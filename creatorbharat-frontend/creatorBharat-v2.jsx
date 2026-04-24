@@ -424,11 +424,10 @@ function Navbar(){
       </div>
     </nav>
     {mob&&st.ui.mobileMenu&&!st.user&&<div style={{position:'fixed',inset:0,zIndex:4999,background:'rgba(0,0,0,.6)',backdropFilter:'blur(4px)'}} onClick={()=>dsp({t:'UI',v:{mobileMenu:false}})}><div className="si" onClick={e=>e.stopPropagation()} style={{position:'absolute',top:10,right:10,left:10,background:'#fff',borderRadius:24,boxShadow:T.sh4,padding:'24px',display:'flex',flexDirection:'column',gap:8}}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}><Logo onClick={()=>go('home')}/><button onClick={()=>dsp({t:'UI',v:{mobileMenu:false}})} style={{width:36,height:36,borderRadius:'50%',background:T.bg2,border:'none',fontSize:20}}>×</button></div>{links.map(([p,l])=><button key={p} onClick={()=>{go(p);dsp({t:'UI',v:{mobileMenu:false}})}} style={{display:'block',width:'100%',padding:'14px 18px',background:st.page===p?T.ga:'transparent',border:'none',textAlign:'left',fontSize:16,color:st.page===p?T.gd:T.n8,cursor:'pointer',fontFamily:'inherit',fontWeight:st.page===p?800:500,borderRadius:12}}>{l}</button>)}<div style={{height:1,background:T.bd,margin:'12px 0'}}/><Btn full lg onClick={()=>{dsp({t:'UI',v:{authModal:true,authTab:'login',mobileMenu:false}})}}>Sign In</Btn><Btn full lg variant="outline" onClick={()=>{go('apply');dsp({t:'UI',v:{mobileMenu:false}})}} style={{border:`2px solid ${T.gd}`}}>Get Listed Free</Btn></div></div>}
-</Btn></div></div></div>}
-
     {st.ui.notifPanel&&<NotifPanel/>}
   </>;
 }
+
 
 // FOOTER
 function Footer(){
