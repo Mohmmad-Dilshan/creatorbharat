@@ -1991,7 +1991,20 @@ function BlogArticlePage(){
         <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(3,1fr)',gap:18}}>
           {related.map(function(r){
             return React.createElement(Card,{key:r.id,onClick:function(){go('blog-article',{blog:r});scrollToTop();},style:{overflow:'hidden'}},
-              React.createElement('div',{style:{height:140,overflow:'function CampaignsPage(){
+              React.createElement('div',{style:{height:140,background:bgAlt,display:'flex',alignItems:'center',justifyContent:'center',fontSize:32}},'📰'),
+              React.createElement('div',{style:{padding:16}},
+                React.createElement('p',{style:{fontSize:13,fontWeight:700,color:tc,marginBottom:4}},r.title),
+                React.createElement('p',{style:{fontSize:11,color:sc}},r.date)
+              )
+            );
+          })}
+        </div>
+      </div>
+    </div>}
+  </PL>;
+}
+
+function CampaignsPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
   const{cpf:f}=st;
   const[modal,setModal]=useState(null);const[done,setDone]=useState(false);
