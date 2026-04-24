@@ -2236,7 +2236,6 @@ function LeaderboardPage(){
               {c.verified&&<div style={{width:24,height:24,borderRadius:'50%',background:'#3B82F6',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:12}}>✓</div>}
             </Card>;
           })}
-        </div>
         {filtered.length===0&&<Empty icon="🏆" title="No creators yet" sub="Be the first on the leaderboard!" ctaLabel="Get Listed" onCta={()=>go('apply')}/>}
       </div>
     </div>
@@ -2448,14 +2447,15 @@ function AboutPage(){
         </div>
       </div>
     </div>
-  </PL>;
-}
+
+    <div style={{padding:mob?'60px 20px':'80px 20px',background:T.bg2}}>
+      <div style={W()}>
         <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(4,1fr)',gap:20,marginBottom:64}}>
           {[{icon:'🌍',t:'Local First',d:'We celebrate regional creators, regional languages, and regional audiences.'},
             {icon:'🤝',t:'Creator-First',d:'Every decision we make starts with "how does this help the creator?"'},
             {icon:'📊',t:'Data-Driven',d:'We believe in transparency -- clear metrics, honest scores, real analytics.'},
             {icon:'💡',t:'Access for All',d:'₹49 removes the barrier to professional representation. Forever.'}
-          ].map(v=><div key={v.t} style={{textAlign:'center',padding:'24px 16px',borderRadius:14,background:T.bg2,border:`1px solid ${T.bd}`}}><div style={{fontSize:32,marginBottom:12}}>{v.icon}</div><h4 style={{fontFamily:"'Fraunces',serif",fontSize:17,color:T.n8,marginBottom:8}}>{v.t}</h4><p style={{fontSize:13,color:T.t2,lineHeight:1.6}}>{v.d}</p></div>)}
+          ].map(v=><div key={v.t} style={{textAlign:'center',padding:'24px 16px',borderRadius:14,background:'#fff',border:`1px solid ${T.bd}`}}><div style={{fontSize:32,marginBottom:12}}>{v.icon}</div><h4 style={{fontFamily:"'Fraunces',serif",fontSize:17,color:T.n8,marginBottom:8}}>{v.t}</h4><p style={{fontSize:13,color:T.t2,lineHeight:1.6}}>{v.d}</p></div>)}
         </div>
         <div style={{background:T.n8,borderRadius:24,padding:mob?'32px':'48px',display:'grid',gridTemplateColumns:mob?'1fr':'1fr 1fr',gap:32,alignItems:'center'}}>
           <div><h3 style={{fontFamily:"'Fraunces',serif",fontSize:mob?24:32,color:'#fff',marginBottom:12}}>Based in Jaipur,<br/>Building for Bharat</h3><p style={{fontSize:14,color:'rgba(255,255,255,.65)',lineHeight:1.7,marginBottom:20}}>CreatorBharat Technologies Pvt. Ltd. is headquartered in Jaipur, Rajasthan. We're a team of creators, marketers, and technologists who believe India's creator economy belongs to all of India -- not just the metros.</p><p style={{fontSize:13,color:'rgba(255,255,255,.45)'}}>📍 Jaipur, Rajasthan 302001<br/>✉ hello@creatorbharat.in<br/>📱 @creatorbharat</p></div>

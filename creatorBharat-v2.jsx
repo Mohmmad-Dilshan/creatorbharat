@@ -2619,11 +2619,9 @@ function AdminDashboardPage(){
              <p style={{color:T.t3}}>Manage your 340+ brand partners here.</p>
           </div>}
 
-        </div>}
-      </div>
-    </div>
-  </PL>;
-}
+          {tab==='blogs'&&<div>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}}>
+              <h3 style={{fontFamily:"'Fraunces',serif",fontSize:20}}>Blog Management ({data.blogs.length})</h3>
               <Btn onClick={()=>toast('Create Blog feature coming soon!','info')}>+ New Post</Btn>
             </div>
             <div style={{display:'flex',flexDirection:'column',gap:12}}>
