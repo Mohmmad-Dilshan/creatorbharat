@@ -2897,4 +2897,8 @@ function App(){
   );
 }
 
-export default App;
+setTimeout(() => {
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    React.createElement(App)
+  );
+}, 0);
