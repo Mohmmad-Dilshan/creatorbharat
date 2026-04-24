@@ -381,6 +381,7 @@ function CreatorsAdminPage({toast}){
 function BlogAdminPage({toast}){
   const[posts,setPosts]=useState([]);
   const[showForm,setShowForm]=useState(false);
+  const[saving,setSaving]=useState(false);
   const[form,setForm]=useState({title:'',category:'Creator Stories',body:'',excerpt:'',author:'CreatorBharat Team',image:'',tags:'',creatorHandle:''});
   const CATS=['Creator Stories','Creator Tips','Brand Guides','Top Lists','Interviews','News'];
   const[loading,setLoading]=useState(true);
