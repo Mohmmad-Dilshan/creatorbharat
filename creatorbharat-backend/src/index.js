@@ -28,7 +28,8 @@ app.use('/api/blog',         require('./routes/blog'));
 app.use('/api/payments',     require('./routes/payments'));
 app.use('/api/admin',        require('./routes/admin'));
 
-// ── Health check ────────────────────────────────────────────
+// ── Health check & Root ─────────────────────────────────────
+app.get('/', (req, res) => res.json({ message: 'CreatorBharat API is running 🚀', status: 'ok' }));
 app.get('/health', (req, res) => res.json({ status: 'ok', platform: 'CreatorBharat' }));
 
 // ── Error handler ───────────────────────────────────────────
