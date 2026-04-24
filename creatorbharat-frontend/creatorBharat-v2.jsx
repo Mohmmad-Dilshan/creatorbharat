@@ -165,6 +165,7 @@ function reducer(s,a){
     case'RM_TOAST':return{...s,toasts:s.toasts.filter(t=>t.id!==a.id)};
     case'NOTIF':return{...s,notifications:[{id:Date.now(),...a.n},...s.notifications]};
     case'READ_ALL':return{...s,notifications:s.notifications.map(n=>({...n,read:true}))};
+    case'SYNC_DATA':return{...s,lastSync:Date.now()};
     default:return s;
   }
 }
@@ -2851,6 +2852,25 @@ function App(){
 
   useEffect(()=>{
     seedData();
+    // Fetch live API data and override local storage cache
+    const syncLiveAPI = async () => {
+      try {
+        const creatorsData = await apiCall('/creators');
+        if(creatorsData && creatorsData.creators) {
+          const mapped = creatorsData.creators.map(c => ({...c, er: c.engagementRate || c.er || 0}));
+          LS.set('cb_creators', mapped);
+        }
+        const campaignsData = await apiCall('/campaigns');
+        if(campaignsData && campaignsData.campaigns) {
+          LS.set('cb_campaigns', campaignsData.campaigns);
+        }
+        dsp({t:'SYNC_DATA'});
+      } catch(err) {
+        console.error("Live API sync failed, falling back to local mock data:", err);
+      }
+    };
+    syncLiveAPI();
+
     const sess=SS.get();
     if(sess){
       const user=sess.role==='creator'?Auth.getCreator(sess.email):Auth.getBrand(sess.email);
