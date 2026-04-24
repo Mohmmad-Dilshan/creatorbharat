@@ -249,20 +249,30 @@ function Bar({value,max=100,color,label,showPct,height=8}){
 
 function Modal({open,onClose,title,children,width=520}){
   if(!open)return null;
-  return <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(0,0,0,.55)',zIndex:8000,display:'flex',alignItems:'center',justifyContent:'center',padding:16,backdropFilter:'blur(4px)'}}><div className="si" onClick={e=>e.stopPropagation()} style={{background:'#fff',borderRadius:18,width:'100%',maxWidth:width,maxHeight:'90vh',overflowY:'auto',boxShadow:T.sh4}}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'18px 24px',borderBottom:`1px solid ${T.bd}`,position:'sticky',top:0,background:'#fff',zIndex:1}}><h3 style={{fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:700,color:T.n8}}>{title}</h3><button onClick={onClose} style={{background:T.bg3,border:'none',width:30,height:30,borderRadius:'50%',cursor:'pointer',fontSize:18,color:T.t2,display:'flex',alignItems:'center',justifyContent:'center'}}>x</button></div><div style={{padding:'22px 24px'}}>{children}</div></div></div>;
+  return <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(0,0,0,.6)',zIndex:8000,display:'flex',alignItems:'center',justifyContent:'center',padding:16,backdropFilter:'blur(10px)'}}><div className="si" onClick={e=>e.stopPropagation()} style={{background:'#fff',borderRadius:28,width:'100%',maxWidth:width,maxHeight:'90vh',overflowY:'auto',boxShadow:T.sh4,border:'1px solid rgba(255,255,255,0.2)'}}><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'24px 32px',borderBottom:`1px solid ${T.bd}`,position:'sticky',top:0,background:'rgba(255,255,255,0.95)',backdropFilter:'blur(10px)',zIndex:1}}><h3 style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:900,color:T.n8}}>{title}</h3><button onClick={onClose} style={{background:T.bg2,border:'none',width:36,height:36,borderRadius:'50%',cursor:'pointer',fontSize:20,color:T.t2,display:'flex',alignItems:'center',justifyContent:'center',transition:'all .2s'}} onMouseEnter={e=>e.target.style.background=T.bg3} onMouseLeave={e=>e.target.style.background=T.bg2}>×</button></div><div style={{padding:'32px'}}>{children}</div></div></div>;
 }
 
-function SH({eyebrow,title,sub,center,light,mb=36}){
-  return <div style={{textAlign:center?'center':'left',marginBottom:mb}}>{eyebrow&&<p style={{fontSize:11,fontWeight:800,letterSpacing:'.1em',textTransform:'uppercase',color:T.gd,marginBottom:10}}>{eyebrow}</p>}<h2 style={{fontFamily:"'Fraunces',serif",fontSize:'clamp(24px,4vw,38px)',fontWeight:900,color:light?'#fff':T.n8,marginBottom:sub?10:0,lineHeight:1.15}}>{title}</h2>{sub&&<p style={{fontSize:15,color:light?'rgba(255,255,255,.75)':T.t2,maxWidth:center?540:'100%',margin:center?'0 auto':'0',lineHeight:1.7}}>{sub}</p>}</div>;
+
+function SH({eyebrow,title,sub,center,light,mb=48}){
+  return <div style={{textAlign:center?'center':'left',marginBottom:mb,position:'relative'}}>
+    {eyebrow&&<div style={{display:'flex',alignItems:'center',justifyContent:center?'center':'flex-start',gap:12,marginBottom:12}}>
+      <div style={{width:24,height:2,background:T.gd,borderRadius:2}}/>
+      <p style={{fontSize:12,fontWeight:800,letterSpacing:'.12em',textTransform:'uppercase',color:T.gd}}>{eyebrow}</p>
+    </div>}
+    <h2 style={{fontFamily:"'Fraunces',serif",fontSize:'clamp(28px,5vw,44px)',fontWeight:900,color:light?'#fff':T.n8,marginBottom:sub?14:0,lineHeight:1.1,letterSpacing:'-0.02em'}}>{title}</h2>
+    {sub&&<p style={{fontSize:16,color:light?'rgba(255,255,255,0.6)':T.t2,maxWidth:center?600:'100%',margin:center?'0 auto':'0',lineHeight:1.6,fontWeight:500}}>{sub}</p>}
+  </div>;
 }
+
 
 function Tabs({tabs,active,onChange,sm}){
   return <div style={{display:'flex',borderBottom:`2px solid ${T.bd}`,marginBottom:22}}>{tabs.map(([id,label,count])=><button key={id} onClick={()=>onChange(id)} style={{padding:sm?'8px 12px':'10px 18px',background:'none',border:'none',borderBottom:`2px solid ${active===id?T.gd:'transparent'}`,marginBottom:-2,color:active===id?T.gd:T.t2,fontWeight:active===id?700:500,fontSize:sm?12:14,cursor:'pointer',display:'flex',alignItems:'center',gap:5,fontFamily:'inherit',transition:'color .15s'}}>{label}{count!=null&&<Bdg sm color={active===id?'red':'gray'}>{count}</Bdg>}</button>)}</div>;
 }
 
 function Empty({icon,title,sub,ctaLabel,onCta}){
-  return <div style={{textAlign:'center',padding:'48px 24px',background:T.bg2,borderRadius:16,border:`1px dashed ${T.bd}`}}><div style={{fontSize:36,marginBottom:12}}>{icon||'📭'}</div><h4 style={{fontFamily:"'Fraunces',serif",fontSize:19,color:T.n8,marginBottom:8}}>{title}</h4>{sub&&<p style={{fontSize:14,color:T.t2,marginBottom:ctaLabel?18:0,lineHeight:1.6}}>{sub}</p>}{ctaLabel&&<Btn onClick={onCta}>{ctaLabel}</Btn>}</div>;
+  return <div style={{textAlign:'center',padding:'64px 32px',background:T.bg,borderRadius:24,border:`1.5px dashed ${T.bd}`,display:'flex',flexDirection:'column',alignItems:'center'}}><div style={{fontSize:48,marginBottom:20,filter:'grayscale(0.5)'}}>{icon||'📭'}</div><h4 style={{fontFamily:"'Fraunces',serif",fontSize:22,fontWeight:900,color:T.n8,marginBottom:12}}>{title}</h4>{sub&&<p style={{fontSize:15,color:T.t2,marginBottom:ctaLabel?24:0,lineHeight:1.6,maxWidth:320}}>{sub}</p>}{ctaLabel&&<Btn onClick={onCta} lg style={{borderRadius:12}}>{ctaLabel}</Btn>}</div>;
 }
+
 
 function Card({children,style:sx={},onClick}){
   const[h,sh]=useState(false);
@@ -705,34 +715,50 @@ function PL({children,noFooter}){
 
 // CREATOR CARD
 function CreatorCard({creator:c,onView}){
+
   const{st,dsp}=useApp();
   const saved=st.saved.includes(c.id);const compared=st.compared.includes(c.id);
   const score=c.score||fmt.score(c);const tier=fmt.tier(score);
   const niches=Array.isArray(c.niche)?c.niche:[c.niche].filter(Boolean);
   const platforms=Array.isArray(c.platform)?c.platform:[c.platform].filter(Boolean);
-  const img=c.photo||c.avatarUrl||`https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=DC2626&color=fff&size=200`;
-  return <Card style={{overflow:'hidden',display:'flex',flexDirection:'column'}}>
-    <div style={{position:'relative',height:80,background:`linear-gradient(135deg,${T.gd},#7C3AED)`,flexShrink:0}}>
-      {c.coverUrl&&<img src={c.coverUrl} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" onError={e=>e.target.style.display='none'}/>}
-      <button onClick={e=>{e.stopPropagation();dsp({t:'SAVE',id:c.id})}} style={{position:'absolute',top:8,right:8,background:'rgba(0,0,0,.5)',border:'none',borderRadius:'50%',width:28,height:28,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',color:saved?'#F87171':'#fff',fontSize:14}}>{saved?'♥':'♡'}</button>
-      {c.trending&&<span style={{position:'absolute',top:8,left:8,background:'rgba(0,0,0,.6)',color:'#fff',fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:10}}>Trending</span>}
+  const img=c.photo||c.avatarUrl||`https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=FF9431&color=fff&size=200`;
+  
+  return <Card onClick={e=>{e.stopPropagation();onView&&onView(c)}} style={{overflow:'hidden',display:'flex',flexDirection:'column',position:'relative',background:'#fff',border:`1.5px solid ${compared?T.gd:T.bd}`,height:'100%'}}>
+    <div style={{position:'relative',height:100,background:`linear-gradient(135deg,${T.n8},${T.n7})`,flexShrink:0,overflow:'hidden'}}>
+      {c.coverUrl?<img src={c.coverUrl} style={{width:'100%',height:'100%',objectFit:'cover',opacity:0.6}} alt="" onError={e=>e.target.style.display='none'}/>:<div style={{width:'100%',height:'100%',background:`linear-gradient(45deg,${T.ga},${T.gab})`}}/>}
+      <button onClick={e=>{e.stopPropagation();dsp({t:'SAVE',id:c.id})}} style={{position:'absolute',top:12,right:12,background:'rgba(255,255,255,0.9)',backdropFilter:'blur(4px)',border:'none',borderRadius:12,width:36,height:36,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',color:saved?T.gd:T.t2,fontSize:18,boxShadow:T.sh2,transition:'all .2s'}}>{saved?'❤️':'♡'}</button>
+      {c.verified&&<div style={{position:'absolute',top:12,left:12,background:'rgba(59,130,246,0.9)',color:'#fff',fontSize:10,fontWeight:800,padding:'4px 10px',borderRadius:20,backdropFilter:'blur(4px)',display:'flex',alignItems:'center',gap:4}}><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg> VERIFIED</div>}
     </div>
-    <div style={{padding:'0 14px',marginTop:-22,display:'flex',justifyContent:'space-between',alignItems:'flex-end',marginBottom:10}}>
-      <img src={img} style={{width:44,height:44,borderRadius:'50%',objectFit:'cover',border:'3px solid #fff',boxShadow:T.sh2}} alt={c.name} onError={e=>{e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=DC2626&color=fff&size=200`}}/>
-      <div style={{display:'flex',gap:6,alignItems:'center'}}>{c.verified&&<Bdg sm color="blue">Verified</Bdg>}<Bdg sm color={tier.bc}>{tier.label}</Bdg></div>
-    </div>
-    <div style={{padding:'0 14px',flex:1}}>
-      <h3 style={{fontSize:15,fontWeight:700,color:T.n8,marginBottom:2}}>{c.name}</h3>
-      <p style={{fontSize:12,color:T.t3,marginBottom:8}}>{c.city}{c.state?`, ${c.state}`:''} &bull; {niches.slice(0,2).join(', ')}</p>
-      <div style={{display:'flex',gap:14,marginBottom:10,flexWrap:'wrap'}}>
-        {[[fmt.num(c.followers),'Followers'],[(c.engagementRate||c.er||0)+'%','ER'],[fmt.inr(c.rateMin),'Min Rate']].map(([v,l])=><div key={l} style={{textAlign:'center'}}><div style={{fontSize:14,fontWeight:800,color:T.n8,fontFamily:"'Fraunces',serif"}}>{v}</div><div style={{fontSize:10,color:T.t3}}>{l}</div></div>)}
+    
+    <div style={{padding:'0 20px',marginTop:-40,position:'relative',zIndex:2}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',marginBottom:12}}>
+        <div style={{position:'relative'}}>
+          <img src={img} style={{width:80,height:80,borderRadius:22,objectFit:'cover',border:'4px solid #fff',boxShadow:T.sh3,background:T.bg2}} alt={c.name} onError={e=>{e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=FF9431&color=fff&size=200`}}/>
+          <div style={{position:'absolute',bottom:-4,right:-4,width:24,height:24,borderRadius:'50%',background:tier.color,border:'3px solid #fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,fontWeight:900,color:'#fff'}}>{score}</div>
+        </div>
+        <div style={{paddingBottom:8}}><Bdg color={tier.bc}>{tier.label}</Bdg></div>
       </div>
-      {platforms.length>0&&<div style={{display:'flex',gap:4,flexWrap:'wrap',marginBottom:8}}>{platforms.slice(0,3).map(p=><Bdg key={p} sm>{p}</Bdg>)}</div>}
-      {c.rating>0&&<Stars rating={c.rating} sm/>}
+      
+      <h3 style={{fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:900,color:T.n8,marginBottom:4,lineHeight:1.2}}>{c.name}</h3>
+      <p style={{fontSize:13,color:T.t3,marginBottom:16,display:'flex',alignItems:'center',gap:4}}>📍 {c.city}{c.state?`, ${c.state}`:''}</p>
+      
+      <div style={{display:'flex',gap:12,marginBottom:20,padding:'12px',background:T.bg2,borderRadius:14,border:`1px solid ${T.bd}`}}>
+        {[[fmt.num(c.followers),'Followers'],[(c.engagementRate||c.er||0)+'%','Eng.'],[fmt.inr(c.rateMin),'Min Rate']].map(([v,l],i)=><div key={l} style={{flex:1,textAlign:'center',borderRight:i<2?`1px solid ${T.bd}`:'none'}}>
+          <div style={{fontSize:15,fontWeight:800,color:T.n8,fontFamily:"'Fraunces',serif"}}>{v}</div>
+          <div style={{fontSize:10,color:T.t3,fontWeight:600,textTransform:'uppercase',letterSpacing:'.02em'}}>{l}</div>
+        </div>)}
+      </div>
+
+      <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:20}}>
+        {niches.slice(0,3).map(n=><span key={n} style={{fontSize:11,fontWeight:700,color:T.gd,background:T.ga,padding:'4px 10px',borderRadius:20}}>{n}</span>)}
+      </div>
     </div>
-    <div style={{padding:'10px 14px 14px',display:'flex',gap:8}}>
-      <Btn full sm onClick={e=>{e.stopPropagation();onView&&onView(c)}}>View Profile</Btn>
-      <button onClick={e=>{e.stopPropagation();dsp({t:'COMPARE',id:c.id})}} style={{padding:'6px 12px',borderRadius:8,border:`1.5px solid ${compared?T.gd:T.bd}`,background:compared?T.ga:'transparent',color:compared?T.gd:T.t2,fontSize:12,fontWeight:600,cursor:'pointer',fontFamily:'inherit',flexShrink:0}}>{compared?'Added':'Compare'}</button>
+    
+    <div style={{padding:'0 20px 20px',marginTop:'auto',display:'flex',gap:8}}>
+      <Btn full sm variant="primary" style={{borderRadius:12}}>View Profile</Btn>
+      <button onClick={e=>{e.stopPropagation();dsp({t:'COMPARE',id:c.id})}} style={{width:44,height:44,borderRadius:12,border:`1.5px solid ${compared?T.gd:T.bd}`,background:compared?T.ga:'transparent',color:compared?T.gd:T.t2,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',transition:'all .2s',flexShrink:0}} title="Compare">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+      </button>
     </div>
   </Card>;
 }
@@ -745,27 +771,54 @@ function CampCard({campaign:c,onApply}){
   const platforms=Array.isArray(c.platform)?c.platform:[c.platform].filter(Boolean);
   const daysLeft=c.deadline?Math.max(0,Math.ceil((new Date(c.deadline)-new Date())/(1000*60*60*24))):null;
   const fillPct=c.slots>0?Math.round((c.filled/c.slots)*100):0;
-  return <Card style={{padding:'18px'}}>
-    <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:10,gap:10}}>
-      <div style={{flex:1}}>
-        <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:6}}>{c.urgent&&<Bdg sm color="red">Urgent</Bdg>}{c.bidding&&<Bdg sm color="purple">Bidding</Bdg>}{niches.slice(0,2).map(n=><Bdg key={n} sm>{n}</Bdg>)}</div>
-        <h3 style={{fontSize:15,fontWeight:700,color:T.n8,lineHeight:1.3}}>{c.title}</h3>
-        <p style={{fontSize:13,color:T.gd,fontWeight:600,marginTop:4}}>{typeof c.brand === 'object' && c.brand !== null ? c.brand.companyName : c.brand}</p>
+  
+  return <Card style={{padding:'24px',display:'flex',flexDirection:'column',gap:16,border:`1.5px solid ${applied?T.ok:T.bd}`,position:'relative'}}>
+    {c.urgent&&<div style={{position:'absolute',top:12,right:12,background:T.ga,color:T.gd,fontSize:10,fontWeight:900,padding:'4px 10px',borderRadius:20,border:`1px solid ${T.gab}`}}>URGENT</div>}
+    
+    <div>
+      <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:12}}>
+        {niches.slice(0,2).map(n=><Bdg key={n} sm color="gray">{n}</Bdg>)}
+        {c.bidding&&<Bdg sm color="purple">Bidding</Bdg>}
       </div>
-      <div style={{textAlign:'right',flexShrink:0}}><div style={{fontFamily:"'Fraunces',serif",fontSize:16,fontWeight:900,color:T.ok}}>{fmt.inr(c.budgetMin)}</div><div style={{fontSize:11,color:T.t3}}>to {fmt.inr(c.budgetMax)}</div></div>
+      <h3 style={{fontFamily:"'Fraunces',serif",fontSize:18,fontWeight:900,color:T.n8,lineHeight:1.3,marginBottom:6}}>{c.title}</h3>
+      <p style={{fontSize:14,color:T.gd,fontWeight:700,display:'flex',alignItems:'center',gap:6}}>
+        <span style={{width:24,height:24,borderRadius:6,background:T.ga,display:'flex',alignItems:'center',justifyContent:'center',fontSize:12}}>🏢</span>
+        {typeof c.brand === 'object' && c.brand !== null ? c.brand.companyName : c.brand}
+      </p>
     </div>
-    <p style={{fontSize:13,color:T.t2,lineHeight:1.55,marginBottom:10,display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{c.description}</p>
-    <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:10}}>{platforms.slice(0,3).map(p=><Bdg key={p} sm>{p}</Bdg>)}{c.minFollowers&&<span style={{fontSize:11,color:T.t3}}>{fmt.num(c.minFollowers)}+ followers</span>}</div>
-    <div style={{marginBottom:12}}>
-      <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}><span style={{fontSize:12,color:T.t2}}>Slots</span><span style={{fontSize:12,fontWeight:700,color:fillPct>=100?T.gd:T.ok}}>{c.filled}/{c.slots}</span></div>
-      <Bar value={fillPct} color={fillPct>=80?T.gd:T.ok} height={5}/>
+
+    <div style={{background:T.bg2,padding:'12px 16px',borderRadius:14,display:'flex',justifyContent:'space-between',alignItems:'center',border:`1px solid ${T.bd}`}}>
+      <div>
+        <div style={{fontSize:11,color:T.t3,fontWeight:700,textTransform:'uppercase'}}>Budget</div>
+        <div style={{fontFamily:"'Fraunces',serif",fontSize:19,fontWeight:900,color:T.ok}}>{fmt.inr(c.budgetMin)} - {fmt.inr(c.budgetMax)}</div>
+      </div>
+      <div style={{textAlign:'right'}}>
+        <div style={{fontSize:11,color:T.t3,fontWeight:700,textTransform:'uppercase'}}>Deadline</div>
+        <div style={{fontSize:14,fontWeight:700,color:daysLeft<=7?T.gd:T.n8}}>{daysLeft} days left</div>
+      </div>
     </div>
-    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:10}}>
-      {daysLeft!==null&&<span style={{fontSize:12,color:daysLeft<=7?T.gd:T.t3,fontWeight:daysLeft<=7?700:400}}>{daysLeft}d left</span>}
-      {applied?<Bdg color="green">Applied</Bdg>:<Btn sm onClick={()=>{if(!st.user){dsp({t:'UI',v:{authModal:true,authTab:'login'}});return}if(st.role!=='creator'){dsp({t:'TOAST',d:{type:'info',msg:'Only creators can apply'}});return}onApply&&onApply(c)}}>Apply Now</Btn>}
+
+    <p style={{fontSize:14,color:T.t2,lineHeight:1.6,display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}>{c.description}</p>
+    
+    <div>
+      <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
+        <span style={{fontSize:12,color:T.t3,fontWeight:600}}>Slots: {c.filled}/{c.slots} filled</span>
+        <span style={{fontSize:12,fontWeight:800,color:fillPct>=80?T.gd:T.ok}}>{fillPct}%</span>
+      </div>
+      <Bar value={fillPct} color={fillPct>=80?T.gd:T.ok} height={6}/>
+    </div>
+
+    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:4}}>
+      <div style={{display:'flex',gap:-8}}>
+        {platforms.map(p=><span key={p} title={p} style={{width:28,height:28,borderRadius:'50%',background:'#fff',border:`2px solid ${T.bd}`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,marginLeft:-8,zIndex:1}}>
+          {p==='Instagram'?'📸':p==='YouTube'?'🎥':p==='Twitter'?'🐦':'📱'}
+        </span>)}
+      </div>
+      {applied?<Bdg color="green">Applied</Bdg>:<Btn onClick={()=>{if(!st.user){dsp({t:'UI',v:{authModal:true,authTab:'login'}});return}if(st.role!=='creator'){dsp({t:'TOAST',d:{type:'info',msg:'Only creators can apply'}});return}onApply&&onApply(c)}} style={{borderRadius:12}}>Apply Now</Btn>}
     </div>
   </Card>;
 }
+
 
 
 // ── HOME PAGE
@@ -776,19 +829,14 @@ const ALL_STATES=Object.keys(INDIA_STATES).sort();
 // ── HELPERS ──────────────────────────────────────────────────────
 function NewsletterForm(){
   const[em,setEm]=useState('');const[ok,setOk]=useState(false);const{dsp}=useApp();
-  const sub=()=>{
-    if(!em.includes('@'))return;
-    const ex=LS.get('cb_newsletter',[]);
-    if(!ex.find(e=>e.email===em))LS.push('cb_newsletter',{email:em,date:new Date().toISOString()});
-    setOk(true);setEm('');
-    dsp({t:'TOAST',d:{type:'success',msg:'Subscribed!'}});
-  };
-  if(ok)return React.createElement('p',{style:{color:'#138808',fontWeight:600,fontSize:13}},'Subscribed!');
-  return React.createElement('div',{style:{display:'flex',gap:8,flexWrap:'wrap',justifyContent:'center'}},
-    React.createElement('input',{value:em,onChange:e=>setEm(e.target.value),placeholder:'your@email.com',onKeyDown:e=>e.key==='Enter'&&sub(),style:{flex:1,minWidth:160,padding:'9px 14px',borderRadius:8,border:'1px solid rgba(255,255,255,.2)',background:'rgba(255,255,255,.1)',color:'#fff',fontSize:13,fontFamily:'inherit',outline:'none'}}),
-    React.createElement('button',{onClick:sub,style:{padding:'9px 18px',background:'linear-gradient(135deg,#FF9933,#FF6B00)',border:'none',borderRadius:8,color:'#fff',fontSize:13,fontWeight:700,cursor:'pointer',fontFamily:'inherit'}},'Subscribe')
-  );
+  const sub=()=>{if(!em.includes('@'))return;const ex=LS.get('cb_newsletter',[]);if(!ex.find(e=>e.email===em))LS.push('cb_newsletter',{email:em,date:new Date().toISOString()});setOk(true);setEm('');dsp({t:'TOAST',d:{type:'success',msg:'Subscribed!'}})};
+  if(ok)return <div style={{padding:'12px 24px',background:'rgba(19,136,8,.1)',color:T.ok,borderRadius:12,fontWeight:800,fontSize:14,border:'1px solid rgba(19,136,8,.2)'}}>✓ Subscribed Successfully!</div>;
+  return <div style={{display:'flex',gap:10,flexWrap:'wrap',justifyContent:'center',maxWidth:500,margin:'0 auto'}}>
+    <input value={em} onChange={e=>setEm(e.target.value)} placeholder="Apna email dalo..." onKeyDown={e=>e.key==='Enter'&&sub()} style={{flex:2,minWidth:200,padding:'14px 20px',borderRadius:14,border:'1px solid rgba(255,255,255,.2)',background:'rgba(255,255,255,.05)',color:'#fff',fontSize:15,fontFamily:'inherit',outline:'none',transition:'all .2s'}} onFocus={e=>e.target.style.borderColor=T.gd} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,.2)'}/>
+    <Btn onClick={sub} lg style={{background:'linear-gradient(135deg,#FF9431,#FF6B00)',border:'none',color:'#fff',fontWeight:800,borderRadius:14,padding:'0 32px'}}>Join Now</Btn>
+  </div>;
 }
+
 
 // ── HOME PAGE ─────────────────────────────────────────────────────
 function HomePage(){
@@ -850,13 +898,13 @@ function HomePage(){
 
 
     {featured.length>0&&(
-      <section style={{padding:mob?'56px 20px':'80px 20px',background:T.bg2}}>
+      <section style={{padding:mob?'64px 20px':'100px 20px',background:'#fff',position:'relative'}}>
         <div style={W()}>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',marginBottom:36}}>
-            <SH eyebrow="Top Creators" title="Is Hafte Featured" mb={0}/>
-            <Btn variant="outline" sm onClick={()=>go('creators')}>Sab Dekho</Btn>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',marginBottom:48}}>
+            <SH eyebrow="Discover" title="Featured Creators" sub="This week's top picks from Jaipur & beyond." mb={0}/>
+            <Btn variant="outline" sm onClick={()=>go('creators')} style={{borderRadius:12}}>View All Creators</Btn>
           </div>
-          <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(3,1fr)',gap:20}}>
+          <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(3,1fr)',gap:24}}>
             {featured.slice(0,mob?3:6).map(function(c,i){
               return React.createElement('div',{key:c.id,className:'au d'+(i+1)},
                 React.createElement(CreatorCard,{creator:c,onView:function(cr){dsp({t:'GO',p:'creator-profile',sel:{creator:cr}});scrollToTop();}})
@@ -866,6 +914,24 @@ function HomePage(){
         </div>
       </section>
     )}
+
+    <section style={{padding:mob?'64px 20px':'100px 20px',background:T.bg2,borderTop:`1px solid ${T.bd}`,borderBottom:`1px solid ${T.bd}`}}>
+      <div style={W()}>
+        <SH eyebrow="Process" title="How It Works" center sub="Getting listed and landing deals is easier than ever." mb={64}/>
+        <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(3,1fr)',gap:mob?32:48}}>
+          {[
+            {icon:'✨',t:'1. Create Profile',d:'Fill your details, link your socials, and set your rates. It takes less than 2 minutes.'},
+            {icon:'🎯',t:'2. Get Discovered',d:'Our AI-powered search helps brands find the perfect creators for their niche and city.'},
+            {icon:'🤝',t:'3. Close Deals',d:'Brands contact you directly. Negotiate, collaborate, and grow your career.'}
+          ].map((step,i)=><div key={i} className="au" style={{textAlign:'center',padding:'32px',background:'#fff',borderRadius:24,boxShadow:T.sh2,border:`1px solid ${T.bd}`,transition:'transform .3s'}} onMouseEnter={e=>e.currentTarget.style.transform='translateY(-8px)'} onMouseLeave={e=>e.currentTarget.style.transform='none'}>
+            <div style={{width:64,height:64,borderRadius:20,background:T.ga,display:'flex',alignItems:'center',justifyContent:'center',fontSize:32,margin:'0 auto 24px'}}>{step.icon}</div>
+            <h3 style={{fontFamily:"'Fraunces',serif",fontSize:20,fontWeight:900,color:T.n8,marginBottom:12}}>{step.t}</h3>
+            <p style={{fontSize:15,color:T.t2,lineHeight:1.6}}>{step.d}</p>
+          </div>)}
+        </div>
+      </div>
+    </section>
+
 
     {campaigns.length>0&&(
       <section style={{padding:mob?'56px 20px':'80px 20px',background:'#fff'}}>
@@ -953,15 +1019,21 @@ function CreatorsPage(){
   var clearAll=function(){dsp({t:'CF',v:{q:'',state:'',district:'',niche:'',platform:'',verified:false,minER:'',minFollowers:'',sort:'score'}});};
 
   return <PL>
-    <div style={{background:'linear-gradient(135deg,#0a0a0a,#1a0800)',padding:mob?'40px 20px 20px':'56px 20px 24px',position:'relative'}}>
-      <div style={{position:'absolute',top:0,left:0,right:0,height:3,background:'linear-gradient(90deg,#FF9933 33%,#fff 33%,#fff 66%,#138808 66%)'}}/>
+    <div style={{background:T.n9,padding:mob?'48px 20px 32px':'72px 20px 48px',position:'relative',overflow:'hidden'}}>
+      <div style={{position:'absolute',top:0,left:0,right:0,height:4,background:'linear-gradient(90deg,#FF9431 33%,#fff 33%,#fff 66%,#128807 66%)'}}/>
+      <div style={{position:'absolute',top:0,right:0,width:400,height:400,background:'radial-gradient(circle, rgba(255,148,49,0.05) 0%, transparent 70%)',filter:'blur(40px)'}}/>
+      
       <div style={W()}>
-        <SH eyebrow="Discover" title="India Ke Local Creators" sub={all.length+"+ creators listed"} light mb={20}/>
-        <div style={{position:'relative',maxWidth:500}}>
-          <input value={f.q} onChange={function(e){dsp({t:'CF',v:{q:e.target.value}});}} placeholder="Search by name, city, niche..." style={{width:'100%',padding:'12px 18px',borderRadius:10,border:'1px solid rgba(255,255,255,.15)',background:'rgba(255,255,255,.08)',color:'#fff',fontSize:14,fontFamily:'inherit',outline:'none'}}/>
+        <div style={{display:'flex',flexDirection:mob?'column':'row',justifyContent:'space-between',alignItems:mob?'flex-start':'center',gap:24}}>
+          <SH eyebrow="Ecosystem" title="Bharat Ke Top Creators" sub="Search from 2,400+ handpicked local creators." light mb={0}/>
+          <div style={{position:'relative',width:mob?'100%':400}}>
+            <input value={f.q} onChange={e=>dsp({t:'CF',v:{q:e.target.value}})} placeholder="Name, city, or niche..." style={{width:'100%',padding:'16px 20px 16px 48px',borderRadius:16,border:'1px solid rgba(255,255,255,0.1)',background:'rgba(255,255,255,0.05)',color:'#fff',fontSize:15,fontFamily:'inherit',outline:'none',transition:'all .3s',boxShadow:T.sh2}} onFocus={e=>e.target.style.borderColor=T.gd}/>
+            <span style={{position:'absolute',left:18,top:'50%',transform:'translateY(-50%)',fontSize:18,opacity:0.6}}>🔍</span>
+          </div>
         </div>
       </div>
     </div>
+
 
     <div style={{display:'flex',minHeight:500}}>
       {/* Sidebar */}
