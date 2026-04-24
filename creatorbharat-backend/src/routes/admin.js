@@ -1,7 +1,6 @@
 const router = require('express').Router();
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../prisma');
 const { auth, adminOnly } = require('../middleware/auth');
-const prisma = new PrismaClient();
 
 // All admin routes require auth + admin role
 router.use(auth, adminOnly);

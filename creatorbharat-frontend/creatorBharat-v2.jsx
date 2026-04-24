@@ -74,20 +74,28 @@ const scrollToTop=()=>window.scrollTo({top:0,behavior:'smooth'});
 const useVP=()=>{const[w,setW]=useState(window.innerWidth);useEffect(()=>{const h=()=>setW(window.innerWidth);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[]);return{mob:w<768,tab:w<1024,w}};
 const W=(max=1200)=>({maxWidth:max,margin:'0 auto',padding:'0 20px'});
 
-const API_BASE = 'https://creatorbharat.onrender.com/api';
+const API_BASE = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
+  ? 'http://localhost:4000/api'
+  : 'https://creatorbharat.onrender.com/api';
+
 async function apiCall(endpoint, options = {}) {
   const token = localStorage.getItem('cb_token');
-  const res = await fetch(API_BASE + endpoint, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: 'Bearer ' + token } : {}),
-    },
-    ...options,
-    body: options.body ? JSON.stringify(options.body) : undefined,
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'API Error');
-  return data;
+  try {
+    const res = await fetch(API_BASE + endpoint, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: 'Bearer ' + token } : {}),
+      },
+      ...options,
+      body: options.body ? JSON.stringify(options.body) : undefined,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'API Error');
+    return data;
+  } catch (err) {
+    console.error(`API Call failed [${endpoint}]:`, err);
+    throw err;
+  }
 }
 
 // LOCALSTORAGE
@@ -265,7 +273,7 @@ function AuthModal(){
     if(r.ok){dsp({t:'LOGIN',u:r.user,role:r.role});toast(`Welcome back, ${r.user.name||r.user.companyName}!`,'success');dsp({t:'GO',p:r.role==='creator'?'dashboard':'brand-dashboard'})}
     else{toast(r.error,'error')}
   };
-  return <Modal open title="" onClose={()=>dsp({t:'UI',v:{authModal:false}})}><div style={{textAlign:'center',marginBottom:22}}><div style={{display:'inline-flex',background:T.bg2,borderRadius:10,padding:3}}>{[['login','Login'],['register','Register']].map(([id,lbl])=><button key={id} onClick={()=>setTab(id)} style={{padding:'8px 24px',borderRadius:8,border:'none',background:tab===id?'#fff':'transparent',color:tab===id?T.n8:T.t2,fontWeight:tab===id?700:500,cursor:'pointer',fontSize:14,fontFamily:'inherit',boxShadow:tab===id?T.sh1:'none',transition:'all .2s'}}>{lbl}</button>)}</div></div>{tab==='login'?<div><Fld label="Email" type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@email.com" required/><Fld label="Password" type="password" value={pass} onChange={e=>setPass(e.target.value)} placeholder="Enter password" required/><Btn full loading={loading} onClick={doLogin} lg>Login to CreatorBharat</Btn><p style={{textAlign:'center',fontSize:12,color:T.t3,marginTop:10}}>Demo: rahul@demo.in / demo123</p></div>:<div><p style={{textAlign:'center',fontSize:14,color:T.t2,marginBottom:18}}>Create your free account</p><Btn full lg onClick={()=>{dsp({t:'UI',v:{authModal:false}});dsp({t:'GO',p:'apply'});top()}}>I am a Creator</Btn><div style={{margin:'12px 0',textAlign:'center',fontSize:13,color:T.t3}}>or</div><Btn full variant="outline" onClick={()=>{dsp({t:'UI',v:{authModal:false}});dsp({t:'GO',p:'brand-register'});top()}}>I am a Brand</Btn><p style={{textAlign:'center',marginTop:14}}><button onClick={()=>dsp({t:'UI',v:{authModal:false}})} style={{background:'none',border:'none',color:T.t3,cursor:'pointer',textDecoration:'underline',fontSize:12,fontFamily:'inherit'}}>Continue as Guest</button></p></div>}</Modal>;
+  return <Modal open title="" onClose={()=>dsp({t:'UI',v:{authModal:false}})}><div style={{textAlign:'center',marginBottom:22}}><div style={{display:'inline-flex',background:T.bg2,borderRadius:10,padding:3}}>{[['login','Login'],['register','Register']].map(([id,lbl])=><button key={id} onClick={()=>setTab(id)} style={{padding:'8px 24px',borderRadius:8,border:'none',background:tab===id?'#fff':'transparent',color:tab===id?T.n8:T.t2,fontWeight:tab===id?700:500,cursor:'pointer',fontSize:14,fontFamily:'inherit',boxShadow:tab===id?T.sh1:'none',transition:'all .2s'}}>{lbl}</button>)}</div></div>{tab==='login'?<div><Fld label="Email" type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@email.com" required/><Fld label="Password" type="password" value={pass} onChange={e=>setPass(e.target.value)} placeholder="Enter password" required/><Btn full loading={loading} onClick={doLogin} lg>Login to CreatorBharat</Btn><p style={{textAlign:'center',fontSize:12,color:T.t3,marginTop:10}}>Demo: rahul@demo.in / demo123</p></div>:<div><p style={{textAlign:'center',fontSize:14,color:T.t2,marginBottom:18}}>Create your free account</p><Btn full lg onClick={()=>{dsp({t:'UI',v:{authModal:false}});dsp({t:'GO',p:'apply'});scrollToTop()}}>I am a Creator</Btn><div style={{margin:'12px 0',textAlign:'center',fontSize:13,color:T.t3}}>or</div><Btn full variant="outline" onClick={()=>{dsp({t:'UI',v:{authModal:false}});dsp({t:'GO',p:'brand-register'});scrollToTop()}}>I am a Brand</Btn><p style={{textAlign:'center',marginTop:14}}><button onClick={()=>dsp({t:'UI',v:{authModal:false}})} style={{background:'none',border:'none',color:T.t3,cursor:'pointer',textDecoration:'underline',fontSize:12,fontFamily:'inherit'}}>Continue as Guest</button></p></div>}</Modal>;
 }
 
 // NOTIF PANEL
@@ -280,7 +288,7 @@ function CompareBar(){
   if(st.compared.length===0)return null;
   const all=LS.get('cb_creators',[]);
   const clist=st.compared.map(id=>all.find(c=>c.id===id)).filter(Boolean);
-  return <div style={{position:'fixed',bottom:0,left:0,right:0,background:'#fff',borderTop:`2px solid ${T.gd}`,zIndex:6000,padding:'10px 20px',display:'flex',alignItems:'center',gap:12,boxShadow:'0 -4px 20px rgba(0,0,0,.08)'}}><span style={{fontSize:13,fontWeight:700,color:T.n8,flexShrink:0}}>Compare ({clist.length}/3)</span><div style={{display:'flex',gap:8,flex:1,overflowX:'auto'}}>{clist.map(c=><div key={c.id} style={{display:'flex',alignItems:'center',gap:7,background:T.bg2,borderRadius:8,padding:'5px 10px',flexShrink:0}}><img src={c.photo||`https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=DC2626&color=fff`} style={{width:26,height:26,borderRadius:'50%',objectFit:'cover'}} alt="" onError={e=>{e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=DC2626&color=fff`}}/><span style={{fontSize:12,fontWeight:600,color:T.n8}}>{c.name}</span><button onClick={()=>dsp({t:'COMPARE',id:c.id})} style={{background:'none',border:'none',cursor:'pointer',color:T.t3,fontSize:14}}>x</button></div>)}</div><div style={{display:'flex',gap:8,flexShrink:0}}>{clist.length>=2&&<Btn sm onClick={()=>{dsp({t:'GO',p:'compare'});top()}}>Compare</Btn>}<Btn sm variant="ghost" onClick={()=>clist.forEach(c=>dsp({t:'COMPARE',id:c.id}))}>Clear</Btn></div></div>;
+  return <div style={{position:'fixed',bottom:0,left:0,right:0,background:'#fff',borderTop:`2px solid ${T.gd}`,zIndex:6000,padding:'10px 20px',display:'flex',alignItems:'center',gap:12,boxShadow:'0 -4px 20px rgba(0,0,0,.08)'}}><span style={{fontSize:13,fontWeight:700,color:T.n8,flexShrink:0}}>Compare ({clist.length}/3)</span><div style={{display:'flex',gap:8,flex:1,overflowX:'auto'}}>{clist.map(c=><div key={c.id} style={{display:'flex',alignItems:'center',gap:7,background:T.bg2,borderRadius:8,padding:'5px 10px',flexShrink:0}}><img src={c.photo||`https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=DC2626&color=fff`} style={{width:26,height:26,borderRadius:'50%',objectFit:'cover'}} alt="" onError={e=>{e.target.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=DC2626&color=fff`}}/><span style={{fontSize:12,fontWeight:600,color:T.n8}}>{c.name}</span><button onClick={()=>dsp({t:'COMPARE',id:c.id})} style={{background:'none',border:'none',cursor:'pointer',color:T.t3,fontSize:14}}>x</button></div>)}</div><div style={{display:'flex',gap:8,flexShrink:0}}>{clist.length>=2&&<Btn sm onClick={()=>{dsp({t:'GO',p:'compare'});scrollToTop()}}>Compare</Btn>}<Btn sm variant="ghost" onClick={()=>clist.forEach(c=>dsp({t:'COMPARE',id:c.id}))}>Clear</Btn></div></div>;
 }
 
 // NAVBAR
@@ -288,7 +296,7 @@ function Navbar(){
   const{st,dsp}=useApp();const{mob}=useVP();
   const[scroll,setScroll]=useState(false);
   useEffect(()=>{const h=()=>setScroll(window.scrollY>20);window.addEventListener('scroll',h);return()=>window.removeEventListener('scroll',h)},[]);
-  const go=(p)=>{dsp({t:'GO',p});top();dsp({t:'UI',v:{mobileMenu:false,notifPanel:false}})};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop();dsp({t:'UI',v:{mobileMenu:false,notifPanel:false}})};
   const unread=st.notifications.filter(n=>!n.read).length;
   const isCreator=st.role==='creator',isBrand=st.role==='brand';
   const links=isCreator?[['dashboard','Dashboard'],['monetize','Monetize 💰'],['campaigns','Campaigns'],['leaderboard','Leaderboard'],['blog','Blog']]:isBrand?[['creators','Find Creators'],['campaigns','Campaigns'],['brand-dashboard','Dashboard'],['blog','Blog']]:[['creators','Creators'],['campaigns','Campaigns'],['monetize','Monetize 💰'],['pricing','Pricing'],['about','About']];
@@ -333,7 +341,7 @@ function Navbar(){
 // FOOTER
 function Footer(){
   const{dsp}=useApp();const{mob}=useVP();
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop()};
   const[email,setEmail]=useState('');const[ok,setOk]=useState(false);
   const sub=()=>{if(!email.includes('@'))return;const ex=LS.get('cb_newsletter',[]);if(!ex.find(e=>e.email===email))LS.push('cb_newsletter',{email,date:new Date().toISOString()});setOk(true);setEmail('')};
   return <footer style={{background:T.n9,color:'rgba(255,255,255,.7)',paddingTop:52}}>
@@ -606,7 +614,7 @@ function CreatorCard({creator:c,onView}){
       <h3 style={{fontSize:15,fontWeight:700,color:T.n8,marginBottom:2}}>{c.name}</h3>
       <p style={{fontSize:12,color:T.t3,marginBottom:8}}>{c.city}{c.state?`, ${c.state}`:''} &bull; {niches.slice(0,2).join(', ')}</p>
       <div style={{display:'flex',gap:14,marginBottom:10,flexWrap:'wrap'}}>
-        {[[fmt.num(c.followers),'Followers'],[c.er+'%','ER'],[fmt.inr(c.rateMin),'Min Rate']].map(([v,l])=><div key={l} style={{textAlign:'center'}}><div style={{fontSize:14,fontWeight:800,color:T.n8,fontFamily:"'Fraunces',serif"}}>{v}</div><div style={{fontSize:10,color:T.t3}}>{l}</div></div>)}
+        {[[fmt.num(c.followers),'Followers'],[(c.engagementRate||c.er||0)+'%','ER'],[fmt.inr(c.rateMin),'Min Rate']].map(([v,l])=><div key={l} style={{textAlign:'center'}}><div style={{fontSize:14,fontWeight:800,color:T.n8,fontFamily:"'Fraunces',serif"}}>{v}</div><div style={{fontSize:10,color:T.t3}}>{l}</div></div>)}
       </div>
       {platforms.length>0&&<div style={{display:'flex',gap:4,flexWrap:'wrap',marginBottom:8}}>{platforms.slice(0,3).map(p=><Bdg key={p} sm>{p}</Bdg>)}</div>}
       {c.rating>0&&<Stars rating={c.rating} sm/>}
@@ -674,14 +682,22 @@ function NewsletterForm(){
 // ── HOME PAGE ─────────────────────────────────────────────────────
 function HomePage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p,sel)=>{dsp({t:'GO',p,sel});top();};
+  const go=(p,sel)=>{dsp({t:'GO',p,sel});scrollToTop();};
   const[creators,setCreators]=useState([]);
   const[campaigns,setCampaigns]=useState([]);
   const[totalC,setTotalC]=useState(2400);
   const[totalCp,setTotalCp]=useState(340);
   useEffect(()=>{
-    apiCall('/creators?limit=10').then(d=>{setCreators(d.creators||[]);setTotalC((d.creators?.length||0)+2400)}).catch(console.error);
-    apiCall('/campaigns?limit=10').then(d=>{setCampaigns(d.campaigns||[]);setTotalCp((d.campaigns?.length||0)+340)}).catch(console.error);
+    apiCall('/creators?limit=10').then(d=>{
+      const list = d.creators || (Array.isArray(d) ? d : []);
+      setCreators(list);
+      setTotalC(list.length + 2400);
+    }).catch(console.error);
+    apiCall('/campaigns?limit=10').then(d=>{
+      const list = d.campaigns || (Array.isArray(d) ? d : []);
+      setCampaigns(list.slice(0, 4));
+      setTotalCp(list.length + 340);
+    }).catch(console.error);
   },[]);
   const featured=creators.filter(c=>c.featured).slice(0,6);
 
@@ -729,7 +745,7 @@ function HomePage(){
           <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(3,1fr)',gap:20}}>
             {featured.slice(0,mob?3:6).map(function(c,i){
               return React.createElement('div',{key:c.id,className:'au d'+(i+1)},
-                React.createElement(CreatorCard,{creator:c,onView:function(cr){dsp({t:'GO',p:'creator-profile',sel:{creator:cr}});top();}})
+                React.createElement(CreatorCard,{creator:c,onView:function(cr){dsp({t:'GO',p:'creator-profile',sel:{creator:cr}});scrollToTop();}})
               );
             })}
           </div>
@@ -795,7 +811,7 @@ function HomePage(){
 function CreatorsPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
   const{cf:f}=st;
-  const go=(p,sel)=>{dsp({t:'GO',p,sel});top();};
+  const go=(p,sel)=>{dsp({t:'GO',p,sel});scrollToTop();};
   const[showFilters,setShowFilters]=useState(false);
   const[viewMode,setViewMode]=useState('grid');
   const[all,setAll]=useState([]);
@@ -951,7 +967,7 @@ function CreatorsPage(){
           <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(auto-fill,minmax(270px,1fr))',gap:18}}>
             {filtered.map(function(c,i){
               return React.createElement('div',{key:c.id,className:'au d'+(Math.min(i%6+1,6))},
-                React.createElement(CreatorCard,{creator:c,onView:function(cr){dsp({t:'GO',p:'creator-profile',sel:{creator:cr}});top();}})
+                React.createElement(CreatorCard,{creator:c,onView:function(cr){dsp({t:'GO',p:'creator-profile',sel:{creator:cr}});scrollToTop();}})
               );
             })}
           </div>
@@ -967,7 +983,7 @@ function CreatorProfilePage(){
   const{st,dsp}=useApp();const{mob}=useVP();
   const[tab,setTab]=useState('about');
   const toast=function(msg,type){dsp({t:'TOAST',d:{type:type||'info',msg:msg}});};
-  const go=function(p,sel){dsp({t:'GO',p:p,sel:sel});top();};
+  const go=function(p,sel){dsp({t:'GO',p:p,sel:sel});scrollToTop();};
   const c=st.sel.creator||st.creatorProfile;
   if(!c)return <PL><div style={{...W(),padding:'80px 20px',textAlign:'center'}}><Empty icon="👤" title="Creator not found" ctaLabel="Browse Creators" onCta={function(){go('creators');}}/></div></PL>;
 
@@ -1303,7 +1319,7 @@ function CreatorProfilePage(){
                         React.createElement('div',{style:{width:34,height:34,borderRadius:'50%',background:'linear-gradient(135deg,#FF9933,#138808)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,color:'#fff',fontWeight:700,flexShrink:0}},(r.brand||'?')[0].toUpperCase()),
                         React.createElement('div',null,
                           React.createElement('div',{style:{display:'flex',alignItems:'center',gap:5,flexWrap:'wrap'}},
-                            React.createElement('p',{style:{fontWeight:700,color:T.n8,fontSize:13}},r.brand||'Anonymous'),
+                            React.createElement('p',{style:{fontWeight:700,color:T.n8,fontSize:13}},(typeof r.brand==='object'&&r.brand?r.brand.companyName:r.brand)||'Anonymous'),
                             r.verified&&React.createElement('span',{style:{fontSize:9,background:'rgba(19,136,8,.1)',color:'#138808',padding:'1px 6px',borderRadius:9,fontWeight:700}},'Verified')
                           ),
                           React.createElement(Stars,{rating:Number(r.rating||0),sm:true})
@@ -1336,10 +1352,11 @@ function CreatorProfilePage(){
 function BlogPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
   const[cat,setCat]=useState('');
-  const go=function(p,sel){dsp({t:'GO',p:p,sel:sel});top();};
-  const cats=[...new Set(SB.map(function(b){return b.category;}))];
-  const filtered=cat?SB.filter(function(b){return b.category===cat;}):SB;
-  const featured=SB.find(function(b){return b.featured;});
+  const go=function(p,sel){dsp({t:'GO',p:p,sel:sel});scrollToTop();};
+  const allBlogs=LS.get('cb_blogs',SB);
+  const cats=[...new Set(allBlogs.map(function(b){return b.category;}))];
+  const filtered=cat?allBlogs.filter(function(b){return b.category===cat;}):allBlogs;
+  const featured=allBlogs.find(function(b){return b.featured;});
   return <PL>
     <div style={{background:'linear-gradient(135deg,#0d0d0d,#1a0800)',padding:mob?'48px 20px':'72px 20px',position:'relative'}}>
       <div style={{position:'absolute',top:0,left:0,right:0,height:3,background:'linear-gradient(90deg,#FF9933 33%,#fff 33%,#fff 66%,#138808 66%)'}}/>
@@ -1365,9 +1382,9 @@ function BlogPage(){
             <h2 style={{fontFamily:"'Fraunces',serif",fontSize:mob?19:24,color:T.n8,margin:'12px 0 10px',lineHeight:1.25,fontWeight:800}}>{featured.title}</h2>
             <p style={{fontSize:13,color:T.t2,lineHeight:1.7,marginBottom:18}}>{featured.excerpt}</p>
             <div style={{display:'flex',gap:12,marginBottom:18}}>
-              <span style={{fontSize:11,color:T.t3}}>{'by '+featured.author}</span>
-              <span style={{fontSize:11,color:T.t3}}>{'⏱ '+featured.readTime}</span>
-              <span style={{fontSize:11,color:T.t3}}>{'👁 '+fmt.num(featured.views)}</span>
+              <span style={{fontSize:11,color:T.t3}}>{'by '+(featured.author || 'CreatorBharat Team')}</span>
+              <span style={{fontSize:11,color:T.t3}}>{'⏱ '+(featured.readTime || '5 min')}</span>
+              <span style={{fontSize:11,color:T.t3}}>{'👁 '+fmt.num(featured.views || 0)}</span>
             </div>
             <Btn style={{background:'linear-gradient(135deg,#FF9933,#FF6B00)',border:'none',color:'#fff',alignSelf:'flex-start'}} onClick={function(){go('blog-article',{blog:featured});}}>Read Article</Btn>
           </div>
@@ -1385,8 +1402,8 @@ function BlogPage(){
               ),
               React.createElement('div',{style:{padding:16,flex:1}},
                 React.createElement('div',{style:{display:'flex',gap:9,marginBottom:8}},
-                  React.createElement('span',{style:{fontSize:10,color:T.t3}},b.readTime),
-                  React.createElement('span',{style:{fontSize:10,color:T.t3}},('👁 '+fmt.num(b.views)))
+                  React.createElement('span',{style:{fontSize:10,color:T.t3}},b.readTime || '5 min'),
+                  React.createElement('span',{style:{fontSize:10,color:T.t3}},('👁 '+fmt.num(b.views || 0)))
                 ),
                 React.createElement('h3',{style:{fontFamily:"'Fraunces',serif",fontSize:15,color:T.n8,lineHeight:1.35,marginBottom:7,fontWeight:700}},b.title),
                 React.createElement('p',{style:{fontSize:12,color:T.t2,lineHeight:1.6}},b.excerpt)
@@ -1402,7 +1419,7 @@ function BlogPage(){
 // ── BLOG ARTICLE PAGE ─────────────────────────────────────────────
 function BlogArticlePage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=function(p,sel){dsp({t:'GO',p:p,sel:sel});top();};
+  const go=function(p,sel){dsp({t:'GO',p:p,sel:sel});scrollToTop();};
   const b=st.sel.blog;
   const[liked,setLiked]=useState(false);
   const[readPct,setReadPct]=useState(0);
@@ -1428,10 +1445,19 @@ function BlogArticlePage(){
     return function(){window.removeEventListener('scroll',h);};
   },[]);
 
+  useEffect(function(){
+    if(b && b.slug){
+      apiCall('/blog/'+b.slug).then(function(data){
+        if(data.comments) setComments(data.comments);
+      }).catch(console.error);
+    }
+  },[b?.slug]);
+
   if(!b)return <PL><div style={{...W(),padding:'80px 20px'}}><Empty icon="📄" title="Article not found" ctaLabel="Back to Blog" onCta={function(){go('blog');}}/></div></PL>;
 
+  const allBlogs=LS.get('cb_blogs',SB);
   var linkedCreator=b.creatorHandle?LS.get('cb_creators',[]).find(function(cr){return cr.handle===b.creatorHandle;}):null;
-  var related=SB.filter(function(x){return x.id!==b.id&&x.category===b.category;}).slice(0,3);
+  var related=allBlogs.filter(function(x){return x.id!==b.id&&x.category===b.category;}).slice(0,3);
   var shareUrl='creatorbharat.in/blog/'+b.slug;
   var totalC=comments.length+comments.reduce(function(s,c){return s+(c.replies?c.replies.length:0);},0);
 
@@ -1446,17 +1472,28 @@ function BlogArticlePage(){
     if(!text.trim()){dsp({t:'TOAST',d:{type:'error',msg:'Comment likhiye'}});return;}
     if(!cName.trim()){dsp({t:'TOAST',d:{type:'error',msg:'Naam daaliye'}});return;}
     setCLoading(true);
-    setTimeout(function(){
-      if(isReply&&replyTo){
-        var updated=comments.map(function(c){return c.id===replyTo?{...c,replies:[...(c.replies||[]),{id:'r'+Date.now(),name:cName,text:text,date:new Date().toISOString(),verified:!!st.user}]}:c;});
-        setComments(updated);LS.set('cb_comments_'+b.id,updated);setReplyText('');setReplyTo(null);
+    
+    apiCall('/blog/'+b.id+'/comment', {
+      method: 'POST',
+      body: {
+        name: cName,
+        text: text,
+        parentId: isReply ? replyTo : null,
+        email: st.user?.email || null
+      }
+    }).then(function(nc){
+      if(isReply && replyTo){
+        var updated=comments.map(function(c){return c.id===replyTo?{...c,replies:[...(c.replies||[]),nc]}:c;});
+        setComments(updated);setReplyText('');setReplyTo(null);
       }else{
-        var nc={id:'c'+Date.now(),name:cName,text:text,date:new Date().toISOString(),likes:0,replies:[],verified:!!st.user,role:st.role||'guest'};
-        var upd=[...comments,nc];setComments(upd);LS.set('cb_comments_'+b.id,upd);setCText('');
+        setComments([...comments, {...nc, replies: []}]);setCText('');
       }
       setCLoading(false);
       dsp({t:'TOAST',d:{type:'success',msg:'Comment published!'}});
-    },400);
+    }).catch(function(err){
+      setCLoading(false);
+      dsp({t:'TOAST',d:{type:'error',msg:err.message}});
+    });
   };
 
   var bg=darkMode?'#111':'#fff';
@@ -1496,12 +1533,12 @@ function BlogArticlePage(){
             <div style={{display:'flex',alignItems:'center',gap:8}}>
               <div style={{width:30,height:30,borderRadius:'50%',background:'linear-gradient(135deg,#FF9933,#138808)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,color:'#fff',fontWeight:700}}>{b.author?b.author[0]:'C'}</div>
               <div>
-                <p style={{fontSize:13,fontWeight:700,color:tc}}>{b.author}</p>
-                <p style={{fontSize:10,color:tm}}>{fmt.date(b.date)}</p>
+                <p style={{fontSize:13,fontWeight:700,color:tc}}>{b.author || 'CreatorBharat Team'}</p>
+                <p style={{fontSize:10,color:tm}}>{fmt.date(b.createdAt || b.date)}</p>
               </div>
             </div>
-            <span style={{fontSize:11,color:tm}}>{'⏱ '+b.readTime}</span>
-            <span style={{fontSize:11,color:tm}}>{'👁 '+fmt.num(b.views)}</span>
+            <span style={{fontSize:11,color:tm}}>{'⏱ '+(b.readTime || '5 min')}</span>
+            <span style={{fontSize:11,color:tm}}>{'👁 '+fmt.num(b.views || 0)}</span>
             <span style={{fontSize:11,color:tm}}>{'💬 '+totalC}</span>
           </div>
           <div style={{display:'flex',gap:6,alignItems:'center'}}>
@@ -1555,7 +1592,7 @@ function BlogArticlePage(){
                   <p style={{fontSize:11,color:tm,marginBottom:4}}>{'📍 '+linkedCreator.city+' · '+fmt.num(linkedCreator.followers)+' followers'}</p>
                   <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>{(Array.isArray(linkedCreator.niche)?linkedCreator.niche:[linkedCreator.niche]).filter(Boolean).slice(0,3).map(function(n){return React.createElement(Bdg,{key:n,sm:true},n);})}</div>
                 </div>
-                <Btn sm style={{background:'linear-gradient(135deg,#FF9933,#FF6B00)',border:'none',color:'#fff',flexShrink:0}} onClick={function(){dsp({t:'GO',p:'creator-profile',sel:{creator:linkedCreator}});top();}}>View Profile</Btn>
+                <Btn sm style={{background:'linear-gradient(135deg,#FF9933,#FF6B00)',border:'none',color:'#fff',flexShrink:0}} onClick={function(){dsp({t:'GO',p:'creator-profile',sel:{creator:linkedCreator}});scrollToTop();}}>View Profile</Btn>
               </div>
             </div>}
 
@@ -1605,7 +1642,7 @@ function BlogArticlePage(){
                             React.createElement('span',{style:{fontWeight:700,fontSize:13,color:tc}},comment.name),
                             comment.verified&&React.createElement('span',{style:{fontSize:9,background:'rgba(19,136,8,.1)',color:'#138808',padding:'1px 5px',borderRadius:8,fontWeight:700}},'Verified')
                           ),
-                          React.createElement('span',{style:{fontSize:10,color:tm}},fmt.date(comment.date))
+                          React.createElement('span',{style:{fontSize:10,color:tm}},fmt.date(comment.createdAt || comment.date))
                         )
                       ),
                       React.createElement('p',{style:{fontSize:13,color:ts,lineHeight:1.75,marginBottom:9}},comment.text),
@@ -1620,7 +1657,7 @@ function BlogArticlePage(){
                               React.createElement('div',{style:{width:24,height:24,borderRadius:'50%',background:'rgba(255,153,51,.2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,color:'#FF9933',fontWeight:700}},(r.name||'?')[0].toUpperCase()),
                               React.createElement('span',{style:{fontWeight:600,fontSize:12,color:tc}},r.name),
                               r.verified&&React.createElement('span',{style:{fontSize:9,background:'rgba(19,136,8,.1)',color:'#138808',padding:'1px 5px',borderRadius:8,fontWeight:700}},'✓'),
-                              React.createElement('span',{style:{fontSize:10,color:tm,marginLeft:'auto'}},fmt.date(r.date))
+                              React.createElement('span',{style:{fontSize:10,color:tm,marginLeft:'auto'}},fmt.date(r.createdAt || r.date))
                             ),
                             React.createElement('p',{style:{fontSize:12,color:ts,lineHeight:1.6}},r.text)
                           );
@@ -1674,7 +1711,7 @@ function BlogArticlePage(){
         </div>
         <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(3,1fr)',gap:18}}>
           {related.map(function(r){
-            return React.createElement(Card,{key:r.id,onClick:function(){go('blog-article',{blog:r});top();},style:{overflow:'hidden'}},
+            return React.createElement(Card,{key:r.id,onClick:function(){go('blog-article',{blog:r});scrollToTop();},style:{overflow:'hidden'}},
               React.createElement('div',{style:{height:140,overflow:'hidden',background:'#f5f5f5',position:'relative'}},
                 React.createElement('img',{src:r.image,style:{width:'100%',height:'100%',objectFit:'cover'},alt:'',onError:function(e){e.target.style.display='none';}}),
                 React.createElement('div',{style:{position:'absolute',top:8,left:8}},React.createElement(Bdg,{sm:true,color:'dark'},r.category))
@@ -1702,14 +1739,39 @@ function CampaignsPage(){
   const[aF,setAF]=useState({pitch:'',portfolio:'',rate:''});
   const toast=(msg,type)=>dsp({t:'TOAST',d:{type,msg}});
   const[allCamps,setAllCamps]=useState([]);
-  useEffect(()=>{apiCall('/campaigns?limit=100').then(d=>setAllCamps(d.campaigns||[])).catch(console.error)},[]);
-  const filtered=allCamps.filter(c=>{
-    if(f.q){const q=f.q.toLowerCase();if(!c.title.toLowerCase().includes(q)&&!c.brand.toLowerCase().includes(q))return false}
-    if(f.niche){const cn=Array.isArray(c.niche)?c.niche:[c.niche];if(!cn.some(n=>n===f.niche))return false}
-    if(f.urgent&&!c.urgent)return false;
-    return c.status==='live';
+  
+  useEffect(()=>{
+    apiCall('/campaigns?limit=100')
+      .then(d=>{
+        const camps = d.campaigns || (Array.isArray(d) ? d : []);
+        console.log("Fetched Campaigns:", camps);
+        setAllCamps(camps);
+      })
+      .catch(err=>{
+        console.error("Fetch Campaigns error:", err);
+      });
+  },[]);
+
+  const filtered = allCamps.filter(c => {
+    try {
+      const bName = typeof c.brand === 'object' && c.brand ? (c.brand.companyName || '') : (c.brand || '');
+      const title = (c.title || '').toLowerCase();
+      const status = (c.status || '').toLowerCase();
+      const q = (f.q || '').toLowerCase();
+
+      if (q && !title.includes(q) && !bName.toLowerCase().includes(q)) return false;
+      if (f.niche) {
+        const cn = Array.isArray(c.niche) ? c.niche : [c.niche];
+        if (!cn.includes(f.niche)) return false;
+      }
+      if (f.urgent && !c.urgent) return false;
+      return status === 'live' || status === 'active' || !status;
+    } catch(e) {
+      return false;
+    }
   });
-  const niches=[...new Set(allCamps.flatMap(c=>Array.isArray(c.niche)?c.niche:[c.niche]).filter(Boolean))];
+
+  const niches = [...new Set(allCamps.flatMap(c => Array.isArray(c.niche) ? c.niche : [c.niche]).filter(Boolean))];
   const submitApply=()=>{
     if(!aF.pitch){toast('Write your pitch first','error');return}
     LS.push('cb_applications',{id:'app-'+Date.now(),campaignId:modal.id,campaignTitle:modal.title,brand:modal.brand,applicantEmail:st.user?.email,applicantName:st.user?.name,pitch:aF.pitch,portfolio:aF.portfolio,rate:aF.rate,status:'applied',date:new Date().toISOString()});
@@ -1749,7 +1811,7 @@ function CampaignsPage(){
         <Btn onClick={()=>{setModal(null);setDone(false)}}>Browse More Campaigns</Btn>
       </div>:<div>
         <div style={{background:T.bg2,borderRadius:12,padding:'14px',marginBottom:20}}>
-          <p style={{fontSize:13,fontWeight:700,color:T.n8}}>{modal?.brand}</p>
+          <p style={{fontSize:13,fontWeight:700,color:T.n8}}>{typeof modal?.brand === 'object' && modal.brand ? modal.brand.companyName : modal?.brand}</p>
           <p style={{fontSize:13,color:T.t2,marginTop:4}}>Budget: {fmt.inr(modal?.budgetMin)} -- {fmt.inr(modal?.budgetMax)}</p>
           {modal?.deliverables&&<div style={{marginTop:8}}>{modal.deliverables.map(d=><p key={d} style={{fontSize:12,color:T.t3}}>• {d}</p>)}</div>}
         </div>
@@ -1765,7 +1827,7 @@ function CampaignsPage(){
 // BLOG PAGE
 function PricingPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop()};
   const toast=(msg,type)=>dsp({t:'TOAST',d:{type,msg}});
   const[faq,setFaq]=useState(null);
   const plans=[
@@ -1820,7 +1882,7 @@ function PricingPage(){
 function LeaderboardPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
   const[niche,setNiche]=useState('');const[period,setPeriod]=useState('all');
-  const go=(p,sel)=>{dsp({t:'GO',p,sel});top()};
+  const go=(p,sel)=>{dsp({t:'GO',p,sel});scrollToTop()};
   const[allC,setAllC]=useState([]);
   useEffect(()=>{apiCall('/creators?limit=100').then(d=>setAllC(d.creators||[])).catch(console.error)},[]);
   const niches=[...new Set(allC.flatMap(c=>Array.isArray(c.niche)?c.niche:[c.niche]).filter(Boolean))];
@@ -1863,7 +1925,7 @@ function LeaderboardPage(){
 // RATE CALCULATOR
 function RateCalcPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop()};
   const[F,setF]=useState({platform:'Instagram',followers:'',niche:'Lifestyle',er:''});
   const[result,setResult]=useState(null);
   const upF=(k,v)=>setF(p=>({...p,[k]:v}));
@@ -1914,7 +1976,7 @@ function RateCalcPage(){
 // CREATOR SCORE PAGE
 function CreatorScorePage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop()};
   const c=st.creatorProfile;
   const score=c?fmt.score(c):0;
   const tier=fmt.tier(score);
@@ -1951,7 +2013,7 @@ function CreatorScorePage(){
 // ABOUT PAGE
 function AboutPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop()};
   return <PL>
     <div style={{background:T.n9,padding:mob?'60px 20px':'100px 20px',textAlign:'center'}}>
       <div style={W(700)}>
@@ -2037,7 +2099,7 @@ function ContactPage(){
 // APPLY PAGE (4-step creator registration)
 function ApplyPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop()};
   const toast=(msg,type)=>dsp({t:'TOAST',d:{type,msg}});
   const[step,setStep]=useState(1);
   const[F,setF]=useState({name:'',handle:'',email:'',password:'',confirm:'',phone:'',city:'',state:'',niche:[],platform:[],followers:'',er:'',monthlyViews:'',bio:'',instagram:'',youtube:'',rateMin:'',rateMax:'',services:[],languages:[],photo:null});
@@ -2062,7 +2124,7 @@ function ApplyPage(){
     }
     if(step===2){if(!F.niche.length||!F.platform.length||!F.followers){toast('Fill niche, platform and followers','error');return}}
     if(step===3){if(!F.rateMin){toast('Set your minimum rate','error');return}}
-    setStep(s=>s+1);top();
+    setStep(s=>s+1);scrollToTop();
   };
 
   const submit=async ()=>{
@@ -2076,7 +2138,7 @@ function ApplyPage(){
       dsp({t:'SET_CP',p:newCreator});
       dsp({t:'NOTIF',n:{msg:`Profile live! Share it: creatorbharat.in/c/${handle}`,time:'Just now',read:false}});
       toast(`Welcome to CreatorBharat! Your profile is live.`,'success');
-      dsp({t:'GO',p:'dashboard'});top();
+      dsp({t:'GO',p:'dashboard'});scrollToTop();
     } catch(err) {
       toast(err.message,'error');
     }
@@ -2195,7 +2257,7 @@ function ApplyPage(){
 // DASHBOARD (Creator)
 function DashboardPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p,sel)=>{dsp({t:'GO',p,sel});top()};
+  const go=(p,sel)=>{dsp({t:'GO',p,sel});scrollToTop()};
   const toast=(msg,type)=>dsp({t:'TOAST',d:{type,msg}});
   const c=st.creatorProfile;
   if(!st.user||st.role!=='creator'){return <PL><div style={{...W(),padding:'80px 20px'}}><Empty icon="🔒" title="Creator login required" ctaLabel="Login" onCta={()=>dsp({t:'UI',v:{authModal:true,authTab:'login'}})}/></div></PL>}
@@ -2338,7 +2400,7 @@ function SettingsPage(){
 // SAVED PAGE
 function SavedPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p,sel)=>{dsp({t:'GO',p,sel});top()};
+  const go=(p,sel)=>{dsp({t:'GO',p,sel});scrollToTop()};
   const[tab,setTab]=useState('creators');
   const[allC,setAllC]=useState([]);
   const[allCp,setAllCp]=useState([]);
@@ -2371,7 +2433,7 @@ function SavedPage(){
 // APPLICATIONS PAGE
 function ApplicationsPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop()};
   const[filter,setFilter]=useState('');
   const myApps=LS.get('cb_applications',[]).filter(a=>a.applicantEmail===st.user?.email);
   const filtered=filter?myApps.filter(a=>(a.status||'applied')===filter):myApps;
@@ -2395,7 +2457,7 @@ function ApplicationsPage(){
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:10}}>
               <div style={{flex:1}}>
                 <h4 style={{fontWeight:700,color:T.n8,fontSize:14,marginBottom:4}}>{a.campaignTitle}</h4>
-                <p style={{fontSize:13,color:T.gd,fontWeight:600,marginBottom:6}}>{a.brand}</p>
+                <p style={{fontSize:13,color:T.gd,fontWeight:600,marginBottom:6}}>{typeof a.brand === 'object' && a.brand ? a.brand.companyName : a.brand}</p>
                 <p style={{fontSize:12,color:T.t3}}>{fmt.date(a.date)}</p>
               </div>
               <Bdg color={STATUS_COLORS[a.status||'applied']}>{(a.status||'applied').replace('-',' ')}</Bdg>
@@ -2412,7 +2474,7 @@ function ApplicationsPage(){
 function BrandRegisterPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
   const toast=(msg,type)=>dsp({t:'TOAST',d:{type,msg}});
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop()};
   const[F,setF]=useState({companyName:'',industry:'',website:'',size:'',contactName:'',email:'',password:'',phone:'',budget:'',about:'',gstin:''});
   const[loading,setLoading]=useState(false);
   const upF=(k,v)=>setF(p=>({...p,[k]:v}));
@@ -2467,7 +2529,7 @@ function BrandRegisterPage(){
 // BRAND DASHBOARD
 function BrandDashboardPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p,sel)=>{dsp({t:'GO',p,sel});top()};
+  const go=(p,sel)=>{dsp({t:'GO',p,sel});scrollToTop()};
   const toast=(msg,type)=>dsp({t:'TOAST',d:{type,msg}});
   if(!st.user||st.role!=='brand')return <PL><div style={{...W(),padding:'80px 20px'}}><Empty icon="🔒" title="Brand login required" ctaLabel="Register as Brand" onCta={()=>go('brand-register')}/></div></PL>;
   const myBrand=Auth.getBrand(st.user.email);
@@ -2502,7 +2564,7 @@ function BrandDashboardPage(){
               <p style={{fontSize:13,fontWeight:600,color:T.n8}}>{c.title}</p>
               <div style={{display:'flex',justifyContent:'space-between',marginTop:4}}>
                 <span style={{fontSize:11,color:T.t3}}>{c.filled||0}/{c.slots} filled</span>
-                <Bdg sm color={c.status==='live'?'green':'yellow'}>{c.status}</Bdg>
+                <Bdg sm color={c.status?.toLowerCase()==='live'?'green':'yellow'}>{c.status}</Bdg>
               </div>
             </div>)}
           </Card>
@@ -2528,7 +2590,7 @@ function BrandDashboardPage(){
 // CAMPAIGN BUILDER (4-step)
 function CampaignBuilderPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p)=>{dsp({t:'GO',p});top()};
+  const go=(p)=>{dsp({t:'GO',p});scrollToTop()};
   const toast=(msg,type)=>dsp({t:'TOAST',d:{type,msg}});
   const[step,setStep]=useState(1);const[paying,setPaying]=useState(false);const[done,setDone]=useState(false);
   const[F,setF]=useState({title:'',niche:[],goal:'',platform:[],description:'',minFollowers:'',minER:'',budgetMin:'',budgetMax:'',slots:5,deadline:'',bidding:false,deliverables:[],usageRights:'',exclusivity:false,requirements:''});
@@ -2543,7 +2605,7 @@ function CampaignBuilderPage(){
     if(step===1&&(!F.title||!F.niche.length||!F.platform.length)){toast('Fill title, niche and platform','error');return}
     if(step===2&&(!F.budgetMin||!F.budgetMax||!F.deadline)){toast('Fill budget and deadline','error');return}
     if(step===3&&!F.deliverables.length){toast('Add at least one deliverable','error');return}
-    setStep(s=>s+1);top();
+    setStep(s=>s+1);scrollToTop();
   };
 
   const pay=()=>{
@@ -2631,7 +2693,7 @@ function CampaignBuilderPage(){
 // COMPARE PAGE
 function ComparePage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=(p,sel)=>{dsp({t:'GO',p,sel});top()};
+  const go=(p,sel)=>{dsp({t:'GO',p,sel});scrollToTop()};
   const allC=LS.get('cb_creators',[]);
   const creators=st.compared.map(id=>allC.find(c=>c.id===id)).filter(Boolean);
   if(creators.length<2)return <PL><div style={{...W(),padding:'80px 20px'}}><Empty icon="⚖" title="Select at least 2 creators to compare" sub="Browse creators and click Compare to add them." ctaLabel="Browse Creators" onCta={()=>go('creators')}/></div></PL>;
@@ -2679,7 +2741,7 @@ function ComparePage(){
 // ── MONETIZATION HUB PAGE ─────────────────────────────────────────
 function MonetizationPage(){
   const{st,dsp}=useApp();const{mob}=useVP();
-  const go=function(p){dsp({t:'GO',p:p});top();};
+  const go=function(p){dsp({t:'GO',p:p});scrollToTop();};
   const[activeTab,setActiveTab]=useState('overview');
   const isCreator=st.role==='creator';
   const toast=function(msg,type){dsp({t:'TOAST',d:{type:type||'info',msg:msg}});};
@@ -2846,6 +2908,7 @@ function MonetizationPage(){
 }
 
 function App(){
+  console.log("App Component Rendering...");
   const[st,dsp]=useReducer(reducer,IS);
   const toast=(msg,type='info')=>dsp({t:'TOAST',d:{type,msg}});
   const go=(p,sel={})=>{dsp({t:'GO',p,sel:Object.keys(sel).length?sel:undefined});window.scrollTo({top:0,behavior:'smooth'});};
@@ -2855,14 +2918,19 @@ function App(){
     // Fetch live API data and override local storage cache
     const syncLiveAPI = async () => {
       try {
-        const creatorsData = await apiCall('/creators');
+        const creatorsData = await apiCall('/creators?limit=100');
         if(creatorsData && creatorsData.creators) {
           const mapped = creatorsData.creators.map(c => ({...c, er: c.engagementRate || c.er || 0}));
           LS.set('cb_creators', mapped);
         }
-        const campaignsData = await apiCall('/campaigns');
+        const campaignsData = await apiCall('/campaigns?limit=100');
         if(campaignsData && campaignsData.campaigns) {
+          console.log(`Synced ${campaignsData.campaigns.length} campaigns from API`);
           LS.set('cb_campaigns', campaignsData.campaigns);
+        }
+        const blogsData = await apiCall('/blog');
+        if(blogsData) {
+          LS.set('cb_blogs', blogsData);
         }
         dsp({t:'SYNC_DATA'});
       } catch(err) {

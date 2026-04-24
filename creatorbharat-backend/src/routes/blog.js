@@ -1,6 +1,5 @@
 const router = require('express').Router();
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../prisma');
 
 // GET /api/blog
 router.get('/', async (req, res) => {
@@ -20,7 +19,12 @@ router.get('/:slug', async (req, res) => {
   try {
     const blog = await prisma.blog.findUnique({
       where: { slug: req.params.slug },
-      include: { comments: true }
+      include: { 
+        comments: {
+          where: { parentId: null },
+          include: { replies: true }
+        }
+      }
     });
     if (!blog) return res.status(404).json({ error: 'Blog not found' });
     // Increment views
@@ -29,6 +33,25 @@ router.get('/:slug', async (req, res) => {
       data: { views: { increment: 1 } }
     });
     res.json(blog);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/blog/:id/comment
+router.post('/:id/comment', async (req, res) => {
+  try {
+    const { name, email, text, parentId } = req.body;
+    const comment = await prisma.comment.create({
+      data: {
+        blogId: req.params.id,
+        name,
+        email,
+        text,
+        parentId
+      }
+    });
+    res.json(comment);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

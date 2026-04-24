@@ -1,7 +1,6 @@
 const router = require('express').Router();
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../prisma');
 const { auth } = require('../middleware/auth');
-const prisma = new PrismaClient();
 
 // GET /api/campaigns
 router.get('/', async (req, res) => {
@@ -41,7 +40,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST /api/campaigns — brand creates campaign
+// POST /api/campaigns -- brand creates campaign
 router.post('/', auth, async (req, res) => {
   try {
     if (req.user.role !== 'BRAND')

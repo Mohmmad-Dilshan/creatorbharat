@@ -201,6 +201,7 @@ async function main() {
       body: 'The narrative around Indian content creation has always centered on Mumbai and Delhi. But 2026 has rewritten that story entirely...',
       author: 'CreatorBharat Team',
       featured: true,
+      readTime: '6 min',
       image: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=800&q=80',
     },
     {
@@ -211,6 +212,7 @@ async function main() {
       body: 'Landing your first brand deal feels impossible until it happens...',
       author: 'Rahul Sharma',
       featured: false,
+      readTime: '9 min',
       image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&q=80',
     },
     {
@@ -221,6 +223,7 @@ async function main() {
       body: 'Creator A: 1M followers, 1.2% ER. Creator B: 150K followers, 8.5% ER. Same reach. Creator B costs 5-8x less...',
       author: 'CreatorBharat Team',
       featured: false,
+      readTime: '4 min',
       image: 'https://images.unsplash.com/photo-1611605698335-8441051e7b47?w=800&q=80',
     },
     {
@@ -231,6 +234,7 @@ async function main() {
       body: '1. Jaipur 2. Ahmedabad 3. Lucknow 4. Indore 5. Surat...',
       author: 'Editorial Team',
       featured: false,
+      readTime: '7 min',
       image: 'https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=800&q=80',
     },
     {
@@ -241,6 +245,7 @@ async function main() {
       body: 'Use the CreatorBharat Rate Calculator. Base = followers x ER x platform multiplier...',
       author: 'CreatorBharat Team',
       featured: false,
+      readTime: '5 min',
       image: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800&q=80',
     }
   ];
@@ -249,7 +254,7 @@ async function main() {
     await prisma.blog.upsert({
       where: { slug: b.slug },
       update: {},
-      create: b
+      create: { ...b, published: true }
     });
   }
 

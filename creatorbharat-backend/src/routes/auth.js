@@ -1,8 +1,7 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../prisma');
 
 // POST /api/auth/register/creator
 router.post('/register/creator', async (req, res) => {
@@ -22,7 +21,7 @@ router.post('/register/creator', async (req, res) => {
       data: {
         email, password: hash, role: 'CREATOR',
         creator: {
-          create: { handle, name, city, state, userId: undefined }
+          create: { handle, name, city, state }
         }
       },
       include: { creator: true }
