@@ -2238,6 +2238,7 @@ function LeaderboardPage(){
           })}
         {filtered.length===0&&<Empty icon="🏆" title="No creators yet" sub="Be the first on the leaderboard!" ctaLabel="Get Listed" onCta={()=>go('apply')}/>}
       </div>
+      </div>
     </div>
   </PL>;
 }
