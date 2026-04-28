@@ -115,9 +115,7 @@ const scrollToTop=()=>window.scrollTo({top:0,behavior:'smooth'});
 const useVP=()=>{const[w,setW]=useState(window.innerWidth);useEffect(()=>{const h=()=>setW(window.innerWidth);window.addEventListener('resize',h);return()=>window.removeEventListener('resize',h)},[]);return{mob:w<768,tab:w<1024,w}};
 const W=(max=1200)=>({maxWidth:max,margin:'0 auto',padding:'0 20px'});
 
-const API_BASE = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
-  ? 'http://localhost:4000/api'
-  : 'https://creatorbharat.onrender.com/api';
+const API_BASE = 'https://creatorbharat.onrender.com/api';
 
 async function apiCall(endpoint, options = {}) {
   const token = localStorage.getItem('cb_token');
