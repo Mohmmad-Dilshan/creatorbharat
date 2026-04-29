@@ -24,6 +24,7 @@ img{max-width:100%;display:block}input,select,textarea,button{font-family:inheri
 .spin{animation:spin .8s linear infinite}
 @keyframes float{0%,100%{transform:translateY(0) rotate(3deg);box-shadow:0 24px 64px rgba(0,0,0,0.16)}50%{transform:translateY(-20px) rotate(1deg);box-shadow:0 32px 80px rgba(255,148,49,0.15)}}
 @keyframes glowPulse{0%,100%{opacity:0.8;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .btn-int{transition:transform .1s cubic-bezier(0.4,0,0.2,1)}.btn-int:active:not(:disabled){transform:scale(0.96)!important}
 `;document.head.appendChild(s);}catch(e){}
 
@@ -245,8 +246,47 @@ function Bdg({children,color='gray',sm}){
 }
 
 function Fld({label,value,onChange,type='text',placeholder,options,rows,helper,required,error,sm,readOnly}){
-  const s={width:'100%',padding:sm?'8px 11px':'11px 14px',border:`1.5px solid ${error?T.gd:T.bd}`,borderRadius:8,fontSize:sm?12:14,color:T.n8,background:readOnly?T.bg3:T.bg,transition:'border-color .15s',boxSizing:'border-box',fontFamily:'inherit'};
-  return <div style={{marginBottom:14}}>{label&&<label style={{display:'block',fontSize:12,fontWeight:700,color:T.t2,marginBottom:5,textTransform:'uppercase',letterSpacing:'.04em'}}>{label}{required&&<span style={{color:T.gd}}> *</span>}</label>}{options?<select value={value} onChange={onChange} style={{...s,paddingRight:28,appearance:'none'}}>{options.map(o=><option key={typeof o==='object'?o.v:o} value={typeof o==='object'?o.v:o}>{typeof o==='object'?o.l:o}</option>)}</select>:rows?<textarea value={value} onChange={onChange} rows={rows} placeholder={placeholder} style={{...s,resize:'vertical'}} readOnly={readOnly}/>:<input type={type} value={value} onChange={onChange} placeholder={placeholder} style={s} readOnly={readOnly}/>}{error&&<p style={{fontSize:11,color:T.gd,marginTop:3}}>{error}</p>}{helper&&!error&&<p style={{fontSize:11,color:T.t3,marginTop:3}}>{helper}</p>}</div>;
+  const[foc,setFoc]=useState(false);
+  const s={width:'100%',padding:sm?'10px 14px':'14px 18px',border:`1.5px solid ${error?'#EF4444':foc?'#FF9431':T.bd}`,borderRadius:12,fontSize:sm?13:15,color:T.n8,background:readOnly?T.bg3:'#fff',transition:'all .2s cubic-bezier(0.4,0,0.2,1)',boxSizing:'border-box',fontFamily:'inherit',outline:'none',boxShadow:foc?`0 0 0 4px ${error?'rgba(239,68,68,0.15)':'rgba(255,148,49,0.15)'}`:'none'};
+  return <div style={{marginBottom:18}}>
+    {label&&<label style={{display:'flex',alignItems:'center',gap:4,fontSize:13,fontWeight:700,color:T.n8,marginBottom:8}}>{label}{required&&<span style={{color:'#EF4444'}}>*</span>}</label>}
+    {options?
+      <div style={{position:'relative'}}>
+        <select value={value} onChange={onChange} onFocus={()=>setFoc(true)} onBlur={()=>setFoc(false)} style={{...s,paddingRight:40,appearance:'none',cursor:'pointer'}}>{options.map(o=><option key={typeof o==='object'?o.v:o} value={typeof o==='object'?o.v:o}>{typeof o==='object'?o.l:o}</option>)}</select>
+        <div style={{position:'absolute',right:16,top:'50%',transform:'translateY(-50%)',pointerEvents:'none',color:T.t3,fontSize:10}}>▼</div>
+      </div>
+    :rows?
+      <textarea value={value} onChange={onChange} rows={rows} placeholder={placeholder} onFocus={()=>setFoc(true)} onBlur={()=>setFoc(false)} style={{...s,resize:'vertical'}} readOnly={readOnly}/>
+    :
+      <input type={type} value={value} onChange={onChange} placeholder={placeholder} onFocus={()=>setFoc(true)} onBlur={()=>setFoc(false)} style={s} readOnly={readOnly}/>
+    }
+    {error&&<div style={{display:'flex',alignItems:'center',gap:6,marginTop:6,color:'#EF4444',fontSize:12,fontWeight:600}}><span>⚠️</span> {error}</div>}
+    {helper&&!error&&<div style={{fontSize:12,color:T.t3,marginTop:6}}>{helper}</div>}
+  </div>;
+}
+
+function Skeleton({width='100%',height=20,borderRadius=12,style={}}){
+  return <div style={{width,height,borderRadius,background:'linear-gradient(90deg, #f9f9f9 25%, #ececec 50%, #f9f9f9 75%)',backgroundSize:'200% 100%',animation:'shimmer 1.5s infinite',...style}}/>;
+}
+
+function SkeletonCard(){
+  return <div style={{border:`1px solid ${T.bd}`,borderRadius:24,padding:24,background:'#fff',boxShadow:T.sh1}}>
+    <div style={{display:'flex',alignItems:'center',gap:16,marginBottom:20}}>
+      <Skeleton width={64} height={64} borderRadius="50%"/>
+      <div style={{flex:1}}><Skeleton width="60%" height={16} style={{marginBottom:8}}/><Skeleton width="40%" height={12}/></div>
+    </div>
+    <Skeleton height={14} style={{marginBottom:8}}/><Skeleton height={14} width="80%" style={{marginBottom:24}}/>
+    <div style={{display:'flex',gap:10}}><Skeleton height={32} width={80} borderRadius={20}/><Skeleton height={32} width={60} borderRadius={20}/></div>
+  </div>;
+}
+
+function EmptyState({title,sub,icon='📭',ctaLabel,onCta}){
+  return <div style={{padding:'64px 20px',textAlign:'center',background:T.bg,borderRadius:24,border:`1px dashed ${T.bd2}`}}>
+    <div className="au" style={{fontSize:48,marginBottom:16}}>{icon}</div>
+    <h3 style={{fontSize:20,fontWeight:800,color:T.n8,marginBottom:8}}>{title}</h3>
+    <p style={{fontSize:14,color:T.t3,marginBottom:ctaLabel?24:0,maxWidth:320,margin:'0 auto'}}>{sub}</p>
+    {ctaLabel&&<Btn onClick={onCta}>{ctaLabel}</Btn>}
+  </div>;
 }
 
 function Tog({on,onChange,label}){
@@ -892,12 +932,15 @@ function HomePage(){
   const[campaigns,setCampaigns]=useState([]);
   const[totalC,setTotalC]=useState(2400);
   const[totalCp,setTotalCp]=useState(340);
+  const[loading,setLoading]=useState(true);
   useEffect(()=>{
+    setLoading(true);
     apiCall('/creators?limit=10').then(d=>{
       const list = d.creators || (Array.isArray(d) ? d : []);
       setCreators(list);
       setTotalC(list.length + 2400);
-    }).catch(console.error);
+      setLoading(false);
+    }).catch(e=>{console.error(e);setLoading(false);});
     apiCall('/campaigns?limit=10').then(d=>{
       const list = d.campaigns || (Array.isArray(d) ? d : []);
       setCampaigns(list.slice(0, 4));
@@ -976,7 +1019,7 @@ function HomePage(){
     </section>
 
 
-    {featured.length>0&&(
+    {(loading||featured.length>0)&&(
       <section style={{padding:mob?'64px 20px':'100px 20px',background:'#fff',position:'relative'}}>
         <div style={W()}>
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',marginBottom:48}}>
@@ -984,7 +1027,7 @@ function HomePage(){
             <Btn variant="outline" sm onClick={()=>go('creators')} style={{borderRadius:12}}>View All Creators</Btn>
           </div>
           <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(3,1fr)',gap:24}}>
-            {featured.slice(0,mob?3:6).map(function(c,i){
+            {loading ? [1,2,3].map(i=><SkeletonCard key={i}/>) : featured.slice(0,mob?3:6).map(function(c,i){
               return React.createElement('div',{key:c.id,className:'au d'+(i+1)},
                 React.createElement(CreatorCard,{creator:c,onView:function(cr){dsp({t:'GO',p:'creator-profile',sel:{creator:cr}});scrollToTop();}})
               );
@@ -1015,7 +1058,7 @@ function HomePage(){
     </section>
 
 
-    {campaigns.length>0&&(
+    {(loading||campaigns.length>0)&&(
       <section style={{padding:mob?'56px 20px':'80px 20px',background:'#fff'}}>
         <div style={W()}>
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',marginBottom:36}}>
@@ -1023,7 +1066,7 @@ function HomePage(){
             <Btn variant="outline" sm onClick={()=>go('campaigns')}>All Campaigns</Btn>
           </div>
           <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(3,1fr)',gap:20}}>
-            {campaigns.slice(0,3).map(function(c){
+            {loading ? [1,2,3].map(i=><SkeletonCard key={i}/>) : campaigns.slice(0,3).map(function(c){
               return React.createElement('div',{key:c.id},
                 React.createElement(CampCard,{campaign:c,onApply:function(){dsp({t:'UI',v:{authModal:true,authTab:'register'}});}})
               );
@@ -1083,7 +1126,8 @@ function CreatorsPage(){
   const[showFilters,setShowFilters]=useState(false);
   const[viewMode,setViewMode]=useState('grid');
   const[all,setAll]=useState([]);
-  useEffect(()=>{apiCall('/creators?limit=100').then(d=>setAll(d.creators||[])).catch(console.error)},[]);
+  const[loading,setLoading]=useState(true);
+  useEffect(()=>{setLoading(true);apiCall('/creators?limit=100').then(d=>{setAll(d.creators||[]);setLoading(false);}).catch(e=>{console.error(e);setLoading(false);})},[]);
   const niches=[...new Set(all.flatMap(c=>Array.isArray(c.niche)?c.niche:[c.niche]).filter(Boolean))].sort();
   const districts=f.state&&INDIA_STATES[f.state]?INDIA_STATES[f.state]:[];
 
@@ -1245,8 +1289,12 @@ function CreatorsPage(){
           <p style={{fontSize:12,color:T.t3,marginTop:2}}>{(f.district?f.district+' mein ':'Poore '+f.state+' mein ')+filtered.length+' creators'}</p>
         </div>}
 
-        {filtered.length===0?(
-          <Empty icon="🔍" title="Koi creator nahi mila" sub="Filters adjust karo" ctaLabel="Clear Filters" onCta={clearAll}/>
+        {loading ? (
+          <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(auto-fill,minmax(270px,1fr))',gap:18}}>
+            {[1,2,3,4,5,6].map(i=><SkeletonCard key={i}/>)}
+          </div>
+        ) : filtered.length===0?(
+          <EmptyState icon="🔍" title="Koi creator nahi mila" sub="Aapke current filters ke hisaab se koi creator nahi mila. Filters adjust karein." ctaLabel="Clear Filters" onCta={clearAll}/>
         ):(
           <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(auto-fill,minmax(270px,1fr))',gap:18}}>
             {filtered.map(function(c,i){
@@ -2016,14 +2064,17 @@ function CampaignsPage(){
   const[aF,setAF]=useState({pitch:'',portfolio:'',rate:''});
   const toast=(msg,type)=>dsp({t:'TOAST',d:{type,msg}});
   const[allCamps,setAllCamps]=useState([]);
+  const[loading,setLoading]=useState(true);
   
   useEffect(()=>{
+    setLoading(true);
     apiCall('/campaigns?limit=100')
       .then(d=>{
         const camps = d.campaigns || (Array.isArray(d) ? d : []);
         setAllCamps(camps);
+        setLoading(false);
       })
-      .catch(console.error);
+      .catch(e=>{console.error(e);setLoading(false);});
   },[]);
 
   const filtered = allCamps.filter(c => {
@@ -2075,15 +2126,16 @@ function CampaignsPage(){
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:32}}>
           <div style={{display:'flex',alignItems:'center',gap:20}}>
             <p style={{fontSize:15,color:T.t2,fontWeight:700}}>{filtered.length} Opportunities Available</p>
-            <label style={{display:'flex',alignItems:'center',gap:10,cursor:'pointer',userSelect:'none'}}>
-              <input type="checkbox" checked={f.urgent} onChange={e=>dsp({t:'CPF',v:{urgent:e.target.checked}})} style={{width:20,height:20,accentColor:T.gd}}/>
-              <span style={{fontSize:14,color:T.t1,fontWeight:600}}>Urgent Only</span>
-            </label>
+            <Tog on={!!f.urgent} onChange={()=>dsp({t:'CPF',v:{urgent:!f.urgent}})} label="Urgent Only"/>
           </div>
           {(f.q||f.niche||f.urgent)&&<Btn sm variant="ghost" onClick={()=>dsp({t:'CPF',v:{q:'',niche:'',urgent:false}})}>Clear Filters</Btn>}
         </div>
 
-        {filtered.length===0?<Empty icon="📋" title="No campaigns found" sub="Check back later or try different filters." ctaLabel="Reset Filters" onCta={()=>dsp({t:'CPF',v:{q:'',niche:'',urgent:false}})}/>:
+        {loading ? (
+          <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(auto-fill,minmax(340px,1fr))',gap:24}}>
+            {[1,2,3,4,5,6].map(i=><SkeletonCard key={i}/>)}
+          </div>
+        ) : filtered.length===0?<EmptyState icon="📋" title="No campaigns found" sub="Check back later or try different filters." ctaLabel="Reset Filters" onCta={()=>dsp({t:'CPF',v:{q:'',niche:'',urgent:false}})}/>:
         <div style={{display:'grid',gridTemplateColumns:mob?'1fr':'repeat(auto-fill,minmax(340px,1fr))',gap:24}}>
           {filtered.map(c=><CampCard key={c.id} campaign={c} onApply={camp=>{setModal(camp);setDone(false);setAF({pitch:'',portfolio:'',rate:''})}}/>)}
         </div>}
