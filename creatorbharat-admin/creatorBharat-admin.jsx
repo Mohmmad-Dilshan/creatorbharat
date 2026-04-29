@@ -3,9 +3,7 @@
 const{useState,useEffect,useCallback}=React;
 
 // ── CONFIG ───────────────────────────────────────────────────────
-const API_BASE = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
-  ? 'http://localhost:4000/api'
-  : 'https://creatorbharat.onrender.com/api';
+const API_BASE = 'https://creatorbharat.onrender.com/api';
 const T={
   saffron:'#FF9933',green:'#138808',white:'#FFFFFF',
   bg:'#0a0a0a',bg2:'#111',bg3:'#1a1a1a',bg4:'#222',
