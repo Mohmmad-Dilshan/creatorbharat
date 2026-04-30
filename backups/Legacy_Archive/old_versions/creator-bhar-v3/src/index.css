@@ -1,0 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; color: #111; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, .fraunces { font-family: 'Fraunces', serif; }
+button { font-family: inherit; }
+a { text-decoration: none; color: inherit; }
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
