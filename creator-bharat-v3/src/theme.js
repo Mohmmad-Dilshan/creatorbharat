@@ -115,14 +115,48 @@ export const Auth = {
   getCreator(email) { return LS.get('cb_creators', []).find(c => c.email === email) }
 };
 
-export const ALL_STATES = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi"];
+export const ALL_STATES = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", 
+  "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", 
+  "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", 
+  "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", 
+  "Uttarakhand", "West Bengal", "Delhi", "Jammu & Kashmir", "Ladakh"
+];
 
 export const INDIA_STATES = {
-  "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur", "Kota", "Ajmer", "Bikaner"],
-  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Nashik"],
-  "Delhi": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi"],
-  "Karnataka": ["Bangalore", "Mysore", "Hubli", "Belgaum"],
-  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot"]
+  "Rajasthan": [
+    "Jaipur", "Jodhpur", "Udaipur", "Kota", "Ajmer", "Bikaner", "Alwar", "Sikar", "Bhilwara", "Bharatpur", 
+    "Ganganagar", "Hanumangarh", "Churu", "Jhunjhunu", "Nagaur", "Pali", "Barmer", "Jaisalmer", "Jalore", 
+    "Sirohi", "Rajsamand", "Chittorgarh", "Banswara", "Dungarpur", "Pratapgarh", "Jhalawar", "Baran", 
+    "Bundi", "Sawai Madhopur", "Karauli", "Dholpur", "Dausa", "Tonk"
+  ],
+  "Maharashtra": [
+    "Mumbai", "Pune", "Nagpur", "Thane", "Nashik", "Aurangabad", "Solapur", "Amravati", "Navi Mumbai",
+    "Kolhapur", "Akola", "Latur", "Dhule", "Ahmednagar", "Chandrapur", "Parbhani", "Jalgaon", "Jalna",
+    "Nanded", "Satara", "Sangli", "Raigad", "Sindhudurg", "Ratnagiri", "Gondia", "Wardha", "Yavatmal"
+  ],
+  "Uttar Pradesh": [
+    "Lucknow", "Kanpur", "Varanasi", "Agra", "Meerut", "Prayagraj", "Ghaziabad", "Noida", "Bareilly",
+    "Aligarh", "Moradabad", "Saharanpur", "Gorakhpur", "Jhansi", "Muzaffarnagar", "Mathura", "Ayodhya",
+    "Firozabad", "Loni", "Gautam Buddha Nagar", "Azamgarh", "Basti", "Mirzapur", "Rampur"
+  ],
+  "Delhi": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi", "Central Delhi", "South West Delhi", "North West Delhi", "Shahdara", "Gurugram", "Noida", "Faridabad"],
+  "Karnataka": [
+    "Bangalore", "Mysore", "Hubli", "Belgaum", "Mangalore", "Gulbarga", "Davanagere", "Shimoga", 
+    "Bellary", "Bijapur", "Tumkur", "Raichur", "Bidar", "Hassan", "Udupi", "Kodagu"
+  ],
+  "Gujarat": [
+    "Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Gandhinagar", "Junagadh", 
+    "Gandhidham", "Anand", "Navsari", "Morbi", "Nadiad", "Bharuch", "Mehsana", "Bhuj"
+  ],
+  "Madhya Pradesh": ["Indore", "Bhopal", "Gwalior", "Jabalpur", "Ujjain", "Sagar", "Rewa", "Ratlam", "Satna", "Dewas", "Singrauli", "Murwara", "Khandwa", "Bhind"],
+  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Erode", "Tiruppur", "Vellore", "Thoothukudi", "Nagercoil", "Thanjavur", "Dindigul"],
+  "West Bengal": ["Kolkata", "Howrah", "Durgapur", "Asansol", "Siliguri", "Kharagpur", "Bardhaman", "Malda", "Baharampur", "Habra", "Kharagpur", "Shantipur"],
+  "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Khammam", "Karimnagar", "Ramagundam", "Mahbubnagar", "Nalgonda", "Adilabad"],
+  "Punjab": ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda", "Mohali", "Hoshiarpur", "Pathankot", "Moga", "Abohar", "Malerkotla", "Khanna"],
+  "Bihar": ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia", "Darbhanga", "Arrah", "Begusarai", "Katihar", "Munger", "Chapra", "Saharsa"],
+  "Haryana": ["Gurgaon", "Faridabad", "Panipat", "Ambala", "Yamunanagar", "Rohtak", "Hisar", "Karnal", "Sonipat", "Panchkula", "Bhiwani", "Sirsa"]
 };
 
-export const CITIES = ["Jaipur", "Mumbai", "New Delhi", "Bangalore", "Pune", "Hyderabad", "Ahmedabad", "Chennai", "Kolkata", "Surat", "Indore", "Chandigarh"];
+export const CITIES = ["Jaipur", "Mumbai", "New Delhi", "Bangalore", "Pune", "Hyderabad", "Ahmedabad", "Chennai", "Kolkata", "Surat", "Indore", "Lucknow", "Chandigarh", "Guwahati", "Patna"];

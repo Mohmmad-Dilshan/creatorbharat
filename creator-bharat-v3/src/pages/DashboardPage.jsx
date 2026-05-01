@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
 import { T, W, scrollToTop, LS, fmt } from '../theme';
-import { Btn, Card, Bdg, Bar, Empty } from '../components/Primitives';
+import { Btn, Card, Bdg, Bar, Empty, Ring } from '../components/Primitives';
 
 export default function DashboardPage() {
   const { st, dsp } = useApp();
@@ -18,7 +18,9 @@ export default function DashboardPage() {
   const c = st.creatorProfile;
 
   if (!st.user || st.role !== 'creator') {
-    return <div style={{ ...W(), padding: '80px 20px' }}><Empty icon="🔒" title="Creator login required" ctaLabel="Login" onCta={() => dsp({ t: 'UI', v: { authModal: true, authTab: 'login' } })} /></div>;
+    return <div style={{ ...W(), padding: '120px 20px', textAlign: 'center' }}>
+      <Empty icon="🔒" title="Creator Access Required" sub="Dashboard dekhne ke liye creator account se login kerna zaroori hai." ctaLabel="Sign In Now" onCta={() => dsp({ t: 'UI', v: { authModal: true, authTab: 'login' } })} />
+    </div>;
   }
 
   const myApps = LS.get('cb_applications', []).filter(a => a.applicantEmail === st.user?.email);
@@ -26,64 +28,136 @@ export default function DashboardPage() {
   const comp = c ? fmt.completeness(c) : { pct: 0, missing: [] };
 
   return (
-    <div style={{ background: '#fff' }}>
-      <div style={{ background: T.n8, padding: mob ? '32px 20px' : '48px 20px' }}>
+    <div style={{ background: '#FAFAFA', minHeight: '100vh', paddingBottom: 80 }}>
+      {/* Header Section */}
+      <div style={{ background: '#050505', padding: mob ? '120px 20px 48px' : '160px 20px 60px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 70% 30%, rgba(255,148,49,0.1), transparent 70%)' }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #FF9431, #fff, #128807)' }} />
+        
         <div style={W()}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 24, position: 'relative', zIndex: 2 }}>
             <div>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,.4)', marginBottom: 4, textTransform: 'uppercase' }}>Creator Dashboard</p>
-              <h1 style={{ fontSize: mob ? 22 : 28, color: '#fff' }}>Welcome, {c?.name || st.user.name}</h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                 <Bdg sm color="gold">PRO CREATOR</Bdg>
+                 <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: 700 }}>VERIFIED ACCT</span>
+              </div>
+              <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 32 : 42, color: '#fff', fontWeight: 900, lineHeight: 1.1 }}>Welcome, {c?.name?.split(' ')[0] || st.user.name.split(' ')[0]}!</h1>
+              <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', marginTop: 8 }}>Manage your deals, improve your score, and grow your brand.</p>
             </div>
-            <Btn variant="ghost" style={{ color: 'rgba(255,255,255,.8)', borderColor: 'rgba(255,255,255,.2)' }} onClick={() => { if (c) go('creator-profile', { creator: c }) }}>View Public Profile</Btn>
+            <div style={{ display: 'flex', gap: 12 }}>
+               <Btn lg variant="white" onClick={() => { if (c) go('creator-profile', { creator: c }) }}>👁 View Public Profile</Btn>
+               <Btn lg variant="primary" onClick={() => go('campaigns')}>🔥 Find Campaigns</Btn>
+            </div>
           </div>
         </div>
       </div>
 
-      <div style={{ padding: mob ? '24px 20px' : '36px 20px' }}>
+      <div style={{ marginTop: -40 }}>
         <div style={W()}>
-          {c?.handle && (
-            <div style={{ background: 'linear-gradient(135deg,' + T.gd + ',#B91C1C)', borderRadius: 16, padding: '20px 24px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-              <div style={{ flex: 1, minWidth: 200 }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,.7)', marginBottom: 4 }}>YOUR CREATOR LINK</p>
-                <p style={{ fontSize: 16, fontFamily: 'monospace', color: '#fff', fontWeight: 700 }}>creatorbharat.in/c/{c.handle}</p>
-              </div>
-              <Btn sm variant="white" onClick={() => { navigator.clipboard.writeText(`https://creatorbharat.in/c/${c.handle}`); toast('Link copied!', 'success'); }}>Copy Link</Btn>
-            </div>
-          )}
-
-          <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2,1fr)' : 'repeat(4,1fr)', gap: 14, marginBottom: 24 }}>
-            {[[myApps.length, 'Applications', '#2563EB'], [myApps.filter(a => a.status === 'shortlisted').length, 'Shortlisted', '#7C3AED'], [score, 'CS Score', T.gd], [comp.pct + '%', 'Complete', '#10B981']].map(([v, l, col]) => (
-              <div key={l} style={{ textAlign: 'center', padding: '18px', background: '#fff', borderRadius: 14, border: `1px solid ${T.bd}` }}>
-                <div style={{ fontSize: mob ? 22 : 28, fontWeight: 900, color: col }}>{v}</div>
-                <div style={{ fontSize: 12, color: T.t3, marginTop: 4 }}>{l}</div>
-              </div>
-            ))}
+          {/* Quick Stats Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(4, 1fr)', gap: 20, marginBottom: 32 }}>
+             {[
+               { l: 'Active Deals', v: myApps.filter(a => a.status === 'selected').length, c: '#10B981', i: '🤝' },
+               { l: 'Shortlisted', v: myApps.filter(a => a.status === 'shortlisted').length, c: '#7C3AED', i: '⭐' },
+               { l: 'Total Applications', v: myApps.length, c: '#3B82F6', i: '📄' },
+               { l: 'Profile Score', v: score, c: '#FF9431', i: '🏆' }
+             ].map((st, i) => (
+               <Card key={i} className="au" style={{ padding: '24px', background: '#fff', textAlign: 'center', border: '1px solid rgba(0,0,0,0.05)' }}>
+                  <div style={{ fontSize: 24, marginBottom: 8 }}>{st.i}</div>
+                  <div style={{ fontSize: 32, fontWeight: 900, color: st.c, lineHeight: 1 }}>{st.v}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: T.t3, marginTop: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{st.l}</div>
+               </Card>
+             ))}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 20 }}>
-            <Card style={{ padding: '20px' }}>
-              <h3 style={{ fontWeight: 700, color: T.n8, fontSize: 15, marginBottom: 16 }}>Quick Actions</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {[['Browse Campaigns', 'campaigns'], ['Edit Profile', 'settings'], ['View Leaderboard', 'leaderboard'], ['Rate Calculator', 'rate-calc']].map(([l, p]) => <Btn key={p} variant="ghost" onClick={() => go(p)}>{l}</Btn>)}
-              </div>
-            </Card>
-
-            <Card style={{ padding: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <h3 style={{ fontWeight: 700, color: T.n8, fontSize: 15 }}>Recent Applications</h3>
-                <Btn sm variant="text" onClick={() => go('applications')}>View All</Btn>
-              </div>
-              {myApps.length === 0 ? <p style={{ fontSize: 13, color: T.t3 }}>No applications yet.</p> :
-                myApps.slice(0, 3).map(a => (
-                  <div key={a.id} style={{ padding: '10px 0', borderBottom: `1px solid ${T.bg3}` }}>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: T.n8 }}>{a.campaignTitle}</p>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-                      <p style={{ fontSize: 11, color: T.t3 }}>{typeof a.brand === 'object' ? a.brand.companyName : a.brand}</p>
-                      <Bdg sm color={a.status === 'selected' ? 'green' : a.status === 'shortlisted' ? 'purple' : 'blue'}>{a.status || 'applied'}</Bdg>
-                    </div>
+          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1.8fr', gap: 24 }}>
+            {/* Left Column: Profile Strength */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+               <Card style={{ padding: '32px', background: '#111', color: '#fff', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: -20, right: -20, width: 100, height: 100, background: T.gd, borderRadius: '50%', filter: 'blur(50px)', opacity: 0.4 }} />
+                  <h3 style={{ fontSize: 18, fontWeight: 900, marginBottom: 24, fontFamily: "'Fraunces', serif" }}>Profile Performance</h3>
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+                     <Ring score={score} size={140} />
                   </div>
-                ))}
-            </Card>
+                  <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 20, padding: '20px' }}>
+                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+                        <span style={{ fontSize: 14, fontWeight: 700 }}>Profile Strength</span>
+                        <span style={{ fontSize: 14, fontWeight: 900, color: '#FF9431' }}>{comp.pct}%</span>
+                     </div>
+                     <Bar value={comp.pct} color={T.gd} height={8} />
+                     {comp.missing.length > 0 && (
+                       <div style={{ marginTop: 16 }}>
+                          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 8 }}>NEXT STEPS:</p>
+                          <ul style={{ paddingLeft: 16, fontSize: 13, color: '#fff' }}>
+                             {comp.missing.map(m => <li key={m} style={{ marginBottom: 4 }}>{m}</li>)}
+                          </ul>
+                       </div>
+                     )}
+                  </div>
+                  <Btn full style={{ marginTop: 24, background: '#fff', color: '#111' }} onClick={() => go('settings')}>Complete Profile</Btn>
+               </Card>
+
+               <Card style={{ padding: '24px' }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 800, marginBottom: 16 }}>Quick Resources</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
+                     {[
+                       { l: 'Check Leaderboard', p: 'leaderboard', i: '🎖️' },
+                       { l: 'Rate Calculator', p: 'rate-calc', i: '🧮' },
+                       { l: 'Monetization Guide', p: 'monetize', i: '💸' },
+                       { l: 'Help & Support', p: 'contact', i: '💬' }
+                     ].map(r => (
+                       <button key={r.p} onClick={() => go(r.p)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', background: T.bg2, border: '1px solid rgba(0,0,0,0.04)', borderRadius: 12, cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = '#fff'} onMouseLeave={e => e.currentTarget.style.background = T.bg2}>
+                          <span style={{ fontSize: 18 }}>{r.i}</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: '#111' }}>{r.l}</span>
+                       </button>
+                     ))}
+                  </div>
+               </Card>
+            </div>
+
+            {/* Right Column: Applications */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+               <Card style={{ padding: '32px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                     <h3 style={{ fontSize: 20, fontWeight: 900, fontFamily: "'Fraunces', serif" }}>Recent Applications</h3>
+                     <Btn sm variant="ghost" onClick={() => go('applications')}>View All</Btn>
+                  </div>
+                  
+                  {myApps.length === 0 ? (
+                    <Empty icon="📄" title="No applications yet" sub="Browse campaigns and start applying to brands." ctaLabel="Find Campaigns" onCta={() => go('campaigns')} />
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      {myApps.slice(0, 5).map(a => (
+                        <div key={a.id} style={{ padding: '20px', background: 'rgba(0,0,0,0.02)', borderRadius: 20, border: '1px solid rgba(0,0,0,0.03)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                           <div>
+                              <p style={{ fontSize: 16, fontWeight: 800, color: '#111' }}>{a.campaignTitle}</p>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                                 <span style={{ fontSize: 13, color: T.t3 }}>{typeof a.brand === 'object' ? a.brand.companyName : a.brand}</span>
+                                 <span style={{ width: 4, height: 4, borderRadius: '50%', background: T.bd2 }} />
+                                 <span style={{ fontSize: 12, color: T.t4 }}>{fmt.date(a.date)}</span>
+                              </div>
+                           </div>
+                           <Bdg color={a.status === 'selected' ? 'green' : a.status === 'shortlisted' ? 'purple' : a.status === 'rejected' ? 'red' : 'blue'}>
+                              {a.status?.toUpperCase() || 'APPLIED'}
+                           </Bdg>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+               </Card>
+
+               {/* Profile Share Link Card */}
+               <Card style={{ padding: '32px', background: 'linear-gradient(135deg, #FF9431, #FF6B00)', color: '#fff' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 20 }}>
+                     <div>
+                        <h3 style={{ fontSize: 18, fontWeight: 900, marginBottom: 4 }}>Your Public Profile</h3>
+                        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)' }}>Share this link in your Instagram bio to attract brands.</p>
+                        <p style={{ fontSize: 15, fontWeight: 700, marginTop: 12, fontFamily: 'monospace' }}>creatorbharat.in/c/{c?.handle || 'username'}</p>
+                     </div>
+                     <Btn variant="white" onClick={() => { navigator.clipboard.writeText(`https://creatorbharat.in/c/${c?.handle}`); toast('Link copied to clipboard!', 'success'); }}>Copy Your Link</Btn>
+                  </div>
+               </Card>
+            </div>
           </div>
         </div>
       </div>

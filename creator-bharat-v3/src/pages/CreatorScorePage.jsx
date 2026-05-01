@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
 import { T, W, scrollToTop, fmt } from '../theme';
-import { SH, Card, Ring, Btn } from '../components/Primitives';
+import { SH, Card, Ring, Btn, Bdg, Bar } from '../components/Primitives';
 
 export default function CreatorScorePage() {
   const { st, dsp } = useApp();
@@ -15,72 +15,86 @@ export default function CreatorScorePage() {
 
   const go = (p) => { dsp({ t: 'GO', p }); scrollToTop(); };
   const c = st.creatorProfile;
-  const score = c ? (c.score || fmt.score(c)) : 85;
+  const score = c ? (c.score || fmt.score(c)) : 78;
   const tier = fmt.tier(score);
-  const comp = c ? fmt.completeness(c) : { pct: 0, missing: [] };
+  const comp = c ? fmt.completeness(c) : { pct: 85, missing: ['Verify Phone', 'Add Portfolio Link'] };
 
   return (
-    <div style={{ background: '#fff' }}>
-      <div style={{ background: T.n8, padding: mob ? '60px 20px' : '100px 20px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at 50% 50%, rgba(245,158,11,0.1) 0%, transparent 60%)' }} />
-        <div style={W(800)}><SH eyebrow="Algorithms" title="Creator Score (CS)" sub="The industry standard for measuring creator influence in Bharat." light center mb={0} /></div>
+    <div style={{ background: '#fff', minHeight: '100vh' }}>
+      {/* Header */}
+      <div style={{ background: '#050505', padding: mob ? '120px 20px 60px' : '160px 20px 100px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(245,158,11,0.1), transparent 70%)' }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #FF9431, #fff, #128807)' }} />
+        
+        <div style={W(900)}>
+           <SH eyebrow="Algorithmic Trust" title="Creator Score (CS)" sub="The industry-standard benchmark for measuring influence, reliability, and reach in Bharat." light center mb={0} />
+        </div>
       </div>
 
-      <div style={{ padding: mob ? '40px 20px' : '80px 20px', background: T.bg2 }}>
-        <div style={W(900)}>
-          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1.5fr', gap: 32, alignItems: 'start' }}>
-            <div style={{ position: 'sticky', top: 100 }}>
-              <Card style={{ padding: 40, textAlign: 'center', background: '#fff', boxShadow: '0 10px 40px rgba(0,0,0,.05)' }}>
-                <p style={{ fontSize: 12, color: T.t4, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: 24 }}>Algorithm Output</p>
-                <Ring score={score} size={140} />
-                <h3 style={{ fontSize: 24, color: T.t1, marginTop: 20, fontWeight: 900 }}>{c ? c.name : 'Demo Creator'}</h3>
-                <p style={{ fontSize: 15, color: T.t3, marginBottom: 24, fontWeight: 600 }}>{tier.label} Tier</p>
+      <div style={{ padding: mob ? '40px 20px' : '80px 20px', background: '#FAFAFA' }}>
+        <div style={W(1000)}>
+          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '380px 1fr', gap: 40, alignItems: 'start' }}>
+            
+            <div style={{ position: mob ? 'static' : 'sticky', top: 120 }}>
+              <Card className="au" style={{ padding: '48px 32px', textAlign: 'center', background: '#fff', boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}>
+                <p style={{ fontSize: 13, color: T.t4, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: 32 }}>LIVE ANALYSIS</p>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                   <Ring score={score} size={160} />
+                </div>
+                <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 24, color: '#111', marginTop: 24, fontWeight: 900 }}>{c ? c.name : 'Sample Creator'}</h3>
+                <div style={{ marginTop: 8 }}>
+                   <Bdg color="yellow">{tier.label.toUpperCase()} TIER</Bdg>
+                </div>
                 
-                {c && comp.missing.length > 0 && (
-                  <div style={{ background: T.ga, borderRadius: 20, padding: 20, textAlign: 'left', border: `1px solid ${T.gab}` }}>
-                    <p style={{ fontSize: 13, fontWeight: 900, color: T.gd, marginBottom: 12 }}>BOOST YOUR SCORE</p>
-                    {comp.missing.map(m => <p key={m} style={{ fontSize: 13, color: T.t2, marginBottom: 6, display: 'flex', gap: 8 }}><span>•</span>{m}</p>)}
-                  </div>
-                )}
+                <div style={{ background: '#F8FAFC', borderRadius: 24, padding: '24px', textAlign: 'left', marginTop: 32, border: '1px solid rgba(0,0,0,0.03)' }}>
+                   <p style={{ fontSize: 13, fontWeight: 900, color: '#111', marginBottom: 16 }}>SCORE OPTIMIZATION</p>
+                   {comp.missing.map(m => (
+                      <div key={m} style={{ display: 'flex', gap: 10, fontSize: 13, color: T.t3, marginBottom: 10, fontWeight: 600 }}>
+                         <span style={{ color: '#FF9431' }}>+</span> {m}
+                      </div>
+                   ))}
+                </div>
                 
-                {!c && <Btn full lg onClick={() => go('apply')} style={{ marginTop: 24, borderRadius: 14 }}>Calculate My Real Score</Btn>}
+                {!c && <Btn full lg onClick={() => go('apply')} style={{ marginTop: 32, borderRadius: 100 }}>Calculate My Real Score</Btn>}
               </Card>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-              <Card style={{ padding: 32 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 900, color: T.t1, marginBottom: 20 }}>How it works</h3>
-                <p style={{ fontSize: 15, color: T.t2, lineHeight: 1.7, marginBottom: 24 }}>The CS Score is a dynamic metric that evaluates your professional standing as a creator. It is not just about followers; it is about how much brands can trust your results.</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <div className="ai" style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+              <Card style={{ padding: '40px' }}>
+                <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 20 }}>How We Calculate Trust</h3>
+                <p style={{ fontSize: 16, color: T.t2, lineHeight: 1.8, marginBottom: 32, fontWeight: 500 }}>The CS Score is not a vanity metric. It uses proprietary AI to analyze your professional footprint across Bharat's digital ecosystem.</p>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   {[
-                    { t: 'Profile Authority', d: 'Completeness of your portfolio, bio, and verified social links.', v: '40%' },
-                    { t: 'Growth & Reach', d: 'Follower milestones across all platforms.', v: '30%' },
-                    { t: 'Engagement Velocity', d: 'Interaction rates and audience sentiment analysis.', v: '30%' }
+                    { t: 'Profile Authority', d: 'Completeness of portfolio, niche clarity, and verification status.', v: 40, c: '#FF9431' },
+                    { t: 'Engagement Velocity', d: 'Real-time interaction trends and audience sentiment analysis.', v: 30, c: '#10B981' },
+                    { t: 'Milestone Achievement', d: 'Historical growth patterns and platform consistency.', v: 30, c: '#3B82F6' }
                   ].map(item => (
-                    <div key={item.t} style={{ padding: '20px', background: T.bg2, borderRadius: 16, border: `1px solid ${T.bd}` }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                        <span style={{ fontWeight: 800, color: T.t1 }}>{item.t}</span>
-                        <span style={{ fontSize: 13, fontWeight: 900, color: T.gd }}>{item.v}</span>
+                    <div key={item.t} style={{ padding: '24px', background: '#FAFAFA', borderRadius: 24, border: '1px solid rgba(0,0,0,0.02)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                        <span style={{ fontWeight: 800, color: '#111', fontSize: 15 }}>{item.t}</span>
+                        <span style={{ fontSize: 14, fontWeight: 900, color: item.c }}>{item.v}% Weight</span>
                       </div>
-                      <p style={{ fontSize: 13, color: T.t3, lineHeight: 1.5 }}>{item.d}</p>
+                      <Bar value={item.v} color={item.c} height={6} />
+                      <p style={{ fontSize: 13, color: T.t3, lineHeight: 1.6, marginTop: 12, fontWeight: 500 }}>{item.d}</p>
                     </div>
                   ))}
                 </div>
               </Card>
 
-              <Card style={{ padding: 32 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 900, color: T.t1, marginBottom: 20 }}>Score Tiers</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <Card style={{ padding: '40px' }}>
+                <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>Official Tiering System</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 20 }}>
                   {[
-                    { t: 'Rising', r: '0-50', c: '#94A3B8', d: 'Building foundational presence.' },
-                    { t: 'Silver', r: '51-75', c: '#64748B', d: 'Established consistent content.' },
-                    { t: 'Gold', r: '76-90', c: '#D97706', d: 'Strong engagement and brand trust.' },
-                    { t: 'Platinum', r: '91-100', c: '#1E293B', d: 'Elite status with high ROI.' }
+                    { t: 'Rising Star', r: '0-50', c: '#94A3B8', d: 'New talent building their initial footprint.' },
+                    { t: 'Silver Elite', r: '51-75', c: '#64748B', d: 'Consistent content with verified stats.' },
+                    { t: 'Gold Partner', r: '76-90', c: '#FF9431', d: 'High trust, reliable brand results.' },
+                    { t: 'Platinum Pro', r: '91-100', c: '#111', d: 'Top 1% of Bharat\'s creator elite.' }
                   ].map(item => (
-                    <div key={item.t} style={{ padding: 20, borderRadius: 20, border: `2px solid ${item.c}20`, background: `${item.c}05` }}>
-                      <p style={{ fontWeight: 900, color: item.c, fontSize: 18 }}>{item.t}</p>
-                      <p style={{ fontSize: 13, fontWeight: 800, color: T.t1, margin: '4px 0' }}>{item.r} Points</p>
-                      <p style={{ fontSize: 12, color: T.t3, lineHeight: 1.4 }}>{item.d}</p>
+                    <div key={item.t} style={{ padding: '24px', borderRadius: 24, border: `2px solid ${item.c}10`, background: `${item.c}03` }}>
+                      <p style={{ fontWeight: 900, color: item.c, fontSize: 18, fontFamily: "'Fraunces', serif" }}>{item.t}</p>
+                      <p style={{ fontSize: 14, fontWeight: 900, color: '#111', margin: '6px 0' }}>{item.r} CS Points</p>
+                      <p style={{ fontSize: 13, color: T.t3, lineHeight: 1.5, fontWeight: 500 }}>{item.d}</p>
                     </div>
                   ))}
                 </div>
