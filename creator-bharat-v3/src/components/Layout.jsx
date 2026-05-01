@@ -34,10 +34,10 @@ export function Navbar() {
 
   const isCreator = st.role === 'creator', isBrand = st.role === 'brand';
   const links = isCreator
-    ? [['dashboard', 'Dashboard'], ['campaigns', 'Deals'], ['leaderboard', 'Leaderboard'], ['blog', 'Blogs']]
+    ? [['dashboard', 'Dashboard'], ['campaigns', 'Deals'], ['leaderboard', 'Leaderboard'], ['blog', 'Articles']]
     : isBrand
-      ? [['creators', 'Discover'], ['campaigns', 'My Ads'], ['blog', 'Blogs']]
-      : [['creators', 'Creators'], ['campaigns', 'Campaigns'], ['monetize', 'Monetize 💰'], ['blog', 'Blogs'], ['about', 'About']];
+      ? [['creators', 'Discover'], ['campaigns', 'My Ads'], ['blog', 'Articles']]
+      : [['creators', 'Creators'], ['campaigns', 'Campaigns'], ['monetize', 'Monetize 💰'], ['blog', 'Articles'], ['about', 'About']];
 
   return (
     <>

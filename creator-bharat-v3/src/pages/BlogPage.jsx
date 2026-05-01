@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
 import { T, W, scrollToTop, apiCall, fmt, LS } from '../theme';
-import { SH, Bdg, SkeletonCard, Empty } from '../components/Primitives';
+import { SH, Bdg, SkeletonCard, Empty, Btn } from '../components/Primitives';
 import { BlogCard } from '../components/Cards';
 
 export default function BlogPage() {

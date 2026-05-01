@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
 import { T, W, scrollToTop, fmt } from '../theme';
-import { Btn, PL, Bdg, SH, Card } from '../components/Primitives';
+import { Btn, PL, Bdg, SH, Card, Empty } from '../components/Primitives';
 
 export default function BlogArticlePage() {
   const { st, dsp } = useApp();
