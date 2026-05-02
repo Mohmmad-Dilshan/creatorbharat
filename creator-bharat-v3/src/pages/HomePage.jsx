@@ -28,9 +28,18 @@ export default function HomePage() {
     setLoading(true);
     apiCall('/creators?limit=10').then(d => {
       const list = Array.isArray(d) ? d : (d.creators || []);
-      setCreators(list);
+      if (list.length > 0) {
+        setCreators(list);
+      } else {
+        const local = LS.get('cb_creators', []);
+        if (local.length > 0) setCreators(local);
+      }
       setLoading(false);
-    }).catch(() => setLoading(false));
+    }).catch(() => {
+      const local = LS.get('cb_creators', []);
+      if (local.length > 0) setCreators(local);
+      setLoading(false);
+    });
   }, []);
 
   const go = (p, sel) => { 

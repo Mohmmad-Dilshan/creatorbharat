@@ -110,7 +110,7 @@ export default function Hero({ mob, st, dsp, go }) {
   };
 
   return (
-    <section style={{ background: '#fff', minHeight: mob ? 'auto' : '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: mob ? 120 : 160, paddingBottom: mob ? 60 : 60, position: 'relative', overflow: 'visible', textAlign: 'center' }}>
+    <section style={{ background: '#fff', minHeight: mob ? 'auto' : '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: mob ? 120 : 160, paddingBottom: 40, position: 'relative', overflow: 'visible', textAlign: 'center' }}>
       <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
         <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '70vw', height: '70vw', background: 'radial-gradient(circle, rgba(255,148,49,0.1) 0%, transparent 70%)', filter: 'blur(100px)', opacity: 0.6 }} />
         <div style={{ position: 'absolute', bottom: '0%', right: '-10%', width: '60vw', height: '60vw', background: 'radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)', filter: 'blur(100px)', opacity: 0.6 }} />
