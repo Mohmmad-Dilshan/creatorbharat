@@ -82,6 +82,68 @@ button:hover .lightning-icon { transform: scale(1.3) rotate(15deg); }
 .brand-logo-rich { height: 32px; filter: grayscale(1) brightness(0.2); opacity: 0.3; transition: all 0.4s; }
 .brand-logo-rich:hover { filter: grayscale(0) brightness(1); opacity: 1; transform: scale(1.1); }
 
-.feature-card-h { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-.feature-card-h:hover { transform: translateY(-8px); box-shadow: 0 30px 60px rgba(0,0,0,0.12); }
+.feature-card-h { transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
+.feature-card-h:hover { transform: translateY(-12px) scale(1.01); box-shadow: 0 40px 80px -15px rgba(0,0,0,0.15); }
 .sug-item:hover { background: #F3F4F6 !important; }
+
+/* Bento Grid Specifics */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: minmax(100px, auto);
+  gap: 24px;
+}
+
+.bento-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 32px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.04);
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.bento-item:hover {
+  border-color: rgba(255, 148, 49, 0.2);
+  box-shadow: 0 30px 60px -12px rgba(0,0,0,0.08);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-container {
+  overflow: hidden;
+  user-select: none;
+  display: flex;
+  gap: 80px;
+}
+
+.marquee-content {
+  display: flex;
+  gap: 80px;
+  animation: marquee 40s linear infinite;
+  min-width: 100%;
+}
+
+.marquee-content:hover {
+  animation-play-state: paused;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #FF9431 0%, #DC2626 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtle-float {
+  animation: float-simple 6s ease-in-out infinite;
+}

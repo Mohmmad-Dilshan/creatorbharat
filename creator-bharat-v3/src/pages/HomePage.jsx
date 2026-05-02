@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { scrollToTop, apiCall } from '../theme';
-import { BrandTrustStrip, FeaturesEcosystem, VerificationEngine, FeaturedCreatorsSection, Testimonials, FaqSection, FinalCta, HeroSection } from './HomeSections';
+import { apiCall } from '../theme';
+
+// Modular Home Components
+import Hero from '../components/home/Hero';
+import CommunityPulse from '../components/home/CommunityPulse';
+import Features from '../components/home/Features';
+import Verification from '../components/home/Verification';
+import FeaturedCreators from '../components/home/FeaturedCreators';
+import Testimonials from '../components/home/Testimonials';
+import Faq from '../components/home/Faq';
+import Cta from '../components/home/Cta';
 
 export default function HomePage() {
   const { st, dsp } = useApp();
@@ -23,18 +32,21 @@ export default function HomePage() {
     }).catch(() => setLoading(false));
   }, []);
 
-  const go = (p, sel) => { dsp({ t: 'GO', p, sel }); scrollToTop(); };
+  const go = (p, sel) => { 
+    dsp({ t: 'GO', p, sel }); 
+    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+  };
 
   return (
     <div style={{ background: '#fff' }}>
-      <HeroSection mob={mob} st={st} dsp={dsp} go={go} />
-      <BrandTrustStrip />
-      <FeaturesEcosystem mob={mob} />
-      <VerificationEngine mob={mob} />
-      <FeaturedCreatorsSection mob={mob} creators={creators} go={go} loading={loading} />
+      <Hero mob={mob} st={st} dsp={dsp} go={go} />
+      <CommunityPulse mob={mob} />
+      <Features mob={mob} />
+      <Verification mob={mob} />
+      <FeaturedCreators mob={mob} creators={creators} go={go} loading={loading} />
       <Testimonials mob={mob} />
-      <FaqSection mob={mob} />
-      <FinalCta mob={mob} go={go} />
+      <Faq mob={mob} />
+      <Cta mob={mob} go={go} />
     </div>
   );
 }

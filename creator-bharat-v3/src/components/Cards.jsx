@@ -12,64 +12,67 @@ export function CreatorCard({ creator: c, onView }) {
   const img = c.photo || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=FF9431&color=fff&size=200`;
 
   return (
-    <Card onClick={() => onView && onView(c)} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ position: 'relative', height: 110, background: 'linear-gradient(135deg, #050505, #111)', flexShrink: 0 }}>
+    <Card onClick={() => onView && onView(c)} style={{ height: '100%', display: 'flex', flexDirection: 'column', transition: 'all 0.5s cubic-bezier(0.23, 1, 0.32, 1)', border: '1px solid rgba(0,0,0,0.04)' }} className="feature-card-h">
+      <div style={{ position: 'relative', height: 140, background: 'linear-gradient(135deg, #0f172a, #1e293b)', flexShrink: 0, overflow: 'hidden' }}>
         {c.coverUrl ? (
-          <img src={c.coverUrl} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6 }} alt="" />
+          <img src={c.coverUrl} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} alt="" />
         ) : (
-          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255,148,49,0.1), transparent)' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255,148,49,0.15), transparent)' }} />
         )}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.4))' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.6))' }} />
         
         <button 
           onClick={e => { e.stopPropagation(); dsp({ t: 'SAVE', id: c.id }); }} 
-          style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: saved ? '#FF4D4D' : '#fff', fontSize: 16, transition: 'all 0.2s' }}
+          style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', width: 36, height: 36, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: saved ? '#FF4D4D' : '#fff', fontSize: 18, transition: 'all 0.3s' }}
         >
           {saved ? '❤️' : '🤍'}
         </button>
 
         {c.verified && (
-          <div style={{ position: 'absolute', top: 12, left: 12, background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)', padding: '4px 10px', borderRadius: 100, display: 'flex', alignItems: 'center', gap: 4 }}>
-             <span style={{ color: '#fff', fontSize: 10, fontWeight: 800, letterSpacing: '0.5px' }}>VERIFIED</span>
-             <span style={{ color: '#2563EB', fontSize: 12 }}>✓</span>
+          <div style={{ position: 'absolute', top: 12, left: 12, background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.2)', padding: '6px 12px', borderRadius: 100, display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+             <span style={{ color: '#fff', fontSize: 9, fontWeight: 900, letterSpacing: '1px' }}>ELITE</span>
+             <div style={{ background: '#3B82F6', width: 14, height: 14, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#fff' }}>✓</div>
           </div>
         )}
       </div>
 
-      <div style={{ padding: '0 20px', marginTop: -32, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16, position: 'relative', zIndex: 2 }}>
-        <img src={img} style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: '4px solid #fff', boxShadow: '0 8px 20px rgba(0,0,0,0.15)' }} alt={c.name} />
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
-           <Bdg sm color={tier.bc}>{tier.label}</Bdg>
-           <div style={{ fontSize: 10, fontWeight: 800, color: T.t3 }}>SCORE: {score}</div>
+      <div style={{ padding: '0 24px', marginTop: -40, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 20, position: 'relative', zIndex: 2 }}>
+        <img src={img} style={{ width: 80, height: 80, borderRadius: 24, objectFit: 'cover', border: '4px solid #fff', boxShadow: '0 12px 24px rgba(0,0,0,0.12)' }} alt={c.name} />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+           <Bdg sm color={tier.bc} style={{ padding: '4px 12px', borderRadius: 100 }}>{tier.label}</Bdg>
+           <div style={{ fontSize: 11, fontWeight: 900, color: T.t3, background: 'rgba(0,0,0,0.03)', padding: '2px 8px', borderRadius: 6 }}>SCORE: {score}</div>
         </div>
       </div>
 
-      <div style={{ padding: '0 20px', flex: 1 }}>
-        <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 20, fontWeight: 900, color: '#111', marginBottom: 4, letterSpacing: '-0.02em' }}>{c.name || 'Anonymous Creator'}</h3>
-        <p style={{ fontSize: 13, color: T.t3, fontWeight: 600, marginBottom: 16 }}>📍 {typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')} • {(Array.isArray(c.niche) ? c.niche : [c.niche || 'Digital Creator']).slice(0, 2).join(' & ')}</p>
+      <div style={{ padding: '0 24px', flex: 1 }}>
+        <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 22, fontWeight: 900, color: '#111', marginBottom: 6, letterSpacing: '-0.02em' }}>{c.name || 'Anonymous Creator'}</h3>
+        <p style={{ fontSize: 14, color: T.t3, fontWeight: 600, marginBottom: 24, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span>📍 {typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')}</span>
+          <span style={{ opacity: 0.3 }}>•</span>
+          <span>{(Array.isArray(c.niche) ? c.niche : [c.niche || 'Digital Creator']).slice(0, 1).join('')}</span>
+        </p>
         
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, padding: '16px 0', borderTop: '1px solid rgba(0,0,0,0.04)', borderBottom: '1px solid rgba(0,0,0,0.04)', marginBottom: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, padding: '20px 0', borderTop: '1px solid rgba(0,0,0,0.06)', borderBottom: '1px solid rgba(0,0,0,0.06)', marginBottom: 24 }}>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 16, fontWeight: 900, color: '#111' }}>{fmt.num(c.followers)}</div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: T.t4, textTransform: 'uppercase' }}>Reach</div>
-          </div>
-          <div style={{ textAlign: 'center', borderLeft: '1px solid rgba(0,0,0,0.05)', borderRight: '1px solid rgba(0,0,0,0.05)' }}>
-            <div style={{ fontSize: 16, fontWeight: 900, color: '#10B981' }}>{c.er || 4.2}%</div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: T.t4, textTransform: 'uppercase' }}>ER</div>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#111' }}>{fmt.num(c.followers)}</div>
+            <div style={{ fontSize: 10, fontWeight: 800, color: T.t4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Reach</div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 16, fontWeight: 900, color: '#FF9431' }}>{fmt.inr(c.rateMin)}</div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: T.t4, textTransform: 'uppercase' }}>Min Rate</div>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#10B981' }}>{c.er || 4.2}%</div>
+            <div style={{ fontSize: 10, fontWeight: 800, color: T.t4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>ER</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#FF9431' }}>{fmt.inr(c.rateMin)}</div>
+            <div style={{ fontSize: 10, fontWeight: 800, color: T.t4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Min Rate</div>
           </div>
         </div>
       </div>
 
-      <div style={{ padding: '0 20px 20px', display: 'flex', gap: 10 }}>
-        <Btn full onClick={() => onView && onView(c)} style={{ borderRadius: 100 }}>View Portfolio</Btn>
+      <div style={{ padding: '0 24px 24px', display: 'flex', gap: 12 }}>
+        <Btn lg full onClick={() => onView && onView(c)} style={{ borderRadius: 100, fontWeight: 900, fontSize: 15 }}>View Portfolio</Btn>
         <button 
           onClick={e => { e.stopPropagation(); dsp({ t: 'COMPARE', id: c.id }); }} 
-          style={{ width: 44, height: 44, borderRadius: '50%', border: '1.5px solid ' + (compared ? '#FF9431' : 'rgba(0,0,0,0.08)'), background: compared ? 'rgba(255,148,49,0.05)' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, transition: 'all 0.2s' }}
-          title="Compare Profile"
+          style={{ width: 48, height: 48, borderRadius: 100, border: '1.5px solid ' + (compared ? '#FF9431' : 'rgba(0,0,0,0.08)'), background: compared ? 'rgba(255,148,49,0.05)' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, transition: 'all 0.3s' }}
         >
           {compared ? '⚖️' : '⚖️'}
         </button>
