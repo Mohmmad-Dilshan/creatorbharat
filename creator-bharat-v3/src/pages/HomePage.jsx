@@ -27,7 +27,8 @@ export default function HomePage() {
   useEffect(() => {
     setLoading(true);
     apiCall('/creators?limit=10').then(d => {
-      setCreators(d.creators || d || []);
+      const list = Array.isArray(d) ? d : (d.creators || []);
+      setCreators(list);
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
@@ -40,10 +41,9 @@ export default function HomePage() {
   return (
     <div style={{ background: '#fff' }}>
       <Hero mob={mob} st={st} dsp={dsp} go={go} />
+      <FeaturedCreators mob={mob} creators={creators} go={go} loading={loading} />
       <CommunityPulse mob={mob} />
       <PlatformShowcase mob={mob} />
-      <Verification mob={mob} />
-      <FeaturedCreators mob={mob} creators={creators} go={go} loading={loading} />
       <Testimonials mob={mob} />
       <Faq mob={mob} />
       <Cta mob={mob} go={go} />
