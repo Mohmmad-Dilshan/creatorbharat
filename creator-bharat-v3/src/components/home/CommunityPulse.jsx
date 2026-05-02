@@ -30,7 +30,7 @@ export default function CommunityPulse({ mob }) {
   ];
 
   return (
-    <section style={{ padding: mob ? '40px 20px' : '40px 20px 120px 20px', background: '#fff', position: 'relative' }}>
+    <section style={{ padding: mob ? '40px 20px' : '40px 20px 60px 20px', background: '#fff', position: 'relative' }}>
       <div style={W()}>
         {/* Pro Heading UI with Indian Flag */}
         <div style={{ textAlign: 'left', marginBottom: 80, borderLeft: '4px solid #FF9431', paddingLeft: 32, position: 'relative' }}>

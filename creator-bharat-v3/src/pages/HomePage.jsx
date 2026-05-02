@@ -5,7 +5,7 @@ import { apiCall } from '../theme';
 // Modular Home Components
 import Hero from '../components/home/Hero';
 import CommunityPulse from '../components/home/CommunityPulse';
-import Features from '../components/home/Features';
+import PlatformShowcase from '../components/home/PlatformShowcase';
 import Verification from '../components/home/Verification';
 import FeaturedCreators from '../components/home/FeaturedCreators';
 import Testimonials from '../components/home/Testimonials';
@@ -41,7 +41,7 @@ export default function HomePage() {
     <div style={{ background: '#fff' }}>
       <Hero mob={mob} st={st} dsp={dsp} go={go} />
       <CommunityPulse mob={mob} />
-      <Features mob={mob} />
+      <PlatformShowcase mob={mob} />
       <Verification mob={mob} />
       <FeaturedCreators mob={mob} creators={creators} go={go} loading={loading} />
       <Testimonials mob={mob} />
