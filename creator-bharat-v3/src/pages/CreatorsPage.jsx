@@ -18,7 +18,13 @@ export default function CreatorsPage() {
     setLoading(true);
     // Simulate real API or use Seed Data if API fails
     apiCall('/creators?limit=100').then(d => {
-      setAll(d.creators || d || []);
+      const apiC = d.creators || d || [];
+      const localC = LS.get('cb_creators', []);
+      const merged = [...apiC];
+      localC.forEach(lc => {
+        if (!merged.find(ac => ac.id === lc.id)) merged.push(lc);
+      });
+      setAll(merged);
       setLoading(false);
     }).catch(() => {
       const seed = LS.get('cb_creators', []);

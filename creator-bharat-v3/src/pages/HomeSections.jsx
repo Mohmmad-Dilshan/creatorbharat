@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { T, W, ALL_STATES, apiCall } from '../theme';
+import { T, W, ALL_STATES, apiCall, fmt, LS } from '../theme';
 import { Btn, SH } from '../components/Primitives';
 import { CreatorCard } from '../components/Cards';
 
@@ -39,28 +39,102 @@ export function HeroSection({ mob, st, dsp, go }) {
   const [sugs, setSugs] = useState([]);
   const [showSug, setShowSug] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [activeIdx, setActiveIdx] = useState(-1);
+
+  const trending = ['Fashion', 'Tech', 'Travel', 'Lifestyle', 'Gaming', 'Food'];
 
   useEffect(() => {
-    if (!st.cf.q || st.cf.q.length < 2) {
+    if (!st.cf.q && !st.cf.state) {
       setSugs([]);
       setShowSug(false);
+      setActiveIdx(-1);
       return;
     }
+    
+    const query = st.cf.q || '';
+    if (query.length < 1 && !st.cf.state) {
+      setSugs([]);
+      setShowSug(false);
+      setActiveIdx(-1);
+      return;
+    }
+
+    // Step 1: Search LocalStorage INSTANTLY for real-time feel
+    const localList = LS.get('cb_creators', []);
+    const filteredLocal = localList.filter(c => {
+      const q = query.toLowerCase();
+      const matchesQuery = !q || 
+        (c.name || '').toLowerCase().includes(q) || 
+        (c.niche || '').toLowerCase().includes(q) || 
+        (c.city || '').toLowerCase().includes(q) ||
+        (c.state || '').toLowerCase().includes(q);
+      const matchesState = !st.cf.state || c.state === st.cf.state;
+      return matchesQuery && matchesState;
+    });
+
+    // Show local results immediately
+    if (filteredLocal.length > 0) {
+      setSugs(filteredLocal.slice(0, 6));
+      setShowSug(true);
+    }
+
+    // Step 2: Fetch from API with debounce
     const timer = setTimeout(() => {
       setIsSearching(true);
-      apiCall(`/creators?q=${encodeURIComponent(st.cf.q)}&limit=4`)
+      const url = `/creators?q=${encodeURIComponent(query)}&state=${encodeURIComponent(st.cf.state || '')}&limit=10`;
+      
+      apiCall(url)
         .then(d => {
-          setSugs(d.creators || []);
+          const apiList = d.creators || (Array.isArray(d) ? d : []);
+          
+          // Merge local and API results, removing duplicates
+          const merged = [...apiList];
+          filteredLocal.forEach(lc => {
+            if (!merged.find(ac => ac.id === lc.id)) merged.push(lc);
+          });
+
+          setSugs(merged.slice(0, 6));
           setShowSug(true);
           setIsSearching(false);
         })
         .catch(() => {
-          setSugs([]);
+          // If API fails, we already have local results showing
           setIsSearching(false);
         });
     }, 300);
+    
     return () => clearTimeout(timer);
-  }, [st.cf.q]);
+  }, [st.cf.q, st.cf.state]);
+
+  const [showStateSug, setShowStateSug] = useState(false);
+
+  const handleKeyDown = (e) => {
+    if (showSug) {
+      const isTrending = !st.cf.q;
+      const maxIdx = isTrending ? trending.length - 1 : sugs.length;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setActiveIdx(prev => (prev < maxIdx ? prev + 1 : prev));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setActiveIdx(prev => (prev > 0 ? prev - 1 : -1));
+      } else if (e.key === 'Enter') {
+        if (isTrending) {
+          if (activeIdx >= 0) dsp({ t: 'CF', v: { q: trending[activeIdx] } });
+        } else {
+          if (activeIdx >= 0 && activeIdx < sugs.length) {
+            go('creator-profile', { creator: sugs[activeIdx] });
+          } else if (activeIdx === sugs.length || activeIdx === -1) {
+            go('creators');
+          }
+          setShowSug(false);
+        }
+      } else if (e.key === 'Escape') {
+        setShowSug(false);
+      }
+    }
+  };
 
   return (
     <section style={{ background: '#fff', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: mob ? 160 : 200, paddingBottom: mob ? 80 : 120, position: 'relative', overflow: 'hidden', textAlign: 'center' }}>
@@ -140,67 +214,207 @@ export function HeroSection({ mob, st, dsp, go }) {
           border: '1px solid rgba(0,0,0,0.05)', 
           marginBottom: mob ? 40 : 32, 
           position: 'relative', 
-          zIndex: 10,
+          zIndex: 100,
           minHeight: mob ? 'auto' : 84
         }}>
           {/* Input Section */}
-          <div style={{ flex: 1, position: 'relative', padding: mob ? '16px 20px' : '0 40px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderRight: mob ? 'none' : '1px solid rgba(0,0,0,0.05)', borderBottom: mob ? '1px solid rgba(0,0,0,0.05)' : 'none' }}>
+          <div style={{ flex: 1.2, position: 'relative', padding: mob ? '16px 20px' : '0 40px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderRight: mob ? 'none' : '1px solid rgba(0,0,0,0.05)', borderBottom: mob ? '1px solid rgba(0,0,0,0.05)' : 'none' }}>
             <label style={{ fontSize: 9, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 4, opacity: 0.8 }}>Who are you looking for?</label>
             <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: 12 }}>
               <span style={{ fontSize: 20 }}>{isSearching ? <div className="spin" style={{width: 20, height: 20, borderRadius: '50%', border: '2px solid rgba(0,0,0,0.1)', borderTopColor: '#FF9431'}} /> : '🔍'}</span>
               <input 
                 value={st.cf.q} 
                 onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} 
-                onFocus={() => { if(sugs.length > 0) setShowSug(true); }}
+                onFocus={() => setShowSug(true)}
                 onBlur={() => setTimeout(() => setShowSug(false), 200)}
+                onKeyDown={handleKeyDown}
                 placeholder="Name, niche or city..." 
                 style={{ width: '100%', border: 'none', background: 'none', fontSize: 18, outline: 'none', fontWeight: 700, color: '#111', letterSpacing: '-0.01em' }} 
               />
+              {st.cf.q && (
+                <button onClick={() => dsp({ t: 'CF', v: { q: '' } })} style={{ border: 'none', background: 'rgba(0,0,0,0.05)', width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 14, color: 'rgba(0,0,0,0.4)', transition: 'all 0.2s' }}>×</button>
+              )}
             </div>
-            {/* Real-time suggestions dropdown */}
-            {showSug && sugs.length > 0 && (
-              <div className="si" style={{ position: 'absolute', top: '100%', left: 0, width: mob ? '100%' : 'calc(100% + 40px)', marginLeft: mob ? 0 : -20, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(20px)', borderRadius: 24, boxShadow: '0 30px 60px -10px rgba(0,0,0,0.2)', border: '1px solid rgba(0,0,0,0.08)', zIndex: 100, padding: 12, marginTop: 12, textAlign: 'left', overflow: 'hidden' }}>
-                <div style={{ fontSize: 10, fontWeight: 900, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px', padding: '8px 12px', marginBottom: 4 }}>Top Matches</div>
-                {sugs.map(c => (
-                  <div key={c.id} onMouseDown={() => go('creator-profile', { creator: c })} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 16px', borderRadius: 16, cursor: 'pointer', transition: 'all 0.2s', background: 'transparent' }} className="sug-item">
-                    <div style={{ position: 'relative' }}>
-                      <img src={c.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&q=80'} style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} alt={c.name} />
-                      {c.isVerified && <div style={{ position: 'absolute', bottom: -2, right: -2, background: '#10B981', color: '#fff', borderRadius: '50%', width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, border: '2px solid #fff' }}>✓</div>}
+            
+            {/* Improved Real-time suggestions dropdown */}
+            {showSug && (
+              <div className="si" style={{ 
+                position: 'absolute', 
+                top: 'calc(100% + 12px)', 
+                left: mob ? 0 : -20, 
+                width: mob ? '100%' : 'calc(100% + 40px)', 
+                background: 'rgba(255,255,255,0.98)', 
+                backdropFilter: 'blur(30px)', 
+                borderRadius: 32, 
+                boxShadow: '0 40px 80px -10px rgba(0,0,0,0.25), inset 0 0 0 1px rgba(255,255,255,0.5)', 
+                border: '1px solid rgba(0,0,0,0.06)', 
+                zIndex: 1000, 
+                padding: 16, 
+                textAlign: 'left', 
+                overflow: 'hidden',
+                animation: 'scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+              }}>
+                {!st.cf.q ? (
+                  <>
+                    <div style={{ fontSize: 11, fontWeight: 900, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px', padding: '0 12px 12px' }}>Trending Niches</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 8px 12px' }}>
+                      {trending.map((t, idx) => (
+                        <div 
+                          key={t} 
+                          onMouseDown={() => dsp({ t: 'CF', v: { q: t } })} 
+                          onMouseEnter={() => setActiveIdx(idx)}
+                          style={{ 
+                            padding: '8px 16px', 
+                            borderRadius: 100, 
+                            background: (!st.cf.q && activeIdx === idx) ? '#111' : 'rgba(0,0,0,0.04)', 
+                            color: (!st.cf.q && activeIdx === idx) ? '#fff' : 'rgba(0,0,0,0.6)',
+                            fontSize: 13, 
+                            fontWeight: 700, 
+                            cursor: 'pointer', 
+                            transition: 'all 0.2s',
+                            transform: (!st.cf.q && activeIdx === idx) ? 'translateY(-2px)' : 'none',
+                            boxShadow: (!st.cf.q && activeIdx === idx) ? '0 10px 20px rgba(0,0,0,0.1)' : 'none'
+                          }}
+                        >
+                          #{t}
+                        </div>
+                      ))}
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 16, fontWeight: 800, color: '#111', display: 'flex', alignItems: 'center', gap: 6 }}>{c.name}</div>
-                      <div style={{ fontSize: 13, color: 'rgba(0,0,0,0.5)', fontWeight: 600, marginTop: 2 }}>{c.niche || 'Creator'} • {c.city || 'India'}</div>
-                    </div>
-                    {c.followers && (
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: 14, fontWeight: 900, color: '#FF9431' }}>{(c.followers/1000).toFixed(0)}K</div>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(0,0,0,0.4)' }}>Folls</div>
+                    <div style={{ borderTop: '1px solid rgba(0,0,0,0.05)', marginTop: 8, paddingTop: 16 }}>
+                      <div style={{ fontSize: 11, fontWeight: 900, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px', padding: '0 12px 12px' }}>Quick Actions</div>
+                      <div onMouseDown={() => go('creators')} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderRadius: 16, cursor: 'pointer', transition: 'all 0.2s' }} className="sug-item">
+                        <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, #FF9431, #FF6B00)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 18 }}>🔥</div>
+                        <div>
+                          <div style={{ fontSize: 15, fontWeight: 800 }}>Explore Elite Talent</div>
+                          <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.5)', fontWeight: 500 }}>Browse verified creators across India</div>
+                        </div>
                       </div>
-                    )}
+                    </div>
+                  </>
+                ) : isSearching ? (
+                  <div style={{ padding: '40px 0', textAlign: 'center' }}>
+                    <div className="spin" style={{ width: 32, height: 32, borderRadius: '50%', border: '3px solid rgba(0,0,0,0.05)', borderTopColor: '#FF9431', margin: '0 auto 16px' }} />
+                    <div style={{ fontSize: 14, fontWeight: 700, color: 'rgba(0,0,0,0.4)' }}>Searching for "{st.cf.q}"...</div>
                   </div>
-                ))}
-                <div onMouseDown={() => go('creators')} style={{ padding: '12px', textAlign: 'center', borderTop: '1px solid rgba(0,0,0,0.05)', marginTop: 8, cursor: 'pointer', fontSize: 14, fontWeight: 800, color: '#FF9431', transition: 'all 0.2s' }} className="sug-item">
-                  View all results →
-                </div>
+                ) : sugs.length > 0 ? (
+                  <>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 12px 12px' }}>
+                      <span style={{ fontSize: 11, fontWeight: 900, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>Top Results</span>
+                      <span style={{ fontSize: 11, fontWeight: 800, color: '#FF9431' }}>{sugs.length} Matches Found</span>
+                    </div>
+                    {sugs.map((c, i) => (
+                      <div 
+                        key={c.id} 
+                        onMouseDown={() => go('creator-profile', { creator: c })} 
+                        onMouseEnter={() => setActiveIdx(i)}
+                        style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: 16, 
+                          padding: '14px 16px', 
+                          borderRadius: 20, 
+                          cursor: 'pointer', 
+                          transition: 'all 0.2s', 
+                          background: activeIdx === i ? 'rgba(255,148,49,0.08)' : 'transparent',
+                          border: activeIdx === i ? '1px solid rgba(255,148,49,0.1)' : '1px solid transparent'
+                        }}
+                      >
+                        <div style={{ position: 'relative' }}>
+                          <img src={c.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&q=80'} style={{ width: 52, height: 52, borderRadius: 16, objectFit: 'cover', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} alt={c.name} />
+                          {c.isVerified && <div style={{ position: 'absolute', bottom: -4, right: -4, background: '#10B981', color: '#fff', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, border: '2px solid #fff' }}>✓</div>}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 16, fontWeight: 800, color: '#111', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            {c.name}
+                            {activeIdx === i && <span style={{ fontSize: 10, background: '#FF9431', color: '#fff', padding: '2px 6px', borderRadius: 4, fontWeight: 900 }}>ENTER</span>}
+                            {c.isVerified && <span style={{ color: '#3B82F6', fontSize: 14 }}>Verified</span>}
+                          </div>
+                          <div style={{ fontSize: 13, color: 'rgba(0,0,0,0.5)', fontWeight: 600, marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                            {c.niche || 'Creator'} • {c.city || 'India'}
+                            {c.platform && (
+                              <span style={{ fontSize: 10, background: 'rgba(0,0,0,0.05)', padding: '2px 8px', borderRadius: 4 }}>
+                                {Array.isArray(c.platform) ? c.platform[0] : c.platform}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {c.followers && (
+                          <div style={{ textAlign: 'right', paddingRight: 4 }}>
+                            <div style={{ fontSize: 15, fontWeight: 900, color: '#FF9431' }}>{fmt.num(c.followers)}</div>
+                            <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase' }}>Folls</div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    <div onMouseDown={() => go('creators')} style={{ padding: '16px', textAlign: 'center', borderTop: '1px solid rgba(0,0,0,0.05)', marginTop: 12, cursor: 'pointer', fontSize: 14, fontWeight: 800, color: '#FF9431', transition: 'all 0.2s', background: activeIdx === sugs.length ? 'rgba(255,148,49,0.05)' : 'transparent' }} className="sug-item">
+                      View all results for "{st.cf.q}" →
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ padding: '32px 16px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
+                    <div style={{ fontSize: 16, fontWeight: 800, color: '#111' }}>No results found</div>
+                    <div style={{ fontSize: 14, color: 'rgba(0,0,0,0.5)', marginTop: 4 }}>Try searching for a different name or niche</div>
+                    <Btn lg variant="outline" onClick={() => dsp({ t: 'CF', v: { q: '' } })} style={{ marginTop: 20, borderRadius: 100 }}>Clear Search</Btn>
+                  </div>
+                )}
               </div>
             )}
           </div>
 
           {/* State Section */}
-          <div style={{ flex: 1, position: 'relative', padding: mob ? '16px 20px' : '0 40px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          <div 
+            style={{ flex: 0.8, position: 'relative', padding: mob ? '16px 20px' : '0 40px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}
+            onBlur={() => setTimeout(() => setShowStateSug(false), 200)}
+            tabIndex={0}
+          >
             <label style={{ fontSize: 9, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 4, opacity: 0.8 }}>Location</label>
-            <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: 12, position: 'relative' }}>
+            <div 
+              onClick={() => setShowStateSug(!showStateSug)}
+              style={{ display: 'flex', alignItems: 'center', width: '100%', gap: 12, position: 'relative', cursor: 'pointer' }}
+            >
               <span style={{ fontSize: 20 }}>📍</span>
-              <select 
-                value={st.cf.state} 
-                onChange={e => dsp({ t: 'CF', v: { state: e.target.value } })} 
-                style={{ width: '100%', border: 'none', background: 'none', fontSize: 17, outline: 'none', appearance: 'none', cursor: 'pointer', fontWeight: 700, color: '#111', paddingRight: 32 }}
-              >
-                <option value="">All over India</option>
-                {ALL_STATES.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-              <span style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', fontSize: 12, opacity: 0.4, pointerEvents: 'none' }}>▼</span>
+              <div style={{ width: '100%', fontSize: 17, fontWeight: 700, color: '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {st.cf.state || 'All over India'}
+              </div>
+              <span style={{ fontSize: 12, opacity: 0.4, transition: 'transform 0.3s', transform: showStateSug ? 'rotate(180deg)' : 'none' }}>▼</span>
             </div>
+
+            {showStateSug && (
+              <div className="si" style={{ 
+                position: 'absolute', 
+                top: 'calc(100% + 12px)', 
+                left: mob ? 0 : -20, 
+                width: mob ? '100%' : 'calc(100% + 40px)', 
+                background: 'rgba(255,255,255,0.98)', 
+                backdropFilter: 'blur(30px)', 
+                borderRadius: 32, 
+                boxShadow: '0 40px 80px -10px rgba(0,0,0,0.25), inset 0 0 0 1px rgba(255,255,255,0.5)', 
+                border: '1px solid rgba(0,0,0,0.06)', 
+                zIndex: 1000, 
+                padding: 12, 
+                maxHeight: 400,
+                overflowY: 'auto'
+              }}>
+                <div 
+                  onMouseDown={() => { dsp({ t: 'CF', v: { state: '' } }); setShowStateSug(false); }}
+                  style={{ padding: '12px 16px', borderRadius: 16, cursor: 'pointer', transition: 'all 0.2s', fontWeight: 800, color: !st.cf.state ? '#FF9431' : '#111', background: !st.cf.state ? 'rgba(255,148,49,0.05)' : 'transparent' }}
+                  className="sug-item"
+                >
+                  All over India
+                </div>
+                {ALL_STATES.map(s => (
+                  <div 
+                    key={s}
+                    onMouseDown={() => { dsp({ t: 'CF', v: { state: s } }); setShowStateSug(false); }}
+                    style={{ padding: '12px 16px', borderRadius: 16, cursor: 'pointer', transition: 'all 0.2s', fontWeight: 700, color: st.cf.state === s ? '#FF9431' : '#444', background: st.cf.state === s ? 'rgba(255,148,49,0.05)' : 'transparent' }}
+                    className="sug-item"
+                  >
+                    {s}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Search Button */}
