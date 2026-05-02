@@ -159,16 +159,29 @@ export function HeroSection({ mob, st, dsp, go }) {
             </div>
             {/* Real-time suggestions dropdown */}
             {showSug && sugs.length > 0 && (
-              <div className="si" style={{ position: 'absolute', top: '100%', left: 0, width: mob ? '100%' : 'calc(100% + 20px)', background: '#fff', borderRadius: 20, boxShadow: '0 20px 40px rgba(0,0,0,0.15)', border: '1px solid rgba(0,0,0,0.05)', zIndex: 100, padding: 8, marginTop: 8, textAlign: 'left' }}>
+              <div className="si" style={{ position: 'absolute', top: '100%', left: 0, width: mob ? '100%' : 'calc(100% + 40px)', marginLeft: mob ? 0 : -20, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(20px)', borderRadius: 24, boxShadow: '0 30px 60px -10px rgba(0,0,0,0.2)', border: '1px solid rgba(0,0,0,0.08)', zIndex: 100, padding: 12, marginTop: 12, textAlign: 'left', overflow: 'hidden' }}>
+                <div style={{ fontSize: 10, fontWeight: 900, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px', padding: '8px 12px', marginBottom: 4 }}>Top Matches</div>
                 {sugs.map(c => (
-                  <div key={c.id} onClick={() => go('creator-profile', { creator: c })} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 12, borderRadius: 12, cursor: 'pointer', transition: 'all 0.2s' }} className="sug-item">
-                    <img src={c.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&q=80'} style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }} alt={c.name} />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 15, fontWeight: 800, color: '#111' }}>{c.name}</div>
-                      <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.5)', fontWeight: 600 }}>{c.niche || 'Creator'} • {c.city || 'India'}</div>
+                  <div key={c.id} onMouseDown={() => go('creator-profile', { creator: c })} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '12px 16px', borderRadius: 16, cursor: 'pointer', transition: 'all 0.2s', background: 'transparent' }} className="sug-item">
+                    <div style={{ position: 'relative' }}>
+                      <img src={c.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&q=80'} style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }} alt={c.name} />
+                      {c.isVerified && <div style={{ position: 'absolute', bottom: -2, right: -2, background: '#10B981', color: '#fff', borderRadius: '50%', width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, border: '2px solid #fff' }}>✓</div>}
                     </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 16, fontWeight: 800, color: '#111', display: 'flex', alignItems: 'center', gap: 6 }}>{c.name}</div>
+                      <div style={{ fontSize: 13, color: 'rgba(0,0,0,0.5)', fontWeight: 600, marginTop: 2 }}>{c.niche || 'Creator'} • {c.city || 'India'}</div>
+                    </div>
+                    {c.followers && (
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: 14, fontWeight: 900, color: '#FF9431' }}>{(c.followers/1000).toFixed(0)}K</div>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(0,0,0,0.4)' }}>Folls</div>
+                      </div>
+                    )}
                   </div>
                 ))}
+                <div onMouseDown={() => go('creators')} style={{ padding: '12px', textAlign: 'center', borderTop: '1px solid rgba(0,0,0,0.05)', marginTop: 8, cursor: 'pointer', fontSize: 14, fontWeight: 800, color: '#FF9431', transition: 'all 0.2s' }} className="sug-item">
+                  View all results →
+                </div>
               </div>
             )}
           </div>
