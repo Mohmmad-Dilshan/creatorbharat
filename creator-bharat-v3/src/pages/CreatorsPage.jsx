@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { T, W, scrollToTop, apiCall, fmt, LS, ALL_STATES, INDIA_STATES } from '../theme';
+import { T } from '../theme';
+import { W, scrollToTop, fmt, LS, ALL_STATES, INDIA_STATES } from '../utils/helpers';
+import { apiCall } from '../utils/api';
 import { Btn, SH, Bdg, SkeletonCard, Empty } from '../components/Primitives';
 import { CreatorCard } from '../components/Cards';
 

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { T, W, ALL_STATES, apiCall, fmt, LS } from '../../theme';
+import { T } from '../../theme';
+import { W, ALL_STATES, fmt, LS } from '../../utils/helpers';
+import { apiCall } from '../../utils/api';
 import { Btn } from '../Primitives';
 
 export function Typewriter({ words, interval = 2000 }) {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../context';
-import { T, fmt } from '../theme';
+import { T } from '../theme';
+import { fmt } from '../utils/helpers';
 import { Card, Bdg, Btn, Stars, Bar } from './Primitives';
 
 export function CreatorCard({ creator: c, onView }) {

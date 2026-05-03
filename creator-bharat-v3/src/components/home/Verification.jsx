@@ -1,5 +1,5 @@
 import React from 'react';
-import { W } from '../../theme';
+import { W } from '../../utils/helpers';
 import { Btn } from '../Primitives';
 
 export default function Verification({ mob }) {

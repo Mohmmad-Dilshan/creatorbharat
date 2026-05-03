@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { T, W, scrollToTop, LS } from '../theme';
+import { T } from '../theme';
+import { W, scrollToTop, LS } from '../utils/helpers';
 import { Btn, SH, Fld, Card } from '../components/Primitives';
 
 export default function ContactPage() {
@@ -56,14 +57,14 @@ export default function ContactPage() {
                 <div className="ai">
                   <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>Send us a message</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 20 }}>
-                    <Fld label="Full Name *" value={F.name} onChange={e => upF('name', e.target.value)} placeholder="e.g. Ravi Kumar" required />
-                    <Fld label="Email Address *" type="email" value={F.email} onChange={e => upF('email', e.target.value)} placeholder="ravi@email.com" required />
+                    <Fld label="Full Name" value={F.name} onChange={e => upF('name', e.target.value)} placeholder="e.g. Ravi Kumar" required />
+                    <Fld label="Email Address" type="email" value={F.email} onChange={e => upF('email', e.target.value)} placeholder="ravi@email.com" required />
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 20 }}>
                     <Fld label="I am a..." value={F.type} onChange={e => upF('type', e.target.value)} options={['Creator', 'Brand', 'Investor', 'Press', 'Other']} />
                     <Fld label="Subject" value={F.subject} onChange={e => upF('subject', e.target.value)} placeholder="Inquiry about..." />
                   </div>
-                  <Fld label="Your Message *" value={F.message} onChange={e => upF('message', e.target.value)} rows={6} placeholder="Hum aapki kaise help kar sakte hain?" required />
+                  <Fld label="Your Message" value={F.message} onChange={e => upF('message', e.target.value)} rows={6} placeholder="Hum aapki kaise help kar sakte hain?" required />
                   <Btn full lg loading={loading} onClick={submit} style={{ height: 60, borderRadius: 100, fontSize: 17 }}>Submit Message 🚀</Btn>
                 </div>
               )}

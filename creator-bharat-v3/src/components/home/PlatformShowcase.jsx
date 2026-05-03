@@ -1,5 +1,5 @@
 import React from 'react';
-import { W } from '../../theme';
+import { W } from '../../utils/helpers';
 
 export default function PlatformShowcase({ mob }) {
   return (

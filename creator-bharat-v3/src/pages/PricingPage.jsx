@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { T, W, scrollToTop, LS } from '../theme';
+import { T } from '../theme';
+import { W, scrollToTop, LS } from '../utils/helpers';
 import { Btn, SH, Card, Bdg } from '../components/Primitives';
 
 export default function PricingPage() {

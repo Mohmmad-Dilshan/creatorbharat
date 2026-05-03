@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { T, W, scrollToTop, fmt, LS, apiCall, CITIES, ALL_STATES, INDIA_STATES } from '../theme';
+import { T } from '../theme';
+import { W, scrollToTop, fmt, LS, ALL_STATES, INDIA_STATES, CITIES } from '../utils/helpers';
+import { apiCall } from '../utils/api';
 import { Btn, Fld, Bdg, Chip, SH } from '../components/Primitives';
 
 export default function ApplyPage() {
@@ -136,16 +138,16 @@ export default function ApplyPage() {
 
             {step === 1 && (
               <div className="ai">
-                <Fld label="Full Legal Name *" value={F.name} onChange={e => { upF('name', e.target.value); if (!F.handle) upF('handle', fmt.handle(e.target.value)) }} placeholder="e.g. Rahul Sharma" required />
-                <Fld label="Unique Handle *" value={F.handle} onChange={e => upF('handle', fmt.handle(e.target.value))} placeholder="rahul-sharma" helper={`Profile Link: creatorbharat.in/c/${F.handle || 'your-handle'}`} required />
-                <Fld label="Work Email *" type="email" value={F.email} onChange={e => upF('email', e.target.value)} placeholder="hello@rahul.com" required />
+                <Fld label="Full Legal Name" value={F.name} onChange={e => { upF('name', e.target.value); if (!F.handle) upF('handle', fmt.handle(e.target.value)) }} placeholder="e.g. Rahul Sharma" required />
+                <Fld label="Unique Handle" value={F.handle} onChange={e => upF('handle', fmt.handle(e.target.value))} placeholder="rahul-sharma" helper={`Profile Link: creatorbharat.in/c/${F.handle || 'your-handle'}`} required />
+                <Fld label="Work Email" type="email" value={F.email} onChange={e => upF('email', e.target.value)} placeholder="hello@rahul.com" required />
                 <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 16 }}>
-                  <Fld label="Current City *" value={F.city} onChange={e => upF('city', e.target.value)} options={['', ...CITIES]} required />
+                  <Fld label="Current City" value={F.city} onChange={e => upF('city', e.target.value)} options={['', ...CITIES]} required />
                   <Fld label="State" value={F.state} onChange={e => upF('state', e.target.value)} placeholder="Rajasthan" />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <Fld label="Set Password *" type="password" value={F.password} onChange={e => upF('password', e.target.value)} placeholder="••••••••" required />
-                  <Fld label="Confirm *" type="password" value={F.confirm} onChange={e => upF('confirm', e.target.value)} placeholder="••••••••" required />
+                  <Fld label="Set Password" type="password" value={F.password} onChange={e => upF('password', e.target.value)} placeholder="••••••••" required />
+                  <Fld label="Confirm" type="password" value={F.confirm} onChange={e => upF('confirm', e.target.value)} placeholder="••••••••" required />
                 </div>
               </div>
             )}
@@ -161,10 +163,10 @@ export default function ApplyPage() {
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{PLATFORMS.map(p => <Chip key={p} label={p} active={F.platform.includes(p)} onClick={() => toggleArr('platform', p)} />)}</div>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <Fld label="Total Followers *" type="number" value={F.followers} onChange={e => upF('followers', e.target.value)} placeholder="50000" required />
+                  <Fld label="Total Followers" type="number" value={F.followers} onChange={e => upF('followers', e.target.value)} placeholder="50000" required />
                   <Fld label="Avg. Monthly Views" type="number" value={F.monthlyViews} onChange={e => upF('monthlyViews', e.target.value)} placeholder="200000" />
                 </div>
-                <Fld label="Short Professional Bio *" value={F.bio} onChange={e => upF('bio', e.target.value)} rows={4} placeholder="Briefly describe your content and audience..." required />
+                <Fld label="Short Professional Bio" value={F.bio} onChange={e => upF('bio', e.target.value)} rows={4} placeholder="Briefly describe your content and audience..." required />
               </div>
             )}
 
@@ -174,7 +176,7 @@ export default function ApplyPage() {
                    <p style={{ fontSize: 14, color: '#10B981', fontWeight: 700, lineHeight: 1.5 }}>Setting transparent rates helps brands book you faster. You can always change these later.</p>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <Fld label="Min Collab Rate (₹) *" type="number" value={F.rateMin} onChange={e => upF('rateMin', e.target.value)} placeholder="5000" required />
+                  <Fld label="Min Collab Rate (₹)" type="number" value={F.rateMin} onChange={e => upF('rateMin', e.target.value)} placeholder="5000" required />
                   <Fld label="Max Collab Rate (₹)" type="number" value={F.rateMax} onChange={e => upF('rateMax', e.target.value)} placeholder="25000" />
                 </div>
                 <div style={{ marginBottom: 24 }}>

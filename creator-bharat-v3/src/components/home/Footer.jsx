@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { W, T } from '../../theme';
+import { T } from '../../theme';
+import { W } from '../../utils/helpers';
 import { Logo } from '../Primitives'; // USING THE PRO LOGO COMPONENT
 
 export default function Footer({ mob }) {

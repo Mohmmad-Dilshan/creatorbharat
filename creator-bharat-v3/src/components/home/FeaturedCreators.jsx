@@ -1,5 +1,5 @@
 import React from 'react';
-import { W, LS } from '../../theme';
+import { W, LS } from '../../utils/helpers';
 
 export default function FeaturedCreators({ mob, creators, go, loading }) {
   // Premium & Verified Portrait Fallbacks with specific tags

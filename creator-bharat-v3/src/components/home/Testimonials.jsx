@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { W, T } from '../../theme';
+import { T } from '../../theme';
+import { W } from '../../utils/helpers';
 
 export default function Testimonials({ mob }) {
   const [activeTab, setActiveTab] = useState('creator');

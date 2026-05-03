@@ -1,5 +1,5 @@
 import React from 'react';
-import { W } from '../../theme';
+import { W } from '../../utils/helpers';
 
 const LOGOS = [
   { name: 'Zomato', url: 'https://upload.wikimedia.org/wikipedia/commons/7/75/Zomato_logo.png' },

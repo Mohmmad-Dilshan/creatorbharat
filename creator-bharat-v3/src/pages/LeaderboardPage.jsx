@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { T, W, scrollToTop, apiCall, fmt, LS } from '../theme';
+import { T } from '../theme';
+import { W, scrollToTop, fmt, LS } from '../utils/helpers';
+import { apiCall } from '../utils/api';
 import { SH, Card, Empty, Bdg } from '../components/Primitives';
 
 export default function LeaderboardPage() {

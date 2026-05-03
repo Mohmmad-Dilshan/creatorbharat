@@ -1,5 +1,6 @@
 import React from 'react';
-import { W, T } from '../../theme';
+import { T } from '../../theme';
+import { W } from '../../utils/helpers';
 
 export default function CreatorPulse({ mob }) {
   return (

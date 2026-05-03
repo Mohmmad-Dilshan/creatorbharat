@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { T, W, scrollToTop } from '../theme';
+import { T } from '../theme';
+import { W, scrollToTop } from '../utils/helpers';
 import { Btn, SH, Bdg } from '../components/Primitives';
 
 export default function MonetizePage() {

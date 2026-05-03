@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { T, W, scrollToTop, LS, fmt } from '../theme';
+import { T } from '../theme';
+import { W, scrollToTop, LS, fmt } from '../utils/helpers';
 import { Btn, Card, Bdg, Bar, Empty, Ring } from '../components/Primitives';
 
 export default function DashboardPage() {

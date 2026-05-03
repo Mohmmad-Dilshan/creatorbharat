@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { T, W, scrollToTop, LS, Auth, fmt } from '../theme';
+import { T } from '../theme';
+import { W, scrollToTop, LS, Auth, fmt } from '../utils/helpers';
 import { Btn, Card, Bdg, Empty } from '../components/Primitives';
 
 export default function BrandDashboardPage() {

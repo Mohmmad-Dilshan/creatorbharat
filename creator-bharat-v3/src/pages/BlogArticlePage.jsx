@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { T, W, scrollToTop, fmt } from '../theme';
+import { T } from '../theme';
+import { W, scrollToTop, fmt } from '../utils/helpers';
 import { Btn, PL, Bdg, SH, Card, Empty } from '../components/Primitives';
 
 export default function BlogArticlePage() {

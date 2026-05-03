@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { T, W, scrollToTop, LS, apiCall } from '../theme';
+import { T } from '../theme';
+import { W, scrollToTop, LS } from '../utils/helpers';
+import { apiCall } from '../utils/api';
 import { Btn, Fld, Card, Bdg, SH } from '../components/Primitives';
 
 export default function CampaignBuilderPage() {
@@ -65,8 +67,8 @@ export default function CampaignBuilderPage() {
                
                <div>
                   <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 22, fontWeight: 900, color: '#111', marginBottom: 24 }}>Campaign Core Details</h3>
-                  <Fld label="Campaign Title *" value={F.title} onChange={e => upF('title', e.target.value)} placeholder="e.g. Summer Collection Launch 2026" required />
-                  <Fld label="Creative Brief & Description *" value={F.desc} onChange={e => upF('desc', e.target.value)} rows={6} placeholder="Describe your brand, the campaign goals, and what you expect from creators..." required />
+                  <Fld label="Campaign Title" value={F.title} onChange={e => upF('title', e.target.value)} placeholder="e.g. Summer Collection Launch 2026" required />
+                  <Fld label="Creative Brief & Description" value={F.desc} onChange={e => upF('desc', e.target.value)} rows={6} placeholder="Describe your brand, the campaign goals, and what you expect from creators..." required />
                </div>
 
                <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 24 }}>

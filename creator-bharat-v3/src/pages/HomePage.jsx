@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { apiCall } from '../theme';
+import { apiCall } from '../utils/api';
+import { LS } from '../utils/helpers';
 
 // Modular Home Components
 import Hero from '../components/home/Hero';

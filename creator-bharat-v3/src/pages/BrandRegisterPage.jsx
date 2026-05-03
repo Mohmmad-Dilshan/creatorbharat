@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { T, W, scrollToTop, LS, apiCall, Auth, SS } from '../theme';
+import { T } from '../theme';
+import { W, scrollToTop, LS, Auth, SS } from '../utils/helpers';
+import { apiCall } from '../utils/api';
 import { Btn, Fld, SH } from '../components/Primitives';
 
 export default function BrandRegisterPage() {
@@ -95,14 +97,14 @@ export default function BrandRegisterPage() {
 
             <div className="ai">
                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                 <Fld label="Company Name *" value={F.companyName} onChange={e => upF('companyName', e.target.value)} placeholder="e.g. Nykaa" required />
-                 <Fld label="Industry *" value={F.industry} onChange={e => upF('industry', e.target.value)} options={['', 'Beauty', 'Fashion', 'Tech', 'Food', 'Real Estate', 'Education', 'Finance']} required />
+                 <Fld label="Company Name" value={F.companyName} onChange={e => upF('companyName', e.target.value)} placeholder="e.g. Nykaa" required />
+                 <Fld label="Industry" value={F.industry} onChange={e => upF('industry', e.target.value)} options={['', 'Beauty', 'Fashion', 'Tech', 'Food', 'Real Estate', 'Education', 'Finance']} required />
                </div>
                
-               <Fld label="Professional Work Email *" type="email" value={F.email} onChange={e => upF('email', e.target.value)} placeholder="you@company.com" required />
-               <Fld label="Primary Contact Person *" value={F.contactName} onChange={e => upF('contactName', e.target.value)} placeholder="e.g. Priya Sharma" required />
+               <Fld label="Professional Work Email" type="email" value={F.email} onChange={e => upF('email', e.target.value)} placeholder="you@company.com" required />
+               <Fld label="Primary Contact Person" value={F.contactName} onChange={e => upF('contactName', e.target.value)} placeholder="e.g. Priya Sharma" required />
                
-               <Fld label="Set Password *" type="password" value={F.password} onChange={e => upF('password', e.target.value)} placeholder="••••••••" required />
+               <Fld label="Set Password" type="password" value={F.password} onChange={e => upF('password', e.target.value)} placeholder="••••••••" required />
                
                <Fld label="About Your Brand / Vision" value={F.about} onChange={e => upF('about', e.target.value)} rows={4} placeholder="Tell creators what you are looking for in a partnership..." />
                
