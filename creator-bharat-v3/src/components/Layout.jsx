@@ -144,51 +144,57 @@ function FloatingMobileNav() {
     { id: 'home', l: 'Home', i: Home },
     { id: 'creators', l: 'Creators', i: Users },
     { id: 'campaigns', l: 'Campaigns', i: Megaphone },
-    { id: 'roadmap', l: 'Vision', i: Target } // REPLACED MONETIZE WITH VISION
+    { id: 'roadmap', l: 'Vision', i: Target }
   ];
 
   return (
-    <div className="floating-nav-bar-container" style={{
-      position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)',
-      zIndex: 9000, width: '92%', maxWidth: 360, padding: 2, borderRadius: 100,
-      overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.2)'
+    <div className="apple-nav-container" style={{
+      position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+      zIndex: 9000, width: '92%', maxWidth: 360, 
+      background: 'rgba(255, 255, 255, 0.72)',
+      backdropFilter: 'blur(25px)', WebkitBackdropFilter: 'blur(25px)',
+      borderRadius: 32, padding: '6px 12px', display: 'flex', 
+      justifyContent: 'space-around', alignItems: 'center',
+      border: '0.5px solid rgba(0,0,0,0.1)',
+      boxShadow: '0 20px 40px rgba(0,0,0,0.08)'
     }}>
-      {/* TRICOLOR SPINNING BORDER */}
-      <div style={{
-        position: 'absolute', top: '50%', left: '50%', width: '200%', height: '500%',
-        background: 'conic-gradient(from 0deg, #138808, #FFFFFF, #FF9933, #FF9933, #FFFFFF, #138808)',
-        animation: 'spinBorder 5s linear infinite', zIndex: 0, transform: 'translate(-50%, -50%)'
-      }} />
-
-      <div style={{
-        position: 'relative', zIndex: 1, background: 'rgba(10, 10, 10, 0.9)',
-        backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
-        borderRadius: 100, padding: '8px 16px', display: 'flex', 
-        justifyContent: 'space-between', alignItems: 'center', gap: 4
-      }}>
-        {navs.map(n => {
-          const Icon = n.i;
-          const active = st.page === n.id;
-          return (
-            <button
-              key={n.id}
-              onClick={() => go(n.id)}
-              style={{
-                flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-                padding: '12px 4px', borderRadius: 24, border: 'none', cursor: 'pointer',
-                background: active ? 'rgba(255,148,49,0.1)' : 'transparent',
-                color: active ? '#FF9431' : 'rgba(255,255,255,0.4)',
-                transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                position: 'relative'
-              }}
-            >
-              <Icon size={active ? 22 : 20} strokeWidth={active ? 3 : 2} style={{ filter: active ? 'drop-shadow(0 0 8px rgba(255,148,49,0.4))' : 'none' }} />
-              <span style={{ fontSize: 9, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', opacity: active ? 1 : 0.7 }}>{n.l}</span>
-              {active && <div style={{ position: 'absolute', bottom: 6, width: 4, height: 4, borderRadius: '50%', background: '#FF9431' }} />}
-            </button>
-          );
-        })}
-      </div>
+      {navs.map(n => {
+        const Icon = n.i;
+        const active = st.page === n.id;
+        return (
+          <button
+            key={n.id}
+            onClick={() => go(n.id)}
+            style={{
+              flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+              padding: '10px 0', borderRadius: 20, border: 'none', cursor: 'pointer',
+              background: 'transparent',
+              color: active ? '#FF9500' : 'rgba(0,0,0,0.4)', // APPLE ORANGE
+              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+              position: 'relative'
+            }}
+          >
+            <div style={{
+              transform: active ? 'scale(1.1) translateY(-2px)' : 'scale(1)',
+              transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+            }}>
+              <Icon size={22} strokeWidth={active ? 2.5 : 2} />
+            </div>
+            <span style={{ 
+              fontSize: 10, fontWeight: 700, 
+              textTransform: 'capitalize', letterSpacing: '0.01em',
+              opacity: active ? 1 : 0.6
+            }}>{n.l}</span>
+            {active && (
+               <div style={{ 
+                 position: 'absolute', bottom: -2, width: 4, height: 4, 
+                 borderRadius: '50%', background: '#FF9500',
+                 boxShadow: '0 0 10px rgba(255,149,0,0.5)'
+               }} />
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }
