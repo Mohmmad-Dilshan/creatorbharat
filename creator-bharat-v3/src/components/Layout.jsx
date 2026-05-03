@@ -131,35 +131,76 @@ export default function Layout({ children }) {
   );
 }
 
+import { Home, Users, Megaphone, DollarSign, Menu } from 'lucide-react';
+
 function FloatingMobileNav() {
   const { st, dsp } = useApp();
-  const go = (p) => { dsp({ t: 'GO', p }); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  const go = (p) => { 
+    dsp({ t: 'GO', p }); 
+    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+  };
 
   const navs = [
-    { id: 'home', l: 'Home', i: '🏠' },
-    { id: 'creators', l: 'Creators', i: '👥' },
-    { id: 'campaigns', l: 'Campaigns', i: '📢' },
-    { id: 'monetize', l: 'Monetize', i: '💰' }
+    { id: 'home', l: 'Home', i: Home },
+    { id: 'creators', l: 'Creators', i: Users },
+    { id: 'campaigns', l: 'Campaigns', i: Megaphone },
+    { id: 'monetize', l: 'Monetize', i: DollarSign }
   ];
 
   return (
-    <div className="floating-nav-bar">
-      {navs.map(n => (
+    <div className="floating-nav-bar-container" style={{
+      position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)',
+      zIndex: 9000, width: '92%', maxWidth: 400, padding: 2, borderRadius: 100,
+      overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.2)'
+    }}>
+      {/* TRICOLOR SPINNING BORDER */}
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%', width: '200%', height: '500%',
+        background: 'conic-gradient(from 0deg, #138808, #FFFFFF, #FF9933, #FF9933, #FFFFFF, #138808)',
+        animation: 'spinBorder 5s linear infinite', zIndex: 0, transform: 'translate(-50%, -50%)'
+      }} />
+
+      <div style={{
+        position: 'relative', zIndex: 1, background: 'rgba(10, 10, 10, 0.9)',
+        backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+        borderRadius: 100, padding: '8px 12px', display: 'flex', 
+        justifyContent: 'space-between', alignItems: 'center', gap: 4
+      }}>
+        {navs.map(n => {
+          const Icon = n.i;
+          const active = st.page === n.id;
+          return (
+            <button
+              key={n.id}
+              onClick={() => go(n.id)}
+              style={{
+                flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+                padding: '12px 4px', borderRadius: 24, border: 'none', cursor: 'pointer',
+                background: active ? 'rgba(255,148,49,0.1)' : 'transparent',
+                color: active ? '#FF9431' : 'rgba(255,255,255,0.4)',
+                transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                position: 'relative'
+              }}
+            >
+              <Icon size={active ? 22 : 20} strokeWidth={active ? 3 : 2} style={{ filter: active ? 'drop-shadow(0 0 8px rgba(255,148,49,0.4))' : 'none' }} />
+              <span style={{ fontSize: 9, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', opacity: active ? 1 : 0.7 }}>{n.l}</span>
+              {active && <div style={{ position: 'absolute', bottom: 6, width: 4, height: 4, borderRadius: '50%', background: '#FF9431' }} />}
+            </button>
+          );
+        })}
+        
+        {/* Burger menu trigger for mobile bottom bar */}
         <button
-          key={n.id}
-          onClick={() => go(n.id)}
+          onClick={() => dsp({ t: 'UI', v: { mobileMenu: !st.ui.mobileMenu } })}
           style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
-            padding: '10px 12px', borderRadius: 100, border: 'none', cursor: 'pointer',
-            background: st.page === n.id ? 'rgba(255,255,255,0.1)' : 'transparent',
-            color: st.page === n.id ? '#FF9431' : 'rgba(255,255,255,0.6)',
-            transition: 'all 0.3s'
+            width: 48, height: 48, borderRadius: '50%', border: 'none', 
+            background: 'rgba(255,255,255,0.05)', color: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}
         >
-          <span style={{ fontSize: 16 }}>{n.i}</span>
-          <span style={{ fontSize: 8, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{n.l}</span>
+          <Menu size={20} />
         </button>
-      ))}
+      </div>
     </div>
   );
 }
