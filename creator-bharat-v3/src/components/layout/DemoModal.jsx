@@ -6,26 +6,21 @@ import { Logo, Btn } from '../Primitives';
 export default function DemoModal({ open }) {
   const { dsp } = useApp();
   const [step, setStep] = useState(1);
-  const [prog, setProg] = useState(0);
   const [mob, setMob] = useState(window.innerWidth < 768);
+  const STEP_DURATION = 5000; // 5 seconds per step
 
   useEffect(() => {
     const h = () => setMob(window.innerWidth < 768);
     window.addEventListener('resize', h);
+    
     if (!open) return () => window.removeEventListener('resize', h);
-    
-    const interval = setInterval(() => {
-      setProg(p => {
-        if (p >= 100) {
-          setStep(s => (s < 4 ? s + 1 : 1));
-          return 0;
-        }
-        return p + 0.4;
-      });
-    }, 20);
-    
+
+    const timer = setInterval(() => {
+      setStep(s => (s < 4 ? s + 1 : 1));
+    }, STEP_DURATION);
+
     return () => {
-      clearInterval(interval);
+      clearInterval(timer);
       window.removeEventListener('resize', h);
     };
   }, [open, step]);
@@ -42,7 +37,7 @@ export default function DemoModal({ open }) {
           position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', 
           backdropFilter: 'blur(12px)', zIndex: 9999,
           display: 'flex', alignItems: 'center', justifyContent: 'center', 
-          padding: mob ? 0 : 20 // NO PADDING ON MOBILE FOR FULLSCREEN FEEL
+          padding: mob ? 0 : 20
         }}
         onClick={() => dsp({ t: 'UI', v: { demoModal: false } })}
       >
@@ -52,7 +47,7 @@ export default function DemoModal({ open }) {
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           style={{ 
             width: '100%', maxWidth: 1000, background: '#fff', 
-            borderRadius: mob ? 0 : 40, // FULLSCREEN ON MOBILE
+            borderRadius: mob ? 0 : 40, 
             overflow: 'hidden', position: 'relative', boxShadow: '0 40px 120px rgba(0,0,0,0.5)',
             display: 'flex', flexDirection: mob ? 'column' : 'row', 
             height: mob ? '100%' : 580,
@@ -60,7 +55,6 @@ export default function DemoModal({ open }) {
           }}
           onClick={e => e.stopPropagation()}
         >
-          {/* CLOSE BUTTON */}
           <button 
             onClick={() => dsp({ t: 'UI', v: { demoModal: false } })}
             style={{ position: 'absolute', top: mob ? 16 : 20, right: mob ? 16 : 20, width: 36, height: 36, borderRadius: '50%', background: 'rgba(0,0,0,0.05)', border: 'none', cursor: 'pointer', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, fontWeight: 300, color: '#111' }}
@@ -71,18 +65,17 @@ export default function DemoModal({ open }) {
           {/* LEFT: PHONE SHOWCASE */}
           <div style={{ 
             flex: mob ? 'none' : 1.1, 
-            height: mob ? '55%' : 'auto', // GIVE PHONE MORE SPACE ON MOBILE
-            background: '#F8FAFC', padding: mob ? '40px 20px 20px' : 32, 
+            height: mob ? '50%' : 'auto', 
+            background: '#F8FAFC', padding: mob ? '40px 20px 0px' : 32, 
             position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', alignItems: 'center' 
           }}>
-            <div style={{ width: '100%', textAlign: 'left', marginBottom: 20 }}>
-               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '6px 12px', background: 'rgba(255,148,49,0.1)', color: '#FF9431', borderRadius: 100, fontSize: 9, fontWeight: 900, textTransform: 'uppercase', marginBottom: 12 }}>
+            <div style={{ width: '100%', textAlign: 'left', marginBottom: mob ? 10 : 20 }}>
+               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '6px 12px', background: 'rgba(255,148,49,0.1)', color: '#FF9431', borderRadius: 100, fontSize: 9, fontWeight: 900, textTransform: 'uppercase', marginBottom: 8 }}>
                  <span style={{ width: 6, height: 6, background: '#FF9431', borderRadius: '50%', animation: 'pulse 1.5s infinite' }} /> Bharat's Creator Ecosystem
                </div>
-               <h2 style={{ fontSize: 22, fontWeight: 900, color: '#111', marginBottom: 6 }}>The Future of <span style={{ color: '#FF9431' }}>Bharat's</span> Creators</h2>
+               <h2 style={{ fontSize: mob ? 18 : 22, fontWeight: 900, color: '#111', marginBottom: 6 }}>The Future of <span style={{ color: '#FF9431' }}>Bharat's</span> Creators</h2>
             </div>
 
-            {/* SHARED PHONE MOCKUP */}
             <PhoneMockup mob={mob}>
                {step === 1 && <IdentityScreen />}
                {step === 2 && <TrustScreen />}
@@ -90,10 +83,9 @@ export default function DemoModal({ open }) {
                {step === 4 && <VisionScreen />}
             </PhoneMockup>
 
-            {/* STEP CONTROLS (DESKTOP) */}
             {!mob && (
               <div style={{ display: 'flex', gap: 6, marginTop: 24, width: '100%' }}>
-                <StepIndicators step={step} setStep={setStep} setProg={setProg} prog={prog} />
+                <StepIndicators step={step} setStep={setStep} duration={STEP_DURATION} />
               </div>
             )}
           </div>
@@ -101,13 +93,14 @@ export default function DemoModal({ open }) {
           {/* RIGHT: VISION COPY */}
           <div style={{ 
             flex: mob ? 1 : 0.9, 
-            padding: mob ? '24px 32px' : 40, 
+            padding: mob ? '20px 32px' : 40, 
             display: 'flex', flexDirection: 'column', justifyContent: 'center', background: '#fff', 
             borderLeft: mob ? 'none' : '1px solid rgba(0,0,0,0.05)',
-            borderTop: mob ? '1px solid rgba(0,0,0,0.05)' : 'none'
+            borderTop: mob ? '1px solid rgba(0,0,0,0.05)' : 'none',
+            overflowY: 'auto'
           }}>
-             <div style={{ marginBottom: mob ? 20 : 32 }}>
-                <h3 style={{ fontSize: mob ? 17 : 19, fontWeight: 900, color: '#111', marginBottom: 10 }}>
+             <div style={{ marginBottom: mob ? 16 : 32 }}>
+                <h3 style={{ fontSize: mob ? 17 : 19, fontWeight: 900, color: '#111', marginBottom: 8 }}>
                    {step === 1 && "Identity: Own Your Digital Estate"}
                    {step === 2 && "Trust: The Gold Standard"}
                    {step === 3 && "Impact: National Spotlight"}
@@ -122,13 +115,12 @@ export default function DemoModal({ open }) {
              </div>
 
              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <Btn lg style={{ width: '100%', background: '#111', color: '#fff', borderRadius: 100, fontWeight: 900, padding: mob ? '14px' : '16px' }} onClick={() => dsp({ t: 'GO', p: 'apply' })}>Join the Revolution ⚡</Btn>
+                <Btn lg style={{ width: '100%', background: '#111', color: '#fff', borderRadius: 100, fontWeight: 900, padding: mob ? '12px' : '16px' }} onClick={() => dsp({ t: 'GO', p: 'apply' })}>Join the Revolution ⚡</Btn>
              </div>
 
-             {/* STEP CONTROLS (MOBILE) */}
              {mob && (
-               <div style={{ display: 'flex', gap: 6, marginTop: 32, width: '100%' }}>
-                 <StepIndicators step={step} setStep={setStep} setProg={setProg} prog={prog} />
+               <div style={{ display: 'flex', gap: 6, marginTop: 24, width: '100%' }}>
+                 <StepIndicators step={step} setStep={setStep} duration={STEP_DURATION} />
                </div>
              )}
 
@@ -147,11 +139,11 @@ export default function DemoModal({ open }) {
   );
 }
 
-function StepIndicators({ step, setStep, setProg, prog }) {
+function StepIndicators({ step, setStep, duration }) {
   return [1,2,3,4].map(i => (
     <div 
       key={i} 
-      onClick={() => { setStep(i); setProg(0); }} 
+      onClick={() => setStep(i)} 
       style={{ 
         flex: 1, height: 3, borderRadius: 10, background: 'rgba(0,0,0,0.05)', 
         cursor: 'pointer', position: 'relative', overflow: 'hidden' 
@@ -159,7 +151,11 @@ function StepIndicators({ step, setStep, setProg, prog }) {
     >
        {step === i && (
          <motion.div 
-           style={{ position: 'absolute', inset: 0, background: '#FF9431', width: `${prog}%` }} 
+           key={`prog-${i}`}
+           initial={{ width: '0%' }}
+           animate={{ width: '100%' }}
+           transition={{ duration: duration / 1000, ease: 'linear' }}
+           style={{ position: 'absolute', inset: 0, background: '#FF9431' }} 
          />
        )}
        {step > i && <div style={{ position: 'absolute', inset: 0, background: '#FF9431' }} />}
@@ -168,13 +164,13 @@ function StepIndicators({ step, setStep, setProg, prog }) {
 }
 
 function PhoneMockup({ children, mob }) {
-  const scale = mob ? 0.85 : 1; // SCALE DOWN ON MOBILE TO PREVENT CUT-OFF
+  const scale = mob ? 0.8 : 1; 
   return (
     <div style={{ 
       width: 190, height: 380, background: '#111', borderRadius: 36, padding: 5, 
       position: 'relative', boxShadow: '0 25px 50px rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)',
       transform: `scale(${scale})`, transformOrigin: 'top center',
-      marginBottom: mob ? -40 : 0 // OFFSET SCALE REDUCTION
+      marginBottom: mob ? -60 : 0 
     }}>
       <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 60, height: 16, background: '#111', borderBottomLeftRadius: 10, borderBottomRightRadius: 10, zIndex: 10 }} />
       <div style={{ width: '100%', height: '100%', background: '#fff', borderRadius: 32, overflowY: 'hidden', position: 'relative' }}>
@@ -227,7 +223,6 @@ function TrustScreen() {
        </div>
        <div style={{ fontSize: 11, fontWeight: 900, color: '#111', marginBottom: 4 }}>Verification Audit</div>
        <div style={{ fontSize: 7, color: 'rgba(0,0,0,0.4)', marginBottom: 16 }}>BharatAI Security Active</div>
-       
        <div style={{ width: '100%', height: 6, background: '#eee', borderRadius: 10, position: 'relative', overflow: 'hidden' }}>
           <motion.div initial={{ width: 0 }} animate={{ width: '92%' }} transition={{ duration: 1 }} style={{ position: 'absolute', inset: 0, background: '#10B981' }} />
        </div>
