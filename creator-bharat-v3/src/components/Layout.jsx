@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import Footer from './home/Footer'; 
+import Footer from './home/Footer';
 import Navbar from './layout/Navbar';
 import MobileMenu from './layout/MobileMenu';
 import AIChatbot from './layout/AIChatbot';
@@ -82,21 +82,21 @@ export default function Layout({ children }) {
       `}</style>
 
       <Navbar />
-      
+
       <main style={{ flex: 1, position: 'relative', zIndex: 1, paddingTop: mob ? 64 : 80 }}>
         {children}
       </main>
 
       <Footer mob={mob} />
-      
+
       {mob && <FloatingMobileNav />}
-      
+
       <MobileMenu open={st.ui.mobileMenu} />
-      
+
       <ToastBar />
       <CompareBar />
       <AIChatbot mob={mob} />
-      
+
       {st.ui.authModal && <AuthModal />}
     </div>
   );
@@ -105,7 +105,7 @@ export default function Layout({ children }) {
 function FloatingMobileNav() {
   const { st, dsp } = useApp();
   const go = (p) => { dsp({ t: 'GO', p }); window.scrollTo({ top: 0, behavior: 'smooth' }); };
-  
+
   const navs = [
     { id: 'home', l: 'Home', i: '🏠' },
     { id: 'creators', l: 'Creators', i: '👥' },

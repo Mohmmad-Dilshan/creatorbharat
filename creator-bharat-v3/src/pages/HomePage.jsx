@@ -7,7 +7,6 @@ import { LS } from '../utils/helpers';
 import Hero from '../components/home/Hero';
 import CommunityPulse from '../components/home/CommunityPulse';
 import PlatformShowcase from '../components/home/PlatformShowcase';
-import Verification from '../components/home/Verification';
 import FeaturedCreators from '../components/home/FeaturedCreators';
 import Testimonials from '../components/home/Testimonials';
 import Faq from '../components/home/Faq';
@@ -29,9 +28,8 @@ export default function HomePage() {
     setLoading(true);
     apiCall('/creators?limit=10').then(d => {
       const list = Array.isArray(d) ? d : (d.creators || []);
-      if (list.length > 0) {
-        setCreators(list);
-      } else {
+      if (list.length > 0) setCreators(list);
+      else {
         const local = LS.get('cb_creators', []);
         if (local.length > 0) setCreators(local);
       }

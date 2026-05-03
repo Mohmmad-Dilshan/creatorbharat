@@ -100,17 +100,21 @@ export default function Testimonials({ mob }) {
         </div>
 
         {/* STEPS GRID */}
-        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: 32 }}>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', 
+          gap: 32,
+        }}>
           {steps.map((s, i) => (
             <div key={activeTab + i} className="how-card au" style={{ 
-              padding: '52px 40px', 
+              padding: mob ? '40px 32px' : '52px 40px', 
               background: '#fff', 
               borderRadius: 32, 
               border: '1.5px solid rgba(0,0,0,0.1)',
               boxShadow: '0 20px 50px rgba(0,0,0,0.04)',
               position: 'relative',
               transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-              animation: 'slideUp 0.6s ease forwards'
+              animation: 'slideUp 0.6s ease forwards',
             }}>
                <div style={{ 
                  position: 'absolute', top: 32, right: 32, fontSize: 48, fontWeight: 900, 

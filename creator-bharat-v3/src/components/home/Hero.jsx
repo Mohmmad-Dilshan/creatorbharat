@@ -52,7 +52,7 @@ export default function Hero({ mob, st, dsp, go }) {
       setActiveIdx(-1);
       return;
     }
-    
+
     const query = st.cf.q || '';
     if (query.length < 1 && !st.cf.state) {
       setSugs([]);
@@ -64,9 +64,9 @@ export default function Hero({ mob, st, dsp, go }) {
     const localList = LS.get('cb_creators', []);
     const filteredLocal = localList.filter(c => {
       const q = query.toLowerCase();
-      const matchesQuery = !q || 
-        (c.name || '').toLowerCase().includes(q) || 
-        (c.niche || '').toLowerCase().includes(q) || 
+      const matchesQuery = !q ||
+        (c.name || '').toLowerCase().includes(q) ||
+        (c.niche || '').toLowerCase().includes(q) ||
         (c.city || '').toLowerCase().includes(q) ||
         (c.state || '').toLowerCase().includes(q);
       const matchesState = !st.cf.state || c.state === st.cf.state;
@@ -90,7 +90,7 @@ export default function Hero({ mob, st, dsp, go }) {
         setIsSearching(false);
       }).catch(() => setIsSearching(false));
     }, 300);
-    
+
     return () => clearTimeout(timer);
   }, [st.cf.q, st.cf.state]);
 
@@ -117,11 +117,11 @@ export default function Hero({ mob, st, dsp, go }) {
         <div style={{ position: 'absolute', top: '-20%', left: '-10%', width: '70vw', height: '70vw', background: 'radial-gradient(circle, rgba(255,148,49,0.1) 0%, transparent 70%)', filter: 'blur(100px)', opacity: 0.6 }} />
         <div style={{ position: 'absolute', bottom: '0%', right: '-10%', width: '60vw', height: '60vw', background: 'radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)', filter: 'blur(100px)', opacity: 0.6 }} />
       </div>
-      
+
       <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(0,0,0,0.04) 1px, transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none', maskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)', opacity: 0.5 }} />
 
       <div style={{ ...W(), position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', boxSizing: 'border-box' }}>
-        
+
         {/* Elite Creator Badge */}
         <div className="au" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: mob ? '8px 16px' : '12px 32px', borderRadius: 100, background: '#fff', border: '1px solid rgba(0,0,0,0.08)', marginBottom: 40, boxShadow: '0 4px 20px rgba(0,0,0,0.02)', position: 'relative', maxWidth: '90vw' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -156,10 +156,10 @@ export default function Hero({ mob, st, dsp, go }) {
         </div>
 
         {/* SEARCH BAR WITH EXACT NAVBAR BORDER */}
-        <div className="au d3" style={{ 
-          width: '100%', 
-          maxWidth: 1000, 
-          padding: 2, 
+        <div className="au d3" style={{
+          width: '100%',
+          maxWidth: 1000,
+          padding: 2,
           borderRadius: mob ? 34 : 102,
           position: 'relative',
           overflow: 'hidden',
@@ -183,17 +183,17 @@ export default function Hero({ mob, st, dsp, go }) {
           }} />
 
           {/* INNER SEARCH BAR CONTENT */}
-          <div style={{ 
-            width: '100%', 
-            background: 'rgba(255,255,255,0.98)', 
-            backdropFilter: 'blur(24px)', 
-            borderRadius: mob ? 32 : 100, 
-            padding: mob ? 8 : 8, 
-            display: 'flex', 
-            flexDirection: mob ? 'column' : 'row', 
+          <div style={{
+            width: '100%',
+            background: 'rgba(255,255,255,0.98)',
+            backdropFilter: 'blur(24px)',
+            borderRadius: mob ? 32 : 100,
+            padding: mob ? 8 : 8,
+            display: 'flex',
+            flexDirection: mob ? 'column' : 'row',
             alignItems: mob ? 'stretch' : 'center',
-            gap: mob ? 8 : 0, 
-            position: 'relative', 
+            gap: mob ? 8 : 0,
+            position: 'relative',
             zIndex: 1,
             minHeight: mob ? 'auto' : 84
           }}>
@@ -215,35 +215,35 @@ export default function Hero({ mob, st, dsp, go }) {
 
         {/* CREATOR SUPPORT SYSTEM GRID */}
         <div className="au d4" style={{ width: '100%', maxWidth: 1200, display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: 24, padding: mob ? '0 16px' : 0, boxSizing: 'border-box' }}>
-           {[
-             { t: 'Digital Identity', h: 'Pro Portfolio', d: 'Aapki verified identity jo brands ko impress karegi. Ek hi link mein saara kaam.', i: '👤', bg: '#FDF7F2' },
-             { t: 'Learning Hub', h: 'Insights & Articles', d: 'Naya seekho aur grow karo. Industry experts ke articles aur deep analytics.', i: '📖', bg: '#F0FDF4' },
-             { t: 'Content Collab', h: 'Podcast Spotlight', d: 'Hamare sath podcast pe aaiye. Hum local creators ki story national level tak le jayenge.', i: '🎙️', bg: '#EFF6FF' },
-             { t: 'Regional First', h: 'Tier 2 & 3 Support', d: 'Jaipur ho ya Jodhpur—har shehar ke creator ko support aur pehchan milegi.', i: '📍', bg: '#F5F3FF' },
-             { t: 'Ecosystem', h: 'The Full Support', d: 'Community, growth aur opportunities—sab kuch jo ek creator ko chahiye.', i: '⚡', bg: '#FEF2F2' },
-             { t: 'Join the Revolution', h: 'Free Forever', d: 'Apni journey aaj hi shuru karein. Zero cost, zero commission, 100% freedom.', i: '🚀', bg: '#FFFBEB' }
-           ].map((p, i) => (
-             <div key={i} className="card-animated-border" style={{ position: 'relative', borderRadius: 34, padding: 2, overflow: 'hidden', transition: 'all 0.3s', height: '100%' }}>
-                {/* THE MOVING BORDER (ALWAYS VISIBLE & FULL PERIMETER) */}
-                <div className="border-line" style={{
-                  position: 'absolute', top: '50%', left: '50%', width: mob ? '120%' : '200%', height: mob ? '120%' : '200%',
-                  background: 'conic-gradient(from 0deg, transparent, #138808, #FFFFFF, #FF9933, transparent 50%, #138808, #FFFFFF, #FF9933, transparent)',
-                  animation: 'spinBorder 5s linear infinite',
-                  transform: 'translate(-50%, -50%)',
-                  opacity: 0.6, transition: 'opacity 0.3s', zIndex: 0
-                }} />
-                
-                {/* INNER CONTENT */}
-                <div style={{ background: p.bg, padding: '32px', borderRadius: 32, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 12, border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)', position: 'relative', zIndex: 1, height: '100%' }}>
-                  <div style={{ width: 56, height: 56, borderRadius: 16, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, boxShadow: '0 8px 20px rgba(0,0,0,0.05)' }}>{p.i}</div>
-                  <div>
-                    <span style={{ fontSize: 10, fontWeight: 900, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>{p.t}</span>
-                    <h3 style={{ fontSize: 20, fontWeight: 900, color: '#111', marginTop: 4, marginBottom: 8 }}>{p.h}</h3>
-                    <p style={{ fontSize: 14, color: 'rgba(0,0,0,0.6)', lineHeight: 1.5, fontWeight: 500 }}>{p.d}</p>
-                  </div>
+          {[
+            { t: 'Digital Identity', h: 'Pro Portfolio', d: 'Aapki verified identity jo brands ko impress karegi. Ek hi link mein saara kaam.', i: '👤', bg: '#FDF7F2' },
+            { t: 'Learning Hub', h: 'Insights & Articles', d: 'Naya seekho aur grow karo. Industry experts ke articles aur deep analytics.', i: '📖', bg: '#F0FDF4' },
+            { t: 'Content Collab', h: 'Podcast Spotlight', d: 'Hamare sath podcast pe aaiye. Hum local creators ki story national level tak le jayenge.', i: '🎙️', bg: '#EFF6FF' },
+            { t: 'Regional First', h: 'Tier 2 & 3 Support', d: 'Jaipur ho ya Jodhpur—har shehar ke creator ko support aur pehchan milegi.', i: '📍', bg: '#F5F3FF' },
+            { t: 'Ecosystem', h: 'The Full Support', d: 'Community, growth aur opportunities—sab kuch jo ek creator ko chahiye.', i: '⚡', bg: '#FEF2F2' },
+            { t: 'Join the Revolution', h: 'Free Forever', d: 'Apni journey aaj hi shuru karein. Zero cost, zero commission, 100% freedom.', i: '🚀', bg: '#FFFBEB' }
+          ].map((p, i) => (
+            <div key={i} className="card-animated-border" style={{ position: 'relative', borderRadius: 34, padding: 2, overflow: 'hidden', transition: 'all 0.3s', height: '100%' }}>
+              {/* THE MOVING BORDER (ALWAYS VISIBLE & FULL PERIMETER) */}
+              <div className="border-line" style={{
+                position: 'absolute', top: '50%', left: '50%', width: mob ? '120%' : '200%', height: mob ? '120%' : '200%',
+                background: 'conic-gradient(from 0deg, transparent, #138808, #FFFFFF, #FF9933, transparent 50%, #138808, #FFFFFF, #FF9933, transparent)',
+                animation: 'spinBorder 5s linear infinite',
+                transform: 'translate(-50%, -50%)',
+                opacity: 0.6, transition: 'opacity 0.3s', zIndex: 0
+              }} />
+
+              {/* INNER CONTENT */}
+              <div style={{ background: p.bg, padding: '32px', borderRadius: 32, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 12, border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)', position: 'relative', zIndex: 1, height: '100%' }}>
+                <div style={{ width: 56, height: 56, borderRadius: 16, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, boxShadow: '0 8px 20px rgba(0,0,0,0.05)' }}>{p.i}</div>
+                <div>
+                  <span style={{ fontSize: 10, fontWeight: 900, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>{p.t}</span>
+                  <h3 style={{ fontSize: 20, fontWeight: 900, color: '#111', marginTop: 4, marginBottom: 8 }}>{p.h}</h3>
+                  <p style={{ fontSize: 14, color: 'rgba(0,0,0,0.6)', lineHeight: 1.5, fontWeight: 500 }}>{p.d}</p>
                 </div>
-             </div>
-           ))}
+              </div>
+            </div>
+          ))}
         </div>
 
         <style>{`

@@ -43,81 +43,86 @@ export default function CommunityPulse({ mob }) {
                 <span style={{ background: 'linear-gradient(90deg, #FF9431, #138808)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Roadmap.</span>
               </h2>
             </div>
-            
+
             {/* ANIMATED INDIAN FLAG */}
             <div className="flag-wave-container" style={{ marginBottom: 10 }}>
-               <div style={{ width: mob ? 80 : 120, height: mob ? 50 : 75, borderRadius: 8, overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', position: 'relative', display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ flex: 1, background: '#FF9933' }} />
-                  <div style={{ flex: 1, background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                     <div style={{ width: mob ? 14 : 20, height: mob ? 14 : 20, borderRadius: '50%', border: '1.5px solid #000080', position: 'relative' }}>
-                        {[...Array(12)].map((_, i) => (
-                           <div key={i} style={{ position: 'absolute', top: '50%', left: '50%', width: '100%', height: 1, background: '#000080', transform: `translate(-50%, -50%) rotate(${i * 30}deg)` }} />
-                        ))}
-                     </div>
+              <div style={{ width: mob ? 80 : 120, height: mob ? 50 : 75, borderRadius: 8, overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ flex: 1, background: '#FF9933' }} />
+                <div style={{ flex: 1, background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: mob ? 14 : 20, height: mob ? 14 : 20, borderRadius: '50%', border: '1.5px solid #000080', position: 'relative' }}>
+                    {[...Array(12)].map((_, i) => (
+                      <div key={i} style={{ position: 'absolute', top: '50%', left: '50%', width: '100%', height: 1, background: '#000080', transform: `translate(-50%, -50%) rotate(${i * 30}deg)` }} />
+                    ))}
                   </div>
-                  <div style={{ flex: 1, background: '#138808' }} />
-                  <div className="flag-wave-overlay" />
-               </div>
+                </div>
+                <div style={{ flex: 1, background: '#138808' }} />
+                <div className="flag-wave-overlay" />
+              </div>
             </div>
           </div>
-          
+
           <p style={{ fontSize: 18, color: 'rgba(0,0,0,0.5)', marginTop: 24, maxWidth: 600, fontWeight: 500 }}>
             Humein pata hai local creator banna asaan nahi hai. Isliye humne banaya hai India ka pehla step-by-step growth path.
           </p>
         </div>
 
         {/* Vertical Journey Section */}
-        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: mob ? 60 : 100 }}>
+        <div style={{ 
+          position: 'relative', 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: mob ? 60 : 100,
+          position: 'relative'
+        }}>
           
-          {/* THE GLOWING VERTICAL LINE (MATCHING NAVBAR) */}
-          {!mob && <div style={{ 
-            position: 'absolute', 
-            left: '50%', 
-            top: 0, 
-            bottom: 0, 
-            width: 2, 
-            background: 'linear-gradient(to bottom, #FF9431, #138808, #FF9431)', 
+          {!mob && <div style={{
+            position: 'absolute',
+            left: '50%',
+            top: 0,
+            bottom: 0,
+            width: 2,
+            background: 'linear-gradient(to bottom, #FF9431, #138808, #FF9431)',
             transform: 'translateX(-50%)',
             opacity: 0.2
           }} />}
 
           {steps.map((s, i) => (
-            <div key={i} style={{ 
-              display: 'flex', 
-              flexDirection: mob ? 'column' : (i % 2 === 0 ? 'row' : 'row-reverse'), 
-              alignItems: 'center', 
+            <div key={i} style={{
+              display: 'flex',
+              flexDirection: mob ? 'column' : (i % 2 === 0 ? 'row' : 'row-reverse'),
+              alignItems: 'center',
               gap: mob ? 32 : 80,
               textAlign: mob ? 'center' : (i % 2 === 0 ? 'right' : 'left'),
-              position: 'relative'
+              position: 'relative',
+              width: '100%',
             }}>
-              
+
               {/* STEP INFO */}
-              <div style={{ flex: 1 }}>
-                <div style={{ 
-                  display: 'inline-flex', 
-                  alignItems: 'center', 
-                  gap: 12, 
-                  marginBottom: 20, 
-                  flexDirection: i % 2 === 0 ? 'row-reverse' : 'row' 
+              <div style={{ flex: 1, width: '100%' }}>
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  marginBottom: 20,
+                  flexDirection: (mob || i % 2 !== 0) ? 'row' : 'row-reverse'
                 }}>
                   <div style={{ fontSize: 48, fontWeight: 900, color: 'rgba(0,0,0,0.05)' }}>{s.n}</div>
                   <div style={{ padding: '6px 16px', borderRadius: 100, background: s.color + '15', color: s.color, fontSize: 12, fontWeight: 900, textTransform: 'uppercase' }}>{s.tag}</div>
                 </div>
-                <h3 style={{ fontSize: mob ? 28 : 42, fontWeight: 900, color: '#111', marginBottom: 20 }}>{s.h}</h3>
-                <p style={{ fontSize: 18, color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, maxWidth: 500, margin: mob ? '0 auto' : (i % 2 === 0 ? '0 0 0 auto' : '0 auto 0 0') }}>{s.d}</p>
+                <h3 style={{ fontSize: mob ? 24 : 42, fontWeight: 900, color: '#111', marginBottom: 16 }}>{s.h}</h3>
+                <p style={{ fontSize: 16, color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, maxWidth: 500, margin: mob ? '0 auto' : (i % 2 === 0 ? '0 0 0 auto' : '0 auto 0 0') }}>{s.d}</p>
               </div>
 
               {/* STEP VISUAL CARD */}
               <div style={{ flex: 1, width: '100%' }}>
-                <div className="roadmap-card" style={{ 
-                  position: 'relative', 
-                  padding: 2, 
-                  borderRadius: 42, 
+                <div className="roadmap-card" style={{
+                  position: 'relative',
+                  padding: 2,
+                  borderRadius: 42,
                   overflow: 'hidden',
                   background: 'rgba(0,0,0,0.05)',
                   boxShadow: '0 40px 80px -20px rgba(0,0,0,0.1)'
                 }}>
-                  {/* THE SPINNING BORDER */}
                   <div className="card-border" style={{
                     position: 'absolute', top: '50%', left: '50%', width: '200%', height: '300%',
                     background: `conic-gradient(from 0deg, transparent, ${s.color}, transparent 50%)`,
@@ -126,28 +131,27 @@ export default function CommunityPulse({ mob }) {
                     zIndex: 0
                   }} />
 
-                  <div style={{ position: 'relative', zIndex: 1, background: '#fff', borderRadius: 40, padding: 60, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
-                     <div style={{ width: 100, height: 100, borderRadius: 32, background: s.color + '10', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48 }}>
-                       {s.i}
-                     </div>
-                     <div style={{ textAlign: 'center' }}>
-                       <p style={{ fontSize: 14, fontWeight: 800, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Impact Area</p>
-                       <div style={{ fontSize: 20, fontWeight: 900, color: '#111' }}>The {s.tag} Hub</div>
-                     </div>
+                  <div style={{ position: 'relative', zIndex: 1, background: '#fff', borderRadius: 40, padding: mob ? 40 : 60, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
+                    <div style={{ width: mob ? 80 : 100, height: mob ? 80 : 100, borderRadius: 32, background: s.color + '10', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: mob ? 36 : 48 }}>
+                      {s.i}
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <p style={{ fontSize: 12, fontWeight: 800, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Impact Area</p>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: '#111' }}>The {s.tag} Hub</div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* CENTER CONNECTOR NODE */}
-              {!mob && <div style={{ 
-                position: 'absolute', 
-                left: '50%', 
-                top: '50%', 
-                width: 24, 
-                height: 24, 
-                borderRadius: '50%', 
-                background: '#fff', 
-                border: `4px solid ${s.color}`, 
+              {!mob && <div style={{
+                position: 'absolute',
+                left: '50%',
+                top: '50%',
+                width: 24,
+                height: 24,
+                borderRadius: '50%',
+                background: '#fff',
+                border: `4px solid ${s.color}`,
                 transform: 'translate(-50%, -50%)',
                 zIndex: 2,
                 boxShadow: `0 0 20px ${s.color}40`
@@ -155,7 +159,6 @@ export default function CommunityPulse({ mob }) {
 
             </div>
           ))}
-
         </div>
       </div>
 
