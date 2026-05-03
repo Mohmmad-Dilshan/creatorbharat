@@ -83,7 +83,7 @@ export default function DemoModal({ open }) {
             </div>
 
             {/* SHARED PHONE MOCKUP */}
-            <PhoneMockup>
+            <PhoneMockup mob={mob}>
                {step === 1 && <IdentityScreen />}
                {step === 2 && <TrustScreen />}
                {step === 3 && <CommunityScreen />}
@@ -154,11 +154,14 @@ export default function DemoModal({ open }) {
   );
 }
 
-function PhoneMockup({ children }) {
+function PhoneMockup({ children, mob }) {
+  const scale = mob ? 0.85 : 1; // SCALE DOWN ON MOBILE TO PREVENT CUT-OFF
   return (
     <div style={{ 
       width: 190, height: 380, background: '#111', borderRadius: 36, padding: 5, 
-      position: 'relative', boxShadow: '0 25px 50px rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)' 
+      position: 'relative', boxShadow: '0 25px 50px rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)',
+      transform: `scale(${scale})`, transformOrigin: 'top center',
+      marginBottom: mob ? -40 : 0 // OFFSET SCALE REDUCTION
     }}>
       <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 60, height: 16, background: '#111', borderBottomLeftRadius: 10, borderBottomRightRadius: 10, zIndex: 10 }} />
       <div style={{ width: '100%', height: '100%', background: '#fff', borderRadius: 32, overflowY: 'hidden', position: 'relative' }}>
