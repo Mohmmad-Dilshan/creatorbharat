@@ -12,12 +12,12 @@ export function Typewriter({ words, interval = 1000 }) {
 
   useEffect(() => {
     const word = words[idx % words.length];
-    // MOBILE TURBO SPEEDS (Extremely low to counter browser throttling)
-    const speed = mob ? (del ? 10 : 20) : (del ? 20 : 40); 
+    // EXTREME TURBO SPEEDS
+    const speed = mob ? (del ? 5 : 15) : (del ? 20 : 40); 
     
     const timeout = setTimeout(() => {
       if (!del && sub === word) {
-        setTimeout(() => setDel(true), mob ? 800 : 1200); 
+        setTimeout(() => setDel(true), mob ? 500 : 1200); // SUPER SHORT PAUSE
       } else if (del && sub === '') {
         setDel(false);
         setIdx(i => i + 1);
@@ -31,7 +31,7 @@ export function Typewriter({ words, interval = 1000 }) {
   return (
     <span style={{ position: 'relative', display: 'inline-block' }}>
       <span style={{ position: 'relative', zIndex: 2, background: 'linear-gradient(90deg, #FF9431, #DC2626)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{sub}</span>
-      <span style={{ width: 3, height: '80%', background: '#FF9431', position: 'absolute', right: -6, top: '10%', animation: 'blink 1s infinite' }} />
+      <span style={{ width: 3, height: '80%', background: '#FF9431', position: 'absolute', right: -6, top: '10%', animation: 'blink 0.6s infinite' }} />
       <svg style={{ position: 'absolute', bottom: -12, left: 0, width: '100%', height: 16, zIndex: 1, pointerEvents: 'none' }} viewBox="0 0 100 20" preserveAspectRatio="none">
         <path d="M2 15 Q 50 2 98 15" stroke="rgba(255, 148, 49, 0.4)" strokeWidth="8" strokeLinecap="round" fill="none" />
       </svg>
