@@ -131,7 +131,7 @@ export default function Layout({ children }) {
   );
 }
 
-import { Home, Users, Megaphone, DollarSign, Menu } from 'lucide-react';
+import { Home, Users, Megaphone, Target } from 'lucide-react';
 
 function FloatingMobileNav() {
   const { st, dsp } = useApp();
@@ -144,13 +144,13 @@ function FloatingMobileNav() {
     { id: 'home', l: 'Home', i: Home },
     { id: 'creators', l: 'Creators', i: Users },
     { id: 'campaigns', l: 'Campaigns', i: Megaphone },
-    { id: 'monetize', l: 'Monetize', i: DollarSign }
+    { id: 'roadmap', l: 'Vision', i: Target } // REPLACED MONETIZE WITH VISION
   ];
 
   return (
     <div className="floating-nav-bar-container" style={{
       position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)',
-      zIndex: 9000, width: '92%', maxWidth: 400, padding: 2, borderRadius: 100,
+      zIndex: 9000, width: '92%', maxWidth: 360, padding: 2, borderRadius: 100,
       overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.2)'
     }}>
       {/* TRICOLOR SPINNING BORDER */}
@@ -163,7 +163,7 @@ function FloatingMobileNav() {
       <div style={{
         position: 'relative', zIndex: 1, background: 'rgba(10, 10, 10, 0.9)',
         backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
-        borderRadius: 100, padding: '8px 12px', display: 'flex', 
+        borderRadius: 100, padding: '8px 16px', display: 'flex', 
         justifyContent: 'space-between', alignItems: 'center', gap: 4
       }}>
         {navs.map(n => {
@@ -188,18 +188,6 @@ function FloatingMobileNav() {
             </button>
           );
         })}
-        
-        {/* Burger menu trigger for mobile bottom bar */}
-        <button
-          onClick={() => dsp({ t: 'UI', v: { mobileMenu: !st.ui.mobileMenu } })}
-          style={{
-            width: 48, height: 48, borderRadius: '50%', border: 'none', 
-            background: 'rgba(255,255,255,0.05)', color: '#fff',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}
-        >
-          <Menu size={20} />
-        </button>
       </div>
     </div>
   );
