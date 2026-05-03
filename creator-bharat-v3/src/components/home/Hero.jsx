@@ -4,17 +4,20 @@ import { W, ALL_STATES, fmt, LS } from '../../utils/helpers';
 import { apiCall } from '../../utils/api';
 import { Btn } from '../Primitives';
 
-export function Typewriter({ words, interval = 2000 }) {
+export function Typewriter({ words, interval = 1000 }) {
   const [idx, setIdx] = useState(0);
   const [sub, setSub] = useState('');
   const [del, setDel] = useState(false);
+  const mob = typeof window !== 'undefined' && window.innerWidth < 768;
 
   useEffect(() => {
     const word = words[idx % words.length];
-    const speed = del ? 20 : 40; // ULTRA FAST
+    // MOBILE TURBO SPEEDS (Extremely low to counter browser throttling)
+    const speed = mob ? (del ? 10 : 20) : (del ? 20 : 40); 
+    
     const timeout = setTimeout(() => {
       if (!del && sub === word) {
-        setTimeout(() => setDel(true), 1000); // 1s PAUSE
+        setTimeout(() => setDel(true), mob ? 800 : 1200); 
       } else if (del && sub === '') {
         setDel(false);
         setIdx(i => i + 1);
@@ -23,7 +26,7 @@ export function Typewriter({ words, interval = 2000 }) {
       }
     }, speed);
     return () => clearTimeout(timeout);
-  }, [sub, del, idx, words]);
+  }, [sub, del, idx, words, mob]);
 
   return (
     <span style={{ position: 'relative', display: 'inline-block' }}>
