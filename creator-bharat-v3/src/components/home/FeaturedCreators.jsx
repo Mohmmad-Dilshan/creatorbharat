@@ -16,7 +16,7 @@ export default function FeaturedCreators({ mob, creators, go, loading }) {
   const finalCreators = realList.length > 0 ? realList : mockCreators;
 
   return (
-    <section style={{ padding: '0 0 60px 0', background: '#fff', position: 'relative', zIndex: 100 }}>
+    <section style={{ padding: mob ? '0 0 12px 0' : '0 0 60px 0', background: '#fff', position: 'relative', zIndex: 100 }}>
       <div style={{ ...W(), maxWidth: 1100, boxSizing: 'border-box' }}>
 
         {/* ULTRA-ELITE TALENT CAPSULE */}

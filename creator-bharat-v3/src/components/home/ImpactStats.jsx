@@ -31,7 +31,7 @@ export default function ImpactStats({ mob }) {
   ];
 
   return (
-    <section style={{ padding: mob ? '60px 20px' : '80px 20px', background: '#fff', textAlign: 'center', position: 'relative' }}>
+    <section style={{ padding: mob ? '20px 20px 60px 20px' : '80px 20px', background: '#fff', textAlign: 'center', position: 'relative' }}>
       
       {/* Background Subtle Gradient */}
       <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '80%', height: '80%', background: 'radial-gradient(circle, rgba(255,148,49,0.03) 0%, transparent 70%)', zIndex: 0 }} />
