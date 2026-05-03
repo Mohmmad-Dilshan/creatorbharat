@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../../context';
-import { Btn } from '../Primitives';
+import { Logo, Btn } from '../Primitives';
 
 export default function DemoModal({ open }) {
   const { dsp } = useApp();
@@ -16,7 +16,7 @@ export default function DemoModal({ open }) {
           setStep(s => (s < 4 ? s + 1 : 1));
           return 0;
         }
-        return p + 0.4; // Slightly slower for 4 steps
+        return p + 0.4;
       });
     }, 20);
     return () => clearInterval(interval);
@@ -237,14 +237,16 @@ function CommunityScreen() {
 
 function VisionScreen() {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20, textAlign: 'center', background: '#111', color: '#fff' }}>
-       <div style={{ width: 50, height: 50, background: 'linear-gradient(45deg, #FF9431, #DC2626)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20, fontSize: 24, fontWeight: 900 }}>CB</div>
-       <h4 style={{ fontSize: 14, fontWeight: 900, marginBottom: 8 }}>Our Vision</h4>
-       <p style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, fontWeight: 600 }}>
-          To empower every local creator in Bharat to build a world-class digital brand. 🇮🇳
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20, textAlign: 'center', background: '#fff' }}>
+       <div style={{ marginBottom: 20 }}>
+          <Logo sm />
+       </div>
+       <h4 style={{ fontSize: 15, fontWeight: 900, color: '#111', marginBottom: 12 }}>Our Vision</h4>
+       <p style={{ fontSize: 10, color: 'rgba(0,0,0,0.6)', lineHeight: 1.6, fontWeight: 600 }}>
+          To build a Bharat where every local talent becomes a global brand. 🇮🇳
        </p>
-       <div style={{ marginTop: 24, width: '100%', height: 1, background: 'rgba(255,255,255,0.1)' }} />
-       <div style={{ marginTop: 20, fontSize: 8, fontWeight: 800, color: '#FF9431', textTransform: 'uppercase' }}>100M+ Creators • 1 Mission</div>
+       <div style={{ marginTop: 32, width: '100%', height: 2, background: 'linear-gradient(90deg, #FF9431, #DC2626)', borderRadius: 10 }} />
+       <div style={{ marginTop: 16, fontSize: 9, fontWeight: 900, color: '#111', textTransform: 'uppercase', letterSpacing: '0.05em' }}>100M+ Creators • 1 Mission</div>
     </motion.div>
   );
 }
