@@ -8,6 +8,73 @@ import ToastBar from './layout/ToastBar';
 import CompareBar from './layout/CompareBar';
 import AuthModal from './layout/AuthModal';
 import DemoModal from './layout/DemoModal';
+import { Home, Users, Megaphone, Target } from 'lucide-react';
+
+function FloatingMobileNav() {
+  const { st, dsp } = useApp();
+  const go = (p) => { 
+    dsp({ t: 'GO', p }); 
+    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+  };
+
+  const navs = [
+    { id: 'home', l: 'Home', i: Home },
+    { id: 'creators', l: 'Creators', i: Users },
+    { id: 'campaigns', l: 'Campaigns', i: Megaphone },
+    { id: 'roadmap', l: 'Vision', i: Target }
+  ];
+
+  return (
+    <div className="apple-nav-container" style={{
+      position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+      zIndex: 9000, width: '92%', maxWidth: 360, 
+      background: 'rgba(255, 255, 255, 0.72)',
+      backdropFilter: 'blur(25px)', WebkitBackdropFilter: 'blur(25px)',
+      borderRadius: 32, padding: '6px 12px', display: 'flex', 
+      justifyContent: 'space-around', alignItems: 'center',
+      border: '0.5px solid rgba(0,0,0,0.1)',
+      boxShadow: '0 20px 40px rgba(0,0,0,0.08)'
+    }}>
+      {navs.map(n => {
+        const Icon = n.i;
+        const active = st.page === n.id;
+        return (
+          <button
+            key={n.id}
+            onClick={() => go(n.id)}
+            style={{
+              flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+              padding: '10px 0', borderRadius: 20, border: 'none', cursor: 'pointer',
+              background: 'transparent',
+              color: active ? '#FF9500' : 'rgba(0,0,0,0.4)', // APPLE ORANGE
+              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+              position: 'relative'
+            }}
+          >
+            <div style={{
+              transform: active ? 'scale(1.1) translateY(-2px)' : 'scale(1)',
+              transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+            }}>
+              <Icon size={22} strokeWidth={active ? 2.5 : 2} />
+            </div>
+            <span style={{ 
+              fontSize: 10, fontWeight: 700, 
+              textTransform: 'capitalize', letterSpacing: '0.01em',
+              opacity: active ? 1 : 0.6
+            }}>{n.l}</span>
+            {active && (
+               <div style={{ 
+                 position: 'absolute', bottom: -2, width: 4, height: 4, 
+                 borderRadius: '50%', background: '#FF9500',
+                 boxShadow: '0 0 10px rgba(255,149,0,0.5)'
+               }} />
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function Layout({ children }) {
   const { st, dsp } = useApp();
@@ -131,70 +198,3 @@ export default function Layout({ children }) {
   );
 }
 
-import { Home, Users, Megaphone, Target } from 'lucide-react';
-
-function FloatingMobileNav() {
-  const { st, dsp } = useApp();
-  const go = (p) => { 
-    dsp({ t: 'GO', p }); 
-    window.scrollTo({ top: 0, behavior: 'smooth' }); 
-  };
-
-  const navs = [
-    { id: 'home', l: 'Home', i: Home },
-    { id: 'creators', l: 'Creators', i: Users },
-    { id: 'campaigns', l: 'Campaigns', i: Megaphone },
-    { id: 'roadmap', l: 'Vision', i: Target }
-  ];
-
-  return (
-    <div className="apple-nav-container" style={{
-      position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-      zIndex: 9000, width: '92%', maxWidth: 360, 
-      background: 'rgba(255, 255, 255, 0.72)',
-      backdropFilter: 'blur(25px)', WebkitBackdropFilter: 'blur(25px)',
-      borderRadius: 32, padding: '6px 12px', display: 'flex', 
-      justifyContent: 'space-around', alignItems: 'center',
-      border: '0.5px solid rgba(0,0,0,0.1)',
-      boxShadow: '0 20px 40px rgba(0,0,0,0.08)'
-    }}>
-      {navs.map(n => {
-        const Icon = n.i;
-        const active = st.page === n.id;
-        return (
-          <button
-            key={n.id}
-            onClick={() => go(n.id)}
-            style={{
-              flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-              padding: '10px 0', borderRadius: 20, border: 'none', cursor: 'pointer',
-              background: 'transparent',
-              color: active ? '#FF9500' : 'rgba(0,0,0,0.4)', // APPLE ORANGE
-              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-              position: 'relative'
-            }}
-          >
-            <div style={{
-              transform: active ? 'scale(1.1) translateY(-2px)' : 'scale(1)',
-              transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-            }}>
-              <Icon size={22} strokeWidth={active ? 2.5 : 2} />
-            </div>
-            <span style={{ 
-              fontSize: 10, fontWeight: 700, 
-              textTransform: 'capitalize', letterSpacing: '0.01em',
-              opacity: active ? 1 : 0.6
-            }}>{n.l}</span>
-            {active && (
-               <div style={{ 
-                 position: 'absolute', bottom: -2, width: 4, height: 4, 
-                 borderRadius: '50%', background: '#FF9500',
-                 boxShadow: '0 0 10px rgba(255,149,0,0.5)'
-               }} />
-            )}
-          </button>
-        );
-      })}
-    </div>
-  );
-}

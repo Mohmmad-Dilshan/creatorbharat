@@ -48,6 +48,7 @@ export default function Navbar() {
     }}>
       <div style={{
         maxWidth: 1200,
+        width: '100%',
         margin: '0 auto',
         position: 'relative',
         borderRadius: 100,
@@ -56,7 +57,6 @@ export default function Navbar() {
         pointerEvents: 'auto',
         boxShadow: scroll ? '0 20px 40px -10px rgba(0,0,0,0.1)' : '0 10px 30px -10px rgba(0,0,0,0.05)',
         transition: 'all 0.5s ease',
-        maxWidth: '100vw',
         boxSizing: 'border-box'
       }}>
         {/* Animated Indian Flag Border */}

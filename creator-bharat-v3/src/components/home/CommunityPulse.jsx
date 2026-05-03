@@ -71,8 +71,7 @@ export default function CommunityPulse({ mob }) {
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
-          gap: mob ? 24 : 100, // TIGHTER GAP ON MOBILE
-          position: 'relative'
+          gap: mob ? 24 : 100 // TIGHTER GAP ON MOBILE
         }}>
           {!mob && <div style={{
             position: 'absolute', left: '50%', top: 0, bottom: 0, width: 2,

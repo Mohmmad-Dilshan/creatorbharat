@@ -3,7 +3,7 @@ import { useApp } from '../../context';
 import { Btn } from '../Primitives';
 import { scrollToTop } from '../../utils/helpers';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Users, Megaphone, Target, BookOpen, Heart, ArrowRight, Instagram, Twitter, Youtube } from 'lucide-react';
+import { X, Users, Megaphone, Target, BookOpen, Heart, ArrowRight, Camera, Globe, Video } from 'lucide-react';
 
 export default function MobileMenu({ open }) {
   const { st, dsp } = useApp();
@@ -103,9 +103,9 @@ export default function MobileMenu({ open }) {
             <div style={{ marginTop: 24, padding: '24px', background: '#111', borderRadius: 32, display: 'flex', flexDirection: 'column', gap: 16 }}>
               <Btn full lg onClick={() => { dsp({ t: 'UI', v: { authModal: true, mobileMenu: false } }); }}>Login to Dashboard</Btn>
               <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 8 }}>
-                <Instagram size={20} color="rgba(255,255,255,0.4)" />
-                <Twitter size={20} color="rgba(255,255,255,0.4)" />
-                <Youtube size={20} color="rgba(255,255,255,0.4)" />
+                <Camera size={20} color="rgba(0,0,0,0.4)" />
+                <Globe size={20} color="rgba(0,0,0,0.4)" />
+                <Video size={20} color="rgba(0,0,0,0.4)" />
               </div>
             </div>
           </motion.div>
