@@ -6,6 +6,21 @@ import { Btn } from '../Primitives';
 export default function DemoModal({ open }) {
   const { dsp } = useApp();
   const [step, setStep] = useState(1);
+  const [prog, setProg] = useState(0);
+
+  useEffect(() => {
+    if (!open) return;
+    const interval = setInterval(() => {
+      setProg(p => {
+        if (p >= 100) {
+          setStep(s => (s < 3 ? s + 1 : 1));
+          return 0;
+        }
+        return p + 0.5; // Controls speed of auto-slide
+      });
+    }, 20);
+    return () => clearInterval(interval);
+  }, [open, step]);
 
   if (!open) return null;
 
@@ -58,10 +73,24 @@ export default function DemoModal({ open }) {
                {step === 3 && <GrowthScreen />}
             </PhoneMockup>
 
-            {/* STEP CONTROLS */}
+            {/* STEP CONTROLS WITH PROGRESS LINE */}
             <div style={{ display: 'flex', gap: 6, marginTop: 24, width: '100%' }}>
                {[1,2,3].map(i => (
-                 <div key={i} onClick={() => setStep(i)} style={{ flex: 1, height: 3, borderRadius: 10, background: step === i ? '#FF9431' : 'rgba(0,0,0,0.05)', cursor: 'pointer', transition: 'all 0.3s' }} />
+                 <div 
+                   key={i} 
+                   onClick={() => { setStep(i); setProg(0); }} 
+                   style={{ 
+                     flex: 1, height: 3, borderRadius: 10, background: 'rgba(0,0,0,0.05)', 
+                     cursor: 'pointer', position: 'relative', overflow: 'hidden' 
+                   }}
+                 >
+                    {step === i && (
+                      <motion.div 
+                        style={{ position: 'absolute', inset: 0, background: '#FF9431', width: `${prog}%` }} 
+                      />
+                    )}
+                    {step > i && <div style={{ position: 'absolute', inset: 0, background: '#FF9431' }} />}
+                 </div>
                ))}
             </div>
           </div>
