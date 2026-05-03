@@ -213,33 +213,38 @@ export default function Hero({ mob, st, dsp, go }) {
           </div>
         </div>
 
-        {/* CREATOR SUPPORT SYSTEM GRID */}
-        <div className="au d4" style={{ width: '100%', maxWidth: 1200, display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: 24, padding: mob ? '0 16px' : 0, boxSizing: 'border-box' }}>
+        {/* CREATOR SUPPORT SYSTEM GRID: CONDENSED FOR MOBILE */}
+        <div className="au d4" style={{ 
+          width: '100%', maxWidth: 1200, 
+          display: 'grid', 
+          gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(3, 1fr)', // 2 COLUMNS ON MOBILE
+          gap: mob ? 12 : 24, 
+          padding: mob ? '0 16px' : 0, 
+          boxSizing: 'border-box' 
+        }}>
           {[
-            { t: 'Digital Identity', h: 'Pro Portfolio', d: 'Aapki verified identity jo brands ko impress karegi. Ek hi link mein saara kaam.', i: '👤', bg: '#FDF7F2' },
-            { t: 'Learning Hub', h: 'Insights & Articles', d: 'Naya seekho aur grow karo. Industry experts ke articles aur deep analytics.', i: '📖', bg: '#F0FDF4' },
-            { t: 'Content Collab', h: 'Podcast Spotlight', d: 'Hamare sath podcast pe aaiye. Hum local creators ki story national level tak le jayenge.', i: '🎙️', bg: '#EFF6FF' },
-            { t: 'Regional First', h: 'Tier 2 & 3 Support', d: 'Jaipur ho ya Jodhpur—har shehar ke creator ko support aur pehchan milegi.', i: '📍', bg: '#F5F3FF' },
-            { t: 'Ecosystem', h: 'The Full Support', d: 'Community, growth aur opportunities—sab kuch jo ek creator ko chahiye.', i: '⚡', bg: '#FEF2F2' },
-            { t: 'Join the Revolution', h: 'Free Forever', d: 'Apni journey aaj hi shuru karein. Zero cost, zero commission, 100% freedom.', i: '🚀', bg: '#FFFBEB' }
+            { t: 'Identity', h: 'Pro Portfolio', d: 'Verified identity jo brands ko impress karegi.', i: '👤', bg: '#FDF7F2' },
+            { t: 'Growth', h: 'Insights', d: 'Naya seekho aur grow karo industry experts ke sath.', i: '📖', bg: '#F0FDF4' },
+            { t: 'Spotlight', h: 'Podcasts', d: 'Local creators ki story national level tak.', i: '🎙️', bg: '#EFF6FF' },
+            { t: 'Regional', h: 'Tier 2 & 3', d: 'Har shehar ke creator ko pehchan milegi.', i: '📍', bg: '#F5F3FF' },
+            { t: 'Freedom', h: '0% Commission', d: 'Zero cost, zero commission, 100% freedom.', i: '💸', bg: '#FFFBEB' },
+            { t: 'Join', h: 'Free Forever', d: 'Apni journey aaj hi shuru karein.', i: '🚀', bg: '#FEF2F2' }
           ].map((p, i) => (
-            <div key={i} className="card-animated-border" style={{ position: 'relative', borderRadius: 34, padding: 2, overflow: 'hidden', transition: 'all 0.3s', height: '100%' }}>
-              {/* THE MOVING BORDER (ALWAYS VISIBLE & FULL PERIMETER) */}
+            <div key={i} className="card-animated-border" style={{ position: 'relative', borderRadius: mob ? 24 : 34, padding: 2, overflow: 'hidden', transition: 'all 0.3s', height: '100%' }}>
               <div className="border-line" style={{
-                position: 'absolute', top: '50%', left: '50%', width: mob ? '120%' : '200%', height: mob ? '120%' : '200%',
+                position: 'absolute', top: '50%', left: '50%', width: mob ? '150%' : '200%', height: mob ? '150%' : '200%',
                 background: 'conic-gradient(from 0deg, transparent, #138808, #FFFFFF, #FF9933, transparent 50%, #138808, #FFFFFF, #FF9933, transparent)',
                 animation: 'spinBorder 5s linear infinite',
                 transform: 'translate(-50%, -50%)',
                 opacity: 0.6, transition: 'opacity 0.3s', zIndex: 0
               }} />
 
-              {/* INNER CONTENT */}
-              <div style={{ background: p.bg, padding: '32px', borderRadius: 32, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 12, border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)', position: 'relative', zIndex: 1, height: '100%' }}>
-                <div style={{ width: 56, height: 56, borderRadius: 16, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, boxShadow: '0 8px 20px rgba(0,0,0,0.05)' }}>{p.i}</div>
+              <div style={{ background: p.bg, padding: mob ? '20px 16px' : '32px', borderRadius: mob ? 22 : 32, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: mob ? 8 : 12, border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)', position: 'relative', zIndex: 1, height: '100%' }}>
+                <div style={{ width: mob ? 40 : 56, height: mob ? 40 : 56, borderRadius: 12, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: mob ? 20 : 28, boxShadow: '0 8px 20px rgba(0,0,0,0.05)' }}>{p.i}</div>
                 <div>
-                  <span style={{ fontSize: 10, fontWeight: 900, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>{p.t}</span>
-                  <h3 style={{ fontSize: 20, fontWeight: 900, color: '#111', marginTop: 4, marginBottom: 8 }}>{p.h}</h3>
-                  <p style={{ fontSize: 14, color: 'rgba(0,0,0,0.6)', lineHeight: 1.5, fontWeight: 500 }}>{p.d}</p>
+                  <span style={{ fontSize: mob ? 8 : 10, fontWeight: 900, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>{p.t}</span>
+                  <h3 style={{ fontSize: mob ? 14 : 20, fontWeight: 900, color: '#111', marginTop: 2, marginBottom: mob ? 2 : 8 }}>{p.h}</h3>
+                  <p style={{ fontSize: mob ? 11 : 14, color: 'rgba(0,0,0,0.6)', lineHeight: 1.4, fontWeight: 500 }}>{p.d}</p>
                 </div>
               </div>
             </div>
@@ -255,10 +260,12 @@ export default function Hero({ mob, st, dsp, go }) {
             opacity: 1;
             animation-duration: 3s;
           }
+          ${!mob ? `
           .card-animated-border:hover {
             transform: translateY(-8px);
             box-shadow: 0 24px 60px rgba(0,0,0,0.1);
           }
+          ` : ''}
         `}</style>
 
       </div>
