@@ -173,30 +173,30 @@ function PhoneMockup({ children, mob }) {
 
 function IdentityScreen() {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ height: '100%' }}>
-       <div style={{ height: 60, background: 'linear-gradient(45deg, #FF9431, #DC2626)', position: 'relative' }}>
-          <div style={{ position: 'absolute', bottom: -20, left: 14, width: 40, height: 40, borderRadius: '50%', border: '2px solid #fff', background: '#eee' }}>
-             <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&q=80" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+       <div style={{ height: 60, background: 'linear-gradient(45deg, #FF9431, #DC2626)', position: 'relative', flexShrink: 0 }}>
+          <div style={{ position: 'absolute', bottom: -20, left: 16, width: 40, height: 40, borderRadius: '50%', border: '2px solid #fff', background: '#eee' }}>
+             <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&q=80" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} alt="" />
           </div>
        </div>
-       <div style={{ padding: '24px 14px' }}>
+       <div style={{ padding: 16, paddingTop: 28, flex: 1 }}>
           <div style={{ fontSize: 11, fontWeight: 900 }}>Aryan Sharma ✅</div>
           <div style={{ fontSize: 7, color: '#FF9431', fontWeight: 900 }}>FASHION • JAIPUR</div>
-          <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-             <div style={{ background: '#f5f5f5', padding: 6, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 10, fontWeight: 900 }}>450k+</div>
+          <div style={{ marginTop: 10, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+             <div style={{ background: '#f8f9fa', padding: 6, borderRadius: 8, textAlign: 'center', border: '1px solid rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: 9, fontWeight: 900 }}>450k+</div>
                 <div style={{ fontSize: 5, opacity: 0.5 }}>REACH</div>
              </div>
-             <div style={{ background: '#f5f5f5', padding: 6, borderRadius: 8, textAlign: 'center' }}>
-                <div style={{ fontSize: 10, fontWeight: 900 }}>8.2%</div>
+             <div style={{ background: '#f8f9fa', padding: 6, borderRadius: 8, textAlign: 'center', border: '1px solid rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: 9, fontWeight: 900 }}>8.2%</div>
                 <div style={{ fontSize: 5, opacity: 0.5 }}>ENGAGE</div>
              </div>
           </div>
-          <div style={{ marginTop: 12, height: 32, background: '#111', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 9, fontWeight: 800 }}>Connect Now</div>
-          <p style={{ fontSize: 7, color: 'rgba(0,0,0,0.6)', marginTop: 10, lineHeight: 1.3, textAlign: 'left' }}>
-             Capturing Bharat's authentic style. 🇮🇳 Fashion, Travel, and Lifestyle.
+          <div style={{ marginTop: 10, height: 28, background: '#111', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 8, fontWeight: 800 }}>Connect Now</div>
+          <p style={{ fontSize: 7, color: 'rgba(0,0,0,0.5)', marginTop: 8, lineHeight: 1.3 }}>
+             Capturing Bharat's authentic style. 🇮🇳 Fashion & Lifestyle.
           </p>
-          <div style={{ marginTop: 14 }}>
+          <div style={{ marginTop: 10 }}>
              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4 }}>
                 {[1,2,3,4,5,6].map(i => <div key={i} style={{ aspectRatio: '1', background: '#eee', borderRadius: 4, backgroundImage: `url(https://picsum.photos/100/100?random=${i})`, backgroundSize: 'cover' }} />)}
              </div>
@@ -208,19 +208,21 @@ function IdentityScreen() {
 
 function TrustScreen() {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ height: '100%', padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-       <div style={{ width: 60, height: 60, background: '#F0FDF4', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-          <span style={{ fontSize: 24 }}>🛡️</span>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ height: '100%', padding: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+       <div style={{ width: 54, height: 54, background: '#F0FDF4', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+          <span style={{ fontSize: 22 }}>🛡️</span>
        </div>
-       <div style={{ fontSize: 11, fontWeight: 900, color: '#111', marginBottom: 4 }}>Audit Report</div>
-       <div style={{ width: '100%', height: 6, background: '#eee', borderRadius: 10, position: 'relative', overflow: 'hidden', marginTop: 16 }}>
+       <div style={{ fontSize: 11, fontWeight: 900, color: '#111', marginBottom: 4 }}>Verification Audit</div>
+       <div style={{ fontSize: 7, color: 'rgba(0,0,0,0.4)', marginBottom: 16 }}>BharatAI Security Active</div>
+       
+       <div style={{ width: '100%', height: 6, background: '#eee', borderRadius: 10, position: 'relative', overflow: 'hidden' }}>
           <motion.div initial={{ width: 0 }} animate={{ width: '92%' }} transition={{ duration: 1 }} style={{ position: 'absolute', inset: 0, background: '#10B981' }} />
        </div>
        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: 6, fontSize: 8, fontWeight: 900 }}>
           <span>TRUST SCORE</span>
           <span style={{ color: '#10B981' }}>92/100</span>
        </div>
-       <div style={{ marginTop: 24, padding: '10px', background: '#F0FDF4', border: '1px solid #10B981', borderRadius: 12, fontSize: 8, fontWeight: 800, color: '#10B981' }}>
+       <div style={{ marginTop: 24, padding: '10px', background: '#F0FDF4', border: '1px solid #10B981', borderRadius: 12, fontSize: 8, fontWeight: 800, color: '#10B981', width: '100%' }}>
           Verified Profile Issued ✅
        </div>
     </motion.div>
@@ -229,9 +231,9 @@ function TrustScreen() {
 
 function CommunityScreen() {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ height: '100%', padding: 16 }}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ height: '100%', padding: 16, display: 'flex', flexDirection: 'column' }}>
        <div style={{ fontSize: 10, fontWeight: 900, marginBottom: 12 }}>Growth & Community</div>
-       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
           <div style={{ padding: 10, background: '#F0F9FF', borderRadius: 12, border: '1px solid #0EA5E9', display: 'flex', alignItems: 'center', gap: 8 }}>
              <span style={{ fontSize: 14 }}>🎙️</span>
              <div>
@@ -254,8 +256,8 @@ function CommunityScreen() {
              </div>
           </div>
        </div>
-       <div style={{ marginTop: 16, padding: 10, background: '#111', borderRadius: 10, color: '#fff', textAlign: 'center' }}>
-          <div style={{ fontSize: 8, fontWeight: 900 }}>Support for Tier 2 & 3</div>
+       <div style={{ marginTop: 12, padding: 10, background: '#111', borderRadius: 10, color: '#fff', textAlign: 'center' }}>
+          <div style={{ fontSize: 8, fontWeight: 900 }}>Tier 2 & 3 Support</div>
           <div style={{ fontSize: 5, opacity: 0.6 }}>LOCAL ASSISTANCE</div>
        </div>
     </motion.div>
@@ -264,14 +266,12 @@ function CommunityScreen() {
 
 function VisionScreen() {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20, textAlign: 'center', background: '#fff' }}>
-       {/* CENTERED LOGO ICON */}
-       <div style={{ position: 'relative', width: 54, height: 54, borderRadius: '50%', padding: 2, overflow: 'hidden', boxShadow: '0 10px 20px rgba(0,0,0,0.1)', marginBottom: 12 }}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16, textAlign: 'center', background: '#fff' }}>
+       <div style={{ position: 'relative', width: 50, height: 50, borderRadius: '50%', padding: 2, overflow: 'hidden', boxShadow: '0 10px 20px rgba(0,0,0,0.08)', marginBottom: 12 }}>
           <div style={{ position: 'absolute', top: '50%', left: '50%', width: '200%', height: '200%', background: 'conic-gradient(from 0deg, #FF9431, #fff, #128807, #fff, #FF9431)', animation: 'spinBorder 4s linear infinite', zIndex: 0 }} />
           <div style={{ position: 'relative', zIndex: 1, width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '33.33%', background: '#FF9431' }} />
             <div style={{ position: 'absolute', top: '33.33%', left: 0, right: 0, height: '33.34%', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-               {/* ASHOKA CHAKRA */}
                <div style={{ width: '25%', height: '25%', borderRadius: '50%', border: '1px solid #000080', position: 'relative' }}>
                   {[...Array(12)].map((_, i) => <div key={i} style={{ position: 'absolute', top: '50%', left: '50%', width: '100%', height: 1, background: '#000080', transform: `translate(-50%,-50%) rotate(${i * 15}deg)` }} />)}
                </div>
@@ -279,14 +279,13 @@ function VisionScreen() {
             <div style={{ position: 'absolute', top: '66.67%', left: 0, right: 0, height: '33.33%', background: '#128807' }} />
           </div>
        </div>
-       <div style={{ fontSize: 18, fontWeight: 900, color: '#111', marginBottom: 16 }}>CreatorBharat</div>
-
-       <h4 style={{ fontSize: 13, fontWeight: 800, color: 'rgba(0,0,0,0.4)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Our Mission</h4>
-       <p style={{ fontSize: 10, color: 'rgba(0,0,0,0.6)', lineHeight: 1.6, fontWeight: 600 }}>
+       <div style={{ fontSize: 16, fontWeight: 900, color: '#111', marginBottom: 12 }}>CreatorBharat</div>
+       <h4 style={{ fontSize: 11, fontWeight: 800, color: 'rgba(0,0,0,0.4)', marginBottom: 6, textTransform: 'uppercase' }}>Our Mission</h4>
+       <p style={{ fontSize: 9, color: 'rgba(0,0,0,0.6)', lineHeight: 1.5, fontWeight: 600 }}>
           To build a Bharat where every local talent becomes a global brand. 🇮🇳
        </p>
-       <div style={{ marginTop: 24, width: '100%', height: 2, background: 'linear-gradient(90deg, #FF9431, #DC2626)', borderRadius: 10 }} />
-       <div style={{ marginTop: 12, fontSize: 8, fontWeight: 900, color: '#111', textTransform: 'uppercase' }}>100M+ Creators • 1 Mission</div>
+       <div style={{ marginTop: 20, width: '100%', height: 2, background: 'linear-gradient(90deg, #FF9431, #DC2626)', borderRadius: 10 }} />
+       <div style={{ marginTop: 10, fontSize: 8, fontWeight: 900, color: '#111', textTransform: 'uppercase' }}>100M+ Creators • 1 Mission</div>
     </motion.div>
   );
 }
