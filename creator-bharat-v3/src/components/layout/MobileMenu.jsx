@@ -3,7 +3,7 @@ import { useApp } from '../../context';
 import { Btn, Logo } from '../Primitives';
 import { scrollToTop } from '../../utils/helpers';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Users, Megaphone, Target, BookOpen, Heart, ArrowRight } from 'lucide-react';
+import { X, Users, Megaphone, Target, BookOpen, Heart, LogOut, LayoutDashboard, Briefcase, Bookmark, Settings, ChevronRight, User, LifeBuoy, MessageSquare, Sparkles, Search } from 'lucide-react';
 
 export default function MobileMenu({ open }) {
   const { st, dsp } = useApp();
@@ -15,18 +15,26 @@ export default function MobileMenu({ open }) {
   };
 
   const links = [
-    { id: 'creators', l: 'Creators', i: Users },
+    { id: 'creators', l: 'Find Creators', i: Users },
     { id: 'campaigns', l: 'Campaigns', i: Megaphone },
-    { id: 'roadmap', l: 'Vision', i: Target },
-    { id: 'blog', l: 'Academy', i: BookOpen },
-    { id: 'about', l: 'About', i: Heart }
+    { id: 'roadmap', l: 'Roadmap & Vision', i: Target },
+    { id: 'blog', l: 'Creator Academy', i: BookOpen },
+    { id: 'about', l: 'Our Story', i: Heart }
   ];
+
+  const supportLinks = [
+    { id: 'contact', l: 'Help & Support', i: LifeBuoy },
+    { id: 'contact', l: 'Feedback', i: MessageSquare }
+  ];
+
+  const isCreator = st.role === 'creator';
+  const isBrand = st.role === 'brand';
 
   return (
     <AnimatePresence>
       {open && (
         <>
-          {/* DIM OVERLAY */}
+          {/* PREMIUM BLUR OVERLAY */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -34,78 +42,245 @@ export default function MobileMenu({ open }) {
             onClick={() => dsp({ t: 'UI', v: { mobileMenu: false } })}
             style={{ 
               position: 'fixed', inset: 0, 
-              background: 'rgba(0,0,0,0.3)', 
-              backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
+              background: 'rgba(0,0,0,0.4)', 
+              backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
               zIndex: 9500 
             }} 
           />
 
+          {/* FULL HEIGHT PRO SAAS SIDEBAR */}
           <motion.div 
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 28, stiffness: 220 }}
+            transition={{ type: 'spring', damping: 30, stiffness: 300, mass: 0.8 }}
             style={{ 
-              position: 'fixed', right: 0, top: 0, bottom: 0, 
-              width: '80%', maxWidth: 320, // HALF PAGE WIDTH
-              background: '#fff', 
+              position: 'fixed', top: 0, right: 0, bottom: 0, 
+              width: '100%', maxWidth: 360, 
+              background: '#ffffff', 
               zIndex: 9600,
-              padding: '24px',
               display: 'flex', flexDirection: 'column',
-              boxShadow: '-10px 0 50px rgba(0,0,0,0.1)',
-              borderRadius: '32px 0 0 32px' // MODERN CURVED DRAWER
+              boxShadow: '-20px 0 60px rgba(0,0,0,0.15)',
+              borderLeft: '1px solid rgba(0,0,0,0.05)',
             }}
           >
-            {/* BRAND HEADER */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+            {/* HEADER WITH LOGO & CLOSE */}
+            <div style={{ 
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+              padding: '24px 28px', borderBottom: '1px solid rgba(0,0,0,0.05)'
+            }}>
                <Logo onClick={() => go('home')} sm />
                <button 
                   onClick={() => dsp({ t: 'UI', v: { mobileMenu: false } })}
-                  style={{ width: 40, height: 40, borderRadius: '50%', border: 'none', background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ 
+                    width: 36, height: 36, borderRadius: '10px', border: '1px solid rgba(0,0,0,0.05)', 
+                    background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                    cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)',
+                    transition: 'all 0.2s ease'
+                  }}
                >
                   <X size={18} color="#111" />
                </button>
             </div>
 
-            {/* SLEEK MENU LIST */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
-              {links.map((n, i) => {
-                const Icon = n.i;
-                return (
-                  <motion.div
-                    key={n.id}
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    onClick={() => go(n.id)}
-                    style={{ 
-                      padding: '16px 20px', borderRadius: 16, 
-                      background: st.page === n.id ? 'rgba(255,148,49,0.08)' : 'transparent',
-                      display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                  >
-                    <Icon size={18} color={st.page === n.id ? '#FF9431' : 'rgba(0,0,0,0.4)'} />
-                    <span style={{ 
-                      fontWeight: 800, fontSize: 15, 
-                      color: st.page === n.id ? '#111' : 'rgba(0,0,0,0.6)',
-                      flex: 1 
-                    }}>{n.l}</span>
-                    {st.page === n.id && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF9431' }} />}
-                  </motion.div>
-                );
-              })}
+            {/* SCROLLABLE CONTENT */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '28px', display: 'flex', flexDirection: 'column', gap: 32 }}>
+              
+              {/* QUICK SEARCH (MOCKUP) */}
+              <div 
+                onClick={() => { dsp({ t: 'UI', v: { mobileMenu: false } }); go('creators'); }}
+                style={{ 
+                  display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', 
+                  background: '#F9FAFB', borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)',
+                  cursor: 'pointer'
+                }}
+              >
+                <Search size={18} color="rgba(0,0,0,0.4)" />
+                <span style={{ fontSize: 14, color: 'rgba(0,0,0,0.5)', fontWeight: 500 }}>Search creators, campaigns...</span>
+              </div>
+
+              {/* MAIN NAVIGATION */}
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 16 }}>
+                  Explore Platform
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {links.map((n, i) => {
+                    const Icon = n.i;
+                    const isActive = st.page === n.id;
+                    return (
+                      <motion.div
+                        key={n.id}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.05 + 0.1 }}
+                        onClick={() => go(n.id)}
+                        style={{ 
+                          padding: '14px 16px', borderRadius: 12, 
+                          background: isActive ? '#111' : 'transparent',
+                          display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer',
+                          transition: 'all 0.2s ease'
+                        }}
+                      >
+                        <Icon size={18} color={isActive ? '#fff' : 'rgba(0,0,0,0.6)'} />
+                        <span style={{ 
+                          fontWeight: isActive ? 700 : 600, 
+                          fontSize: 15, 
+                          color: isActive ? '#fff' : '#111',
+                          flex: 1 
+                        }}>{n.l}</span>
+                        {isActive && <ChevronRight size={16} color="#fff" style={{ opacity: 0.5 }} />}
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* LOGGED IN USER DASHBOARD SECTION */}
+              {st.user && (
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 16 }}>
+                    Your Workspace
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {[
+                      isCreator && { l: 'Dashboard', p: 'dashboard', i: LayoutDashboard },
+                      isCreator && { l: 'Applications', p: 'applications', i: Briefcase },
+                      isBrand && { l: 'Brand Dashboard', p: 'brand-dashboard', i: LayoutDashboard },
+                      isBrand && { l: 'Post Campaign', p: 'campaign-builder', i: Megaphone },
+                      { l: 'Saved Items', p: 'saved', i: Bookmark },
+                      { l: 'Settings', p: 'settings', i: Settings }
+                    ].filter(Boolean).map((n) => {
+                      const Icon = n.i;
+                      const isActive = st.page === n.p;
+                      return (
+                        <button 
+                          key={n.p} 
+                          onClick={() => go(n.p)} 
+                          style={{ 
+                            display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '14px 16px', 
+                            background: isActive ? 'rgba(0,0,0,0.04)' : 'transparent',
+                            border: 'none', textAlign: 'left', fontSize: 15, 
+                            color: isActive ? '#111' : 'rgba(0,0,0,0.7)', 
+                            cursor: 'pointer', fontWeight: isActive ? 700 : 500, 
+                            borderRadius: 12, transition: 'all 0.2s'
+                          }}
+                        >
+                          <Icon size={18} color={isActive ? '#111' : 'rgba(0,0,0,0.5)'} />
+                          {n.l}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* SUPPORT & RESOURCES */}
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 16 }}>
+                  Resources
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {supportLinks.map((n, i) => {
+                    const Icon = n.i;
+                    return (
+                      <button 
+                        key={n.l} 
+                        onClick={() => go(n.id)} 
+                        style={{ 
+                          display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '14px 16px', 
+                          background: 'transparent',
+                          border: 'none', textAlign: 'left', fontSize: 15, 
+                          color: 'rgba(0,0,0,0.7)', cursor: 'pointer', fontWeight: 500, 
+                          borderRadius: 12, transition: 'all 0.2s'
+                        }}
+                      >
+                        <Icon size={18} color="rgba(0,0,0,0.5)" />
+                        {n.l}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* PRO PROMO CARD */}
+              <div style={{ 
+                padding: '20px', borderRadius: 16, 
+                background: 'linear-gradient(135deg, #111 0%, #333 100%)', 
+                color: '#fff', position: 'relative', overflow: 'hidden',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+              }}>
+                <div style={{ position: 'absolute', top: -20, right: -20, opacity: 0.1 }}>
+                  <Sparkles size={80} />
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <Sparkles size={16} color="#FF9431" />
+                  <span style={{ fontSize: 12, fontWeight: 800, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px' }}>CreatorBharat Pro</span>
+                </div>
+                <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8, lineHeight: 1.3 }}>Unlock premium tools & analytics</h4>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', marginBottom: 16, lineHeight: 1.4 }}>Get verified, access elite campaigns, and grow faster.</p>
+                <button 
+                  onClick={() => { dsp({ t: 'UI', v: { mobileMenu: false } }); go('pricing'); }}
+                  style={{ 
+                    padding: '10px 16px', background: '#fff', color: '#111', 
+                    border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, 
+                    cursor: 'pointer', width: '100%' 
+                  }}
+                >
+                  Upgrade Now
+                </button>
+              </div>
+
             </div>
 
-            {/* ACTION FOOTER */}
+            {/* FOOTER ACTION AREA */}
             <div style={{ 
-              marginTop: 'auto', paddingTop: 24, 
+              padding: '24px 28px', 
               borderTop: '1px solid rgba(0,0,0,0.05)',
-              display: 'flex', flexDirection: 'column', gap: 12 
+              background: '#FAFAFA'
             }}>
-              <p style={{ fontSize: 11, fontWeight: 900, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', letterSpacing: '2px', textAlign: 'center', marginBottom: 4 }}>Account</p>
-              <Btn full lg onClick={() => { dsp({ t: 'UI', v: { authModal: true, mobileMenu: false } }); }}>Login to Portal</Btn>
-              <p style={{ fontSize: 10, color: 'rgba(0,0,0,0.4)', textAlign: 'center', fontWeight: 700 }}>Made with ❤️ in Bharat</p>
+              
+              {/* SOCIAL LINKS */}
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 24 }}>
+                <span style={{ fontSize: 13, color: 'rgba(0,0,0,0.4)', fontWeight: 500 }}>Join the CreatorBharat Community</span>
+              </div>
+
+              {!st.user ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                    <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <User size={20} color="#111" />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: '#111' }}>Guest User</div>
+                      <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.5)' }}>Sign in to access features</div>
+                    </div>
+                  </div>
+                  <Btn full lg onClick={() => { dsp({ t: 'UI', v: { authModal: true, mobileMenu: false } }); }} style={{ padding: '14px', borderRadius: 10, fontSize: 14, background: '#111', color: '#fff', border: 'none' }}>Sign In to Portal</Btn>
+                  <Btn full lg variant="outline" onClick={() => { go('apply'); dsp({ t: 'UI', v: { mobileMenu: false } }); }} style={{ padding: '14px', borderRadius: 10, fontSize: 14, background: '#fff', border: '1px solid rgba(0,0,0,0.1)', color: '#111' }}>Create Free Account</Btn>
+                </div>
+              ) : (
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+                    <img 
+                      src={(st.creatorProfile?.photo || st.creatorProfile?.avatarUrl) || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user?.name || 'U')}&background=111111&color=fff`} 
+                      style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }} 
+                      alt=""
+                    />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{st.user?.name || st.user?.companyName}</div>
+                      <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.5)' }}>{isCreator ? 'Creator Account' : isBrand ? 'Brand Account' : 'User'}</div>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => { dsp({ t: 'LOGOUT' }); dsp({ t: 'UI', v: { mobileMenu: false } }); }} 
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '14px', background: 'rgba(239,68,68,0.1)', border: 'none', fontSize: 14, color: '#DC2626', cursor: 'pointer', fontWeight: 600, borderRadius: 10 }}
+                  >
+                    <LogOut size={16} />
+                    Log Out securely
+                  </button>
+                </div>
+              )}
             </div>
           </motion.div>
         </>
