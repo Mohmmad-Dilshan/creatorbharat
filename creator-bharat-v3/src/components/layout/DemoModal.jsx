@@ -48,7 +48,7 @@ export default function DemoModal({ open }) {
                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '6px 12px', background: 'rgba(255,148,49,0.1)', color: '#FF9431', borderRadius: 100, fontSize: 9, fontWeight: 900, textTransform: 'uppercase', marginBottom: 12 }}>
                  <span style={{ width: 6, height: 6, background: '#FF9431', borderRadius: '50%', animation: 'pulse 1.5s infinite' }} /> Creator-First Vision
                </div>
-               <h2 style={{ fontSize: 22, fontWeight: 900, color: '#111', marginBottom: 6 }}>Your <span style={{ color: '#FF9431' }}>Success</span>, Our Design</h2>
+               <h2 style={{ fontSize: 22, fontWeight: 900, color: '#111', marginBottom: 6 }}>The Future of <span style={{ color: '#FF9431' }}>Bharat's</span> Creators</h2>
             </div>
 
             {/* SHARED PHONE MOCKUP */}
@@ -70,9 +70,9 @@ export default function DemoModal({ open }) {
           <div style={{ flex: 0.9, padding: 40, display: 'flex', flexDirection: 'column', justifyContent: 'center', background: '#fff', borderLeft: '1px solid rgba(0,0,0,0.05)' }}>
              <div style={{ marginBottom: 32 }}>
                 <h3 style={{ fontSize: 19, fontWeight: 900, color: '#111', marginBottom: 12 }}>
-                   {step === 1 && "Vision: Your Brand Identity"}
-                   {step === 2 && "Vision: Trusted Recognition"}
-                   {step === 3 && "Vision: Spotlight & Community"}
+                   {step === 1 && "Identity: Own Your Digital Estate"}
+                   {step === 2 && "Trust: The Gold Standard of Influence"}
+                   {step === 3 && "Impact: The National Spotlight"}
                 </h3>
                 <p style={{ fontSize: 14, color: 'rgba(0,0,0,0.5)', lineHeight: 1.5, fontWeight: 600 }}>
                    {step === 1 && "A professional portfolio that turns your followers into your digital estate. You own your data, always."}
