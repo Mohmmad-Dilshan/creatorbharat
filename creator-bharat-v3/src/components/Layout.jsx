@@ -3,7 +3,6 @@ import { useApp } from '../context';
 import Footer from './home/Footer';
 import Navbar from './layout/Navbar';
 import MobileMenu from './layout/MobileMenu';
-import AIChatbot from './layout/AIChatbot';
 import ToastBar from './layout/ToastBar';
 import CompareBar from './layout/CompareBar';
 import AuthModal from './layout/AuthModal';
@@ -95,7 +94,6 @@ export default function Layout({ children }) {
 
       <ToastBar />
       <CompareBar />
-      <AIChatbot mob={mob} />
 
       {st.ui.authModal && <AuthModal />}
     </div>
