@@ -15,7 +15,7 @@ export function CreatorCard({ creator: c, onView }) {
 
   return (
     <Card onClick={() => onView && onView(c)} style={{ height: '100%', display: 'flex', flexDirection: 'column', transition: 'all 0.5s cubic-bezier(0.23, 1, 0.32, 1)', border: '1px solid rgba(0,0,0,0.04)', borderRadius: mob ? 20 : 24, overflow: 'hidden' }} className="feature-card-h">
-      <div style={{ position: 'relative', height: mob ? 100 : 140, background: 'linear-gradient(135deg, #0f172a, #1e293b)', flexShrink: 0 }}>
+      <div style={{ position: 'relative', height: mob ? 120 : 140, background: 'linear-gradient(135deg, #0f172a, #1e293b)', flexShrink: 0 }}>
         {c.coverUrl ? (
           <img src={c.coverUrl} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6 }} alt="" />
         ) : (
@@ -35,8 +35,8 @@ export function CreatorCard({ creator: c, onView }) {
         )}
       </div>
 
-      <div style={{ padding: mob ? '0 12px' : '0 24px', marginTop: mob ? -30 : -40, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: mob ? 12 : 20, position: 'relative', zIndex: 2 }}>
-        <img src={img} style={{ width: mob ? 60 : 80, height: mob ? 60 : 80, borderRadius: mob ? 16 : 24, objectFit: 'cover', border: (mob ? '3px' : '4px') + ' solid #fff', boxShadow: '0 8px 16px rgba(0,0,0,0.1)' }} alt={c.name} />
+      <div style={{ padding: mob ? '0 16px' : '0 24px', marginTop: mob ? -34 : -40, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: mob ? 12 : 20, position: 'relative', zIndex: 2 }}>
+        <img src={img} style={{ width: mob ? 68 : 80, height: mob ? 68 : 80, borderRadius: mob ? 16 : 24, objectFit: 'cover', border: (mob ? '3px' : '4px') + ' solid #fff', boxShadow: '0 8px 16px rgba(0,0,0,0.1)' }} alt={c.name} />
         {!mob && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
              <Bdg sm color={tier.bc} style={{ padding: '4px 12px', borderRadius: 100 }}>{tier.label}</Bdg>

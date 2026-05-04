@@ -104,7 +104,7 @@ export default function CreatorsPage() {
         position: 'sticky', top: 0, zIndex: 1000, 
         background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(30px)',
         borderBottom: '1px solid rgba(0,0,0,0.05)', 
-        padding: mob ? '12px 0 14px' : '16px 0',
+        padding: mob ? '10px 0 12px' : '16px 0',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
       }}>
         <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px', display: 'flex', flexDirection: 'column', gap: mob ? 14 : 12 }}>
@@ -118,9 +118,9 @@ export default function CreatorsPage() {
                   onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} 
                   placeholder="Search creators..." 
                   style={{ 
-                    width: '100%', padding: '15px 15px 15px 50px', borderRadius: 100, 
+                    width: '100%', padding: '12px 15px 12px 48px', borderRadius: 100, 
                     border: '1.5px solid rgba(0,0,0,0.04)', background: 'rgba(0,0,0,0.02)', 
-                    fontSize: 15, fontWeight: 600, outline: 'none'
+                    fontSize: 14, fontWeight: 600, outline: 'none'
                   }} 
                 />
               </div>
@@ -241,7 +241,7 @@ export default function CreatorsPage() {
 
           {/* Quick Action Chips for Mobile */}
           {mob && (
-            <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="no-scrollbar">
+            <div style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: '4px 0 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="no-scrollbar">
               {/* Reset Chip */}
               {(f.niche || f.state || f.district || f.q) && (
                 <button 
@@ -357,13 +357,13 @@ export default function CreatorsPage() {
         )}
       </AnimatePresence>
 
-      <div id="creators-grid-anchor" style={{ padding: mob ? '12px 16px 32px' : '48px 24px', background: '#fdfdfd' }}>
+      <div id="creators-grid-anchor" style={{ padding: mob ? '24px 16px 48px' : '48px 24px', background: '#fdfdfd' }}>
         <div style={W(1280)}>
           {/* Header Row - Refined for Mobile */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: mob ? 20 : 40, flexWrap: 'wrap', gap: 16 }}>
+          <div style={{ display: 'flex', justifyContent: mob ? 'center' : 'space-between', alignItems: 'center', marginBottom: mob ? 24 : 40, flexWrap: 'wrap', gap: 16, textAlign: mob ? 'center' : 'left' }}>
             <div>
-              <h2 style={{ fontSize: mob ? 20 : 28, fontWeight: 900, color: '#111', fontFamily: "'Fraunces', serif" }}>
-                 Elite Talent Network <span style={{ color: '#94a3b8', fontSize: 16, fontWeight: 700, marginLeft: 8 }}>({filtered.length})</span>
+              <h2 style={{ fontSize: mob ? 18 : 28, fontWeight: 900, color: '#111', fontFamily: "'Fraunces', serif" }}>
+                 Elite Talent Network <span style={{ color: '#94a3b8', fontSize: 14, fontWeight: 700, marginLeft: 6 }}>({filtered.length})</span>
               </h2>
             </div>
             
@@ -399,7 +399,7 @@ export default function CreatorsPage() {
             </div>
           ) : view === 'grid' ? (
             <>
-              <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(340px, 1fr))', gap: mob ? 12 : 32 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(340px, 1fr))', gap: mob ? 16 : 32 }}>
                 {visible.map((c, i) => (
                   <motion.div 
                     key={c.id || i}
@@ -505,7 +505,7 @@ export default function CreatorsPage() {
               style={{ 
                 position: 'fixed', bottom: 0, left: 0, right: 0, 
                 maxHeight: '92vh', background: '#fff', borderRadius: '40px 40px 0 0', 
-                zIndex: 10002, overflowY: 'auto', padding: mob ? '24px 20px 40px' : '48px 48px 60px',
+                zIndex: 10002, overflowY: 'auto', padding: mob ? '24px 20px 60px' : '48px 48px 60px',
                 boxShadow: '0 -20px 60px rgba(0,0,0,0.15)'
               }}
             >

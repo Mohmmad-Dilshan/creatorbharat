@@ -25,8 +25,8 @@ const EliteHeader = memo(({
     gold: 'radial-gradient(circle at 50% 50%, rgba(217,119,6,0.08), transparent 70%)'
   };
 
-  const pt = mob ? (compact ? '80px' : '100px') : (compact ? '120px' : '160px');
-  const pb = mob ? (compact ? '40px' : '60px') : (compact ? '60px' : '100px');
+  const pt = mob ? (compact ? '100px' : '130px') : (compact ? '120px' : '160px');
+  const pb = mob ? (compact ? '50px' : '70px') : (compact ? '60px' : '100px');
 
   return (
     <div style={{ 
@@ -47,19 +47,55 @@ const EliteHeader = memo(({
         }} />
       )}
 
-      {/* Modern Decorative Blobs */}
-      <motion.div 
-        animate={{ 
-          scale: [1, 1.1, 1],
-          opacity: light ? [0.4, 0.6, 0.4] : [0.3, 0.5, 0.3],
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        style={{ 
-          position: 'absolute', top: '-10%', right: '5%', width: '500px', height: '500px', 
-          background: gradients[gradient] || gradients.saffron, 
-          borderRadius: '50%', filter: 'blur(100px)', zIndex: 2
-        }} 
-      />
+      {/* Animated 'Tiranga' Lehrata Background Effect */}
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 2 }}>
+        {/* Saffron Blob */}
+        <motion.div 
+          animate={{ 
+            x: [0, 40, -20, 0],
+            y: [0, -30, 20, 0],
+            scale: [1, 1.2, 0.9, 1],
+            rotate: [0, 5, -5, 0]
+          }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          style={{ 
+            position: 'absolute', top: '-20%', left: '10%', width: '600px', height: '600px', 
+            background: 'radial-gradient(circle, rgba(255,148,49,0.15) 0%, transparent 70%)', 
+            borderRadius: '50%', filter: 'blur(80px)'
+          }} 
+        />
+        
+        {/* White Glow Blob */}
+        <motion.div 
+          animate={{ 
+            x: [0, -20, 0],
+            y: [0, 20, 0],
+            opacity: [0.3, 0.5, 0.3]
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          style={{ 
+            position: 'absolute', top: '10%', left: '30%', width: '400px', height: '400px', 
+            background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%)', 
+            borderRadius: '50%', filter: 'blur(60px)'
+          }} 
+        />
+
+        {/* Green Blob */}
+        <motion.div 
+          animate={{ 
+            x: [0, -50, 30, 0],
+            y: [0, 40, -20, 0],
+            scale: [1, 1.3, 1],
+            rotate: [0, -8, 8, 0]
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          style={{ 
+            position: 'absolute', bottom: '-20%', right: '10%', width: '600px', height: '600px', 
+            background: 'radial-gradient(circle, rgba(18,136,7,0.12) 0%, transparent 70%)', 
+            borderRadius: '50%', filter: 'blur(90px)'
+          }} 
+        />
+      </div>
       
       <div style={{ ...W(maxWidth), position: 'relative', zIndex: 10, textAlign: 'center' }}>
         <motion.div
@@ -81,7 +117,7 @@ const EliteHeader = memo(({
           )}
 
           <h1 style={{ 
-            fontSize: 'clamp(40px, 6vw, 72px)', 
+            fontSize: mob ? '36px' : 'clamp(40px, 6vw, 72px)', 
             fontWeight: 900, 
             color: light ? '#111' : '#fff', 
             fontFamily: "'Fraunces', serif",
@@ -94,10 +130,10 @@ const EliteHeader = memo(({
 
           {sub && (
             <p style={{ 
-              fontSize: 'clamp(17px, 1.3vw, 21px)', 
+              fontSize: mob ? '15px' : 'clamp(17px, 1.3vw, 21px)', 
               color: light ? '#64748b' : 'rgba(255,255,255,0.6)', 
               maxWidth: 700, 
-              margin: '0 auto 48px',
+              margin: mob ? '0 auto 32px' : '0 auto 48px',
               lineHeight: 1.6,
               fontWeight: 500
             }}>
