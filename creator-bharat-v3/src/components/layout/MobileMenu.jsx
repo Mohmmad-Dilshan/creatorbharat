@@ -115,21 +115,23 @@ export default function MobileMenu({ open }) {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.05 + 0.1 }}
                         onClick={() => go(n.id)}
+                        onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; }}
+                        onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
                         style={{ 
                           padding: '14px 16px', borderRadius: 12, 
-                          background: isActive ? '#111' : 'transparent',
+                          background: isActive ? 'rgba(0,0,0,0.05)' : 'transparent',
                           display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer',
                           transition: 'all 0.2s ease'
                         }}
                       >
-                        <Icon size={18} color={isActive ? '#fff' : 'rgba(0,0,0,0.6)'} />
+                        <Icon size={18} color={isActive ? '#111' : 'rgba(0,0,0,0.6)'} />
                         <span style={{ 
-                          fontWeight: isActive ? 700 : 600, 
+                          fontWeight: isActive ? 700 : 500, 
                           fontSize: 15, 
-                          color: isActive ? '#fff' : '#111',
+                          color: isActive ? '#111' : 'rgba(0,0,0,0.7)',
                           flex: 1 
                         }}>{n.l}</span>
-                        {isActive && <ChevronRight size={16} color="#fff" style={{ opacity: 0.5 }} />}
+                        {isActive && <ChevronRight size={16} color="#111" style={{ opacity: 0.5 }} />}
                       </motion.div>
                     );
                   })}
@@ -157,9 +159,11 @@ export default function MobileMenu({ open }) {
                         <button 
                           key={n.p} 
                           onClick={() => go(n.p)} 
+                          onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; }}
+                          onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
                           style={{ 
                             display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '14px 16px', 
-                            background: isActive ? 'rgba(0,0,0,0.04)' : 'transparent',
+                            background: isActive ? 'rgba(0,0,0,0.05)' : 'transparent',
                             border: 'none', textAlign: 'left', fontSize: 15, 
                             color: isActive ? '#111' : 'rgba(0,0,0,0.7)', 
                             cursor: 'pointer', fontWeight: isActive ? 700 : 500, 
@@ -187,11 +191,13 @@ export default function MobileMenu({ open }) {
                       <button 
                         key={n.l} 
                         onClick={() => go(n.id)} 
+                        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                         style={{ 
                           display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '14px 16px', 
                           background: 'transparent',
                           border: 'none', textAlign: 'left', fontSize: 15, 
-                          color: 'rgba(0,0,0,0.7)', cursor: 'pointer', fontWeight: 500, 
+                          color: '#111', cursor: 'pointer', fontWeight: 500, 
                           borderRadius: 12, transition: 'all 0.2s'
                         }}
                       >
@@ -206,26 +212,29 @@ export default function MobileMenu({ open }) {
               {/* PRO PROMO CARD */}
               <div style={{ 
                 padding: '20px', borderRadius: 16, 
-                background: 'linear-gradient(135deg, #111 0%, #333 100%)', 
-                color: '#fff', position: 'relative', overflow: 'hidden',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+                background: 'linear-gradient(135deg, #FFF9F2 0%, #FFF2E5 100%)', 
+                border: '1px solid rgba(255,148,49,0.2)',
+                color: '#111', position: 'relative', overflow: 'hidden',
               }}>
-                <div style={{ position: 'absolute', top: -20, right: -20, opacity: 0.1 }}>
-                  <Sparkles size={80} />
+                <div style={{ position: 'absolute', top: -20, right: -20, opacity: 0.05 }}>
+                  <Sparkles size={80} color="#FF9431" />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                   <Sparkles size={16} color="#FF9431" />
                   <span style={{ fontSize: 12, fontWeight: 800, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px' }}>CreatorBharat Pro</span>
                 </div>
                 <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8, lineHeight: 1.3 }}>Unlock premium tools & analytics</h4>
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', marginBottom: 16, lineHeight: 1.4 }}>Get verified, access elite campaigns, and grow faster.</p>
+                <p style={{ fontSize: 13, color: 'rgba(0,0,0,0.6)', marginBottom: 16, lineHeight: 1.4 }}>Get verified, access elite campaigns, and grow faster.</p>
                 <button 
                   onClick={() => { dsp({ t: 'UI', v: { mobileMenu: false } }); go('pricing'); }}
                   style={{ 
-                    padding: '10px 16px', background: '#fff', color: '#111', 
+                    padding: '10px 16px', background: '#FF9431', color: '#fff', 
                     border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, 
-                    cursor: 'pointer', width: '100%' 
+                    cursor: 'pointer', width: '100%', transition: 'all 0.2s',
+                    boxShadow: '0 4px 12px rgba(255,148,49,0.2)'
                   }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                 >
                   Upgrade Now
                 </button>
@@ -241,8 +250,25 @@ export default function MobileMenu({ open }) {
             }}>
               
               {/* SOCIAL LINKS */}
-              <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 24 }}>
-                <span style={{ fontSize: 13, color: 'rgba(0,0,0,0.4)', fontWeight: 500 }}>Join the CreatorBharat Community</span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, marginBottom: 28 }}>
+                <span style={{ fontSize: 11, color: 'rgba(0,0,0,0.4)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Join the Community</span>
+                <div style={{ display: 'flex', gap: 16 }}>
+                  {[
+                    { l: 'Twitter', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1DA1F2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg> },
+                    { l: 'Instagram', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="url(#ig-grad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><defs><linearGradient id="ig-grad" x1="2" y1="2" x2="22" y2="22"><stop offset="0%" stopColor="#f09433"/><stop offset="25%" stopColor="#e6683c"/><stop offset="50%" stopColor="#dc2743"/><stop offset="75%" stopColor="#cc2366"/><stop offset="100%" stopColor="#bc1888"/></linearGradient></defs><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg> },
+                    { l: 'LinkedIn', svg: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0A66C2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg> }
+                  ].map((s, idx) => {
+                    return (
+                      <a key={idx} href="#" aria-label={s.l} style={{ 
+                        width: 38, height: 38, borderRadius: '50%', background: 'rgba(0,0,0,0.03)', 
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)', border: '1px solid rgba(0,0,0,0.05)'
+                      }} onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.08)'; e.currentTarget.style.transform = 'scale(1.1)'; }} onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; e.currentTarget.style.transform = 'scale(1)'; }}>
+                        {s.svg}
+                      </a>
+                    )
+                  })}
+                </div>
               </div>
 
               {!st.user ? (
