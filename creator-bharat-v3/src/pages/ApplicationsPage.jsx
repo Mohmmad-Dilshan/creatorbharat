@@ -3,6 +3,7 @@ import { useApp } from '../context';
 import { T } from '../theme';
 import { W, scrollToTop, LS, fmt } from '../utils/helpers';
 import { SH, Card, Bdg, Chip, Empty, Btn } from '../components/Primitives';
+import EliteHeader from '../components/layout/EliteHeader';
 
 export default function ApplicationsPage() {
   const { st, dsp } = useApp();
@@ -28,18 +29,13 @@ export default function ApplicationsPage() {
 
   return (
     <div style={{ background: '#FAFAFA', minHeight: '100vh', paddingBottom: 80 }}>
-      {/* Header */}
-      <div style={{ background: '#050505', padding: mob ? '120px 20px 48px' : '160px 20px 60px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 30% 70%, rgba(255,148,49,0.1), transparent 70%)' }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #FF9431, #fff, #128807)' }} />
-        
-        <div style={W()}>
-          <div style={{ position: 'relative', zIndex: 2 }}>
-             <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.1em' }}>History & Status</p>
-             <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 32 : 48, color: '#fff', fontWeight: 900 }}>My Applications</h1>
-          </div>
-        </div>
-      </div>
+      {/* Elite Applications Header */}
+      <EliteHeader 
+        eyebrow="History & Status"
+        title="My Applications"
+        sub="Track your collaboration history and deal status in real-time."
+        gradient="saffron"
+      />
 
       <div style={{ padding: '24px 20px', background: '#fff', borderBottom: '1px solid rgba(0,0,0,0.05)', position: 'sticky', top: 80, zIndex: 100 }}>
         <div style={W()}>

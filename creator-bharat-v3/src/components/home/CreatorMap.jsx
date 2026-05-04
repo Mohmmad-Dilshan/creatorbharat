@@ -65,7 +65,7 @@ export default function CreatorMap({ mob }) {
                 display: 'block',
                 borderRadius: 20
               }}
-              onLoad={() => console.log('Map Loaded')}
+              onLoad={() => {}}
               onError={(e) => {
                 e.target.src = 'https://via.placeholder.com/800x1000?text=India+Map+Not+Loaded';
               }}

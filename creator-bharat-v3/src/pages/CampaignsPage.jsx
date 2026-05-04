@@ -6,6 +6,7 @@ import { apiCall } from '../utils/api';
 import { Btn, SH, Bdg, SkeletonCard, Empty, Modal, Fld } from '../components/Primitives';
 import { CampCard } from '../components/Cards';
 import { Card } from '../components/Primitives';
+import EliteHeader from '../components/layout/EliteHeader';
 
 export default function CampaignsPage() {
   const { st, dsp } = useApp();
@@ -74,47 +75,53 @@ export default function CampaignsPage() {
 
   return (
     <div style={{ background: '#fff', minHeight: '100vh' }}>
-      {/* Premium Header */}
-      <div style={{ background: '#050505', padding: mob ? '120px 20px 60px' : '160px 20px 100px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 70% 30%, rgba(16,185,129,0.1), transparent 70%)' }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #10B981, #fff, #FF9431)' }} />
-        
-        <div style={{ ...W(), position: 'relative', zIndex: 2 }}>
-           <div style={{ maxWidth: 800 }}>
-             <SH eyebrow="Brand Collaborations" title="Find Your Next Big Deal" sub="Connect with India's fastest-growing brands. From Jaipur startups to global giants." light mb={48} />
-             
-             <div className="au d2" style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-                <div style={{ flex: 1, minWidth: mob ? '100%' : 400, position: 'relative' }}>
-                   <input 
-                      value={f.q} 
-                      onChange={e => dsp({ t: 'CPF', v: { q: e.target.value } })} 
-                      placeholder="Search campaigns, brands, or roles..." 
-                      style={{ width: '100%', padding: '18px 24px 18px 56px', borderRadius: 100, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 16, outline: 'none', backdropFilter: 'blur(10px)' }} 
-                   />
-                   <span style={{ position: 'absolute', left: 22, top: '50%', transform: 'translateY(-50%)', fontSize: 20, opacity: 0.6 }}>🔍</span>
-                </div>
-                
-                <div style={{ display: 'flex', gap: 12, width: mob ? '100%' : 'auto' }}>
-                  <select 
-                    value={f.niche} 
-                    onChange={e => dsp({ t: 'CPF', v: { niche: e.target.value } })} 
-                    style={{ padding: '0 24px', borderRadius: 100, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.1)', color: '#fff', fontSize: 14, fontWeight: 700, outline: 'none', cursor: 'pointer', height: 56 }}
-                  >
-                    <option value="" style={{ background: '#111' }}>All Categories</option>
-                    {niches.map(n => <option key={n} value={n} style={{ background: '#111' }}>{n}</option>)}
-                  </select>
-                  
-                  <button 
-                    onClick={() => dsp({ t: 'CPF', v: { urgent: !f.urgent } })}
-                    style={{ padding: '0 24px', borderRadius: 100, border: '1.5px solid ' + (f.urgent ? '#EF4444' : 'rgba(255,255,255,0.1)'), background: f.urgent ? 'rgba(239,68,68,0.1)' : 'transparent', color: f.urgent ? '#EF4444' : '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
-                  >
-                    🔥 Urgent Only
-                  </button>
-                </div>
-             </div>
-           </div>
+      {/* Elite Campaigns Header */}
+      <EliteHeader 
+        eyebrow="Brand Collaborations"
+        title="Find Your Next Big Deal"
+        sub="Connect with India's fastest-growing brands. From Jaipur startups to global giants."
+        gradient="blue"
+      >
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: mob ? '100%' : 400, position: 'relative' }}>
+            <input 
+              value={f.q} 
+              onChange={e => dsp({ t: 'CPF', v: { q: e.target.value } })} 
+              placeholder="Search campaigns, brands, or roles..." 
+              style={{ 
+                width: '100%', 
+                padding: '18px 24px 18px 56px', 
+                borderRadius: 100, 
+                border: '1px solid rgba(255,255,255,0.1)', 
+                background: 'rgba(255,255,255,0.08)', 
+                color: '#fff', 
+                fontSize: 16, 
+                outline: 'none', 
+                backdropFilter: 'blur(10px)' 
+              }} 
+            />
+            <span style={{ position: 'absolute', left: 22, top: '50%', transform: 'translateY(-50%)', fontSize: 20, opacity: 0.6 }}>🔍</span>
+          </div>
+          
+          <div style={{ display: 'flex', gap: 12, width: mob ? '100%' : 'auto' }}>
+            <select 
+              value={f.niche} 
+              onChange={e => dsp({ t: 'CPF', v: { niche: e.target.value } })} 
+              style={{ padding: '0 24px', borderRadius: 100, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.1)', color: '#fff', fontSize: 14, fontWeight: 700, outline: 'none', cursor: 'pointer', height: 56 }}
+            >
+              <option value="" style={{ background: '#111' }}>All Categories</option>
+              {niches.map(n => <option key={n} value={n} style={{ background: '#111' }}>{n}</option>)}
+            </select>
+            
+            <button 
+              onClick={() => dsp({ t: 'CPF', v: { urgent: !f.urgent } })}
+              style={{ padding: '0 24px', borderRadius: 100, border: '1.5px solid ' + (f.urgent ? '#EF4444' : 'rgba(255,255,255,0.1)'), background: f.urgent ? 'rgba(239,68,68,0.1)' : 'transparent', color: f.urgent ? '#EF4444' : '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
+            >
+              🔥 Urgent
+            </button>
+          </div>
         </div>
-      </div>
+      </EliteHeader>
 
       <div style={{ padding: mob ? '40px 20px' : '60px 20px', background: '#FAFAFA' }}>
         <div style={W()}>

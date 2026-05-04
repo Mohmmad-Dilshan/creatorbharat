@@ -5,6 +5,7 @@ import { W, scrollToTop, fmt, LS, ALL_STATES, INDIA_STATES } from '../utils/help
 import { apiCall } from '../utils/api';
 import { Btn, SH, Bdg, SkeletonCard, Empty } from '../components/Primitives';
 import { CreatorCard } from '../components/Cards';
+import EliteHeader from '../components/layout/EliteHeader';
 
 export default function CreatorsPage() {
   const { st, dsp } = useApp();
@@ -72,29 +73,37 @@ export default function CreatorsPage() {
 
   return (
     <div style={{ background: '#fff', minHeight: '100vh' }}>
-      {/* Search Header */}
-      <div style={{ background: '#050505', padding: mob ? '120px 20px 48px' : '160px 20px 80px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg,#FF9431 33%,#fff 33%,#fff 66%,#128807 66%)', opacity: 0.8 }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 20% 30%, rgba(255,148,49,0.1), transparent 50%), radial-gradient(circle at 80% 70%, rgba(18,136,7,0.08), transparent 50%)' }} />
-        
-        <div style={{ ...W(), position: 'relative', zIndex: 2 }}>
-          <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', justifyContent: 'space-between', alignItems: mob ? 'center' : 'flex-end', gap: 32 }}>
-            <div style={{ textAlign: mob ? 'center' : 'left' }}>
-              <SH eyebrow="Talent Discovery" title="Bharat Ke Top Creators" sub="Search from 2,400+ handpicked local creators from Tier 2 & 3 cities." light mb={0} />
-            </div>
-            <div className="au" style={{ position: 'relative', width: mob ? '100%' : 500 }}>
-              <input 
-                value={f.q} 
-                onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} 
-                placeholder="Search by name, niche, or city..." 
-                style={{ width: '100%', padding: '20px 24px 20px 60px', borderRadius: 100, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 17, outline: 'none', backdropFilter: 'blur(10px)', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }} 
-              />
-              <span style={{ position: 'absolute', left: 24, top: '50%', transform: 'translateY(-50%)', fontSize: 22, opacity: 0.6 }}>🔍</span>
-              {f.q && <button onClick={() => dsp({ t: 'CF', v: { q: '' } })} style={{ position: 'absolute', right: 24, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#fff', opacity: 0.5, cursor: 'pointer', fontSize: 18 }}>×</button>}
-            </div>
+      {/* Elite Search Header */}
+      <EliteHeader 
+        eyebrow="Talent Discovery"
+        title="Bharat Ke Top Creators"
+        sub="Search from 2,400+ handpicked local creators from Tier 2 & 3 cities."
+        gradient="saffron"
+      >
+        <div style={{ display: 'flex', justifyContent: mob ? 'center' : 'flex-start' }}>
+          <div className="au" style={{ position: 'relative', width: '100%', maxWidth: 500 }}>
+            <input 
+              value={f.q} 
+              onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} 
+              placeholder="Search by name, niche, or city..." 
+              style={{ 
+                width: '100%', 
+                padding: '20px 24px 20px 60px', 
+                borderRadius: 100, 
+                border: '1px solid rgba(255,255,255,0.1)', 
+                background: 'rgba(255,255,255,0.08)', 
+                color: '#fff', 
+                fontSize: 17, 
+                outline: 'none', 
+                backdropFilter: 'blur(10px)', 
+                boxShadow: '0 10px 30px rgba(0,0,0,0.2)' 
+              }} 
+            />
+            <span style={{ position: 'absolute', left: 24, top: '50%', transform: 'translateY(-50%)', fontSize: 22, opacity: 0.6 }}>🔍</span>
+            {f.q && <button onClick={() => dsp({ t: 'CF', v: { q: '' } })} style={{ position: 'absolute', right: 24, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#fff', opacity: 0.5, cursor: 'pointer', fontSize: 18 }}>×</button>}
           </div>
         </div>
-      </div>
+      </EliteHeader>
 
       <div style={{ display: 'flex', minHeight: '80vh', position: 'relative' }}>
         {/* Sidebar - Filter System */}

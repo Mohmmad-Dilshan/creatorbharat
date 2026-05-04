@@ -3,6 +3,7 @@ import { useApp } from '../context';
 import { T } from '../theme';
 import { W, scrollToTop, LS, Auth, fmt } from '../utils/helpers';
 import { Btn, Card, Bdg, Empty } from '../components/Primitives';
+import EliteHeader from '../components/layout/EliteHeader';
 
 export default function BrandDashboardPage() {
   const { st, dsp } = useApp();
@@ -30,21 +31,15 @@ export default function BrandDashboardPage() {
 
   return (
     <div style={{ background: '#FAFAFA', minHeight: '100vh', paddingBottom: 80 }}>
-      {/* Header */}
-      <div style={{ background: '#050505', padding: mob ? '120px 20px 48px' : '160px 20px 60px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 70% 30%, rgba(16,185,129,0.1), transparent 70%)' }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #10B981, #fff, #FF9431)' }} />
-        
-        <div style={W()}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 24, position: 'relative', zIndex: 2 }}>
-            <div>
-              <p style={{ fontSize: 13, fontWeight: 900, color: '#10B981', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Management Console</p>
-              <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 32 : 42, color: '#fff', fontWeight: 900, lineHeight: 1.1 }}>{myBrand.companyName || myBrand.name}</h1>
-            </div>
-            <Btn lg variant="primary" onClick={() => go('campaign-builder')}>+ Launch New Campaign</Btn>
-          </div>
-        </div>
-      </div>
+      {/* Elite Brand Header */}
+      <EliteHeader 
+        eyebrow="Management Console"
+        title={myBrand.companyName || myBrand.name || 'Brand Dashboard'}
+        sub="Manage your campaigns, track applications, and discover talent."
+        gradient="green"
+      >
+        <Btn lg variant="primary" onClick={() => go('campaign-builder')}>+ Launch New Campaign</Btn>
+      </EliteHeader>
 
       <div style={{ marginTop: -40 }}>
         <div style={W()}>

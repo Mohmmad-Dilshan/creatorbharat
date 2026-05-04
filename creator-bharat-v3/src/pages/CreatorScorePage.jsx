@@ -3,6 +3,7 @@ import { useApp } from '../context';
 import { T } from '../theme';
 import { W, scrollToTop, fmt } from '../utils/helpers';
 import { SH, Card, Ring, Btn, Bdg, Bar } from '../components/Primitives';
+import EliteHeader from '../components/layout/EliteHeader';
 
 export default function CreatorScorePage() {
   const { st, dsp } = useApp();
@@ -22,15 +23,14 @@ export default function CreatorScorePage() {
 
   return (
     <div style={{ background: '#fff', minHeight: '100vh' }}>
-      {/* Header */}
-      <div style={{ background: '#050505', padding: mob ? '120px 20px 60px' : '160px 20px 100px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(245,158,11,0.1), transparent 70%)' }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #FF9431, #fff, #128807)' }} />
-        
-        <div style={W(900)}>
-           <SH eyebrow="Algorithmic Trust" title="Creator Score (CS)" sub="The industry-standard benchmark for measuring influence, reliability, and reach in Bharat." light center mb={0} />
-        </div>
-      </div>
+      {/* Elite Score Header */}
+      <EliteHeader 
+        eyebrow="Algorithmic Trust"
+        title="Creator Score (CS)"
+        sub="The industry-standard benchmark for measuring influence, reliability, and reach in Bharat."
+        gradient="saffron"
+        maxWidth={900}
+      />
 
       <div style={{ padding: mob ? '40px 20px' : '80px 20px', background: '#FAFAFA' }}>
         <div style={W(1000)}>

@@ -3,6 +3,7 @@ import { useApp } from '../context';
 import { T } from '../theme';
 import { W, scrollToTop, LS, fmt } from '../utils/helpers';
 import { Btn, Card, Bdg, Bar, Empty, Ring } from '../components/Primitives';
+import EliteHeader from '../components/layout/EliteHeader';
 
 export default function DashboardPage() {
   const { st, dsp } = useApp();
@@ -30,28 +31,18 @@ export default function DashboardPage() {
 
   return (
     <div style={{ background: '#FAFAFA', minHeight: '100vh', paddingBottom: 80 }}>
-      {/* Header Section */}
-      <div style={{ background: '#050505', padding: mob ? '120px 20px 48px' : '160px 20px 60px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 70% 30%, rgba(255,148,49,0.1), transparent 70%)' }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #FF9431, #fff, #128807)' }} />
-        
-        <div style={W()}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 24, position: 'relative', zIndex: 2 }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                 <Bdg sm color="gold">PRO CREATOR</Bdg>
-                 <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: 700 }}>VERIFIED ACCT</span>
-              </div>
-              <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 32 : 42, color: '#fff', fontWeight: 900, lineHeight: 1.1 }}>Welcome, {c?.name?.split(' ')[0] || st.user.name.split(' ')[0]}!</h1>
-              <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', marginTop: 8 }}>Manage your deals, improve your score, and grow your brand.</p>
-            </div>
-            <div style={{ display: 'flex', gap: 12 }}>
-               <Btn lg variant="white" onClick={() => { if (c) go('creator-profile', { creator: c }) }}>👁 View Public Profile</Btn>
-               <Btn lg variant="primary" onClick={() => go('campaigns')}>🔥 Find Campaigns</Btn>
-            </div>
-          </div>
+      {/* Elite Dashboard Header */}
+      <EliteHeader 
+        eyebrow="Pro Creator"
+        title={`Welcome, ${c?.name?.split(' ')[0] || st.user.name.split(' ')[0]}!`}
+        sub="Manage your deals, improve your score, and grow your brand."
+        gradient="saffron"
+      >
+        <div style={{ display: 'flex', gap: 12 }}>
+          <Btn lg variant="white" onClick={() => { if (c) go('creator-profile', { creator: c }) }}>👁 View Public Profile</Btn>
+          <Btn lg variant="primary" onClick={() => go('campaigns')}>🔥 Find Campaigns</Btn>
         </div>
-      </div>
+      </EliteHeader>
 
       <div style={{ marginTop: -40 }}>
         <div style={W()}>

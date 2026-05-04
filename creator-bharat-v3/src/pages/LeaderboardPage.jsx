@@ -4,6 +4,7 @@ import { T } from '../theme';
 import { W, scrollToTop, fmt, LS } from '../utils/helpers';
 import { apiCall } from '../utils/api';
 import { SH, Card, Empty, Bdg } from '../components/Primitives';
+import EliteHeader from '../components/layout/EliteHeader';
 
 export default function LeaderboardPage() {
   const { st, dsp } = useApp();
@@ -31,15 +32,15 @@ export default function LeaderboardPage() {
 
   return (
     <div style={{ background: '#fff', minHeight: '100vh' }}>
-      {/* Premium Header */}
-      <div style={{ background: '#050505', padding: mob ? '120px 20px 60px' : '160px 20px 100px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255,148,49,0.1), transparent 70%)' }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #FF9431, #fff, #128807)' }} />
-        
-        <div style={W()}>
-          <SH eyebrow="Ecosystem Elite" title="Creator Leaderboard" sub="Celebrating the voices that shape Bharat's digital future." light center mb={48} />
-          
-          <div className="au d2" style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 32 }}>
+      {/* Elite Leaderboard Header */}
+      <EliteHeader 
+        eyebrow="Ecosystem Elite"
+        title="Creator Leaderboard"
+        sub="Celebrating the voices that shape Bharat's digital future."
+        gradient="gold"
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 32, alignItems: mob ? 'center' : 'flex-start' }}>
+          <div className="au d2" style={{ display: 'flex', gap: 12, justifyContent: mob ? 'center' : 'flex-start', flexWrap: 'wrap' }}>
             {['all', 'weekly', 'monthly'].map(p => (
               <button 
                 key={p} 
@@ -51,14 +52,14 @@ export default function LeaderboardPage() {
             ))}
           </div>
           
-          <div className="au d3" style={{ display: 'flex', justifyContent: 'center' }}>
+          <div className="au d3" style={{ display: 'flex', justifyContent: mob ? 'center' : 'flex-start' }}>
             <select value={niche} onChange={e => setNiche(e.target.value)} style={{ padding: '14px 28px', borderRadius: 100, border: '1px solid rgba(255,255,255,0.1)', fontSize: 15, background: 'rgba(255,255,255,0.1)', color: '#fff', outline: 'none', fontWeight: 700, cursor: 'pointer' }}>
               <option value="" style={{ background: '#111' }}>All Influence Niches</option>
               {niches.map(n => <option key={n} value={n} style={{ background: '#111' }}>{n}</option>)}
             </select>
           </div>
         </div>
-      </div>
+      </EliteHeader>
 
       <div style={{ padding: mob ? '40px 20px' : '80px 20px', background: '#FAFAFA' }}>
         <div style={W()}>
