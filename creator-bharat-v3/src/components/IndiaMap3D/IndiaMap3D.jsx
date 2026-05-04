@@ -8,7 +8,7 @@ const GEOJSON_URL =
 
 const FLAG_COLORS = ["#FF9933", "#FFFFFF", "#138808"];
 
-export default function IndiaMap3D({ mob }) {
+export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
   const svgRef  = useRef(null);
   const wrapRef = useRef(null);
   const [selectedState, setSelectedState] = useState(null);
@@ -19,25 +19,38 @@ export default function IndiaMap3D({ mob }) {
     offset: ["start end", "center center"]
   });
 
-  // Scale map only on desktop. On mobile, stay fixed.
+  // Original Scroll-Triggered Presence
   const scale = useTransform(scrollYProgress, [0, 1], mob ? [1, 1] : [0.7, 1]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], mob ? [1, 1] : [0, 1]);
 
   useEffect(() => {
     let cancelled = false;
     async function init() {
-      const d3 = await import("d3");
-      let geojson;
       try {
+        const d3Module = await import("d3");
+        const d3 = d3Module.default || d3Module;
+        
         const res = await fetch(GEOJSON_URL);
-        geojson = await res.json();
+        if (!res.ok) throw new Error("Map fetch failed: " + res.status);
+        const geojson = await res.json();
+        
+        if (cancelled) return;
+        const features = geojson.features || (Array.isArray(geojson) ? geojson : []);
+        
+        if (features.length === 0) throw new Error("No features found in GeoJSON");
+
+        if (svgRef.current) {
+          drawMap(d3, features);
+        } else {
+          setTimeout(() => {
+            if (!cancelled && svgRef.current) drawMap(d3, features);
+          }, 200);
+        }
+        setLoading(false);
       } catch (e) {
-        return;
+        console.error("IndiaMap3D Error:", e);
+        setLoading(false);
       }
-      if (cancelled) return;
-      const features = geojson.features || geojson;
-      drawMap(d3, features);
-      setLoading(false);
     }
     init();
     return () => { cancelled = true; };
@@ -67,8 +80,14 @@ export default function IndiaMap3D({ mob }) {
       .attr("stroke-opacity", 0.2)
       .style("cursor", "pointer")
       .on("click", function(event, d) {
-        const name = d.properties.NAME_1 || d.properties.State_Name || d.properties.state || "";
+        let name = d.properties.NAME_1 || d.properties.State_Name || d.properties.state || "";
+        
+        // Normalize names to match ALL_STATES
+        if (name === "Orissa") name = "Odisha";
+        if (name === "Uttaranchal") name = "Uttarakhand";
+        
         setSelectedState(name);
+        if (onSelectState) onSelectState(name);
         d3.selectAll("path").attr("stroke-width", 0.5).attr("stroke-opacity", 0.2);
         d3.select(this).attr("stroke-width", 2).attr("stroke-opacity", 1).attr("stroke", "#000080");
         setTimeout(() => setSelectedState(null), 3000);
@@ -86,15 +105,20 @@ export default function IndiaMap3D({ mob }) {
         </div>
 
         <div className={styles.svgWrap} style={{ height: mob ? '450px' : '640px' }}>
-          <svg ref={svgRef} viewBox="0 0 560 640" className={styles.svg} style={{ width: '100%', height: '100%' }} />
+          <svg ref={svgRef} viewBox="0 0 560 640" className={styles.svg} style={{ width: '100%', height: '100%', display: 'block' }} />
           
           {selectedState && (
             <motion.div 
-              initial={{ opacity: 0, y: 10 }} 
-              animate={{ opacity: 1, y: 0 }} 
+              initial={{ opacity: 0, y: 10, scale: 0.9 }} 
+              animate={{ opacity: 1, y: 0, scale: 1 }} 
               className={styles.stateLabel}
+              style={{ textAlign: 'center', minWidth: 200 }}
             >
-              {selectedState}
+              <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 4, fontWeight: 700 }}>SELECTED REGION</div>
+              <div style={{ fontSize: 24, fontWeight: 900 }}>{selectedState}</div>
+              <div style={{ marginTop: 8, padding: '4px 12px', background: 'rgba(255,255,255,0.2)', borderRadius: 100, fontSize: 14 }}>
+                🚀 <b>{stateCounts[selectedState] || 0}</b> Creators Available
+              </div>
             </motion.div>
           )}
 

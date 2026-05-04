@@ -185,7 +185,7 @@ export default function Layout({ children }) {
 
       <Footer mob={mob} />
 
-      {mob && <FloatingMobileNav />}
+      {mob && !st.ui.hideNav && <FloatingMobileNav />}
 
       <MobileMenu open={st.ui.mobileMenu} />
 

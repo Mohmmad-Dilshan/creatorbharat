@@ -14,8 +14,10 @@ const EliteHeader = memo(({
   children, 
   gradient = 'saffron', 
   maxWidth = 1100,
-  light = false 
+  light = false,
+  compact = false
 }) => {
+  const mob = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
   const gradients = {
     saffron: 'radial-gradient(circle at 50% 50%, rgba(255,148,49,0.1), transparent 70%)',
     green: 'radial-gradient(circle at 50% 50%, rgba(18,136,7,0.08), transparent 70%)',
@@ -23,10 +25,13 @@ const EliteHeader = memo(({
     gold: 'radial-gradient(circle at 50% 50%, rgba(217,119,6,0.08), transparent 70%)'
   };
 
+  const pt = mob ? (compact ? '80px' : '100px') : (compact ? '120px' : '160px');
+  const pb = mob ? (compact ? '40px' : '60px') : (compact ? '60px' : '100px');
+
   return (
     <div style={{ 
       background: light ? '#fff' : '#050505', 
-      padding: '160px 20px 100px', 
+      padding: `${pt} 20px ${pb}`, 
       position: 'relative', 
       overflow: 'hidden',
       borderBottom: light ? '1px solid rgba(0,0,0,0.05)' : 'none'

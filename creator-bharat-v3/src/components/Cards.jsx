@@ -11,12 +11,13 @@ export function CreatorCard({ creator: c, onView }) {
   const score = c.score || fmt.score(c);
   const tier = fmt.tier(score);
   const img = c.photo || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=FF9431&color=fff&size=200`;
+  const mob = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
 
   return (
-    <Card onClick={() => onView && onView(c)} style={{ height: '100%', display: 'flex', flexDirection: 'column', transition: 'all 0.5s cubic-bezier(0.23, 1, 0.32, 1)', border: '1px solid rgba(0,0,0,0.04)' }} className="feature-card-h">
-      <div style={{ position: 'relative', height: 140, background: 'linear-gradient(135deg, #0f172a, #1e293b)', flexShrink: 0, overflow: 'hidden' }}>
+    <Card onClick={() => onView && onView(c)} style={{ height: '100%', display: 'flex', flexDirection: 'column', transition: 'all 0.5s cubic-bezier(0.23, 1, 0.32, 1)', border: '1px solid rgba(0,0,0,0.04)', borderRadius: mob ? 20 : 24, overflow: 'hidden' }} className="feature-card-h">
+      <div style={{ position: 'relative', height: mob ? 100 : 140, background: 'linear-gradient(135deg, #0f172a, #1e293b)', flexShrink: 0 }}>
         {c.coverUrl ? (
-          <img src={c.coverUrl} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} alt="" />
+          <img src={c.coverUrl} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6 }} alt="" />
         ) : (
           <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255,148,49,0.15), transparent)' }} />
         )}
@@ -24,59 +25,56 @@ export function CreatorCard({ creator: c, onView }) {
         
         <button 
           onClick={e => { e.stopPropagation(); dsp({ t: 'SAVE', id: c.id }); }} 
-          style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', width: 36, height: 36, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: saved ? '#FF4D4D' : '#fff', fontSize: 18, transition: 'all 0.3s' }}
+          style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '50%', width: 30, height: 30, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: saved ? '#FF4D4D' : '#fff', fontSize: 14 }}
         >
           {saved ? '❤️' : '🤍'}
         </button>
 
-        {c.verified && (
-          <div style={{ position: 'absolute', top: 12, left: 12, background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.2)', padding: '6px 12px', borderRadius: 100, display: 'flex', alignItems: 'center', gap: 6, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-             <span style={{ color: '#fff', fontSize: 9, fontWeight: 900, letterSpacing: '1px' }}>ELITE</span>
-             <div style={{ background: '#3B82F6', width: 14, height: 14, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#fff' }}>✓</div>
+        {c.verified && mob && (
+          <div style={{ position: 'absolute', top: 8, left: 8, background: '#3B82F6', width: 14, height: 14, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: '#fff', border: '2px solid #fff' }}>✓</div>
+        )}
+      </div>
+
+      <div style={{ padding: mob ? '0 12px' : '0 24px', marginTop: mob ? -30 : -40, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: mob ? 12 : 20, position: 'relative', zIndex: 2 }}>
+        <img src={img} style={{ width: mob ? 60 : 80, height: mob ? 60 : 80, borderRadius: mob ? 16 : 24, objectFit: 'cover', border: (mob ? '3px' : '4px') + ' solid #fff', boxShadow: '0 8px 16px rgba(0,0,0,0.1)' }} alt={c.name} />
+        {!mob && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+             <Bdg sm color={tier.bc} style={{ padding: '4px 12px', borderRadius: 100 }}>{tier.label}</Bdg>
+             <div style={{ fontSize: 11, fontWeight: 900, color: T.t3, background: 'rgba(0,0,0,0.03)', padding: '2px 8px', borderRadius: 6 }}>SCORE: {score}</div>
           </div>
         )}
       </div>
 
-      <div style={{ padding: '0 24px', marginTop: -40, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 20, position: 'relative', zIndex: 2 }}>
-        <img src={img} style={{ width: 80, height: 80, borderRadius: 24, objectFit: 'cover', border: '4px solid #fff', boxShadow: '0 12px 24px rgba(0,0,0,0.12)' }} alt={c.name} />
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
-           <Bdg sm color={tier.bc} style={{ padding: '4px 12px', borderRadius: 100 }}>{tier.label}</Bdg>
-           <div style={{ fontSize: 11, fontWeight: 900, color: T.t3, background: 'rgba(0,0,0,0.03)', padding: '2px 8px', borderRadius: 6 }}>SCORE: {score}</div>
-        </div>
-      </div>
-
-      <div style={{ padding: '0 24px', flex: 1 }}>
-        <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 22, fontWeight: 900, color: '#111', marginBottom: 6, letterSpacing: '-0.02em' }}>{c.name || 'Anonymous Creator'}</h3>
-        <p style={{ fontSize: 14, color: T.t3, fontWeight: 600, marginBottom: 24, display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span>📍 {typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')}</span>
-          <span style={{ opacity: 0.3 }}>•</span>
-          <span>{(Array.isArray(c.niche) ? c.niche : [c.niche || 'Digital Creator']).slice(0, 1).join('')}</span>
+      <div style={{ padding: mob ? '0 12px 12px' : '0 24px 24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 15 : 22, fontWeight: 900, color: '#111', marginBottom: 4, letterSpacing: '-0.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.name}</h3>
+        <p style={{ fontSize: mob ? 11 : 14, color: T.t3, fontWeight: 700, marginBottom: mob ? 12 : 20, display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>📍 {typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')}</span>
         </p>
         
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, padding: '20px 0', borderTop: '1px solid rgba(0,0,0,0.06)', borderBottom: '1px solid rgba(0,0,0,0.06)', marginBottom: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: mob ? 4 : 12, padding: (mob ? '12px' : '16px') + ' 0', borderTop: '1px solid rgba(0,0,0,0.05)', marginTop: 'auto' }}>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 18, fontWeight: 900, color: '#111' }}>{fmt.num(c.followers)}</div>
-            <div style={{ fontSize: 10, fontWeight: 800, color: T.t4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Reach</div>
+            <div style={{ fontSize: mob ? 13 : 18, fontWeight: 900, color: '#111' }}>{fmt.num(c.followers)}</div>
+            <div style={{ fontSize: mob ? 8 : 10, fontWeight: 800, color: T.t4, textTransform: 'uppercase' }}>Reach</div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 18, fontWeight: 900, color: '#10B981' }}>{c.er || 4.2}%</div>
-            <div style={{ fontSize: 10, fontWeight: 800, color: T.t4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>ER</div>
+            <div style={{ fontSize: mob ? 13 : 18, fontWeight: 900, color: '#10B981' }}>{c.er || 4.2}%</div>
+            <div style={{ fontSize: mob ? 8 : 10, fontWeight: 800, color: T.t4, textTransform: 'uppercase' }}>ER</div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 18, fontWeight: 900, color: '#FF9431' }}>{fmt.inr(c.rateMin)}</div>
-            <div style={{ fontSize: 10, fontWeight: 800, color: T.t4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Min Rate</div>
+            <div style={{ fontSize: mob ? 13 : 18, fontWeight: 900, color: '#FF9431' }}>{score}</div>
+            <div style={{ fontSize: mob ? 8 : 10, fontWeight: 800, color: T.t4, textTransform: 'uppercase' }}>Score</div>
           </div>
         </div>
-      </div>
 
-      <div style={{ padding: '0 24px 24px', display: 'flex', gap: 12 }}>
-        <Btn lg full onClick={() => onView && onView(c)} style={{ borderRadius: 100, fontWeight: 900, fontSize: 15 }}>View Portfolio</Btn>
-        <button 
-          onClick={e => { e.stopPropagation(); dsp({ t: 'COMPARE', id: c.id }); }} 
-          style={{ width: 48, height: 48, borderRadius: 100, border: '1.5px solid ' + (compared ? '#FF9431' : 'rgba(0,0,0,0.08)'), background: compared ? 'rgba(255,148,49,0.05)' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, transition: 'all 0.3s' }}
-        >
-          {compared ? '⚖️' : '⚖️'}
-        </button>
+        {!mob && (
+          <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
+            <Btn lg full onClick={() => onView && onView(c)} style={{ borderRadius: 100, fontWeight: 900, fontSize: 14 }}>Portfolio</Btn>
+            <button 
+              onClick={e => { e.stopPropagation(); dsp({ t: 'COMPARE', id: c.id }); }} 
+              style={{ width: 44, height: 44, borderRadius: 100, border: '1.5px solid ' + (compared ? '#FF9431' : 'rgba(0,0,0,0.08)'), background: compared ? 'rgba(255,148,49,0.05)' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}
+            >⚖️</button>
+          </div>
+        )}
       </div>
     </Card>
   );
