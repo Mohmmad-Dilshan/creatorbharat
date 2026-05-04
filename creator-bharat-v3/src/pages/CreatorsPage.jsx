@@ -69,6 +69,9 @@ export default function CreatorsPage() {
     }
     if (f.minFollowers && c.followers < Number(f.minFollowers)) return false;
     if (f.verified && !c.verified) return false;
+    if (f.gender && f.gender !== 'Any' && c.gender !== f.gender) return false;
+    if (f.language && c.language && !c.language.includes(f.language)) return false;
+    if (f.minER && (c.er || 0) < Number(f.minER)) return false;
     return true;
   }).sort((a, b) => {
     if (f.sort === 'followers') return Number(b.followers || 0) - Number(a.followers || 0);
@@ -83,7 +86,7 @@ export default function CreatorsPage() {
     return acc;
   }, {});
 
-  const clearFilters = () => dsp({ t: 'CF', v: { q: '', niche: '', state: '', district: '', platform: '', verified: false, minFollowers: '', sort: 'score' } });
+  const clearFilters = () => dsp({ t: 'CF', v: { q: '', niche: '', state: '', district: '', platform: '', verified: false, minFollowers: '', sort: 'score', gender: '', language: '', minER: '' } });
 
   return (
     <div style={{ background: '#fff', minHeight: '100vh' }}>
@@ -201,7 +204,7 @@ export default function CreatorsPage() {
                 height: 48, padding: mob ? '0 12px' : '0 16px', borderRadius: 100, 
                 background: showMap ? '#FF9431' : 'rgba(0,0,0,0.03)', 
                 color: showMap ? '#fff' : '#475569', 
-                border: '1.5px solid ' + (showMap ? '#FF9431' : 'rgba(0,0,0,0.05)'), 
+                border: '1.5 solid ' + (showMap ? '#FF9431' : 'rgba(0,0,0,0.05)'), 
                 fontWeight: 900, fontSize: 13, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 6,
                 transition: 'all 0.2s'
@@ -519,6 +522,7 @@ export default function CreatorsPage() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
+                  {/* Category Section */}
                   <div>
                     <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 16, letterSpacing: '1px' }}>Creator Niche</label>
                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
@@ -541,6 +545,7 @@ export default function CreatorsPage() {
                     </div>
                   </div>
 
+                  {/* Platforms Section */}
                   <div>
                     <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 16, letterSpacing: '1px' }}>Primary Platform</label>
                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
@@ -561,8 +566,7 @@ export default function CreatorsPage() {
                             color: f.platform === p.name ? '#fff' : '#475569', 
                             fontSize: 14, fontWeight: 800, cursor: 'pointer',
                             display: 'flex', alignItems: 'center', gap: 8,
-                            transition: 'all 0.2s',
-                            boxShadow: f.platform === p.name ? `0 8px 16px ${p.color}20` : 'none'
+                            transition: 'all 0.2s'
                           }}
                         >
                           <span>{p.icon}</span>
@@ -572,6 +576,7 @@ export default function CreatorsPage() {
                     </div>
                   </div>
 
+                  {/* Location Section */}
                   <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 24 }}>
                     <div>
                       <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>State</label>
@@ -607,58 +612,108 @@ export default function CreatorsPage() {
                     </div>
                   </div>
 
+                  {/* Demographics & Engagement */}
                   <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 24 }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>Sort Order</label>
+                      <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>Gender</label>
                       <div style={{ display: 'flex', background: '#f8fafc', padding: 4, borderRadius: 100, border: '1.5px solid rgba(0,0,0,0.04)' }}>
-                        <button onClick={() => dsp({ t: 'CF', v: { sort: 'score' } })} style={{ flex: 1, padding: '12px', borderRadius: 100, border: 'none', background: f.sort === 'score' ? '#111' : 'transparent', color: f.sort === 'score' ? '#fff' : '#64748b', fontSize: 13, fontWeight: 800, cursor: 'pointer', transition: '0.3s' }}>Elite Score</button>
-                        <button onClick={() => dsp({ t: 'CF', v: { sort: 'followers' } })} style={{ flex: 1, padding: '12px', borderRadius: 100, border: 'none', background: f.sort === 'followers' ? '#111' : 'transparent', color: f.sort === 'followers' ? '#fff' : '#64748b', fontSize: 13, fontWeight: 800, cursor: 'pointer', transition: '0.3s' }}>Followers</button>
+                        {['Any', 'Male', 'Female'].map(g => (
+                          <button 
+                            key={g}
+                            onClick={() => dsp({ t: 'CF', v: { gender: g } })} 
+                            style={{ 
+                              flex: 1, padding: '12px', borderRadius: 100, border: 'none', 
+                              background: (f.gender || 'Any') === g ? '#111' : 'transparent', 
+                              color: (f.gender || 'Any') === g ? '#fff' : '#64748b', 
+                              fontSize: 13, fontWeight: 800, cursor: 'pointer', transition: '0.3s' 
+                            }}
+                          >{g}</button>
+                        ))}
                       </div>
                     </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>Primary Language</label>
+                      <select 
+                        value={f.language} 
+                        onChange={e => dsp({ t: 'CF', v: { language: e.target.value } })}
+                        style={{ 
+                          width: '100%', padding: '18px 20px', borderRadius: 18, border: '1.5px solid rgba(0,0,0,0.06)', 
+                          fontSize: 15, fontWeight: 700, background: '#f8fafc', outline: 'none',
+                          fontFamily: "'Inter', sans-serif", color: '#111'
+                        }}
+                      >
+                        <option value="">All Languages</option>
+                        {['Hindi', 'English', 'Punjabi', 'Tamil', 'Telugu', 'Bengali', 'Marathi', 'Gujarati', 'Kannada', 'Malayalam'].map(l => (
+                          <option key={l} value={l}>{l}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Reach & Engagement */}
+                  <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 24 }}>
                     <div>
                       <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>Minimum Reach</label>
                       <div style={{ position: 'relative' }}>
                         <input 
                           type="number" 
+                          placeholder="e.g. 10000" 
                           value={f.minFollowers} 
-                          onChange={e => dsp({ t: 'CF', v: { minFollowers: e.target.value } })} 
-                          placeholder="e.g. 10000"
-                          style={{ width: '100%', padding: '16px 20px', borderRadius: 18, border: '1.5px solid rgba(0,0,0,0.06)', fontSize: 15, fontWeight: 700, background: '#f8fafc', outline: 'none' }}
+                          onChange={e => dsp({ t: 'CF', v: { minFollowers: e.target.value } })}
+                          style={{ 
+                            width: '100%', padding: '18px 20px', borderRadius: 18, border: '1.5px solid rgba(0,0,0,0.06)', 
+                            fontSize: 15, fontWeight: 700, background: '#f8fafc', outline: 'none',
+                            fontFamily: "'Inter', sans-serif"
+                          }}
                         />
-                        <span style={{ position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)', fontSize: 12, fontWeight: 800, color: '#94a3b8' }}>FOLLOWERS</span>
+                        <span style={{ position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)', fontWeight: 900, color: '#94a3b8', fontSize: 12 }}>FOLLOWERS</span>
                       </div>
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>Min Engagement</label>
+                      <select 
+                        value={f.minER} 
+                        onChange={e => dsp({ t: 'CF', v: { minER: e.target.value } })}
+                        style={{ 
+                          width: '100%', padding: '18px 20px', borderRadius: 18, border: '1.5px solid rgba(0,0,0,0.06)', 
+                          fontSize: 15, fontWeight: 700, background: '#f8fafc', outline: 'none',
+                          fontFamily: "'Inter', sans-serif", color: '#111'
+                        }}
+                      >
+                        <option value="">Any ER</option>
+                        <option value="2">2% + (Active)</option>
+                        <option value="5">5% + (High)</option>
+                        <option value="10">10% + (Elite)</option>
+                      </select>
                     </div>
                   </div>
 
-                  <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 16 }}>Trust & Verification</label>
-                    <div 
+                  {/* Trust & Verification Section */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', padding: '24px', borderRadius: 24, border: '1.5px solid rgba(0,0,0,0.04)' }}>
+                    <div>
+                      <h4 style={{ fontSize: 16, fontWeight: 900, color: '#111' }}>Verified Only</h4>
+                      <p style={{ fontSize: 13, color: '#64748b', fontWeight: 600 }}>Show only manually verified elite profiles</p>
+                    </div>
+                    <button 
                       onClick={() => dsp({ t: 'CF', v: { verified: !f.verified } })}
                       style={{ 
-                        display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', 
-                        background: f.verified ? 'rgba(59,130,246,0.05)' : '#f8fafc', 
-                        borderRadius: 24, border: '1.5px solid ' + (f.verified ? '#3B82F6' : 'rgba(0,0,0,0.04)'),
-                        cursor: 'pointer', transition: 'all 0.3s'
+                        width: 64, height: 32, borderRadius: 100, background: f.verified ? '#3B82F6' : '#e2e8f0', 
+                        position: 'relative', border: 'none', cursor: 'pointer', transition: '0.3s' 
                       }}
                     >
-                      <div>
-                        <p style={{ fontSize: 16, fontWeight: 900, color: '#1e293b' }}>Verified Creators Only</p>
-                        <p style={{ fontSize: 13, color: '#64748b', fontWeight: 600 }}>Show only profiles manually verified by our team.</p>
-                      </div>
-                      <div style={{ width: 50, height: 28, background: f.verified ? '#3B82F6' : '#cbd5e1', borderRadius: 100, position: 'relative', transition: '0.3s' }}>
-                        <motion.div 
-                          animate={{ x: f.verified ? 24 : 3 }}
-                          style={{ position: 'absolute', top: 3, left: 0, width: 22, height: 22, background: '#fff', borderRadius: '50%', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} 
-                        />
-                      </div>
-                    </div>
+                      <div style={{ 
+                        width: 24, height: 24, borderRadius: '50%', background: '#fff', 
+                        position: 'absolute', top: 4, left: f.verified ? 36 : 4, transition: '0.3s',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                      }} />
+                    </button>
                   </div>
 
+                  {/* Action Buttons */}
                   <div style={{ 
-                    display: 'flex', gap: 12, marginTop: 24, padding: '16px', 
+                    display: 'flex', gap: 12, marginTop: 24, padding: '16px 0', 
                     background: '#fff', borderTop: '1px solid rgba(0,0,0,0.05)',
-                    position: 'sticky', bottom: -40, margin: '0 -20px -40px',
-                    zIndex: 10
+                    position: 'sticky', bottom: -40, zIndex: 10
                   }}>
                     <button 
                       onClick={clearFilters} 
@@ -668,9 +723,7 @@ export default function CreatorsPage() {
                         fontWeight: 900, cursor: 'pointer', border: '1.5px solid rgba(0,0,0,0.04)',
                         transition: 'all 0.2s'
                       }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#f1f5f9'}
-                      onMouseLeave={e => e.currentTarget.style.background = '#f8fafc'}
-                    >Reset</button>
+                    >Reset All</button>
                     
                     <button 
                       onClick={() => setShowFilters(false)} 
@@ -679,11 +732,8 @@ export default function CreatorsPage() {
                         background: '#111', color: '#fff', fontSize: 15, 
                         fontWeight: 900, cursor: 'pointer', border: 'none', 
                         boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                         transition: 'all 0.2s'
                       }}
-                      onMouseDown={e => e.currentTarget.style.transform = 'scale(0.96)'}
-                      onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
                     >
                       Show {filtered.length} Creators
                     </button>
@@ -702,4 +752,3 @@ export default function CreatorsPage() {
     </div>
   );
 }
-
