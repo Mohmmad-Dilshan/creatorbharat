@@ -5,6 +5,7 @@ import { W, scrollToTop, fmt, LS } from '../utils/helpers';
 import { apiCall } from '../utils/api';
 import { SH, Card, Empty, Bdg } from '../components/Primitives';
 import EliteHeader from '../components/layout/EliteHeader';
+import { motion } from 'framer-motion';
 
 export default function LeaderboardPage() {
   const { st, dsp } = useApp();
@@ -32,37 +33,42 @@ export default function LeaderboardPage() {
 
   return (
     <div style={{ background: '#fff', minHeight: '100vh' }}>
-      {/* Elite Leaderboard Header */}
       <EliteHeader 
         eyebrow="Ecosystem Elite"
         title="Creator Leaderboard"
-        sub="Celebrating the voices that shape Bharat's digital future."
+        sub="Celebrating the voices that shape Bharat's digital future through high-impact content."
         gradient="gold"
+        light={true}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 32, alignItems: mob ? 'center' : 'flex-start' }}>
-          <div className="au d2" style={{ display: 'flex', gap: 12, justifyContent: mob ? 'center' : 'flex-start', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24, alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             {['all', 'weekly', 'monthly'].map(p => (
               <button 
                 key={p} 
                 onClick={() => setPeriod(p)} 
-                style={{ padding: '12px 32px', borderRadius: 100, border: `1.5px solid ${period === p ? '#FF9431' : 'rgba(255,255,255,0.1)'}`, background: period === p ? '#FF9431' : 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 14, fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s' }}
+                style={{ 
+                  padding: '12px 28px', borderRadius: 100, border: `1.5px solid ${period === p ? '#FF9431' : 'rgba(0,0,0,0.06)'}`, 
+                  background: period === p ? '#FF9431' : '#fff', color: period === p ? '#fff' : '#64748b', 
+                  fontSize: 13, fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s',
+                  boxShadow: period === p ? '0 10px 20px rgba(255,148,49,0.2)' : 'none'
+                }}
               >
                 {p === 'all' ? 'All Time' : p.toUpperCase()}
               </button>
             ))}
           </div>
           
-          <div className="au d3" style={{ display: 'flex', justifyContent: mob ? 'center' : 'flex-start' }}>
-            <select value={niche} onChange={e => setNiche(e.target.value)} style={{ padding: '14px 28px', borderRadius: 100, border: '1px solid rgba(255,255,255,0.1)', fontSize: 15, background: 'rgba(255,255,255,0.1)', color: '#fff', outline: 'none', fontWeight: 700, cursor: 'pointer' }}>
-              <option value="" style={{ background: '#111' }}>All Influence Niches</option>
-              {niches.map(n => <option key={n} value={n} style={{ background: '#111' }}>{n}</option>)}
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <select value={niche} onChange={e => setNiche(e.target.value)} style={{ padding: '14px 28px', borderRadius: 100, border: '1px solid rgba(0,0,0,0.06)', fontSize: 14, background: '#fff', color: '#1e293b', outline: 'none', fontWeight: 800, cursor: 'pointer', boxShadow: '0 10px 30px rgba(0,0,0,0.04)' }}>
+              <option value="">All Influence Niches</option>
+              {niches.map(n => <option key={n} value={n}>{n}</option>)}
             </select>
           </div>
         </div>
       </EliteHeader>
 
-      <div style={{ padding: mob ? '40px 20px' : '80px 20px', background: '#FAFAFA' }}>
-        <div style={W()}>
+      <div style={{ padding: mob ? '40px 16px' : '80px 20px', background: '#fdfdfd' }}>
+        <div style={W(1100)}>
           {/* Podium for Top 3 */}
           {top3.length > 0 && (
             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1.2fr 1fr', gap: 24, marginBottom: 80, alignItems: 'flex-end' }}>
@@ -77,18 +83,24 @@ export default function LeaderboardPage() {
                     key={c.id} 
                     className="au"
                     onClick={() => go('creator-profile', { creator: c })} 
-                    style={{ textAlign: 'center', padding: isWinner ? '60px 32px' : '40px 24px', borderRadius: 40, background: '#fff', boxShadow: isWinner ? '0 30px 60px rgba(255,148,49,0.15)' : '0 10px 30px rgba(0,0,0,.03)', border: `2px solid ${isWinner ? '#FF9431' : 'rgba(0,0,0,0.04)'}`, cursor: 'pointer', position: 'relative', order: mob ? idx : undefined, transform: isWinner && !mob ? 'scale(1.05)' : 'none', zIndex: isWinner ? 10 : 1 }}
+                    style={{ 
+                      textAlign: 'center', padding: isWinner ? '60px 32px' : '40px 24px', borderRadius: 40, background: '#fff', 
+                      boxShadow: isWinner ? '0 40px 80px rgba(255,148,49,0.12)' : '0 10px 40px rgba(0,0,0,0.03)', 
+                      border: `1.5px solid ${isWinner ? '#FF9431' : 'rgba(0,0,0,0.05)'}`, 
+                      cursor: 'pointer', position: 'relative', order: mob ? idx : undefined, 
+                      transform: isWinner && !mob ? 'scale(1.05)' : 'none', zIndex: isWinner ? 10 : 1 
+                    }}
                   >
-                    <div style={{ fontSize: isWinner ? 64 : 48, position: 'absolute', top: isWinner ? -40 : -24, left: '50%', transform: 'translateX(-50%)' }}>{medals[idx]}</div>
-                    <div style={{ width: isWinner ? 140 : 100, height: isWinner ? 140 : 100, borderRadius: '50%', padding: 4, background: `linear-gradient(135deg, ${medalColors[idx]}, #fff)`, margin: '0 auto 24px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
-                       <img src={img} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '4px solid #fff' }} alt={c.name} />
+                    <div style={{ fontSize: isWinner ? 72 : 48, position: 'absolute', top: isWinner ? -45 : -24, left: '50%', transform: 'translateX(-50%)' }}>{medals[idx]}</div>
+                    <div style={{ width: isWinner ? 160 : 120, height: isWinner ? 160 : 120, borderRadius: '50%', padding: 4, background: `linear-gradient(135deg, ${medalColors[idx]}, #fff)`, margin: '0 auto 24px', boxShadow: '0 15px 35px rgba(0,0,0,0.1)' }}>
+                       <img src={img} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '5px solid #fff' }} alt={c.name} />
                     </div>
-                    <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: isWinner ? 28 : 22, color: '#111', marginBottom: 6, fontWeight: 900 }}>{c.name}</h3>
-                    <p style={{ fontSize: 14, color: T.t3, marginBottom: 24, fontWeight: 700 }}><span>📍 {typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')}{c.state ? ', ' + c.state : ''}</span></p>
+                    <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: isWinner ? 32 : 24, color: '#111', marginBottom: 8, fontWeight: 900 }}>{c.name}</h3>
+                    <p style={{ fontSize: 14, color: '#64748b', marginBottom: 24, fontWeight: 700 }}><span>📍 {typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')}{c.state ? ', ' + c.state : ''}</span></p>
                     
-                    <div style={{ display: 'inline-flex', flexDirection: 'column', padding: '12px 32px', background: isWinner ? '#FF9431' : T.bg2, borderRadius: 100, color: isWinner ? '#fff' : '#111' }}>
-                       <span style={{ fontSize: 24, fontWeight: 900 }}>{score}</span>
-                       <span style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.8 }}>CS Points</span>
+                    <div style={{ display: 'inline-flex', flexDirection: 'column', padding: '14px 40px', background: isWinner ? '#FF9431' : '#f1f5f9', borderRadius: 100, color: isWinner ? '#fff' : '#1e293b' }}>
+                       <span style={{ fontSize: 28, fontWeight: 900 }}>{score}</span>
+                       <span style={{ fontSize: 10, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.8 }}>CS Score</span>
                     </div>
                   </div>
                 );
@@ -97,14 +109,14 @@ export default function LeaderboardPage() {
           )}
 
           {/* Table Header */}
-          <div style={{ display: 'flex', padding: '0 32px 16px', borderBottom: '1px solid rgba(0,0,0,0.05)', marginBottom: 16 }}>
-             <span style={{ width: 60, fontSize: 12, fontWeight: 800, color: T.t4 }}>RANK</span>
-             <span style={{ flex: 1, fontSize: 12, fontWeight: 800, color: T.t4 }}>CREATOR</span>
-             <span style={{ width: 100, textAlign: 'right', fontSize: 12, fontWeight: 800, color: T.t4 }}>INFLUENCE</span>
+          <div style={{ display: 'flex', padding: '0 32px 16px', borderBottom: '1px solid rgba(0,0,0,0.06)', marginBottom: 20 }}>
+             <span style={{ width: 60, fontSize: 11, fontWeight: 900, color: '#94a3b8', letterSpacing: '0.1em' }}>RANK</span>
+             <span style={{ flex: 1, fontSize: 11, fontWeight: 900, color: '#94a3b8', letterSpacing: '0.1em' }}>CREATOR PROFILE</span>
+             <span style={{ width: 120, textAlign: 'right', fontSize: 11, fontWeight: 900, color: '#94a3b8', letterSpacing: '0.1em' }}>INFLUENCE</span>
           </div>
 
           {/* List for the rest */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {rest.map((c, i) => {
               const score = c.score || fmt.score(c);
               const img = c.photo || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=FF9431&color=fff`;
@@ -113,21 +125,33 @@ export default function LeaderboardPage() {
                    key={c.id} 
                    className={`au d${(i % 5) + 1}`}
                    onClick={() => go('creator-profile', { creator: c })} 
-                   style={{ padding: '16px 32px', background: '#fff', borderRadius: 24, border: '1px solid rgba(0,0,0,0.04)', display: 'flex', alignItems: 'center', gap: 24, cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}
-                   onMouseEnter={e => e.currentTarget.style.transform = 'translateX(8px)'}
-                   onMouseLeave={e => e.currentTarget.style.transform = 'none'}
+                   style={{ 
+                     padding: '20px 32px', background: '#fff', borderRadius: 28, border: '1.5px solid rgba(0,0,0,0.04)', 
+                     display: 'flex', alignItems: 'center', gap: 24, cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)', 
+                     boxShadow: '0 10px 30px rgba(0,0,0,0.02)' 
+                   }}
+                   onMouseEnter={e => {
+                     e.currentTarget.style.transform = 'translateY(-4px)';
+                     e.currentTarget.style.boxShadow = '0 20px 50px rgba(0,0,0,0.06)';
+                     e.currentTarget.style.borderColor = '#FF9431';
+                   }}
+                   onMouseLeave={e => {
+                     e.currentTarget.style.transform = 'none';
+                     e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.02)';
+                     e.currentTarget.style.borderColor = 'rgba(0,0,0,0.04)';
+                   }}
                 >
-                  <span style={{ width: 60, fontSize: 18, fontWeight: 900, color: T.t4 }}>#{i + 4}</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1 }}>
-                     <img src={img} style={{ width: 52, height: 52, borderRadius: 16, objectFit: 'cover' }} alt={c.name} />
+                  <span style={{ width: 60, fontSize: 20, fontWeight: 900, color: '#94a3b8' }}>#{i + 4}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 20, flex: 1 }}>
+                     <img src={img} style={{ width: 60, height: 60, borderRadius: 18, objectFit: 'cover', boxShadow: '0 8px 16px rgba(0,0,0,0.05)' }} alt={c.name} />
                      <div>
-                        <h4 style={{ fontSize: 16, fontWeight: 800, color: '#111', marginBottom: 2 }}>{c.name}</h4>
-                        <p style={{ fontSize: 13, color: T.t3, fontWeight: 600 }}>{typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')}{c.state ? ', ' + c.state : ''} • {(Array.isArray(c.niche) ? c.niche : [c.niche]).filter(Boolean).slice(0, 1).join(', ')}</p>
+                        <h4 style={{ fontSize: 18, fontWeight: 800, color: '#111', marginBottom: 4 }}>{c.name}</h4>
+                        <p style={{ fontSize: 14, color: '#64748b', fontWeight: 600 }}>{typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')} • {(Array.isArray(c.niche) ? c.niche : [c.niche]).filter(Boolean).slice(0, 1).join(', ')}</p>
                      </div>
                   </div>
-                  <div style={{ textAlign: 'right', width: 100 }}>
-                    <div style={{ fontSize: 20, fontWeight: 900, color: '#FF9431' }}>{score}</div>
-                    <div style={{ fontSize: 10, color: T.t4, fontWeight: 800 }}>POINTS</div>
+                  <div style={{ textAlign: 'right', width: 120 }}>
+                    <div style={{ fontSize: 24, fontWeight: 900, color: '#111' }}>{score}</div>
+                    <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 900 }}>SCORE</div>
                   </div>
                 </div>
               );

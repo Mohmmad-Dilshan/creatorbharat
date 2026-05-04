@@ -12,78 +12,96 @@ const EliteHeader = memo(({
   title, 
   sub, 
   children, 
-  gradient = 'saffron', // 'saffron', 'green', 'blue', 'gold'
-  maxWidth = 900,
-  light = true
+  gradient = 'saffron', 
+  maxWidth = 1100,
+  light = false 
 }) => {
   const gradients = {
-    saffron: 'radial-gradient(circle at 50% 50%, rgba(255,148,49,0.12), transparent 70%)',
-    green: 'radial-gradient(circle at 50% 50%, rgba(18,136,7,0.1), transparent 70%)',
-    blue: 'radial-gradient(circle at 50% 50%, rgba(37,99,235,0.08), transparent 70%)',
-    gold: 'radial-gradient(circle at 50% 50%, rgba(217,119,6,0.1), transparent 70%)'
-  };
-
-  const accents = {
-    saffron: 'linear-gradient(90deg, #FF9431, #fff, #128807)',
-    green: 'linear-gradient(90deg, #128807, #fff, #FF9431)',
-    blue: 'linear-gradient(90deg, #2563EB, #fff, #10B981)',
-    gold: 'linear-gradient(90deg, #D97706, #fff, #FF9431)'
+    saffron: 'radial-gradient(circle at 50% 50%, rgba(255,148,49,0.1), transparent 70%)',
+    green: 'radial-gradient(circle at 50% 50%, rgba(18,136,7,0.08), transparent 70%)',
+    blue: 'radial-gradient(circle at 50% 50%, rgba(37,99,235,0.06), transparent 70%)',
+    gold: 'radial-gradient(circle at 50% 50%, rgba(217,119,6,0.08), transparent 70%)'
   };
 
   return (
     <div style={{ 
-      background: '#050505', 
-      padding: '140px 20px 100px', 
+      background: light ? '#fff' : '#050505', 
+      padding: '160px 20px 100px', 
       position: 'relative', 
-      overflow: 'hidden' 
+      overflow: 'hidden',
+      borderBottom: light ? '1px solid rgba(0,0,0,0.05)' : 'none'
     }}>
-      {/* Decorative Blobs */}
+      {/* SaaS Dot Grid Background */}
+      {light && (
+        <div style={{ 
+          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, 
+          backgroundImage: 'radial-gradient(#e2e8f0 1.2px, transparent 1.2px)', 
+          backgroundSize: '32px 32px', 
+          opacity: 0.5,
+          zIndex: 1
+        }} />
+      )}
+
+      {/* Modern Decorative Blobs */}
       <motion.div 
         animate={{ 
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
+          scale: [1, 1.1, 1],
+          opacity: light ? [0.4, 0.6, 0.4] : [0.3, 0.5, 0.3],
         }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         style={{ 
-          position: 'absolute', 
-          top: '-10%', 
-          right: '5%', 
-          width: '400px', 
-          height: '400px', 
+          position: 'absolute', top: '-10%', right: '5%', width: '500px', height: '500px', 
           background: gradients[gradient] || gradients.saffron, 
-          borderRadius: '50%', 
-          filter: 'blur(60px)',
-          zIndex: 1
+          borderRadius: '50%', filter: 'blur(100px)', zIndex: 2
         }} 
       />
       
-      {/* Top Accent Bar */}
-      <div style={{ 
-        position: 'absolute', 
-        top: 0, 
-        left: 0, 
-        right: 0, 
-        height: 4, 
-        background: accents[gradient] || accents.saffron,
-        opacity: 0.8,
-        zIndex: 2
-      }} />
-      
-      <div style={{ ...W(maxWidth), position: 'relative', zIndex: 3 }}>
+      <div style={{ ...W(maxWidth), position: 'relative', zIndex: 10, textAlign: 'center' }}>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
         >
-          <SH 
-            eyebrow={eyebrow} 
-            title={title} 
-            sub={sub} 
-            light={light} 
-            mb={children ? 32 : 0} 
-          />
+          {eyebrow && (
+            <motion.div 
+              style={{ 
+                display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px', 
+                background: light ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)', 
+                borderRadius: 100, marginBottom: 28, border: `1px solid ${light ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'}` 
+              }}
+            >
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF9431' }} />
+              <span style={{ fontSize: 12, fontWeight: 900, color: light ? '#64748b' : '#fff', textTransform: 'uppercase', letterSpacing: '2px' }}>{eyebrow}</span>
+            </motion.div>
+          )}
+
+          <h1 style={{ 
+            fontSize: 'clamp(40px, 6vw, 72px)', 
+            fontWeight: 900, 
+            color: light ? '#111' : '#fff', 
+            fontFamily: "'Fraunces', serif",
+            lineHeight: 1.05,
+            marginBottom: 24,
+            letterSpacing: '-0.02em'
+          }}>
+            {title}
+          </h1>
+
+          {sub && (
+            <p style={{ 
+              fontSize: 'clamp(17px, 1.3vw, 21px)', 
+              color: light ? '#64748b' : 'rgba(255,255,255,0.6)', 
+              maxWidth: 700, 
+              margin: '0 auto 48px',
+              lineHeight: 1.6,
+              fontWeight: 500
+            }}>
+              {sub}
+            </p>
+          )}
+          
           {children && (
-            <div style={{ marginTop: 24 }}>
+            <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
               {children}
             </div>
           )}

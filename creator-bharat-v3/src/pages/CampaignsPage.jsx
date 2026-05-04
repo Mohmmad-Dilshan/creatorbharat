@@ -7,6 +7,7 @@ import { Btn, SH, Bdg, SkeletonCard, Empty, Modal, Fld } from '../components/Pri
 import { CampCard } from '../components/Cards';
 import { Card } from '../components/Primitives';
 import EliteHeader from '../components/layout/EliteHeader';
+import { motion } from 'framer-motion';
 
 export default function CampaignsPage() {
   const { st, dsp } = useApp();
@@ -73,49 +74,53 @@ export default function CampaignsPage() {
     toast(`Application sent for "${modal.title}"`, 'success');
   };
 
+  const clearFilters = () => dsp({ t: 'CPF', v: { q: '', niche: '', urgent: false } });
+
   return (
     <div style={{ background: '#fff', minHeight: '100vh' }}>
-      {/* Elite Campaigns Header */}
       <EliteHeader 
-        eyebrow="Brand Collaborations"
+        eyebrow="Collaborations"
         title="Find Your Next Big Deal"
         sub="Connect with India's fastest-growing brands. From Jaipur startups to global giants."
         gradient="blue"
+        light={true}
       >
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', width: '100%', maxWidth: 800, justifyContent: 'center' }}>
           <div style={{ flex: 1, minWidth: mob ? '100%' : 400, position: 'relative' }}>
-            <input 
-              value={f.q} 
-              onChange={e => dsp({ t: 'CPF', v: { q: e.target.value } })} 
-              placeholder="Search campaigns, brands, or roles..." 
+            <motion.div 
               style={{ 
-                width: '100%', 
-                padding: '18px 24px 18px 56px', 
-                borderRadius: 100, 
-                border: '1px solid rgba(255,255,255,0.1)', 
-                background: 'rgba(255,255,255,0.08)', 
-                color: '#fff', 
-                fontSize: 16, 
-                outline: 'none', 
-                backdropFilter: 'blur(10px)' 
-              }} 
-            />
-            <span style={{ position: 'absolute', left: 22, top: '50%', transform: 'translateY(-50%)', fontSize: 20, opacity: 0.6 }}>🔍</span>
+                display: 'flex', alignItems: 'center', background: '#fff', borderRadius: 100, padding: '8px 8px 8px 24px',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05)',
+                border: '1px solid rgba(0,0,0,0.05)'
+              }}
+            >
+              <span style={{ fontSize: 20, marginRight: 16 }}>🔍</span>
+              <input 
+                value={f.q} 
+                onChange={e => dsp({ t: 'CPF', v: { q: e.target.value } })} 
+                placeholder="Search campaigns, brands..." 
+                style={{ flex: 1, border: 'none', background: 'none', color: '#111', fontSize: 16, fontWeight: 500, outline: 'none' }} 
+              />
+            </motion.div>
           </div>
           
           <div style={{ display: 'flex', gap: 12, width: mob ? '100%' : 'auto' }}>
             <select 
               value={f.niche} 
               onChange={e => dsp({ t: 'CPF', v: { niche: e.target.value } })} 
-              style={{ padding: '0 24px', borderRadius: 100, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.1)', color: '#fff', fontSize: 14, fontWeight: 700, outline: 'none', cursor: 'pointer', height: 56 }}
+              style={{ padding: '0 24px', borderRadius: 100, border: '1px solid rgba(0,0,0,0.08)', background: '#fff', color: '#1e293b', fontSize: 14, fontWeight: 800, outline: 'none', cursor: 'pointer', height: 56, minWidth: 160 }}
             >
-              <option value="" style={{ background: '#111' }}>All Categories</option>
-              {niches.map(n => <option key={n} value={n} style={{ background: '#111' }}>{n}</option>)}
+              <option value="">All Categories</option>
+              {niches.map(n => <option key={n} value={n}>{n}</option>)}
             </select>
             
             <button 
               onClick={() => dsp({ t: 'CPF', v: { urgent: !f.urgent } })}
-              style={{ padding: '0 24px', borderRadius: 100, border: '1.5px solid ' + (f.urgent ? '#EF4444' : 'rgba(255,255,255,0.1)'), background: f.urgent ? 'rgba(239,68,68,0.1)' : 'transparent', color: f.urgent ? '#EF4444' : '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s' }}
+              style={{ 
+                padding: '0 28px', borderRadius: 100, border: '1.5px solid ' + (f.urgent ? '#EF4444' : 'rgba(0,0,0,0.08)'), 
+                background: f.urgent ? 'rgba(239,68,68,0.05)' : '#fff', color: f.urgent ? '#EF4444' : '#64748b', 
+                fontSize: 14, fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s', height: 56
+              }}
             >
               🔥 Urgent
             </button>
@@ -123,37 +128,43 @@ export default function CampaignsPage() {
         </div>
       </EliteHeader>
 
-      <div style={{ padding: mob ? '40px 20px' : '60px 20px', background: '#FAFAFA' }}>
-        <div style={W()}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-            <h2 style={{ fontSize: 18, fontWeight: 900, color: '#111', fontFamily: "'Fraunces', serif" }}>
-               Latest Opportunities <span style={{ color: T.t3, fontSize: 15, fontWeight: 600, marginLeft: 8 }}>({filtered.length} Live)</span>
+      <div style={{ padding: mob ? '40px 16px' : '60px 20px', background: '#fdfdfd' }}>
+        <div style={W(1200)}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
+            <h2 style={{ fontSize: mob ? 20 : 26, fontWeight: 900, color: '#111', fontFamily: "'Fraunces', serif" }}>
+               Latest Opportunities <span style={{ color: '#94a3b8', fontSize: 15, fontWeight: 800, marginLeft: 12 }}>{filtered.length} Live Campaigns</span>
             </h2>
             {(f.q || f.niche || f.urgent) && (
-              <button onClick={() => dsp({ t: 'CPF', v: { q: '', niche: '', urgent: false } })} style={{ background: 'none', border: 'none', color: '#FF9431', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>Clear All Filters</button>
+              <button onClick={clearFilters} style={{ background: 'none', border: 'none', color: '#FF9431', fontWeight: 900, fontSize: 13, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Clear All</button>
             )}
           </div>
 
           {loading ? (
-            <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(auto-fill, minmax(350px, 1fr))', gap: 24 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(auto-fill, minmax(360px, 1fr))', gap: 32 }}>
               {[1, 2, 3, 4, 5, 6].map(i => <SkeletonCard key={i} />)}
             </div>
           ) : filtered.length === 0 ? (
-            <div style={{ padding: '80px 0' }}>
+            <div style={{ padding: '100px 0' }}>
                <Empty 
                 icon="📋" 
                 title="No Campaigns Found" 
                 sub="Hum naye brand campaigns par kaam kar rahe hain. Tab tak dusre categories check karein!" 
-                ctaLabel="Browse All Categories" 
-                onCta={() => dsp({ t: 'CPF', v: { q: '', niche: '', urgent: false } })} 
+                ctaLabel="Browse All Opportunities" 
+                onCta={clearFilters} 
                />
             </div>
           ) : (
-            <div className="au" style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(auto-fill, minmax(350px, 1fr))', gap: 24 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(auto-fill, minmax(360px, 1fr))', gap: 32 }}>
               {filtered.map((c, i) => (
-                 <div key={c.id} className={`au d${(i % 5) + 1}`}>
-                    <CampCard campaign={c} onApply={camp => { setModal(camp); setDone(false); setAF({ pitch: '', portfolio: '', rate: '' }) }} />
-                 </div>
+                <motion.div 
+                  key={c.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.05 }}
+                >
+                  <CampCard campaign={c} onApply={camp => { setModal(camp); setDone(false); setAF({ pitch: '', portfolio: '', rate: '' }) }} />
+                </motion.div>
               ))}
             </div>
           )}
@@ -162,19 +173,21 @@ export default function CampaignsPage() {
 
       <Modal open={!!modal} title={'Campaign Application'} onClose={() => { setModal(null); setDone(false) }} width={600}>
         {done ? (
-          <div className="si" style={{ textAlign: 'center', padding: '40px 0' }}>
-            <div style={{ width: 80, height: 80, background: 'rgba(16,185,129,0.1)', color: '#10B981', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40, margin: '0 auto 24px' }}>✓</div>
-            <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 28, color: '#111', marginBottom: 12, fontWeight: 900 }}>Application Successful!</h3>
-            <p style={{ fontSize: 16, color: T.t2, marginBottom: 32, lineHeight: 1.6, maxWidth: 400, margin: '0 auto 32px' }}>Aapka application brand tak pahunch gaya hai. Shortlist hone par aapko notification mil jayega.</p>
-            <Btn lg onClick={() => { setModal(null); setDone(false) }} style={{ borderRadius: 100, padding: '16px 48px' }}>Done, Browse More</Btn>
+          <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+            <div style={{ width: 100, height: 100, background: 'rgba(16,185,129,0.06)', color: '#10B981', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48, margin: '0 auto 32px' }}>✓</div>
+            <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 32, color: '#111', marginBottom: 16, fontWeight: 900 }}>Application Sent!</h3>
+            <p style={{ fontSize: 16, color: '#64748b', marginBottom: 40, lineHeight: 1.6, maxWidth: 420, margin: '0 auto 40px' }}>Aapka application brand tak pahunch gaya hai. Shortlist hone par hum aapko notify karenge.</p>
+            <Btn lg onClick={() => { setModal(null); setDone(false) }} style={{ borderRadius: 100, padding: '16px 60px' }}>Done, Browse More</Btn>
           </div>
         ) : (
-          <div className="ai">
-            <div style={{ background: '#111', borderRadius: 24, padding: '24px', marginBottom: 32, color: '#fff', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: -20, right: -20, width: 100, height: 100, background: '#10B981', borderRadius: '50%', filter: 'blur(50px)', opacity: 0.3 }} />
-              <p style={{ fontSize: 12, fontWeight: 900, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>You are applying for:</p>
-              <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 22, fontWeight: 900, marginBottom: 8 }}>{modal?.title}</h3>
-              <p style={{ fontSize: 15, fontWeight: 600, color: '#10B981' }}>Est. Budget: {fmt.inr(modal?.budgetMin)} - {fmt.inr(modal?.budgetMax)}</p>
+          <div style={{ padding: '10px' }}>
+            <div style={{ background: '#f8fafc', borderRadius: 24, padding: '28px', marginBottom: 40, border: '1px solid rgba(0,0,0,0.04)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: -20, right: -20, width: 120, height: 120, background: '#FF9431', borderRadius: '50%', filter: 'blur(60px)', opacity: 0.08 }} />
+              <p style={{ fontSize: 11, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Applying for:</p>
+              <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 12 }}>{modal?.title}</h3>
+              <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(16,185,129,0.08)', borderRadius: 100, fontSize: 14, fontWeight: 800, color: '#10B981' }}>
+                Est. Budget: {fmt.inr(modal?.budgetMin)} - {fmt.inr(modal?.budgetMax)}
+              </div>
             </div>
             
             <Fld 
@@ -186,12 +199,12 @@ export default function CampaignsPage() {
               required 
             />
             
-            <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16, marginBottom: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 20, marginBottom: 16 }}>
               <Fld label="Your Quote (₹)" type="number" value={aF.rate} onChange={e => setAF(p => ({ ...p, rate: e.target.value }))} placeholder="15,000" />
               <Fld label="Past Work Link" value={aF.portfolio} onChange={e => setAF(p => ({ ...p, portfolio: e.target.value }))} placeholder="Portfolio or Reel URL" />
             </div>
             
-            <Btn full lg onClick={submitApply} style={{ height: 60, borderRadius: 100, fontSize: 17, background: 'linear-gradient(135deg, #111, #333)', border: 'none', color: '#fff', marginTop: 12 }}>Submit Application 🚀</Btn>
+            <Btn full lg onClick={submitApply} style={{ height: 64, borderRadius: 100, fontSize: 18, background: '#111', color: '#fff', border: 'none', marginTop: 16, fontWeight: 900 }}>Submit Application 🚀</Btn>
           </div>
         )}
       </Modal>
