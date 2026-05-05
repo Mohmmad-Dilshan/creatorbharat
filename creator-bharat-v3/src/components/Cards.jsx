@@ -36,8 +36,22 @@ export function CreatorCard({ creator: c, onView }) {
           {saved ? '❤️' : '🤍'}
         </button>
 
+        {mob && (
+          <button 
+            onClick={e => { e.stopPropagation(); dsp({ t: 'COMPARE', id: c.id }); }} 
+            style={{ 
+              position: 'absolute', top: 8, left: 8, 
+              background: compared ? '#FF9431' : 'rgba(255,255,255,0.1)', 
+              backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.1)', 
+              borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', 
+              display: 'flex', alignItems: 'center', justifyContent: 'center', 
+              fontSize: 14, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 5
+            }}
+          >⚖️</button>
+        )}
+
         {c.verified && mob && (
-          <div style={{ position: 'absolute', top: 8, left: 8, background: '#3B82F6', width: 14, height: 14, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: '#fff', border: '2px solid #fff' }}>✓</div>
+          <div style={{ position: 'absolute', top: 32, left: 24, background: '#3B82F6', width: 14, height: 14, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, color: '#fff', border: '2px solid #fff', zIndex: 6 }}>✓</div>
         )}
       </div>
 

@@ -30,7 +30,7 @@ const EliteHeader = memo(({
 
   return (
     <div style={{ 
-      background: light ? '#fff' : '#050505', 
+      background: light ? 'linear-gradient(180deg, #fff 0%, #f8fafc 100%)' : '#050505', 
       padding: `${pt} 20px ${pb}`, 
       position: 'relative', 
       overflow: 'hidden',
@@ -60,7 +60,7 @@ const EliteHeader = memo(({
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
           style={{ 
             position: 'absolute', top: '-20%', left: '10%', width: '600px', height: '600px', 
-            background: 'radial-gradient(circle, rgba(255,148,49,0.15) 0%, transparent 70%)', 
+            background: 'radial-gradient(circle, rgba(255,148,49,0.35) 0%, transparent 70%)', 
             borderRadius: '50%', filter: 'blur(80px)'
           }} 
         />
@@ -91,7 +91,7 @@ const EliteHeader = memo(({
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 1 }}
           style={{ 
             position: 'absolute', bottom: '-20%', right: '10%', width: '600px', height: '600px', 
-            background: 'radial-gradient(circle, rgba(18,136,7,0.12) 0%, transparent 70%)', 
+            background: 'radial-gradient(circle, rgba(18,136,7,0.25) 0%, transparent 70%)', 
             borderRadius: '50%', filter: 'blur(90px)'
           }} 
         />

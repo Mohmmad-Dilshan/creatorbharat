@@ -35,6 +35,7 @@ export function reducer(s, a) {
     case 'UI': return { ...s, ui: { ...s.ui, ...a.v } };
     case 'CF': return { ...s, cf: { ...s.cf, ...a.v } };
     case 'CPF': return { ...s, cpf: { ...s.cpf, ...a.v } };
+    case 'CLEAR_COMPARE': return { ...s, compared: [] };
     case 'TOAST': return { ...s, toasts: [...s.toasts, { id: Date.now() + Math.random(), ...a.d }] };
     case 'RM_TOAST': return { ...s, toasts: s.toasts.filter(t => t.id !== a.id) };
     default: return s;

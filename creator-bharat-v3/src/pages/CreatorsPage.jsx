@@ -783,41 +783,7 @@ export default function CreatorsPage() {
         )}
       </AnimatePresence>
 
-      {/* Comparison Drawer - Elite Feature */}
-      <AnimatePresence>
-        {st.compared.length > 0 && (
-          <motion.div
-            initial={{ y: 100 }} animate={{ y: 0 }} exit={{ y: 100 }}
-            style={{
-              position: 'fixed', bottom: mob ? 20 : 32, left: '50%', transform: 'translateX(-50%)',
-              zIndex: 10000, width: mob ? 'calc(100% - 32px)' : 'auto', minWidth: mob ? 0 : 400
-            }}
-          >
-            <div style={{
-              background: '#111', color: '#fff', padding: '12px 24px', borderRadius: 100,
-              display: 'flex', alignItems: 'center', gap: 20, boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-              border: '1px solid rgba(255,255,255,0.1)'
-            }}>
-              <div style={{ display: 'flex', gap: 8 }}>
-                {st.compared.map(id => {
-                  const c = all.find(x => x.id === id);
-                  return (
-                    <div key={id} style={{ position: 'relative' }}>
-                      <img src={c?.photo || c?.avatarUrl || `https://ui-avatars.com/api/?name=C&background=FF9431&color=fff`} style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', border: '2px solid #fff' }} />
-                      <button onClick={() => dsp({ t: 'COMPARE', id })} style={{ position: 'absolute', top: -4, right: -4, width: 16, height: 16, borderRadius: '50%', background: '#EF4444', color: '#fff', border: 'none', fontSize: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
-                    </div>
-                  );
-                })}
-                {[...Array(3 - st.compared.length)].map((_, i) => (
-                  <div key={i} style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px dashed rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>+</div>
-                ))}
-              </div>
-              <div style={{ height: 24, width: 1, background: 'rgba(255,255,255,0.1)' }} />
-              <button onClick={() => go('compare')} style={{ background: '#FF9431', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 100, fontWeight: 900, fontSize: 12, cursor: 'pointer' }}>Compare Now</button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
 
       {/* Floating Action Button (FAB) for Mobile Filters */}
       {mob && !showFilters && (
@@ -829,7 +795,7 @@ export default function CreatorsPage() {
             position: 'fixed', bottom: 90, right: 20, width: 60, height: 60,
             borderRadius: '50%', background: '#111', color: '#fff', border: 'none',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 12px 24px rgba(0,0,0,0.2)', zIndex: 1000, cursor: 'pointer'
+            boxShadow: '0 12px 24px rgba(0,0,0,0.2)', zIndex: 2000001, cursor: 'pointer'
           }}
         >
           <span style={{ fontSize: 24 }}>⌥</span>
