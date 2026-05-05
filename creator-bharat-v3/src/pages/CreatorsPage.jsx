@@ -438,6 +438,37 @@ export default function CreatorsPage() {
             )}
           </div>
 
+          {/* Live Search Insights (Elite SaaS Feature) */}
+          {filtered.length > 0 && !loading && (
+            <div style={{ 
+              display: 'flex', gap: mob ? 8 : 24, padding: mob ? '12px' : '16px 24px', 
+              background: '#f8fafc', border: '1px solid rgba(0,0,0,0.04)', borderRadius: 16,
+              marginBottom: 32, flexWrap: 'wrap', alignItems: 'center', justifyContent: mob ? 'center' : 'flex-start'
+            }}>
+              <div style={{ fontSize: 11, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', width: mob ? '100%' : 'auto', textAlign: mob ? 'center' : 'left', marginBottom: mob ? 4 : 0 }}>
+                Search Insights
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#fff', padding: '6px 12px', borderRadius: 100, boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+                <span style={{ fontSize: 14 }}>📈</span>
+                <span style={{ fontSize: 12, fontWeight: 800, color: '#111' }}>
+                  {fmt.num(filtered.reduce((sum, c) => sum + (Number(c.followers) || 0), 0))} <span style={{ color: '#64748b' }}>Total Reach</span>
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#fff', padding: '6px 12px', borderRadius: 100, boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+                <span style={{ fontSize: 14 }}>🔥</span>
+                <span style={{ fontSize: 12, fontWeight: 800, color: '#111' }}>
+                  {filtered.length > 0 ? (filtered.reduce((sum, c) => sum + (parseFloat(c.er) || 0), 0) / filtered.length).toFixed(1) : 0}% <span style={{ color: '#64748b' }}>Avg ER</span>
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#fff', padding: '6px 12px', borderRadius: 100, boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+                <span style={{ fontSize: 14 }}>💎</span>
+                <span style={{ fontSize: 12, fontWeight: 800, color: '#111' }}>
+                  {filtered.length > 0 ? Math.round(filtered.reduce((sum, c) => sum + (Number(c.score) || fmt.score(c)), 0) / filtered.length) : 0} <span style={{ color: '#64748b' }}>Avg Score</span>
+                </span>
+              </div>
+            </div>
+          )}
+
           {loading ? (
             <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : (view === 'grid' ? 'repeat(auto-fill, minmax(340px, 1fr))' : '1fr'), gap: mob ? 12 : 32 }}>
               {[1, 2, 3, 4, 5, 6].map(i => <SkeletonCard key={i} />)}
