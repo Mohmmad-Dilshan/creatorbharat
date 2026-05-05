@@ -18,9 +18,40 @@ export function CreatorCard({ creator: c, onView }) {
   const tier = fmt.tier(score);
   const img = c.photo || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=FF9431&color=fff&size=200`;
   const mob = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
+  const isMega = c.followers >= 100000;
+  
+  const cp = Array.isArray(c.platform) ? c.platform : (c.platform ? [c.platform] : []);
+  const cn = Array.isArray(c.niche) ? c.niche : (c.niche ? [c.niche] : []);
+  const getIcon = p => {
+    const pt = p.toLowerCase();
+    if (pt.includes('insta')) return '📸';
+    if (pt.includes('you')) return '▶️';
+    if (pt.includes('link')) return '💼';
+    if (pt.includes('snap')) return '👻';
+    return '📱';
+  };
 
   return (
-    <Card onClick={() => onView && onView(c)} style={{ height: '100%', display: 'flex', flexDirection: 'column', transition: 'all 0.5s cubic-bezier(0.23, 1, 0.32, 1)', border: '1px solid rgba(0,0,0,0.04)', borderRadius: mob ? 20 : 24, overflow: 'hidden' }} className="feature-card-h">
+    <Card 
+      onClick={() => onView && onView(c)} 
+      style={{ 
+        height: '100%', display: 'flex', flexDirection: 'column', 
+        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)', 
+        border: isMega ? '1.5px solid rgba(251, 191, 36, 0.4)' : '1px solid rgba(0,0,0,0.06)', 
+        borderRadius: mob ? 20 : 24, overflow: 'hidden', 
+        background: isMega ? 'linear-gradient(180deg, #ffffff 0%, #fffbeb 100%)' : '#fff' 
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.transform = 'translateY(-6px)';
+        e.currentTarget.style.boxShadow = isMega ? '0 20px 40px rgba(251, 191, 36, 0.15)' : '0 20px 40px rgba(0,0,0,0.08)';
+        e.currentTarget.style.borderColor = isMega ? '#F59E0B' : 'rgba(255,148,49,0.3)';
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = 'none';
+        e.currentTarget.style.borderColor = isMega ? 'rgba(251, 191, 36, 0.4)' : 'rgba(0,0,0,0.06)';
+      }}
+    >
       <div style={{ position: 'relative', height: mob ? 120 : 140, background: 'linear-gradient(135deg, #0f172a, #1e293b)', flexShrink: 0 }}>
         {c.coverUrl ? (
           <img src={c.coverUrl} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6 }} alt="" />
@@ -72,10 +103,16 @@ export function CreatorCard({ creator: c, onView }) {
       </div>
 
       <div style={{ padding: mob ? '0 12px 12px' : '0 24px 24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 15 : 22, fontWeight: 900, color: '#111', marginBottom: 4, letterSpacing: '-0.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.name}</h3>
-        <p style={{ fontSize: mob ? 11 : 14, color: T.t3, fontWeight: 700, marginBottom: mob ? 12 : 20, display: 'flex', alignItems: 'center', gap: 4 }}>
+        <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 16 : 22, fontWeight: 900, color: '#111', marginBottom: 4, letterSpacing: '-0.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.name}</h3>
+        <p style={{ fontSize: mob ? 11 : 13, color: T.t3, fontWeight: 700, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
           <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>📍 {typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')}</span>
         </p>
+
+        {/* Niche & Platform Badges (SaaS Style) */}
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: mob ? 16 : 20 }}>
+           {cp.slice(0, 2).map(p => <div key={p} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '2px 8px', borderRadius: 100, fontSize: 10, fontWeight: 800, color: '#475569', display: 'flex', alignItems: 'center', gap: 4 }}>{getIcon(p)} {p}</div>)}
+           {cn.slice(0, 2).map(n => <div key={n} style={{ background: 'rgba(255,148,49,0.08)', color: '#FF9431', padding: '2px 8px', borderRadius: 100, fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{n}</div>)}
+        </div>
         
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: mob ? 4 : 12, padding: (mob ? '12px' : '16px') + ' 0', borderTop: '1px solid rgba(0,0,0,0.05)', marginTop: 'auto' }}>
           <div style={{ textAlign: 'center' }}>
@@ -97,7 +134,14 @@ export function CreatorCard({ creator: c, onView }) {
 
         {!mob && (
           <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
-            <Btn lg full onClick={() => onView && onView(c)} style={{ borderRadius: 100, fontWeight: 900, fontSize: 14 }}>Portfolio</Btn>
+            <button 
+              onClick={(e) => { e.stopPropagation(); onView && onView(c); }} 
+              style={{ flex: 1, borderRadius: 100, fontWeight: 900, fontSize: 14, background: '#FF9431', color: '#fff', border: 'none', cursor: 'pointer', transition: 'all 0.2s', padding: '12px' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#138808'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#FF9431'; }}
+            >
+              Portfolio
+            </button>
             <button 
               onClick={e => { e.stopPropagation(); dsp({ t: 'COMPARE', id: c.id }); }} 
               style={{ width: 44, height: 44, borderRadius: 100, border: '1.5px solid ' + (compared ? '#FF9431' : 'rgba(0,0,0,0.08)'), background: compared ? 'rgba(255,148,49,0.05)' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}
