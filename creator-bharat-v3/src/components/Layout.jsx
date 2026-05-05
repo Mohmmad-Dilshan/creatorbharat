@@ -27,7 +27,7 @@ function FloatingMobileNav() {
   return (
     <div className="apple-nav-container" style={{
       position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-      zIndex: 9000, width: '92%', maxWidth: 360, 
+      zIndex: 999990, width: '92%', maxWidth: 360, 
       background: 'rgba(255, 255, 255, 0.72)',
       backdropFilter: 'blur(25px)', WebkitBackdropFilter: 'blur(25px)',
       borderRadius: 32, padding: '6px 12px', display: 'flex', 
@@ -150,13 +150,13 @@ export default function Layout({ children }) {
           width: 20px;
         }
         .mobile-nav-overlay {
-          position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); z-index: 6000;
+          position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); z-index: 999991;
         }
         .mobile-nav-sheet {
           position: fixed; left: 12px; right: 12px; bottom: 12px; background: rgba(255, 255, 255, 0.95); 
           backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
           border: 1px solid rgba(0,0,0,0.05); border-radius: 40px;
-          padding: 40px 24px; z-index: 6001; box-shadow: 0 -20px 60px rgba(0,0,0,0.15);
+          padding: 40px 24px; z-index: 999992; box-shadow: 0 -20px 60px rgba(0,0,0,0.15);
           animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .mobile-menu-item {
@@ -179,7 +179,7 @@ export default function Layout({ children }) {
 
       <Navbar />
 
-      <main style={{ flex: 1, position: 'relative', zIndex: 1, paddingTop: mob ? 64 : 80 }}>
+      <main style={{ flex: 1, position: 'relative', paddingTop: mob ? 64 : 80 }}>
         {children}
       </main>
 

@@ -497,7 +497,7 @@ export default function CreatorsPage() {
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowFilters(false)}
-              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(12px)', zIndex: 10001 }}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(12px)', zIndex: 999998 }}
             />
             <motion.div
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
@@ -505,7 +505,7 @@ export default function CreatorsPage() {
               style={{
                 position: 'fixed', bottom: 0, left: 0, right: 0,
                 maxHeight: '92vh', background: '#fff', borderRadius: '40px 40px 0 0',
-                zIndex: 10002, overflowY: 'auto', padding: mob ? '24px 20px 60px' : '48px 48px 60px',
+                zIndex: 999999, overflowY: 'auto', padding: mob ? '24px 20px 60px' : '48px 48px 60px',
                 boxShadow: '0 -20px 60px rgba(0,0,0,0.15)'
               }}
             >

@@ -124,7 +124,7 @@ export function SH({ eyebrow, title, sub, center, light, mb = 56 }) {
 export function Modal({ open, onClose, title, children, width = 520 }) {
   if (!open) return null;
   return (
-    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.6)', zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, backdropFilter: 'blur(10px)' }}>
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.6)', zIndex: 999999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, backdropFilter: 'blur(10px)' }}>
       <div className="si" onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 28, width: '100%', maxWidth: width, maxHeight: '90vh', overflowY: 'auto', boxShadow: T.sh4, border: '1px solid rgba(255,255,255,0.2)', position: 'relative' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 32px', borderBottom: `1px solid ${T.bd}`, position: 'sticky', top: 0, background: '#fff', zIndex: 100, boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
           <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 900, color: T.n8 }}>{title}</h3>
