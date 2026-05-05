@@ -55,7 +55,7 @@ export default function CreatorsPage() {
     const handle = (c.handle || '').toLowerCase();
     const bio = (c.bio || '').toLowerCase();
     const city = (c.city || '').toLowerCase();
-    
+
     if (q && !name.includes(q) && !handle.includes(q) && !bio.includes(q) && !city.includes(q)) return false;
     if (f.state && c.state !== f.state) return false;
     if (f.district && c.city !== f.district) return false;
@@ -90,7 +90,7 @@ export default function CreatorsPage() {
 
   return (
     <div style={{ background: '#fff', minHeight: '100vh' }}>
-      <EliteHeader 
+      <EliteHeader
         eyebrow="Marketplace"
         title="Bharat's Top Creators"
         sub="Discover elite influencers, YouTubers, and content creators from 2,400+ handpicked talent across Bharat's Tier 2 & 3 cities."
@@ -100,10 +100,10 @@ export default function CreatorsPage() {
       />
 
       {/* Sticky Ultra-Premium Toolbar (Floating Glass Style) */}
-      <div style={{ 
-        position: 'sticky', top: 0, zIndex: 1000, 
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 1000,
         background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(30px)',
-        borderBottom: '1px solid rgba(0,0,0,0.05)', 
+        borderBottom: '1px solid rgba(0,0,0,0.05)',
         padding: mob ? '10px 0 12px' : '16px 0',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
       }}>
@@ -113,41 +113,41 @@ export default function CreatorsPage() {
             {mob ? (
               <div style={{ flex: 1, position: 'relative' }}>
                 <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', opacity: 0.3, fontSize: 20 }}>🔍</span>
-                <input 
-                  value={f.q} 
-                  onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} 
-                  placeholder="Search creators..." 
-                  style={{ 
-                    width: '100%', padding: '12px 15px 12px 48px', borderRadius: 100, 
-                    border: '1.5px solid rgba(0,0,0,0.04)', background: 'rgba(0,0,0,0.02)', 
+                <input
+                  value={f.q}
+                  onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })}
+                  placeholder="Search creators..."
+                  style={{
+                    width: '100%', padding: '12px 15px 12px 48px', borderRadius: 100,
+                    border: '1.5px solid rgba(0,0,0,0.04)', background: 'rgba(0,0,0,0.02)',
                     fontSize: 14, fontWeight: 600, outline: 'none'
-                  }} 
+                  }}
                 />
               </div>
             ) : (
               <div style={{ display: 'flex', flex: 1, background: 'rgba(0,0,0,0.02)', borderRadius: 100, border: '1.5px solid rgba(0,0,0,0.04)', overflow: 'hidden', height: 48 }}>
-                 <select 
-                   value={f.niche} 
-                   onChange={e => dsp({ t: 'CF', v: { niche: e.target.value } })} 
-                   style={{ 
-                     padding: '0 24px', border: 'none', borderRight: '1.5px solid rgba(0,0,0,0.06)', 
-                     background: 'rgba(0,0,0,0.01)', fontSize: 13, fontWeight: 700, 
-                     color: '#111', outline: 'none', cursor: 'pointer', minWidth: 160,
-                     fontFamily: "'Inter', sans-serif"
-                   }}
-                 >
-                   <option value="">All Categories</option>
-                   {NICHES.map(n => <option key={n} value={n}>{n}</option>)}
-                 </select>
-                 <div style={{ position: 'relative', flex: 1 }}>
-                   <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', opacity: 0.3, fontSize: 20 }}>🔍</span>
-                   <input 
-                     value={f.q} 
-                     onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })}
-                     placeholder="Find elite talent by niche, name or city..." 
-                     style={{ width: '100%', height: '100%', padding: '0 24px 0 50px', border: 'none', background: 'transparent', fontSize: 14, fontWeight: 600, color: '#111', outline: 'none' }}
-                   />
-                 </div>
+                <select
+                  value={f.niche}
+                  onChange={e => dsp({ t: 'CF', v: { niche: e.target.value } })}
+                  style={{
+                    padding: '0 24px', border: 'none', borderRight: '1.5px solid rgba(0,0,0,0.06)',
+                    background: 'rgba(0,0,0,0.01)', fontSize: 13, fontWeight: 700,
+                    color: '#111', outline: 'none', cursor: 'pointer', minWidth: 160,
+                    fontFamily: "'Inter', sans-serif"
+                  }}
+                >
+                  <option value="">All Categories</option>
+                  {NICHES.map(n => <option key={n} value={n}>{n}</option>)}
+                </select>
+                <div style={{ position: 'relative', flex: 1 }}>
+                  <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', opacity: 0.3, fontSize: 20 }}>🔍</span>
+                  <input
+                    value={f.q}
+                    onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })}
+                    placeholder="Find elite talent by niche, name or city..."
+                    style={{ width: '100%', height: '100%', padding: '0 24px 0 50px', border: 'none', background: 'transparent', fontSize: 14, fontWeight: 600, color: '#111', outline: 'none' }}
+                  />
+                </div>
               </div>
             )}
 
@@ -157,11 +157,11 @@ export default function CreatorsPage() {
                 <div style={{ display: 'flex', gap: 8 }}>
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center', background: 'rgba(0,0,0,0.02)', padding: '4px 12px', borderRadius: 100, border: '1.5px solid rgba(0,0,0,0.03)' }}>
                     <span style={{ fontSize: 11, fontWeight: 900, color: '#94a3b8', marginRight: 4 }}>📍</span>
-                    <select 
-                      value={f.state} 
-                      onChange={e => dsp({ t: 'CF', v: { state: e.target.value, district: '' } })} 
-                      style={{ 
-                        background: 'transparent', border: 'none', fontSize: 13, fontWeight: 700, 
+                    <select
+                      value={f.state}
+                      onChange={e => dsp({ t: 'CF', v: { state: e.target.value, district: '' } })}
+                      style={{
+                        background: 'transparent', border: 'none', fontSize: 13, fontWeight: 700,
                         color: f.state ? '#FF9431' : '#475569', outline: 'none', cursor: 'pointer',
                         fontFamily: "'Inter', sans-serif"
                       }}
@@ -173,11 +173,11 @@ export default function CreatorsPage() {
 
                   {f.state && (
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', background: 'rgba(0,0,0,0.02)', padding: '4px 12px', borderRadius: 100, border: '1.5px solid rgba(0,0,0,0.03)' }}>
-                    <select 
-                        value={f.district} 
-                        onChange={e => dsp({ t: 'CF', v: { district: e.target.value } })} 
-                        style={{ 
-                          background: 'transparent', border: 'none', fontSize: 13, fontWeight: 700, 
+                      <select
+                        value={f.district}
+                        onChange={e => dsp({ t: 'CF', v: { district: e.target.value } })}
+                        style={{
+                          background: 'transparent', border: 'none', fontSize: 13, fontWeight: 700,
                           color: f.district ? '#FF9431' : '#475569', outline: 'none', cursor: 'pointer',
                           fontFamily: "'Inter', sans-serif"
                         }}
@@ -191,20 +191,20 @@ export default function CreatorsPage() {
 
                 {/* View Toggles */}
                 <div style={{ display: 'flex', gap: 4, background: '#f1f5f9', padding: 4, borderRadius: 100 }}>
-                   <button onClick={() => setView('grid')} style={{ padding: '8px 16px', borderRadius: 100, border: 'none', background: view === 'grid' ? '#fff' : 'transparent', color: view === 'grid' ? '#111' : '#64748b', fontSize: 11, fontWeight: 900, cursor: 'pointer', boxShadow: view === 'grid' ? '0 4px 12px rgba(0,0,0,0.08)' : 'none', transition: '0.3s' }}>Grid</button>
-                   <button onClick={() => setView('list')} style={{ padding: '8px 16px', borderRadius: 100, border: 'none', background: view === 'list' ? '#fff' : 'transparent', color: view === 'list' ? '#111' : '#64748b', fontSize: 11, fontWeight: 900, cursor: 'pointer', boxShadow: view === 'list' ? '0 4px 12px rgba(0,0,0,0.08)' : 'none', transition: '0.3s' }}>List</button>
+                  <button onClick={() => setView('grid')} style={{ padding: '8px 16px', borderRadius: 100, border: 'none', background: view === 'grid' ? '#fff' : 'transparent', color: view === 'grid' ? '#111' : '#64748b', fontSize: 11, fontWeight: 900, cursor: 'pointer', boxShadow: view === 'grid' ? '0 4px 12px rgba(0,0,0,0.08)' : 'none', transition: '0.3s' }}>Grid</button>
+                  <button onClick={() => setView('list')} style={{ padding: '8px 16px', borderRadius: 100, border: 'none', background: view === 'list' ? '#fff' : 'transparent', color: view === 'list' ? '#111' : '#64748b', fontSize: 11, fontWeight: 900, cursor: 'pointer', boxShadow: view === 'list' ? '0 4px 12px rgba(0,0,0,0.08)' : 'none', transition: '0.3s' }}>List</button>
                 </div>
               </React.Fragment>
             )}
 
             {/* Map Toggle Button */}
-            <button 
+            <button
               onClick={() => setShowMap(!showMap)}
-              style={{ 
-                height: 48, padding: mob ? '0 12px' : '0 16px', borderRadius: 100, 
-                background: showMap ? '#FF9431' : 'rgba(0,0,0,0.03)', 
-                color: showMap ? '#fff' : '#475569', 
-                border: '1.5 solid ' + (showMap ? '#FF9431' : 'rgba(0,0,0,0.05)'), 
+              style={{
+                height: 48, padding: mob ? '0 12px' : '0 16px', borderRadius: 100,
+                background: showMap ? '#FF9431' : 'rgba(0,0,0,0.03)',
+                color: showMap ? '#fff' : '#475569',
+                border: '1.5 solid ' + (showMap ? '#FF9431' : 'rgba(0,0,0,0.05)'),
                 fontWeight: 900, fontSize: 13, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 6,
                 transition: 'all 0.2s'
@@ -215,11 +215,11 @@ export default function CreatorsPage() {
             </button>
 
             {/* Premium Filter Trigger */}
-            <button 
+            <button
               onClick={() => setShowFilters(true)}
-              style={{ 
-                height: 48, padding: mob ? '0 16px' : '0 24px', borderRadius: 100, 
-                background: '#111', color: '#fff', border: 'none', 
+              style={{
+                height: 48, padding: mob ? '0 16px' : '0 24px', borderRadius: 100,
+                background: '#111', color: '#fff', border: 'none',
                 fontWeight: 900, fontSize: 13, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8,
                 transition: 'all 0.2s',
@@ -229,8 +229,8 @@ export default function CreatorsPage() {
               <span style={{ fontSize: 18 }}>⌥</span>
               {!mob && 'Advanced Filters'}
               {Object.values(f).filter(v => v && v !== 'score' && v !== '' && v !== false).length > 0 && (
-                <span style={{ 
-                  background: '#FF9431', color: '#fff', fontSize: 10, padding: '2px 6px', 
+                <span style={{
+                  background: '#FF9431', color: '#fff', fontSize: 10, padding: '2px 6px',
                   borderRadius: 100, border: '2px solid #111', fontWeight: 900, marginLeft: 4
                 }}>
                   {Object.values(f).filter(v => v && v !== 'score' && v !== '' && v !== false).length}
@@ -244,10 +244,10 @@ export default function CreatorsPage() {
             <div style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: '4px 0 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="no-scrollbar">
               {/* Reset Chip */}
               {(f.niche || f.state || f.district || f.q) && (
-                <button 
+                <button
                   onClick={clearFilters}
-                  style={{ 
-                    flexShrink: 0, padding: '10px 18px', borderRadius: 100, 
+                  style={{
+                    flexShrink: 0, padding: '10px 18px', borderRadius: 100,
                     background: '#FEF2F2', color: '#EF4444', border: '1.5px solid rgba(239,68,68,0.1)',
                     fontSize: 13, fontWeight: 900, cursor: 'pointer'
                   }}
@@ -255,10 +255,10 @@ export default function CreatorsPage() {
               )}
 
               {/* Smart Location Chip */}
-              <button 
+              <button
                 onClick={() => setShowFilters(true)}
-                style={{ 
-                  flexShrink: 0, padding: '10px 18px', borderRadius: 100, 
+                style={{
+                  flexShrink: 0, padding: '10px 18px', borderRadius: 100,
                   border: '1.5px solid ' + (f.state ? '#FF9431' : 'rgba(0,0,0,0.06)'),
                   background: f.state ? '#FF9431' : '#fff',
                   color: f.state ? '#fff' : '#64748b',
@@ -269,10 +269,10 @@ export default function CreatorsPage() {
               </button>
 
               {/* Sort Chip (Compact) */}
-              <button 
+              <button
                 onClick={() => dsp({ t: 'CF', v: { sort: f.sort === 'score' ? 'followers' : 'score' } })}
-                style={{ 
-                  flexShrink: 0, padding: '10px 18px', borderRadius: 100, 
+                style={{
+                  flexShrink: 0, padding: '10px 18px', borderRadius: 100,
                   border: '1.5px solid rgba(0,0,0,0.06)',
                   background: '#fff', color: '#64748b',
                   fontSize: 13, fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
@@ -284,10 +284,10 @@ export default function CreatorsPage() {
               <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.05)', flexShrink: 0, alignSelf: 'center' }} />
 
               {/* Verified Toggle Chip */}
-              <button 
+              <button
                 onClick={() => dsp({ t: 'CF', v: { verified: !f.verified } })}
-                style={{ 
-                  flexShrink: 0, padding: '10px 18px', borderRadius: 100, 
+                style={{
+                  flexShrink: 0, padding: '10px 18px', borderRadius: 100,
                   border: '1.5px solid ' + (f.verified ? '#3B82F6' : 'rgba(0,0,0,0.06)'),
                   background: f.verified ? '#3B82F6' : '#fff',
                   color: f.verified ? '#fff' : '#64748b',
@@ -299,11 +299,11 @@ export default function CreatorsPage() {
 
               {/* Platform Chips */}
               {PLATFORMS.map(p => (
-                <button 
+                <button
                   key={p}
                   onClick={() => dsp({ t: 'CF', v: { platform: f.platform === p ? '' : p } })}
-                  style={{ 
-                    flexShrink: 0, padding: '10px 18px', borderRadius: 100, 
+                  style={{
+                    flexShrink: 0, padding: '10px 18px', borderRadius: 100,
                     border: '1.5px solid ' + (f.platform === p ? '#FF9431' : 'rgba(0,0,0,0.06)'),
                     background: f.platform === p ? '#FF9431' : '#fff',
                     color: f.platform === p ? '#fff' : '#64748b',
@@ -315,11 +315,11 @@ export default function CreatorsPage() {
               <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.05)', flexShrink: 0, alignSelf: 'center' }} />
 
               {NICHES.map(n => (
-                <button 
+                <button
                   key={n}
                   onClick={() => dsp({ t: 'CF', v: { niche: f.niche === n ? '' : n } })}
-                  style={{ 
-                    flexShrink: 0, padding: '10px 20px', borderRadius: 100, 
+                  style={{
+                    flexShrink: 0, padding: '10px 20px', borderRadius: 100,
                     border: '1.5px solid ' + (f.niche === n ? '#FF9431' : 'rgba(0,0,0,0.06)'),
                     background: f.niche === n ? '#FF9431' : '#fff',
                     color: f.niche === n ? '#fff' : '#64748b',
@@ -335,23 +335,23 @@ export default function CreatorsPage() {
 
       <AnimatePresence>
         {showMap && (
-          <motion.div 
+          <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             style={{ overflow: 'hidden', background: '#fdfdfd', borderBottom: '1px solid rgba(0,0,0,0.05)' }}
           >
             <div style={{ padding: mob ? '20px' : '40px 0' }}>
-               <IndiaMap3D 
-                 mob={mob} 
-                 stateCounts={stateCounts}
-                 onSelectState={s => {
-                   dsp({ t: 'CF', v: { state: s, district: '' } });
-                   // Scroll to the results grid
-                   const grid = document.getElementById('creators-grid-anchor');
-                   if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                 }} 
-               />
+              <IndiaMap3D
+                mob={mob}
+                stateCounts={stateCounts}
+                onSelectState={s => {
+                  dsp({ t: 'CF', v: { state: s, district: '' } });
+                  // Scroll to the results grid
+                  const grid = document.getElementById('creators-grid-anchor');
+                  if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }}
+              />
             </div>
           </motion.div>
         )}
@@ -363,19 +363,19 @@ export default function CreatorsPage() {
           <div style={{ display: 'flex', justifyContent: mob ? 'center' : 'space-between', alignItems: 'center', marginBottom: mob ? 24 : 40, flexWrap: 'wrap', gap: 16, textAlign: mob ? 'center' : 'left' }}>
             <div>
               <h2 style={{ fontSize: mob ? 18 : 28, fontWeight: 900, color: '#111', fontFamily: "'Fraunces', serif" }}>
-                 Elite Talent Network <span style={{ color: '#94a3b8', fontSize: 14, fontWeight: 700, marginLeft: 6 }}>({filtered.length})</span>
+                Elite Talent Network <span style={{ color: '#94a3b8', fontSize: 14, fontWeight: 700, marginLeft: 6 }}>({filtered.length})</span>
               </h2>
             </div>
-            
+
             {!mob && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ fontSize: 11, fontWeight: 900, color: '#94a3b8', letterSpacing: '0.08em' }}>SORT BY:</span>
-                <select 
-                  value={f.sort} 
-                  onChange={e => dsp({ t: 'CF', v: { sort: e.target.value } })} 
-                  style={{ 
-                    padding: '10px 20px', borderRadius: 100, border: '1.5px solid rgba(0,0,0,0.06)', 
-                    background: '#fff', fontSize: 13, fontWeight: 700, color: '#111', 
+                <select
+                  value={f.sort}
+                  onChange={e => dsp({ t: 'CF', v: { sort: e.target.value } })}
+                  style={{
+                    padding: '10px 20px', borderRadius: 100, border: '1.5px solid rgba(0,0,0,0.06)',
+                    background: '#fff', fontSize: 13, fontWeight: 700, color: '#111',
                     outline: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif"
                   }}
                 >
@@ -383,7 +383,7 @@ export default function CreatorsPage() {
                   <option value="followers">Followers</option>
                 </select>
                 {(f.q || f.niche || f.state || f.district || f.verified) && (
-                   <button onClick={clearFilters} style={{ background: 'none', border: 'none', color: '#FF9431', fontWeight: 900, fontSize: 11, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Clear</button>
+                  <button onClick={clearFilters} style={{ background: 'none', border: 'none', color: '#FF9431', fontWeight: 900, fontSize: 11, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Clear</button>
                 )}
               </div>
             )}
@@ -395,13 +395,13 @@ export default function CreatorsPage() {
             </div>
           ) : filtered.length === 0 ? (
             <div style={{ padding: '80px 0' }}>
-               <Empty icon="🔍" title="No matching creators" sub="Try adjusting your filters or search query to explore more talent." ctaLabel="Clear all filters" onCta={clearFilters} />
+              <Empty icon="🔍" title="No matching creators" sub="Try adjusting your filters or search query to explore more talent." ctaLabel="Clear all filters" onCta={clearFilters} />
             </div>
           ) : view === 'grid' ? (
             <>
               <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(340px, 1fr))', gap: mob ? 16 : 32 }}>
                 {visible.map((c, i) => (
-                  <motion.div 
+                  <motion.div
                     key={c.id || i}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -415,10 +415,10 @@ export default function CreatorsPage() {
 
               {visible.length < filtered.length && (
                 <div style={{ marginTop: 60, textAlign: 'center' }}>
-                  <button 
+                  <button
                     onClick={() => setLimit(prev => prev + 12)}
-                    style={{ 
-                      padding: '16px 48px', borderRadius: 100, background: '#111', color: '#fff', 
+                    style={{
+                      padding: '16px 48px', borderRadius: 100, background: '#111', color: '#fff',
                       fontSize: 15, fontWeight: 900, border: 'none', cursor: 'pointer',
                       boxShadow: '0 10px 20px rgba(0,0,0,0.1)', transition: 'all 0.3s'
                     }}
@@ -445,20 +445,20 @@ export default function CreatorsPage() {
                 </div>
               )}
               {filtered.map((c, i) => (
-                <motion.div 
+                <motion.div
                   key={c.id}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.4, delay: (i % 15) * 0.02 }}
                   onClick={() => go('creator-profile', { creator: c })}
-                  style={{ 
-                    padding: mob ? '16px' : '16px 24px', background: '#fff', borderRadius: 20, 
-                    border: '1px solid rgba(0,0,0,0.04)', 
+                  style={{
+                    padding: mob ? '16px' : '16px 24px', background: '#fff', borderRadius: 20,
+                    border: '1px solid rgba(0,0,0,0.04)',
                     display: 'flex', alignItems: 'center', cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.23, 1, 0.32, 1)',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
                   }}
-                  onMouseEnter={e => { if(!mob) { e.currentTarget.style.borderColor = '#FF9431'; e.currentTarget.style.transform = 'translateX(8px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.05)'; } }}
-                  onMouseLeave={e => { if(!mob) { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.04)'; e.currentTarget.style.transform = 'translateX(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.02)'; } }}
+                  onMouseEnter={e => { if (!mob) { e.currentTarget.style.borderColor = '#FF9431'; e.currentTarget.style.transform = 'translateX(8px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.05)'; } }}
+                  onMouseLeave={e => { if (!mob) { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.04)'; e.currentTarget.style.transform = 'translateX(0)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.02)'; } }}
                 >
                   <div style={{ flex: 1.5, display: 'flex', alignItems: 'center', gap: 16 }}>
                     <img src={c.photo || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=FF9431&color=fff`} style={{ width: mob ? 48 : 56, height: mob ? 48 : 56, borderRadius: 16, objectFit: 'cover', background: '#f1f5f9' }} />
@@ -470,17 +470,17 @@ export default function CreatorsPage() {
                   {!mob && (
                     <>
                       <span style={{ flex: 1, fontSize: 14, color: '#475569', fontWeight: 600 }}>📍 {typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')}</span>
-                      <span style={{ flex: 1, fontSize: 14, color: '#475569', fontWeight: 600 }}>{(Array.isArray(c.niche) ? c.niche : [c.niche]).slice(0,1).join('')}</span>
+                      <span style={{ flex: 1, fontSize: 14, color: '#475569', fontWeight: 600 }}>{(Array.isArray(c.niche) ? c.niche : [c.niche]).slice(0, 1).join('')}</span>
                       <span style={{ flex: 1, fontSize: 14, color: '#1e293b', fontWeight: 800 }}>{fmt.num(c.followers || 0)}</span>
                       <div style={{ width: 100, textAlign: 'right' }}>
-                         <Bdg color="saffron">{c.score || fmt.score(c)}</Bdg>
+                        <Bdg color="saffron">{c.score || fmt.score(c)}</Bdg>
                       </div>
                     </>
                   )}
                   {mob && (
                     <div style={{ textAlign: 'right', flex: 1 }}>
-                       <div style={{ fontSize: 14, fontWeight: 900, color: '#111' }}>{fmt.num(c.followers)}</div>
-                       <div style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8' }}>REACH</div>
+                      <div style={{ fontSize: 14, fontWeight: 900, color: '#111' }}>{fmt.num(c.followers)}</div>
+                      <div style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8' }}>REACH</div>
                     </div>
                   )}
                 </motion.div>
@@ -494,17 +494,17 @@ export default function CreatorsPage() {
       <AnimatePresence>
         {showFilters && (
           <>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowFilters(false)}
-              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(12px)', zIndex: 10001 }} 
+              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(12px)', zIndex: 10001 }}
             />
-            <motion.div 
+            <motion.div
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 220 }}
-              style={{ 
-                position: 'fixed', bottom: 0, left: 0, right: 0, 
-                maxHeight: '92vh', background: '#fff', borderRadius: '40px 40px 0 0', 
+              style={{
+                position: 'fixed', bottom: 0, left: 0, right: 0,
+                maxHeight: '92vh', background: '#fff', borderRadius: '40px 40px 0 0',
                 zIndex: 10002, overflowY: 'auto', padding: mob ? '24px 20px 60px' : '48px 48px 60px',
                 boxShadow: '0 -20px 60px rgba(0,0,0,0.15)'
               }}
@@ -527,14 +527,14 @@ export default function CreatorsPage() {
                     <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 16, letterSpacing: '1px' }}>Creator Niche</label>
                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                       {NICHES.map(n => (
-                        <button 
-                          key={n} 
+                        <button
+                          key={n}
                           onClick={() => dsp({ t: 'CF', v: { niche: f.niche === n ? '' : n } })}
-                          style={{ 
-                            padding: '12px 22px', borderRadius: 100, 
-                            border: '1.5px solid ' + (f.niche === n ? '#FF9431' : 'rgba(0,0,0,0.06)'), 
-                            background: f.niche === n ? '#FF9431' : '#fff', 
-                            color: f.niche === n ? '#fff' : '#475569', 
+                          style={{
+                            padding: '12px 22px', borderRadius: 100,
+                            border: '1.5px solid ' + (f.niche === n ? '#FF9431' : 'rgba(0,0,0,0.06)'),
+                            background: f.niche === n ? '#FF9431' : '#fff',
+                            color: f.niche === n ? '#fff' : '#475569',
                             fontSize: 14, fontWeight: 800, cursor: 'pointer',
                             transition: 'all 0.2s'
                           }}
@@ -556,14 +556,14 @@ export default function CreatorsPage() {
                         { name: 'LinkedIn', icon: '💼', color: '#0A66C2' },
                         { name: 'Facebook', icon: '👥', color: '#1877F2' }
                       ].map(p => (
-                        <button 
-                          key={p.name} 
+                        <button
+                          key={p.name}
                           onClick={() => dsp({ t: 'CF', v: { platform: f.platform === p.name ? '' : p.name } })}
-                          style={{ 
-                            padding: '12px 22px', borderRadius: 100, 
-                            border: '1.5px solid ' + (f.platform === p.name ? p.color : 'rgba(0,0,0,0.06)'), 
-                            background: f.platform === p.name ? p.color : '#fff', 
-                            color: f.platform === p.name ? '#fff' : '#475569', 
+                          style={{
+                            padding: '12px 22px', borderRadius: 100,
+                            border: '1.5px solid ' + (f.platform === p.name ? p.color : 'rgba(0,0,0,0.06)'),
+                            background: f.platform === p.name ? p.color : '#fff',
+                            color: f.platform === p.name ? '#fff' : '#475569',
                             fontSize: 14, fontWeight: 800, cursor: 'pointer',
                             display: 'flex', alignItems: 'center', gap: 8,
                             transition: 'all 0.2s'
@@ -580,11 +580,11 @@ export default function CreatorsPage() {
                   <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 24 }}>
                     <div>
                       <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>State</label>
-                      <select 
-                        value={f.state} 
-                        onChange={e => dsp({ t: 'CF', v: { state: e.target.value, district: '' } })} 
-                        style={{ 
-                          width: '100%', padding: '18px 20px', borderRadius: 18, border: '1.5px solid rgba(0,0,0,0.06)', 
+                      <select
+                        value={f.state}
+                        onChange={e => dsp({ t: 'CF', v: { state: e.target.value, district: '' } })}
+                        style={{
+                          width: '100%', padding: '18px 20px', borderRadius: 18, border: '1.5px solid rgba(0,0,0,0.06)',
                           fontSize: 15, fontWeight: 700, background: '#f8fafc', outline: 'none',
                           fontFamily: "'Inter', sans-serif", color: '#111'
                         }}
@@ -595,13 +595,13 @@ export default function CreatorsPage() {
                     </div>
                     <div>
                       <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>District / City</label>
-                      <select 
-                        value={f.district} 
-                        onChange={e => dsp({ t: 'CF', v: { district: e.target.value } })} 
-                        disabled={!f.state} 
-                        style={{ 
-                          width: '100%', padding: '18px 20px', borderRadius: 18, border: '1.5px solid rgba(0,0,0,0.06)', 
-                          fontSize: 15, fontWeight: 700, background: f.state ? '#f8fafc' : '#f1f5f9', 
+                      <select
+                        value={f.district}
+                        onChange={e => dsp({ t: 'CF', v: { district: e.target.value } })}
+                        disabled={!f.state}
+                        style={{
+                          width: '100%', padding: '18px 20px', borderRadius: 18, border: '1.5px solid rgba(0,0,0,0.06)',
+                          fontSize: 15, fontWeight: 700, background: f.state ? '#f8fafc' : '#f1f5f9',
                           opacity: f.state ? 1 : 0.6, outline: 'none',
                           fontFamily: "'Inter', sans-serif", color: '#111'
                         }}
@@ -618,14 +618,14 @@ export default function CreatorsPage() {
                       <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>Gender</label>
                       <div style={{ display: 'flex', background: '#f8fafc', padding: 4, borderRadius: 100, border: '1.5px solid rgba(0,0,0,0.04)' }}>
                         {['Any', 'Male', 'Female'].map(g => (
-                          <button 
+                          <button
                             key={g}
-                            onClick={() => dsp({ t: 'CF', v: { gender: g } })} 
-                            style={{ 
-                              flex: 1, padding: '12px', borderRadius: 100, border: 'none', 
-                              background: (f.gender || 'Any') === g ? '#111' : 'transparent', 
-                              color: (f.gender || 'Any') === g ? '#fff' : '#64748b', 
-                              fontSize: 13, fontWeight: 800, cursor: 'pointer', transition: '0.3s' 
+                            onClick={() => dsp({ t: 'CF', v: { gender: g } })}
+                            style={{
+                              flex: 1, padding: '12px', borderRadius: 100, border: 'none',
+                              background: (f.gender || 'Any') === g ? '#111' : 'transparent',
+                              color: (f.gender || 'Any') === g ? '#fff' : '#64748b',
+                              fontSize: 13, fontWeight: 800, cursor: 'pointer', transition: '0.3s'
                             }}
                           >{g}</button>
                         ))}
@@ -633,11 +633,11 @@ export default function CreatorsPage() {
                     </div>
                     <div>
                       <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>Primary Language</label>
-                      <select 
-                        value={f.language} 
+                      <select
+                        value={f.language}
                         onChange={e => dsp({ t: 'CF', v: { language: e.target.value } })}
-                        style={{ 
-                          width: '100%', padding: '18px 20px', borderRadius: 18, border: '1.5px solid rgba(0,0,0,0.06)', 
+                        style={{
+                          width: '100%', padding: '18px 20px', borderRadius: 18, border: '1.5px solid rgba(0,0,0,0.06)',
                           fontSize: 15, fontWeight: 700, background: '#f8fafc', outline: 'none',
                           fontFamily: "'Inter', sans-serif", color: '#111'
                         }}
@@ -655,13 +655,13 @@ export default function CreatorsPage() {
                     <div>
                       <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>Minimum Reach</label>
                       <div style={{ position: 'relative' }}>
-                        <input 
-                          type="number" 
-                          placeholder="e.g. 10000" 
-                          value={f.minFollowers} 
+                        <input
+                          type="number"
+                          placeholder="e.g. 10000"
+                          value={f.minFollowers}
                           onChange={e => dsp({ t: 'CF', v: { minFollowers: e.target.value } })}
-                          style={{ 
-                            width: '100%', padding: '18px 20px', borderRadius: 18, border: '1.5px solid rgba(0,0,0,0.06)', 
+                          style={{
+                            width: '100%', padding: '18px 20px', borderRadius: 18, border: '1.5px solid rgba(0,0,0,0.06)',
                             fontSize: 15, fontWeight: 700, background: '#f8fafc', outline: 'none',
                             fontFamily: "'Inter', sans-serif"
                           }}
@@ -671,11 +671,11 @@ export default function CreatorsPage() {
                     </div>
                     <div>
                       <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>Min Engagement</label>
-                      <select 
-                        value={f.minER} 
+                      <select
+                        value={f.minER}
                         onChange={e => dsp({ t: 'CF', v: { minER: e.target.value } })}
-                        style={{ 
-                          width: '100%', padding: '18px 20px', borderRadius: 18, border: '1.5px solid rgba(0,0,0,0.06)', 
+                        style={{
+                          width: '100%', padding: '18px 20px', borderRadius: 18, border: '1.5px solid rgba(0,0,0,0.06)',
                           fontSize: 15, fontWeight: 700, background: '#f8fafc', outline: 'none',
                           fontFamily: "'Inter', sans-serif", color: '#111'
                         }}
@@ -694,15 +694,15 @@ export default function CreatorsPage() {
                       <h4 style={{ fontSize: 16, fontWeight: 900, color: '#111' }}>Verified Only</h4>
                       <p style={{ fontSize: 13, color: '#64748b', fontWeight: 600 }}>Show only manually verified elite profiles</p>
                     </div>
-                    <button 
+                    <button
                       onClick={() => dsp({ t: 'CF', v: { verified: !f.verified } })}
-                      style={{ 
-                        width: 64, height: 32, borderRadius: 100, background: f.verified ? '#3B82F6' : '#e2e8f0', 
-                        position: 'relative', border: 'none', cursor: 'pointer', transition: '0.3s' 
+                      style={{
+                        width: 64, height: 32, borderRadius: 100, background: f.verified ? '#3B82F6' : '#e2e8f0',
+                        position: 'relative', border: 'none', cursor: 'pointer', transition: '0.3s'
                       }}
                     >
-                      <div style={{ 
-                        width: 24, height: 24, borderRadius: '50%', background: '#fff', 
+                      <div style={{
+                        width: 24, height: 24, borderRadius: '50%', background: '#fff',
                         position: 'absolute', top: 4, left: f.verified ? 36 : 4, transition: '0.3s',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                       }} />
@@ -710,27 +710,27 @@ export default function CreatorsPage() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div style={{ 
-                    display: 'flex', gap: 12, marginTop: 24, padding: '16px 0', 
+                  <div style={{
+                    display: 'flex', gap: 12, marginTop: 24, padding: '16px 0',
                     background: '#fff', borderTop: '1px solid rgba(0,0,0,0.05)',
                     position: 'sticky', bottom: -40, zIndex: 10
                   }}>
-                    <button 
-                      onClick={clearFilters} 
-                      style={{ 
-                        flex: 1, padding: '18px', borderRadius: 100, 
-                        background: '#f8fafc', color: '#64748b', fontSize: 15, 
+                    <button
+                      onClick={clearFilters}
+                      style={{
+                        flex: 1, padding: '18px', borderRadius: 100,
+                        background: '#f8fafc', color: '#64748b', fontSize: 15,
                         fontWeight: 900, cursor: 'pointer', border: '1.5px solid rgba(0,0,0,0.04)',
                         transition: 'all 0.2s'
                       }}
                     >Reset All</button>
-                    
-                    <button 
-                      onClick={() => setShowFilters(false)} 
-                      style={{ 
-                        flex: 2, padding: '18px', borderRadius: 100, 
-                        background: '#111', color: '#fff', fontSize: 15, 
-                        fontWeight: 900, cursor: 'pointer', border: 'none', 
+
+                    <button
+                      onClick={() => setShowFilters(false)}
+                      style={{
+                        flex: 2, padding: '18px', borderRadius: 100,
+                        background: '#111', color: '#fff', fontSize: 15,
+                        fontWeight: 900, cursor: 'pointer', border: 'none',
                         boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
                         transition: 'all 0.2s'
                       }}
@@ -745,7 +745,8 @@ export default function CreatorsPage() {
         )}
       </AnimatePresence>
 
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}} />
