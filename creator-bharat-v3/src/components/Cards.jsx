@@ -56,7 +56,13 @@ export function CreatorCard({ creator: c, onView }) {
       </div>
 
       <div style={{ padding: mob ? '0 16px' : '0 24px', marginTop: mob ? -34 : -40, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: mob ? 12 : 20, position: 'relative', zIndex: 2 }}>
-        <img src={img} style={{ width: mob ? 68 : 80, height: mob ? 68 : 80, borderRadius: mob ? 16 : 24, objectFit: 'cover', border: (mob ? '3px' : '4px') + ' solid #fff', boxShadow: '0 8px 16px rgba(0,0,0,0.1)' }} alt={c.name} />
+        <div style={{ position: 'relative' }}>
+          <img src={img} style={{ width: mob ? 68 : 80, height: mob ? 68 : 80, borderRadius: mob ? 16 : 24, objectFit: 'cover', border: (mob ? '3px' : '4px') + ' solid #fff', boxShadow: '0 8px 16px rgba(0,0,0,0.1)' }} alt={c.name} />
+          {/* SaaS: Live Status Dot */}
+          <div style={{ position: 'absolute', bottom: 4, right: 4, width: 14, height: 14, background: '#10B981', border: '2px solid #fff', borderRadius: '50%', zIndex: 10, boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+            <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#10B981', animation: 'pulse-green 2s infinite' }} />
+          </div>
+        </div>
         {!mob && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
              <Bdg sm color={tier.bc} style={{ padding: '4px 12px', borderRadius: 100 }}>{tier.label}</Bdg>

@@ -13,9 +13,14 @@ const NICHES = ['Influencer', 'YouTuber', 'Content Creator', 'Vlogger', 'Lifesty
 const PLATFORMS = ['Instagram', 'YouTube', 'Twitter', 'LinkedIn', 'Snapchat', 'Facebook'];
 
 const FilterTag = ({ label, onClear }) => (
-  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(0,0,0,0.05)', padding: '6px 12px', borderRadius: 100, border: '1px solid rgba(0,0,0,0.05)' }}>
-    <span style={{ fontSize: 11, fontWeight: 800, color: '#475569' }}>{label}</span>
-    <button onClick={onClear} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: 12, cursor: 'pointer', padding: 0, display: 'flex', lineHeight: 1 }}>✕</button>
+  <div style={{ 
+    display: 'inline-flex', alignItems: 'center', gap: 6, 
+    background: '#111', color: '#fff', 
+    padding: '6px 14px', borderRadius: 100, 
+    boxShadow: '0 4px 12px rgba(0,0,0,0.1)', flexShrink: 0 
+  }}>
+    <span style={{ fontSize: 11, fontWeight: 800, whiteSpace: 'nowrap' }}>{label}</span>
+    <button onClick={onClear} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', fontSize: 10, cursor: 'pointer', padding: 0, width: 16, height: 16, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
   </div>
 );
 
@@ -98,13 +103,25 @@ export default function CreatorsPage() {
   return (
     <div style={{ background: '#fff', minHeight: '100vh' }}>
       <EliteHeader
-        eyebrow="Marketplace"
-        title="Bharat's Top Creators"
-        sub="Discover elite influencers, YouTubers, and content creators from 2,400+ handpicked talent across Bharat's Tier 2 & 3 cities."
+        eyebrow="Talent Discovery"
+        title={
+          <>
+            Find the <span style={{ background: 'linear-gradient(90deg, #FF9431 20%, #475569 50%, #138808 80%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Faces</span> That Build Bharat
+          </>
+        }
+        sub={<>The ultimate creator marketplace for brands. Access <strong style={{ color: '#111' }}>{fmt.num(all.length)}+</strong> handpicked, verified influencers from Tier-2 & Tier-3 cities with deep regional trust.</>}
         gradient="saffron"
         light={true}
         compact={true}
-      />
+      >
+        <div style={{ display: 'flex', gap: mob ? 12 : 24, justifyContent: 'center', marginTop: mob ? 4 : 12, flexWrap: 'wrap' }}>
+           <div style={{ fontSize: mob ? 12 : 14, fontWeight: 800, color: '#64748b', display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ background: 'rgba(16,185,129,0.1)', color: '#10B981', padding: '2px 8px', borderRadius: 100, fontSize: 11 }}>100%</span> VERIFIED</div>
+           <div style={{ width: 4, height: 4, background: '#cbd5e1', borderRadius: '50%', alignSelf: 'center' }} />
+           <div style={{ fontSize: mob ? 12 : 14, fontWeight: 800, color: '#64748b', display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ background: 'rgba(255,148,49,0.1)', color: '#FF9431', padding: '2px 8px', borderRadius: 100, fontSize: 11 }}>TOP 5%</span> ER</div>
+           <div style={{ width: 4, height: 4, background: '#cbd5e1', borderRadius: '50%', alignSelf: 'center', display: mob ? 'none' : 'block' }} />
+           <div style={{ fontSize: mob ? 12 : 14, fontWeight: 800, color: '#64748b', display: 'flex', alignItems: 'center', gap: 6 }}>PAN-INDIA</div>
+        </div>
+      </EliteHeader>
 
       {/* Sticky Ultra-Premium Toolbar (Floating Glass Style) */}
       <div style={{
@@ -350,8 +367,8 @@ export default function CreatorsPage() {
         
         {/* Active Filter Tags - Elite SaaS Pattern */}
         {Object.values(f).some(v => Array.isArray(v) ? v.length > 0 : (v && v !== 'score' && v !== '' && v !== false)) && (
-          <div style={{ ...W(1280), padding: mob ? '0 16px 8px' : '0 24px 12px', display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ fontSize: 10, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Filters:</span>
+          <div className="no-scrollbar" style={{ ...W(1280), padding: mob ? '0 16px 8px' : '0 24px 12px', display: 'flex', gap: 8, flexWrap: mob ? 'nowrap' : 'wrap', alignItems: 'center', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <span style={{ fontSize: 10, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', flexShrink: 0 }}>Filters:</span>
             {f.q && <FilterTag label={`Search: ${f.q}`} onClear={() => dsp({ t: 'CF', v: { q: '' } })} />}
             {f.state && <FilterTag label={f.state} onClear={() => dsp({ t: 'CF', v: { state: '', district: '' } })} />}
             {f.district && <FilterTag label={f.district} onClear={() => dsp({ t: 'CF', v: { district: '' } })} />}
@@ -785,25 +802,38 @@ export default function CreatorsPage() {
 
 
 
-      {/* Floating Action Button (FAB) for Mobile Filters */}
-      {mob && !showFilters && (
-        <motion.button
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          onClick={() => setShowFilters(true)}
-          style={{
-            position: 'fixed', bottom: 90, right: 20, width: 60, height: 60,
-            borderRadius: '50%', background: '#111', color: '#fff', border: 'none',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 12px 24px rgba(0,0,0,0.2)', zIndex: 2000001, cursor: 'pointer'
-          }}
-        >
-          <span style={{ fontSize: 24 }}>⌥</span>
-          {Object.values(f).some(v => Array.isArray(v) ? v.length > 0 : (v && v !== 'score' && v !== '' && v !== false)) && (
-            <div style={{ position: 'absolute', top: 0, right: 0, background: '#FF9431', width: 20, height: 20, borderRadius: '50%', border: '3px solid #111', fontSize: 10, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>!</div>
-          )}
-        </motion.button>
-      )}
+
+
+      {/* Dual CTA Section */}
+      <div style={{ background: '#fdfdfd', padding: mob ? '0 16px 60px' : '0 24px 80px' }}>
+        <div style={{ ...W(1280), display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 24 }}>
+          {/* Creator CTA */}
+          <div style={{
+            background: 'linear-gradient(135deg, #FF9431 0%, #138808 100%)',
+            borderRadius: 24, padding: mob ? '32px 24px' : '48px',
+            color: '#fff', position: 'relative', overflow: 'hidden',
+            boxShadow: '0 20px 40px rgba(255,148,49,0.2)'
+          }}>
+            <div style={{ position: 'absolute', top: 0, right: 0, width: 200, height: 200, background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%)', transform: 'translate(30%, -30%)' }} />
+            <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 24 : 32, fontWeight: 900, marginBottom: 12, lineHeight: 1.2 }}>Are you a Creator?</h3>
+            <p style={{ fontSize: mob ? 14 : 16, fontWeight: 500, opacity: 0.9, marginBottom: 32, maxWidth: 400, lineHeight: 1.5 }}>Join Bharat's fastest-growing elite network. Get discovered by top brands, manage your portfolio, and grow your income with zero commission.</p>
+            <button onClick={() => go('apply')} style={{ background: '#fff', color: '#111', border: 'none', padding: '16px 32px', borderRadius: 100, fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 8px 16px rgba(0,0,0,0.1)', transition: 'transform 0.2s' }} onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'} onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}>Claim Your Profile →</button>
+          </div>
+
+          {/* Brand CTA */}
+          <div style={{
+            background: '#111',
+            borderRadius: 24, padding: mob ? '32px 24px' : '48px',
+            color: '#fff', position: 'relative', overflow: 'hidden',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
+          }}>
+            <div style={{ position: 'absolute', bottom: 0, right: 0, width: 200, height: 200, background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)', transform: 'translate(20%, 20%)' }} />
+            <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 24 : 32, fontWeight: 900, marginBottom: 12, lineHeight: 1.2 }}>Are you a Brand?</h3>
+            <p style={{ fontSize: mob ? 14 : 16, fontWeight: 500, color: '#94a3b8', marginBottom: 32, maxWidth: 400, lineHeight: 1.5 }}>Skip the agency fees. Directly hire top-performing regional creators who drive real engagement and trust in Tier 2 & 3 markets.</p>
+            <button onClick={() => dsp({ t: 'UI', v: { demoModal: true } })} style={{ background: 'rgba(255,255,255,0.1)', border: '1.5px solid rgba(255,255,255,0.2)', color: '#fff', padding: '16px 32px', borderRadius: 100, fontSize: 15, fontWeight: 900, cursor: 'pointer', backdropFilter: 'blur(10px)', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'} onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'} onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}>Post a Campaign</button>
+          </div>
+        </div>
+      </div>
 
       <style dangerouslySetInnerHTML={{
         __html: `

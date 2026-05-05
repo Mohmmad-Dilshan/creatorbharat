@@ -104,8 +104,19 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
           <div className={styles.flagLine} />
         </div>
 
-        <div className={styles.svgWrap} style={{ height: mob ? '450px' : '640px' }}>
-          <svg ref={svgRef} viewBox="0 0 560 640" className={styles.svg} style={{ width: '100%', height: '100%', display: 'block' }} />
+        <div className={styles.svgWrap} style={{ height: mob ? '450px' : '640px', position: 'relative' }}>
+          {loading && (
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 10, background: 'transparent' }}
+            >
+               <div style={{ width: 48, height: 48, borderRadius: '50%', border: '4px solid rgba(255,153,51,0.2)', borderTopColor: '#FF9933', borderRightColor: '#FFFFFF', borderBottomColor: '#138808', animation: 'spin 1s linear infinite' }} />
+               <p style={{ marginTop: 16, fontSize: 13, fontWeight: 900, color: 'rgba(255,255,255,0.7)', letterSpacing: '2px', textTransform: 'uppercase' }}>Loading Bharat...</p>
+               <style dangerouslySetInnerHTML={{__html: `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}} />
+            </motion.div>
+          )}
+          
+          <svg ref={svgRef} viewBox="0 0 560 640" className={styles.svg} style={{ width: '100%', height: '100%', display: 'block', opacity: loading ? 0 : 1, transition: 'opacity 0.8s ease-in-out' }} />
           
           {selectedState && (
             <motion.div 
