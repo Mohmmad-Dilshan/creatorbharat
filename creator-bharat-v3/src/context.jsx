@@ -13,7 +13,7 @@ export const IS = {
   applied: [],
   toasts: [],
   ui: { authModal: false, mobileMenu: false, hideNav: false },
-  cf: { q: '', state: '', niche: '', platform: '', sort: 'score', verified: false, minFollowers: '', minER: '' },
+  cf: { q: '', state: '', niche: [], platform: [], sort: 'score', verified: false, minFollowers: '', minER: '' },
   cpf: { q: '', niche: '', urgent: false }
 };
 

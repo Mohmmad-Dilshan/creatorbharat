@@ -12,6 +12,13 @@ import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 const NICHES = ['Influencer', 'YouTuber', 'Content Creator', 'Vlogger', 'Lifestyle', 'Tech', 'Fashion', 'Beauty', 'Gaming', 'Finance', 'Travel', 'Comedy', 'Educational', 'Music', 'Fitness', 'Food'];
 const PLATFORMS = ['Instagram', 'YouTube', 'Twitter', 'LinkedIn', 'Snapchat', 'Facebook'];
 
+const FilterTag = ({ label, onClear }) => (
+  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(0,0,0,0.05)', padding: '6px 12px', borderRadius: 100, border: '1px solid rgba(0,0,0,0.05)' }}>
+    <span style={{ fontSize: 11, fontWeight: 800, color: '#475569' }}>{label}</span>
+    <button onClick={onClear} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: 12, cursor: 'pointer', padding: 0, display: 'flex', lineHeight: 1 }}>✕</button>
+  </div>
+);
+
 export default function CreatorsPage() {
   const { st, dsp } = useApp();
   const [mob, setMob] = useState(window.innerWidth < 768);
@@ -59,13 +66,13 @@ export default function CreatorsPage() {
     if (q && !name.includes(q) && !handle.includes(q) && !bio.includes(q) && !city.includes(q)) return false;
     if (f.state && c.state !== f.state) return false;
     if (f.district && c.city !== f.district) return false;
-    if (f.niche) {
+    if (f.niche && f.niche.length > 0) {
       const cn = Array.isArray(c.niche) ? c.niche : [c.niche];
-      if (!cn.includes(f.niche)) return false;
+      if (!f.niche.some(n => cn.includes(n))) return false;
     }
-    if (f.platform) {
+    if (f.platform && f.platform.length > 0) {
       const cp = Array.isArray(c.platform) ? c.platform : [c.platform];
-      if (!cp.includes(f.platform)) return false;
+      if (!f.platform.some(p => cp.includes(p))) return false;
     }
     if (f.minFollowers && c.followers < Number(f.minFollowers)) return false;
     if (f.verified && !c.verified) return false;
@@ -86,7 +93,7 @@ export default function CreatorsPage() {
     return acc;
   }, {});
 
-  const clearFilters = () => dsp({ t: 'CF', v: { q: '', niche: '', state: '', district: '', platform: '', verified: false, minFollowers: '', sort: 'score', gender: '', language: '', minER: '' } });
+  const clearFilters = () => dsp({ t: 'CF', v: { q: '', niche: [], state: '', district: '', platform: [], verified: false, minFollowers: '', sort: 'score', gender: '', language: '', minER: '' } });
 
   return (
     <div style={{ background: '#fff', minHeight: '100vh' }}>
@@ -127,8 +134,11 @@ export default function CreatorsPage() {
             ) : (
               <div style={{ display: 'flex', flex: 1, background: 'rgba(0,0,0,0.02)', borderRadius: 100, border: '1.5px solid rgba(0,0,0,0.04)', overflow: 'hidden', height: 48 }}>
                 <select
-                  value={f.niche}
-                  onChange={e => dsp({ t: 'CF', v: { niche: e.target.value } })}
+                  value=""
+                  onChange={e => {
+                    const val = e.target.value;
+                    if (val && !f.niche.includes(val)) dsp({ t: 'CF', v: { niche: [...f.niche, val] } });
+                  }}
                   style={{
                     padding: '0 24px', border: 'none', borderRight: '1.5px solid rgba(0,0,0,0.06)',
                     background: 'rgba(0,0,0,0.01)', fontSize: 13, fontWeight: 700,
@@ -136,7 +146,7 @@ export default function CreatorsPage() {
                     fontFamily: "'Inter', sans-serif"
                   }}
                 >
-                  <option value="">All Categories</option>
+                  <option value="">+ Add Category</option>
                   {NICHES.map(n => <option key={n} value={n}>{n}</option>)}
                 </select>
                 <div style={{ position: 'relative', flex: 1 }}>
@@ -243,7 +253,7 @@ export default function CreatorsPage() {
           {mob && (
             <div style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: '4px 0 8px', scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="no-scrollbar">
               {/* Reset Chip */}
-              {(f.niche || f.state || f.district || f.q) && (
+              {(f.niche.length > 0 || f.state || f.district || f.q) && (
                 <button
                   onClick={clearFilters}
                   style={{
@@ -298,39 +308,61 @@ export default function CreatorsPage() {
               </button>
 
               {/* Platform Chips */}
-              {PLATFORMS.map(p => (
-                <button
-                  key={p}
-                  onClick={() => dsp({ t: 'CF', v: { platform: f.platform === p ? '' : p } })}
-                  style={{
-                    flexShrink: 0, padding: '10px 18px', borderRadius: 100,
-                    border: '1.5px solid ' + (f.platform === p ? '#FF9431' : 'rgba(0,0,0,0.06)'),
-                    background: f.platform === p ? '#FF9431' : '#fff',
-                    color: f.platform === p ? '#fff' : '#64748b',
-                    fontSize: 13, fontWeight: 800, cursor: 'pointer'
-                  }}
-                >{p}</button>
-              ))}
+              {PLATFORMS.map(p => {
+                const isSel = f.platform.includes(p);
+                return (
+                  <button
+                    key={p}
+                    onClick={() => dsp({ t: 'CF', v: { platform: isSel ? f.platform.filter(x => x !== p) : [...f.platform, p] } })}
+                    style={{
+                      flexShrink: 0, padding: '10px 18px', borderRadius: 100,
+                      border: '1.5px solid ' + (isSel ? '#FF9431' : 'rgba(0,0,0,0.06)'),
+                      background: isSel ? '#FF9431' : '#fff',
+                      color: isSel ? '#fff' : '#64748b',
+                      fontSize: 13, fontWeight: 800, cursor: 'pointer'
+                    }}
+                  >{p}</button>
+                );
+              })}
 
               <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.05)', flexShrink: 0, alignSelf: 'center' }} />
 
-              {NICHES.map(n => (
-                <button
-                  key={n}
-                  onClick={() => dsp({ t: 'CF', v: { niche: f.niche === n ? '' : n } })}
-                  style={{
-                    flexShrink: 0, padding: '10px 20px', borderRadius: 100,
-                    border: '1.5px solid ' + (f.niche === n ? '#FF9431' : 'rgba(0,0,0,0.06)'),
-                    background: f.niche === n ? '#FF9431' : '#fff',
-                    color: f.niche === n ? '#fff' : '#64748b',
-                    fontSize: 13, fontWeight: 800, cursor: 'pointer',
-                    transition: 'all 0.2s'
-                  }}
-                >{n}</button>
-              ))}
+              {NICHES.map(n => {
+                const isSel = f.niche.includes(n);
+                return (
+                  <button
+                    key={n}
+                    onClick={() => dsp({ t: 'CF', v: { niche: isSel ? f.niche.filter(x => x !== n) : [...f.niche, n] } })}
+                    style={{
+                      flexShrink: 0, padding: '10px 20px', borderRadius: 100,
+                      border: '1.5px solid ' + (isSel ? '#FF9431' : 'rgba(0,0,0,0.06)'),
+                      background: isSel ? '#FF9431' : '#fff',
+                      color: isSel ? '#fff' : '#64748b',
+                      fontSize: 13, fontWeight: 800, cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                  >{n}</button>
+                );
+              })}
             </div>
           )}
         </div>
+        
+        {/* Active Filter Tags - Elite SaaS Pattern */}
+        {Object.values(f).some(v => Array.isArray(v) ? v.length > 0 : (v && v !== 'score' && v !== '' && v !== false)) && (
+          <div style={{ ...W(1280), padding: mob ? '0 16px 8px' : '0 24px 12px', display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+            <span style={{ fontSize: 10, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Filters:</span>
+            {f.q && <FilterTag label={`Search: ${f.q}`} onClear={() => dsp({ t: 'CF', v: { q: '' } })} />}
+            {f.state && <FilterTag label={f.state} onClear={() => dsp({ t: 'CF', v: { state: '', district: '' } })} />}
+            {f.district && <FilterTag label={f.district} onClear={() => dsp({ t: 'CF', v: { district: '' } })} />}
+            {f.niche.map(n => <FilterTag key={n} label={n} onClear={() => dsp({ t: 'CF', v: { niche: f.niche.filter(x => x !== n) } })} />)}
+            {f.platform.map(p => <FilterTag key={p} label={p} onClear={() => dsp({ t: 'CF', v: { platform: f.platform.filter(x => x !== p) } })} />)}
+            {f.verified && <FilterTag label="Verified" onClear={() => dsp({ t: 'CF', v: { verified: false } })} />}
+            {f.gender && f.gender !== 'Any' && <FilterTag label={f.gender} onClear={() => dsp({ t: 'CF', v: { gender: 'Any' } })} />}
+            {f.minER && <FilterTag label={`ER: ${f.minER}%+`} onClear={() => dsp({ t: 'CF', v: { minER: '' } })} />}
+            <button onClick={clearFilters} style={{ background: 'none', border: 'none', color: '#64748b', fontSize: 11, fontWeight: 800, cursor: 'pointer', textDecoration: 'underline' }}>Clear All</button>
+          </div>
+        )}
       </div>
 
       <AnimatePresence>
@@ -526,22 +558,25 @@ export default function CreatorsPage() {
                   <div>
                     <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 16, letterSpacing: '1px' }}>Creator Niche</label>
                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                      {NICHES.map(n => (
-                        <button
-                          key={n}
-                          onClick={() => dsp({ t: 'CF', v: { niche: f.niche === n ? '' : n } })}
-                          style={{
-                            padding: '12px 22px', borderRadius: 100,
-                            border: '1.5px solid ' + (f.niche === n ? '#FF9431' : 'rgba(0,0,0,0.06)'),
-                            background: f.niche === n ? '#FF9431' : '#fff',
-                            color: f.niche === n ? '#fff' : '#475569',
-                            fontSize: 14, fontWeight: 800, cursor: 'pointer',
-                            transition: 'all 0.2s'
-                          }}
-                        >
-                          {n}
-                        </button>
-                      ))}
+                      {NICHES.map(n => {
+                        const isSel = f.niche.includes(n);
+                        return (
+                          <button
+                            key={n}
+                            onClick={() => dsp({ t: 'CF', v: { niche: isSel ? f.niche.filter(x => x !== n) : [...f.niche, n] } })}
+                            style={{
+                              padding: '12px 22px', borderRadius: 100,
+                              border: '1.5px solid ' + (isSel ? '#FF9431' : 'rgba(0,0,0,0.06)'),
+                              background: isSel ? '#FF9431' : '#fff',
+                              color: isSel ? '#fff' : '#475569',
+                              fontSize: 14, fontWeight: 800, cursor: 'pointer',
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            {n}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -555,24 +590,27 @@ export default function CreatorsPage() {
                         { name: 'Twitter', icon: '🐦', color: '#1DA1F2' },
                         { name: 'LinkedIn', icon: '💼', color: '#0A66C2' },
                         { name: 'Facebook', icon: '👥', color: '#1877F2' }
-                      ].map(p => (
-                        <button
-                          key={p.name}
-                          onClick={() => dsp({ t: 'CF', v: { platform: f.platform === p.name ? '' : p.name } })}
-                          style={{
-                            padding: '12px 22px', borderRadius: 100,
-                            border: '1.5px solid ' + (f.platform === p.name ? p.color : 'rgba(0,0,0,0.06)'),
-                            background: f.platform === p.name ? p.color : '#fff',
-                            color: f.platform === p.name ? '#fff' : '#475569',
-                            fontSize: 14, fontWeight: 800, cursor: 'pointer',
-                            display: 'flex', alignItems: 'center', gap: 8,
-                            transition: 'all 0.2s'
-                          }}
-                        >
-                          <span>{p.icon}</span>
-                          {p.name}
-                        </button>
-                      ))}
+                      ].map(p => {
+                        const isSel = f.platform.includes(p.name);
+                        return (
+                          <button
+                            key={p.name}
+                            onClick={() => dsp({ t: 'CF', v: { platform: isSel ? f.platform.filter(x => x !== p.name) : [...f.platform, p.name] } })}
+                            style={{
+                              padding: '12px 22px', borderRadius: 100,
+                              border: '1.5px solid ' + (isSel ? p.color : 'rgba(0,0,0,0.06)'),
+                              background: isSel ? p.color : '#fff',
+                              color: isSel ? '#fff' : '#475569',
+                              fontSize: 14, fontWeight: 800, cursor: 'pointer',
+                              display: 'flex', alignItems: 'center', gap: 8,
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            <span>{p.icon}</span>
+                            {p.name}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -744,6 +782,62 @@ export default function CreatorsPage() {
           </>
         )}
       </AnimatePresence>
+
+      {/* Comparison Drawer - Elite Feature */}
+      <AnimatePresence>
+        {st.compared.length > 0 && (
+          <motion.div
+            initial={{ y: 100 }} animate={{ y: 0 }} exit={{ y: 100 }}
+            style={{
+              position: 'fixed', bottom: mob ? 20 : 32, left: '50%', transform: 'translateX(-50%)',
+              zIndex: 10000, width: mob ? 'calc(100% - 32px)' : 'auto', minWidth: mob ? 0 : 400
+            }}
+          >
+            <div style={{
+              background: '#111', color: '#fff', padding: '12px 24px', borderRadius: 100,
+              display: 'flex', alignItems: 'center', gap: 20, boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+              border: '1px solid rgba(255,255,255,0.1)'
+            }}>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {st.compared.map(id => {
+                  const c = all.find(x => x.id === id);
+                  return (
+                    <div key={id} style={{ position: 'relative' }}>
+                      <img src={c?.photo || c?.avatarUrl || `https://ui-avatars.com/api/?name=C&background=FF9431&color=fff`} style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', border: '2px solid #fff' }} />
+                      <button onClick={() => dsp({ t: 'COMPARE', id })} style={{ position: 'absolute', top: -4, right: -4, width: 16, height: 16, borderRadius: '50%', background: '#EF4444', color: '#fff', border: 'none', fontSize: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+                    </div>
+                  );
+                })}
+                {[...Array(3 - st.compared.length)].map((_, i) => (
+                  <div key={i} style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px dashed rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>+</div>
+                ))}
+              </div>
+              <div style={{ height: 24, width: 1, background: 'rgba(255,255,255,0.1)' }} />
+              <button onClick={() => go('compare')} style={{ background: '#FF9431', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 100, fontWeight: 900, fontSize: 12, cursor: 'pointer' }}>Compare Now</button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Floating Action Button (FAB) for Mobile Filters */}
+      {mob && !showFilters && (
+        <motion.button
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          onClick={() => setShowFilters(true)}
+          style={{
+            position: 'fixed', bottom: 90, right: 20, width: 60, height: 60,
+            borderRadius: '50%', background: '#111', color: '#fff', border: 'none',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 12px 24px rgba(0,0,0,0.2)', zIndex: 1000, cursor: 'pointer'
+          }}
+        >
+          <span style={{ fontSize: 24 }}>⌥</span>
+          {Object.values(f).some(v => Array.isArray(v) ? v.length > 0 : (v && v !== 'score' && v !== '' && v !== false)) && (
+            <div style={{ position: 'absolute', top: 0, right: 0, background: '#FF9431', width: 20, height: 20, borderRadius: '50%', border: '3px solid #111', fontSize: 10, fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>!</div>
+          )}
+        </motion.button>
+      )}
 
       <style dangerouslySetInnerHTML={{
         __html: `

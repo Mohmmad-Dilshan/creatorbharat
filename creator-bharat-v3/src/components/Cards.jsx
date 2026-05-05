@@ -4,6 +4,12 @@ import { T } from '../theme';
 import { fmt } from '../utils/helpers';
 import { Card, Bdg, Btn, Stars, Bar } from './Primitives';
 
+const Sparkline = ({ color }) => (
+  <svg width="40" height="16" viewBox="0 0 40 20" fill="none" style={{ opacity: 0.8 }}>
+    <path d="M0 15L5 12L10 14L15 8L20 10L25 4L30 7L35 2L40 5" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 export function CreatorCard({ creator: c, onView }) {
   const { st, dsp } = useApp();
   const saved = st.saved.includes(c.id);
@@ -57,7 +63,10 @@ export function CreatorCard({ creator: c, onView }) {
             <div style={{ fontSize: mob ? 8 : 10, fontWeight: 800, color: T.t4, textTransform: 'uppercase' }}>Reach</div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: mob ? 13 : 18, fontWeight: 900, color: '#10B981' }}>{c.er || 4.2}%</div>
+            <div style={{ fontSize: mob ? 13 : 18, fontWeight: 900, color: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+              {c.er || 4.2}%
+              {!mob && <Sparkline color="#10B981" />}
+            </div>
             <div style={{ fontSize: mob ? 8 : 10, fontWeight: 800, color: T.t4, textTransform: 'uppercase' }}>ER</div>
           </div>
           <div style={{ textAlign: 'center' }}>
