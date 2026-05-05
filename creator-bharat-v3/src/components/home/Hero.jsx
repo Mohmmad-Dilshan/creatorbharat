@@ -13,8 +13,8 @@ export function Typewriter({ words, interval = 1000 }) {
   useEffect(() => {
     const word = words[idx % words.length];
     // SNAPPY & PRO SPEED FOR MOBILE
-    const speed = mob ? (del ? 20 : 40) : (del ? 15 : 35); 
-    
+    const speed = mob ? (del ? 20 : 40) : (del ? 15 : 35);
+
     const timeout = setTimeout(() => {
       if (!del && sub === word) {
         setTimeout(() => setDel(true), 800); // SNAPPY PAUSE
@@ -53,48 +53,48 @@ const TirangaGlow = ({ mob }) => (
     WebkitMaskImage: 'linear-gradient(to bottom, black 75%, transparent 100%)'
   }}>
     {/* Vibrant but soft Mesh Blobs */}
-    <div style={{ 
-      position: 'absolute', 
-      top: '-15%', 
-      left: '-5%', 
-      width: '70%', 
-      height: '70%', 
-      background: 'radial-gradient(circle, rgba(255,153,51,0.22) 0%, transparent 75%)', 
-      filter: 'blur(80px)', 
-      animation: 'float-slow 20s infinite alternate' 
+    <div style={{
+      position: 'absolute',
+      top: '-15%',
+      left: '-5%',
+      width: '70%',
+      height: '70%',
+      background: 'radial-gradient(circle, rgba(255,153,51,0.22) 0%, transparent 75%)',
+      filter: 'blur(80px)',
+      animation: 'float-slow 20s infinite alternate'
     }} />
-    <div style={{ 
-      position: 'absolute', 
-      bottom: '5%', 
-      right: '-5%', 
-      width: '70%', 
-      height: '70%', 
-      background: 'radial-gradient(circle, rgba(19,136,8,0.18) 0%, transparent 75%)', 
-      filter: 'blur(80px)', 
-      animation: 'float-slow 25s infinite alternate-reverse' 
+    <div style={{
+      position: 'absolute',
+      bottom: '5%',
+      right: '-5%',
+      width: '70%',
+      height: '70%',
+      background: 'radial-gradient(circle, rgba(19,136,8,0.18) 0%, transparent 75%)',
+      filter: 'blur(80px)',
+      animation: 'float-slow 25s infinite alternate-reverse'
     }} />
 
     {/* The Chakra - Clearer and more 'Premium' */}
-    <div style={{ 
-      position: 'absolute', 
-      top: '38%', 
-      left: '50%', 
-      transform: 'translate(-50%, -50%)', 
-      opacity: 0.1, 
-      zIndex: 0 
+    <div style={{
+      position: 'absolute',
+      top: '38%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      opacity: 0.1,
+      zIndex: 0
     }}>
       <svg width={mob ? 300 : 600} height={mob ? 300 : 600} viewBox="0 0 24 24" style={{ animation: 'slowRotate 180s linear infinite', filter: 'drop-shadow(0 0 15px rgba(0,0,128,0.1))' }}>
         <circle cx="12" cy="12" r="9.5" fill="none" stroke="#000080" strokeWidth="0.2" />
         <circle cx="12" cy="12" r="0.8" fill="#000080" />
         {[...Array(24)].map((_, i) => (
-          <line 
-            key={i} 
-            x1="12" 
-            y1="12" 
-            x2={12 + 9.5 * Math.cos((i * 15) * Math.PI / 180)} 
-            y2={12 + 9.5 * Math.sin((i * 15) * Math.PI / 180)} 
-            stroke="#000080" 
-            strokeWidth="0.1" 
+          <line
+            key={i}
+            x1="12"
+            y1="12"
+            x2={12 + 9.5 * Math.cos((i * 15) * Math.PI / 180)}
+            y2={12 + 9.5 * Math.sin((i * 15) * Math.PI / 180)}
+            stroke="#000080"
+            strokeWidth="0.1"
           />
         ))}
       </svg>
@@ -210,10 +210,10 @@ export default function Hero({ mob, st, dsp, go }) {
 
         <h1 className="au d1" style={{ fontSize: mob ? 'clamp(28px,9vw,36px)' : 'clamp(76px,9vw,104px)', fontWeight: 900, color: '#111', lineHeight: mob ? 1.15 : 1.02, marginBottom: mob ? 20 : 32, letterSpacing: '-0.05em', maxWidth: '100%', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
           Your Digital <Typewriter words={['Identity', 'Portfolio', 'Empire', 'Legacy']} /> <br />
-          Built for <span style={{ 
-            background: 'linear-gradient(90deg, #FF9431, #128807)', 
-            WebkitBackgroundClip: 'text', 
-            WebkitTextFillColor: 'transparent', 
+          Built for <span style={{
+            background: 'linear-gradient(90deg, #FF9431, #128807)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
             paddingRight: mob ? 5 : 15,
             display: 'inline-block'
           }}>Bharat.</span>
@@ -293,13 +293,13 @@ export default function Hero({ mob, st, dsp, go }) {
         </div>
 
         {/* CREATOR SUPPORT SYSTEM GRID: CONDENSED FOR MOBILE */}
-        <div className="au d4" style={{ 
-          width: '100%', maxWidth: 1200, 
-          display: 'grid', 
+        <div className="au d4" style={{
+          width: '100%', maxWidth: 1200,
+          display: 'grid',
           gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(3, 1fr)', // 2 COLUMNS ON MOBILE
-          gap: mob ? 12 : 24, 
-          padding: mob ? '0 16px' : 0, 
-          boxSizing: 'border-box' 
+          gap: mob ? 12 : 24,
+          padding: mob ? '0 16px' : 0,
+          boxSizing: 'border-box'
         }}>
           {[
             { t: 'Identity', h: 'Pro Portfolio', d: 'Verified identity jo brands ko impress karegi.', i: '👤', bg: '#FDF7F2' },
@@ -334,11 +334,6 @@ export default function Hero({ mob, st, dsp, go }) {
           @keyframes spinBorder {
             from { transform: translate(-50%, -50%) rotate(0deg); }
             to { transform: translate(-50%, -50%) rotate(360deg); }
-          }
-          @keyframes leher {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-4px) rotate(-1deg); }
-            75% { transform: translateY(4px) rotate(1deg); }
           }
           .card-animated-border:hover .border-line {
             opacity: 1;
