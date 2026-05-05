@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { T } from '../theme';
 
-export function Btn({ children, onClick, variant = 'primary', sm, lg, full, disabled, loading, style: sx = {}, href }) {
+export function Btn({ children, onClick, variant = 'primary', sm, lg, full, disabled, loading, style: sx = {}, href, className }) {
   const [h, sh] = useState(false);
   const base = {
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -21,7 +21,7 @@ export function Btn({ children, onClick, variant = 'primary', sm, lg, full, disa
   };
   const Tag = href ? 'a' : 'button';
   return (
-    <Tag className="btn-int" onClick={onClick} disabled={disabled || loading} href={href}
+    <Tag className={`btn-int ${className || ''}`} onClick={onClick} disabled={disabled || loading} href={href}
       style={{ ...base, ...(vs[variant] || vs.primary) }}
       onMouseEnter={() => sh(true)} onMouseLeave={() => sh(false)}>
       {loading ? <span className="spin" style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,.3)', borderTopColor: '#fff', borderRadius: '50%' }} /> : children}

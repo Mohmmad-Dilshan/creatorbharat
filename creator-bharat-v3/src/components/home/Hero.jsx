@@ -223,13 +223,13 @@ export default function Hero({ mob, st, dsp, go }) {
           The all-in-one platform where Tier 2 & Tier 3 creators get the support, identity, and growth they deserve. Your journey from local to national starts here.
         </p>
 
-        <div className="au d3" style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: mob ? 14 : 16, marginBottom: 48, justifyContent: 'center', width: mob ? '100%' : 'auto' }}>
-          <Btn lg full={mob} onClick={() => go('apply')} style={{ padding: '22px 48px', fontSize: 18, background: T.gd, color: '#fff', borderRadius: 100, fontWeight: 900, border: 'none', boxShadow: '0 12px 32px rgba(255,148,49,0.35)', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div className="au d3" style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: mob ? 12 : 16, marginBottom: 48, justifyContent: 'center', width: mob ? '100%' : 'auto', alignItems: 'center' }}>
+          <Btn lg full={false} onClick={() => go('apply')} className="hero-primary-btn" style={{ padding: mob ? '16px 32px' : '22px 48px', fontSize: mob ? 15 : 18, background: T.gd, color: '#fff', borderRadius: 100, fontWeight: 900, border: 'none', boxShadow: '0 12px 32px rgba(255,148,49,0.35)', justifyContent: 'center', position: 'relative', overflow: 'hidden', width: mob ? 'auto' : 'auto' }}>
             <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 10 }}>🚀 Claim Your Link Free</span>
             <div style={{ position: 'absolute', top: 0, left: '-100%', width: '50%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)', animation: 'shimmer 3s infinite', transform: 'skewX(-20deg)' }} />
           </Btn>
-          <Btn lg variant="ghost" full={mob} onClick={() => dsp({ t: 'UI', v: { demoModal: true } })} style={{ padding: '20px 40px', fontSize: 17, background: 'rgba(0,0,0,0.03)', color: '#111', borderRadius: 100, fontWeight: 700, border: '1.5px solid rgba(0,0,0,0.08)', backdropFilter: 'blur(10px)', justifyContent: 'center', position: 'relative' }}>
-            <span style={{ position: 'absolute', top: 12, left: 12, width: 8, height: 8, background: '#EF4444', borderRadius: '50%', animation: 'pulse-red 1.5s infinite' }} />
+          <Btn lg variant="ghost" full={false} onClick={() => dsp({ t: 'UI', v: { demoModal: true } })} className="hero-secondary-btn" style={{ padding: mob ? '15px 32px' : '20px 40px', fontSize: mob ? 14 : 17, background: 'rgba(0,0,0,0.03)', color: '#111', borderRadius: 100, fontWeight: 700, border: '1.5px solid rgba(0,0,0,0.08)', backdropFilter: 'blur(10px)', justifyContent: 'center', position: 'relative', width: mob ? 'auto' : 'auto' }}>
+            <span className="live-dot" style={{ position: 'absolute', top: 12, left: 12, width: 8, height: 8, background: '#EF4444', borderRadius: '50%', animation: 'pulse-red 1.5s infinite' }} />
             👁️ View Live Demo
           </Btn>
         </div>
@@ -239,27 +239,29 @@ export default function Hero({ mob, st, dsp, go }) {
           width: '100%',
           maxWidth: 1000,
           padding: 2,
-          borderRadius: mob ? 34 : 102,
+          borderRadius: mob ? 24 : 102,
           position: 'relative',
           overflow: 'hidden',
           background: 'rgba(0,0,0,0.05)',
-          marginBottom: 80,
+          marginBottom: mob ? 40 : 80,
           zIndex: 100,
-          boxShadow: '0 40px 120px -20px rgba(0,0,0,0.12)',
+          boxShadow: mob ? '0 20px 40px rgba(0,0,0,0.06)' : '0 40px 120px -20px rgba(0,0,0,0.12)',
           boxSizing: 'border-box'
         }}>
-          {/* THE MOVING LINE ANIMATION (EXACT NAVBAR MATCH) */}
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            width: mob ? '120%' : '200%',
-            height: mob ? '300%' : '500%',
-            background: 'conic-gradient(from 0deg, #138808 0%, #FFFFFF 20%, #FF9933 40%, #FF9933 60%, #FFFFFF 80%, #138808 100%)',
-            animation: 'spinBorder 5s linear infinite',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 0
-          }} />
+          {/* THE MOVING LINE ANIMATION (EXACT NAVBAR MATCH) - HIDDEN ON MOBILE FOR CLEAN LOOK */}
+          {!mob && (
+            <div style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              width: '200%',
+              height: '500%',
+              background: 'conic-gradient(from 0deg, #138808 0%, #FFFFFF 20%, #FF9933 40%, #FF9933 60%, #FFFFFF 80%, #138808 100%)',
+              animation: 'spinBorder 5s linear infinite',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 0
+            }} />
+          )}
 
           {/* INNER SEARCH BAR CONTENT */}
           <div style={{
@@ -267,11 +269,11 @@ export default function Hero({ mob, st, dsp, go }) {
             background: 'rgba(255,255,255,0.98)',
             backdropFilter: 'blur(24px)',
             borderRadius: mob ? 32 : 100,
-            padding: mob ? 8 : 8,
+            padding: mob ? 6 : 8,
             display: 'flex',
             flexDirection: mob ? 'column' : 'row',
             alignItems: mob ? 'stretch' : 'center',
-            gap: mob ? 8 : 0,
+            gap: mob ? 4 : 0,
             position: 'relative',
             zIndex: 1,
             minHeight: mob ? 'auto' : 84
@@ -279,20 +281,48 @@ export default function Hero({ mob, st, dsp, go }) {
             <div style={{ flex: 1.2, position: 'relative', padding: mob ? '12px 16px' : '0 40px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderRight: mob ? 'none' : '1px solid rgba(0,0,0,0.05)', borderBottom: mob ? '1px solid rgba(0,0,0,0.05)' : 'none' }}>
               <label style={{ fontSize: 9, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 4, opacity: 0.8 }}>Who are you looking for?</label>
               <div style={{ display: 'flex', alignItems: 'center', width: '100%', gap: 12 }}>
-                <input value={st.cf.q} onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} placeholder="Name, niche or city..." style={{ width: '100%', border: 'none', background: 'none', fontSize: 18, outline: 'none', fontWeight: 700, color: '#111' }} />
+                <input value={st.cf.q} onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} placeholder="Name, niche or city..." style={{ width: '100%', border: 'none', background: 'none', fontSize: mob ? 16 : 18, outline: 'none', fontWeight: 700, color: '#111' }} />
               </div>
             </div>
-            <div style={{ flex: 0.8, padding: mob ? '12px 16px' : '0 40px', textAlign: 'left', width: '100%' }}>
-              <label style={{ fontSize: 9, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 4, opacity: 0.8 }}>Location</label>
-              <div style={{ fontSize: 17, fontWeight: 700, color: '#111' }}>{st.cf.state || 'All over India'}</div>
+            <div style={{ flex: 0.8, padding: mob ? '10px 16px' : '0 40px', textAlign: 'left', width: '100%' }}>
+              <label style={{ fontSize: 9, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 2, opacity: 0.8 }}>Location</label>
+              <div style={{ fontSize: mob ? 15 : 17, fontWeight: 700, color: '#111' }}>{st.cf.state || 'All over India'}</div>
             </div>
-            <div style={{ padding: 4, width: mob ? '100%' : 'auto' }}>
-              <Btn lg full={mob} onClick={() => go('creators')} style={{ borderRadius: 100, padding: '18px 48px', background: '#111', color: '#fff', border: 'none', fontWeight: 900 }}>Search Now ⚡</Btn>
+            <div style={{ padding: mob ? 8 : 4, width: mob ? '100%' : 'auto' }}>
+              <Btn lg full={mob} onClick={() => go('creators')} className="hero-find-btn" style={{ borderRadius: mob ? 18 : 100, padding: mob ? '14px' : '18px 48px', background: '#111', color: '#fff', border: 'none', fontWeight: 900, fontSize: mob ? 14 : 16, transition: 'all 0.3s' }}>Find Creators ⚡</Btn>
             </div>
           </div>
         </div>
+        
+        {/* SECTION HEADING - ALIGNED WITH WEBSITE STYLE */}
+        <div className="au d4" style={{ textAlign: 'center', marginBottom: mob ? 40 : 60, marginTop: mob ? 20 : 40 }}>
+           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 20px', background: 'rgba(0,0,0,0.03)', borderRadius: 100, marginBottom: 24 }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF9431', animation: 'pulse-orange 1.5s infinite' }} />
+              <span style={{ fontSize: 11, fontWeight: 900, color: '#111', textTransform: 'uppercase', letterSpacing: '2.5px' }}>Support Ecosystem</span>
+           </div>
+           <h2 style={{ 
+             fontFamily: "'Fraunces', serif", 
+             fontSize: mob ? 32 : 56, 
+             fontWeight: 900, 
+             color: '#111', 
+             lineHeight: 1.1, 
+             letterSpacing: '-0.03em',
+             marginBottom: 20
+           }}>
+             Empowering Bharat's <br /> <span style={{ background: 'linear-gradient(90deg, #FF9431 20%, #475569 50%, #138808 80%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Digital Success.</span>
+           </h2>
+           
+           {/* FLAG COLORED ACCENT LINE */}
+           <div style={{ 
+             width: 120, height: 6, 
+             background: 'linear-gradient(90deg, #FF9431 0%, #FF9431 33.33%, #fff 33.33%, #fff 66.66%, #138808 66.66%, #138808 100%)', 
+             margin: '0 auto', borderRadius: 100, 
+             border: '1px solid rgba(0,0,0,0.05)',
+             boxShadow: '0 4px 12px rgba(0,0,0,0.05)' 
+           }} />
+        </div>
 
-        {/* CREATOR SUPPORT SYSTEM GRID: CONDENSED FOR MOBILE */}
+        {/* CREATOR SUPPORT SYSTEM GRID: ELITE CARDS */}
         <div className="au d4" style={{
           width: '100%', maxWidth: 1200,
           display: 'grid',
@@ -302,12 +332,12 @@ export default function Hero({ mob, st, dsp, go }) {
           boxSizing: 'border-box'
         }}>
           {[
-            { t: 'Identity', h: 'Pro Portfolio', d: 'Verified identity jo brands ko impress karegi.', i: '👤', bg: '#FDF7F2' },
-            { t: 'Growth', h: 'Insights', d: 'Naya seekho aur grow karo industry experts ke sath.', i: '📖', bg: '#F0FDF4' },
-            { t: 'Spotlight', h: 'Podcasts', d: 'Local creators ki story national level tak.', i: '🎙️', bg: '#EFF6FF' },
-            { t: 'Regional', h: 'Tier 2 & 3', d: 'Har shehar ke creator ko pehchan milegi.', i: '📍', bg: '#F5F3FF' },
-            { t: 'Freedom', h: '0% Commission', d: 'Zero cost, zero commission, 100% freedom.', i: '💸', bg: '#FFFBEB' },
-            { t: 'Join', h: 'Free Forever', d: 'Apni journey aaj hi shuru karein.', i: '🚀', bg: '#FEF2F2' }
+            { t: 'Identity', h: 'Pro Portfolio', d: 'Verified identity jo brands ko impress karegi.', i: '👤', bg: '#FDF7F2', c: '#FF9431' },
+            { t: 'Growth', h: 'Insights', d: 'Naya seekho aur grow karo industry experts ke sath.', i: '📖', bg: '#F0FDF4', c: '#128807' },
+            { t: 'Spotlight', h: 'Podcasts', d: 'Local creators ki story national level tak.', i: '🎙️', bg: '#EFF6FF', c: '#3B82F6' },
+            { t: 'Regional', h: 'Tier 2 & 3', d: 'Har shehar ke creator ko pehchan milegi.', i: '📍', bg: '#F5F3FF', c: '#8B5CF6' },
+            { t: 'Freedom', h: '0% Commission', d: 'Zero cost, zero commission, 100% freedom.', i: '💸', bg: '#FFFBEB', c: '#F59E0B' },
+            { t: 'Join', h: 'Free Forever', d: 'Apni journey aaj hi shuru karein.', i: '🚀', bg: '#FEF2F2', c: '#EF4444' }
           ].map((p, i) => (
             <div key={i} className="card-animated-border" style={{ position: 'relative', borderRadius: mob ? 24 : 34, padding: 2, overflow: 'hidden', transition: 'all 0.3s', height: '100%' }}>
               <div className="border-line" style={{
@@ -318,13 +348,28 @@ export default function Hero({ mob, st, dsp, go }) {
                 opacity: 0.6, transition: 'opacity 0.3s', zIndex: 0
               }} />
 
-              <div style={{ background: p.bg, padding: mob ? '20px 16px' : '32px', borderRadius: mob ? 22 : 32, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: mob ? 8 : 12, border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)', position: 'relative', zIndex: 1, height: '100%' }}>
-                <div style={{ width: mob ? 40 : 56, height: mob ? 40 : 56, borderRadius: 12, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: mob ? 20 : 28, boxShadow: '0 8px 20px rgba(0,0,0,0.05)' }}>{p.i}</div>
+              <div style={{ 
+                background: p.bg, padding: mob ? '24px 20px' : '40px 32px', borderRadius: mob ? 22 : 32, 
+                textAlign: 'left', display: 'flex', flexDirection: 'column', gap: mob ? 12 : 20, 
+                border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 10px 30px rgba(0,0,0,0.03)', 
+                position: 'relative', zIndex: 1, height: '100%',
+                transition: 'all 0.4s'
+              }} className="support-card-inner">
+                <div style={{ width: mob ? 48 : 64, height: mob ? 48 : 64, borderRadius: 20, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: mob ? 24 : 32, boxShadow: '0 12px 24px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.03)' }}>{p.i}</div>
                 <div>
-                  <span style={{ fontSize: mob ? 8 : 10, fontWeight: 900, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>{p.t}</span>
-                  <h3 style={{ fontSize: mob ? 14 : 20, fontWeight: 900, color: '#111', marginTop: 2, marginBottom: mob ? 2 : 8 }}>{p.h}</h3>
-                  <p style={{ fontSize: mob ? 11 : 14, color: 'rgba(0,0,0,0.6)', lineHeight: 1.4, fontWeight: 500 }}>{p.d}</p>
+                  <span style={{ fontSize: mob ? 9 : 11, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 6, display: 'block' }}>{p.t}</span>
+                  <h3 style={{ fontSize: mob ? 16 : 22, fontWeight: 900, color: '#111', marginBottom: mob ? 4 : 10, fontFamily: "'Fraunces', serif" }}>{p.h}</h3>
+                  <p style={{ fontSize: mob ? 12 : 15, color: 'rgba(0,0,0,0.55)', lineHeight: 1.6, fontWeight: 600 }}>{p.d}</p>
                 </div>
+                
+                {/* Subtle Learn More Arrow (Elite Touch) */}
+                <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 6, color: '#111', fontWeight: 900, fontSize: 13, opacity: 0.6, transform: 'translateX(-4px)', transition: '0.3s' }} className="arrow-more">
+                   <span>Explore</span>
+                   <span style={{ fontSize: 18 }}>→</span>
+                </div>
+
+                {/* BOTTOM ACCENT LINE (WEBSITE PATTERN) */}
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 4, background: p.c, opacity: 0.8 }} />
               </div>
             </div>
           ))}
@@ -335,14 +380,46 @@ export default function Hero({ mob, st, dsp, go }) {
             from { transform: translate(-50%, -50%) rotate(0deg); }
             to { transform: translate(-50%, -50%) rotate(360deg); }
           }
+          .hero-primary-btn:hover {
+            background: #138808 !important;
+            box-shadow: 0 12px 32px rgba(19,136,8,0.3) !important;
+            transform: translateY(-2px);
+          }
+          .hero-secondary-btn:hover {
+            background: rgba(19,136,8,0.05) !important;
+            border-color: #138808 !important;
+            color: #138808 !important;
+          }
+          .hero-secondary-btn:hover .live-dot {
+            background: #138808 !important;
+            animation: pulse-green 1.5s infinite !important;
+          }
+          .hero-find-btn:hover {
+            background: #138808 !important;
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(19,136,8,0.2) !important;
+          }
+          @keyframes pulse-orange {
+            0% { box-shadow: 0 0 0 0 rgba(255,148,49,0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255,148,49,0); }
+            100% { box-shadow: 0 0 0 0 rgba(255,148,49,0); }
+          }
           .card-animated-border:hover .border-line {
             opacity: 1;
             animation-duration: 3s;
           }
+          .card-animated-border:hover .support-card-inner {
+            background: #fff !important;
+          }
+          .card-animated-border:hover .arrow-more {
+            opacity: 1;
+            transform: translateX(0);
+            color: #FF9431;
+          }
           ${!mob ? `
           .card-animated-border:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 24px 60px rgba(0,0,0,0.1);
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 32px 80px rgba(0,0,0,0.12);
           }
           ` : ''}
         `}</style>
