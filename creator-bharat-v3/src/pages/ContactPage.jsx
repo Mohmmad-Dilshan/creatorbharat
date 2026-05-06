@@ -75,13 +75,13 @@ export default function ContactPage() {
                  { icon: '✉️', t: 'Support Email', d: 'support@creatorbharat.in', sub: 'For creator queries' },
                  { icon: '💼', t: 'Business Inquiry', d: 'brands@creatorbharat.in', sub: 'For agency partnerships' },
                  { icon: '📱', t: 'Instagram DM', d: '@creatorbharat', sub: 'Fastest response' },
-                 { icon: '📍', t: 'Headquarters', d: 'Pink City, Jaipur, Rajasthan', sub: 'Digital Hub' }
+                 { icon: '📍', t: 'Headquarters', d: 'Textile City, Bhilwara, Rajasthan', sub: 'Digital Hub' }
                ].map((item, i) => (
                  <Card key={item.t} className={`au d${i+1}`} style={{ padding: '24px', display: 'flex', gap: 20, alignItems: 'center' }}>
                    <div style={{ width: 56, height: 56, borderRadius: 16, background: T.bg2, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0 }}>{item.icon}</div>
                    <div>
                       <p style={{ fontWeight: 800, color: '#111', fontSize: 16 }}>{item.t}</p>
-                      <p style={{ fontSize: 14, color: T.gd, fontWeight: 700, marginTop: 2 }}>{item.d}</p>
+                      <p style={{ fontSize: 14, color: T.saffron, fontWeight: 700, marginTop: 2 }}>{item.d}</p>
                       <p style={{ fontSize: 12, color: T.t3, marginTop: 2 }}>{item.sub}</p>
                    </div>
                  </Card>

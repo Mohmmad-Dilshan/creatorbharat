@@ -28,7 +28,7 @@ function getTag(c) {
 }
 
 const FALLBACK = [
-  { id: 'f1', name: 'Rahul Sharma',  city: 'Jaipur',   niche: 'Fashion',  followers: 84000,  er: 5.2, profile_pic: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80' },
+  { id: 'f1', name: 'Rahul Sharma',  city: 'Bhilwara', niche: 'Fashion',  followers: 84000,  er: 5.2, profile_pic: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80' },
   { id: 'f2', name: 'Priya Mehta',   city: 'Indore',   niche: 'Lifestyle',followers: 210000, er: 4.8, profile_pic: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80' },
   { id: 'f3', name: 'Amit Gupta',    city: 'Lucknow',  niche: 'Tech',     followers: 56000,  er: 9.1, profile_pic: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80' },
   { id: 'f4', name: 'Neha Singh',    city: 'Surat',    niche: 'Food',     followers: 132000, er: 6.3, profile_pic: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80' },

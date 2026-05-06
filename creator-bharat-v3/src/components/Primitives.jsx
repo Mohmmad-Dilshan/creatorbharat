@@ -31,13 +31,13 @@ export function Btn({ children, onClick, variant = 'primary', sm, lg, full, disa
 
 export function Bdg({ children, color = 'gray', sm }) {
   const m = {
-    red: { bg: T.ga, col: T.gd },
+    red: { bg: 'rgba(239,68,68,0.1)', col: '#EF4444' },
     green: { bg: T.okl, col: T.ok },
     yellow: { bg: T.wnl, col: T.wn },
     blue: { bg: T.infol, col: T.info },
     purple: { bg: 'rgba(124,58,237,.1)', col: '#7C3AED' },
     gray: { bg: T.bg3, col: T.t2 },
-    gold: { bg: 'rgba(217,119,6,.1)', col: T.gold },
+    gold: { bg: 'rgba(217,119,6,.1)', col: T.wn },
     platinum: { bg: 'rgba(124,58,237,.1)', col: T.platinum },
     silver: { bg: 'rgba(156,163,175,.15)', col: '#6B7280' },
     rising: { bg: 'rgba(107,114,128,.1)', col: '#6B7280' },
@@ -112,7 +112,7 @@ export function SH({ eyebrow, title, sub, center, light, mb = 56 }) {
     <div style={{ textAlign: center ? 'center' : 'left', marginBottom: mb, position: 'relative' }}>
       {eyebrow && <div style={{ display: 'flex', alignItems: 'center', justifyContent: center ? 'center' : 'flex-start', gap: 12, marginBottom: 16 }}>
         <div style={{ width: 32, height: 3, background: T.gd, borderRadius: 4 }} />
-        <p style={{ fontSize: 12, fontWeight: 900, letterSpacing: '.15em', textTransform: 'uppercase', color: T.gd }}>{eyebrow}</p>
+        <p style={{ fontSize: 12, fontWeight: 900, letterSpacing: '.15em', textTransform: 'uppercase', color: T.saffron }}>{eyebrow}</p>
       </div>}
       <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 'clamp(32px,6vw,52px)', fontWeight: 900, color: light ? '#fff' : T.t1, marginBottom: sub ? 20 : 0, lineHeight: 1, letterSpacing: '-0.03em' }}>{title}</h2>
       {sub && <p style={{ fontSize: 18, color: light ? 'rgba(255,255,255,0.6)' : T.t2, maxWidth: center ? 640 : '100%', margin: center ? '0 auto' : '0', lineHeight: 1.6, fontWeight: 500 }}>{sub}</p>}
@@ -166,7 +166,7 @@ export function Ring({ score, size = 80 }) {
 
 export function Bar({ value, max = 100, color, label, showPct, height = 8 }) {
   const pct = Math.min(100, Math.round((value / max) * 100));
-  return <div>{(label || showPct) && <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>{label && <span style={{ fontSize: 12, color: T.t2 }}>{label}</span>}{showPct && <span style={{ fontSize: 12, color: color || T.gd, fontWeight: 700 }}>{pct}%</span>}</div>}<div style={{ height, background: T.bg3, borderRadius: height, overflow: 'hidden' }}><div style={{ height: '100%', width: pct + '%', background: color || T.gd, borderRadius: height, transition: 'width .6s' }} /></div></div>;
+  return <div>{(label || showPct) && <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>{label && <span style={{ fontSize: 12, color: T.t2 }}>{label}</span>}{showPct && <span style={{ fontSize: 12, color: color || T.saffron, fontWeight: 700 }}>{pct}%</span>}</div>}<div style={{ height, background: T.bg3, borderRadius: height, overflow: 'hidden' }}><div style={{ height: '100%', width: pct + '%', background: color || T.gd, borderRadius: height, transition: 'width .6s' }} /></div></div>;
 }
 
 export function SkeletonCard() {

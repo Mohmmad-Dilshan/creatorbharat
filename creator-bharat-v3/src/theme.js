@@ -5,6 +5,8 @@ export const T = {
   // Brand Gradients
   gd: 'linear-gradient(135deg, #FF9431 0%, #FF6B00 100%)', // Indian Saffron
   ga: 'linear-gradient(135deg, #128807 0%, #0F6B06 100%)', // Indian Green
+  saffron: '#FF9431',
+  green: '#128807',
   
   // Neutral Palette (Dark Mode Base)
   n9: '#050505',

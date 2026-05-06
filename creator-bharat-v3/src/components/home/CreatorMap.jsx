@@ -15,7 +15,7 @@ const CITIES = [
   { name: 'Hyderabad', state: 'Telangana', tier: 1, x: 40.5, y: 62.5 },
   { name: 'Chennai', state: 'Tamil Nadu', tier: 1, x: 44.5, y: 78.5 },
   { name: 'Kolkata', state: 'West Bengal', tier: 1, x: 67.5, y: 46.5 },
-  { name: 'Jaipur', state: 'Rajasthan', tier: 2, x: 28.5, y: 32.5 },
+  { name: 'Bhilwara', state: 'Rajasthan', tier: 2, x: 28.5, y: 32.5 },
   { name: 'Ahmedabad', state: 'Gujarat', tier: 2, x: 20.5, y: 44.5 },
   { name: 'Pune', state: 'Maharashtra', tier: 2, x: 26.5, y: 59.5 },
 ];

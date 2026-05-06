@@ -37,7 +37,7 @@ export default function Manifesto({ mob }) {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
             <p style={{ fontSize: mob ? 18 : 24, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, fontWeight: 500 }}>
-              For too long, the spotlight was only on the big cities. But we know the real stories, the raw talent, and the next big empires are rising from the streets of Jaipur, the fields of Punjab, and the small towns of Kerala.
+              For too long, the spotlight was only on the big cities. But we know the real stories, the raw talent, and the next big empires are rising from the streets of Bhilwara, the fields of Punjab, and the small towns of Kerala.
             </p>
             
             <p style={{ fontSize: mob ? 18 : 24, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, fontWeight: 500 }}>
