@@ -40,7 +40,7 @@ export default function HomePage() {
     { id: 'creators',  comp: <FeaturedCreators mob={mob} creators={creators} go={go} loading={loading} /> },
     { id: 'impact',    comp: <ImpactStats mob={mob} /> },
     { id: 'map',       comp: <IndiaMap3D mob={mob} stateCounts={stateCounts} /> },
-    { id: 'roadmap',   comp: <CommunityPulse mob={mob} /> },
+    { id: 'roadmap',   comp: <CommunityPulse mob={mob} go={go} /> },
     // Desktop-only sections
     ...(!mob ? [
       { id: 'showcase',  comp: <PlatformShowcase mob={mob} /> },

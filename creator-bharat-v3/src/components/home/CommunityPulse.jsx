@@ -1,162 +1,289 @@
-import React from 'react';
-import { T } from '../../theme';
-import { W } from '../../utils/helpers';
+/**
+ * CommunityPulse.jsx
+ *
+ * "The Creator Success Roadmap" section.
+ * Step stats are derived live from the platform API:
+ *   Step 01 → real creator count from /creators
+ *   Step 02 → combined audience reach from creator followers
+ *   Step 03 → total campaign deal value from /campaigns
+ *
+ * To add/remove steps, edit buildSteps() only.
+ */
 
-export default function CommunityPulse({ mob }) {
-  const steps = [
+import React, { useState } from 'react';
+import { W, fmt } from '../../utils/helpers';
+import { User, Mic, Wallet, ArrowRight, CheckCircle } from 'lucide-react';
+import MiniIndiaMap from '../MiniIndiaMap';
+import { usePlatformStats } from '../../hooks/usePlatformStats';
+
+// Step config — static content only, stats injected from real data
+const STEP_CONFIG = [
+  {
+    n: '01',
+    tag: 'Identity',
+    h: 'Build Your Verified Identity',
+    d: 'Get a premium, verified portfolio page that brands instantly trust. Your digital identity, your story — on a platform built for Bharat.',
+    icon: User,
+    color: '#FF9431',
+    bg: 'rgba(255,148,49,0.08)',
+  },
+  {
+    n: '02',
+    tag: 'Spotlight',
+    h: 'Get National Spotlight',
+    d: 'Podcasts, articles, and featured placements — we amplify Tier 2 & 3 creator stories to a national audience. Local voice, national reach.',
+    icon: Mic,
+    color: '#10B981',
+    bg: 'rgba(16,185,129,0.08)',
+  },
+  {
+    n: '03',
+    tag: 'Monetize',
+    h: 'Direct Deals, 0% Commission',
+    d: 'No middlemen. Connect with brands directly and keep 100% of what you earn. We are not an agency — we are your growth partner.',
+    icon: Wallet,
+    color: '#3B82F6',
+    bg: 'rgba(59,130,246,0.08)',
+  },
+];
+
+// Merge static config with real analytics
+function buildSteps(analytics) {
+  if (!analytics) {
+    return STEP_CONFIG.map(s => ({ ...s, stat: '...', statLoading: true }));
+  }
+  return [
     {
-      n: '01',
-      h: 'Create Your Verified Identity',
-      d: 'Hum har creator ko ek premium, verified portfolio page dete hain. Ye sirf ek link nahi, aapki digital pehchan hai jo brands ko aapka real potential dikhayegi.',
-      i: '👤',
-      tag: 'Identity',
-      color: '#FF9431'
+      ...STEP_CONFIG[0],
+      stat: analytics.totalCreators > 0
+        ? `${analytics.totalCreators.toLocaleString('en-IN')} profiles live`
+        : 'Be the first to join',
     },
     {
-      n: '02',
-      h: 'Get Featured in Podcasts & Articles',
-      d: 'Sirf identity nahi, hum aapko national spotlight dete hain. Humare podcast aur articles ke zariye Tier 2 & 3 creators ki story poore Bharat tak pahunchegi.',
-      i: '🎙️',
-      tag: 'Spotlight',
-      color: '#138808'
+      ...STEP_CONFIG[1],
+      stat: analytics.totalReach > 0
+        ? `${fmt.num(analytics.totalReach)} combined audience reach`
+        : 'Growing network',
     },
     {
-      n: '03',
-      h: 'Direct Brand Deals with 0% Commission',
-      d: 'Hum middlemen ko hatate hain. Aap brands se direct connect honge aur jo bhi kamayenge, wo 100% aapka hoga. Hamara mission hai aapko independent banana.',
-      i: '💸',
-      tag: 'Monetize',
-      color: '#3B82F6'
-    }
+      ...STEP_CONFIG[2],
+      stat: analytics.dealValue > 0
+        ? `${fmt.inr(analytics.dealValue)} deals facilitated`
+        : '0% commission always',
+    },
   ];
+}
+
+export default function CommunityPulse({ mob, go }) {
+  const [activeStep, setActiveStep] = useState(null);
+  const { analytics, loading: statsLoading } = usePlatformStats();
+  const steps = buildSteps(analytics);
 
   return (
-    <section style={{ padding: mob ? '40px 20px' : '40px 20px 60px 20px', background: '#fff', position: 'relative' }}>
-      <div style={W()}>
-        {/* Pro Heading UI with Indian Flag */}
-        <div style={{ textAlign: 'left', marginBottom: 80, borderLeft: '4px solid #FF9431', paddingLeft: 32, position: 'relative' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-end', flexWrap: 'wrap', gap: 24 }}>
-            <div style={{ flex: 1, minWidth: mob ? '100%' : 600 }}>
-              <span style={{ fontSize: 13, fontWeight: 900, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', letterSpacing: '4px' }}>How it Works</span>
-              <h2 style={{ fontSize: mob ? 40 : 72, fontWeight: 900, color: '#111', marginTop: 12, lineHeight: 1, letterSpacing: '-0.05em' }}>
-                The Creator Success <br />
-                <span style={{ background: 'linear-gradient(90deg, #FF9431, #138808)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Roadmap.</span>
-              </h2>
+    <section style={{ padding: mob ? '48px 16px' : '96px 24px', background: '#fff', position: 'relative', overflow: 'hidden' }}>
+
+      {/* Subtle dot-grid background */}
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px)', backgroundSize: '28px 28px', zIndex: 0 }} />
+
+      <div style={{ ...W(), maxWidth: 1200, position: 'relative', zIndex: 1, boxSizing: 'border-box' }}>
+
+        {/* ── Header ── */}
+        <div style={{ marginBottom: mob ? 48 : 80, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 32, flexWrap: mob ? 'wrap' : 'nowrap' }}>
+
+          {/* Left: orange border line + text */}
+          <div style={{ borderLeft: '4px solid #FF9431', paddingLeft: mob ? 20 : 32, flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 14px', background: '#FFF7ED', border: '1px solid #FFEDD5', borderRadius: 100, marginBottom: 20 }}>
+              <span style={{ fontSize: 11, fontWeight: 800, color: '#C2410C', textTransform: 'uppercase', letterSpacing: '1.5px' }}>How it Works</span>
             </div>
 
-            {/* ANIMATED INDIAN FLAG */}
-            <div className="flag-wave-container" style={{ marginBottom: 10 }}>
-              <div style={{ width: mob ? 80 : 120, height: mob ? 50 : 75, borderRadius: 8, overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', position: 'relative', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ flex: 1, background: '#FF9933' }} />
-                <div style={{ flex: 1, background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div style={{ width: mob ? 14 : 20, height: mob ? 14 : 20, borderRadius: '50%', border: '1.5px solid #000080', position: 'relative' }}>
-                    {[...Array(12)].map((_, i) => (
-                      <div key={i} style={{ position: 'absolute', top: '50%', left: '50%', width: '100%', height: 1, background: '#000080', transform: `translate(-50%, -50%) rotate(${i * 30}deg)` }} />
-                    ))}
-                  </div>
-                </div>
-                <div style={{ flex: 1, background: '#138808' }} />
-                <div className="flag-wave-overlay" />
-              </div>
-            </div>
+            <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 30 : 56, fontWeight: 900, color: '#0f172a', lineHeight: 1.1, letterSpacing: '-0.03em', marginBottom: 20 }}>
+              The Creator Success{' '}
+              <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #10B981 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                Roadmap.
+              </span>
+            </h2>
+            <p style={{ fontSize: mob ? 15 : 18, color: '#64748b', lineHeight: 1.7, maxWidth: 540, fontWeight: 400, margin: 0 }}>
+              India's first step-by-step growth path built exclusively for local creators. From zero to verified — we are with you at every step.
+            </p>
           </div>
 
-          <p style={{ fontSize: 18, color: 'rgba(0,0,0,0.5)', marginTop: 24, maxWidth: 600, fontWeight: 500 }}>
-            Humein pata hai local creator banna asaan nahi hai. Isliye humne banaya hai India ka pehla step-by-step growth path.
-          </p>
+          {/* Right: Mini India 3D Map */}
+          {!mob && (
+            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, paddingTop: 8 }}>
+              <MiniIndiaMap width={160} height={195} />
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Bharat</span>
+            </div>
+          )}
         </div>
 
-        {/* Vertical Journey Section: MORE COMPACT ON MOBILE */}
-        <div style={{
-          position: 'relative',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: mob ? 24 : 100 // TIGHTER GAP ON MOBILE
-        }}>
-          {!mob && <div style={{
-            position: 'absolute', left: '50%', top: 0, bottom: 0, width: 2,
-            background: 'linear-gradient(to bottom, #FF9431, #138808, #FF9431)',
-            transform: 'translateX(-50%)', opacity: 0.2
-          }} />}
 
-          {steps.map((s, i) => (
-            <div key={i} style={{
-              display: 'flex',
-              flexDirection: mob ? 'row' : (i % 2 === 0 ? 'row' : 'row-reverse'), // SIDE BY SIDE ON MOBILE TOO
-              alignItems: 'center',
-              gap: mob ? 16 : 80,
-              textAlign: mob ? 'left' : (i % 2 === 0 ? 'right' : 'left'),
-              position: 'relative',
-              width: '100%',
-              background: mob ? 'rgba(0,0,0,0.02)' : 'transparent',
-              padding: mob ? '20px' : 0,
-              borderRadius: mob ? 24 : 0
-            }}>
-              {/* STEP INFO */}
-              <div style={{ flex: mob ? 1.2 : 1 }}>
-                <div style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 10,
-                  marginBottom: mob ? 8 : 20,
-                  flexDirection: (mob || i % 2 !== 0) ? 'row' : 'row-reverse'
-                }}>
-                  <div style={{ fontSize: mob ? 24 : 48, fontWeight: 900, color: 'rgba(0,0,0,0.05)' }}>{s.n}</div>
-                  <div style={{ padding: '4px 12px', borderRadius: 100, background: s.color + '15', color: s.color, fontSize: mob ? 9 : 12, fontWeight: 900, textTransform: 'uppercase' }}>{s.tag}</div>
-                </div>
-                <h3 style={{ fontSize: mob ? 16 : 42, fontWeight: 900, color: '#111', marginBottom: mob ? 4 : 16 }}>{s.h}</h3>
-                {!mob && <p style={{ fontSize: 16, color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, maxWidth: 500, margin: i % 2 === 0 ? '0 0 0 auto' : '0 auto 0 0' }}>{s.d}</p>}
-              </div>
+        {/* ── Steps ── */}
+        {mob ? (
+          /* MOBILE: Stacked cards */
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {steps.map((s, i) => {
+              const Icon = s.icon;
+              return (
+                <div
+                  key={i}
+                  style={{
+                    background: '#fff',
+                    border: `1.5px solid ${activeStep === i ? s.color : '#E2E8F0'}`,
+                    borderRadius: 20,
+                    padding: '24px 20px',
+                    display: 'flex',
+                    gap: 16,
+                    alignItems: 'flex-start',
+                    transition: 'all 0.25s',
+                    boxShadow: activeStep === i ? `0 8px 32px ${s.color}20` : '0 2px 8px rgba(0,0,0,0.03)',
+                  }}
+                  onClick={() => setActiveStep(activeStep === i ? null : i)}
+                >
+                  {/* Icon block */}
+                  <div style={{ width: 48, height: 48, borderRadius: 14, background: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: s.color, flexShrink: 0 }}>
+                    <Icon size={22} strokeWidth={2.5} />
+                  </div>
 
-              {/* STEP VISUAL ICON ON MOBILE / DESKTOP TIMELINE NODE */}
-              <div style={{ flex: mob ? 0.3 : '0 0 auto', width: mob ? 'auto' : 80, display: 'flex', justifyContent: 'center', zIndex: 2 }}>
-                 <div style={{ width: mob ? 50 : 80, height: mob ? 50 : 80, borderRadius: mob ? 16 : '50%', background: mob ? s.color + '10' : '#fff', border: mob ? 'none' : `4px solid ${s.color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: mob ? 24 : 32, boxShadow: mob ? 'none' : '0 10px 20px rgba(0,0,0,0.1)' }}>
-                   {s.i}
-                 </div>
-              </div>
-
-              {!mob && (
-                <div style={{ flex: 1, width: '100%' }}>
-                  <div className="roadmap-card" style={{ position: 'relative', padding: 2, borderRadius: 42, overflow: 'hidden', background: 'rgba(0,0,0,0.05)', boxShadow: '0 40px 80px -20px rgba(0,0,0,0.1)' }}>
-                    <div className="card-border" style={{ position: 'absolute', top: '50%', left: '50%', width: '200%', height: '300%', background: `conic-gradient(from 0deg, transparent, ${s.color}, transparent 50%)`, animation: 'spinBorder 4s linear infinite', transform: 'translate(-50%, -50%)', zIndex: 0 }} />
-                    <div style={{ position: 'relative', zIndex: 1, background: '#fff', borderRadius: 40, padding: 60, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
-                      <div style={{ width: 100, height: 100, borderRadius: 32, background: s.color + '10', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48 }}>{s.i}</div>
-                      <div style={{ textAlign: 'center' }}>
-                        <p style={{ fontSize: 12, fontWeight: 800, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Impact Area</p>
-                        <div style={{ fontSize: 18, fontWeight: 900, color: '#111' }}>The {s.tag} Hub</div>
-                      </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                      <span style={{ fontSize: 11, fontWeight: 800, color: s.color, textTransform: 'uppercase', letterSpacing: '1px' }}>Step {s.n}</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, background: s.bg, color: s.color, padding: '2px 8px', borderRadius: 100 }}>{s.tag}</span>
+                    </div>
+                    <h3 style={{ fontSize: 16, fontWeight: 800, color: '#0f172a', marginBottom: 6, fontFamily: "'Outfit', sans-serif" }}>{s.h}</h3>
+                    {activeStep === i && (
+                      <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.6 }}>{s.d}</p>
+                    )}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: activeStep === i ? 12 : 0 }}>
+                      <CheckCircle size={12} color={s.color} />
+                      <span style={{ fontSize: 11, fontWeight: 700, color: s.color }}>{s.stat}</span>
                     </div>
                   </div>
                 </div>
-              )}
+              );
+            })}
+          </div>
+        ) : (
+          /* DESKTOP: Alternating timeline */
+          <div style={{ position: 'relative' }}>
+            {/* Center spine */}
+            <div style={{
+              position: 'absolute', left: '50%', top: 40, bottom: 40,
+              width: 2,
+              background: 'linear-gradient(to bottom, #FF9431 0%, #10B981 50%, #3B82F6 100%)',
+              transform: 'translateX(-50%)',
+              opacity: 0.15,
+            }} />
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 80 }}>
+              {steps.map((s, i) => {
+                const Icon = s.icon;
+                const isLeft = i % 2 === 0;
+
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 80px 1fr',
+                      alignItems: 'center',
+                      gap: 0,
+                    }}
+                  >
+                    {/* Left content */}
+                    <div style={{ textAlign: isLeft ? 'right' : 'left', padding: isLeft ? '0 48px 0 0' : 0, opacity: isLeft ? 1 : 0.15, transition: 'opacity 0.3s' }}>
+                      {isLeft && <StepContent s={s} isLeft />}
+                    </div>
+
+                    {/* Center node */}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, zIndex: 2 }}>
+                      <div style={{
+                        width: 64, height: 64,
+                        borderRadius: '50%',
+                        background: '#fff',
+                        border: `3px solid ${s.color}`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: s.color,
+                        boxShadow: `0 0 0 6px ${s.color}15, 0 8px 24px ${s.color}20`,
+                        transition: 'all 0.3s',
+                      }}>
+                        <Icon size={26} strokeWidth={2.5} />
+                      </div>
+                      <div style={{ fontSize: 11, fontWeight: 900, color: '#94a3b8', letterSpacing: '1px' }}>STEP {s.n}</div>
+                    </div>
+
+                    {/* Right content */}
+                    <div style={{ textAlign: isLeft ? 'left' : 'right', padding: isLeft ? '0 0 0 48px' : '0 48px 0 0', opacity: isLeft ? 0.15 : 1, transition: 'opacity 0.3s' }}>
+                      {!isLeft && <StepContent s={s} isLeft={false} />}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          ))}
+          </div>
+        )}
+
+        {/* ── CTA ── */}
+        <div style={{ textAlign: 'center', marginTop: mob ? 48 : 80 }}>
+          <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+            <p style={{ fontSize: mob ? 14 : 16, color: '#94a3b8', fontWeight: 400 }}>
+              Ready to start your journey?
+            </p>
+            <button
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 10,
+                padding: mob ? '14px 28px' : '16px 36px',
+                background: 'linear-gradient(135deg, #FF9431, #FF6B00)',
+                color: '#fff',
+                fontWeight: 800, fontSize: mob ? 14 : 16,
+                border: 'none', borderRadius: 100,
+                cursor: 'pointer',
+                boxShadow: '0 8px 32px rgba(255,148,49,0.3)',
+                transition: 'all 0.3s',
+                fontFamily: "'Inter', sans-serif",
+              }}
+              onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(255,148,49,0.4)'; }}
+              onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(255,148,49,0.3)'; }}
+              onClick={() => go ? go('apply') : null}
+            >
+              Start Your Creator Journey <ArrowRight size={18} />
+            </button>
+          </div>
         </div>
       </div>
-
       <style>{`
-        @keyframes spinBorder {
-          from { transform: translate(-50%, -50%) rotate(0deg); }
-          to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-        @keyframes flagWave {
-          0% { transform: translateX(-10%) skewX(5deg); }
-          50% { transform: translateX(10%) skewX(-5deg); }
-          100% { transform: translateX(-10%) skewX(5deg); }
-        }
-        .flag-wave-overlay {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
-          background-size: 200% 100%;
-          animation: flagWave 3s ease-in-out infinite;
-          pointer-events: none;
-        }
-        .roadmap-card {
-          transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .roadmap-card:hover {
-          transform: scale(1.02) translateY(-10px);
+        @keyframes flagShimmer {
+          0%   { background-position: -200% center; }
+          100% { background-position: 200% center; }
         }
       `}</style>
     </section>
+  );
+}
+
+// ── Reusable step card content ──────────────────────────────
+function StepContent({ s, isLeft }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: isLeft ? 'flex-end' : 'flex-start' }}>
+      {/* Tag pill */}
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 14px', background: s.bg, borderRadius: 100 }}>
+        <span style={{ fontSize: 11, fontWeight: 800, color: s.color, textTransform: 'uppercase', letterSpacing: '1px' }}>{s.tag}</span>
+      </div>
+
+      {/* Title */}
+      <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 30, fontWeight: 900, color: '#0f172a', lineHeight: 1.2, margin: 0, textAlign: isLeft ? 'right' : 'left' }}>
+        {s.h}
+      </h3>
+
+      {/* Description */}
+      <p style={{ fontSize: 15, color: '#64748b', lineHeight: 1.7, maxWidth: 400, margin: 0, textAlign: isLeft ? 'right' : 'left' }}>
+        {s.d}
+      </p>
+
+      {/* Stat pill */}
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+        <CheckCircle size={14} color={s.color} />
+        <span style={{ fontSize: 13, fontWeight: 700, color: s.color }}>{s.stat}</span>
+      </div>
+    </div>
   );
 }
