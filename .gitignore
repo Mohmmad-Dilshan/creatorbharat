@@ -16,3 +16,4 @@ yarn-error.log*
 /prisma/*.db-journal
 **/node_modules/
 **/.env
+SAAS_FRONTEND_MASTER_PLAN.md
