@@ -41,10 +41,10 @@ export default function DashboardPage() {
   const comp = c ? fmt.completeness(c) : { pct: 0, missing: [] };
 
   const stats = [
-    { l: 'Active Deals', v: myApps.filter(a => a.status === 'selected').length, c: '#10B981', i: Megaphone },
-    { l: 'Shortlisted', v: myApps.filter(a => a.status === 'shortlisted').length, c: '#7C3AED', i: Trophy },
-    { l: 'Total Applied', v: myApps.length, c: '#3B82F6', i: LayoutDashboard },
-    { l: 'Elite Score', v: score, c: '#FF9431', i: ShieldCheck }
+    { l: 'Active Deals', v: myApps.filter(a => a.status === 'selected').length, c: '#10B981', i: Megaphone, trend: '+2' },
+    { l: 'Shortlisted', v: myApps.filter(a => a.status === 'shortlisted').length, c: '#7C3AED', i: Trophy, trend: 'New' },
+    { l: 'Total Applied', v: myApps.length, c: '#3B82F6', i: LayoutDashboard, trend: '+5' },
+    { l: 'Elite Score', v: score, c: '#FF9431', i: ShieldCheck, trend: 'Top 5%' }
   ];
 
   return (
@@ -52,31 +52,32 @@ export default function DashboardPage() {
       <EliteHeader 
         eyebrow="Mission Control"
         title={`Namaste, ${c?.name?.split(' ')[0] || st.user.name.split(' ')[0]}!`}
-        sub="Manage your deals, improve your score, and grow your digital presence in Bharat."
+        sub="Your digital empire at a glance. Manage deals and scale your identity."
         gradient="saffron"
         light={true}
+        compact
       >
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 12 }}>
           <Btn 
             variant="outline" 
             onClick={() => navigate(`/creator/${c?.handle || 'me'}`)}
-            style={{ borderRadius: 100, background: '#fff', padding: '12px 24px' }}
+            style={{ borderRadius: 100, background: 'rgba(255,255,255,0.8)', padding: '10px 20px', fontSize: 13, fontWeight: 700 }}
           >
-            <ExternalLink size={18} style={{ marginRight: 8 }} /> View Public Profile
+            <ExternalLink size={14} style={{ marginRight: 6 }} /> Public Profile
           </Btn>
           <Btn 
             onClick={() => navigate('/campaigns')}
-            style={{ borderRadius: 100, background: '#111', color: '#fff', padding: '12px 24px' }}
+            style={{ borderRadius: 100, background: '#111', color: '#fff', padding: '10px 24px', fontSize: 13, fontWeight: 800 }}
           >
-            🔥 Find New Campaigns
+            🔥 Find Campaigns
           </Btn>
         </div>
       </EliteHeader>
 
-      <div style={{ marginTop: -50, position: 'relative', zIndex: 10 }}>
-        <div style={W(1140)}>
+      <div style={{ marginTop: -40, position: 'relative', zIndex: 10 }}>
+        <div style={W(1180)}>
           {/* Quick Stats Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(4, 1fr)', gap: 20, marginBottom: 40, padding: mob ? '0 16px' : 0 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: 16, marginBottom: 32, padding: mob ? '0 16px' : 0 }}>
              {stats.map((s, i) => {
                 const Icon = s.i;
                 return (
@@ -84,63 +85,71 @@ export default function DashboardPage() {
                     key={i}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                    style={{ padding: '32px 24px', background: '#fff', borderRadius: 32, textAlign: 'center', border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 15px 40px rgba(0,0,0,0.03)' }}
+                    transition={{ delay: i * 0.05 }}
+                    style={{ 
+                      padding: '24px', background: '#fff', borderRadius: 24, 
+                      border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)',
+                      position: 'relative', overflow: 'hidden'
+                    }}
                   >
-                    <div style={{ color: s.c, marginBottom: 12, display: 'flex', justifyContent: 'center' }}><Icon size={28} /></div>
-                    <div style={{ fontSize: 36, fontWeight: 900, color: '#111', lineHeight: 1 }}>{s.v}</div>
-                    <div style={{ fontSize: 11, fontWeight: 900, color: '#94a3b8', marginTop: 12, textTransform: 'uppercase', letterSpacing: '1px' }}>{s.l}</div>
+                    <div style={{ position: 'absolute', top: 12, right: 12, background: s.c + '15', color: s.c, fontSize: 10, fontWeight: 900, padding: '2px 8px', borderRadius: 100 }}>
+                      {s.trend}
+                    </div>
+                    <div style={{ color: s.c, marginBottom: 16 }}><Icon size={22} /></div>
+                    <div style={{ fontSize: 28, fontWeight: 900, color: '#111', lineHeight: 1 }}>{s.v}</div>
+                    <div style={{ fontSize: 11, fontWeight: 800, color: '#94a3b8', marginTop: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.l}</div>
                   </motion.div>
                 );
              })}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1.8fr', gap: 32, padding: mob ? '0 16px' : 0 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1.6fr', gap: 24, padding: mob ? '0 16px' : 0 }}>
             {/* Left Column: Profile Strength */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-               <Card style={{ padding: '40px 32px', borderRadius: 32, position: 'relative', overflow: 'hidden' }}>
-                  <div style={{ position: 'absolute', top: -20, right: -20, width: 120, height: 120, background: '#FF9431', borderRadius: '50%', filter: 'blur(70px)', opacity: 0.08 }} />
-                  <h3 style={{ fontSize: 20, fontWeight: 900, marginBottom: 32, fontFamily: "'Outfit', sans-serif" }}>Profile Identity Strength</h3>
-                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
-                     <Ring score={score} size={160} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+               <Card style={{ padding: '32px', borderRadius: 28 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                    <h3 style={{ fontSize: 18, fontWeight: 900, fontFamily: "'Outfit', sans-serif" }}>Identity Strength</h3>
+                    <Bdg color="saffron">Elite Level</Bdg>
                   </div>
-                  <div style={{ background: '#f8fafc', borderRadius: 24, padding: '24px', border: '1px solid rgba(0,0,0,0.02)' }}>
-                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12, alignItems: 'center' }}>
-                        <span style={{ fontSize: 14, fontWeight: 800, color: '#1e293b' }}>Completeness</span>
-                        <span style={{ fontSize: 16, fontWeight: 900, color: '#FF9431' }}>{comp.pct}%</span>
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+                     <Ring score={score} size={140} strokeWidth={12} />
+                  </div>
+                  <div style={{ background: '#f8fafc', borderRadius: 20, padding: '20px', border: '1px solid rgba(0,0,0,0.02)' }}>
+                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10, alignItems: 'center' }}>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: '#475569' }}>Profile Sync</span>
+                        <span style={{ fontSize: 15, fontWeight: 900, color: '#FF9431' }}>{comp.pct}%</span>
                      </div>
-                     <Bar value={comp.pct} color="#FF9431" height={10} />
+                     <Bar value={comp.pct} color="#FF9431" height={8} />
                      {comp.missing.length > 0 && (
-                       <div style={{ marginTop: 24 }}>
-                          <p style={{ fontSize: 11, color: '#94a3b8', marginBottom: 12, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em' }}>UPGRADE YOUR STATUS:</p>
-                          <ul style={{ paddingLeft: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                             {comp.missing.map(m => (
-                               <li key={m} style={{ fontSize: 14, color: '#475569', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10 }}>
-                                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF9431' }} />
+                       <div style={{ marginTop: 20 }}>
+                          <p style={{ fontSize: 10, color: '#94a3b8', marginBottom: 10, fontWeight: 900, textTransform: 'uppercase' }}>Next Steps:</p>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                             {comp.missing.slice(0, 3).map(m => (
+                               <div key={m} style={{ fontSize: 13, color: '#1e293b', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
+                                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF9431' }} />
                                  {m}
-                               </li>
+                               </div>
                              ))}
-                          </ul>
+                          </div>
                        </div>
                      )}
                   </div>
-                  <Btn full lg style={{ marginTop: 32, borderRadius: 100, background: '#111', color: '#fff' }} onClick={() => navigate('/settings')}>
-                    Update Identity Profile
+                  <Btn full lg style={{ marginTop: 24, borderRadius: 100, background: '#111', color: '#fff', fontSize: 14 }} onClick={() => navigate('/settings')}>
+                    Complete My Identity
                   </Btn>
                </Card>
 
-               <Card style={{ padding: '32px', borderRadius: 32 }}>
-                  <h3 style={{ fontSize: 18, fontWeight: 900, marginBottom: 24, fontFamily: "'Outfit', sans-serif" }}>Quick Utilities</h3>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
+               <Card style={{ padding: '24px', borderRadius: 28 }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 900, marginBottom: 20, fontFamily: "'Outfit', sans-serif" }}>Ecosystem Shortcuts</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
                      {[
-                       { l: 'Elite Leaderboard', p: '/leaderboard', i: '🎖️' },
                        { l: 'Earning Calculator', p: '/rate-calc', i: '🧮' },
-                       { l: 'Monetization Guide', p: '/monetize', i: '💸' },
-                       { l: 'Support Center', p: '/contact', i: '💬' }
+                       { l: 'Leaderboard', p: '/leaderboard', i: '🎖️' },
+                       { l: 'Support Hub', p: '/contact', i: '💬' }
                      ].map(r => (
-                        <button key={r.p} onClick={() => navigate(r.p)} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 20px', background: '#f8fafc', border: '1px solid rgba(0,0,0,0.02)', borderRadius: 20, cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}>
-                           <span style={{ fontSize: 24 }}>{r.i}</span>
-                           <span style={{ fontSize: 15, fontWeight: 800, color: '#1e293b' }}>{r.l}</span>
+                        <button key={r.p} onClick={() => navigate(r.p)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', background: '#f8fafc', border: '1px solid rgba(0,0,0,0.02)', borderRadius: 16, cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}>
+                           <span style={{ fontSize: 20 }}>{r.i}</span>
+                           <span style={{ fontSize: 14, fontWeight: 700, color: '#1e293b' }}>{r.l}</span>
                         </button>
                      ))}
                   </div>
@@ -148,34 +157,34 @@ export default function DashboardPage() {
             </div>
 
             {/* Right Column: Applications */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-               <Card style={{ padding: '40px 32px', borderRadius: 32 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-                     <h3 style={{ fontSize: 22, fontWeight: 900, fontFamily: "'Outfit', sans-serif" }}>Recent Applications</h3>
-                     <Btn sm variant="ghost" onClick={() => navigate('/applications')}>View All</Btn>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+               <Card style={{ padding: '32px', borderRadius: 28 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                     <h3 style={{ fontSize: 18, fontWeight: 900, fontFamily: "'Outfit', sans-serif" }}>Recent Activities</h3>
+                     <Btn sm variant="ghost" onClick={() => navigate('/applications')} style={{ fontSize: 12, fontWeight: 800 }}>View All</Btn>
                   </div>
                   
                   {myApps.length === 0 ? (
                     <Empty 
                       icon="📄" 
-                      title="No applications yet" 
-                      sub="Browse campaigns and start applying to national brands." 
+                      title="No Applications" 
+                      sub="Apply to national brands to start earning." 
                       ctaLabel="Browse Campaigns" 
                       onCta={() => navigate('/campaigns')} 
                     />
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                      {myApps.slice(0, 5).map(a => (
-                        <div key={a.id} style={{ padding: '24px', background: '#f8fafc', borderRadius: 24, border: '1px solid rgba(0,0,0,0.02)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      {myApps.slice(0, 4).map(a => (
+                        <div key={a.id} style={{ padding: '20px', background: '#f8fafc', borderRadius: 20, border: '1px solid rgba(0,0,0,0.02)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                            <div>
-                              <p style={{ fontSize: 17, fontWeight: 800, color: '#111', marginBottom: 6 }}>{a.campaignTitle}</p>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                 <span style={{ fontSize: 14, color: '#64748b', fontWeight: 600 }}>{typeof a.brand === 'object' ? a.brand.companyName : a.brand}</span>
-                                 <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#cbd5e1' }} />
-                                 <span style={{ fontSize: 13, color: '#94a3b8', fontWeight: 700 }}>{fmt.date(a.date)}</span>
+                              <p style={{ fontSize: 15, fontWeight: 800, color: '#111', marginBottom: 4 }}>{a.campaignTitle}</p>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                 <span style={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>{typeof a.brand === 'object' ? a.brand.companyName : a.brand}</span>
+                                 <div style={{ width: 3, height: 3, borderRadius: '50%', background: '#cbd5e1' }} />
+                                 <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>{fmt.date(a.date)}</span>
                               </div>
                            </div>
-                           <Bdg color={a.status === 'selected' ? 'green' : a.status === 'shortlisted' ? 'purple' : a.status === 'rejected' ? 'red' : 'blue'}>
+                           <Bdg sm color={a.status === 'selected' ? 'green' : a.status === 'shortlisted' ? 'purple' : a.status === 'rejected' ? 'red' : 'blue'}>
                               {a.status?.toUpperCase() || 'APPLIED'}
                            </Bdg>
                         </div>
@@ -185,26 +194,26 @@ export default function DashboardPage() {
                </Card>
 
                {/* Profile Share Link Card */}
-               <Card style={{ padding: '40px', background: 'linear-gradient(135deg, #FF9431, #FF6B00)', borderRadius: 32, color: '#fff', boxShadow: '0 25px 60px rgba(255,148,49,0.25)', position: 'relative', overflow: 'hidden' }}>
-                  <div style={{ position: 'absolute', top: -30, left: -30, width: 150, height: 150, background: '#fff', borderRadius: '50%', opacity: 0.1, filter: 'blur(40px)' }} />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 32, position: 'relative', zIndex: 2 }}>
-                     <div style={{ flex: 1, minWidth: 280 }}>
-                        <h3 style={{ fontSize: 24, fontWeight: 900, marginBottom: 8, fontFamily: "'Outfit', sans-serif" }}>Your Public Identity</h3>
-                        <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.9)', fontWeight: 500, lineHeight: 1.5 }}>Share this link to attract high-quality brands directly to your portfolio.</p>
-                        <div style={{ background: 'rgba(255,255,255,0.15)', padding: '14px 20px', borderRadius: 16, marginTop: 24, fontSize: 16, fontWeight: 700, fontFamily: 'monospace', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)' }}>
-                           creatorbharat.in/creator/{c?.handle || 'username'}
-                        </div>
-                     </div>
-                     <Btn 
-                       variant="white"
-                       style={{ padding: '18px 36px', borderRadius: 100, color: '#FF9431' }}
-                       onClick={() => { 
-                         navigator.clipboard.writeText(`https://creatorbharat.in/creator/${c?.handle}`); 
-                         toast('Link copied to clipboard!', 'success'); 
-                       }}
-                    >
-                      <Share2 size={18} style={{ marginRight: 8 }} /> Copy Link
-                    </Btn>
+               <Card style={{ padding: '32px', background: '#111', borderRadius: 28, color: '#fff', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: -30, left: -30, width: 120, height: 120, background: '#FF9431', borderRadius: '50%', opacity: 0.1, filter: 'blur(40px)' }} />
+                  <div style={{ position: 'relative', zIndex: 2 }}>
+                    <h3 style={{ fontSize: 18, fontWeight: 900, marginBottom: 8, fontFamily: "'Outfit', sans-serif" }}>Your Brand Identity</h3>
+                    <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', fontWeight: 500, lineHeight: 1.5 }}>Share this link to attract brands directly.</p>
+                    
+                    <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+                      <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', padding: '12px 16px', borderRadius: 12, fontSize: 13, fontWeight: 700, fontFamily: 'monospace', border: '1px solid rgba(255,255,255,0.1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                         cb.in/creator/{c?.handle || 'user'}
+                      </div>
+                      <button 
+                        style={{ padding: '0 16px', borderRadius: 12, background: '#FF9431', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 900, fontSize: 12 }}
+                        onClick={() => { 
+                          navigator.clipboard.writeText(`https://creatorbharat.in/creator/${c?.handle}`); 
+                          toast('Copied to clipboard!', 'success'); 
+                        }}
+                      >
+                        COPY
+                      </button>
+                    </div>
                   </div>
                </Card>
             </div>

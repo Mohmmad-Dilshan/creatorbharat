@@ -73,50 +73,45 @@ export default function CampaignBuilderPage() {
   };
 
   const steps = [
-    { n: 1, l: 'Basics' },
-    { n: 2, l: 'Requirements' },
-    { n: 3, l: 'Budget' }
+    { n: 1, l: 'Basics', i: '📝' },
+    { n: 2, l: 'Targeting', i: '🎯' },
+    { n: 3, l: 'Review', i: '✨' }
   ];
 
   return (
-    <div style={{ background: '#FAFAFA', minHeight: '100vh', paddingBottom: 100 }}>
+    <div style={{ background: '#f8fafc', minHeight: '100vh', paddingBottom: 100 }}>
       <EliteHeader 
-        eyebrow="Deployment Center"
-        title="Launch New Campaign"
-        sub="Bharat ke top creators tak pahunchne ke liye apni campaign brief taiyaar karein."
+        eyebrow="Architect Mode"
+        title="Create New Campaign"
+        sub="Define your mission and find the perfect creators in Bharat."
         gradient="green"
-        maxWidth={800}
+        light={true}
+        compact
       >
         {/* Progress Indicator */}
-        <div style={{ display: 'flex', gap: 12, marginTop: 40 }}>
+        <div style={{ display: 'flex', gap: 12, marginTop: 24, justifyContent: 'center' }}>
            {steps.map(s => (
              <div key={s.n} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ 
-                  width: 32, 
-                  height: 32, 
-                  borderRadius: '50%', 
-                  background: step >= s.n ? '#10B981' : 'rgba(255,255,255,0.1)', 
-                  color: '#fff', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  fontSize: 14, 
-                  fontWeight: 900,
-                  transition: 'all 0.3s',
+                  width: 36, height: 36, borderRadius: 12, 
+                  background: step >= s.n ? '#10B981' : 'rgba(255,255,255,0.15)', 
+                  color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                  fontSize: 14, fontWeight: 900, transition: 'all 0.3s',
+                  boxShadow: step === s.n ? '0 0 15px rgba(16,185,129,0.4)' : 'none',
                   border: step === s.n ? '2px solid #fff' : 'none'
                 }}>
-                  {step > s.n ? '✓' : s.n}
+                  {step > s.n ? '✓' : s.i}
                 </div>
-                {!mob && <span style={{ color: step >= s.n ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{s.l}</span>}
-                {s.n < 3 && <div style={{ width: mob ? 20 : 40, height: 2, background: step > s.n ? '#10B981' : 'rgba(255,255,255,0.1)' }} />}
+                {!mob && <span style={{ color: step >= s.n ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>{s.l}</span>}
+                {s.n < 3 && <div style={{ width: mob ? 10 : 30, height: 2, background: step > s.n ? '#10B981' : 'rgba(255,255,255,0.1)' }} />}
              </div>
            ))}
         </div>
       </EliteHeader>
 
-      <div style={{ marginTop: -60, position: 'relative', zIndex: 10 }}>
-        <div style={W(800)}>
-          <Card className="au" style={{ padding: mob ? '32px 24px' : '48px', background: '#fff', border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 20px 60px rgba(0,0,0,0.05)' }}>
+      <div style={{ marginTop: -40, position: 'relative', zIndex: 10 }}>
+        <div style={W(720)}>
+          <Card style={{ padding: mob ? '32px 20px' : '48px', background: '#fff', borderRadius: 32, border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 30px 70px rgba(0,0,0,0.04)' }}>
             
             <AnimatePresence mode="wait">
               {step === 1 && (
@@ -125,32 +120,33 @@ export default function CampaignBuilderPage() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.4, ease: "circOut" }}
+                  transition={{ duration: 0.3 }}
                 >
-                  <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>1. Campaign Core Details</h3>
-                  <Fld 
-                    label="Campaign Title" 
-                    value={F.title} 
-                    onChange={e => upF('title', e.target.value)} 
-                    placeholder="e.g. Summer Collection Launch 2026" 
-                    required 
-                  />
-                  <Fld 
-                    label="Target Niche" 
-                    value={F.niche} 
-                    onChange={e => upF('niche', e.target.value)} 
-                    options={['', 'Lifestyle', 'Fashion', 'Tech', 'Food', 'Beauty', 'Education', 'Finance', 'Travel', 'Entertainment']} 
-                    required
-                  />
-                  <Fld 
-                    label="Creative Brief & Description" 
-                    value={F.desc} 
-                    onChange={e => upF('desc', e.target.value)} 
-                    rows={6} 
-                    placeholder="Apne brand aur campaign goals ke baare mein batayein..." 
-                    required 
-                    helper="Brief jitna accha hoga, utne acche creators apply karenge."
-                  />
+                  <h3 style={{ fontSize: 22, fontWeight: 900, color: '#111', marginBottom: 32, fontFamily: "'Outfit', sans-serif" }}>Primary Intelligence</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                    <Fld 
+                      label="Campaign Title" 
+                      value={F.title} 
+                      onChange={e => upF('title', e.target.value)} 
+                      placeholder="e.g. Summer Collection 2026" 
+                      required 
+                    />
+                    <Fld 
+                      label="Category / Niche" 
+                      value={F.niche} 
+                      onChange={e => upF('niche', e.target.value)} 
+                      options={['', 'Lifestyle', 'Fashion', 'Tech', 'Food', 'Beauty', 'Education', 'Finance', 'Travel', 'Entertainment']} 
+                      required
+                    />
+                    <Fld 
+                      label="Creative Brief" 
+                      value={F.desc} 
+                      onChange={e => upF('desc', e.target.value)} 
+                      rows={5} 
+                      placeholder="Define your campaign goals and creator expectations..." 
+                      required 
+                    />
+                  </div>
                 </motion.div>
               )}
 
@@ -160,11 +156,11 @@ export default function CampaignBuilderPage() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.4, ease: "circOut" }}
+                  transition={{ duration: 0.3 }}
                 >
-                  <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>2. Execution & Requirements</h3>
+                  <h3 style={{ fontSize: 22, fontWeight: 900, color: '#111', marginBottom: 32, fontFamily: "'Outfit', sans-serif" }}>Targeting & Reach</h3>
                   
-                  <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 24 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 20 }}>
                     <Fld 
                       label="Primary Platform" 
                       value={F.platform} 
@@ -172,7 +168,7 @@ export default function CampaignBuilderPage() {
                       options={['Instagram', 'YouTube', 'Twitter', 'LinkedIn', 'Mixed']} 
                     />
                     <Fld 
-                      label="Total Slots (No. of Creators)" 
+                      label="Total Slots" 
                       type="number" 
                       value={F.slots} 
                       onChange={e => upF('slots', e.target.value)} 
@@ -181,39 +177,28 @@ export default function CampaignBuilderPage() {
                     />
                   </div>
 
-                  <div style={{ marginTop: 12 }}>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: T.n8, marginBottom: 12 }}>Timeline & Urgency</p>
+                  <div style={{ marginTop: 24 }}>
+                    <label style={{ fontSize: 13, fontWeight: 800, color: '#475569', marginBottom: 12, display: 'block' }}>PRIORITY LEVEL</label>
                     <div 
                       onClick={() => upF('urgent', !F.urgent)} 
                       style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: 16, 
-                        padding: '24px', 
-                        borderRadius: 20, 
-                        background: F.urgent ? 'rgba(239,68,68,0.04)' : '#F9F9F9', 
-                        border: `1.5px solid ${F.urgent ? '#EF4444' : 'rgba(0,0,0,0.05)'}`,
-                        cursor: 'pointer',
-                        transition: 'all 0.3s'
+                        display: 'flex', alignItems: 'center', gap: 16, padding: '20px', 
+                        borderRadius: 20, background: F.urgent ? '#FEF2F2' : '#F8FAFC', 
+                        border: `1.5px solid ${F.urgent ? '#FECACA' : 'rgba(0,0,0,0.03)'}`,
+                        cursor: 'pointer', transition: 'all 0.3s'
                       }}
                     >
                       <div style={{ 
-                        width: 28, 
-                        height: 28, 
-                        borderRadius: 8, 
-                        border: '2px solid ' + (F.urgent ? '#EF4444' : '#ccc'), 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
-                        background: F.urgent ? '#EF4444' : 'transparent', 
-                        color: '#fff',
-                        fontSize: 16
+                        width: 24, height: 24, borderRadius: 8, 
+                        border: '2px solid ' + (F.urgent ? '#EF4444' : '#cbd5e1'), 
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                        background: F.urgent ? '#EF4444' : 'transparent', color: '#fff', fontSize: 14
                       }}>
                         {F.urgent && '✓'}
                       </div>
-                      <div style={{ flex: 1 }}>
-                        <p style={{ fontSize: 17, fontWeight: 900, color: F.urgent ? '#EF4444' : '#111' }}>Urgent Requirement</p>
-                        <p style={{ fontSize: 13, color: T.t3, marginTop: 4 }}>Ager aapko content 7 days ke andar chahiye, toh ise mark karein. (Higher reach guaranteed)</p>
+                      <div>
+                        <p style={{ fontSize: 16, fontWeight: 800, color: F.urgent ? '#B91C1C' : '#1e293b' }}>Urgent Deployment</p>
+                        <p style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>Need content within 7 days? Mark as urgent for higher visibility.</p>
                       </div>
                     </div>
                   </div>
@@ -226,11 +211,11 @@ export default function CampaignBuilderPage() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.4, ease: "circOut" }}
+                  transition={{ duration: 0.3 }}
                 >
-                  <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>3. Commercials & Review</h3>
+                  <h3 style={{ fontSize: 22, fontWeight: 900, color: '#111', marginBottom: 32, fontFamily: "'Outfit', sans-serif" }}>Commercial Logic</h3>
                   
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 32 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 32 }}>
                     <Fld 
                       label="Min Budget (₹ / Creator)" 
                       type="number" 
@@ -248,20 +233,20 @@ export default function CampaignBuilderPage() {
                     />
                   </div>
 
-                  <div style={{ background: 'rgba(16,185,129,0.05)', borderRadius: 24, padding: '32px', border: '1px solid rgba(16,185,129,0.1)' }}>
-                     <h4 style={{ fontSize: 14, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 16 }}>Campaign Preview</h4>
+                  <div style={{ background: '#F0FDF4', borderRadius: 24, padding: '28px', border: '1px solid #DCFCE7' }}>
+                     <p style={{ fontSize: 11, fontWeight: 900, color: '#166534', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 16 }}>Deployment Forecast</p>
                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                           <span style={{ fontSize: 14, color: T.t3 }}>Campaign:</span>
-                           <span style={{ fontSize: 14, fontWeight: 800, color: '#111' }}>{F.title || 'Untitled'}</span>
+                           <span style={{ fontSize: 14, color: '#166534', opacity: 0.7 }}>Campaign Name:</span>
+                           <span style={{ fontSize: 14, fontWeight: 800, color: '#166534' }}>{F.title || 'Draft'}</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                           <span style={{ fontSize: 14, color: T.t3 }}>Est. Reach:</span>
-                           <span style={{ fontSize: 14, fontWeight: 800, color: '#111' }}>~{((F.slots || 0) * 25000).toLocaleString()}+ People</span>
+                           <span style={{ fontSize: 14, color: '#166534', opacity: 0.7 }}>Potential Reach:</span>
+                           <span style={{ fontSize: 14, fontWeight: 800, color: '#166534' }}>~{((F.slots || 0) * 15000).toLocaleString()}+ Viewers</span>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                           <span style={{ fontSize: 14, color: T.t3 }}>Total Payout:</span>
-                           <span style={{ fontSize: 14, fontWeight: 900, color: '#10B981' }}>₹{((F.slots || 0) * (F.budgetMin || 0)).toLocaleString()} - ₹{((F.slots || 0) * (F.budgetMax || F.budgetMin || 0)).toLocaleString()}</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 12, borderTop: '1px dashed #BBF7D0' }}>
+                           <span style={{ fontSize: 14, color: '#166534', opacity: 0.7 }}>Estimated Payout:</span>
+                           <span style={{ fontSize: 15, fontWeight: 900, color: '#15803D' }}>₹{((F.slots || 0) * (F.budgetMin || 0)).toLocaleString()} - ₹{((F.slots || 0) * (F.budgetMax || F.budgetMin || 0)).toLocaleString()}</span>
                         </div>
                      </div>
                   </div>
@@ -270,21 +255,28 @@ export default function CampaignBuilderPage() {
             </AnimatePresence>
 
             {/* Actions */}
-            <div style={{ marginTop: 48, paddingTop: 32, borderTop: '1px solid rgba(0,0,0,0.05)', display: 'flex', gap: 16, flexDirection: mob ? 'column' : 'row' }}>
-              {step > 1 ? (
-                <Btn variant="outline" lg onClick={prevStep} style={{ flex: 1, borderRadius: 100 }}>Previous Step</Btn>
-              ) : (
-                <Btn variant="outline" lg onClick={() => go('brand-dashboard')} style={{ flex: 1, borderRadius: 100 }}>Cancel</Btn>
+            <div style={{ marginTop: 40, display: 'flex', gap: 12 }}>
+              {step > 1 && (
+                <button 
+                  onClick={prevStep} 
+                  style={{ flex: 1, height: 56, borderRadius: 16, background: '#f8fafc', border: '1px solid #e2e8f0', color: '#1e293b', fontWeight: 800, cursor: 'pointer', fontSize: 14 }}
+                >
+                  BACK
+                </button>
               )}
               
-              <Btn 
-                lg 
-                loading={loading} 
+              <button 
                 onClick={nextStep} 
-                style={{ flex: 2, borderRadius: 100, height: 60, fontSize: 17 }}
+                style={{ 
+                  flex: 2, height: 56, borderRadius: 16, 
+                  background: step === 3 ? '#10B981' : '#111', 
+                  color: '#fff', border: 'none', cursor: 'pointer', 
+                  fontWeight: 900, fontSize: 15, transition: 'all 0.3s',
+                  boxShadow: step === 3 ? '0 10px 20px rgba(16,185,129,0.2)' : '0 10px 20px rgba(0,0,0,0.1)'
+                }}
               >
-                {step === 3 ? 'Confirm & Launch Campaign 🚀' : 'Save & Continue'}
-              </Btn>
+                {step === 3 ? 'LAUNCH CAMPAIGN 🚀' : 'CONTINUE'}
+              </button>
             </div>
 
           </Card>

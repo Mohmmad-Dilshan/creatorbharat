@@ -12,22 +12,22 @@ export default function Navbar() {
   const [mob, setMob] = useState(window.innerWidth < 768);
 
   useEffect(() => {
-    const h = () => { 
-      setScroll(window.scrollY > 20); 
-      setMob(window.innerWidth < 768); 
+    const h = () => {
+      setScroll(window.scrollY > 20);
+      setMob(window.innerWidth < 768);
     };
     window.addEventListener('scroll', h);
     window.addEventListener('resize', h);
-    return () => { 
-      window.removeEventListener('scroll', h); 
-      window.removeEventListener('resize', h); 
+    return () => {
+      window.removeEventListener('scroll', h);
+      window.removeEventListener('resize', h);
     };
   }, []);
 
-  const go = (path) => { 
-    navigate(path); 
+  const go = (path) => {
+    navigate(path);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    dsp({ t: 'UI', v: { mobileMenu: false } }); 
+    dsp({ t: 'UI', v: { mobileMenu: false } });
   };
 
   const isCreator = st.role === 'creator', isBrand = st.role === 'brand';
@@ -45,30 +45,49 @@ export default function Navbar() {
       pointerEvents: 'none'
     }}>
       <div style={{
-        maxWidth: 1280, width: '100%', margin: '0 auto', position: 'relative',
-        borderRadius: 100, padding: '1.5px', overflow: 'hidden', pointerEvents: 'auto',
+        maxWidth: 1200, width: '100%', margin: '0 auto', position: 'relative',
+        borderRadius: 102, padding: '2px', overflow: 'hidden', pointerEvents: 'auto',
         boxShadow: scroll ? '0 20px 50px rgba(0,0,0,0.1)' : '0 10px 30px rgba(0,0,0,0.05)',
-        transition: 'all 0.5s ease'
+        transition: 'all 0.5s ease',
+        background: 'rgba(255, 255, 255, 0.1)'
       }}>
-        {/* Subtler Animated Tiranga Border */}
+        {/* Exact Vercel-style Spinning Border Layer */}
         <div style={{
-          position: 'absolute', top: '50%', left: '50%', width: '150%', height: '400%',
-          background: 'conic-gradient(from 0deg, transparent 0%, #138808 10%, #FFFFFF 20%, #FF9933 30%, transparent 40%, transparent 100%)',
-          animation: 'spinBorder 8s linear infinite',
-          zIndex: 0, opacity: scroll ? 1 : 0.6
+          position: 'absolute', top: '50%', left: '50%', width: '200%', height: '500%',
+          background: 'conic-gradient(rgb(19, 136, 8) 0%, rgb(255, 255, 255) 20%, rgb(255, 153, 51) 40%, rgb(255, 153, 51) 60%, rgb(255, 255, 255) 80%, rgb(19, 136, 8) 100%)',
+          animation: 'spinBorder 5s linear infinite',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 0
         }} />
+
+        <style>{`
+          @keyframes spinBorder {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+          }
+          .nav-logo-text {
+            background: linear-gradient(90deg, #FF9933 0%, #FFFFFF 50%, #138808 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: flagSweep 3s linear infinite;
+          }
+          @keyframes flagSweep {
+            to { background-position: 200% center; }
+          }
+        `}</style>
 
         <nav style={{
           position: 'relative', zIndex: 1,
-          background: scroll ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.85)',
-          backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)',
+          background: scroll ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)',
           borderRadius: 100, padding: mob ? '0 12px 0 20px' : '0 32px',
           height: mob ? 54 : 72, display: 'flex', alignItems: 'center', gap: 24
         }}>
           <Logo onClick={() => go('/')} sm={mob} />
 
           {!mob && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, marginLeft: 40 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, justifyContent: 'center' }}>
               {links.map(([path, label]) => {
                 const active = location.pathname === path;
                 return (
