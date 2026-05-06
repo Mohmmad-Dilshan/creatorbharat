@@ -1,10 +1,129 @@
-import React from 'react';
-import { T } from '../../theme';
+import React, { useState } from 'react';
 import { W } from '../../utils/helpers';
-import { motion } from 'framer-motion';
-import { X, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { X, CheckCircle2, AlertTriangle, ShieldCheck, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const DATA = [
+  {
+    id: 'problem',
+    type: 'problem',
+    tag: 'The Core Problem',
+    tagColor: '#EF4444',
+    tagBg: '#FEF2F2',
+    icon: AlertTriangle,
+    title: 'Middlemen taking 30% of your hard work.',
+    points: [
+      'No formal portfolio. Pitching via messy screenshots.',
+      'Agencies eating up to 30% of your hard-earned money.',
+      'Unprofessional communication & ghosting via chaotic DMs.',
+      'Tier 2 & 3 talent being completely ignored by national brands.',
+      'High risk of payment delays and agency frauds.'
+    ],
+    cardBg: '#fff',
+    borderColor: 'rgba(239, 68, 68, 0.2)',
+    textColor: '#475569',
+    pointIcon: X,
+    pointIconBg: '#FEF2F2',
+    pointIconColor: '#EF4444'
+  },
+  {
+    id: 'mission',
+    type: 'mission',
+    tag: 'The Fix',
+    tagColor: '#10B981',
+    tagBg: 'rgba(16, 185, 129, 0.1)',
+    icon: ShieldCheck,
+    title: 'Empowering the Real Bharat Creator.',
+    points: [
+      'Smart Media Kit (Your elite, verified SaaS portfolio).',
+      '0% Commission. You keep exactly 100% of your earnings.',
+      'Formal dashboard for professional & safe brand deals.',
+      'National spotlight and premium visibility for local talent.',
+      'Direct connections with top brands—no middlemen.'
+    ],
+    cardBg: '#0f172a',
+    borderColor: 'rgba(16, 185, 129, 0.3)',
+    textColor: '#e2e8f0',
+    pointIcon: CheckCircle2,
+    pointIconBg: '#10B981',
+    pointIconColor: '#fff'
+  }
+];
+
+function CardContent({ c, mob }) {
+  const Icon = c.icon;
+  const PointIcon = c.pointIcon;
+  const isMission = c.type === 'mission';
+
+  return (
+    <div
+      style={{
+        padding: mob ? '32px 24px' : '56px',
+        borderRadius: 32,
+        background: c.cardBg,
+        color: isMission ? '#fff' : '#0f172a',
+        border: `1px solid ${c.borderColor}`,
+        boxShadow: isMission ? '0 30px 60px -15px rgba(16, 185, 129, 0.15)' : '0 20px 40px -10px rgba(239, 68, 68, 0.05)',
+        position: 'relative',
+        overflow: 'hidden',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
+      {/* Top Bar Decoration */}
+      <div style={{ 
+        position: 'absolute', top: 0, left: 0, width: '100%', height: 4, 
+        background: `linear-gradient(90deg, transparent, ${isMission ? '#10B981' : '#EF4444'}, transparent)` 
+      }} />
+
+      {isMission && (
+        <div style={{ position: 'absolute', top: -100, right: -100, width: 300, height: 300, background: '#10B981', filter: 'blur(120px)', opacity: 0.2 }} />
+      )}
+
+      <div style={{ width: 64, height: 64, borderRadius: 20, background: isMission ? 'rgba(16, 185, 129, 0.15)' : '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 32 }}>
+        <Icon size={32} color={isMission ? '#10B981' : '#EF4444'} strokeWidth={2.5} />
+      </div>
+
+      <h3 style={{ fontSize: mob ? 24 : 36, fontWeight: 900, marginBottom: 32, lineHeight: 1.2, letterSpacing: '-0.02em', fontFamily: "'Outfit', sans-serif" }}>
+        {c.title}
+      </h3>
+
+      <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 20, padding: 0, position: 'relative', zIndex: 2 }}>
+        {c.points.map((p, i) => (
+          <li key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', fontSize: mob ? 14 : 17, color: c.textColor, fontWeight: isMission ? 500 : 600, lineHeight: 1.4 }}>
+            <div style={{ 
+              width: 20, height: 20, borderRadius: '50%', background: c.pointIconBg, 
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2,
+              boxShadow: isMission ? '0 0 8px rgba(16, 185, 129, 0.4)' : 'none'
+            }}>
+              <PointIcon size={12} color={c.pointIconColor} strokeWidth={3} />
+            </div>
+            {p}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 export default function Faq({ mob }) {
+  const [current, setCurrent] = useState(0);
+  const [flipping, setFlipping] = useState(false);
+  const [direction, setDirection] = useState('next');
+
+  const goTo = (idx, dir) => {
+    if (flipping || idx === current) return;
+    setDirection(dir);
+    setFlipping(true);
+    setTimeout(() => {
+      setCurrent(idx);
+      setFlipping(false);
+    }, 160);
+  };
+
+  const next = () => goTo((current + 1) % DATA.length, 'next');
+  const prev = () => goTo((current - 1 + DATA.length) % DATA.length, 'prev');
+
   return (
     <section style={{ padding: mob ? '60px 20px' : '100px 20px', background: '#fdfdfd', position: 'relative', overflow: 'hidden' }}>
       
@@ -15,20 +134,21 @@ export default function Faq({ mob }) {
       <div style={{ ...W(1200), position: 'relative', zIndex: 1 }}>
         
         {/* REVOLUTIONARY HEADING SECTION */}
-        <div
-          style={{ textAlign: 'center', marginBottom: mob ? 60 : 100 }}
-        >
+        <div style={{ textAlign: 'center', marginBottom: mob ? 48 : 80 }}>
           <div style={{ 
             display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 20px', 
-            background: '#FEF2F2', border: '1px solid #FEE2E2', borderRadius: 100, marginBottom: 24 
+            background: DATA[current].tagBg, border: `1px solid ${DATA[current].borderColor}`, borderRadius: 100, marginBottom: 24,
+            transition: 'all 0.3s'
           }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#EF4444', boxShadow: '0 0 10px rgba(239, 68, 68, 0.6)' }} />
-            <span style={{ fontSize: 12, fontWeight: 900, color: '#EF4444', textTransform: 'uppercase', letterSpacing: '3px' }}>The Core Problem</span>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: DATA[current].tagColor, boxShadow: `0 0 10px ${DATA[current].tagColor}66` }} />
+            <span style={{ fontSize: 12, fontWeight: 900, color: DATA[current].tagColor, textTransform: 'uppercase', letterSpacing: '3px' }}>
+              {DATA[current].tag}
+            </span>
           </div>
           
           <h2 style={{ 
             fontFamily: "'Outfit', sans-serif", 
-            fontSize: mob ? 40 : 72, 
+            fontSize: mob ? 36 : 72, 
             fontWeight: 900, 
             color: '#0f172a', 
             lineHeight: 1.1, 
@@ -39,101 +159,52 @@ export default function Faq({ mob }) {
           </h2>
         </div>
 
-        {/* PROBLEM VS MISSION GRID */}
-        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 40 : 64, alignItems: 'stretch' }}>
-          
-          {/* THE PROBLEM */}
-          <div
-            style={{ 
-              padding: mob ? 32 : 56, 
-              borderRadius: 32, 
-              background: '#fff', 
-              border: '1px solid rgba(239, 68, 68, 0.2)',
-              boxShadow: '0 20px 40px -10px rgba(239, 68, 68, 0.05)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}
-          >
-             <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 4, background: 'linear-gradient(90deg, transparent, #EF4444, transparent)' }} />
-             
-             <div style={{ width: 64, height: 64, borderRadius: 20, background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 32 }}>
-               <AlertTriangle size={32} color="#EF4444" strokeWidth={2.5} />
-             </div>
-             
-             <h3 style={{ fontSize: mob ? 28 : 36, fontWeight: 900, color: '#0f172a', marginBottom: 32, lineHeight: 1.2, letterSpacing: '-0.02em' }}>
-               Middlemen taking 30% of your hard work.
-             </h3>
-             
-             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 24, padding: 0 }}>
-                {[
-                  'No formal portfolio. Pitching via messy screenshots.',
-                  'Agencies eating up to 30% of your hard-earned money.',
-                  'Unprofessional communication & ghosting via chaotic DMs.',
-                  'Tier 2 & 3 talent being completely ignored by national brands.',
-                  'High risk of payment delays and agency frauds.'
-                ].map((p, i) => (
-                  <li key={i} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', fontSize: mob ? 15 : 17, color: '#475569', fontWeight: 600, lineHeight: 1.5 }}>
-                    <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
-                      <X size={14} color="#EF4444" strokeWidth={3} />
-                    </div>
-                    {p}
-                  </li>
-                ))}
-             </ul>
+        {/* COMPARISON AREA */}
+        {mob ? (
+          <div style={{ width: '100%' }}>
+            <div style={{ perspective: 1000, marginBottom: 24 }}>
+              <div style={{
+                animation: flipping
+                  ? direction === 'next' ? 'flipOutLeft 0.16s ease forwards' : 'flipOutRight 0.16s ease forwards'
+                  : direction === 'next' ? 'flipInRight 0.18s ease forwards' : 'flipInLeft 0.18s ease forwards',
+              }}>
+                <CardContent c={DATA[current]} mob={true} />
+              </div>
+            </div>
+
+            {/* Controls */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
+               <button onClick={prev} style={{ width: 44, height: 44, borderRadius: '50%', border: '1.5px solid #E2E8F0', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                 <ChevronLeft size={20} color="#0f172a" />
+               </button>
+               
+               <div style={{ display: 'flex', gap: 10 }}>
+                 {DATA.map((_, i) => (
+                   <div key={i} onClick={() => goTo(i, i > current ? 'next' : 'prev')} style={{
+                     width: i === current ? 24 : 10, height: 10, borderRadius: 10,
+                     background: i === current ? DATA[i].tagColor : '#E2E8F0',
+                     transition: 'all 0.3s', cursor: 'pointer'
+                   }} />
+                 ))}
+               </div>
+
+               <button onClick={next} style={{ width: 44, height: 44, borderRadius: '50%', border: '1.5px solid #E2E8F0', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                 <ChevronRight size={20} color="#0f172a" />
+               </button>
+            </div>
           </div>
-
-          {/* THE MISSION */}
-          <div
-            style={{ 
-              padding: mob ? 32 : 56, 
-              borderRadius: 32, 
-              background: '#0f172a', 
-              color: '#fff',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              boxShadow: '0 30px 60px -15px rgba(16, 185, 129, 0.15)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}
-          >
-             {/* Glow effect */}
-             <div style={{ position: 'absolute', top: -100, right: -100, width: 300, height: 300, background: '#10B981', filter: 'blur(120px)', opacity: 0.2 }} />
-
-             <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 4, background: 'linear-gradient(90deg, transparent, #10B981, transparent)' }} />
-             
-             <div style={{ width: 64, height: 64, borderRadius: 20, background: 'rgba(16, 185, 129, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 32 }}>
-               <ShieldCheck size={32} color="#10B981" strokeWidth={2.5} />
-             </div>
-
-             <h3 style={{ fontSize: mob ? 28 : 36, fontWeight: 900, color: '#fff', marginBottom: 32, lineHeight: 1.2, letterSpacing: '-0.02em' }}>
-               Empowering the Real Bharat Creator.
-             </h3>
-             
-             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 24, padding: 0, position: 'relative', zIndex: 2 }}>
-                {[
-                  'Smart Media Kit (Your elite, verified SaaS portfolio).',
-                  '0% Commission. You keep exactly 100% of your earnings.',
-                  'Formal dashboard for professional & safe brand deals.',
-                  'National spotlight and premium visibility for local talent.',
-                  'Direct connections with top brands—no middlemen.'
-                ].map((p, i) => (
-                  <li key={i} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', fontSize: mob ? 15 : 17, color: '#e2e8f0', fontWeight: 500, lineHeight: 1.5 }}>
-                    <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2, boxShadow: '0 0 10px rgba(16, 185, 129, 0.5)' }}>
-                      <CheckCircle2 size={14} color="#fff" strokeWidth={3} />
-                    </div>
-                    {p}
-                  </li>
-                ))}
-             </ul>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'stretch' }}>
+            {DATA.map((c, i) => (
+              <CardContent key={i} c={c} mob={false} />
+            ))}
           </div>
-
-        </div>
+        )}
 
         {/* BOTTOM TAGLINE */}
-        <div
-          style={{ textAlign: 'center', marginTop: mob ? 60 : 80 }}
-        >
+        <div style={{ textAlign: 'center', marginTop: mob ? 60 : 80 }}>
            <div style={{ display: 'inline-block', padding: '16px 32px', background: '#fff', border: '1px solid rgba(0,0,0,0.05)', borderRadius: 100, boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
-             <p style={{ fontSize: mob ? 16 : 20, fontWeight: 700, color: '#334155', fontStyle: 'italic' }}>
+             <p style={{ fontSize: mob ? 15 : 20, fontWeight: 700, color: '#334155', fontStyle: 'italic', margin: 0 }}>
                <span style={{ color: '#FF9431', fontSize: 24, lineHeight: 0, verticalAlign: 'middle' }}>"</span>
                Hum middlemen ko nahi, <strong style={{ color: '#0f172a', fontWeight: 900 }}>talent</strong> ko aage badhana chahte hain.
                <span style={{ color: '#FF9431', fontSize: 24, lineHeight: 0, verticalAlign: 'middle' }}>"</span>
@@ -142,6 +213,13 @@ export default function Faq({ mob }) {
         </div>
 
       </div>
+
+      <style>{`
+        @keyframes flipOutLeft  { from{opacity:1;transform:rotateY(0deg) scale(1)} to{opacity:0;transform:rotateY(-30deg) scale(0.96)} }
+        @keyframes flipOutRight { from{opacity:1;transform:rotateY(0deg) scale(1)} to{opacity:0;transform:rotateY(30deg) scale(0.96)} }
+        @keyframes flipInRight  { from{opacity:0;transform:rotateY(20deg) scale(0.96)} to{opacity:1;transform:rotateY(0deg) scale(1)} }
+        @keyframes flipInLeft   { from{opacity:0;transform:rotateY(-20deg) scale(0.96)} to{opacity:1;transform:rotateY(0deg) scale(1)} }
+      `}</style>
     </section>
   );
 }
