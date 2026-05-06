@@ -479,7 +479,7 @@ export default function CreatorsPage() {
             </div>
           ) : view === 'grid' ? (
             <>
-              <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(340px, 1fr))', gap: mob ? 16 : 32 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(340px, 1fr))', gap: mob ? 12 : 32 }}>
                 {visible.map((c, i) => (
                   <motion.div
                     key={c.id || i}
@@ -835,34 +835,127 @@ export default function CreatorsPage() {
 
 
 
-      {/* Dual CTA Section */}
-      <div style={{ background: '#fdfdfd', padding: mob ? '0 16px 60px' : '0 24px 80px' }}>
-        <div style={{ ...W(1280), display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 24 }}>
+      {/* Dual CTA Section - Elite SaaS Redesign */}
+      <div style={{ background: '#fdfdfd', padding: mob ? '40px 16px 80px' : '40px 24px 120px', position: 'relative', overflow: 'hidden' }}>
+        {/* Decorative ambient background */}
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100%', height: '100%', maxWidth: 1000, background: 'radial-gradient(circle, rgba(255,148,49,0.03) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        
+        <div style={{ ...W(1280), display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 24 : 32, position: 'relative', zIndex: 1 }}>
+          
           {/* Creator CTA */}
-          <div style={{
-            background: 'linear-gradient(135deg, #FF9431 0%, #138808 100%)',
-            borderRadius: 24, padding: mob ? '32px 24px' : '48px',
-            color: '#fff', position: 'relative', overflow: 'hidden',
-            boxShadow: '0 20px 40px rgba(255,148,49,0.2)'
-          }}>
-            <div style={{ position: 'absolute', top: 0, right: 0, width: 200, height: 200, background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%)', transform: 'translate(30%, -30%)' }} />
-            <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 24 : 32, fontWeight: 900, marginBottom: 12, lineHeight: 1.2 }}>Are you a Creator?</h3>
-            <p style={{ fontSize: mob ? 14 : 16, fontWeight: 500, opacity: 0.9, marginBottom: 32, maxWidth: 400, lineHeight: 1.5 }}>Join Bharat's fastest-growing elite network. Get discovered by top brands, manage your portfolio, and grow your income with zero commission.</p>
-            <button onClick={() => go('apply')} style={{ background: '#fff', color: '#111', border: 'none', padding: '16px 32px', borderRadius: 100, fontSize: 15, fontWeight: 900, cursor: 'pointer', boxShadow: '0 8px 16px rgba(0,0,0,0.1)', transition: 'transform 0.2s' }} onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'} onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}>Claim Your Profile →</button>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6 }}
+            style={{
+              background: 'linear-gradient(145deg, #1e293b 0%, #0f172a 100%)',
+              borderRadius: 32, padding: mob ? '40px 24px' : '56px 48px',
+              color: '#fff', position: 'relative', overflow: 'hidden',
+              boxShadow: '0 24px 48px -12px rgba(15, 23, 42, 0.25)',
+              display: 'flex', flexDirection: 'column',
+              border: '1px solid rgba(255,255,255,0.05)'
+            }}
+          >
+            {/* Glowing Orbs */}
+            <div style={{ position: 'absolute', top: -50, right: -50, width: 250, height: 250, background: '#FF9431', filter: 'blur(90px)', opacity: 0.35, borderRadius: '50%', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', bottom: -50, left: -50, width: 250, height: 250, background: '#138808', filter: 'blur(90px)', opacity: 0.25, borderRadius: '50%', pointerEvents: 'none' }} />
+            
+            {/* Mesh Pattern Overlay */}
+            <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px)', backgroundSize: '24px 24px', opacity: 0.5, pointerEvents: 'none' }} />
+
+            <div style={{ position: 'relative', zIndex: 2 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', padding: '6px 16px', borderRadius: 100, fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 24, border: '1px solid rgba(255,255,255,0.1)' }}>
+                <span>🚀</span> For Creators
+              </div>
+              <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 32 : 42, fontWeight: 900, marginBottom: 16, lineHeight: 1.1, letterSpacing: '-0.02em' }}>
+                Build Your <span style={{ color: '#FF9431' }}>Legacy</span>
+              </h3>
+              <p style={{ fontSize: mob ? 15 : 18, color: '#94a3b8', fontWeight: 500, marginBottom: 32, maxWidth: 400, lineHeight: 1.6 }}>
+                Join Bharat's fastest-growing elite network. Get discovered by top brands and grow your income.
+              </p>
+              
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 40px 0', display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {['Zero Platform Commission', 'Premium Brand Collabs', 'Automated Media Kit'].map(item => (
+                  <li key={item} style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 15, fontWeight: 600, color: '#cbd5e1' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', fontSize: 12, flexShrink: 0 }}>✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              <button 
+                onClick={() => go('apply')} 
+                style={{ 
+                  background: 'linear-gradient(90deg, #FF9431, #ea580c)', color: '#fff', border: 'none', 
+                  padding: '18px 36px', borderRadius: 100, fontSize: 16, fontWeight: 900, cursor: 'pointer', 
+                  boxShadow: '0 12px 24px rgba(234, 88, 12, 0.3)', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  display: 'inline-flex', alignItems: 'center', gap: 8, width: mob ? '100%' : 'max-content', justifyContent: 'center',
+                  marginTop: 'auto'
+                }} 
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 16px 32px rgba(234, 88, 12, 0.4)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(234, 88, 12, 0.3)'; }}
+              >
+                Claim Your Profile <span>→</span>
+              </button>
+            </div>
+          </motion.div>
 
           {/* Brand CTA */}
-          <div style={{
-            background: '#111',
-            borderRadius: 24, padding: mob ? '32px 24px' : '48px',
-            color: '#fff', position: 'relative', overflow: 'hidden',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.15)'
-          }}>
-            <div style={{ position: 'absolute', bottom: 0, right: 0, width: 200, height: 200, background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)', transform: 'translate(20%, 20%)' }} />
-            <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 24 : 32, fontWeight: 900, marginBottom: 12, lineHeight: 1.2 }}>Are you a Brand?</h3>
-            <p style={{ fontSize: mob ? 14 : 16, fontWeight: 500, color: '#94a3b8', marginBottom: 32, maxWidth: 400, lineHeight: 1.5 }}>Skip the agency fees. Directly hire top-performing regional creators who drive real engagement and trust in Tier 2 & 3 markets.</p>
-            <button onClick={() => dsp({ t: 'UI', v: { demoModal: true } })} style={{ background: 'rgba(255,255,255,0.1)', border: '1.5px solid rgba(255,255,255,0.2)', color: '#fff', padding: '16px 32px', borderRadius: 100, fontSize: 15, fontWeight: 900, cursor: 'pointer', backdropFilter: 'blur(10px)', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'} onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'} onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}>Post a Campaign</button>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            style={{
+              background: '#ffffff',
+              borderRadius: 32, padding: mob ? '40px 24px' : '56px 48px',
+              color: '#111', position: 'relative', overflow: 'hidden',
+              boxShadow: '0 24px 48px -12px rgba(0, 0, 0, 0.08)',
+              display: 'flex', flexDirection: 'column',
+              border: '1px solid rgba(0,0,0,0.06)'
+            }}
+          >
+            {/* Soft Ambient Glows */}
+            <div style={{ position: 'absolute', top: -50, right: -50, width: 250, height: 250, background: '#3b82f6', filter: 'blur(90px)', opacity: 0.15, borderRadius: '50%', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', bottom: -50, left: -50, width: 250, height: 250, background: '#10b981', filter: 'blur(90px)', opacity: 0.1, borderRadius: '50%', pointerEvents: 'none' }} />
+
+            <div style={{ position: 'relative', zIndex: 2 }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f1f5f9', padding: '6px 16px', borderRadius: 100, fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 24, color: '#475569', border: '1px solid rgba(0,0,0,0.05)' }}>
+                <span>🎯</span> For Brands
+              </div>
+              <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 32 : 42, fontWeight: 900, marginBottom: 16, lineHeight: 1.1, letterSpacing: '-0.02em', color: '#0f172a' }}>
+                Hire <span style={{ color: '#3b82f6' }}>Top Talent</span>
+              </h3>
+              <p style={{ fontSize: mob ? 15 : 18, color: '#64748b', fontWeight: 500, marginBottom: 32, maxWidth: 400, lineHeight: 1.6 }}>
+                Skip the agency fees. Directly hire top-performing regional creators who drive real engagement.
+              </p>
+
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 40px 0', display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {['Direct Access to Creators', 'Data-Driven Insights', 'Pan-India Reach'].map(item => (
+                  <li key={item} style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 15, fontWeight: 700, color: '#334155' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: '#e0f2fe', color: '#0ea5e9', fontSize: 12, flexShrink: 0 }}>✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              <button 
+                onClick={() => go('brand-register')} 
+                style={{ 
+                  background: '#0f172a', color: '#fff', border: 'none', 
+                  padding: '18px 36px', borderRadius: 100, fontSize: 16, fontWeight: 900, cursor: 'pointer', 
+                  boxShadow: '0 12px 24px rgba(15, 23, 42, 0.2)', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  display: 'inline-flex', alignItems: 'center', gap: 8, width: mob ? '100%' : 'max-content', justifyContent: 'center',
+                  marginTop: 'auto'
+                }} 
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 16px 32px rgba(15, 23, 42, 0.3)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(15, 23, 42, 0.2)'; }}
+              >
+                Start Hiring Now <span>→</span>
+              </button>
+            </div>
+          </motion.div>
         </div>
       </div>
 
