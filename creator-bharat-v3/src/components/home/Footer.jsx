@@ -42,8 +42,8 @@ export default function Footer({ mob }) {
     {
       title: 'Support',
       links: [
-        { label: 'Privacy Policy', p: '/about' },
-        { label: 'Terms of Service', p: '/about' },
+        { label: 'Privacy Policy', p: '/privacy' },
+        { label: 'Terms of Service', p: '/terms' },
         { label: 'Security', p: '/about' }
       ]
     }

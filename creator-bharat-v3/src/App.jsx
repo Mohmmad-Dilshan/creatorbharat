@@ -26,6 +26,10 @@ import BrandDashboardPage from './pages/BrandDashboardPage';
 import CampaignBuilderPage from './pages/CampaignBuilderPage';
 import ComparePage from './pages/ComparePage';
 import LoginPage from './pages/LoginPage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
+
+import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
   const location = useLocation();
@@ -38,6 +42,8 @@ export default function App() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/terms" element={<TermsPage />} />
       <Route path="/creators" element={<CreatorsPage />} />
       <Route path="/creator/:id" element={<CreatorProfilePage />} />
       <Route path="/campaigns" element={<CampaignsPage />} />
@@ -51,13 +57,18 @@ export default function App() {
       <Route path="/about" element={<AboutPage />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/apply" element={<ApplyPage />} />
-      <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/settings" element={<SettingsPage />} />
-      <Route path="/saved" element={<SavedPage />} />
-      <Route path="/applications" element={<ApplicationsPage />} />
+      
+      {/* Protected Creator Routes */}
+      <Route path="/dashboard" element={<ProtectedRoute allowedRole="creator"><DashboardPage /></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+      <Route path="/saved" element={<ProtectedRoute allowedRole="creator"><SavedPage /></ProtectedRoute>} />
+      <Route path="/applications" element={<ProtectedRoute allowedRole="creator"><ApplicationsPage /></ProtectedRoute>} />
+      
+      {/* Protected Brand Routes */}
       <Route path="/brand-register" element={<BrandRegisterPage />} />
-      <Route path="/brand-dashboard" element={<BrandDashboardPage />} />
-      <Route path="/campaign-builder" element={<CampaignBuilderPage />} />
+      <Route path="/brand-dashboard" element={<ProtectedRoute allowedRole="brand"><BrandDashboardPage /></ProtectedRoute>} />
+      <Route path="/campaign-builder" element={<ProtectedRoute allowedRole="brand"><CampaignBuilderPage /></ProtectedRoute>} />
+      
       <Route path="/compare" element={<ComparePage />} />
       {/* Fallback */}
       <Route path="*" element={<HomePage />} />

@@ -43,6 +43,28 @@ export function reducer(s, a) {
 }
 
 export const AppProvider = ({ children }) => {
-  const [st, dsp] = useReducer(reducer, IS);
+  // Load initial state from local storage if available
+  const getInitialState = () => {
+    const savedUser = localStorage.getItem('cb_user');
+    const savedRole = localStorage.getItem('cb_role');
+    if (savedUser && savedRole) {
+      return { ...IS, user: JSON.parse(savedUser), role: savedRole };
+    }
+    return IS;
+  };
+
+  const [st, dsp] = useReducer(reducer, IS, getInitialState);
+
+  // Sync auth state to localStorage
+  React.useEffect(() => {
+    if (st.user) {
+      localStorage.setItem('cb_user', JSON.stringify(st.user));
+      localStorage.setItem('cb_role', st.role);
+    } else {
+      localStorage.removeItem('cb_user');
+      localStorage.removeItem('cb_role');
+    }
+  }, [st.user, st.role]);
+
   return <Ctx.Provider value={{ st, dsp }}>{children}</Ctx.Provider>;
 };
