@@ -15,11 +15,7 @@ export default function Faq({ mob }) {
       <div style={{ ...W(1200), position: 'relative', zIndex: 1 }}>
         
         {/* REVOLUTIONARY HEADING SECTION */}
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+        <div
           style={{ textAlign: 'center', marginBottom: mob ? 60 : 100 }}
         >
           <div style={{ 
@@ -41,17 +37,13 @@ export default function Faq({ mob }) {
             The Industry is <span style={{ color: '#cbd5e1', textDecoration: 'line-through', textDecorationColor: '#EF4444', textDecorationThickness: '4px' }}>Broken.</span> <br />
             <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #138808 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: '10px' }}>We're Fixing it.</span>
           </h2>
-        </motion.div>
+        </div>
 
         {/* PROBLEM VS MISSION GRID */}
         <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 40 : 64, alignItems: 'stretch' }}>
           
           {/* THE PROBLEM */}
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+          <div
             style={{ 
               padding: mob ? 32 : 56, 
               borderRadius: 32, 
@@ -88,14 +80,10 @@ export default function Faq({ mob }) {
                   </li>
                 ))}
              </ul>
-          </motion.div>
+          </div>
 
           {/* THE MISSION */}
-          <motion.div 
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+          <div
             style={{ 
               padding: mob ? 32 : 56, 
               borderRadius: 32, 
@@ -136,16 +124,12 @@ export default function Faq({ mob }) {
                   </li>
                 ))}
              </ul>
-          </motion.div>
+          </div>
 
         </div>
 
         {/* BOTTOM TAGLINE */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+        <div
           style={{ textAlign: 'center', marginTop: mob ? 60 : 80 }}
         >
            <div style={{ display: 'inline-block', padding: '16px 32px', background: '#fff', border: '1px solid rgba(0,0,0,0.05)', borderRadius: 100, boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
@@ -155,7 +139,7 @@ export default function Faq({ mob }) {
                <span style={{ color: '#FF9431', fontSize: 24, lineHeight: 0, verticalAlign: 'middle' }}>"</span>
              </p>
            </div>
-        </motion.div>
+        </div>
 
       </div>
     </section>

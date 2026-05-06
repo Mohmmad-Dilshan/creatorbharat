@@ -123,12 +123,24 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
               initial={{ opacity: 0, y: 10, scale: 0.9 }} 
               animate={{ opacity: 1, y: 0, scale: 1 }} 
               className={styles.stateLabel}
-              style={{ textAlign: 'center', minWidth: 200 }}
+              style={{ textAlign: 'center', minWidth: 220 }}
             >
-              <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 4, fontWeight: 700 }}>SELECTED REGION</div>
-              <div style={{ fontSize: 24, fontWeight: 900 }}>{selectedState}</div>
-              <div style={{ marginTop: 8, padding: '4px 12px', background: 'rgba(255,255,255,0.2)', borderRadius: 100, fontSize: 14 }}>
-                🚀 <b>{stateCounts[selectedState] || 0}</b> Creators Available
+              <div style={{ fontSize: 11, opacity: 0.7, marginBottom: 4, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px' }}>Selected Region</div>
+              <div style={{ fontSize: 22, fontWeight: 900, marginBottom: 8 }}>{selectedState}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
+                <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.2)', borderRadius: 100, fontSize: 15, fontWeight: 800 }}>
+                  🎯 <b>{stateCounts[selectedState] || 0}</b> {stateCounts[selectedState] === 1 ? 'Creator' : 'Creators'}
+                </div>
+                {(stateCounts[selectedState] || 0) === 0 && (
+                  <div style={{ fontSize: 11, opacity: 0.7, fontWeight: 600 }}>
+                    Be the first from {selectedState}!
+                  </div>
+                )}
+                {(stateCounts[selectedState] || 0) > 0 && (
+                  <div style={{ fontSize: 11, opacity: 0.7, fontWeight: 600 }}>
+                    Verified & active on the platform
+                  </div>
+                )}
               </div>
             </motion.div>
           )}

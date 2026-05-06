@@ -3,6 +3,7 @@ import { T } from '../../theme';
 import { W, ALL_STATES, fmt, LS } from '../../utils/helpers';
 import { apiCall } from '../../utils/api';
 import { Btn } from '../Primitives';
+import { User, BookOpen, Mic, MapPin, Wallet, Rocket } from 'lucide-react';
 
 export function Typewriter({ words, interval = 1000 }) {
   const [idx, setIdx] = useState(0);
@@ -12,12 +13,12 @@ export function Typewriter({ words, interval = 1000 }) {
 
   useEffect(() => {
     const word = words[idx % words.length];
-    // SNAPPY & PRO SPEED FOR MOBILE
-    const speed = mob ? (del ? 20 : 40) : (del ? 15 : 35);
+    // SUPER FAST SPEED FOR MOBILE
+    const speed = mob ? (del ? 10 : 20) : (del ? 15 : 35);
 
     const timeout = setTimeout(() => {
       if (!del && sub === word) {
-        setTimeout(() => setDel(true), 800); // SNAPPY PAUSE
+        setTimeout(() => setDel(true), mob ? 500 : 800); // FASTER PAUSE ON MOBILE
       } else if (del && sub === '') {
         setDel(false);
         setIdx(i => i + 1);
@@ -294,83 +295,81 @@ export default function Hero({ mob, st, dsp, go }) {
           </div>
         </div>
         
-        {/* SECTION HEADING - ALIGNED WITH WEBSITE STYLE */}
-        <div className="au d4" style={{ textAlign: 'center', marginBottom: mob ? 40 : 60, marginTop: mob ? 20 : 40 }}>
-           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 20px', background: 'rgba(0,0,0,0.03)', borderRadius: 100, marginBottom: 24 }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF9431', animation: 'pulse-orange 1.5s infinite' }} />
-              <span style={{ fontSize: 11, fontWeight: 900, color: '#111', textTransform: 'uppercase', letterSpacing: '2.5px' }}>Support Ecosystem</span>
+        {/* SECTION HEADING - ELITE SAAS */}
+        <div 
+          style={{ textAlign: 'center', marginBottom: mob ? 40 : 60, marginTop: mob ? 20 : 60 }}
+        >
+           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 20px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 100, marginBottom: 24 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#3B82F6', boxShadow: '0 0 10px rgba(59, 130, 246, 0.6)' }} />
+              <span style={{ fontSize: 12, fontWeight: 900, color: '#3B82F6', textTransform: 'uppercase', letterSpacing: '3px' }}>Support Ecosystem</span>
            </div>
+           
            <h2 style={{ 
              fontFamily: "'Outfit', sans-serif", 
-             fontSize: mob ? 32 : 56, 
+             fontSize: mob ? 36 : 56, 
              fontWeight: 900, 
-             color: '#111', 
+             color: '#0f172a', 
              lineHeight: 1.1, 
              letterSpacing: '-0.03em',
              marginBottom: 20
            }}>
-             Empowering Bharat's <br /> <span style={{ background: 'linear-gradient(90deg, #FF9431 20%, #475569 50%, #138808 80%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Digital Success.</span>
+             Empowering Bharat's <br /> <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #10B981 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: '10px' }}>Digital Success.</span>
            </h2>
-           
-           {/* FLAG COLORED ACCENT LINE */}
-           <div style={{ 
-             width: 120, height: 6, 
-             background: 'linear-gradient(90deg, #FF9431 0%, #FF9431 33.33%, #fff 33.33%, #fff 66.66%, #138808 66.66%, #138808 100%)', 
-             margin: '0 auto', borderRadius: 100, 
-             border: '1px solid rgba(0,0,0,0.05)',
-             boxShadow: '0 4px 12px rgba(0,0,0,0.05)' 
-           }} />
         </div>
 
-        {/* CREATOR SUPPORT SYSTEM GRID: ELITE CARDS */}
-        <div className="au d4" style={{
+        {/* CREATOR SUPPORT SYSTEM GRID: HIGH FIDELITY */}
+        <div style={{
           width: '100%', maxWidth: 1200,
           display: 'grid',
-          gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(3, 1fr)', // 2 COLUMNS ON MOBILE
-          gap: mob ? 12 : 24,
+          gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(3, 1fr)',
+          gap: mob ? 12 : 32,
           padding: mob ? '0 16px' : 0,
           boxSizing: 'border-box'
         }}>
           {[
-            { t: 'Identity', h: 'Pro Portfolio', d: 'Verified identity jo brands ko impress karegi.', i: '👤', bg: '#FDF7F2', c: '#FF9431' },
-            { t: 'Growth', h: 'Insights', d: 'Naya seekho aur grow karo industry experts ke sath.', i: '📖', bg: '#F0FDF4', c: '#128807' },
-            { t: 'Spotlight', h: 'Podcasts', d: 'Local creators ki story national level tak.', i: '🎙️', bg: '#EFF6FF', c: '#3B82F6' },
-            { t: 'Regional', h: 'Tier 2 & 3', d: 'Har shehar ke creator ko pehchan milegi.', i: '📍', bg: '#F5F3FF', c: '#8B5CF6' },
-            { t: 'Freedom', h: '0% Commission', d: 'Zero cost, zero commission, 100% freedom.', i: '💸', bg: '#FFFBEB', c: '#F59E0B' },
-            { t: 'Join', h: 'Free Forever', d: 'Apni journey aaj hi shuru karein.', i: '🚀', bg: '#FEF2F2', c: '#EF4444' }
+            { t: 'Identity', h: 'Pro Portfolio', d: 'Verified identity jo brands ko instantly impress karegi.', i: User, c: '#FF9431', bg: 'rgba(255,148,49,0.08)' },
+            { t: 'Growth', h: 'Insights & Analytics', d: 'Deep data analytics se apne growth ko measure karein.', i: BookOpen, c: '#10B981', bg: 'rgba(16,185,129,0.08)' },
+            { t: 'Spotlight', h: 'National Exposure', d: 'Tier 2/3 cities se seedha national brands tak pahunch.', i: Mic, c: '#3B82F6', bg: 'rgba(59,130,246,0.08)' },
+            { t: 'Reach', h: 'Hyperlocal Campaigns', d: 'Targeted brand deals exactly aapke area ke liye.', i: MapPin, c: '#8B5CF6', bg: 'rgba(139,92,246,0.08)' },
+            { t: 'Freedom', h: '0% Platform Fee', d: 'Aapki mehnat, aapka paisa. Hum middlemen nahi hain.', i: Wallet, c: '#F59E0B', bg: 'rgba(245,158,11,0.08)' },
+            { t: 'Scale', h: 'Free Forever', d: 'Basic features will always be free for verified creators.', i: Rocket, c: '#EF4444', bg: 'rgba(239,68,68,0.08)' }
           ].map((p, i) => (
-            <div key={i} className="card-animated-border" style={{ position: 'relative', borderRadius: mob ? 24 : 34, padding: 2, overflow: 'hidden', transition: 'all 0.3s', height: '100%' }}>
-              <div className="border-line" style={{
-                position: 'absolute', top: '50%', left: '50%', width: mob ? '150%' : '200%', height: mob ? '150%' : '200%',
-                background: 'conic-gradient(from 0deg, transparent, #138808, #FFFFFF, #FF9933, transparent 50%, #138808, #FFFFFF, #FF9933, transparent)',
-                animation: 'spinBorder 5s linear infinite',
-                transform: 'translate(-50%, -50%)',
-                opacity: 0.6, transition: 'opacity 0.3s', zIndex: 0
-              }} />
-
-              <div style={{ 
-                background: p.bg, padding: mob ? '24px 20px' : '40px 32px', borderRadius: mob ? 22 : 32, 
-                textAlign: 'left', display: 'flex', flexDirection: 'column', gap: mob ? 12 : 20, 
-                border: '1px solid rgba(255,255,255,0.9)', boxShadow: '0 10px 30px rgba(0,0,0,0.03)', 
-                position: 'relative', zIndex: 1, height: '100%',
-                transition: 'all 0.4s'
-              }} className="support-card-inner">
-                <div style={{ width: mob ? 48 : 64, height: mob ? 48 : 64, borderRadius: 20, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: mob ? 24 : 32, boxShadow: '0 12px 24px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.03)' }}>{p.i}</div>
-                <div>
-                  <span style={{ fontSize: mob ? 9 : 11, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 6, display: 'block' }}>{p.t}</span>
-                  <h3 style={{ fontSize: mob ? 16 : 22, fontWeight: 900, color: '#111', marginBottom: mob ? 4 : 10, fontFamily: "'Outfit', sans-serif" }}>{p.h}</h3>
-                  <p style={{ fontSize: mob ? 12 : 15, color: 'rgba(0,0,0,0.55)', lineHeight: 1.6, fontWeight: 600 }}>{p.d}</p>
-                </div>
-                
-                {/* Subtle Learn More Arrow (Elite Touch) */}
-                <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 6, color: '#111', fontWeight: 900, fontSize: 13, opacity: 0.6, transform: 'translateX(-4px)', transition: '0.3s' }} className="arrow-more">
-                   <span>Explore</span>
-                   <span style={{ fontSize: 18 }}>→</span>
-                </div>
-
-                {/* BOTTOM ACCENT LINE (WEBSITE PATTERN) */}
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 4, background: p.c, opacity: 0.8 }} />
+            <div 
+              key={i} 
+              className="elite-support-card"
+              style={{ 
+                position: 'relative', 
+                borderRadius: mob ? 16 : 24, 
+                padding: mob ? '20px 16px' : 32, 
+                background: '#fff',
+                border: '1px solid rgba(0,0,0,0.06)',
+                boxShadow: '0 10px 40px -10px rgba(0,0,0,0.04)',
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: mob ? 16 : 24,
+                transition: 'all 0.3s',
+                overflow: 'hidden'
+              }}
+            >
+              {/* Subtle Animated Hover Background */}
+              <div className="card-hover-bg" style={{ position: 'absolute', inset: 0, background: `linear-gradient(135deg, transparent, ${p.bg}, transparent)`, opacity: 0, transition: 'opacity 0.4s' }} />
+              
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', position: 'relative', zIndex: 1, flexDirection: mob ? 'column' : 'row', gap: mob ? 12 : 0 }}>
+                 <div style={{ width: mob ? 44 : 64, height: mob ? 44 : 64, borderRadius: mob ? 12 : 20, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: p.c, border: `1px solid ${p.c}30`, boxShadow: `0 8px 24px ${p.c}20` }}>
+                   <p.i size={mob ? 20 : 28} strokeWidth={2.5} />
+                 </div>
+                 <div style={{ padding: mob ? '4px 8px' : '6px 14px', borderRadius: 100, background: '#f8fafc', fontSize: mob ? 9 : 11, fontWeight: 800, color: '#64748b', border: '1px solid #e2e8f0' }}>
+                   {p.t}
+                 </div>
               </div>
+              
+              <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <h3 style={{ fontSize: mob ? 16 : 22, fontWeight: 900, color: '#0f172a', marginBottom: mob ? 6 : 12, fontFamily: "'Outfit', sans-serif", lineHeight: 1.2 }}>{p.h}</h3>
+                <p style={{ fontSize: mob ? 12 : 15, color: '#475569', lineHeight: 1.5, fontWeight: 500, flex: 1 }}>{p.d}</p>
+              </div>
+
+              {/* Bottom Accent Line */}
+              <div className="card-accent-line" style={{ position: 'absolute', bottom: 0, left: 0, width: '0%', height: 4, background: p.c, transition: 'width 0.4s ease-out' }} />
             </div>
           ))}
         </div>
@@ -404,20 +403,19 @@ export default function Hero({ mob, st, dsp, go }) {
             70% { box-shadow: 0 0 0 10px rgba(255,148,49,0); }
             100% { box-shadow: 0 0 0 0 rgba(255,148,49,0); }
           }
-          .card-animated-border:hover .border-line {
-            opacity: 1;
-            animation-duration: 3s;
+          .elite-support-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08) !important;
+            border-color: rgba(0,0,0,0.1) !important;
           }
-          .card-animated-border:hover .support-card-inner {
-            background: #fff !important;
+          .elite-support-card:hover .card-hover-bg {
+            opacity: 1 !important;
           }
-          .card-animated-border:hover .arrow-more {
-            opacity: 1;
-            transform: translateX(0);
-            color: #FF9431;
+          .elite-support-card:hover .card-accent-line {
+            width: 100% !important;
           }
           ${!mob ? `
-          .card-animated-border:hover {
+          .elite-support-card:hover {
             transform: translateY(-12px) scale(1.02);
             box-shadow: 0 32px 80px rgba(0,0,0,0.12);
           }

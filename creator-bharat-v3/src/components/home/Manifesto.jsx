@@ -13,10 +13,7 @@ export default function Manifesto({ mob }) {
 
       <div style={W()}>
         <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+          <div
             style={{ 
               display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 24px', 
               background: 'rgba(255,255,255,0.05)', borderRadius: 100, marginBottom: 40,
@@ -25,7 +22,7 @@ export default function Manifesto({ mob }) {
           >
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF9431', animation: 'pulse-dot 2s infinite' }} />
             <span style={{ fontSize: 11, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '3px', color: 'rgba(255,255,255,0.6)' }}>Our Manifesto</span>
-          </motion.div>
+          </div>
 
           <h2 style={{ 
             fontSize: mob ? 'clamp(32px, 8vw, 48px)' : '72px', 
