@@ -71,8 +71,8 @@ export default function Cta({ mob, go }) {
                        background: '#111', color: '#fff', border: 'none', cursor: 'pointer',
                        boxShadow: '0 10px 30px rgba(0,0,0,0.1)', transition: 'all 0.3s'
                      }}
-                     onMouseOver={e => e.target.style.transform = 'translateY(-4px)'}
-                     onMouseOut={e => e.target.style.transform = 'translateY(0)'}
+                     onMouseOver={e => e.currentTarget.style.transform = 'translateY(-4px)'}
+                     onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
                    >
                      Launch My Portfolio
                    </button>
@@ -83,8 +83,8 @@ export default function Cta({ mob, go }) {
                        background: 'transparent', color: '#111', border: '1.5px solid rgba(0,0,0,0.1)', 
                        cursor: 'pointer', transition: 'all 0.3s'
                      }}
-                     onMouseOver={e => e.target.style.transform = 'translateY(-4px)'}
-                     onMouseOut={e => e.target.style.transform = 'translateY(0)'}
+                     onMouseOver={e => e.currentTarget.style.transform = 'translateY(-4px)'}
+                     onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
                    >
                      Explore Discovery
                    </button>
@@ -113,6 +113,10 @@ export default function Cta({ mob, go }) {
           0% { transform: scale(1); opacity: 1; }
           70% { transform: scale(2.5); opacity: 0; }
           100% { transform: scale(1); opacity: 0; }
+        }
+        @keyframes spinBorder {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to { transform: translate(-50%, -50%) rotate(360deg); }
         }
       `}</style>
     </section>
