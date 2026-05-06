@@ -42,10 +42,7 @@ export default function HomePage() {
     { id: 'map',       comp: <IndiaMap3D mob={mob} stateCounts={stateCounts} /> },
     { id: 'roadmap',   comp: <CommunityPulse mob={mob} go={go} /> },
     { id: 'showcase',  comp: <PlatformShowcase mob={mob} /> },
-    // Desktop-only sections
-    ...(!mob ? [
-      { id: 'manifesto', comp: <Manifesto mob={mob} /> },
-    ] : []),
+    { id: 'manifesto', comp: <Manifesto mob={mob} /> },
     { id: 'blueprint', comp: <Testimonials mob={mob} /> },
     { id: 'faq',       comp: <Faq mob={mob} /> },
     { id: 'cta',       comp: <Cta mob={mob} go={go} /> },
