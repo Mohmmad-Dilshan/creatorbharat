@@ -411,7 +411,7 @@ export default function CreatorsPage() {
           {/* Header Row - Refined for Mobile */}
           <div style={{ display: 'flex', justifyContent: mob ? 'center' : 'space-between', alignItems: 'center', marginBottom: mob ? 24 : 40, flexWrap: 'wrap', gap: 16, textAlign: mob ? 'center' : 'left' }}>
             <div>
-              <h2 style={{ fontSize: mob ? 18 : 28, fontWeight: 900, color: '#111', fontFamily: "'Fraunces', serif" }}>
+              <h2 style={{ fontSize: mob ? 18 : 28, fontWeight: 900, color: '#111', fontFamily: "'Outfit', sans-serif" }}>
                 Elite Talent Network <span style={{ color: '#94a3b8', fontSize: 14, fontWeight: 700, marginLeft: 6 }}>({filtered.length})</span>
               </h2>
             </div>
@@ -595,7 +595,7 @@ export default function CreatorsPage() {
               <div style={W(640)}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
                   <div>
-                    <h3 style={{ fontSize: 28, fontWeight: 900, fontFamily: "'Fraunces', serif", color: '#111' }}>Refine Search</h3>
+                    <h3 style={{ fontSize: 28, fontWeight: 900, fontFamily: "'Outfit', sans-serif", color: '#111' }}>Refine Search</h3>
                     <p style={{ fontSize: 14, color: '#64748b', fontWeight: 600, marginTop: 4 }}>Find the perfect match for your brand</p>
                   </div>
                   <button onClick={() => setShowFilters(false)} style={{ background: '#f1f5f9', border: 'none', width: 40, height: 40, borderRadius: '50%', fontSize: 20, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>✕</button>
@@ -868,7 +868,7 @@ export default function CreatorsPage() {
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', padding: '6px 16px', borderRadius: 100, fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 24, border: '1px solid rgba(255,255,255,0.1)' }}>
                 <span>🚀</span> For Creators
               </div>
-              <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 32 : 42, fontWeight: 900, marginBottom: 16, lineHeight: 1.1, letterSpacing: '-0.02em' }}>
+              <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 32 : 42, fontWeight: 900, marginBottom: 16, lineHeight: 1.1, letterSpacing: '-0.02em' }}>
                 Build Your <span style={{ color: '#FF9431' }}>Legacy</span>
               </h3>
               <p style={{ fontSize: mob ? 15 : 18, color: '#94a3b8', fontWeight: 500, marginBottom: 32, maxWidth: 400, lineHeight: 1.6 }}>
@@ -924,7 +924,7 @@ export default function CreatorsPage() {
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#f1f5f9', padding: '6px 16px', borderRadius: 100, fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 24, color: '#475569', border: '1px solid rgba(0,0,0,0.05)' }}>
                 <span>🎯</span> For Brands
               </div>
-              <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 32 : 42, fontWeight: 900, marginBottom: 16, lineHeight: 1.1, letterSpacing: '-0.02em', color: '#0f172a' }}>
+              <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 32 : 42, fontWeight: 900, marginBottom: 16, lineHeight: 1.1, letterSpacing: '-0.02em', color: '#0f172a' }}>
                 Hire <span style={{ color: '#3b82f6' }}>Top Talent</span>
               </h3>
               <p style={{ fontSize: mob ? 15 : 18, color: '#64748b', fontWeight: 500, marginBottom: 32, maxWidth: 400, lineHeight: 1.6 }}>

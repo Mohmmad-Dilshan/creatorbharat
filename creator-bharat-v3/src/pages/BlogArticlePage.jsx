@@ -36,17 +36,17 @@ export default function BlogArticlePage() {
   const mockContent = `
     <p>Bharat ki creator economy ab tezi se badh rahi hai. Tier 2 aur Tier 3 cities ke creators ab national brands ki pehli pasand ban rahe hain. Iska sabse bada kaaran hai unka 'Authenticity' aur local connect.</p>
     
-    <h3 style="font-family: 'Fraunces', serif; font-size: 24px; margin: 32px 0 16px; font-weight: 900;">1. Local Language ka Power</h3>
+    <h3 style="font-family: 'Outfit', sans-serif; font-size: 24px; margin: 32px 0 16px; font-weight: 900;">1. Local Language ka Power</h3>
     <p>Hindi, Tamil, Telugu, aur Marathi jaise languages mein content banane wale creators ki engagement rate metro creators se 3x zyada hoti hai. Brands ko pata hai ki asli Bharat inhi languages mein basta hai.</p>
     
-    <h3 style="font-family: 'Fraunces', serif; font-size: 24px; margin: 32px 0 16px; font-weight: 900;">2. Trust and Relatability</h3>
+    <h3 style="font-family: 'Outfit', sans-serif; font-size: 24px; margin: 32px 0 16px; font-weight: 900;">2. Trust and Relatability</h3>
     <p>Jab ek creator apne local context mein kisi product ko promote karta hai, toh audience ko wo 'apna' lagta hai. Ye trust hi brand deals ko success banata hai.</p>
     
     <blockquote style="border-left: 4px solid #FF9431; padding: 24px; background: #f9f9f9; font-style: italic; margin: 32px 0; font-size: 20px; color: #555;">
        "Future of influence is local. Metro markets are saturated, growth is coming from the heartlands."
     </blockquote>
     
-    <h3 style="font-family: 'Fraunces', serif; font-size: 24px; margin: 32px 0 16px; font-weight: 900;">3. Professionalism is Key</h3>
+    <h3 style="font-family: 'Outfit', sans-serif; font-size: 24px; margin: 32px 0 16px; font-weight: 900;">3. Professionalism is Key</h3>
     <p>Sirf video banana kaafi nahi hai. Ek professional portfolio, clear rates, aur timely delivery hi aapko ek professional creator banati hai. CreatorBharat inhi cheezon mein aapki help karta hai.</p>
   `;
 
@@ -69,7 +69,7 @@ export default function BlogArticlePage() {
             <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, fontWeight: 600 }}>{fmt.date(b.date)} • {b.readTime || '6 min'} read</span>
           </div>
           
-          <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 32 : 56, color: '#fff', fontWeight: 900, lineHeight: 1.1, marginBottom: 32, letterSpacing: '-0.02em' }}>{b.title}</h1>
+          <h1 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 32 : 56, color: '#fff', fontWeight: 900, lineHeight: 1.1, marginBottom: 32, letterSpacing: '-0.02em' }}>{b.title}</h1>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <div style={{ width: 48, height: 48, borderRadius: '50%', background: T.gd, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: 18, border: '2px solid rgba(255,255,255,0.2)' }}>CB</div>
@@ -89,7 +89,7 @@ export default function BlogArticlePage() {
              </div>
           )}
           
-          <article className="ai" style={{ fontSize: 20, color: '#333', lineHeight: 1.8, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          <article className="ai" style={{ fontSize: 20, color: '#333', lineHeight: 1.8, fontFamily: "'Inter', sans-serif" }}>
             <p style={{ marginBottom: 32, fontSize: 24, fontWeight: 700, color: '#111', lineHeight: 1.5, letterSpacing: '-0.01em' }}>{b.excerpt}</p>
             
             <div dangerouslySetInnerHTML={{ __html: b.content || mockContent }} />
@@ -109,7 +109,7 @@ export default function BlogArticlePage() {
           {/* Next Steps Card */}
           <div style={{ marginTop: 80, padding: mob ? '40px 24px' : '60px 48px', background: 'linear-gradient(135deg, #111, #333)', borderRadius: 40, color: '#fff', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: -20, right: -20, width: 100, height: 100, background: T.gd, borderRadius: '50%', filter: 'blur(50px)', opacity: 0.3 }} />
-            <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 32, fontWeight: 900, marginBottom: 16 }}>Ready to be the next big star?</h3>
+            <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 32, fontWeight: 900, marginBottom: 16 }}>Ready to be the next big star?</h3>
             <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.6)', marginBottom: 32, maxWidth: 500, margin: '0 auto 32px' }}>Aapka professional creator profile sirf 2 minute door hai. Abhi register karein aur deals paana shuru karein.</p>
             <Btn lg onClick={() => go('apply')} style={{ borderRadius: 100, padding: '18px 60px', background: T.gd, color: '#fff', border: 'none', fontSize: 18 }}>Get Started for Free</Btn>
           </div>

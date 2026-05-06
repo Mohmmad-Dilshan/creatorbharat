@@ -80,7 +80,7 @@ export default function CreatorProfilePage() {
                 <Bdg color="blue">Verified Talent</Bdg>
                 <Bdg color={tier.bc}>{tier.label} Tier</Bdg>
               </div>
-              <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 32 : 48, fontWeight: 900, color: '#111', lineHeight: 1, marginBottom: 8 }}>{c?.name || 'Verified Creator'}</h1>
+              <h1 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 32 : 48, fontWeight: 900, color: '#111', lineHeight: 1, marginBottom: 8 }}>{c?.name || 'Verified Creator'}</h1>
               <p style={{ fontSize: 18, color: 'rgba(0,0,0,0.6)', fontWeight: 600, marginBottom: 8 }}>@{c?.handle || (c?.name || 'creator').toLowerCase().replace(' ', '')}</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: mob ? 'center' : 'flex-start', color: '#64748b', fontSize: 15, fontWeight: 500 }}>
                  <span>📍 {c?.city || 'Bharat'}</span>

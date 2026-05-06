@@ -37,7 +37,7 @@ export default function Footer({ mob }) {
       {/* MASSIVE GHOST BRANDING */}
       <div style={{
         position: 'absolute', top: '25%', left: '5%', fontSize: 350, fontWeight: 900,
-        color: 'rgba(255,255,255,0.015)', zIndex: 0, fontFamily: "'Fraunces', serif", fontStyle: 'italic',
+        color: 'rgba(255,255,255,0.015)', zIndex: 0, fontFamily: "'Outfit', sans-serif", fontStyle: 'italic',
         pointerEvents: 'none', whiteSpace: 'nowrap'
       }}>
         CREATOR BHARAT
@@ -62,7 +62,7 @@ export default function Footer({ mob }) {
               <Logo light />
             </div>
             <h1 style={{
-              fontFamily: "'Fraunces', serif", fontSize: mob ? 42 : 72, fontWeight: 900, color: '#fff',
+              fontFamily: "'Outfit', sans-serif", fontSize: mob ? 42 : 72, fontWeight: 900, color: '#fff',
               lineHeight: 1, letterSpacing: '-0.05em', marginBottom: 32
             }}>
               Empowering the soul of <br />

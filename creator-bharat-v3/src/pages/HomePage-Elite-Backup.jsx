@@ -177,7 +177,7 @@ export default function HomePage() {
                       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: 'rgba(16,185,129,0.06)', color: '#10B981', padding: '10px 24px', borderRadius: 100, fontSize: 12, fontWeight: 900, marginBottom: 40, letterSpacing: 1.5 }}>
                         <span style={{ width: 8, height: 8, background: '#10B981', borderRadius: '50%', animation: 'pulseGreen 1.5s infinite' }} /> AI_ENGINE_V3_ACTIVE
                       </div>
-                      <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 36 : 72, fontWeight: 900, color: '#111', lineHeight: 0.9, marginBottom: 48, letterSpacing: '-0.05em' }}>The Identity <br /><span style={{ background: 'linear-gradient(90deg, #10B981, #FF9431)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Logic Protocol.</span></h3>
+                      <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 36 : 72, fontWeight: 900, color: '#111', lineHeight: 0.9, marginBottom: 48, letterSpacing: '-0.05em' }}>The Identity <br /><span style={{ background: 'linear-gradient(90deg, #10B981, #FF9431)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Logic Protocol.</span></h3>
                       
                       {/* TERMINAL UI MOCKUP */}
                       <div style={{ background: '#0F172A', borderRadius: 24, padding: 24, fontFamily: 'monospace', fontSize: 14, color: '#94A3B8', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
@@ -225,7 +225,7 @@ export default function HomePage() {
         <div style={W()}>
            <div style={{ maxWidth: 800, marginBottom: 80, textAlign: 'left' }}>
               <div style={{ fontSize: 12, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 16 }}>The Protocol</div>
-              <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 40 : 64, fontWeight: 900, color: '#111', lineHeight: 1, marginBottom: 24 }}>Scale Your Reach <br /> <span style={{ background: T.gd, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Professionally.</span></h2>
+              <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 40 : 64, fontWeight: 900, color: '#111', lineHeight: 1, marginBottom: 24 }}>Scale Your Reach <br /> <span style={{ background: T.gd, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Professionally.</span></h2>
            </div>
            <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: 32 }}>
               {[
@@ -247,7 +247,7 @@ export default function HomePage() {
       <section style={{ padding: mob ? '100px 20px' : '140px 20px', background: '#0A0A0A', textAlign: 'center', color: '#fff' }}>
         <div style={W(800)}>
           <div style={{ fontSize: 64, marginBottom: 32 }}>🛡️</div>
-          <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 36 : 56, fontWeight: 900, marginBottom: 24 }}>The Badge of Authenticity</h2>
+          <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 36 : 56, fontWeight: 900, marginBottom: 24 }}>The Badge of Authenticity</h2>
           <p style={{ fontSize: 20, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: 48 }}>Our AI-powered engine audits millions of data points to ensure your influence is real. Get verified and unlock premium brand partnerships.</p>
           <Btn lg style={{ borderRadius: 100, padding: '20px 48px', background: '#fff', color: '#111', fontWeight: 900, border: 'none' }}>Get Your Score →</Btn>
         </div>
@@ -311,7 +311,7 @@ export default function HomePage() {
       {/* 7. FINAL CTA */}
       <section style={{ padding: mob ? '100px 20px' : '160px 20px', background: '#111', color: '#fff', textAlign: 'center' }}>
         <div style={W(800)}>
-          <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 42 : 72, fontWeight: 900, marginBottom: 24, lineHeight: 1 }}>Ab Rukna Nahi Hai.</h2>
+          <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 42 : 72, fontWeight: 900, marginBottom: 24, lineHeight: 1 }}>Ab Rukna Nahi Hai.</h2>
           <p style={{ fontSize: 22, color: 'rgba(255,255,255,0.6)', marginBottom: 48 }}>Join 50,000+ creators building Bharat's next-gen digital economy.</p>
           <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: 16, justifyContent: 'center' }}>
             <Btn lg style={{ padding: '24px 64px', fontSize: 20, background: T.gd, color: '#fff', borderRadius: 100, fontWeight: 900, border: 'none' }} onClick={() => go('apply')}>Launch Your Portfolio Free</Btn>

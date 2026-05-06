@@ -301,7 +301,7 @@ export default function Hero({ mob, st, dsp, go }) {
               <span style={{ fontSize: 11, fontWeight: 900, color: '#111', textTransform: 'uppercase', letterSpacing: '2.5px' }}>Support Ecosystem</span>
            </div>
            <h2 style={{ 
-             fontFamily: "'Fraunces', serif", 
+             fontFamily: "'Outfit', sans-serif", 
              fontSize: mob ? 32 : 56, 
              fontWeight: 900, 
              color: '#111', 
@@ -358,7 +358,7 @@ export default function Hero({ mob, st, dsp, go }) {
                 <div style={{ width: mob ? 48 : 64, height: mob ? 48 : 64, borderRadius: 20, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: mob ? 24 : 32, boxShadow: '0 12px 24px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.03)' }}>{p.i}</div>
                 <div>
                   <span style={{ fontSize: mob ? 9 : 11, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 6, display: 'block' }}>{p.t}</span>
-                  <h3 style={{ fontSize: mob ? 16 : 22, fontWeight: 900, color: '#111', marginBottom: mob ? 4 : 10, fontFamily: "'Fraunces', serif" }}>{p.h}</h3>
+                  <h3 style={{ fontSize: mob ? 16 : 22, fontWeight: 900, color: '#111', marginBottom: mob ? 4 : 10, fontFamily: "'Outfit', sans-serif" }}>{p.h}</h3>
                   <p style={{ fontSize: mob ? 12 : 15, color: 'rgba(0,0,0,0.55)', lineHeight: 1.6, fontWeight: 600 }}>{p.d}</p>
                 </div>
                 

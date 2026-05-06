@@ -58,7 +58,7 @@ export default function SettingsPage() {
         <div style={W(800)}>
           <div style={{ position: 'relative', zIndex: 2 }}>
              <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Management Console</p>
-             <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 32 : 48, color: '#fff', fontWeight: 900 }}>Settings</h1>
+             <h1 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 32 : 48, color: '#fff', fontWeight: 900 }}>Settings</h1>
           </div>
         </div>
       </div>
@@ -100,7 +100,7 @@ export default function SettingsPage() {
                 {tab === 'profile' && (
                   <Card style={{ padding: '32px', background: '#fff' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-                       <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 24, fontWeight: 900, color: '#111' }}>Public Profile</h3>
+                       <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 900, color: '#111' }}>Public Profile</h3>
                        <Bdg color="blue">LIVE ON SITE</Bdg>
                     </div>
                     
@@ -135,7 +135,7 @@ export default function SettingsPage() {
 
                 {tab === 'account' && (
                   <Card style={{ padding: '32px', background: '#fff' }}>
-                    <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>Account Security</h3>
+                    <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>Account Security</h3>
                     
                     <div style={{ marginBottom: 32 }}>
                        <p style={{ fontSize: 14, fontWeight: 700, color: T.t3, marginBottom: 12 }}>LOGIN EMAIL</p>
@@ -154,7 +154,7 @@ export default function SettingsPage() {
 
                 {tab === 'billing' && (
                   <Card style={{ padding: '32px', background: '#fff' }}>
-                    <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>Commercial Settings</h3>
+                    <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>Commercial Settings</h3>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
                        <Fld label="Minimum Rate (₹)" type="number" value={F.rateMin} onChange={e => upF('rateMin', e.target.value)} />
                        <Fld label="Maximum Rate (₹)" type="number" value={F.rateMax} onChange={e => upF('rateMax', e.target.value)} />

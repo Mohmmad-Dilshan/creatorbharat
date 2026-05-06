@@ -44,7 +44,7 @@
 }
 
 .title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Outfit', sans-serif;
   font-size: clamp(32px, 5vw, 64px);
   font-weight: 900;
   color: #111;
@@ -134,7 +134,7 @@
   font-weight: 600;
   color: rgba(0,0,0,0.6);
   line-height: 1.5;
-  font-family: 'Fraunces', serif;
+  font-family: 'Outfit', sans-serif;
 }
 
 .annoHighlight {

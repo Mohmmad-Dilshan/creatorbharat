@@ -88,7 +88,7 @@ export default function BlogPage() {
       <div style={{ padding: '100px 20px', background: '#fff', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
          <div style={W(800)}>
             <div style={{ textAlign: 'center', background: T.bg2, borderRadius: 48, padding: mob ? '48px 24px' : '80px 60px', border: '1px solid rgba(0,0,0,0.03)' }}>
-               <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 32, fontWeight: 900, color: '#111', marginBottom: 16 }}>Stay Ahead of the Curve</h2>
+               <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 32, fontWeight: 900, color: '#111', marginBottom: 16 }}>Stay Ahead of the Curve</h2>
                <p style={{ fontSize: 16, color: T.t3, marginBottom: 32, fontWeight: 600 }}>Get the weekly "Bharat Creator" report directly in your inbox.</p>
                <div style={{ display: 'flex', gap: 12, maxWidth: 480, margin: '0 auto', flexDirection: mob ? 'column' : 'row' }}>
                   <input placeholder="Enter your email" style={{ flex: 1, padding: '18px 24px', borderRadius: 100, border: '1px solid rgba(0,0,0,0.1)', outline: 'none', fontSize: 16 }} />

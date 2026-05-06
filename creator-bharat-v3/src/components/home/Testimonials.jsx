@@ -34,7 +34,7 @@ export default function Testimonials({ mob }) {
           </div>
 
           <h2 style={{
-            fontFamily: "'Fraunces', serif",
+            fontFamily: "'Outfit', sans-serif",
             fontSize: mob ? 36 : 64,
             fontWeight: 900,
             color: '#111',

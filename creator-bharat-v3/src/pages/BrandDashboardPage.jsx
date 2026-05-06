@@ -64,7 +64,7 @@ export default function BrandDashboardPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                <Card style={{ padding: '32px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-                     <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 24, fontWeight: 900, color: '#111' }}>Active Campaigns</h3>
+                     <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 900, color: '#111' }}>Active Campaigns</h3>
                      <Btn sm variant="ghost" onClick={() => go('campaigns')}>View All</Btn>
                   </div>
                   
@@ -92,7 +92,7 @@ export default function BrandDashboardPage() {
             {/* Sidebar Resources */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
                <Card style={{ padding: '32px' }}>
-                  <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 20, fontWeight: 900, color: '#111', marginBottom: 24 }}>Shortlisted Talent</h3>
+                  <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 900, color: '#111', marginBottom: 24 }}>Shortlisted Talent</h3>
                   {shortlisted.length === 0 ? (
                     <p style={{ fontSize: 14, color: T.t3, lineHeight: 1.6 }}>Aapne abhi tak kisi creator ko shortlist nahi kiya hai. Discovery engine use karein.</p>
                   ) : (
@@ -112,7 +112,7 @@ export default function BrandDashboardPage() {
                </Card>
 
                <Card style={{ padding: '32px', background: '#111', color: '#fff' }}>
-                  <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 20, fontWeight: 900, marginBottom: 12 }}>Bharat AI Assistant</h3>
+                  <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 900, marginBottom: 12 }}>Bharat AI Assistant</h3>
                   <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', marginBottom: 24, lineHeight: 1.6 }}>Need help finding the right creator for your specific niche? Let our AI suggest the best match.</p>
                   <Btn full variant="white">Ask AI Assistant</Btn>
                </Card>

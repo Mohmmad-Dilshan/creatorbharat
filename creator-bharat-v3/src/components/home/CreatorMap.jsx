@@ -34,7 +34,7 @@ export default function CreatorMap({ mob }) {
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         
         <div style={{ textAlign: 'center', marginBottom: 60 }}>
-          <h2 style={{ fontSize: mob ? 32 : 48, fontWeight: 900, color: '#000', fontFamily: "'Fraunces', serif" }}>
+          <h2 style={{ fontSize: mob ? 32 : 48, fontWeight: 900, color: '#000', fontFamily: "'Outfit', sans-serif" }}>
             The <span style={{ color: '#2563eb' }}>Pan-Bharat</span> Network.
           </h2>
           <p style={{ color: 'rgba(0,0,0,0.5)', marginTop: 16, fontWeight: 600 }}>Explore our presence across the nation.</p>

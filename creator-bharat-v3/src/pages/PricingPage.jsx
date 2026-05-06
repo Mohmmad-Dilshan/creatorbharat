@@ -119,7 +119,7 @@ export default function PricingPage() {
                       <Bdg color="yellow">BEST VALUE</Bdg>
                    </div>
                 )}
-                <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 8 }}>{plan.name}</h3>
+                <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 8 }}>{plan.name}</h3>
                 <p style={{ fontSize: 14, color: T.t3, marginBottom: 32, lineHeight: 1.5, fontWeight: 600 }}>{plan.desc}</p>
                 
                 <div style={{ marginBottom: 40 }}>
@@ -178,7 +178,7 @@ export default function PricingPage() {
       {/* Bottom CTA */}
       <div style={{ background: '#050505', padding: '100px 20px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: T.gd }} />
-         <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 32 : 48, fontWeight: 900, color: '#fff', marginBottom: 24 }}>Ready to Turn Pro?</h2>
+         <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 32 : 48, fontWeight: 900, color: '#fff', marginBottom: 24 }}>Ready to Turn Pro?</h2>
          <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.5)', marginBottom: 40 }}>Bharat's top creators are already here. Join them today.</p>
          <Btn lg onClick={() => go('apply')} style={{ borderRadius: 100, padding: '18px 60px', fontSize: 18 }}>Get Started Now</Btn>
       </div>

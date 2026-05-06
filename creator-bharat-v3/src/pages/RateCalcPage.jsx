@@ -55,7 +55,7 @@ export default function RateCalcPage() {
         <div style={{ ...W(1000), display: 'grid', gridTemplateColumns: mob ? '1fr' : '400px 1fr', gap: 40, alignItems: 'start' }}>
           
           <Card className="au" style={{ padding: '32px', background: '#fff' }}>
-            <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 20, fontWeight: 900, color: '#111', marginBottom: 32 }}>Input Your Metrics</h3>
+            <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 900, color: '#111', marginBottom: 32 }}>Input Your Metrics</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               <Fld label="Primary Platform" value={F.platform} onChange={e => upF('platform', e.target.value)} options={['Instagram', 'YouTube', 'LinkedIn', 'Twitter']} />
               <Fld label="Content Niche" value={F.niche} onChange={e => upF('niche', e.target.value)} options={['Lifestyle', 'Fashion', 'Tech', 'Gaming', 'Travel', 'Food', 'Finance', 'Beauty', 'Fitness', 'Education']} />
@@ -71,7 +71,7 @@ export default function RateCalcPage() {
           <div className="ai">
             {result ? (
               <div>
-                <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>Estimated Market Rates</h3>
+                <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>Estimated Market Rates</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 24, marginBottom: 48 }}>
                   {[
                     { l: 'Static Post', v: result.post, i: '📸', d: 'Standard feed photo with caption' },
@@ -92,7 +92,7 @@ export default function RateCalcPage() {
                 
                 <Card style={{ padding: '40px', background: '#111', color: '#fff', textAlign: 'center', borderRadius: 40, position: 'relative', overflow: 'hidden' }}>
                   <div style={{ position: 'absolute', top: -20, right: -20, width: 100, height: 100, background: '#3B82F6', borderRadius: '50%', filter: 'blur(50px)', opacity: 0.3 }} />
-                  <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 28, fontWeight: 900, marginBottom: 12 }}>Unlock These Deals.</h3>
+                  <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 28, fontWeight: 900, marginBottom: 12 }}>Unlock These Deals.</h3>
                   <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.6)', marginBottom: 32, maxWidth: 500, margin: '0 auto 32px' }}>Aapka rate calculate ho gaya hai. Ab brands se seedha connect karein aur inhi rates par deals paayein.</p>
                   <Btn lg onClick={() => go('apply')} style={{ borderRadius: 100, padding: '18px 60px', background: '#fff', color: '#111', border: 'none' }}>Create Portfolio Now</Btn>
                 </Card>
@@ -100,7 +100,7 @@ export default function RateCalcPage() {
             ) : (
               <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '100px 40px', background: 'rgba(0,0,0,0.01)', borderRadius: 40, border: `2px dashed rgba(0,0,0,0.05)`, textAlign: 'center' }}>
                 <div style={{ fontSize: 80, marginBottom: 32, opacity: 0.1 }}>🧮</div>
-                <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 24, color: T.t3, fontWeight: 900 }}>Ready to calculate?</h3>
+                <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, color: T.t3, fontWeight: 900 }}>Ready to calculate?</h3>
                 <p style={{ fontSize: 16, color: T.t4, marginTop: 12, maxWidth: 300 }}>Enter your statistics in the form to see your estimated market value.</p>
               </div>
             )}

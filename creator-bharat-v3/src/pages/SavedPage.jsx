@@ -38,7 +38,7 @@ export default function SavedPage() {
         <div style={W()}>
           <div style={{ position: 'relative', zIndex: 2 }}>
              <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Personal Collection</p>
-             <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 32 : 48, color: '#fff', fontWeight: 900 }}>Saved Library</h1>
+             <h1 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 32 : 48, color: '#fff', fontWeight: 900 }}>Saved Library</h1>
           </div>
         </div>
       </div>

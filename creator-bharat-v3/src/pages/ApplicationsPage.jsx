@@ -61,7 +61,7 @@ export default function ApplicationsPage() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 20 }}>
                     <div style={{ flex: 1 }}>
                       <p style={{ fontSize: 13, fontWeight: 800, color: '#FF9431', marginBottom: 8 }}>{typeof a.brand === 'object' && a.brand ? a.brand.companyName : a.brand}</p>
-                      <h4 style={{ fontFamily: "'Fraunces', serif", fontSize: 22, fontWeight: 900, color: '#111', marginBottom: 12 }}>{a.campaignTitle}</h4>
+                      <h4 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 22, fontWeight: 900, color: '#111', marginBottom: 12 }}>{a.campaignTitle}</h4>
                       
                       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>

@@ -53,7 +53,7 @@ export default function BrandRegisterPage() {
           </div>
 
           <div style={{ flex: 1, position: 'relative', zIndex: 2 }}>
-            <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 32, color: '#fff', marginBottom: 16, fontWeight: 900, lineHeight: 1.2 }}>Scale with Local Authenticity.</h2>
+            <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 32, color: '#fff', marginBottom: 16, fontWeight: 900, lineHeight: 1.2 }}>Scale with Local Authenticity.</h2>
             <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, marginBottom: 48 }}>Partner with 2,400+ verified creators across 50+ Indian cities. The most reliable way to enter Tier 2 & 3 markets.</p>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
@@ -92,7 +92,7 @@ export default function BrandRegisterPage() {
       <div style={{ padding: mob ? '100px 24px 48px' : '80px 80px', overflowY: 'auto', background: '#fff' }}>
         <div style={{ maxWidth: 520 }}>
           <div className="au">
-            <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 28, color: '#111', fontWeight: 900, marginBottom: 8 }}>Register Your Brand</h2>
+            <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 28, color: '#111', fontWeight: 900, marginBottom: 8 }}>Register Your Brand</h2>
             <p style={{ fontSize: 15, color: T.t3, marginBottom: 40, fontWeight: 500 }}>Join the ecosystem of brands growing with Bharat's creators.</p>
 
             <div className="ai">

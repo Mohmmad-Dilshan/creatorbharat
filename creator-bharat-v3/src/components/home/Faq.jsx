@@ -1,101 +1,161 @@
 import React from 'react';
 import { T } from '../../theme';
 import { W } from '../../utils/helpers';
+import { motion } from 'framer-motion';
+import { X, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
 
 export default function Faq({ mob }) {
   return (
-    <section style={{ padding: mob ? '20px' : '20px 20px 80px 20px', background: '#fff' }}>
-      <div style={W()}>
+    <section style={{ padding: mob ? '60px 20px' : '100px 20px', background: '#fdfdfd', position: 'relative', overflow: 'hidden' }}>
+      
+      {/* Decorative Blur Backgrounds */}
+      <div style={{ position: 'absolute', top: '10%', left: '-10%', width: 500, height: 500, background: 'rgba(239, 68, 68, 0.05)', filter: 'blur(100px)', borderRadius: '50%' }} />
+      <div style={{ position: 'absolute', bottom: '10%', right: '-10%', width: 500, height: 500, background: 'rgba(16, 185, 129, 0.05)', filter: 'blur(100px)', borderRadius: '50%' }} />
+
+      <div style={{ ...W(1200), position: 'relative', zIndex: 1 }}>
         
         {/* REVOLUTIONARY HEADING SECTION */}
-        <div style={{ textAlign: 'center', marginBottom: 64 }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          style={{ textAlign: 'center', marginBottom: mob ? 60 : 100 }}
+        >
           <div style={{ 
             display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 20px', 
-            background: 'rgba(239, 68, 68, 0.05)', borderRadius: 100, marginBottom: 24 
+            background: '#FEF2F2', border: '1px solid #FEE2E2', borderRadius: 100, marginBottom: 24 
           }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444' }} />
-            <span style={{ fontSize: 11, fontWeight: 900, color: '#EF4444', textTransform: 'uppercase', letterSpacing: '3px' }}>The Revolution</span>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#EF4444', boxShadow: '0 0 10px rgba(239, 68, 68, 0.6)' }} />
+            <span style={{ fontSize: 12, fontWeight: 900, color: '#EF4444', textTransform: 'uppercase', letterSpacing: '3px' }}>The Core Problem</span>
           </div>
           
           <h2 style={{ 
-            fontFamily: "'Fraunces', serif", 
-            fontSize: mob ? 36 : 68, 
+            fontFamily: "'Outfit', sans-serif", 
+            fontSize: mob ? 40 : 72, 
             fontWeight: 900, 
-            color: '#111', 
-            lineHeight: 1, 
+            color: '#0f172a', 
+            lineHeight: 1.1, 
             letterSpacing: '-0.04em'
           }}>
-            The Industry is <span style={{ color: 'rgba(0,0,0,0.15)', textDecoration: 'line-through' }}>Broken.</span> <br />
-            <span style={{ background: 'linear-gradient(90deg, #FF9431, #138808)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>We're Fixing it.</span>
+            The Industry is <span style={{ color: '#cbd5e1', textDecoration: 'line-through', textDecorationColor: '#EF4444', textDecorationThickness: '4px' }}>Broken.</span> <br />
+            <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #138808 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: '10px' }}>We're Fixing it.</span>
           </h2>
-        </div>
+        </motion.div>
 
         {/* PROBLEM VS MISSION GRID */}
-        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 48, alignItems: 'stretch' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 40 : 64, alignItems: 'stretch' }}>
           
           {/* THE PROBLEM */}
-          <div style={{ 
-            padding: 48, 
-            borderRadius: 42, 
-            background: '#F8FAFC', 
-            border: '1.5px solid #111',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-             <div style={{ fontSize: 13, fontWeight: 900, color: '#EF4444', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 24 }}>The Industry Problem</div>
-             <h3 style={{ fontSize: 32, fontWeight: 900, color: '#111', marginBottom: 24, lineHeight: 1.3 }}>Agencies taking 30% of your hard work.</h3>
-             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            style={{ 
+              padding: mob ? 32 : 56, 
+              borderRadius: 32, 
+              background: '#fff', 
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+              boxShadow: '0 20px 40px -10px rgba(239, 68, 68, 0.05)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+          >
+             <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 4, background: 'linear-gradient(90deg, transparent, #EF4444, transparent)' }} />
+             
+             <div style={{ width: 64, height: 64, borderRadius: 20, background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 32 }}>
+               <AlertTriangle size={32} color="#EF4444" strokeWidth={2.5} />
+             </div>
+             
+             <h3 style={{ fontSize: mob ? 28 : 36, fontWeight: 900, color: '#0f172a', marginBottom: 32, lineHeight: 1.2, letterSpacing: '-0.02em' }}>
+               Middlemen taking 30% of your hard work.
+             </h3>
+             
+             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 24, padding: 0 }}>
                 {[
-                  'No proper portfolio (Messy screenshots aur links).',
-                  'Agencies taking 30% of your hard-earned money.',
-                  'Unprofessional communication via chaotic DMs.',
-                  'Tier 2 & 3 talent being ignored by national brands.',
-                  'Risk of payment delays and agency frauds.'
+                  'No formal portfolio. Pitching via messy screenshots.',
+                  'Agencies eating up to 30% of your hard-earned money.',
+                  'Unprofessional communication & ghosting via chaotic DMs.',
+                  'Tier 2 & 3 talent being completely ignored by national brands.',
+                  'High risk of payment delays and agency frauds.'
                 ].map((p, i) => (
-                  <li key={i} style={{ display: 'flex', gap: 12, fontSize: 16, color: 'rgba(0,0,0,0.5)', fontWeight: 600 }}>
-                    <span style={{ color: '#EF4444' }}>✕</span> {p}
+                  <li key={i} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', fontSize: mob ? 15 : 17, color: '#475569', fontWeight: 600, lineHeight: 1.5 }}>
+                    <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
+                      <X size={14} color="#EF4444" strokeWidth={3} />
+                    </div>
+                    {p}
                   </li>
                 ))}
              </ul>
-             <div style={{ position: 'absolute', right: -20, bottom: -20, fontSize: 150, opacity: 0.02, fontWeight: 900 }}>STOP</div>
-          </div>
+          </motion.div>
 
           {/* THE MISSION */}
-          <div style={{ 
-            padding: 48, 
-            borderRadius: 42, 
-            background: '#111', 
-            color: '#fff',
-            border: '1.5px solid #111',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-             <div style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 24 }}>Our Core Mission</div>
-             <h3 style={{ fontSize: 32, fontWeight: 900, color: '#fff', marginBottom: 24, lineHeight: 1.3 }}>Empowering the Real Bharat Creator.</h3>
-             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <motion.div 
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            style={{ 
+              padding: mob ? 32 : 56, 
+              borderRadius: 32, 
+              background: '#0f172a', 
+              color: '#fff',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              boxShadow: '0 30px 60px -15px rgba(16, 185, 129, 0.15)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+          >
+             {/* Glow effect */}
+             <div style={{ position: 'absolute', top: -100, right: -100, width: 300, height: 300, background: '#10B981', filter: 'blur(120px)', opacity: 0.2 }} />
+
+             <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 4, background: 'linear-gradient(90deg, transparent, #10B981, transparent)' }} />
+             
+             <div style={{ width: 64, height: 64, borderRadius: 20, background: 'rgba(16, 185, 129, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 32 }}>
+               <ShieldCheck size={32} color="#10B981" strokeWidth={2.5} />
+             </div>
+
+             <h3 style={{ fontSize: mob ? 28 : 36, fontWeight: 900, color: '#fff', marginBottom: 32, lineHeight: 1.2, letterSpacing: '-0.02em' }}>
+               Empowering the Real Bharat Creator.
+             </h3>
+             
+             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 24, padding: 0, position: 'relative', zIndex: 2 }}>
                 {[
-                  'Smart Media Kit (Your elite, verified portfolio).',
-                  '0% Commission. Keep 100% of your earnings.',
-                  'Formal dashboard for professional brand deals.',
-                  'National spotlight for every local creator.',
-                  'Direct and safe connections with real brands.'
+                  'Smart Media Kit (Your elite, verified SaaS portfolio).',
+                  '0% Commission. You keep exactly 100% of your earnings.',
+                  'Formal dashboard for professional & safe brand deals.',
+                  'National spotlight and premium visibility for local talent.',
+                  'Direct connections with top brands—no middlemen.'
                 ].map((p, i) => (
-                  <li key={i} style={{ display: 'flex', gap: 12, fontSize: 16, color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>
-                    <span style={{ color: '#10B981' }}>✓</span> {p}
+                  <li key={i} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', fontSize: mob ? 15 : 17, color: '#e2e8f0', fontWeight: 500, lineHeight: 1.5 }}>
+                    <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2, boxShadow: '0 0 10px rgba(16, 185, 129, 0.5)' }}>
+                      <CheckCircle2 size={14} color="#fff" strokeWidth={3} />
+                    </div>
+                    {p}
                   </li>
                 ))}
              </ul>
-             <div style={{ position: 'absolute', right: -20, bottom: -20, fontSize: 150, opacity: 0.05, fontWeight: 900 }}>BHARAT</div>
-          </div>
+          </motion.div>
 
         </div>
 
         {/* BOTTOM TAGLINE */}
-        <div style={{ textAlign: 'center', marginTop: 64 }}>
-           <p style={{ fontSize: 20, fontWeight: 800, color: '#111', fontStyle: 'italic', fontFamily: "'Fraunces', serif" }}>
-             "Hum middlemen ko nahi, talent ko ameer banana chahte hain."
-           </p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          style={{ textAlign: 'center', marginTop: mob ? 60 : 80 }}
+        >
+           <div style={{ display: 'inline-block', padding: '16px 32px', background: '#fff', border: '1px solid rgba(0,0,0,0.05)', borderRadius: 100, boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
+             <p style={{ fontSize: mob ? 16 : 20, fontWeight: 700, color: '#334155', fontStyle: 'italic' }}>
+               <span style={{ color: '#FF9431', fontSize: 24, lineHeight: 0, verticalAlign: 'middle' }}>"</span>
+               Hum middlemen ko nahi, <strong style={{ color: '#0f172a', fontWeight: 900 }}>talent</strong> ko aage badhana chahte hain.
+               <span style={{ color: '#FF9431', fontSize: 24, lineHeight: 0, verticalAlign: 'middle' }}>"</span>
+             </p>
+           </div>
+        </motion.div>
 
       </div>
     </section>

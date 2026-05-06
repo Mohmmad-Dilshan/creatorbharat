@@ -22,7 +22,7 @@ export default function PlatformShowcase({ mob }) {
            </div>
            
            <h2 style={{ 
-              fontFamily: "'Fraunces', serif", 
+              fontFamily: "'Outfit', sans-serif", 
               fontSize: mob ? 36 : 64, 
               fontWeight: 900, 
               color: '#111', 
@@ -67,7 +67,7 @@ export default function PlatformShowcase({ mob }) {
                 maxWidth: 850, 
                 margin: '0 auto',
                 fontStyle: 'italic',
-                fontFamily: "'Fraunces', serif"
+                fontFamily: "'Outfit', sans-serif"
              }}>
                 "Hum Bharat ke har creator ko unki <span style={{ color: '#FF9431', fontStyle: 'normal' }}>Pehchan</span> dena chahte hain. Hamara mission local talent ko direct <span style={{ color: '#138808', fontStyle: 'normal' }}>National Recognition</span> aur Growth Hub se jodna hai."
              </h3>

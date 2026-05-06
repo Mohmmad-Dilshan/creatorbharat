@@ -9,7 +9,7 @@ export default function Verification({ mob }) {
       
       <div style={{ ...W(800), position: 'relative', zIndex: 1, textAlign: 'center' }}>
         <div style={{ fontSize: 64, marginBottom: 32, animation: 'float-simple 4s ease-in-out infinite' }}>🛡️</div>
-        <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 40 : 64, fontWeight: 900, color: '#fff', marginBottom: 24, lineHeight: 1.1 }}>
+        <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 40 : 64, fontWeight: 900, color: '#fff', marginBottom: 24, lineHeight: 1.1 }}>
           Sirf Content Nahi, <br />
           <span className="gradient-text">Trust Bhi Banaiye.</span>
         </h2>

@@ -127,7 +127,7 @@ export default function CampaignBuilderPage() {
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.4, ease: "circOut" }}
                 >
-                  <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>1. Campaign Core Details</h3>
+                  <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>1. Campaign Core Details</h3>
                   <Fld 
                     label="Campaign Title" 
                     value={F.title} 
@@ -162,7 +162,7 @@ export default function CampaignBuilderPage() {
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.4, ease: "circOut" }}
                 >
-                  <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>2. Execution & Requirements</h3>
+                  <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>2. Execution & Requirements</h3>
                   
                   <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 24 }}>
                     <Fld 
@@ -228,7 +228,7 @@ export default function CampaignBuilderPage() {
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.4, ease: "circOut" }}
                 >
-                  <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>3. Commercials & Review</h3>
+                  <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>3. Commercials & Review</h3>
                   
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 32 }}>
                     <Fld 

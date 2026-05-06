@@ -140,7 +140,7 @@ export function CreatorCard({ creator: c, onView }) {
 
         {/* Name & Location */}
         <div style={{ marginBottom: mob ? 10 : 16 }}>
-          <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 15 : 26, fontWeight: 900, color: '#0F172A', marginBottom: mob ? 2 : 4, letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 15 : 26, fontWeight: 900, color: '#0F172A', marginBottom: mob ? 2 : 4, letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: 6 }}>
             {c.name} {mob && c.verified && <Check size={12} color="#3B82F6" strokeWidth={4} style={{ flexShrink: 0 }} />}
           </h3>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -245,7 +245,7 @@ export function CampCard({ campaign: c, onApply }) {
             {c.urgent && <Bdg sm color="red">URGENT</Bdg>}
             {(Array.isArray(c.niche) ? c.niche : [c.niche]).map(n => <Bdg key={n} sm color="blue">{n}</Bdg>)}
           </div>
-          <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 900, color: '#111', lineHeight: 1.2 }}>{c.title}</h3>
+          <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 18, fontWeight: 900, color: '#111', lineHeight: 1.2 }}>{c.title}</h3>
           <p style={{ fontSize: 14, color: T.t3, fontWeight: 700, marginTop: 6 }}>{typeof c.brand === 'object' ? c.brand.companyName : c.brand}</p>
         </div>
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
@@ -290,7 +290,7 @@ export function BlogCard({ article: b, onClick }) {
       </div>
       <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
         <p style={{ fontSize: 12, fontWeight: 800, color: T.t3, marginBottom: 8 }}>{fmt.date(b.date)} • {b.readTime}</p>
-        <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 20, fontWeight: 900, color: '#111', marginBottom: 12, lineHeight: 1.3 }}>{b.title}</h3>
+        <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 900, color: '#111', marginBottom: 12, lineHeight: 1.3 }}>{b.title}</h3>
         <p style={{ fontSize: 14, color: T.t2, lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: 20 }}>{b.excerpt}</p>
         <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 8, color: '#FF9431', fontWeight: 800, fontSize: 14 }}>
            Read Full Story <span style={{ fontSize: 18 }}>→</span>

@@ -120,7 +120,7 @@ const EliteHeader = memo(({
             fontSize: mob ? '36px' : 'clamp(40px, 6vw, 72px)', 
             fontWeight: 900, 
             color: light ? '#111' : '#fff', 
-            fontFamily: "'Fraunces', serif",
+            fontFamily: "'Outfit', sans-serif",
             lineHeight: 1.05,
             marginBottom: 24,
             letterSpacing: '-0.02em'

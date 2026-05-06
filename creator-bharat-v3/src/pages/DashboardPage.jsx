@@ -84,7 +84,7 @@ export default function DashboardPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
                <div style={{ padding: '40px 32px', background: '#fff', borderRadius: 32, border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 20px 50px rgba(0,0,0,0.02)', position: 'relative', overflow: 'hidden' }}>
                   <div style={{ position: 'absolute', top: -20, right: -20, width: 120, height: 120, background: '#FF9431', borderRadius: '50%', filter: 'blur(70px)', opacity: 0.08 }} />
-                  <h3 style={{ fontSize: 20, fontWeight: 900, marginBottom: 32, fontFamily: "'Fraunces', serif" }}>Profile Strength</h3>
+                  <h3 style={{ fontSize: 20, fontWeight: 900, marginBottom: 32, fontFamily: "'Outfit', sans-serif" }}>Profile Strength</h3>
                   <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
                      <Ring score={score} size={160} />
                   </div>
@@ -117,7 +117,7 @@ export default function DashboardPage() {
                </div>
 
                <div style={{ padding: '32px', background: '#fff', borderRadius: 32, border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 20px 50px rgba(0,0,0,0.02)' }}>
-                  <h3 style={{ fontSize: 18, fontWeight: 900, marginBottom: 24, fontFamily: "'Fraunces', serif" }}>Quick Resources</h3>
+                  <h3 style={{ fontSize: 18, fontWeight: 900, marginBottom: 24, fontFamily: "'Outfit', sans-serif" }}>Quick Resources</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
                      {[
                        { l: 'Leaderboard', p: 'leaderboard', i: '🎖️' },
@@ -138,7 +138,7 @@ export default function DashboardPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
                <div style={{ padding: '40px 32px', background: '#fff', borderRadius: 32, border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 20px 50px rgba(0,0,0,0.02)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-                     <h3 style={{ fontSize: 22, fontWeight: 900, fontFamily: "'Fraunces', serif" }}>Recent Applications</h3>
+                     <h3 style={{ fontSize: 22, fontWeight: 900, fontFamily: "'Outfit', sans-serif" }}>Recent Applications</h3>
                      <button onClick={() => go('applications')} style={{ background: 'none', border: 'none', color: '#FF9431', fontWeight: 900, fontSize: 14, cursor: 'pointer' }}>View All</button>
                   </div>
                   
@@ -170,7 +170,7 @@ export default function DashboardPage() {
                   <div style={{ position: 'absolute', top: -30, left: -30, width: 150, height: 150, background: '#fff', borderRadius: '50%', opacity: 0.1, filter: 'blur(40px)' }} />
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 32, position: 'relative', zIndex: 2 }}>
                      <div style={{ flex: 1, minWidth: 280 }}>
-                        <h3 style={{ fontSize: 24, fontWeight: 900, marginBottom: 8, fontFamily: "'Fraunces', serif" }}>Your Public Profile</h3>
+                        <h3 style={{ fontSize: 24, fontWeight: 900, marginBottom: 8, fontFamily: "'Outfit', sans-serif" }}>Your Public Profile</h3>
                         <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.9)', fontWeight: 500, lineHeight: 1.5 }}>Share this link in your Instagram bio to attract high-quality brands directly.</p>
                         <div style={{ background: 'rgba(255,255,255,0.15)', padding: '14px 20px', borderRadius: 16, marginTop: 24, fontSize: 16, fontWeight: 700, fontFamily: 'monospace', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)' }}>
                            creatorbharat.in/c/{c?.handle || 'username'}

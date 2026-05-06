@@ -49,13 +49,13 @@ export default function ContactPage() {
               {sent ? (
                 <div className="si" style={{ textAlign: 'center', padding: '60px 0' }}>
                   <div style={{ width: 80, height: 80, background: 'rgba(16,185,129,0.1)', color: '#10B981', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40, margin: '0 auto 24px' }}>✓</div>
-                  <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 28, fontWeight: 900, color: '#111', marginBottom: 12 }}>Message Received!</h3>
+                  <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 28, fontWeight: 900, color: '#111', marginBottom: 12 }}>Message Received!</h3>
                   <p style={{ fontSize: 16, color: T.t2, marginBottom: 32, lineHeight: 1.6 }}>Humara team aapse 24 ghante ke andar contact karega. Tab tak dashboard check karein.</p>
                   <Btn lg onClick={() => dsp({ t: 'GO', p: 'home' })} style={{ borderRadius: 100, padding: '16px 48px' }}>Back to Home</Btn>
                 </div>
               ) : (
                 <div className="ai">
-                  <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>Send us a message</h3>
+                  <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 32 }}>Send us a message</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 20 }}>
                     <Fld label="Full Name" value={F.name} onChange={e => upF('name', e.target.value)} placeholder="e.g. Ravi Kumar" required />
                     <Fld label="Email Address" type="email" value={F.email} onChange={e => upF('email', e.target.value)} placeholder="ravi@email.com" required />

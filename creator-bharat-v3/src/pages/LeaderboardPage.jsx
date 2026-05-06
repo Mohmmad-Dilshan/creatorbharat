@@ -95,7 +95,7 @@ export default function LeaderboardPage() {
                     <div style={{ width: isWinner ? 160 : 120, height: isWinner ? 160 : 120, borderRadius: '50%', padding: 4, background: `linear-gradient(135deg, ${medalColors[idx]}, #fff)`, margin: '0 auto 24px', boxShadow: '0 15px 35px rgba(0,0,0,0.1)' }}>
                        <img src={img} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '5px solid #fff' }} alt={c.name} />
                     </div>
-                    <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: isWinner ? 32 : 24, color: '#111', marginBottom: 8, fontWeight: 900 }}>{c.name}</h3>
+                    <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: isWinner ? 32 : 24, color: '#111', marginBottom: 8, fontWeight: 900 }}>{c.name}</h3>
                     <p style={{ fontSize: 14, color: '#64748b', marginBottom: 24, fontWeight: 700 }}><span>📍 {typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')}{c.state ? ', ' + c.state : ''}</span></p>
                     
                     <div style={{ display: 'inline-flex', flexDirection: 'column', padding: '14px 40px', background: isWinner ? '#FF9431' : '#f1f5f9', borderRadius: 100, color: isWinner ? '#fff' : '#1e293b' }}>

@@ -11,7 +11,7 @@ export default function Features({ mob }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
             <span style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px' }}>Superpowers for Creators</span>
           </div>
-          <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 42 : 72, fontWeight: 900, color: '#111', lineHeight: 1, letterSpacing: '-0.04em', marginBottom: 24 }}>
+          <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 42 : 72, fontWeight: 900, color: '#111', lineHeight: 1, letterSpacing: '-0.04em', marginBottom: 24 }}>
             Bas Content Banao, <br />
             <span className="gradient-text">Baaki Hum Sambhaal Lenge.</span>
           </h2>

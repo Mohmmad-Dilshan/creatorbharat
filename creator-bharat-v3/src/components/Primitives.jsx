@@ -100,7 +100,7 @@ export function Logo({ sm, light, onClick }) {
           <div style={{ position: 'absolute', top: '66.67%', left: 0, right: 0, height: '33.33%', background: '#128807' }} />
         </div>
       </div>
-      <span className="logo-text-animated" style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: sm ? 19 : 28, fontWeight: 900, letterSpacing: '-0.04em', display: 'flex', alignItems: 'center' }}>
+      <span className="logo-text-animated" style={{ fontFamily: "'Inter',sans-serif", fontSize: sm ? 19 : 28, fontWeight: 900, letterSpacing: '-0.04em', display: 'flex', alignItems: 'center' }}>
         CreatorBharat
       </span>
     </div>
@@ -114,7 +114,7 @@ export function SH({ eyebrow, title, sub, center, light, mb = 56 }) {
         <div style={{ width: 32, height: 3, background: T.gd, borderRadius: 4 }} />
         <p style={{ fontSize: 12, fontWeight: 900, letterSpacing: '.15em', textTransform: 'uppercase', color: T.gd }}>{eyebrow}</p>
       </div>}
-      <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 'clamp(32px,6vw,52px)', fontWeight: 900, color: light ? '#fff' : T.t1, marginBottom: sub ? 20 : 0, lineHeight: 1, letterSpacing: '-0.03em' }}>{title}</h2>
+      <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 'clamp(32px,6vw,52px)', fontWeight: 900, color: light ? '#fff' : T.t1, marginBottom: sub ? 20 : 0, lineHeight: 1, letterSpacing: '-0.03em' }}>{title}</h2>
       {sub && <p style={{ fontSize: 18, color: light ? 'rgba(255,255,255,0.6)' : T.t2, maxWidth: center ? 640 : '100%', margin: center ? '0 auto' : '0', lineHeight: 1.6, fontWeight: 500 }}>{sub}</p>}
       {!center && <div style={{ width: 60, height: 4, background: T.ga, marginTop: 24, borderRadius: 2 }} />}
     </div>
@@ -127,7 +127,7 @@ export function Modal({ open, onClose, title, children, width = 520 }) {
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.6)', zIndex: 999999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, backdropFilter: 'blur(10px)' }}>
       <div className="si" onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 28, width: '100%', maxWidth: width, maxHeight: '90vh', overflowY: 'auto', boxShadow: T.sh4, border: '1px solid rgba(255,255,255,0.2)', position: 'relative' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 32px', borderBottom: `1px solid ${T.bd}`, position: 'sticky', top: 0, background: '#fff', zIndex: 100, boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-          <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 900, color: T.n8 }}>{title}</h3>
+          <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 22, fontWeight: 900, color: T.n8 }}>{title}</h3>
           <button onClick={onClose} style={{ background: T.bg2, border: 'none', width: 36, height: 36, borderRadius: '50%', cursor: 'pointer', fontSize: 20, color: T.t2, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all .2s', marginRight: 4 }}>×</button>
         </div>
         <div style={{ padding: '32px 32px 48px' }}>{children}</div>
@@ -161,7 +161,7 @@ export function Stars({ rating, sm }) {
 export function Ring({ score, size = 80 }) {
   const r = 32, circ = 2 * Math.PI * r, offset = circ - (score / 100) * circ;
   const tier = { label: score >= 91 ? 'Platinum' : score >= 76 ? 'Gold' : score >= 51 ? 'Silver' : 'Rising', color: score >= 91 ? T.platinum : score >= 76 ? T.gold : score >= 51 ? T.silver : T.rising };
-  return <div style={{ position: 'relative', width: size, height: size, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><svg width={size} height={size} viewBox="0 0 80 80" style={{ transform: 'rotate(-90deg)', position: 'absolute' }}><circle cx="40" cy="40" r={r} fill="none" stroke={T.bg3} strokeWidth="6" /><circle cx="40" cy="40" r={r} fill="none" stroke={tier.color} strokeWidth="6" strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round" style={{ transition: 'stroke-dashoffset .6s' }} /></svg><div style={{ textAlign: 'center' }}><div style={{ fontFamily: "'Fraunces',serif", fontSize: size * 0.28, fontWeight: 900, color: tier.color, lineHeight: 1 }}>{score}</div><div style={{ fontSize: size * 0.11, color: T.t3, fontWeight: 600, marginTop: 1 }}>{tier.label}</div></div></div>;
+  return <div style={{ position: 'relative', width: size, height: size, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><svg width={size} height={size} viewBox="0 0 80 80" style={{ transform: 'rotate(-90deg)', position: 'absolute' }}><circle cx="40" cy="40" r={r} fill="none" stroke={T.bg3} strokeWidth="6" /><circle cx="40" cy="40" r={r} fill="none" stroke={tier.color} strokeWidth="6" strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round" style={{ transition: 'stroke-dashoffset .6s' }} /></svg><div style={{ textAlign: 'center' }}><div style={{ fontFamily: "'Outfit', sans-serif", fontSize: size * 0.28, fontWeight: 900, color: tier.color, lineHeight: 1 }}>{score}</div><div style={{ fontSize: size * 0.11, color: T.t3, fontWeight: 600, marginTop: 1 }}>{tier.label}</div></div></div>;
 }
 
 export function Bar({ value, max = 100, color, label, showPct, height = 8 }) {

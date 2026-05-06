@@ -131,7 +131,7 @@ export default function CampaignsPage() {
       <div style={{ padding: mob ? '40px 16px' : '60px 20px', background: '#fdfdfd' }}>
         <div style={W(1200)}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
-            <h2 style={{ fontSize: mob ? 20 : 26, fontWeight: 900, color: '#111', fontFamily: "'Fraunces', serif" }}>
+            <h2 style={{ fontSize: mob ? 20 : 26, fontWeight: 900, color: '#111', fontFamily: "'Outfit', sans-serif" }}>
                Latest Opportunities <span style={{ color: '#94a3b8', fontSize: 15, fontWeight: 800, marginLeft: 12 }}>{filtered.length} Live Campaigns</span>
             </h2>
             {(f.q || f.niche || f.urgent) && (
@@ -175,7 +175,7 @@ export default function CampaignsPage() {
         {done ? (
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
             <div style={{ width: 100, height: 100, background: 'rgba(16,185,129,0.06)', color: '#10B981', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48, margin: '0 auto 32px' }}>✓</div>
-            <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 32, color: '#111', marginBottom: 16, fontWeight: 900 }}>Application Sent!</h3>
+            <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 32, color: '#111', marginBottom: 16, fontWeight: 900 }}>Application Sent!</h3>
             <p style={{ fontSize: 16, color: '#64748b', marginBottom: 40, lineHeight: 1.6, maxWidth: 420, margin: '0 auto 40px' }}>Aapka application brand tak pahunch gaya hai. Shortlist hone par hum aapko notify karenge.</p>
             <Btn lg onClick={() => { setModal(null); setDone(false) }} style={{ borderRadius: 100, padding: '16px 60px' }}>Done, Browse More</Btn>
           </div>
@@ -184,7 +184,7 @@ export default function CampaignsPage() {
             <div style={{ background: '#f8fafc', borderRadius: 24, padding: '28px', marginBottom: 40, border: '1px solid rgba(0,0,0,0.04)', position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: -20, right: -20, width: 120, height: 120, background: '#FF9431', borderRadius: '50%', filter: 'blur(60px)', opacity: 0.08 }} />
               <p style={{ fontSize: 11, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Applying for:</p>
-              <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 12 }}>{modal?.title}</h3>
+              <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 12 }}>{modal?.title}</h3>
               <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(16,185,129,0.08)', borderRadius: 100, fontSize: 14, fontWeight: 800, color: '#10B981' }}>
                 Est. Budget: {fmt.inr(modal?.budgetMin)} - {fmt.inr(modal?.budgetMax)}
               </div>

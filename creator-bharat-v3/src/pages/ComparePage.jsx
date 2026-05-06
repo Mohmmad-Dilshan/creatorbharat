@@ -83,7 +83,7 @@ export default function ComparePage() {
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
                         <img src={c.photo || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=FF9431&color=fff`} style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid #fff', boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }} alt="" />
                         <div>
-                          <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 900, color: '#111', marginBottom: 4 }}>{c.name}</h3>
+                          <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 18, fontWeight: 900, color: '#111', marginBottom: 4 }}>{c.name}</h3>
                           <Bdg sm color="blue">Verified</Bdg>
                         </div>
                       </div>

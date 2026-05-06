@@ -85,7 +85,7 @@ export default function ApplyPage() {
           </div>
 
           <div style={{ flex: 1, position: 'relative', zIndex: 2 }}>
-            <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 32, color: '#fff', marginBottom: 16, fontWeight: 900, lineHeight: 1.2 }}>Join the Local Elite.</h2>
+            <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 32, color: '#fff', marginBottom: 16, fontWeight: 900, lineHeight: 1.2 }}>Join the Local Elite.</h2>
             <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, marginBottom: 48 }}>India's first platform dedicated to creators from Tier 2 & 3 cities. Get discovered by national brands.</p>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
@@ -133,7 +133,7 @@ export default function ApplyPage() {
           )}
           
           <div className="au">
-            <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 28, color: '#111', fontWeight: 900, marginBottom: 8 }}>{steps[step - 1][0]}</h2>
+            <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 28, color: '#111', fontWeight: 900, marginBottom: 8 }}>{steps[step - 1][0]}</h2>
             <p style={{ fontSize: 15, color: T.t3, marginBottom: 40, fontWeight: 500 }}>{steps[step - 1][1]}</p>
 
             {step === 1 && (
@@ -190,7 +190,7 @@ export default function ApplyPage() {
               <div className="ai">
                 <div style={{ background: '#111', borderRadius: 24, padding: '24px', marginBottom: 24, color: '#fff' }}>
                    <p style={{ fontSize: 12, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', marginBottom: 8 }}>Your Creator SEO Article</p>
-                   <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 20, fontWeight: 900, marginBottom: 12 }}>{article.title}</h3>
+                   <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 900, marginBottom: 12 }}>{article.title}</h3>
                    <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>{article.p1.substring(0, 180)}...</p>
                 </div>
                 <div style={{ padding: '20px', background: T.bg2, borderRadius: 20, border: '1px solid rgba(0,0,0,0.05)' }}>

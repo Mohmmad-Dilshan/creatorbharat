@@ -55,7 +55,7 @@ export default function MonetizationPage() {
               { v: '6', l: 'Income Streams' }
             ].map((item) => (
               <div key={item.l} style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 32, fontWeight: 900, color: '#111', fontFamily: "'Fraunces', serif" }}>{item.v}</div>
+                <div style={{ fontSize: 32, fontWeight: 900, color: '#111', fontFamily: "'Outfit', sans-serif" }}>{item.v}</div>
                 <div style={{ fontSize: 13, color: T.t4, fontWeight: 700, textTransform: 'uppercase', marginTop: 4 }}>{item.l}</div>
               </div>
             ))}
@@ -87,7 +87,7 @@ export default function MonetizationPage() {
                 
                 <div>
                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                      <h3 style={{ fontSize: 20, fontWeight: 900, color: '#111', fontFamily: "'Fraunces', serif" }}>{s.title}</h3>
+                      <h3 style={{ fontSize: 20, fontWeight: 900, color: '#111', fontFamily: "'Outfit', sans-serif" }}>{s.title}</h3>
                       <Bdg color={s.status === 'live' ? 'green' : 'blue'}>{s.status.toUpperCase()}</Bdg>
                    </div>
                    <p style={{ fontSize: 14, color: T.t3, lineHeight: 1.6, fontWeight: 500 }}>{s.desc}</p>
@@ -110,7 +110,7 @@ export default function MonetizationPage() {
         
         <div style={W(800)}>
           <div style={{ fontSize: 64, marginBottom: 24 }}>🤝</div>
-          <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: mob ? 32 : 48, fontWeight: 900, marginBottom: 16 }}>Creator Referral Program</h2>
+          <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 32 : 48, fontWeight: 900, marginBottom: 16 }}>Creator Referral Program</h2>
           <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.6)', marginBottom: 40, lineHeight: 1.6 }}>Invite fellow creators from your city. Earn <span style={{ color: '#10B981', fontWeight: 900 }}>₹50 instantly</span> for every verified portfolio listing. No limits, just growth.</p>
           
           <div style={{ display: 'inline-flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
