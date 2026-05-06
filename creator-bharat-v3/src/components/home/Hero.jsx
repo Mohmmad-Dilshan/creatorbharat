@@ -3,7 +3,7 @@ import { T } from '../../theme';
 import { W, ALL_STATES, fmt, LS } from '../../utils/helpers';
 import { apiCall } from '../../utils/api';
 import { Btn } from '../Primitives';
-import { User, BookOpen, Mic, MapPin, Wallet, Rocket } from 'lucide-react';
+import { User, BookOpen, Radio, MapPin, CreditCard, Zap } from 'lucide-react';
 
 export function Typewriter({ words, interval = 1000 }) {
   const [idx, setIdx] = useState(0);
@@ -329,10 +329,10 @@ export default function Hero({ mob, st, dsp, go }) {
           {[
             { t: 'Identity', h: 'Pro Portfolio', d: 'Verified identity jo brands ko instantly impress karegi.', i: User, c: '#FF9431', bg: 'rgba(255,148,49,0.08)' },
             { t: 'Growth', h: 'Insights & Analytics', d: 'Deep data analytics se apne growth ko measure karein.', i: BookOpen, c: '#10B981', bg: 'rgba(16,185,129,0.08)' },
-            { t: 'Spotlight', h: 'National Exposure', d: 'Tier 2/3 cities se seedha national brands tak pahunch.', i: Mic, c: '#3B82F6', bg: 'rgba(59,130,246,0.08)' },
+            { t: 'Spotlight', h: 'National Exposure', d: 'Tier 2/3 cities se seedha national brands tak pahunch.', i: Radio, c: '#3B82F6', bg: 'rgba(59,130,246,0.08)' },
             { t: 'Reach', h: 'Hyperlocal Campaigns', d: 'Targeted brand deals exactly aapke area ke liye.', i: MapPin, c: '#8B5CF6', bg: 'rgba(139,92,246,0.08)' },
-            { t: 'Freedom', h: '0% Platform Fee', d: 'Aapki mehnat, aapka paisa. Hum middlemen nahi hain.', i: Wallet, c: '#F59E0B', bg: 'rgba(245,158,11,0.08)' },
-            { t: 'Scale', h: 'Free Forever', d: 'Basic features will always be free for verified creators.', i: Rocket, c: '#EF4444', bg: 'rgba(239,68,68,0.08)' }
+            { t: 'Freedom', h: '0% Platform Fee', d: 'Aapki mehnat, aapka paisa. Hum middlemen nahi hain.', i: CreditCard, c: '#F59E0B', bg: 'rgba(245,158,11,0.08)' },
+            { t: 'Scale', h: 'Free Forever', d: 'Basic features will always be free for verified creators.', i: Zap, c: '#EF4444', bg: 'rgba(239,68,68,0.08)' }
           ].map((p, i) => (
             <div 
               key={i} 

@@ -1,41 +1,50 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { W } from '../../utils/helpers';
 import { Logo } from '../Primitives';
 import { Send, Mail, Globe, ShieldCheck } from 'lucide-react';
 
 export default function Footer({ mob }) {
+  const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState('');
+
+  const go = (p) => { navigate(p); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
   const linkGroups = [
     {
       title: 'Platform',
       links: [
-        { label: 'Features', p: 'features' },
-        { label: 'Elite Talent', p: 'creators' },
-        { label: 'Discovery', p: 'creators' },
-        { label: 'Brand Search', p: 'brands' },
-        { label: 'Analytics', p: 'analytics' }
+        { label: 'Elite Talent', p: '/creators' },
+        { label: 'Active Deals', p: '/campaigns' },
+        { label: 'Pricing', p: '/pricing' },
+        { label: 'Leaderboard', p: '/leaderboard' },
+        { label: 'Creator Academy', p: '/blog' }
+      ]
+    },
+    {
+      title: 'Join Us',
+      links: [
+        { label: 'As Creator', p: '/apply' },
+        { label: 'As Brand', p: '/brand-register' },
+        { label: 'Login', p: '/login' },
+        { label: 'Agencies', p: '/contact' }
       ]
     },
     {
       title: 'Company',
       links: [
-        { label: 'Our Story', p: 'about' },
-        { label: 'Blog', p: 'blog' },
-        { label: 'Podcasts', p: 'podcasts' },
-        { label: 'Contact', p: 'contact' },
-        { label: 'Careers', p: 'careers' }
+        { label: 'Our Story', p: '/about' },
+        { label: 'Contact', p: '/contact' },
+        { label: 'Guidelines', p: '/blog' }
       ]
     },
     {
       title: 'Support',
       links: [
-        { label: 'Help Center', p: 'help' },
-        { label: 'Guidelines', p: 'guidelines' },
-        { label: 'Privacy', p: 'privacy' },
-        { label: 'Terms', p: 'terms' },
-        { label: 'Security', p: 'security' }
+        { label: 'Privacy Policy', p: '/about' },
+        { label: 'Terms of Service', p: '/about' },
+        { label: 'Security', p: '/about' }
       ]
     }
   ];
@@ -164,7 +173,7 @@ export default function Footer({ mob }) {
               <h4 style={{ fontSize: 11, fontWeight: 900, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '2.5px', marginBottom: 24 }}>{group.title}</h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {group.links.map(link => (
-                  <span key={link.label} style={{ 
+                  <span key={link.label} onClick={() => go(link.p)} style={{ 
                     fontSize: 15, color: 'rgba(255,255,255,0.4)', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
                     display: 'inline-block'
                   }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>

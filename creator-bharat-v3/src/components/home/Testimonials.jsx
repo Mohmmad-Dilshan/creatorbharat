@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { W } from '../../utils/helpers';
-import { ShieldCheck, Mic, Wallet, Search, Send, CheckCircle2, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { ShieldCheck, Radio, CreditCard, Search, Send, Check, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 
 const CREATOR_STEPS = [
   { title: 'Verified Identity', sub: 'Get a premium verified portfolio page that stands out to global brands.', icon: ShieldCheck, color: '#FF9431', bg: 'rgba(255,148,49,0.08)', badge: 'Identity' },
-  { title: 'National Spotlight', sub: 'Be featured in our exclusive podcasts and articles for maximum reach.', icon: Mic, color: '#10B981', bg: 'rgba(19,136,8,0.08)', badge: 'Spotlight' },
-  { title: 'Direct Earnings', sub: 'Collaborate directly with brands and keep 100% of your earnings.', icon: Wallet, color: '#3B82F6', bg: 'rgba(59,130,246,0.08)', badge: 'Monetize' }
+  { title: 'National Spotlight', sub: 'Be featured in our exclusive podcasts and articles for maximum reach.', icon: Radio, color: '#10B981', bg: 'rgba(19,136,8,0.08)', badge: 'Spotlight' },
+  { title: 'Direct Earnings', sub: 'Collaborate directly with brands and keep 100% of your earnings.', icon: CreditCard, color: '#3B82F6', bg: 'rgba(59,130,246,0.08)', badge: 'Monetize' }
 ];
 
 const BRAND_STEPS = [
   { title: 'Smart Discovery', sub: 'Find creators using AI-powered filters for niche, location, and reach.', icon: Search, color: '#FF9431', bg: 'rgba(255,148,49,0.08)', badge: 'Discovery' },
   { title: 'Direct Access', sub: 'Skip agencies. Connect directly with verified creators for faster deals.', icon: Send, color: '#138808', bg: 'rgba(19,136,8,0.08)', badge: 'Access' },
-  { title: 'Campaign Impact', sub: 'Drive real results with our network of authentic and verified talent.', icon: CheckCircle2, color: '#3B82F6', bg: 'rgba(59,130,246,0.08)', badge: 'Impact' }
+  { title: 'Campaign Impact', sub: 'Drive real results with our network of authentic and verified talent.', icon: Check, color: '#3B82F6', bg: 'rgba(59,130,246,0.08)', badge: 'Impact' }
 ];
 
 function CardContent({ s, i, mob, isHovered }) {
@@ -146,7 +146,7 @@ export default function Testimonials({ mob }) {
             background: '#fff', border: '1.5px solid rgba(0,0,0,0.06)', 
             borderRadius: 100, marginBottom: 24, boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
           }}>
-            <Sparkles size={14} color="#FF9431" fill="#FF9431" />
+            <Star size={14} color="#FF9431" fill="#FF9431" />
             <span style={{ fontSize: 12, fontWeight: 900, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '2.5px' }}>Platform Blueprint</span>
           </div>
 

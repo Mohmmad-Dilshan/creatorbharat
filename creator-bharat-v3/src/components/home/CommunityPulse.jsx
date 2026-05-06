@@ -12,7 +12,7 @@
 
 import React, { useState } from 'react';
 import { W, fmt } from '../../utils/helpers';
-import { User, Mic, Wallet, ArrowRight, CheckCircle } from 'lucide-react';
+import { User, Radio, CreditCard, ArrowRight, CheckCircle } from 'lucide-react';
 import MiniIndiaMap from '../MiniIndiaMap';
 import { usePlatformStats } from '../../hooks/usePlatformStats';
 
@@ -32,7 +32,7 @@ const STEP_CONFIG = [
     tag: 'Spotlight',
     h: 'Get National Spotlight',
     d: 'Podcasts, articles, and featured placements — we amplify Tier 2 & 3 creator stories to a national audience. Local voice, national reach.',
-    icon: Mic,
+    icon: Radio,
     color: '#10B981',
     bg: 'rgba(16,185,129,0.08)',
   },
@@ -41,7 +41,7 @@ const STEP_CONFIG = [
     tag: 'Monetize',
     h: 'Direct Deals, 0% Commission',
     d: 'No middlemen. Connect with brands directly and keep 100% of what you earn. We are not an agency — we are your growth partner.',
-    icon: Wallet,
+    icon: CreditCard,
     color: '#3B82F6',
     bg: 'rgba(59,130,246,0.08)',
   },

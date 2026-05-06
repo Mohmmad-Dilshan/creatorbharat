@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useApp } from '../../context';
-import { T } from '../../theme';
 import { Logo, Btn } from '../Primitives';
-import { scrollToTop } from '../../utils/helpers';
+import { Menu, X, User as UserIcon } from 'lucide-react';
 
 export default function Navbar() {
   const { st, dsp } = useApp();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [scroll, setScroll] = useState(false);
   const [mob, setMob] = useState(window.innerWidth < 768);
 
@@ -22,91 +24,70 @@ export default function Navbar() {
     };
   }, []);
 
-  const go = (p) => { 
-    dsp({ t: 'GO', p }); 
-    scrollToTop(); 
+  const go = (path) => { 
+    navigate(path); 
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     dsp({ t: 'UI', v: { mobileMenu: false } }); 
   };
 
   const isCreator = st.role === 'creator', isBrand = st.role === 'brand';
   const links = isCreator
-    ? [['dashboard', 'Dashboard'], ['campaigns', 'Deals'], ['leaderboard', 'Leaderboard'], ['blog', 'Articles']]
+    ? [['/dashboard', 'Dashboard'], ['/campaigns', 'Deals'], ['/leaderboard', 'Top List'], ['/blog', 'Articles']]
     : isBrand
-      ? [['creators', 'Discover'], ['campaigns', 'My Ads'], ['blog', 'Articles']]
-      : [['creators', 'Creators'], ['campaigns', 'Campaigns'], ['monetize', 'Monetize 💰'], ['blog', 'Articles'], ['about', 'About']];
+      ? [['/creators', 'Discover'], ['/campaigns', 'Campaigns'], ['/blog', 'Articles']]
+      : [['/creators', 'Marketplace'], ['/campaigns', 'Opportunities'], ['/monetize', 'Monetize'], ['/blog', 'News']];
 
   return (
     <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      zIndex: 5000,
+      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 999995,
       padding: mob ? '12px 16px' : (scroll ? '16px 40px' : '24px 40px'),
-      transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+      transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
       pointerEvents: 'none'
     }}>
       <div style={{
-        maxWidth: 1200,
-        width: '100%',
-        margin: '0 auto',
-        position: 'relative',
-        borderRadius: 100,
-        padding: 2,
-        overflow: 'hidden',
-        pointerEvents: 'auto',
-        boxShadow: scroll ? '0 20px 40px -10px rgba(0,0,0,0.1)' : '0 10px 30px -10px rgba(0,0,0,0.05)',
-        transition: 'all 0.5s ease',
-        boxSizing: 'border-box'
+        maxWidth: 1280, width: '100%', margin: '0 auto', position: 'relative',
+        borderRadius: 100, padding: '1.5px', overflow: 'hidden', pointerEvents: 'auto',
+        boxShadow: scroll ? '0 20px 50px rgba(0,0,0,0.1)' : '0 10px 30px rgba(0,0,0,0.05)',
+        transition: 'all 0.5s ease'
       }}>
-        {/* Animated Indian Flag Border */}
+        {/* Subtler Animated Tiranga Border */}
         <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          width: '200%',
-          height: '500%',
-          background: 'conic-gradient(from 0deg, #138808 0%, #FFFFFF 20%, #FF9933 40%, #FF9933 60%, #FFFFFF 80%, #138808 100%)',
-          animation: 'spinBorder 5s linear infinite',
-          zIndex: 0
+          position: 'absolute', top: '50%', left: '50%', width: '150%', height: '400%',
+          background: 'conic-gradient(from 0deg, transparent 0%, #138808 10%, #FFFFFF 20%, #FF9933 30%, transparent 40%, transparent 100%)',
+          animation: 'spinBorder 8s linear infinite',
+          zIndex: 0, opacity: scroll ? 1 : 0.6
         }} />
 
         <nav style={{
-          position: 'relative',
-          zIndex: 1,
-          background: scroll ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.8)',
-          backdropFilter: 'blur(30px)',
-          WebkitBackdropFilter: 'blur(30px)',
-          borderRadius: 100,
-          padding: mob ? '0 10px 0 16px' : '0 24px',
-          height: mob ? 52 : 76,
-          display: 'flex',
-          alignItems: 'center',
-          gap: mob ? 8 : 24
+          position: 'relative', zIndex: 1,
+          background: scroll ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.85)',
+          backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)',
+          borderRadius: 100, padding: mob ? '0 12px 0 20px' : '0 32px',
+          height: mob ? 54 : 72, display: 'flex', alignItems: 'center', gap: 24
         }}>
-          <Logo onClick={() => go('home')} sm={mob} />
+          <Logo onClick={() => go('/')} sm={mob} />
 
           {!mob && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, marginLeft: 48 }}>
-              {links.map(([p, l]) => (
-                <button
-                  key={p}
-                  onClick={() => go(p)}
-                  className="nav-link"
-                  style={{
-                    padding: '8px 16px',
-                    background: st.page === p ? 'rgba(0,0,0,0.05)' : 'transparent',
-                    border: 'none',
-                    color: st.page === p ? '#111' : 'rgba(0,0,0,0.5)',
-                    fontWeight: 800,
-                    fontSize: 12.5,
-                    cursor: 'pointer',
-                    borderRadius: 100
-                  }}
-                >
-                  {l}
-                </button>
-              ))}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, marginLeft: 40 }}>
+              {links.map(([path, label]) => {
+                const active = location.pathname === path;
+                return (
+                  <button
+                    key={path}
+                    onClick={() => go(path)}
+                    className="nav-link"
+                    style={{
+                      padding: '10px 18px', borderRadius: 100, border: 'none',
+                      background: active ? 'rgba(0,0,0,0.04)' : 'transparent',
+                      color: active ? '#111' : 'rgba(0,0,0,0.5)',
+                      fontWeight: 800, fontSize: 13, cursor: 'pointer',
+                      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                    }}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
             </div>
           )}
 
@@ -115,34 +96,27 @@ export default function Navbar() {
               <button
                 onClick={() => dsp({ t: 'UI', v: { mobileMenu: !st.ui.mobileMenu } })}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                  background: '#fff',
-                  border: '1.5px solid rgba(0,0,0,0.04)',
-                  borderRadius: 100,
-                  padding: mob ? '4px' : '6px 16px 6px 6px',
-                  cursor: 'pointer',
-                  boxShadow: '0 8px 16px rgba(0,0,0,0.03)'
+                  display: 'flex', alignItems: 'center', gap: 10, background: '#fff',
+                  border: '1px solid rgba(0,0,0,0.06)', borderRadius: 100,
+                  padding: mob ? '4px' : '5px 16px 5px 5px', cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.03)', transition: '0.2s'
                 }}
               >
-                <img src={st.user.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name)}&background=FF9431&color=fff`} style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }} alt="" />
+                <img src={st.user.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name)}&background=FF9431&color=fff`} style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover' }} alt="" />
                 {!mob && <span style={{ fontSize: 13, fontWeight: 900, color: '#111' }}>{st.user.name.split(' ')[0]}</span>}
               </button>
             ) : (
               <>
-                {!mob && <button onClick={() => dsp({ t: 'UI', v: { authModal: true } })} style={{ background: 'transparent', border: 'none', color: '#111', fontSize: 13, fontWeight: 800, cursor: 'pointer', padding: '0 12px' }}>Login</button>}
-                <Btn lg onClick={() => go('apply')} style={{ fontWeight: 900, borderRadius: 100, padding: mob ? '10px 18px' : '10px 28px', fontSize: 12.5, background: '#111', color: '#fff', border: 'none' }}>
-                  {mob ? 'Join' : 'Start My Journey'}
+                {!mob && <button onClick={() => go('/login')} style={{ background: 'transparent', border: 'none', color: '#111', fontSize: 13, fontWeight: 800, cursor: 'pointer', padding: '0 16px' }}>Sign In</button>}
+                <Btn lg onClick={() => go('/apply')} style={{ fontWeight: 900, borderRadius: 100, padding: mob ? '10px 20px' : '12px 32px', fontSize: 13, background: '#111', color: '#fff', border: 'none', boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }}>
+                  {mob ? 'Join' : 'Claim Your Profile'}
                 </Btn>
                 {mob && (
                   <button
                     onClick={() => dsp({ t: 'UI', v: { mobileMenu: !st.ui.mobileMenu } })}
-                    style={{ background: '#F3F4F6', border: 'none', width: 44, height: 44, borderRadius: '50%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, cursor: 'pointer' }}
+                    style={{ background: '#f1f5f9', border: 'none', width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#111' }}
                   >
-                    <div className="hamburger-bar" style={{ transform: st.ui.mobileMenu ? 'rotate(45deg) translate(4px, 4px)' : 'none' }} />
-                    <div className="hamburger-bar" style={{ opacity: st.ui.mobileMenu ? 0 : 1 }} />
-                    <div className="hamburger-bar" style={{ transform: st.ui.mobileMenu ? 'rotate(-45deg) translate(4px, -4px)' : 'none' }} />
+                    {st.ui.mobileMenu ? <X size={22} /> : <Menu size={22} />}
                   </button>
                 )}
               </>
@@ -153,3 +127,4 @@ export default function Navbar() {
     </div>
   );
 }
+

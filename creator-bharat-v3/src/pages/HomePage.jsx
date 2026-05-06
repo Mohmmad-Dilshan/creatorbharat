@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context';
 import { useFeaturedCreators } from '../hooks/useFeaturedCreators';
 import { useStateCreatorCounts } from '../hooks/useStateCreatorCounts';
@@ -17,6 +18,7 @@ import Cta from '../components/home/Cta';
 
 export default function HomePage() {
   const { st, dsp } = useApp();
+  const navigate = useNavigate();
   const [mob, setMob] = useState(window.innerWidth < 768);
 
   // All data fetching via hooks — zero raw API calls in this file
@@ -29,8 +31,8 @@ export default function HomePage() {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  const go = (p, sel) => {
-    dsp({ t: 'GO', p, sel });
+  const go = (path) => {
+    navigate(path);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useApp } from './context';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
 
 // Pages
@@ -25,40 +25,44 @@ import BrandRegisterPage from './pages/BrandRegisterPage';
 import BrandDashboardPage from './pages/BrandDashboardPage';
 import CampaignBuilderPage from './pages/CampaignBuilderPage';
 import ComparePage from './pages/ComparePage';
+import LoginPage from './pages/LoginPage';
 
 export default function App() {
-  const { st } = useApp();
+  const location = useLocation();
 
-  const pages = {
-    'home': <HomePage />,
-    'creators': <CreatorsPage />,
-    'creator-profile': <CreatorProfilePage />,
-    'campaigns': <CampaignsPage />,
-    'blog': <BlogPage />,
-    'blog-article': <BlogArticlePage />,
-    'monetize': <MonetizationPage />,
-    'pricing': <PricingPage />,
-    'leaderboard': <LeaderboardPage />,
-    'rate-calc': <RateCalcPage />,
-    'creator-score': <CreatorScorePage />,
-    'about': <AboutPage />,
-    'contact': <ContactPage />,
-    'apply': <ApplyPage />,
-    'dashboard': <DashboardPage />,
-    'settings': <SettingsPage />,
-    'saved': <SavedPage />,
-    'applications': <ApplicationsPage />,
-    'brand-register': <BrandRegisterPage />,
-    'brand-dashboard': <BrandDashboardPage />,
-    'campaign-builder': <CampaignBuilderPage />,
-    'compare': <ComparePage />,
-  };
+  // Pages that should not use the standard layout
+  const noLayoutPaths = ['/apply', '/brand-register', '/login'];
+  const useLayout = !noLayoutPaths.includes(location.pathname);
 
-  const currentPage = pages[st.page] || <HomePage />;
+  const AppRoutes = () => (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/creators" element={<CreatorsPage />} />
+      <Route path="/creator/:id" element={<CreatorProfilePage />} />
+      <Route path="/campaigns" element={<CampaignsPage />} />
+      <Route path="/blog" element={<BlogPage />} />
+      <Route path="/blog/:slug" element={<BlogArticlePage />} />
+      <Route path="/monetize" element={<MonetizationPage />} />
+      <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/leaderboard" element={<LeaderboardPage />} />
+      <Route path="/rate-calc" element={<RateCalcPage />} />
+      <Route path="/creator-score" element={<CreatorScorePage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/apply" element={<ApplyPage />} />
+      <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/settings" element={<SettingsPage />} />
+      <Route path="/saved" element={<SavedPage />} />
+      <Route path="/applications" element={<ApplicationsPage />} />
+      <Route path="/brand-register" element={<BrandRegisterPage />} />
+      <Route path="/brand-dashboard" element={<BrandDashboardPage />} />
+      <Route path="/campaign-builder" element={<CampaignBuilderPage />} />
+      <Route path="/compare" element={<ComparePage />} />
+      {/* Fallback */}
+      <Route path="*" element={<HomePage />} />
+    </Routes>
+  );
 
-  // Some pages might not want the standard layout (like Apply or Register)
-  const noLayoutPages = ['apply', 'brand-register'];
-  const useLayout = !noLayoutPages.includes(st.page);
-
-  return useLayout ? <Layout>{currentPage}</Layout> : currentPage;
+  return useLayout ? <Layout><AppRoutes /></Layout> : <AppRoutes />;
 }
