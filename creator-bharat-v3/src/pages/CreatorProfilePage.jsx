@@ -1,9 +1,8 @@
-/* eslint-disable react/prop-types */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import { useApp } from '../context';
-
-import { W, scrollToTop, fmt } from '../utils/helpers';
-
+import { apiCall } from '../utils/api';
+import { W, scrollToTop, fmt, LS } from '../utils/helpers';
 import { Btn, Bdg, Ring, Empty, Modal, Fld, Card } from '../components/Primitives';
 
 
@@ -63,10 +62,15 @@ const PackageSuites = ({ c, setShowCollab }) => {
 };
 
 export default function CreatorProfilePage() {
+  const { id } = useParams();
   const { st, dsp } = useApp();
+  const [c, setC] = useState(st?.sel?.creator || null);
+  const [ld, setLd] = useState(!c);
   const [mob, setMob] = useState(window.innerWidth < 768);
   const [showCollab, setShowCollab] = useState(false);
   const [collabMsg, setCollabMsg] = useState('');
+
+  const go = useCallback((p, sel) => { dsp({ t: 'GO', p, sel }); scrollToTop(); }, [dsp]);
 
   useEffect(() => {
     const h = () => setMob(window.innerWidth < 768);
@@ -74,10 +78,35 @@ export default function CreatorProfilePage() {
     return () => window.removeEventListener('resize', h);
   }, []);
 
-  const c = st?.sel?.creator || st?.creatorProfile;
-  const go = (p, sel) => { dsp({ t: 'GO', p, sel }); scrollToTop(); };
+  useEffect(() => {
+    if (st?.sel?.creator) {
+      setC(st.sel.creator);
+      setLd(false);
+      return;
+    }
+
+    if (!id) return;
+
+    // Try Local Cache
+    const localList = LS.get('cb_creators', []);
+    const found = localList.find(x => String(x.id) === id || x.slug === id || x.handle === id);
+    if (found) {
+      setC(found);
+      setLd(false);
+    } else {
+      setLd(true);
+      apiCall(`/creators/${id}`).then(res => {
+        setC(res.creator || res);
+        setLd(false);
+      }).catch(() => {
+        setLd(false);
+      });
+    }
+  }, [id, st.sel.creator]);
+
   const toast = (msg, type) => dsp({ t: 'TOAST', d: { type: type || 'info', msg } });
 
+  if (ld) return <div style={{ ...W(), padding: '120px 20px', textAlign: 'center' }}>Loading Creator...</div>;
   if (!c) return <div style={{ ...W(), padding: '120px 20px', textAlign: 'center' }}><Empty icon="👤" title="Creator not found" sub="Aap jo creator dhoond rahe hain wo shayad abhi available nahi hai." ctaLabel="Browse Creators" onCta={() => go('creators')} /></div>;
 
   const score = c?.score || 85;
