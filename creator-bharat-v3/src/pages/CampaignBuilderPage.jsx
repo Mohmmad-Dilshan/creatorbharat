@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context';
 import { W, scrollToTop, LS } from '../utils/helpers';
 import { Fld, Card, Empty } from '../components/Primitives';
-import EliteHeader from '../components/layout/EliteHeader';
 
 export default function CampaignBuilderPage() {
   const { st, dsp } = useApp();
@@ -76,38 +75,39 @@ export default function CampaignBuilderPage() {
   ];
 
   return (
-    <div style={{ background: '#f8fafc', minHeight: '100vh', paddingBottom: 100 }}>
-      <EliteHeader 
-        eyebrow="Architect Mode"
-        title="Create New Campaign"
-        sub="Define your mission and find the perfect creators in Bharat."
-        gradient="green"
-        light={true}
-        compact
-      >
-        {/* Progress Indicator */}
-        <div style={{ display: 'flex', gap: 12, marginTop: 24, justifyContent: 'center' }}>
-           {steps.map(s => (
-             <div key={s.n} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+    <div style={{ paddingBottom: 100 }}>
+      {/* Builder Top Section */}
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 20 }}>
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 800, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8 }}>Architect Mode</p>
+            <h1 style={{ fontSize: 32, fontWeight: 900, color: '#111', fontFamily: "'Outfit', sans-serif" }}>Create New Campaign</h1>
+            <p style={{ fontSize: 15, color: '#64748b', marginTop: 4, fontWeight: 500 }}>Define your mission and find the perfect creators in Bharat.</p>
+          </div>
+          
+          {/* Progress Indicator */}
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', background: '#fff', padding: '12px 24px', borderRadius: 20, border: '1px solid rgba(0,0,0,0.05)' }}>
+            {steps.map(s => (
+              <div key={s.n} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ 
-                  width: 36, height: 36, borderRadius: 12, 
-                  background: step >= s.n ? '#10B981' : 'rgba(255,255,255,0.15)', 
-                  color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                  fontSize: 14, fontWeight: 900, transition: 'all 0.3s',
-                  boxShadow: step === s.n ? '0 0 15px rgba(16,185,129,0.4)' : 'none',
-                  border: step === s.n ? '2px solid #fff' : 'none'
+                  width: 28, height: 28, borderRadius: 8, 
+                  background: step >= s.n ? '#10B981' : '#f1f5f9', 
+                  color: step >= s.n ? '#fff' : '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                  fontSize: 12, fontWeight: 900, transition: 'all 0.3s',
+                  border: step === s.n ? '2px solid #10B981' : 'none'
                 }}>
                   {step > s.n ? '✓' : s.i}
                 </div>
-                {!mob && <span style={{ color: step >= s.n ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>{s.l}</span>}
-                {s.n < 3 && <div style={{ width: mob ? 10 : 30, height: 2, background: step > s.n ? '#10B981' : 'rgba(255,255,255,0.1)' }} />}
-             </div>
-           ))}
+                {!mob && <span style={{ color: step >= s.n ? '#111' : '#94a3b8', fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>{s.l}</span>}
+                {s.n < 3 && <div style={{ width: 12, height: 2, background: step > s.n ? '#10B981' : '#f1f5f9' }} />}
+              </div>
+            ))}
+          </div>
         </div>
-      </EliteHeader>
+      </div>
 
-      <div style={{ marginTop: -40, position: 'relative', zIndex: 10 }}>
-        <div style={W(720)}>
+      <div style={{ position: 'relative', zIndex: 10 }}>
+        <div>
           <Card style={{ padding: mob ? '32px 20px' : '48px', background: '#fff', borderRadius: 32, border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 30px 70px rgba(0,0,0,0.04)' }}>
             
             <AnimatePresence mode="wait">

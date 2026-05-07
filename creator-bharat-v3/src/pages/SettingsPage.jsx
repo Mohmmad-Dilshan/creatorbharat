@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
 import { W, LS } from '../utils/helpers';
 import { Btn, Card, Fld, Empty, Bdg } from '../components/Primitives';
-import EliteHeader from '../components/layout/EliteHeader';
 
 export default function SettingsPage() {
   const { st, dsp } = useApp();
@@ -49,18 +48,16 @@ export default function SettingsPage() {
   };
 
   return (
-    <div style={{ background: '#f8fafc', minHeight: '100vh', paddingBottom: 80 }}>
-      <EliteHeader 
-        eyebrow="Console Management"
-        title="Settings"
-        sub="Control your identity, security, and commercial configurations."
-        gradient="saffron"
-        light={true}
-        compact
-      />
+    <div style={{ paddingBottom: 80 }}>
+      {/* Settings Top Section */}
+      <div style={{ marginBottom: 32 }}>
+        <p style={{ fontSize: 13, fontWeight: 800, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8 }}>Console Management</p>
+        <h1 style={{ fontSize: 32, fontWeight: 900, color: '#111', fontFamily: "'Outfit', sans-serif" }}>Settings</h1>
+        <p style={{ fontSize: 15, color: '#64748b', marginTop: 4, fontWeight: 500 }}>Control your identity, security, and commercial configurations.</p>
+      </div>
 
-      <div style={{ marginTop: -40, position: 'relative', zIndex: 10 }}>
-        <div style={W(1100)}>
+      <div style={{ position: 'relative', zIndex: 10 }}>
+        <div>
           <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: 24, padding: mob ? '0 16px' : 0 }}>
              {/* Sidebar Navigation */}
              <div style={{ width: mob ? '100%' : 260, flexShrink: 0 }}>

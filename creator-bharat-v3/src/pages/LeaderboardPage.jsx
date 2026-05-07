@@ -3,7 +3,6 @@ import { useApp } from '../context';
 import { W, scrollToTop, fmt, LS } from '../utils/helpers';
 import { apiCall } from '../utils/api';
 import { Empty } from '../components/Primitives';
-import EliteHeader from '../components/layout/EliteHeader';
 
 /* eslint-disable react/prop-types */
 const PodiumItem = ({ c, idx, isWinner, mob, onClick, medals, medalColors }) => {
@@ -63,33 +62,37 @@ export default function LeaderboardPage() {
 
   return (
     <div style={{ background: '#f8fafc', minHeight: '100vh', paddingBottom: 100 }}>
-      <EliteHeader 
-        eyebrow="Influence Rankings"
-        title={<>The <span style={{ background: 'linear-gradient(90deg, #FF9431 20%, #475569 50%, #138808 80%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Elite</span> 100</>}
-        sub="The definitive ranking of Bharat's most impactful creators."
-        gradient="gold"
-        light={true}
-        compact
-      >
-        <div style={{ display: 'flex', gap: 12, marginTop: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
-          {['weekly', 'monthly', 'all'].map(p => (
-            <button 
-              key={p} 
-              onClick={() => setPeriod(p)} 
-              style={{ 
-                padding: '10px 24px', borderRadius: 100, border: 'none', 
-                background: period === p ? '#111' : 'rgba(255,255,255,0.15)', 
-                color: '#fff', fontSize: 11, fontWeight: 900, cursor: 'pointer', transition: 'all 0.2s',
-                textTransform: 'uppercase', letterSpacing: '1px'
-              }}
-            >
-              {p}
-            </button>
-          ))}
+      {/* Rankings Top Section */}
+      <div style={{ background: '#fff', borderBottom: '1px solid rgba(0,0,0,0.05)', padding: '60px 0 80px', marginBottom: 40 }}>
+        <div style={W(1100)}>
+          <div style={{ textAlign: 'center' }}>
+            <p style={{ fontSize: 13, fontWeight: 800, color: '#FFD700', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 12 }}>Influence Rankings</p>
+            <h1 style={{ fontSize: mob ? 40 : 56, fontWeight: 900, color: '#111', fontFamily: "'Outfit', sans-serif", letterSpacing: '-0.03em', lineHeight: 1.1 }}>
+              The <span style={{ background: 'linear-gradient(90deg, #FF9431 20%, #475569 50%, #138808 80%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Elite</span> 100
+            </h1>
+            <p style={{ fontSize: 18, color: '#64748b', marginTop: 16, fontWeight: 500, maxWidth: 600, margin: '16px auto 32px' }}>The definitive ranking of Bharat's most impactful creators, verified by engagement data.</p>
+            
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+              {['weekly', 'monthly', 'all'].map(p => (
+                <button 
+                  key={p} 
+                  onClick={() => setPeriod(p)} 
+                  style={{ 
+                    padding: '12px 32px', borderRadius: 100, border: period === p ? 'none' : '1px solid rgba(0,0,0,0.1)', 
+                    background: period === p ? '#111' : '#fff', 
+                    color: period === p ? '#fff' : '#64748b', fontSize: 12, fontWeight: 900, cursor: 'pointer', transition: 'all 0.2s',
+                    textTransform: 'uppercase', letterSpacing: '1px'
+                  }}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-      </EliteHeader>
+      </div>
 
-      <div style={{ marginTop: -40, position: 'relative', zIndex: 10 }}>
+      <div style={{ marginTop: -80, position: 'relative', zIndex: 10 }}>
         <div style={W(1100)}>
           {/* Podium for Top 3 */}
           {top3.length > 0 && (

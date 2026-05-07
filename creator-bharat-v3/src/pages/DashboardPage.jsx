@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context';
 import { W, LS, fmt } from '../utils/helpers';
 import { Btn, Card, Bdg, Bar, Empty, Ring } from '../components/Primitives';
-import EliteHeader from '../components/layout/EliteHeader';
 import { motion } from 'framer-motion';
 import { LayoutDashboard, Megaphone, Trophy, ShieldCheck, ExternalLink } from 'lucide-react';
 
@@ -54,34 +53,37 @@ export default function DashboardPage() {
   };
 
   return (
-    <div style={{ background: '#f8fafc', minHeight: '100vh', paddingBottom: 80 }}>
-      <EliteHeader 
-        eyebrow="Mission Control"
-        title={`Namaste, ${c?.name?.split(' ')[0] || st.user.name.split(' ')[0]}!`}
-        sub="Your digital empire at a glance. Manage deals and scale your identity."
-        gradient="saffron"
-        light={true}
-        compact
-      >
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 12 }}>
-          <Btn 
-            variant="outline" 
-            onClick={() => navigate(`/creator/${c?.handle || 'me'}`)}
-            style={{ borderRadius: 100, background: 'rgba(255,255,255,0.8)', padding: '10px 20px', fontSize: 13, fontWeight: 700 }}
-          >
-            <ExternalLink size={14} style={{ marginRight: 6 }} /> Public Profile
-          </Btn>
-          <Btn 
-            onClick={() => navigate('/campaigns')}
-            style={{ borderRadius: 100, background: '#111', color: '#fff', padding: '10px 24px', fontSize: 13, fontWeight: 800 }}
-          >
-            🔥 Find Campaigns
-          </Btn>
+    <div style={{ paddingBottom: 80 }}>
+      {/* Dashboard Top Section */}
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 20 }}>
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 800, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8 }}>Mission Control</p>
+            <h1 style={{ fontSize: 32, fontWeight: 900, color: '#111', fontFamily: "'Outfit', sans-serif" }}>
+              Namaste, {c?.name?.split(' ')[0] || st.user.name.split(' ')[0]}!
+            </h1>
+            <p style={{ fontSize: 15, color: '#64748b', marginTop: 4, fontWeight: 500 }}>Your digital empire at a glance. Manage deals and scale your identity.</p>
+          </div>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <Btn 
+              variant="outline" 
+              onClick={() => navigate(`/creator/${c?.handle || 'me'}`)}
+              style={{ borderRadius: 12, background: '#fff', padding: '12px 20px', fontSize: 13, fontWeight: 700 }}
+            >
+              <ExternalLink size={14} style={{ marginRight: 8 }} /> View Public Profile
+            </Btn>
+            <Btn 
+              onClick={() => navigate('/campaigns')}
+              style={{ borderRadius: 12, background: '#111', color: '#fff', padding: '12px 24px', fontSize: 13, fontWeight: 800 }}
+            >
+              🔥 Find Campaigns
+            </Btn>
+          </div>
         </div>
-      </EliteHeader>
+      </div>
 
-      <div style={{ marginTop: -40, position: 'relative', zIndex: 10 }}>
-        <div style={W(1180)}>
+      <div style={{ position: 'relative', zIndex: 10 }}>
+        <div>
           {/* Quick Stats Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: 16, marginBottom: 32, padding: mob ? '0 16px' : 0 }}>
              {stats.map((s, i) => {

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context';
 import { W, LS, fmt } from '../utils/helpers';
 import { Btn, Card, Bdg, Empty } from '../components/Primitives';
-import EliteHeader from '../components/layout/EliteHeader';
 import { motion } from 'framer-motion';
 import { Rocket, FileText, Star, Eye, Search, Plus, ExternalLink, Zap } from 'lucide-react';
 
@@ -43,34 +42,37 @@ export default function BrandDashboardPage() {
   ];
 
   return (
-    <div style={{ background: '#f8fafc', minHeight: '100vh', paddingBottom: 80 }}>
-      <EliteHeader 
-        eyebrow="Enterprise Console"
-        title={myBrand.companyName || myBrand.name || 'Brand Console'}
-        sub="Monitor your market impact and scale your creator ecosystem."
-        gradient="green"
-        light={true}
-        compact
-      >
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 12 }}>
-          <Btn 
-            variant="outline" 
-            onClick={() => navigate('/creators')}
-            style={{ borderRadius: 100, background: 'rgba(255,255,255,0.8)', padding: '10px 20px', fontSize: 13, fontWeight: 700 }}
-          >
-            <Search size={14} style={{ marginRight: 6 }} /> Find Talent
-          </Btn>
-          <Btn 
-            onClick={() => navigate('/campaign-builder')}
-            style={{ borderRadius: 100, background: '#111', color: '#fff', padding: '10px 24px', fontSize: 13, fontWeight: 800 }}
-          >
-            <Plus size={14} style={{ marginRight: 6 }} /> New Campaign
-          </Btn>
+    <div style={{ paddingBottom: 80 }}>
+      {/* Brand Top Section */}
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 20 }}>
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 800, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8 }}>Enterprise Console</p>
+            <h1 style={{ fontSize: 32, fontWeight: 900, color: '#111', fontFamily: "'Outfit', sans-serif" }}>
+              {myBrand.companyName || myBrand.name || 'Brand Console'}
+            </h1>
+            <p style={{ fontSize: 15, color: '#64748b', marginTop: 4, fontWeight: 500 }}>Monitor your market impact and scale your creator ecosystem.</p>
+          </div>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <Btn 
+              variant="outline" 
+              onClick={() => navigate('/creators')}
+              style={{ borderRadius: 12, background: '#fff', padding: '12px 20px', fontSize: 13, fontWeight: 700 }}
+            >
+              <Search size={14} style={{ marginRight: 8 }} /> Find Talent
+            </Btn>
+            <Btn 
+              onClick={() => navigate('/campaign-builder')}
+              style={{ borderRadius: 12, background: '#111', color: '#fff', padding: '12px 24px', fontSize: 13, fontWeight: 800 }}
+            >
+              <Plus size={14} style={{ marginRight: 8 }} /> New Campaign
+            </Btn>
+          </div>
         </div>
-      </EliteHeader>
+      </div>
 
-      <div style={{ marginTop: -40, position: 'relative', zIndex: 10 }}>
-        <div style={W(1180)}>
+      <div style={{ position: 'relative', zIndex: 10 }}>
+        <div>
           {/* Stats Bar */}
           <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2,1fr)' : 'repeat(4,1fr)', gap: 16, marginBottom: 32, padding: mob ? '0 16px' : 0 }}>
              {stats.map((s, i) => {

@@ -19,16 +19,17 @@ import ContactPage from './pages/ContactPage';
 import ApplyPage from './pages/ApplyPage';
 import DashboardPage from './pages/DashboardPage';
 import SettingsPage from './pages/SettingsPage';
-import SavedPage from './pages/SavedPage';
 import ApplicationsPage from './pages/ApplicationsPage';
 import BrandRegisterPage from './pages/BrandRegisterPage';
 import BrandDashboardPage from './pages/BrandDashboardPage';
 import CampaignBuilderPage from './pages/CampaignBuilderPage';
 import ComparePage from './pages/ComparePage';
 import LoginPage from './pages/LoginPage';
+import WalletPage from './pages/WalletPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
 
+import DashboardLayout from './components/layout/DashboardLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const AppRoutes = () => (
@@ -54,7 +55,7 @@ const AppRoutes = () => (
     {/* Protected Creator Routes */}
     <Route path="/dashboard" element={<ProtectedRoute allowedRole="creator"><DashboardPage /></ProtectedRoute>} />
     <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-    <Route path="/saved" element={<ProtectedRoute allowedRole="creator"><SavedPage /></ProtectedRoute>} />
+    <Route path="/wallet" element={<ProtectedRoute allowedRole="creator"><WalletPage /></ProtectedRoute>} />
     <Route path="/applications" element={<ProtectedRoute allowedRole="creator"><ApplicationsPage /></ProtectedRoute>} />
     
     {/* Protected Brand Routes */}
@@ -73,7 +74,22 @@ export default function App() {
 
   // Pages that should not use the standard layout
   const noLayoutPaths = ['/apply', '/brand-register', '/login'];
-  const useLayout = !noLayoutPaths.includes(location.pathname);
+  
+  // Pages that should use the dashboard layout
+  const dashboardPaths = [
+    '/dashboard', 
+    '/brand-dashboard', 
+    '/settings', 
+    '/wallet', 
+    '/applications', 
+    '/campaign-builder'
+  ];
 
-  return useLayout ? <Layout><AppRoutes /></Layout> : <AppRoutes />;
+  const isNoLayout = noLayoutPaths.includes(location.pathname);
+  const isDashboard = dashboardPaths.includes(location.pathname);
+
+  if (isNoLayout) return <AppRoutes />;
+  if (isDashboard) return <DashboardLayout><AppRoutes /></DashboardLayout>;
+  
+  return <Layout><AppRoutes /></Layout>;
 }
