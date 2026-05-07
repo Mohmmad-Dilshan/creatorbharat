@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useApp } from '../../context';
 import { motion, AnimatePresence } from 'framer-motion';
-import { apiCall } from '../../utils/api';
 
 export default function CompareBar() {
   const { st, dsp } = useApp();
-  const [creators, setCreators] = useState([]);
-  const mob = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
+  const mob = globalThis.window === undefined ? false : globalThis.window.innerWidth < 768;
 
   useEffect(() => {
     if (st.compared.length > 0) {
@@ -20,7 +18,7 @@ export default function CompareBar() {
 
   const go = (p) => { 
     dsp({ t: 'GO', p }); 
-    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+    globalThis.window.scrollTo({ top: 0, behavior: 'smooth' }); 
   };
 
   return (
@@ -60,8 +58,8 @@ export default function CompareBar() {
                 >✕</button>
               </div>
             ))}
-            {[...Array(Math.max(0, 3 - st.compared.length))].map((_, i) => (
-              <div key={i} style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px dashed rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>+</div>
+            {[1, 2, 3].slice(st.compared.length).map(slot => (
+              <div key={`empty-slot-${slot}`} style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px dashed rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>+</div>
             ))}
           </div>
           

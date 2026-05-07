@@ -21,7 +21,7 @@ export async function fetchCreators({ limit = 250 } = {}) {
     const local = LS.get('cb_creators', []);
     const merged = [...remote];
     local.forEach(lc => {
-      if (!merged.find(c => c.id === lc.id || c.email === lc.email)) {
+      if (!merged.some(c => c.id === lc.id || c.email === lc.email)) {
         merged.push(lc);
       }
     });

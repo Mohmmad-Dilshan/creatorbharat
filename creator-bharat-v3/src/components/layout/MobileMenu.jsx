@@ -90,17 +90,17 @@ export default function MobileMenu({ open }) {
             <div style={{ flex: 1, overflowY: 'auto', padding: '28px', display: 'flex', flexDirection: 'column', gap: 32 }}>
               
               {/* QUICK SEARCH (MOCKUP) */}
-              <div 
+              <button 
                 onClick={() => { dsp({ t: 'UI', v: { mobileMenu: false } }); go('/creators'); }}
                 style={{ 
                   display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', 
                   background: '#F9FAFB', borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)',
-                  cursor: 'pointer'
+                  cursor: 'pointer', width: '100%', textAlign: 'left'
                 }}
               >
                 <Search size={18} color="rgba(0,0,0,0.4)" />
                 <span style={{ fontSize: 14, color: 'rgba(0,0,0,0.5)', fontWeight: 500 }}>Search creators, campaigns...</span>
-              </div>
+              </button>
 
               {/* MAIN NAVIGATION */}
               <div>
@@ -112,7 +112,7 @@ export default function MobileMenu({ open }) {
                     const Icon = n.i;
                     const isActive = location.pathname === n.path;
                     return (
-                      <motion.div
+                      <motion.button
                         key={n.path}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -124,7 +124,7 @@ export default function MobileMenu({ open }) {
                           padding: '14px 16px', borderRadius: 12, 
                           background: isActive ? 'rgba(0,0,0,0.05)' : 'transparent',
                           display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer',
-                          transition: 'all 0.2s ease'
+                          transition: 'all 0.2s ease', border: 'none', width: '100%', textAlign: 'left'
                         }}
                       >
                         <Icon size={18} color={isActive ? '#111' : 'rgba(0,0,0,0.6)'} />
@@ -135,7 +135,7 @@ export default function MobileMenu({ open }) {
                           flex: 1 
                         }}>{n.l}</span>
                         {isActive && <ChevronRight size={16} color="#111" style={{ opacity: 0.5 }} />}
-                      </motion.div>
+                      </motion.button>
                     );
                   })}
                 </div>
@@ -188,7 +188,7 @@ export default function MobileMenu({ open }) {
                   Resources
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {supportLinks.map((n, i) => {
+                  {supportLinks.map((n) => {
                     const Icon = n.i;
                     return (
                       <button 
@@ -252,7 +252,34 @@ export default function MobileMenu({ open }) {
               background: '#FAFAFA'
             }}>
               
-              {!st.user ? (
+              {st.user ? (
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+                    <img 
+                      src={(st.creatorProfile?.photo || st.creatorProfile?.avatarUrl) || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user?.name || 'U')}&background=111111&color=fff`} 
+                      style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }} 
+                      alt=""
+                    />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{st.user?.name || st.user?.companyName}</div>
+                      <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.5)' }}>
+                        {(() => {
+                          if (isCreator) return 'Creator Account';
+                          if (isBrand) return 'Brand Account';
+                          return 'User';
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => { dsp({ t: 'LOGOUT' }); dsp({ t: 'UI', v: { mobileMenu: false } }); navigate('/'); }} 
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '14px', background: 'rgba(239,68,68,0.1)', border: 'none', fontSize: 14, color: '#DC2626', cursor: 'pointer', fontWeight: 600, borderRadius: 10 }}
+                  >
+                    <LogOut size={16} />
+                    Log Out securely
+                  </button>
+                </div>
+              ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
                     <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -265,27 +292,6 @@ export default function MobileMenu({ open }) {
                   </div>
                   <Btn full lg onClick={() => { dsp({ t: 'UI', v: { authModal: true, mobileMenu: false } }); }} style={{ padding: '14px', borderRadius: 10, fontSize: 14, background: '#111', color: '#fff', border: 'none' }}>Sign In to Portal</Btn>
                   <Btn full lg variant="outline" onClick={() => { dsp({ t: 'UI', v: { authModal: true, authView: 'register', mobileMenu: false } }); }} style={{ padding: '14px', borderRadius: 10, fontSize: 14, background: '#fff', border: '1px solid rgba(0,0,0,0.1)', color: '#111' }}>Create Free Account</Btn>
-                </div>
-              ) : (
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                    <img 
-                      src={(st.creatorProfile?.photo || st.creatorProfile?.avatarUrl) || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user?.name || 'U')}&background=111111&color=fff`} 
-                      style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }} 
-                      alt=""
-                    />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{st.user?.name || st.user?.companyName}</div>
-                      <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.5)' }}>{isCreator ? 'Creator Account' : isBrand ? 'Brand Account' : 'User'}</div>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => { dsp({ t: 'LOGOUT' }); dsp({ t: 'UI', v: { mobileMenu: false } }); navigate('/'); }} 
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '14px', background: 'rgba(239,68,68,0.1)', border: 'none', fontSize: 14, color: '#DC2626', cursor: 'pointer', fontWeight: 600, borderRadius: 10 }}
-                  >
-                    <LogOut size={16} />
-                    Log Out securely
-                  </button>
                 </div>
               )}
             </div>

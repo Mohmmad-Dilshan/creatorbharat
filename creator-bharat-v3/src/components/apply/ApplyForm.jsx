@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Star, Target, CreditCard, ChevronRight, Check, ShieldCheck, Mail, MapPin, Hash, BarChart3, IndianRupee, Layers, Lock } from 'lucide-react';
+import { User, Star, Target, CreditCard, ChevronRight, ShieldCheck, Mail, MapPin, Hash, IndianRupee, Lock } from 'lucide-react';
 import { Btn, Fld, Chip } from '../Primitives';
 import { T } from '../../theme';
 import { fmt } from '../../utils/helpers';
@@ -24,20 +24,24 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
   const PLATFORMS = ['Instagram', 'YouTube', 'Twitter', 'LinkedIn'];
   const SERVICES = ['Sponsored Posts', 'Reels', 'YouTube Videos', 'Stories', 'Product Reviews', 'Event Attendance'];
 
+  const validateStep1 = (e) => {
+    if (!F.name) e.name = 'Full name is required';
+    if (!F.email || !/^\S+@\S+\.\S+$/.test(F.email)) e.email = 'Valid email is required';
+    if (!F.password || F.password.length < 6) e.password = 'Min 6 chars';
+    if (F.password !== F.confirm) e.confirm = 'Mismatched';
+  };
+
+  const validateStep2 = (e) => {
+    if (F.niche.length === 0) e.niche = 'Select niche';
+    if (F.platform.length === 0) e.platform = 'Select platform';
+    if (!F.followers) e.followers = 'Reach required';
+  };
+
   const validate = (s) => {
-    let e = {};
-    if (s === 1) {
-      if (!F.name) e.name = 'Full name is required';
-      if (!F.email || !/^\S+@\S+\.\S+$/.test(F.email)) e.email = 'Valid email is required';
-      if (!F.password || F.password.length < 6) e.password = 'Min 6 chars';
-      if (F.password !== F.confirm) e.confirm = 'Mismatched';
-    }
-    if (s === 2) {
-      if (F.niche.length === 0) e.niche = 'Select niche';
-      if (F.platform.length === 0) e.platform = 'Select platform';
-      if (!F.followers) e.followers = 'Reach required';
-    }
-    if (s === 3 && !F.rateMin) e.rateMin = 'Required';
+    const e = {};
+    if (s === 1) validateStep1(e);
+    else if (s === 2) validateStep2(e);
+    else if (s === 3 && !F.rateMin) e.rateMin = 'Required';
     
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -67,7 +71,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
       {/* Progress Bar */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 32 }}>
         {steps.map((s, i) => (
-          <div key={i} style={{ flex: 1, height: 4, borderRadius: 10, background: step > i ? T.saffron : '#f1f5f9', transition: 'all 0.4s' }} />
+          <div key={s.t} style={{ flex: 1, height: 4, borderRadius: 10, background: step > i ? T.saffron : '#f1f5f9', transition: 'all 0.4s' }} />
         ))}
       </div>
 
