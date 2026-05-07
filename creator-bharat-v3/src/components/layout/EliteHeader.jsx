@@ -1,7 +1,63 @@
 import React, { memo } from 'react';
+import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { W } from '../../utils/helpers';
-import { SH } from '../Primitives';
+
+/**
+ * BackgroundBlobs: Animated 'Tiranga' background effect
+ */
+const BackgroundBlobs = memo(() => (
+  <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 2 }}>
+    {/* Saffron Blob */}
+    <motion.div 
+      animate={{ 
+        x: [0, 40, -20, 0],
+        y: [0, -30, 20, 0],
+        scale: [1, 1.2, 0.9, 1],
+        rotate: [0, 5, -5, 0]
+      }}
+      transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+      style={{ 
+        position: 'absolute', top: '-20%', left: '10%', width: '600px', height: '600px', 
+        background: 'radial-gradient(circle, rgba(255,148,49,0.35) 0%, transparent 70%)', 
+        borderRadius: '50%', filter: 'blur(80px)'
+      }} 
+    />
+    
+    {/* White Glow Blob */}
+    <motion.div 
+      animate={{ 
+        x: [0, -20, 0],
+        y: [0, 20, 0],
+        opacity: [0.3, 0.5, 0.3]
+      }}
+      transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+      style={{ 
+        position: 'absolute', top: '10%', left: '30%', width: '400px', height: '400px', 
+        background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%)', 
+        borderRadius: '50%', filter: 'blur(60px)'
+      }} 
+    />
+
+    {/* Green Blob */}
+    <motion.div 
+      animate={{ 
+        x: [0, -50, 30, 0],
+        y: [0, 40, -20, 0],
+        scale: [1, 1.3, 1],
+        rotate: [0, -8, 8, 0]
+      }}
+      transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+      style={{ 
+        position: 'absolute', bottom: '-20%', right: '10%', width: '600px', height: '600px', 
+        background: 'radial-gradient(circle, rgba(18,136,7,0.25) 0%, transparent 70%)', 
+        borderRadius: '50%', filter: 'blur(90px)'
+      }} 
+    />
+  </div>
+));
+
+BackgroundBlobs.displayName = 'BackgroundBlobs';
 
 /**
  * EliteHeader: A premium, reusable header component for internal pages.
@@ -12,21 +68,27 @@ const EliteHeader = memo(({
   title, 
   sub, 
   children, 
-  gradient = 'saffron', 
   maxWidth = 1100,
   light = false,
   compact = false
 }) => {
-  const mob = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
-  const gradients = {
-    saffron: 'radial-gradient(circle at 50% 50%, rgba(255,148,49,0.1), transparent 70%)',
-    green: 'radial-gradient(circle at 50% 50%, rgba(18,136,7,0.08), transparent 70%)',
-    blue: 'radial-gradient(circle at 50% 50%, rgba(37,99,235,0.06), transparent 70%)',
-    gold: 'radial-gradient(circle at 50% 50%, rgba(217,119,6,0.08), transparent 70%)'
+  const isServer = globalThis.window === undefined;
+  const mob = isServer ? false : globalThis.window.innerWidth < 768;
+
+  const getPadding = () => {
+    if (mob) {
+      return {
+        pt: compact ? '100px' : '130px',
+        pb: compact ? '50px' : '70px'
+      };
+    }
+    return {
+      pt: compact ? '120px' : '160px',
+      pb: compact ? '60px' : '100px'
+    };
   };
 
-  const pt = mob ? (compact ? '100px' : '130px') : (compact ? '120px' : '160px');
-  const pb = mob ? (compact ? '50px' : '70px') : (compact ? '60px' : '100px');
+  const { pt, pb } = getPadding();
 
   return (
     <div style={{ 
@@ -48,54 +110,7 @@ const EliteHeader = memo(({
       )}
 
       {/* Animated 'Tiranga' Lehrata Background Effect */}
-      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 2 }}>
-        {/* Saffron Blob */}
-        <motion.div 
-          animate={{ 
-            x: [0, 40, -20, 0],
-            y: [0, -30, 20, 0],
-            scale: [1, 1.2, 0.9, 1],
-            rotate: [0, 5, -5, 0]
-          }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          style={{ 
-            position: 'absolute', top: '-20%', left: '10%', width: '600px', height: '600px', 
-            background: 'radial-gradient(circle, rgba(255,148,49,0.35) 0%, transparent 70%)', 
-            borderRadius: '50%', filter: 'blur(80px)'
-          }} 
-        />
-        
-        {/* White Glow Blob */}
-        <motion.div 
-          animate={{ 
-            x: [0, -20, 0],
-            y: [0, 20, 0],
-            opacity: [0.3, 0.5, 0.3]
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          style={{ 
-            position: 'absolute', top: '10%', left: '30%', width: '400px', height: '400px', 
-            background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%)', 
-            borderRadius: '50%', filter: 'blur(60px)'
-          }} 
-        />
-
-        {/* Green Blob */}
-        <motion.div 
-          animate={{ 
-            x: [0, -50, 30, 0],
-            y: [0, 40, -20, 0],
-            scale: [1, 1.3, 1],
-            rotate: [0, -8, 8, 0]
-          }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          style={{ 
-            position: 'absolute', bottom: '-20%', right: '10%', width: '600px', height: '600px', 
-            background: 'radial-gradient(circle, rgba(18,136,7,0.25) 0%, transparent 70%)', 
-            borderRadius: '50%', filter: 'blur(90px)'
-          }} 
-        />
-      </div>
+      <BackgroundBlobs />
       
       <div style={{ ...W(maxWidth), position: 'relative', zIndex: 10, textAlign: 'center' }}>
         <motion.div
@@ -151,5 +166,17 @@ const EliteHeader = memo(({
     </div>
   );
 });
+
+EliteHeader.propTypes = {
+  eyebrow: PropTypes.string,
+  title: PropTypes.node.isRequired,
+  sub: PropTypes.string,
+  children: PropTypes.node,
+  maxWidth: PropTypes.number,
+  light: PropTypes.bool,
+  compact: PropTypes.bool
+};
+
+EliteHeader.displayName = 'EliteHeader';
 
 export default EliteHeader;
