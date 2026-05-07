@@ -28,6 +28,7 @@ import LoginPage from './pages/LoginPage';
 import WalletPage from './pages/WalletPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TermsPage from './pages/TermsPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 
 import DashboardLayout from './components/layout/DashboardLayout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -36,6 +37,7 @@ const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<HomePage />} />
     <Route path="/login" element={<LoginPage />} />
+    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
     <Route path="/privacy" element={<PrivacyPage />} />
     <Route path="/terms" element={<TermsPage />} />
     <Route path="/creators" element={<CreatorsPage />} />
@@ -73,7 +75,7 @@ export default function App() {
   const location = useLocation();
 
   // Pages that should not use the standard layout
-  const noLayoutPaths = ['/apply', '/brand-register', '/login'];
+  const noLayoutPaths = ['/apply', '/brand-register', '/login', '/forgot-password'];
   
   // Pages that should use the dashboard layout
   const dashboardPaths = [

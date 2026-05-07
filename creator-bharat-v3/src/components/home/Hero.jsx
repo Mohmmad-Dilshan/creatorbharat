@@ -196,7 +196,7 @@ const SearchBar = memo(({ mob, st, dsp, go, sugs, onKeyDown }) => (
       <SearchInput mob={mob} q={st?.cf?.q} dsp={dsp} onKeyDown={onKeyDown} sugs={sugs} go={go} />
       <LocationPicker mob={mob} state={st?.cf?.state} />
       <div style={{ padding: mob ? 8 : 4, width: mob ? '100%' : 'auto' }}>
-        <Btn lg full={mob} onClick={() => go('creators')} className="hero-find-btn" aria-label="Search creators" style={{ borderRadius: mob ? 18 : 100, padding: mob ? '14px' : '18px 48px', background: '#111', color: '#fff', border: 'none', fontWeight: 900, fontSize: mob ? 14 : 16, transition: 'all 0.3s' }}>Find Creators ⚡</Btn>
+        <Btn lg full={mob} onClick={() => go('creators')} className="hero-find-btn" aria-label="Search creators" style={{ borderRadius: mob ? 18 : 100, padding: mob ? '14px' : '18px 48px', background: T.gd, color: '#fff', border: 'none', fontWeight: 900, fontSize: mob ? 14 : 16, transition: 'all 0.3s', boxShadow: `0 8px 24px rgba(255,148,49,0.2)` }}>Find Creators ⚡</Btn>
       </div>
     </div>
   </div>

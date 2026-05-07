@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../../context';
 import { Logo, Btn } from '../Primitives';
+import { T } from '../../theme';
 import { Menu, X } from 'lucide-react';
 
 const NavLinks = ({ links, location, go }) => (
@@ -55,8 +56,8 @@ const UserActions = ({ st, dsp, go, mob }) => {
 
   return (
     <>
-      {!mob && <button onClick={() => go('/login')} style={{ background: 'transparent', border: 'none', color: '#111', fontSize: 13, fontWeight: 800, cursor: 'pointer', padding: '0 16px' }}>Sign In</button>}
-      <Btn lg onClick={() => go('/apply')} style={{ fontWeight: 900, borderRadius: 100, padding: mob ? '10px 20px' : '12px 32px', fontSize: 13, background: '#111', color: '#fff', border: 'none', boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }}>
+      {!mob && <button onClick={() => dsp({ t: 'UI', v: { authModal: true } })} style={{ background: 'transparent', border: 'none', color: '#111', fontSize: 13, fontWeight: 800, cursor: 'pointer', padding: '0 16px' }}>Sign In</button>}
+      <Btn lg onClick={() => go('/apply')} style={{ fontWeight: 900, borderRadius: 100, padding: mob ? '10px 20px' : '12px 32px', fontSize: 13, background: T.gd, color: '#fff', border: 'none', boxShadow: `0 8px 24px rgba(255,148,49,0.2)` }}>
         {mob ? 'Join' : 'Claim Your Profile'}
       </Btn>
       {mob && (

@@ -28,25 +28,59 @@ export default function ApplyPage() {
   const PLATFORMS = ['Instagram', 'YouTube', 'Twitter', 'LinkedIn'];
   const SERVICES = ['Sponsored Posts', 'Reels', 'YouTube Videos', 'Stories', 'Product Reviews', 'Event Attendance'];
 
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  const validate = (s) => {
+    let e = {};
+    const f1 = () => {
+      if (!F.name) e.name = 'Full name is required';
+      if (!F.email || !/^\S+@\S+\.\S+$/.test(F.email)) e.email = 'Valid email is required';
+      if (!F.password || F.password.length < 6) e.password = 'Password must be at least 6 characters';
+      if (F.password !== F.confirm) e.confirm = 'Passwords do not match';
+      if (!F.city) e.city = 'City is required';
+    };
+    const f2 = () => {
+      if (F.niche.length === 0) e.niche = 'Select niche';
+      if (F.platform.length === 0) e.platform = 'Select platform';
+      if (!F.followers) e.followers = 'Followers required';
+    };
+    
+    if (s === 1) f1();
+    if (s === 2) f2();
+    if (s === 3 && !F.rateMin) e.rateMin = 'Min rate required';
+    
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
   const next = () => {
-    if (step === 1) {
-      if (!F.name || !F.email || !F.password || !F.city) { toast('Please fill all required fields', 'error'); return; }
-      if (F.password !== F.confirm) { toast('Passwords do not match', 'error'); return; }
+    if (validate(step)) {
+      setStep(s => s + 1); 
+      scrollToTop();
     }
-    setStep(s => s + 1); scrollToTop();
   };
 
   const submit = async () => {
-    const handle = F.handle || fmt.handle(F.name);
-    const user = { ...F, id: 'u-' + Date.now(), role: 'creator', score: 45, handle };
+    if (!validate(4)) return;
+    setLoading(true);
     
-    // Save to local storage for demo
-    const existing = LS.get('cb_creators', []);
-    LS.set('cb_creators', [...existing, user]);
-    
-    dsp({ t: 'LOGIN', u: user, role: 'creator' });
-    toast(`Swagat hai! Your profile is live.`, 'success');
-    navigate('/dashboard');
+    try {
+      const handle = F.handle || fmt.handle(F.name);
+      const user = { ...F, id: 'u-' + Date.now(), role: 'creator', score: 45, handle };
+      
+      const existing = LS.get('cb_creators', []);
+      LS.set('cb_creators', [...existing, user]);
+      
+      dsp({ t: 'LOGIN', u: user, role: 'creator' });
+      toast(`Swagat hai! Your profile is live.`, 'success');
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Registration Error:', err);
+      toast('Registration failed. Please try again.', 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const steps = [
@@ -61,21 +95,32 @@ export default function ApplyPage() {
       {/* Sidebar Onboarding */}
       {!mob && (
         <div style={{ background: '#050505', padding: '60px 48px', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 100% 0%, rgba(255,148,49,0.1), transparent 70%)' }} />
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #FF9431, #fff, #128807)', opacity: 0.8 }} />
+          {/* Animated Background Blobs */}
+          <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 1 }}>
+            <motion.div 
+              animate={{ x: [0, 20, 0], y: [0, -20, 0], scale: [1, 1.2, 1] }}
+              transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+              style={{ position: 'absolute', top: '-15%', right: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(255,148,49,0.2) 0%, transparent 70%)', filter: 'blur(80px)' }}
+            />
+            <motion.div 
+              animate={{ x: [0, -20, 0], y: [0, 20, 0] }}
+              transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+              style={{ position: 'absolute', bottom: '-20%', left: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(18,136,7,0.15) 0%, transparent 70%)', filter: 'blur(100px)' }}
+            />
+          </div>
           
           <div style={{ marginBottom: 60, position: 'relative', zIndex: 2 }}>
              <Link to="/" style={{ textDecoration: 'none', display: 'inline-block' }}>
-               <h1 style={{ fontSize: 24, fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span style={{ width: 40, height: 40, background: '#FF9431', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>CB</span>
-                  <span>Creator Account</span>
+               <h1 style={{ fontSize: 24, fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: 12, fontFamily: "'Outfit', sans-serif" }}>
+                  <div style={{ width: 40, height: 40, background: 'linear-gradient(135deg, #FF9431, #fff)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: '#FF9431' }}>CB</div>
+                  <span>Creator Portal</span>
                </h1>
              </Link>
           </div>
 
           <div style={{ flex: 1, position: 'relative', zIndex: 2 }}>
-            <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 32, color: '#fff', marginBottom: 16, fontWeight: 900, lineHeight: 1.2 }}>Build Your Digital <br/>Identity in Bharat.</h2>
-            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, marginBottom: 48 }}>Join 2,400+ creators from Bhilwara and across India. Get discovered by premium national brands.</p>
+            <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 32, color: '#fff', marginBottom: 16, fontWeight: 900, lineHeight: 1.2, letterSpacing: '-0.02em' }}>Build Your Digital <br/>Identity in Bharat.</h2>
+            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, marginBottom: 48, fontWeight: 500 }}>Join 2,400+ elite creators. Get discovered by premium brands looking for authentic influence.</p>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
               {steps.map((s, i) => {
@@ -89,12 +134,12 @@ export default function ApplyPage() {
 
                 return (
                   <div key={s.t} style={{ display: 'flex', gap: 20, alignItems: 'center', opacity: active || done ? 1 : 0.3, transition: 'all 0.3s' }}>
-                    <div style={{ width: 40, height: 40, borderRadius: '12px', border: '1px solid ' + borderColor, background: done ? '#10B981' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                    <div style={{ width: 44, height: 44, borderRadius: '14px', border: '1.5px solid ' + borderColor, background: done ? '#10B981' : 'rgba(255,255,255,0.02)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
                        {done ? <Check size={20} /> : <Icon size={20} />}
                     </div>
                     <div>
-                       <p style={{ fontSize: 16, fontWeight: 700, color: active ? '#fff' : 'rgba(255,255,255,0.5)' }}>{s.t}</p>
-                       {active && <p style={{ fontSize: 13, color: '#FF9431', marginTop: 2, fontWeight: 600 }}>{s.d}</p>}
+                       <p style={{ fontSize: 15, fontWeight: 800, color: active ? '#fff' : 'rgba(255,255,255,0.4)' }}>{s.t}</p>
+                       {active && <p style={{ fontSize: 12, color: '#FF9431', marginTop: 2, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.d}</p>}
                     </div>
                   </div>
                 );
@@ -103,12 +148,12 @@ export default function ApplyPage() {
           </div>
           
           <div style={{ position: 'relative', zIndex: 2 }}>
-             <div style={{ padding: '24px', background: 'rgba(255,255,255,0.05)', borderRadius: 24, border: '1px solid rgba(255,255,255,0.1)' }}>
+             <div style={{ padding: '24px', background: 'rgba(255,255,255,0.03)', borderRadius: 24, border: '1px solid rgba(255,255,255,0.06)', backdropFilter: 'blur(10px)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
                    <ShieldCheck size={20} color="#10B981" />
-                   <span style={{ color: '#fff', fontSize: 14, fontWeight: 700 }}>Verified by CreatorBharat</span>
+                   <span style={{ color: '#fff', fontSize: 14, fontWeight: 800 }}>Verified Network</span>
                 </div>
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>"The onboarding was so professional. Within a week, I was contacted by a top-tier brand for a Bhilwara-centric campaign."</p>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, fontWeight: 500 }}>"The most professional onboarding I've experienced. My profile was live and receiving brand inquiries within 48 hours."</p>
              </div>
           </div>
         </div>
@@ -138,15 +183,15 @@ export default function ApplyPage() {
 
               {step === 1 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-                  <Fld label="Full Name" value={F.name} onChange={e => { upF('name', e.target.value); if (!F.handle) upF('handle', fmt.handle(e.target.value)) }} placeholder="Aman Deep" required />
-                  <Fld label="Work Email" type="email" value={F.email} onChange={e => upF('email', e.target.value)} placeholder="aman@bhilwara.me" required />
+                  <Fld label="Full Name" value={F.name} onChange={e => { upF('name', e.target.value); if (!F.handle) upF('handle', fmt.handle(e.target.value)) }} placeholder="Aman Deep" error={errors.name} required />
+                  <Fld label="Work Email" type="email" value={F.email} onChange={e => upF('email', e.target.value)} placeholder="aman@bhilwara.me" error={errors.email} required />
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                    <Fld label="City" value={F.city} onChange={e => upF('city', e.target.value)} options={['Bhilwara', 'Jaipur', 'Udaipur', 'Jodhpur', 'Delhi', 'Mumbai']} required />
+                    <Fld label="City" value={F.city} onChange={e => upF('city', e.target.value)} options={['Bhilwara', 'Jaipur', 'Udaipur', 'Jodhpur', 'Delhi', 'Mumbai']} error={errors.city} required />
                     <Fld label="State" value={F.state} onChange={e => upF('state', e.target.value)} placeholder="Rajasthan" />
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                    <Fld label="Password" type="password" value={F.password} onChange={e => upF('password', e.target.value)} placeholder="••••••••" required />
-                    <Fld label="Confirm" type="password" value={F.confirm} onChange={e => upF('confirm', e.target.value)} placeholder="••••••••" required />
+                    <Fld label="Password" type="password" value={F.password} onChange={e => upF('password', e.target.value)} placeholder="••••••••" error={errors.password} required />
+                    <Fld label="Confirm" type="password" value={F.confirm} onChange={e => upF('confirm', e.target.value)} placeholder="••••••••" error={errors.confirm} required />
                   </div>
                 </div>
               )}
@@ -156,13 +201,15 @@ export default function ApplyPage() {
                   <div>
                     <p style={{ display: 'block', fontSize: 13, fontWeight: 800, color: '#111', marginBottom: 12 }}>Primary Niches *</p>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{NICHES.map(n => <Chip key={n} label={n} active={F.niche.includes(n)} onClick={() => toggleArr('niche', n)} />)}</div>
+                    {errors.niche && <p style={{ color: '#EF4444', fontSize: 12, marginTop: 8, fontWeight: 600 }}>{errors.niche}</p>}
                   </div>
                   <div>
                     <p style={{ display: 'block', fontSize: 13, fontWeight: 800, color: '#111', marginBottom: 12 }}>Active Platforms *</p>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{PLATFORMS.map(p => <Chip key={p} label={p} active={F.platform.includes(p)} onClick={() => toggleArr('platform', p)} />)}</div>
+                    {errors.platform && <p style={{ color: '#EF4444', fontSize: 12, marginTop: 8, fontWeight: 600 }}>{errors.platform}</p>}
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                    <Fld label="Total Followers" type="number" value={F.followers} onChange={e => upF('followers', e.target.value)} placeholder="10000" required />
+                    <Fld label="Total Followers" type="number" value={F.followers} onChange={e => upF('followers', e.target.value)} placeholder="10000" error={errors.followers} required />
                     <Fld label="Monthly Views" type="number" value={F.monthlyViews} onChange={e => upF('monthlyViews', e.target.value)} placeholder="50000" />
                   </div>
                 </div>
@@ -171,7 +218,7 @@ export default function ApplyPage() {
               {step === 3 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                    <Fld label="Min Rate (₹)" type="number" value={F.rateMin} onChange={e => upF('rateMin', e.target.value)} placeholder="2000" required />
+                    <Fld label="Min Rate (₹)" type="number" value={F.rateMin} onChange={e => upF('rateMin', e.target.value)} placeholder="2000" error={errors.rateMin} required />
                     <Fld label="Max Rate (₹)" type="number" value={F.rateMax} onChange={e => upF('rateMax', e.target.value)} placeholder="10000" />
                   </div>
                   <div>
@@ -201,7 +248,7 @@ export default function ApplyPage() {
                     Next Step <ChevronRight size={20} style={{ marginLeft: 8 }} />
                   </Btn>
                 ) : (
-                  <Btn full lg onClick={submit} style={{ borderRadius: 100, background: '#FF9431', color: '#fff', border: 'none', height: 60, fontSize: 17, fontWeight: 900, boxShadow: '0 10px 30px rgba(255,148,49,0.3)' }}>
+                  <Btn full lg loading={loading} onClick={submit} style={{ borderRadius: 100, background: '#FF9431', color: '#fff', border: 'none', height: 60, fontSize: 17, fontWeight: 900, boxShadow: '0 10px 30px rgba(255,148,49,0.3)' }}>
                     Launch My Profile 🚀
                   </Btn>
                 )}
