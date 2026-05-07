@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { createContext, useContext, useReducer, useMemo } from 'react';
+import PropTypes from 'prop-types';
 
 const Ctx = createContext(null);
 export const useApp = () => useContext(Ctx);
@@ -19,7 +20,13 @@ export const IS = {
 
 export function reducer(s, a) {
   switch (a.t) {
-    case 'GO': return { ...s, page: a.p, sel: { ...s.sel, ...(a.sel || {}) }, ui: { ...s.ui, mobileMenu: false } };
+    case 'GO': 
+      return { 
+        ...s, 
+        page: a.p, 
+        sel: a.sel ? { ...s.sel, ...a.sel } : s.sel, 
+        ui: { ...s.ui, mobileMenu: false } 
+      };
     case 'LOGIN': return { ...s, user: a.u, role: a.role, ui: { ...s.ui, authModal: false } };
     case 'LOGOUT': return { ...IS, page: 'home' };
     case 'SAVE': {
@@ -66,5 +73,11 @@ export const AppProvider = ({ children }) => {
     }
   }, [st.user, st.role]);
 
-  return <Ctx.Provider value={{ st, dsp }}>{children}</Ctx.Provider>;
+  const value = useMemo(() => ({ st, dsp }), [st, dsp]);
+
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+};
+
+AppProvider.propTypes = {
+  children: PropTypes.node.isRequired
 };

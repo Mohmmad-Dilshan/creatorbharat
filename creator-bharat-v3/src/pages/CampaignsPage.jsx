@@ -1,17 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { T } from '../theme';
-import { W, scrollToTop, fmt, LS } from '../utils/helpers';
+import { W, fmt, LS } from '../utils/helpers';
 import { apiCall } from '../utils/api';
-import { Btn, SH, Bdg, SkeletonCard, Empty, Modal, Fld } from '../components/Primitives';
+import { Btn, SkeletonCard, Empty, Modal, Fld } from '../components/Primitives';
 import { CampCard } from '../components/Cards';
-import { Card } from '../components/Primitives';
 import EliteHeader from '../components/layout/EliteHeader';
 import { motion } from 'framer-motion';
 
+const filterCampaigns = (all, f) => {
+  return all.filter(c => {
+    const title = (c.title || '').toLowerCase();
+    const brandName = typeof c.brand === 'object' && c.brand ? c.brand.companyName : (c.brand || '');
+    const q = (f.q || '').toLowerCase();
+    
+    if (q && !title.includes(q) && !brandName.toLowerCase().includes(q)) return false;
+    
+    if (f.niche) {
+      const cn = Array.isArray(c.niche) ? c.niche : [c.niche];
+      if (!cn.includes(f.niche)) return false;
+    }
+    
+    if (f.urgent && !c.urgent) return false;
+    
+    const status = (c.status || '').toLowerCase();
+    return status === 'live' || status === 'active' || !status;
+  });
+};
+
 export default function CampaignsPage() {
   const { st, dsp } = useApp();
-  const [mob, setMob] = useState(window.innerWidth < 768);
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const { cpf: f } = st;
   const [loading, setLoading] = useState(true);
   const [all, setAll] = useState([]);
@@ -20,8 +38,8 @@ export default function CampaignsPage() {
   const [aF, setAF] = useState({ pitch: '', portfolio: '', rate: '' });
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
     setLoading(true);
     apiCall('/campaigns?limit=100').then(d => {
       setAll(d.campaigns || d || []);
@@ -31,23 +49,12 @@ export default function CampaignsPage() {
        setAll(seed);
        setLoading(false);
     });
-    return () => window.removeEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
   const toast = (msg, type) => dsp({ t: 'TOAST', d: { type: type || 'info', msg } });
 
-  const filtered = all.filter(c => {
-    const title = (c.title || '').toLowerCase();
-    const brandName = typeof c.brand === 'object' && c.brand ? c.brand.companyName : (c.brand || '');
-    const q = (f.q || '').toLowerCase();
-    if (q && !title.includes(q) && !brandName.toLowerCase().includes(q)) return false;
-    if (f.niche) {
-      const cn = Array.isArray(c.niche) ? c.niche : [c.niche];
-      if (!cn.includes(f.niche)) return false;
-    }
-    if (f.urgent && !c.urgent) return false;
-    return (c.status || '').toLowerCase() === 'live' || (c.status || '').toLowerCase() === 'active' || !c.status;
-  });
+  const filtered = filterCampaigns(all, f);
 
   const niches = [...new Set(all.flatMap(c => Array.isArray(c.niche) ? c.niche : [c.niche]).filter(Boolean))];
 
@@ -139,11 +146,13 @@ export default function CampaignsPage() {
             )}
           </div>
 
-          {loading ? (
+          {loading && (
             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(auto-fill, minmax(360px, 1fr))', gap: 32 }}>
               {[1, 2, 3, 4, 5, 6].map(i => <SkeletonCard key={i} />)}
             </div>
-          ) : filtered.length === 0 ? (
+          )}
+
+          {!loading && filtered.length === 0 && (
             <div style={{ padding: '100px 0' }}>
                <Empty 
                 icon="📋" 
@@ -153,7 +162,9 @@ export default function CampaignsPage() {
                 onCta={clearFilters} 
                />
             </div>
-          ) : (
+          )}
+
+          {!loading && filtered.length > 0 && (
             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(auto-fill, minmax(360px, 1fr))', gap: 32 }}>
               {filtered.map((c, i) => (
                 <motion.div 

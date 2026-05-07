@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { W } from '../../utils/helpers';
 import { Btn } from '../Primitives';
 
@@ -23,3 +24,7 @@ export default function Verification({ mob }) {
     </section>
   );
 }
+
+Verification.propTypes = {
+  mob: PropTypes.bool
+};

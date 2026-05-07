@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TrendingUp, Users, Zap, MapPin } from 'lucide-react';
+import { Zap } from 'lucide-react';
 
 const TIER_COLORS = {
   1: { dot: '#1e3a8a', light: 'rgba(30, 58, 138, 0.1)', glow: 'rgba(30, 58, 138, 0.4)' },
@@ -20,6 +20,7 @@ const CITIES = [
   { name: 'Pune', state: 'Maharashtra', tier: 2, x: 26.5, y: 59.5 },
 ];
 
+/* eslint-disable react/prop-types */
 export default function CreatorMap({ mob }) {
   const [hoveredCity, setHoveredCity] = useState(null);
 
@@ -73,10 +74,13 @@ export default function CreatorMap({ mob }) {
 
             {/* City Markers */}
             {CITIES.map((city) => (
-              <div 
+              <button 
                 key={city.name}
                 onMouseEnter={() => setHoveredCity(city)}
                 onMouseLeave={() => setHoveredCity(null)}
+                onFocus={() => setHoveredCity(city)}
+                onBlur={() => setHoveredCity(null)}
+                aria-label={`View details for ${city.name}`}
                 style={{ 
                   position: 'absolute', 
                   left: `${city.x}%`, 
@@ -84,7 +88,11 @@ export default function CreatorMap({ mob }) {
                   width: 24, height: 24,
                   transform: 'translate(-50%, -50%)',
                   cursor: 'pointer',
-                  zIndex: 10
+                  zIndex: 10,
+                  outline: 'none',
+                  border: 'none',
+                  background: 'none',
+                  padding: 0
                 }}
               >
                 {city.tier === 1 && (
@@ -101,7 +109,7 @@ export default function CreatorMap({ mob }) {
                   border: '2px solid #fff',
                   margin: '7px'
                 }} />
-              </div>
+              </button>
             ))}
 
             {/* Tooltip */}
@@ -135,7 +143,7 @@ export default function CreatorMap({ mob }) {
                   <div style={{ fontSize: 12, opacity: 0.7 }}>Major Cities</div>
                </div>
             </div>
-            <button style={{ width: '100%', marginTop: 24, padding: '20px', background: '#000', color: '#fff', borderRadius: '100px', border: 'none', fontSize: 16, fontWeight: 900 }}>
+            <button style={{ width: '100%', marginTop: 24, padding: '20px', background: '#000', color: '#fff', borderRadius: '100px', border: 'none', fontSize: 16, fontWeight: 900, cursor: 'pointer' }}>
               Join Now <Zap size={18} fill="#fff" style={{ marginLeft: 8 }} />
             </button>
           </div>

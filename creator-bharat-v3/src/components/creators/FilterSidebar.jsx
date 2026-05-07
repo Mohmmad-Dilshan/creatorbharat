@@ -1,15 +1,16 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, MapPin, User, Globe, Briefcase, Zap } from 'lucide-react';
-import { T } from '../../theme';
+import { X, MapPin, User, Globe, Zap } from 'lucide-react';
 import { W, ALL_STATES, INDIA_STATES } from '../../utils/helpers';
-import { Chip, Btn } from '../Primitives';
+import { Btn } from '../Primitives';
 
 const FacebookIcon = ({ size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
   </svg>
 );
+FacebookIcon.propTypes = { size: PropTypes.number };
 
 const InstagramIcon = ({ size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -18,6 +19,7 @@ const InstagramIcon = ({ size = 18 }) => (
     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
   </svg>
 );
+InstagramIcon.propTypes = { size: PropTypes.number };
 
 const YoutubeIcon = ({ size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -25,12 +27,14 @@ const YoutubeIcon = ({ size = 18 }) => (
     <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
   </svg>
 );
+YoutubeIcon.propTypes = { size: PropTypes.number };
 
 const TwitterIcon = ({ size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
   </svg>
 );
+TwitterIcon.propTypes = { size: PropTypes.number };
 
 const LinkedinIcon = ({ size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -39,6 +43,7 @@ const LinkedinIcon = ({ size = 18 }) => (
     <circle cx="4" cy="4" r="2" />
   </svg>
 );
+LinkedinIcon.propTypes = { size: PropTypes.number };
 
 export default function FilterSidebar({ show, onClose, f, dsp, mob, niches, platforms }) {
   const clearFilters = () => dsp({ t: 'CF', v: { q: '', niche: [], state: '', district: '', platform: [], verified: false, minFollowers: '', sort: 'score', gender: '', language: '', minER: '' } });
@@ -70,19 +75,20 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches, plat
                   <h3 style={{ fontSize: 28, fontWeight: 900, fontFamily: "'Outfit', sans-serif", color: '#111' }}>Advanced Filters</h3>
                   <p style={{ fontSize: 14, color: '#64748b', fontWeight: 600, marginTop: 4 }}>Find the perfect Bharat creator for your brand</p>
                 </div>
-                <button onClick={onClose} style={{ background: '#f1f5f9', border: 'none', width: 40, height: 40, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><X size={20} color="#64748b" /></button>
+                <button aria-label="Close filters" onClick={onClose} style={{ background: '#f1f5f9', border: 'none', width: 40, height: 40, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><X size={20} color="#64748b" /></button>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
                 {/* Niche Section */}
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 16, letterSpacing: '1px' }}>Creator Niche</label>
+                  <span style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 16, letterSpacing: '1px' }}>Creator Niche</span>
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     {niches.map(n => {
                       const isSel = f.niche.includes(n);
                       return (
                         <button
                           key={n}
+                          aria-pressed={isSel}
                           onClick={() => dsp({ t: 'CF', v: { niche: isSel ? f.niche.filter(x => x !== n) : [...f.niche, n] } })}
                           style={{
                             padding: '12px 22px', borderRadius: 100,
@@ -102,7 +108,7 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches, plat
 
                 {/* Platform Section */}
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 16, letterSpacing: '1px' }}>Social Platforms</label>
+                  <span style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 16, letterSpacing: '1px' }}>Social Platforms</span>
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     {[
                       { name: 'Instagram', icon: <InstagramIcon size={18} />, color: '#E4405F' },
@@ -115,6 +121,7 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches, plat
                       return (
                         <button
                           key={p.name}
+                          aria-pressed={isSel}
                           onClick={() => dsp({ t: 'CF', v: { platform: isSel ? f.platform.filter(x => x !== p.name) : [...f.platform, p.name] } })}
                           style={{
                             padding: '12px 22px', borderRadius: 100,
@@ -136,9 +143,10 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches, plat
                 {/* Location Section */}
                 <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 24 }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>State</label>
+                    <label htmlFor="filter-state" style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>State</label>
                     <div style={{ position: 'relative' }}>
                       <select
+                        id="filter-state"
                         value={f.state}
                         onChange={e => dsp({ t: 'CF', v: { state: e.target.value, district: '' } })}
                         style={{
@@ -154,8 +162,9 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches, plat
                     </div>
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>District / City</label>
+                    <label htmlFor="filter-district" style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>District / City</label>
                     <select
+                      id="filter-district"
                       value={f.district}
                       onChange={e => dsp({ t: 'CF', v: { district: e.target.value } })}
                       disabled={!f.state}
@@ -174,11 +183,12 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches, plat
                 {/* Demographics */}
                 <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 24 }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>Gender</label>
+                    <span style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>Gender</span>
                     <div style={{ display: 'flex', background: '#f8fafc', padding: 4, borderRadius: 100, border: '1.5px solid rgba(0,0,0,0.04)' }}>
                       {['Any', 'Male', 'Female'].map(g => (
                         <button
                           key={g}
+                          aria-pressed={(f.gender || 'Any') === g}
                           onClick={() => dsp({ t: 'CF', v: { gender: g } })}
                           style={{
                             flex: 1, padding: '12px', borderRadius: 100, border: 'none',
@@ -191,9 +201,10 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches, plat
                     </div>
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>Language</label>
+                    <label htmlFor="filter-language" style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>Language</label>
                     <div style={{ position: 'relative' }}>
                       <select
+                        id="filter-language"
                         value={f.language}
                         onChange={e => dsp({ t: 'CF', v: { language: e.target.value } })}
                         style={{
@@ -214,9 +225,10 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches, plat
                 {/* Reach & Engagement */}
                 <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 24 }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>Min Followers</label>
+                    <label htmlFor="filter-min-followers" style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>Min Followers</label>
                     <div style={{ position: 'relative' }}>
                       <input
+                        id="filter-min-followers"
                         type="number"
                         placeholder="e.g. 50000"
                         value={f.minFollowers}
@@ -230,9 +242,10 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches, plat
                     </div>
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>Min Engagement Rate</label>
+                    <label htmlFor="filter-min-er" style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>Min Engagement Rate</label>
                     <div style={{ position: 'relative' }}>
                       <select
+                        id="filter-min-er"
                         value={f.minER}
                         onChange={e => dsp({ t: 'CF', v: { minER: e.target.value } })}
                         style={{
@@ -257,6 +270,8 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches, plat
                     <p style={{ fontSize: 13, color: '#64748B', fontWeight: 600, marginTop: 2 }}>Show only manually vetted elite creators</p>
                   </div>
                   <button
+                    aria-pressed={f.verified}
+                    aria-label="Toggle verified talent only"
                     onClick={() => dsp({ t: 'CF', v: { verified: !f.verified } })}
                     style={{
                       width: 56, height: 28, borderRadius: 100, background: f.verified ? '#3B82F6' : '#E2E8F0',
@@ -284,3 +299,25 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches, plat
     </AnimatePresence>
   );
 }
+
+FilterSidebar.propTypes = {
+  show: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  dsp: PropTypes.func.isRequired,
+  mob: PropTypes.bool,
+  niches: PropTypes.arrayOf(PropTypes.string).isRequired,
+  platforms: PropTypes.arrayOf(PropTypes.string),
+  f: PropTypes.shape({
+    q: PropTypes.string,
+    niche: PropTypes.arrayOf(PropTypes.string),
+    state: PropTypes.string,
+    district: PropTypes.string,
+    platform: PropTypes.arrayOf(PropTypes.string),
+    verified: PropTypes.bool,
+    minFollowers: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    sort: PropTypes.string,
+    gender: PropTypes.string,
+    language: PropTypes.string,
+    minER: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+  }).isRequired
+};

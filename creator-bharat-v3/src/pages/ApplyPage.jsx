@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../context';
 import { T } from '../theme';
-import { W, scrollToTop, fmt, LS, CITIES } from '../utils/helpers';
-import { apiCall } from '../utils/api';
+import { scrollToTop, fmt, LS } from '../utils/helpers';
 import { Btn, Fld, Chip } from '../components/Primitives';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Star, Target, CreditCard, ChevronRight, Check, ShieldCheck } from 'lucide-react';
@@ -11,14 +10,14 @@ import { User, Star, Target, CreditCard, ChevronRight, Check, ShieldCheck } from
 export default function ApplyPage() {
   const { dsp } = useApp();
   const navigate = useNavigate();
-  const [mob, setMob] = useState(window.innerWidth < 768);
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [step, setStep] = useState(1);
   const [F, setF] = useState({ name: '', handle: '', email: '', password: '', confirm: '', phone: '', city: 'Bhilwara', state: 'Rajasthan', niche: [], platform: [], followers: '', er: '', monthlyViews: '', bio: '', instagram: '', youtube: '', rateMin: '', rateMax: '', services: [], languages: [], photo: null });
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
   const upF = (k, v) => setF(p => ({ ...p, [k]: v }));
@@ -69,7 +68,7 @@ export default function ApplyPage() {
              <Link to="/" style={{ textDecoration: 'none', display: 'inline-block' }}>
                <h1 style={{ fontSize: 24, fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span style={{ width: 40, height: 40, background: '#FF9431', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>CB</span>
-                  Creator Account
+                  <span>Creator Account</span>
                </h1>
              </Link>
           </div>
@@ -83,9 +82,14 @@ export default function ApplyPage() {
                 const Icon = s.i;
                 const active = step === i + 1;
                 const done = step > i + 1;
+                
+                let borderColor = 'rgba(255,255,255,0.1)';
+                if (done) borderColor = '#10B981';
+                else if (active) borderColor = '#FF9431';
+
                 return (
-                  <div key={i} style={{ display: 'flex', gap: 20, alignItems: 'center', opacity: active || done ? 1 : 0.3, transition: 'all 0.3s' }}>
-                    <div style={{ width: 40, height: 40, borderRadius: '12px', border: '1px solid ' + (done ? '#10B981' : active ? '#FF9431' : 'rgba(255,255,255,0.1)'), background: done ? '#10B981' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                  <div key={s.t} style={{ display: 'flex', gap: 20, alignItems: 'center', opacity: active || done ? 1 : 0.3, transition: 'all 0.3s' }}>
+                    <div style={{ width: 40, height: 40, borderRadius: '12px', border: '1px solid ' + borderColor, background: done ? '#10B981' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
                        {done ? <Check size={20} /> : <Icon size={20} />}
                     </div>
                     <div>
@@ -117,7 +121,7 @@ export default function ApplyPage() {
             <div style={{ marginBottom: 32 }}>
                <h1 style={{ fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 8 }}>Creator Identity</h1>
                <p style={{ fontSize: 14, color: T.t3, marginBottom: 20 }}>Step {step} of 4</p>
-               <div style={{ display: 'flex', gap: 6 }}>{steps.map((_, i) => <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i < step ? '#FF9431' : '#EEE' }} />)}</div>
+               <div style={{ display: 'flex', gap: 6 }}>{steps.map((s) => <div key={s.t} style={{ flex: 1, height: 4, borderRadius: 2, background: steps.indexOf(s) < step ? '#FF9431' : '#EEE' }} />)}</div>
             </div>
           )}
           
@@ -150,11 +154,11 @@ export default function ApplyPage() {
               {step === 2 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 800, color: '#111', marginBottom: 12 }}>Primary Niches *</label>
+                    <p style={{ display: 'block', fontSize: 13, fontWeight: 800, color: '#111', marginBottom: 12 }}>Primary Niches *</p>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{NICHES.map(n => <Chip key={n} label={n} active={F.niche.includes(n)} onClick={() => toggleArr('niche', n)} />)}</div>
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 800, color: '#111', marginBottom: 12 }}>Active Platforms *</label>
+                    <p style={{ display: 'block', fontSize: 13, fontWeight: 800, color: '#111', marginBottom: 12 }}>Active Platforms *</p>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{PLATFORMS.map(p => <Chip key={p} label={p} active={F.platform.includes(p)} onClick={() => toggleArr('platform', p)} />)}</div>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
@@ -171,7 +175,7 @@ export default function ApplyPage() {
                     <Fld label="Max Rate (₹)" type="number" value={F.rateMax} onChange={e => upF('rateMax', e.target.value)} placeholder="10000" />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: 13, fontWeight: 800, color: '#111', marginBottom: 12 }}>Services Offered</label>
+                    <p style={{ display: 'block', fontSize: 13, fontWeight: 800, color: '#111', marginBottom: 12 }}>Services Offered</p>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{SERVICES.map(s => <Chip key={s} label={s} active={F.services.includes(s)} onClick={() => toggleArr('services', s)} />)}</div>
                   </div>
                 </div>

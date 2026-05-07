@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { W } from '../../utils/helpers';
 import { X, CheckCircle2, AlertTriangle, ShieldCheck, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -70,7 +71,6 @@ function CardContent({ c, mob }) {
         flexDirection: 'column'
       }}
     >
-      {/* Top Bar Decoration */}
       <div style={{ 
         position: 'absolute', top: 0, left: 0, width: '100%', height: 4, 
         background: `linear-gradient(90deg, transparent, ${isMission ? '#10B981' : '#EF4444'}, transparent)` 
@@ -90,7 +90,7 @@ function CardContent({ c, mob }) {
 
       <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 20, padding: 0, position: 'relative', zIndex: 2 }}>
         {c.points.map((p, i) => (
-          <li key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', fontSize: mob ? 14 : 17, color: c.textColor, fontWeight: isMission ? 500 : 600, lineHeight: 1.4 }}>
+          <li key={`${c.id}-p-${i}`} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', fontSize: mob ? 14 : 17, color: c.textColor, fontWeight: isMission ? 500 : 600, lineHeight: 1.4 }}>
             <div style={{ 
               width: 20, height: 20, borderRadius: '50%', background: c.pointIconBg, 
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2,
@@ -105,6 +105,23 @@ function CardContent({ c, mob }) {
     </div>
   );
 }
+
+CardContent.propTypes = {
+  c: PropTypes.shape({
+    id: PropTypes.string,
+    type: PropTypes.string,
+    icon: PropTypes.elementType,
+    pointIcon: PropTypes.elementType,
+    cardBg: PropTypes.string,
+    borderColor: PropTypes.string,
+    title: PropTypes.string,
+    points: PropTypes.arrayOf(PropTypes.string),
+    textColor: PropTypes.string,
+    pointIconBg: PropTypes.string,
+    pointIconColor: PropTypes.string
+  }).isRequired,
+  mob: PropTypes.bool
+};
 
 export default function Faq({ mob }) {
   const [current, setCurrent] = useState(0);
@@ -124,16 +141,21 @@ export default function Faq({ mob }) {
   const next = () => goTo((current + 1) % DATA.length, 'next');
   const prev = () => goTo((current - 1 + DATA.length) % DATA.length, 'prev');
 
+  const getAnimation = () => {
+    if (flipping) {
+      return direction === 'next' ? 'flipOutLeft 0.16s ease forwards' : 'flipOutRight 0.16s ease forwards';
+    }
+    return direction === 'next' ? 'flipInRight 0.18s ease forwards' : 'flipInLeft 0.18s ease forwards';
+  };
+
   return (
     <section style={{ padding: mob ? '60px 20px' : '100px 20px', background: '#fdfdfd', position: 'relative', overflow: 'hidden' }}>
       
-      {/* Decorative Blur Backgrounds */}
       <div style={{ position: 'absolute', top: '10%', left: '-10%', width: 500, height: 500, background: 'rgba(239, 68, 68, 0.05)', filter: 'blur(100px)', borderRadius: '50%' }} />
       <div style={{ position: 'absolute', bottom: '10%', right: '-10%', width: 500, height: 500, background: 'rgba(16, 185, 129, 0.05)', filter: 'blur(100px)', borderRadius: '50%' }} />
 
       <div style={{ ...W(1200), position: 'relative', zIndex: 1 }}>
         
-        {/* REVOLUTIONARY HEADING SECTION */}
         <div style={{ textAlign: 'center', marginBottom: mob ? 48 : 80 }}>
           <div style={{ 
             display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 20px', 
@@ -159,55 +181,51 @@ export default function Faq({ mob }) {
           </h2>
         </div>
 
-        {/* COMPARISON AREA */}
         {mob ? (
           <div style={{ width: '100%' }}>
             <div style={{ perspective: 1000, marginBottom: 24 }}>
-              <div style={{
-                animation: flipping
-                  ? direction === 'next' ? 'flipOutLeft 0.16s ease forwards' : 'flipOutRight 0.16s ease forwards'
-                  : direction === 'next' ? 'flipInRight 0.18s ease forwards' : 'flipInLeft 0.18s ease forwards',
-              }}>
+              <div style={{ animation: getAnimation() }}>
                 <CardContent c={DATA[current]} mob={true} />
               </div>
             </div>
 
-            {/* Controls */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
-               <button onClick={prev} style={{ width: 44, height: 44, borderRadius: '50%', border: '1.5px solid #E2E8F0', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+               <button aria-label="Previous slide" onClick={prev} style={{ width: 44, height: 44, borderRadius: '50%', border: '1.5px solid #E2E8F0', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                  <ChevronLeft size={20} color="#0f172a" />
                </button>
                
                <div style={{ display: 'flex', gap: 10 }}>
                  {DATA.map((_, i) => (
-                   <div key={i} onClick={() => goTo(i, i > current ? 'next' : 'prev')} style={{
-                     width: i === current ? 24 : 10, height: 10, borderRadius: 10,
-                     background: i === current ? DATA[i].tagColor : '#E2E8F0',
-                     transition: 'all 0.3s', cursor: 'pointer'
-                   }} />
+                   <button 
+                    key={DATA[i].id} 
+                    aria-label={`Go to slide ${i + 1}`}
+                    onClick={() => goTo(i, i > current ? 'next' : 'prev')} 
+                    style={{
+                      width: i === current ? 24 : 10, height: 10, borderRadius: 10,
+                      background: i === current ? DATA[i].tagColor : '#E2E8F0',
+                      transition: 'all 0.3s', cursor: 'pointer', border: 'none', padding: 0
+                    }} 
+                   />
                  ))}
                </div>
 
-               <button onClick={next} style={{ width: 44, height: 44, borderRadius: '50%', border: '1.5px solid #E2E8F0', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+               <button aria-label="Next slide" onClick={next} style={{ width: 44, height: 44, borderRadius: '50%', border: '1.5px solid #E2E8F0', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                  <ChevronRight size={20} color="#0f172a" />
                </button>
             </div>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'stretch' }}>
-            {DATA.map((c, i) => (
-              <CardContent key={i} c={c} mob={false} />
+            {DATA.map((c) => (
+              <CardContent key={c.id} c={c} mob={false} />
             ))}
           </div>
         )}
 
-        {/* BOTTOM TAGLINE */}
         <div style={{ textAlign: 'center', marginTop: mob ? 60 : 80 }}>
            <div style={{ display: 'inline-block', padding: '16px 32px', background: '#fff', border: '1px solid rgba(0,0,0,0.05)', borderRadius: 100, boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
              <p style={{ fontSize: mob ? 15 : 20, fontWeight: 700, color: '#334155', fontStyle: 'italic', margin: 0 }}>
-               <span style={{ color: '#FF9431', fontSize: 24, lineHeight: 0, verticalAlign: 'middle' }}>"</span>
-               Hum middlemen ko nahi, <strong style={{ color: '#0f172a', fontWeight: 900 }}>talent</strong> ko aage badhana chahte hain.
-               <span style={{ color: '#FF9431', fontSize: 24, lineHeight: 0, verticalAlign: 'middle' }}>"</span>
+               <span style={{ color: '#FF9431', fontSize: 24, lineHeight: 0, verticalAlign: 'middle' }}>&ldquo;</span> Hum middlemen ko nahi, <strong style={{ color: '#0f172a', fontWeight: 900 }}>talent</strong> ko aage badhana chahte hain. <span style={{ color: '#FF9431', fontSize: 24, lineHeight: 0, verticalAlign: 'middle' }}>&rdquo;</span>
              </p>
            </div>
         </div>
@@ -223,3 +241,7 @@ export default function Faq({ mob }) {
     </section>
   );
 }
+
+Faq.propTypes = {
+  mob: PropTypes.bool
+};

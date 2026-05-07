@@ -1,31 +1,61 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { T } from '../theme';
 import { W, scrollToTop, fmt, LS } from '../utils/helpers';
 import { apiCall } from '../utils/api';
-import { SH, Card, Empty, Bdg } from '../components/Primitives';
+import { Empty } from '../components/Primitives';
 import EliteHeader from '../components/layout/EliteHeader';
-import { motion } from 'framer-motion';
+
+/* eslint-disable react/prop-types */
+const PodiumItem = ({ c, idx, isWinner, mob, onClick, medals, medalColors }) => {
+  const score = c.score || fmt.score(c);
+  const img = c.photo || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=FF9431&color=fff`;
+  
+  return (
+    <button 
+      onClick={onClick}
+      style={{ 
+        textAlign: 'center', padding: isWinner ? '48px 32px' : '32px 24px', borderRadius: 32, background: '#fff', 
+        boxShadow: isWinner ? '0 30px 70px rgba(255,148,49,0.15)' : '0 10px 30px rgba(0,0,0,0.03)', 
+        border: `2px solid ${isWinner ? '#FF9431' : 'rgba(0,0,0,0.02)'}`, 
+        cursor: 'pointer', position: 'relative', order: mob ? idx : undefined, 
+        transform: isWinner && !mob ? 'translateY(-20px)' : 'none', zIndex: isWinner ? 10 : 1,
+        width: '100%',
+        display: 'block',
+        outline: 'none',
+        fontFamily: 'inherit'
+      }}
+    >
+      <div style={{ fontSize: isWinner ? 48 : 32, position: 'absolute', top: isWinner ? -30 : -20, left: '50%', transform: 'translateX(-50%)' }}>{medals[idx]}</div>
+      <div style={{ width: isWinner ? 120 : 90, height: isWinner ? 120 : 90, borderRadius: 28, padding: 3, background: `linear-gradient(135deg, ${medalColors[idx]}, #fff)`, margin: '0 auto 20px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
+          <img src={img} style={{ width: '100%', height: '100%', borderRadius: 25, objectFit: 'cover', border: '4px solid #fff' }} alt={c.name} />
+      </div>
+      <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: isWinner ? 24 : 18, color: '#111', marginBottom: 4, fontWeight: 900 }}>{c.name}</h3>
+      <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 20, fontWeight: 800 }}>{typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')}</p>
+      
+      <div style={{ display: 'inline-flex', flexDirection: 'column', padding: '10px 32px', background: isWinner ? '#FF9431' : '#f8fafc', borderRadius: 100, color: isWinner ? '#fff' : '#111' }}>
+          <span style={{ fontSize: 20, fontWeight: 900 }}>{score}</span>
+      </div>
+    </button>
+  );
+};
 
 export default function LeaderboardPage() {
-  const { st, dsp } = useApp();
-  const [mob, setMob] = useState(window.innerWidth < 768);
-  const [niche, setNiche] = useState('');
+  const { dsp } = useApp();
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [period, setPeriod] = useState('all');
   const [allC, setAllC] = useState([]);
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
     apiCall('/creators?limit=100').then(d => setAllC(d.creators || d || [])).catch(() => {
        setAllC(LS.get('cb_creators', []));
     });
-    return () => window.removeEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
   const go = (p, sel) => { dsp({ t: 'GO', p, sel }); scrollToTop(); };
-  const niches = [...new Set(allC.flatMap(c => Array.isArray(c.niche) ? c.niche : [c.niche]).filter(Boolean))].sort();
-  const filtered = (niche ? allC.filter(c => { const cn = Array.isArray(c.niche) ? c.niche : [c.niche]; return cn.includes(niche); }) : allC).sort((a, b) => (b.score || fmt.score(b)) - (a.score || fmt.score(a)));
+  const filtered = allC.sort((a, b) => (b.score || fmt.score(b)) - (a.score || fmt.score(a)));
   const top3 = filtered.slice(0, 3);
   const rest = filtered.slice(3);
   const medalColors = ['#FFD700', '#C0C0C0', '#CD7F32'];
@@ -66,33 +96,17 @@ export default function LeaderboardPage() {
             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1.1fr 1fr', gap: 20, marginBottom: 60, alignItems: 'flex-end', padding: mob ? '0 16px' : 0 }}>
               {[1, 0, 2].map(idx => {
                 const c = top3[idx]; if (!c) return null;
-                const score = c.score || fmt.score(c);
-                const img = c.photo || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=FF9431&color=fff`;
-                const isWinner = idx === 0;
-                
                 return (
-                  <div 
-                    key={c.id} 
-                    onClick={() => go('creator-profile', { creator: c })} 
-                    style={{ 
-                      textAlign: 'center', padding: isWinner ? '48px 32px' : '32px 24px', borderRadius: 32, background: '#fff', 
-                      boxShadow: isWinner ? '0 30px 70px rgba(255,148,49,0.15)' : '0 10px 30px rgba(0,0,0,0.03)', 
-                      border: `2px solid ${isWinner ? '#FF9431' : 'rgba(0,0,0,0.02)'}`, 
-                      cursor: 'pointer', position: 'relative', order: mob ? idx : undefined, 
-                      transform: isWinner && !mob ? 'translateY(-20px)' : 'none', zIndex: isWinner ? 10 : 1 
-                    }}
-                  >
-                    <div style={{ fontSize: isWinner ? 48 : 32, position: 'absolute', top: isWinner ? -30 : -20, left: '50%', transform: 'translateX(-50%)' }}>{medals[idx]}</div>
-                    <div style={{ width: isWinner ? 120 : 90, height: isWinner ? 120 : 90, borderRadius: 28, padding: 3, background: `linear-gradient(135deg, ${medalColors[idx]}, #fff)`, margin: '0 auto 20px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
-                       <img src={img} style={{ width: '100%', height: '100%', borderRadius: 25, objectFit: 'cover', border: '4px solid #fff' }} alt={c.name} />
-                    </div>
-                    <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: isWinner ? 24 : 18, color: '#111', marginBottom: 4, fontWeight: 900 }}>{c.name}</h3>
-                    <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 20, fontWeight: 800 }}>{typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')}</p>
-                    
-                    <div style={{ display: 'inline-flex', flexDirection: 'column', padding: '10px 32px', background: isWinner ? '#FF9431' : '#f8fafc', borderRadius: 100, color: isWinner ? '#fff' : '#111' }}>
-                       <span style={{ fontSize: 20, fontWeight: 900 }}>{score}</span>
-                    </div>
-                  </div>
+                  <PodiumItem 
+                    key={c.id}
+                    c={c}
+                    idx={idx}
+                    isWinner={idx === 0}
+                    mob={mob}
+                    onClick={() => go('creator-profile', { creator: c })}
+                    medals={medals}
+                    medalColors={medalColors}
+                  />
                 );
               })}
             </div>
@@ -104,28 +118,31 @@ export default function LeaderboardPage() {
               const score = c.score || fmt.score(c);
               const img = c.photo || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=FF9431&color=fff`;
               return (
-                <div 
+                <button 
                    key={c.id} 
                    onClick={() => go('creator-profile', { creator: c })} 
                    style={{ 
+                     width: '100%',
                      padding: '16px 24px', background: '#fff', borderRadius: 24, border: '1px solid rgba(0,0,0,0.04)', 
                      display: 'flex', alignItems: 'center', gap: 20, cursor: 'pointer', transition: 'all 0.2s', 
-                     boxShadow: '0 4px 15px rgba(0,0,0,0.02)' 
+                     boxShadow: '0 4px 15px rgba(0,0,0,0.02)',
+                     outline: 'none',
+                     fontFamily: 'inherit'
                    }}
                 >
                   <span style={{ width: 40, fontSize: 14, fontWeight: 900, color: '#cbd5e1' }}>#{i + 4}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1 }}>
                      <img src={img} style={{ width: 50, height: 50, borderRadius: 14, objectFit: 'cover' }} alt={c.name} />
-                     <div>
+                     <div style={{ textAlign: 'left' }}>
                         <h4 style={{ fontSize: 16, fontWeight: 800, color: '#111' }}>{c.name}</h4>
-                        <p style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>{typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')} • {((Array.isArray(c.niche) ? c.niche : [c.niche]).filter(Boolean))[0]}</p>
+                        <p style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>{typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')} • {((Array.isArray(c.niche) ? c.niche : [c.niche]).find(Boolean))}</p>
                      </div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: 18, fontWeight: 900, color: '#111' }}>{score}</div>
                     <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 900 }}>SCORE</div>
                   </div>
-                </div>
+                </button>
               );
             })}
             {filtered.length === 0 && <Empty icon="🏆" title="No rankings found" sub="Get started to see the leaderboard." ctaLabel="Join Now" onCta={() => go('creators')} />}

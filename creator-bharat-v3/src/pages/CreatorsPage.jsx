@@ -7,6 +7,57 @@ import EliteHeader from '../components/layout/EliteHeader';
 import IndiaMap3D from '../components/IndiaMap3D/IndiaMap3D';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const checkSearchQuery = (c, q) => {
+  if (!q) return true;
+  const sq = q.toLowerCase();
+  return (c.name || '').toLowerCase().includes(sq) || 
+         (c.handle || '').toLowerCase().includes(sq) || 
+         (c.bio || '').toLowerCase().includes(sq) || 
+         (c.city || '').toLowerCase().includes(sq);
+};
+
+const checkNiche = (c, niche) => {
+  if (!niche || niche.length === 0) return true;
+  const cn = Array.isArray(c.niche) ? c.niche : [c.niche];
+  return niche.some(n => cn.includes(n));
+};
+
+const checkPlatform = (c, platform) => {
+  if (!platform || platform.length === 0) return true;
+  const cp = Array.isArray(c.platform) ? c.platform : [c.platform];
+  return platform.some(p => cp.includes(p));
+};
+
+const checkMetrics = (c, f) => {
+  if (f.minFollowers && c.followers < Number(f.minFollowers)) return false;
+  if (f.verified && !c.verified) return false;
+  if (f.gender && f.gender !== 'Any' && c.gender !== f.gender) return false;
+  if (f.language && c.language && !c.language.includes(f.language)) return false;
+  if (f.minER && (c.er || 0) < Number(f.minER)) return false;
+  return true;
+};
+
+const filterCreators = (all, f) => {
+  return all.filter(c => {
+    if (!checkSearchQuery(c, f.q)) return false;
+    if (f.state && c.state !== f.state) return false;
+    if (f.district && c.city !== f.district) return false;
+    if (!checkNiche(c, f.niche)) return false;
+    if (!checkPlatform(c, f.platform)) return false;
+    return checkMetrics(c, f);
+  });
+};
+
+const mergeCreators = (apiC, localC) => {
+  const merged = [...apiC];
+  localC.forEach(lc => { 
+    if (!merged.some(ac => ac.id === lc.id)) {
+      merged.push(lc);
+    }
+  });
+  return merged;
+};
+
 // Modular Components
 import SearchToolbar from '../components/creators/SearchToolbar';
 import FilterSidebar from '../components/creators/FilterSidebar';
@@ -18,7 +69,7 @@ const PLATFORMS = ['Instagram', 'YouTube', 'Twitter', 'LinkedIn', 'Snapchat', 'F
 export default function CreatorsPage() {
   const { st, dsp } = useApp();
   const navigate = useNavigate();
-  const [mob, setMob] = useState(window.innerWidth < 768);
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const { cf: f } = st;
   
   const [showFilters, setShowFilters] = useState(false);
@@ -29,23 +80,21 @@ export default function CreatorsPage() {
   const [limit, setLimit] = useState(12);
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
     
     setLoading(true);
     apiCall('/creators?limit=200').then(d => {
       const apiC = d.creators || d || [];
       const localC = LS.get('cb_creators', []);
-      const merged = [...apiC];
-      localC.forEach(lc => { if (!merged.find(ac => ac.id === lc.id)) merged.push(lc); });
-      setAll(merged);
+      setAll(mergeCreators(apiC, localC));
       setLoading(false);
     }).catch(() => {
       setAll(LS.get('cb_creators', []));
       setLoading(false);
     });
     
-    return () => window.removeEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
   // Sync Global Nav with Filters (Z-index management)
@@ -54,31 +103,7 @@ export default function CreatorsPage() {
     return () => dsp({ t: 'UI', v: { hideNav: false } });
   }, [showFilters, dsp]);
 
-  const filtered = all.filter(c => {
-    const q = (f.q || '').toLowerCase();
-    const name = (c.name || '').toLowerCase();
-    const handle = (c.handle || '').toLowerCase();
-    const bio = (c.bio || '').toLowerCase();
-    const city = (c.city || '').toLowerCase();
-
-    if (q && !name.includes(q) && !handle.includes(q) && !bio.includes(q) && !city.includes(q)) return false;
-    if (f.state && c.state !== f.state) return false;
-    if (f.district && c.city !== f.district) return false;
-    if (f.niche && f.niche.length > 0) {
-      const cn = Array.isArray(c.niche) ? c.niche : [c.niche];
-      if (!f.niche.some(n => cn.includes(n))) return false;
-    }
-    if (f.platform && f.platform.length > 0) {
-      const cp = Array.isArray(c.platform) ? c.platform : [c.platform];
-      if (!f.platform.some(p => cp.includes(p))) return false;
-    }
-    if (f.minFollowers && c.followers < Number(f.minFollowers)) return false;
-    if (f.verified && !c.verified) return false;
-    if (f.gender && f.gender !== 'Any' && c.gender !== f.gender) return false;
-    if (f.language && c.language && !c.language.includes(f.language)) return false;
-    if (f.minER && (c.er || 0) < Number(f.minER)) return false;
-    return true;
-  }).sort((a, b) => {
+  const filtered = filterCreators(all, f).sort((a, b) => {
     if (f.sort === 'followers') return Number(b.followers || 0) - Number(a.followers || 0);
     return (b.score || fmt.score(b)) - (a.score || fmt.score(a));
   });

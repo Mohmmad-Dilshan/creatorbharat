@@ -11,6 +11,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 
 const GEOJSON_URL =
   'https://raw.githubusercontent.com/Subhash9325/GeoJson-Data-of-Indian-States/master/Indian_States';
@@ -119,3 +120,8 @@ export default function MiniIndiaMap({ width = 160, height = 190 }) {
     </div>
   );
 }
+
+MiniIndiaMap.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number
+};

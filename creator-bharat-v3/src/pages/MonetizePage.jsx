@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { T } from '../theme';
 import { W, scrollToTop } from '../utils/helpers';
-import { Btn, SH, Bdg } from '../components/Primitives';
+import { Btn, Bdg } from '../components/Primitives';
 
 export default function MonetizePage() {
   const { dsp } = useApp();
@@ -47,8 +46,8 @@ export default function MonetizePage() {
               { t: 'Direct Brand Deals', d: 'Skip the agencies. Get notified when brands like Nykaa or boAt want to work with you specifically.', i: '🏢' },
               { t: 'Rate Calculator', d: 'Know exactly how much to charge based on your real-time engagement and follower demographics.', i: '💰' },
               { t: 'Creator Score', d: 'Boost your visibility with our proprietary scoring system that ranks you based on content quality.', i: '📈' }
-            ].map((f, i) => (
-              <div key={i} style={{ padding: 32, borderRadius: 24, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+            ].map((f) => (
+              <div key={f.t} style={{ padding: 32, borderRadius: 24, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
                 <div style={{ fontSize: 32, marginBottom: 20 }}>{f.i}</div>
                 <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 12 }}>{f.t}</h3>
                 <p style={{ color: '#94A3B8', fontSize: 14, lineHeight: 1.6 }}>{f.d}</p>

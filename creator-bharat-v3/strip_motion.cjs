@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const dir = 'd:/creatorbharat-1/creator-bharat-v3/src/components/home';
 const files = fs.readdirSync(dir).filter(f => f.endsWith('.jsx') && f !== 'CreatorMap.jsx');
@@ -7,18 +7,18 @@ const files = fs.readdirSync(dir).filter(f => f.endsWith('.jsx') && f !== 'Creat
 files.forEach(f => {
   const filePath = path.join(dir, f);
   let content = fs.readFileSync(filePath, 'utf8');
-  let orig = content;
+  const orig = content;
 
   // Replace <motion.tag with <tag
-  content = content.replace(/<motion\.([a-zA-Z0-9]+)/g, '<$1');
+  content = content.replaceAll(/<motion\.([a-zA-Z0-9]+)/g, '<$1');
   // Replace </motion.tag> with </tag>
-  content = content.replace(/<\/motion\.([a-zA-Z0-9]+)>/g, '</$1>');
+  content = content.replaceAll(/<\/motion\.([a-zA-Z0-9]+)>/g, '</$1>');
   
   // Remove framer-motion props
-  content = content.replace(/\s+initial=\{\{[^}]+\}\}/g, '');
-  content = content.replace(/\s+whileInView=\{\{[^}]+\}\}/g, '');
-  content = content.replace(/\s+viewport=\{\{[^}]+\}\}/g, '');
-  content = content.replace(/\s+transition=\{\{[^}]+\}\}/g, '');
+  content = content.replaceAll(/\s+initial=\{\{[^}]+\}\}/g, '');
+  content = content.replaceAll(/\s+whileInView=\{\{[^}]+\}\}/g, '');
+  content = content.replaceAll(/\s+viewport=\{\{[^}]+\}\}/g, '');
+  content = content.replaceAll(/\s+transition=\{\{[^}]+\}\}/g, '');
 
   if (content !== orig) {
     fs.writeFileSync(filePath, content, 'utf8');

@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
 import { T } from '../theme';
 import { W, scrollToTop, LS, fmt } from '../utils/helpers';
-import { Btn, SH, Empty, Bdg } from '../components/Primitives';
+import { Btn, SH as Sh, Empty, Bdg } from '../components/Primitives';
 
 export default function ComparePage() {
   const { st, dsp } = useApp();
-  const [mob, setMob] = useState(window.innerWidth < 768);
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
   const go = (p, sel) => { dsp({ t: 'GO', p, sel }); scrollToTop(); };
@@ -46,10 +46,10 @@ export default function ComparePage() {
   // Helper to find the "best" in a row
   const getBest = (fieldKey, values) => {
     if (['followers', 'er', 'score'].includes(fieldKey)) {
-       return Math.max(...values.map(v => parseFloat(v) || 0));
+       return Math.max(...values.map(v => Number.parseFloat(v) || 0));
     }
     if (fieldKey === 'rateMin') {
-       return Math.min(...values.map(v => parseFloat(v) || 9999999));
+       return Math.min(...values.map(v => Number.parseFloat(v) || 9999999));
     }
     return null;
   };
@@ -63,7 +63,7 @@ export default function ComparePage() {
         
         <div style={W()}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 24 }}>
-             <SH eyebrow="Benchmarking" title="Side-by-Side Analysis" sub="Compare creator metrics and commercials to find the perfect fit for your campaign." light mb={0} />
+             <Sh eyebrow="Benchmarking" title="Side-by-Side Analysis" sub="Compare creator metrics and commercials to find the perfect fit for your campaign." light mb={0} />
              <Btn variant="white" onClick={() => dsp({ t: 'COMPARE_CLEAR' })}>Clear Bench</Btn>
           </div>
         </div>
@@ -99,9 +99,9 @@ export default function ComparePage() {
                   return (
                     <tr key={key}>
                       <td style={{ padding: '24px', background: '#FAFAFA', borderBottom: '1px solid rgba(0,0,0,0.03)', borderRight: '1px solid rgba(0,0,0,0.03)', fontWeight: 800, fontSize: 14, color: T.t2 }}>{label}</td>
-                      {creators.map((c, colIdx) => {
+                      {creators.map((c) => {
                         const val = getValue(c);
-                        const isBest = bestValue !== null && (parseFloat(val) === bestValue || val === bestValue);
+                        const isBest = bestValue !== null && (Number.parseFloat(val) === bestValue || val === bestValue);
                         return (
                           <td key={c.id} style={{ 
                             padding: '24px', 

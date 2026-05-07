@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
 import { T } from '../theme';
 import { W, scrollToTop, LS } from '../utils/helpers';
-import { Btn, SH, Card, Bdg } from '../components/Primitives';
+import { Btn, SH as Sh, Bdg } from '../components/Primitives';
 
 export default function PricingPage() {
   const { st, dsp } = useApp();
@@ -89,7 +89,7 @@ export default function PricingPage() {
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #FF9431, #fff, #128807)' }} />
         
         <div style={W(900)}>
-           <SH eyebrow="Investment for Growth" title="Simple Pricing, Infinite Reach" sub="Empowering Bharat's creators with affordable professional tools." light center mb={0} />
+           <Sh eyebrow="Investment for Growth" title="Simple Pricing, Infinite Reach" sub="Empowering Bharat's creators with affordable professional tools." light center mb={0} />
         </div>
       </div>
 
@@ -153,10 +153,10 @@ export default function PricingPage() {
       {/* FAQ Section */}
       <div style={{ padding: mob ? '80px 20px' : '120px 20px', background: '#fff' }}>
         <div style={W(800)}>
-          <SH eyebrow="Common Queries" title="Frequently Asked" center mb={56} />
+          <Sh eyebrow="Common Queries" title="Frequently Asked" center mb={56} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {faqs.map(([q, a], i) => (
-              <div key={i} style={{ borderRadius: 24, background: '#FAFAFA', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.03)' }}>
+              <div key={q} style={{ borderRadius: 24, background: '#FAFAFA', overflow: 'hidden', border: '1px solid rgba(0,0,0,0.03)' }}>
                 <button 
                   onClick={() => setFaq(faq === i ? null : i)} 
                   style={{ width: '100%', padding: '28px 32px', background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20, fontFamily: 'inherit' }}

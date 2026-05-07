@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { W } from '../../utils/helpers';
 import { Logo } from '../Primitives';
@@ -48,6 +49,26 @@ export default function Footer({ mob }) {
       ]
     }
   ];
+
+  const handleHoverStart = (e) => {
+    e.currentTarget.style.transform = 'translateY(-2px)';
+  };
+  const handleHoverEnd = (e) => {
+    e.currentTarget.style.transform = 'translateY(0)';
+  };
+
+  const handleSocialHoverStart = (e) => {
+    e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+    e.currentTarget.style.borderColor = '#FF9431';
+    e.currentTarget.style.transform = 'translateY(-3px)';
+    e.currentTarget.style.color = '#fff';
+  };
+  const handleSocialHoverEnd = (e) => {
+    e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
+    e.currentTarget.style.transform = 'translateY(0)';
+    e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
+  };
 
   return (
     <footer style={{
@@ -148,13 +169,19 @@ export default function Footer({ mob }) {
                   onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
                 />
               </div>
-              <button style={{
-                width: '100%', padding: '16px', background: 'linear-gradient(135deg, #FF9431, #FF6B00)',
-                color: '#fff', border: 'none', borderRadius: 16, fontWeight: 900,
-                fontSize: 14, cursor: 'pointer', transition: 'all 0.3s',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                boxShadow: '0 10px 25px rgba(255,107,0,0.2)'
-              }} onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}>
+              <button 
+                style={{
+                  width: '100%', padding: '16px', background: 'linear-gradient(135deg, #FF9431, #FF6B00)',
+                  color: '#fff', border: 'none', borderRadius: 16, fontWeight: 900,
+                  fontSize: 14, cursor: 'pointer', transition: 'all 0.3s',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                  boxShadow: '0 10px 25px rgba(255,107,0,0.2)'
+                }} 
+                onMouseOver={handleHoverStart} 
+                onMouseOut={handleHoverEnd}
+                onFocus={handleHoverStart}
+                onBlur={handleHoverEnd}
+              >
                 Subscribe <Send size={16} />
               </button>
             </div>
@@ -173,12 +200,20 @@ export default function Footer({ mob }) {
               <h4 style={{ fontSize: 11, fontWeight: 900, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '2.5px', marginBottom: 24 }}>{group.title}</h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {group.links.map(link => (
-                  <span key={link.label} onClick={() => go(link.p)} style={{ 
-                    fontSize: 15, color: 'rgba(255,255,255,0.4)', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
-                    display: 'inline-block'
-                  }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}>
+                  <button 
+                    key={link.label} 
+                    onClick={() => go(link.p)} 
+                    style={{ 
+                      fontSize: 15, color: 'rgba(255,255,255,0.4)', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
+                      display: 'block', width: 'fit-content', border: 'none', background: 'none', padding: 0, textAlign: 'left'
+                    }} 
+                    onMouseOver={e => e.currentTarget.style.color = '#fff'} 
+                    onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}
+                    onFocus={e => e.currentTarget.style.color = '#fff'}
+                    onBlur={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}
+                  >
                     {link.label}
-                  </span>
+                  </button>
                 ))}
               </div>
             </div>
@@ -194,14 +229,22 @@ export default function Footer({ mob }) {
                 { n: 'LinkedIn', s: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg> },
                 { n: 'YouTube', s: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg> }
               ].map(s => (
-                <div key={s.n} style={{
-                  width: 44, height: 44, borderRadius: 14, background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.06)', display: 'flex',
-                  alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.3s',
-                  color: 'rgba(255,255,255,0.7)'
-                }} onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = '#FF9431'; e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.color = '#fff'; }} onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; }}>
+                <button 
+                  key={s.n} 
+                  aria-label={`Follow us on ${s.n}`}
+                  style={{
+                    width: 44, height: 44, borderRadius: 14, background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.06)', display: 'flex',
+                    alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.3s',
+                    color: 'rgba(255,255,255,0.7)', padding: 0
+                  }} 
+                  onMouseOver={handleSocialHoverStart} 
+                  onMouseOut={handleSocialHoverEnd}
+                  onFocus={handleSocialHoverStart}
+                  onBlur={handleSocialHoverEnd}
+                >
                   {s.s}
-                </div>
+                </button>
               ))}
             </div>
           </div>
@@ -249,3 +292,7 @@ export default function Footer({ mob }) {
     </footer>
   );
 }
+
+Footer.propTypes = {
+  mob: PropTypes.bool
+};

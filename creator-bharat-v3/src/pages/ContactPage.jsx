@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
 import { T } from '../theme';
-import { W, scrollToTop, LS } from '../utils/helpers';
-import { Btn, SH, Fld, Card } from '../components/Primitives';
+import { W, LS } from '../utils/helpers';
+import { Btn, SH as Sh, Fld, Card } from '../components/Primitives';
 
 export default function ContactPage() {
-  const { dsp, st } = useApp();
-  const [mob, setMob] = useState(window.innerWidth < 768);
+  const { dsp } = useApp();
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [F, setF] = useState({ name: '', email: '', type: 'Creator', subject: '', message: '' });
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
   const upF = (k, v) => setF(p => ({ ...p, [k]: v }));
@@ -38,7 +38,7 @@ export default function ContactPage() {
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #FF9431, #fff, #128807)' }} />
         
         <div style={W()}>
-           <SH eyebrow="Direct Channel" title="Let's Connect Bharat" sub="Have questions about monetization or brand deals? Hum aapki madad ke liye taiyaar hain." light center mb={0} />
+           <Sh eyebrow="Direct Channel" title="Let's Connect Bharat" sub="Have questions about monetization or brand deals? Hum aapki madad ke liye taiyaar hain." light center mb={0} />
         </div>
       </div>
 

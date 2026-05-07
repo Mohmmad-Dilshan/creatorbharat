@@ -27,7 +27,7 @@ export default function BrandTrust() {
       <div className="marquee-container" style={{ maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
         <div className="marquee-content">
           {[...LOGOS, ...LOGOS].map((logo, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 200, padding: '0 40px' }}>
+            <div key={`${logo.name}-${i}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 200, padding: '0 40px' }}>
               <img 
                 src={logo.url} 
                 style={{ height: 32, maxWidth: 140, objectFit: 'contain', filter: 'grayscale(1) opacity(0.3) brightness(0.5)', transition: 'all 0.5s cubic-bezier(0.23, 1, 0.32, 1)' }} 

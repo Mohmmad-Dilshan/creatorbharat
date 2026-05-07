@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { useApp } from '../context';
 import { T } from '../theme';
-import { W, scrollToTop } from '../utils/helpers';
-import { Btn, SH } from '../components/Primitives';
+import { W } from '../utils/helpers';
+import { SH as Sh } from '../components/Primitives';
 
 export default function AboutPage() {
-  const { st, dsp } = useApp();
-  const [mob, setMob] = useState(window.innerWidth < 768);
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
-  const go = (p) => { dsp({ t: 'GO', p }); scrollToTop(); };
+
 
   return (
     <div style={{ background: '#fff' }}>
@@ -31,7 +29,7 @@ export default function AboutPage() {
         <div style={W()}>
           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1.2fr', gap: 64, alignItems: 'center', marginBottom: 100 }}>
             <div>
-              <SH eyebrow="The Problem" title="Bridging the Gap" mb={32} />
+              <Sh eyebrow="The Problem" title="Bridging the Gap" mb={32} />
               <p style={{ fontSize: 17, color: T.t2, lineHeight: 1.8, marginBottom: 24, fontWeight: 500 }}>India's creator economy is massive, but it is deeply unequal. While metro creators get all the attention, <strong>70% of Bharat's talent</strong> resides in smaller cities, creating content in regional languages for hyper-local audiences.</p>
               <p style={{ fontSize: 17, color: T.t2, lineHeight: 1.8, fontWeight: 500 }}>Brands want to reach these audiences but don't know how to find trusted, professional creators in cities like Bhilwara, Indore, or Kanpur. We are here to fix that.</p>
             </div>
@@ -52,7 +50,7 @@ export default function AboutPage() {
           </div>
 
           <div style={{ textAlign: 'center', background: T.n8, borderRadius: 48, padding: mob ? '48px 24px' : '100px 48px', color: '#fff', position: 'relative', overflow: 'hidden' }}>
-            <SH eyebrow="Values" title="What Drives Us" center light mb={64} />
+            <Sh eyebrow="Values" title="What Drives Us" center light mb={64} />
             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3,1fr)', gap: 40 }}>
               {[
                 { t: 'Authenticity First', d: 'We prioritize real influence over vanity metrics. Every creator on our platform is verified for quality.' },

@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context';
-import { T } from '../theme';
-import { W, scrollToTop, LS, fmt } from '../utils/helpers';
+import { W, LS, fmt } from '../utils/helpers';
 import { Btn, Card, Bdg, Bar, Empty, Ring } from '../components/Primitives';
 import EliteHeader from '../components/layout/EliteHeader';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, Users, Megaphone, Trophy, ShieldCheck, Share2, ExternalLink } from 'lucide-react';
+import { LayoutDashboard, Megaphone, Trophy, ShieldCheck, ExternalLink } from 'lucide-react';
 
 export default function DashboardPage() {
   const { st, dsp } = useApp();
   const navigate = useNavigate();
-  const [mob, setMob] = useState(window.innerWidth < 768);
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
   const toast = (msg, type) => dsp({ t: 'TOAST', d: { type, msg } });
@@ -46,6 +45,13 @@ export default function DashboardPage() {
     { l: 'Total Applied', v: myApps.length, c: '#3B82F6', i: LayoutDashboard, trend: '+5' },
     { l: 'Elite Score', v: score, c: '#FF9431', i: ShieldCheck, trend: 'Top 5%' }
   ];
+
+  const getStatusColor = (status) => {
+    if (status === 'selected') return 'green';
+    if (status === 'shortlisted') return 'purple';
+    if (status === 'rejected') return 'red';
+    return 'blue';
+  };
 
   return (
     <div style={{ background: '#f8fafc', minHeight: '100vh', paddingBottom: 80 }}>
@@ -82,7 +88,7 @@ export default function DashboardPage() {
                 const Icon = s.i;
                 return (
                   <motion.div
-                    key={i}
+                    key={s.l}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
@@ -184,7 +190,7 @@ export default function DashboardPage() {
                                  <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>{fmt.date(a.date)}</span>
                               </div>
                            </div>
-                           <Bdg sm color={a.status === 'selected' ? 'green' : a.status === 'shortlisted' ? 'purple' : a.status === 'rejected' ? 'red' : 'blue'}>
+                           <Bdg sm color={getStatusColor(a.status)}>
                               {a.status?.toUpperCase() || 'APPLIED'}
                            </Bdg>
                         </div>

@@ -1,16 +1,5 @@
-/**
- * CommunityPulse.jsx
- *
- * "The Creator Success Roadmap" section.
- * Step stats are derived live from the platform API:
- *   Step 01 → real creator count from /creators
- *   Step 02 → combined audience reach from creator followers
- *   Step 03 → total campaign deal value from /campaigns
- *
- * To add/remove steps, edit buildSteps() only.
- */
-
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { W, fmt } from '../../utils/helpers';
 import { User, Radio, CreditCard, ArrowRight, CheckCircle } from 'lucide-react';
 import MiniIndiaMap from '../MiniIndiaMap';
@@ -19,6 +8,7 @@ import { usePlatformStats } from '../../hooks/usePlatformStats';
 // Step config — static content only, stats injected from real data
 const STEP_CONFIG = [
   {
+    id: 'step-01',
     n: '01',
     tag: 'Identity',
     h: 'Build Your Verified Identity',
@@ -28,6 +18,7 @@ const STEP_CONFIG = [
     bg: 'rgba(255,148,49,0.08)',
   },
   {
+    id: 'step-02',
     n: '02',
     tag: 'Spotlight',
     h: 'Get National Spotlight',
@@ -37,6 +28,7 @@ const STEP_CONFIG = [
     bg: 'rgba(16,185,129,0.08)',
   },
   {
+    id: 'step-03',
     n: '03',
     tag: 'Monetize',
     h: 'Direct Deals, 0% Commission',
@@ -76,8 +68,17 @@ function buildSteps(analytics) {
 
 export default function CommunityPulse({ mob, go }) {
   const [activeStep, setActiveStep] = useState(null);
-  const { analytics, loading: statsLoading } = usePlatformStats();
+  const { analytics } = usePlatformStats();
   const steps = buildSteps(analytics);
+
+  const handleCtaHoverStart = (e) => {
+    e.currentTarget.style.transform = 'translateY(-2px)';
+    e.currentTarget.style.boxShadow = '0 16px 40px rgba(255,148,49,0.4)';
+  };
+  const handleCtaHoverEnd = (e) => {
+    e.currentTarget.style.transform = 'none';
+    e.currentTarget.style.boxShadow = '0 8px 32px rgba(255,148,49,0.3)';
+  };
 
   return (
     <section style={{ padding: mob ? '48px 16px' : '96px 24px', background: '#fff', position: 'relative', overflow: 'hidden' }}>
@@ -124,8 +125,10 @@ export default function CommunityPulse({ mob, go }) {
             {steps.map((s, i) => {
               const Icon = s.icon;
               return (
-                <div
-                  key={i}
+                <button
+                  key={s.id}
+                  aria-expanded={activeStep === i}
+                  aria-label={`Step ${s.n}: ${s.h}`}
                   style={{
                     background: '#fff',
                     border: `1.5px solid ${activeStep === i ? s.color : '#E2E8F0'}`,
@@ -136,6 +139,9 @@ export default function CommunityPulse({ mob, go }) {
                     alignItems: 'flex-start',
                     transition: 'all 0.25s',
                     boxShadow: activeStep === i ? `0 8px 32px ${s.color}20` : '0 2px 8px rgba(0,0,0,0.03)',
+                    textAlign: 'left',
+                    width: '100%',
+                    cursor: 'pointer'
                   }}
                   onClick={() => setActiveStep(activeStep === i ? null : i)}
                 >
@@ -158,7 +164,7 @@ export default function CommunityPulse({ mob, go }) {
                       <span style={{ fontSize: 11, fontWeight: 700, color: s.color }}>{s.stat}</span>
                     </div>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
@@ -181,7 +187,7 @@ export default function CommunityPulse({ mob, go }) {
 
                 return (
                   <div
-                    key={i}
+                    key={s.id}
                     style={{
                       display: 'grid',
                       gridTemplateColumns: '1fr 80px 1fr',
@@ -241,8 +247,10 @@ export default function CommunityPulse({ mob, go }) {
                 transition: 'all 0.3s',
                 fontFamily: "'Inter', sans-serif",
               }}
-              onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(255,148,49,0.4)'; }}
-              onMouseOut={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(255,148,49,0.3)'; }}
+              onMouseOver={handleCtaHoverStart}
+              onMouseOut={handleCtaHoverEnd}
+              onFocus={handleCtaHoverStart}
+              onBlur={handleCtaHoverEnd}
               onClick={() => go ? go('apply') : null}
             >
               Start Your Creator Journey <ArrowRight size={18} />
@@ -259,6 +267,11 @@ export default function CommunityPulse({ mob, go }) {
     </section>
   );
 }
+
+CommunityPulse.propTypes = {
+  mob: PropTypes.bool,
+  go: PropTypes.func
+};
 
 // ── Reusable step card content ──────────────────────────────
 function StepContent({ s, isLeft }) {
@@ -287,3 +300,15 @@ function StepContent({ s, isLeft }) {
     </div>
   );
 }
+
+StepContent.propTypes = {
+  s: PropTypes.shape({
+    tag: PropTypes.string,
+    h: PropTypes.string,
+    d: PropTypes.string,
+    stat: PropTypes.string,
+    color: PropTypes.string,
+    bg: PropTypes.string
+  }).isRequired,
+  isLeft: PropTypes.bool.isRequired
+};

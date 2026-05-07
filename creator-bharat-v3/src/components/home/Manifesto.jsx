@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import PropTypes from 'prop-types';
 import { W } from '../../utils/helpers';
 
 export default function Manifesto({ mob }) {
@@ -47,11 +47,11 @@ export default function Manifesto({ mob }) {
 
           <div style={{ marginTop: 60, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: mob ? 20 : 48 }}>
             {[
-              { l: 'Verified Trust', v: 'No Middlemen' },
-              { l: 'Zero Commission', v: '100% Earnings' },
-              { l: 'Regional First', v: 'Global Reach' }
-            ].map((stat, i) => (
-              <div key={i} style={{ textAlign: 'center' }}>
+              { id: 'trust', l: 'Verified Trust', v: 'No Middlemen' },
+              { id: 'comm', l: 'Zero Commission', v: '100% Earnings' },
+              { id: 'reach', l: 'Regional First', v: 'Global Reach' }
+            ].map((stat) => (
+              <div key={stat.id} style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: 12, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 8 }}>{stat.l}</div>
                 <div style={{ fontSize: 24, fontWeight: 900, color: '#fff' }}>{stat.v}</div>
               </div>
@@ -70,3 +70,7 @@ export default function Manifesto({ mob }) {
     </section>
   );
 }
+
+Manifesto.propTypes = {
+  mob: PropTypes.bool
+};

@@ -7,11 +7,13 @@
  */
 
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { W } from '../../utils/helpers';
 import { ShieldCheck, Handshake, Globe, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const COMMITMENTS = [
   {
+    id: 'identity',
     icon: ShieldCheck,
     color: '#FF9431',
     bg: 'rgba(255,148,49,0.08)',
@@ -22,6 +24,7 @@ const COMMITMENTS = [
     badge: 'Pehchan',
   },
   {
+    id: 'discovery',
     icon: Handshake,
     color: '#10B981',
     bg: 'rgba(16,185,129,0.08)',
@@ -32,6 +35,7 @@ const COMMITMENTS = [
     badge: '0% Commission',
   },
   {
+    id: 'recognition',
     icon: Globe,
     color: '#8B5CF6',
     bg: 'rgba(139,92,246,0.08)',
@@ -48,7 +52,7 @@ function CommitmentCard({ c, hovered, idx, setHovered }) {
   const Icon = c.icon;
   const isHovered = hovered === idx;
   return (
-    <div
+    <article
       onMouseEnter={() => setHovered(idx)}
       onMouseLeave={() => setHovered(null)}
       style={{
@@ -88,9 +92,25 @@ function CommitmentCard({ c, hovered, idx, setHovered }) {
         <div style={{ height: 2, flex: 1, background: `linear-gradient(90deg, ${c.color}, transparent)`, borderRadius: 100, opacity: 0.4 }} />
         <span style={{ fontSize: 11, fontWeight: 700, color: c.color }}>0{idx + 1}</span>
       </div>
-    </div>
+    </article>
   );
 }
+
+CommitmentCard.propTypes = {
+  c: PropTypes.shape({
+    icon: PropTypes.elementType.isRequired,
+    color: PropTypes.string.isRequired,
+    bg: PropTypes.string.isRequired,
+    border: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    desc: PropTypes.string.isRequired,
+    badge: PropTypes.string.isRequired
+  }).isRequired,
+  hovered: PropTypes.number,
+  idx: PropTypes.number.isRequired,
+  setHovered: PropTypes.func.isRequired
+};
 
 // Mobile: single card with 3D flip between cards
 function MobileCardCarousel() {
@@ -114,6 +134,13 @@ function MobileCardCarousel() {
   const c = COMMITMENTS[current];
   const Icon = c.icon;
 
+  const getAnimation = () => {
+    if (!flipping) {
+      return direction === 'next' ? 'flipInRight 0.18s ease forwards' : 'flipInLeft 0.18s ease forwards';
+    }
+    return direction === 'next' ? 'flipOutLeft 0.16s ease forwards' : 'flipOutRight 0.16s ease forwards';
+  };
+
   return (
     <div style={{ width: '100%' }}>
       {/* Card with flip animation */}
@@ -128,13 +155,7 @@ function MobileCardCarousel() {
             display: 'flex',
             flexDirection: 'column',
             gap: 18,
-            animation: flipping
-              ? direction === 'next'
-                ? 'flipOutLeft 0.16s ease forwards'
-                : 'flipOutRight 0.16s ease forwards'
-              : direction === 'next'
-              ? 'flipInRight 0.18s ease forwards'
-              : 'flipInLeft 0.18s ease forwards',
+            animation: getAnimation(),
           }}
         >
           {/* Top row */}
@@ -165,6 +186,7 @@ function MobileCardCarousel() {
       {/* Controls: arrows + dots */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
         <button
+          aria-label="Previous commitment"
           onClick={prev}
           style={{ width: 40, height: 40, borderRadius: '50%', border: '1.5px solid #E2E8F0', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}
         >
@@ -174,7 +196,8 @@ function MobileCardCarousel() {
         <div style={{ display: 'flex', gap: 8 }}>
           {COMMITMENTS.map((cm, i) => (
             <button
-              key={i}
+              key={cm.id}
+              aria-label={`Go to commitment ${i + 1}`}
               onClick={() => goTo(i, i > current ? 'next' : 'prev')}
               style={{
                 width: i === current ? 24 : 8,
@@ -191,6 +214,7 @@ function MobileCardCarousel() {
         </div>
 
         <button
+          aria-label="Next commitment"
           onClick={next}
           style={{ width: 40, height: 40, borderRadius: '50%', border: '1.5px solid #E2E8F0', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}
         >
@@ -247,7 +271,7 @@ export default function PlatformShowcase({ mob }) {
           /* DESKTOP: 3 cards in a row */
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, marginBottom: 64 }}>
             {COMMITMENTS.map((c, i) => (
-              <CommitmentCard key={i} c={c} idx={i} hovered={hovered} setHovered={setHovered} />
+              <CommitmentCard key={c.id} c={c} idx={i} hovered={hovered} setHovered={setHovered} />
             ))}
           </div>
         )}
@@ -276,7 +300,7 @@ export default function PlatformShowcase({ mob }) {
             </p>
             <div style={{ display: 'inline-flex', borderRadius: 100, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}>
               {['#FF9933', '#FFFFFF', '#138808'].map((col, i) => (
-                <div key={i} style={{ width: 32, height: 6, background: col }} />
+                <div key={`${col}-${i}`} style={{ width: 32, height: 6, background: col }} />
               ))}
             </div>
             <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 14, fontWeight: 500 }}>CreatorBharat Mission Statement</p>
@@ -287,3 +311,7 @@ export default function PlatformShowcase({ mob }) {
     </section>
   );
 }
+
+PlatformShowcase.propTypes = {
+  mob: PropTypes.bool
+};

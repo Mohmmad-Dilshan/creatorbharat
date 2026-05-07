@@ -7,6 +7,7 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { TrendingUp, Users, Megaphone, MapPin, ArrowUpRight, RefreshCw } from 'lucide-react';
 import { usePlatformStats } from '../../hooks/usePlatformStats';
 import { fmt } from '../../utils/helpers';
@@ -34,11 +35,16 @@ function Sparkline({ data, color }) {
   );
 }
 
+Sparkline.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.number),
+  color: PropTypes.string.isRequired
+};
+
 function SkeletonCard() {
   return (
     <div style={{ background: '#fff', borderRadius: 20, padding: 28, border: '1px solid #E2E8F0', height: 160 }}>
-      {[60, 80, 40].map((w, i) => (
-        <div key={i} style={{ background: '#F1F5F9', borderRadius: 8, height: i === 1 ? 36 : 12, width: `${w}%`, marginBottom: 12, animation: 'shimmer 1.5s infinite' }} />
+      {[60, 80, 40].map((w) => (
+        <div key={w} style={{ background: '#F1F5F9', borderRadius: 8, height: w === 80 ? 36 : 12, width: `${w}%`, marginBottom: 12, animation: 'shimmer 1.5s infinite' }} />
       ))}
     </div>
   );
@@ -65,19 +71,30 @@ function KpiCard({ label, value, color, icon: Icon, sub, spark, mob }) {
   );
 }
 
+KpiCard.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  color: PropTypes.string.isRequired,
+  icon: PropTypes.elementType.isRequired,
+  sub: PropTypes.string,
+  spark: PropTypes.arrayOf(PropTypes.number),
+  mob: PropTypes.bool
+};
+
 function NicheBreakdown({ niches, mob }) {
+  const hasData = niches && niches.length > 0;
   return (
     <div style={{ background: '#fff', borderRadius: 20, padding: mob ? 24 : 32, border: '1px solid #E2E8F0', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }}>
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 11, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 6 }}>Creator Niches</div>
         <div style={{ fontSize: mob ? 18 : 22, fontWeight: 900, color: '#0f172a', fontFamily: "'Outfit', sans-serif" }}>
-          {niches.length > 0 ? 'Top Creator Categories' : 'Awaiting creator data'}
+          {hasData ? 'Top Creator Categories' : 'Awaiting creator data'}
         </div>
       </div>
-      {niches.length > 0 ? (
+      {hasData ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {niches.map((n, i) => (
-            <div key={i}>
+            <div key={n.name}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                 <span style={{ fontSize: 14, fontWeight: 600, color: '#1e293b' }}>{n.name}</span>
                 <span style={{ fontSize: 13, fontWeight: 700, color: '#64748b' }}>{n.count} creators</span>
@@ -97,16 +114,26 @@ function NicheBreakdown({ niches, mob }) {
   );
 }
 
+NicheBreakdown.propTypes = {
+  niches: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    count: PropTypes.number.isRequired,
+    pct: PropTypes.number.isRequired
+  })),
+  mob: PropTypes.bool
+};
+
 function CityTable({ cities, mob }) {
+  const hasData = cities && cities.length > 0;
   return (
     <div style={{ background: '#fff', borderRadius: 20, padding: mob ? 24 : 32, border: '1px solid #E2E8F0', boxShadow: '0 4px 16px rgba(0,0,0,0.03)', overflow: 'auto' }}>
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 11, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 6 }}>Hyperlocal</div>
         <div style={{ fontSize: mob ? 18 : 22, fontWeight: 900, color: '#0f172a', fontFamily: "'Outfit', sans-serif" }}>
-          {cities.length > 0 ? 'Top Cities by Activity' : 'Awaiting city data'}
+          {hasData ? 'Top Cities by Activity' : 'Awaiting city data'}
         </div>
       </div>
-      {cities.length > 0 ? (
+      {hasData ? (
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
@@ -117,7 +144,7 @@ function CityTable({ cities, mob }) {
           </thead>
           <tbody>
             {cities.map((r, i) => (
-              <tr key={i} style={{ borderBottom: i < cities.length - 1 ? '1px solid #F8FAFC' : 'none' }}>
+              <tr key={r.city} style={{ borderBottom: i < cities.length - 1 ? '1px solid #F8FAFC' : 'none' }}>
                 <td style={{ padding: '14px 0' }}>
                   <div style={{ fontSize: 14, fontWeight: 700, color: '#1e293b' }}>{r.city}</div>
                   {r.state && <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 500 }}>{r.state}</div>}
@@ -139,6 +166,17 @@ function CityTable({ cities, mob }) {
     </div>
   );
 }
+
+CityTable.propTypes = {
+  cities: PropTypes.arrayOf(PropTypes.shape({
+    city: PropTypes.string.isRequired,
+    state: PropTypes.string,
+    creators: PropTypes.number.isRequired,
+    reach: PropTypes.number.isRequired,
+    deals: PropTypes.number.isRequired
+  })),
+  mob: PropTypes.bool
+};
 
 // ── Main Component ────────────────────────────────────────────────────────
 
@@ -216,7 +254,7 @@ export default function ImpactStats({ mob }) {
         <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(4,1fr)', gap: mob ? 12 : 20, marginBottom: mob ? 16 : 20 }}>
           {loading
             ? [0,1,2,3].map(i => <SkeletonCard key={i} />)
-            : buildKpis(analytics).map((k, i) => <KpiCard key={i} {...k} mob={mob} />)
+            : buildKpis(analytics).map((k) => <KpiCard key={k.label} {...k} mob={mob} />)
           }
         </div>
 
@@ -240,3 +278,7 @@ export default function ImpactStats({ mob }) {
     </section>
   );
 }
+
+ImpactStats.propTypes = {
+  mob: PropTypes.bool
+};

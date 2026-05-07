@@ -31,49 +31,49 @@ import TermsPage from './pages/TermsPage';
 
 import ProtectedRoute from './components/ProtectedRoute';
 
+const AppRoutes = () => (
+  <Routes>
+    <Route path="/" element={<HomePage />} />
+    <Route path="/login" element={<LoginPage />} />
+    <Route path="/privacy" element={<PrivacyPage />} />
+    <Route path="/terms" element={<TermsPage />} />
+    <Route path="/creators" element={<CreatorsPage />} />
+    <Route path="/creator/:id" element={<CreatorProfilePage />} />
+    <Route path="/campaigns" element={<CampaignsPage />} />
+    <Route path="/blog" element={<BlogPage />} />
+    <Route path="/blog/:slug" element={<BlogArticlePage />} />
+    <Route path="/monetize" element={<MonetizationPage />} />
+    <Route path="/pricing" element={<PricingPage />} />
+    <Route path="/leaderboard" element={<LeaderboardPage />} />
+    <Route path="/rate-calc" element={<RateCalcPage />} />
+    <Route path="/creator-score" element={<CreatorScorePage />} />
+    <Route path="/about" element={<AboutPage />} />
+    <Route path="/contact" element={<ContactPage />} />
+    <Route path="/apply" element={<ApplyPage />} />
+    
+    {/* Protected Creator Routes */}
+    <Route path="/dashboard" element={<ProtectedRoute allowedRole="creator"><DashboardPage /></ProtectedRoute>} />
+    <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+    <Route path="/saved" element={<ProtectedRoute allowedRole="creator"><SavedPage /></ProtectedRoute>} />
+    <Route path="/applications" element={<ProtectedRoute allowedRole="creator"><ApplicationsPage /></ProtectedRoute>} />
+    
+    {/* Protected Brand Routes */}
+    <Route path="/brand-register" element={<BrandRegisterPage />} />
+    <Route path="/brand-dashboard" element={<ProtectedRoute allowedRole="brand"><BrandDashboardPage /></ProtectedRoute>} />
+    <Route path="/campaign-builder" element={<ProtectedRoute allowedRole="brand"><CampaignBuilderPage /></ProtectedRoute>} />
+    
+    <Route path="/compare" element={<ComparePage />} />
+    {/* Fallback */}
+    <Route path="*" element={<HomePage />} />
+  </Routes>
+);
+
 export default function App() {
   const location = useLocation();
 
   // Pages that should not use the standard layout
   const noLayoutPaths = ['/apply', '/brand-register', '/login'];
   const useLayout = !noLayoutPaths.includes(location.pathname);
-
-  const AppRoutes = () => (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/privacy" element={<PrivacyPage />} />
-      <Route path="/terms" element={<TermsPage />} />
-      <Route path="/creators" element={<CreatorsPage />} />
-      <Route path="/creator/:id" element={<CreatorProfilePage />} />
-      <Route path="/campaigns" element={<CampaignsPage />} />
-      <Route path="/blog" element={<BlogPage />} />
-      <Route path="/blog/:slug" element={<BlogArticlePage />} />
-      <Route path="/monetize" element={<MonetizationPage />} />
-      <Route path="/pricing" element={<PricingPage />} />
-      <Route path="/leaderboard" element={<LeaderboardPage />} />
-      <Route path="/rate-calc" element={<RateCalcPage />} />
-      <Route path="/creator-score" element={<CreatorScorePage />} />
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="/contact" element={<ContactPage />} />
-      <Route path="/apply" element={<ApplyPage />} />
-      
-      {/* Protected Creator Routes */}
-      <Route path="/dashboard" element={<ProtectedRoute allowedRole="creator"><DashboardPage /></ProtectedRoute>} />
-      <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
-      <Route path="/saved" element={<ProtectedRoute allowedRole="creator"><SavedPage /></ProtectedRoute>} />
-      <Route path="/applications" element={<ProtectedRoute allowedRole="creator"><ApplicationsPage /></ProtectedRoute>} />
-      
-      {/* Protected Brand Routes */}
-      <Route path="/brand-register" element={<BrandRegisterPage />} />
-      <Route path="/brand-dashboard" element={<ProtectedRoute allowedRole="brand"><BrandDashboardPage /></ProtectedRoute>} />
-      <Route path="/campaign-builder" element={<ProtectedRoute allowedRole="brand"><CampaignBuilderPage /></ProtectedRoute>} />
-      
-      <Route path="/compare" element={<ComparePage />} />
-      {/* Fallback */}
-      <Route path="*" element={<HomePage />} />
-    </Routes>
-  );
 
   return useLayout ? <Layout><AppRoutes /></Layout> : <AppRoutes />;
 }

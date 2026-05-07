@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
 import { T } from '../theme';
 import { W, scrollToTop, fmt } from '../utils/helpers';
-import { Btn, SH, Card, Fld } from '../components/Primitives';
+import { Btn, SH as Sh, Card, Fld } from '../components/Primitives';
 
 export default function RateCalcPage() {
-  const { st, dsp } = useApp();
+  const { dsp } = useApp();
   const [mob, setMob] = useState(window.innerWidth < 768);
   const [F, setF] = useState({ platform: 'Instagram', followers: '', niche: 'Lifestyle', er: '' });
   const [result, setResult] = useState(null);
@@ -22,9 +22,12 @@ export default function RateCalcPage() {
   const calc = () => {
     const f = Number(F.followers) || 0, er = Number(F.er) || 0;
     if (!f || !er) { dsp({ t: 'TOAST', d: { type: 'error', msg: 'Enter followers and engagement rate' } }); return; }
-    const pmult = { Instagram: 1.0, YouTube: 1.8, LinkedIn: 1.4, Twitter: 0.6 }[F.platform] || 1;
-    const nmult = { Finance: 1.6, Tech: 1.5, Fashion: 1.2, Travel: 1.1, Gaming: 1.3, Beauty: 1.2 }[F.niche] || 1.0;
-    const ebonus = er >= 8 ? 1.4 : er >= 5 ? 1.2 : 1.0;
+    const pmult = { Instagram: 1, YouTube: 1.8, LinkedIn: 1.4, Twitter: 0.6 }[F.platform] || 1;
+    const nmult = { Finance: 1.6, Tech: 1.5, Fashion: 1.2, Travel: 1.1, Gaming: 1.3, Beauty: 1.2 }[F.niche] || 1;
+    
+    let ebonus = 1;
+    if (er >= 8) ebonus = 1.4;
+    else if (er >= 5) ebonus = 1.2;
     const base = f * 0.01;
     const post = Math.round(base * pmult * nmult * ebonus / 100) * 100;
     setResult({ 
@@ -47,7 +50,7 @@ export default function RateCalcPage() {
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #3B82F6, #fff, #128807)' }} />
         
         <div style={W(900)}>
-           <SH eyebrow="Commercial Intelligence" title="Predict Your Worth" sub="Use data-driven benchmarks to negotiate fair brand deals. No more under-quoting." light center mb={0} />
+           <Sh eyebrow="Commercial Intelligence" title="Predict Your Worth" sub="Use data-driven benchmarks to negotiate fair brand deals. No more under-quoting." light center mb={0} />
         </div>
       </div>
 

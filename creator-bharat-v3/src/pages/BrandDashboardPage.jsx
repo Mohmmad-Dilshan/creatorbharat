@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context';
-import { T } from '../theme';
-import { W, scrollToTop, LS, fmt } from '../utils/helpers';
+import { W, LS, fmt } from '../utils/helpers';
 import { Btn, Card, Bdg, Empty } from '../components/Primitives';
 import EliteHeader from '../components/layout/EliteHeader';
 import { motion } from 'framer-motion';
 import { Rocket, FileText, Star, Eye, Search, Plus, ExternalLink, Zap } from 'lucide-react';
 
 export default function BrandDashboardPage() {
-  const { st, dsp } = useApp();
+  const { st } = useApp();
   const navigate = useNavigate();
-  const [mob, setMob] = useState(window.innerWidth < 768);
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
   if (!st.user || st.role !== 'brand') return (
@@ -78,7 +77,7 @@ export default function BrandDashboardPage() {
                const Icon = s.i;
                return (
                  <motion.div
-                   key={i}
+                   key={s.l}
                    initial={{ opacity: 0, y: 20 }}
                    animate={{ opacity: 1, y: 0 }}
                    transition={{ delay: i * 0.05 }}
@@ -152,14 +151,14 @@ export default function BrandDashboardPage() {
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                        {shortlisted.slice(0, 4).map(c => (
-                         <div key={c.id} onClick={() => navigate(`/creator/${c.handle}`)} style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', padding: '8px', borderRadius: 14, transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                         <button key={c.id} onClick={() => navigate(`/creator/${c.handle}`)} style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', padding: '8px', borderRadius: 14, transition: 'all 0.2s', background: 'transparent', border: 'none', width: '100%', textAlign: 'left', outline: 'none' }} onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                             <img src={c.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}`} style={{ width: 36, height: 36, borderRadius: 10, objectFit: 'cover' }} alt="" />
                             <div style={{ flex: 1 }}>
                                <p style={{ fontSize: 13, fontWeight: 800, color: '#111' }}>{c.name}</p>
                                <p style={{ fontSize: 11, color: '#94a3b8' }}>{fmt.num(c.followers)} Followers</p>
                             </div>
                             <ExternalLink size={12} color="#cbd5e1" />
-                         </div>
+                         </button>
                        ))}
                        <button onClick={() => navigate('/creators')} style={{ marginTop: 8, background: 'none', border: 'none', color: '#3B82F6', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}>Manage Bench →</button>
                     </div>

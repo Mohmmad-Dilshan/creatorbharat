@@ -2,17 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
 import { T } from '../theme';
 import { W, scrollToTop } from '../utils/helpers';
-import { Btn, SH, Card, Bdg } from '../components/Primitives';
+import { Btn, SH as Sh, Card, Bdg } from '../components/Primitives';
 
 export default function MonetizationPage() {
   const { st, dsp } = useApp();
-  const [mob, setMob] = useState(window.innerWidth < 768);
-  const isCreator = st.role === 'creator';
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
   const go = (p) => { dsp({ t: 'GO', p }); scrollToTop(); };
@@ -35,7 +34,7 @@ export default function MonetizationPage() {
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #FF9431, #fff, #128807)' }} />
         
         <div style={W(900)}>
-           <SH eyebrow="Monetization Ecosystem" title="Unlock Your Full Earning Potential" sub="Don't just rely on brand deals. Build a sustainable multi-stream creator business in Bharat." light center mb={48} />
+           <Sh eyebrow="Monetization Ecosystem" title="Unlock Your Full Earning Potential" sub="Don't just rely on brand deals. Build a sustainable multi-stream creator business in Bharat." light center mb={48} />
            
            <div className="au d2" style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
               <Btn lg onClick={() => go('apply')} style={{ borderRadius: 100, padding: '18px 48px' }}>Launch My Store</Btn>

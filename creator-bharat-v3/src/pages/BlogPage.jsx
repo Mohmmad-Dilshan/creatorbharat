@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
 import { T } from '../theme';
-import { W, scrollToTop, fmt, LS } from '../utils/helpers';
+import { W, scrollToTop, LS } from '../utils/helpers';
 import { apiCall } from '../utils/api';
-import { SH, Bdg, SkeletonCard, Empty, Btn } from '../components/Primitives';
+import { SH as Sh, SkeletonCard, Empty, Btn } from '../components/Primitives';
 import { BlogCard } from '../components/Cards';
 
 export default function BlogPage() {
-  const { st, dsp } = useApp();
-  const [mob, setMob] = useState(window.innerWidth < 768);
+  const { dsp } = useApp();
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [loading, setLoading] = useState(true);
   const [blogs, setBlogs] = useState([]);
   const [cat, setCat] = useState('All');
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
     setLoading(true);
     apiCall('/blog').then(d => {
       setBlogs(d || []);
@@ -30,7 +30,7 @@ export default function BlogPage() {
        setBlogs(seed);
        setLoading(false);
     });
-    return () => window.removeEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
   const go = (p, sel) => { dsp({ t: 'GO', p, sel }); scrollToTop(); };
@@ -47,7 +47,7 @@ export default function BlogPage() {
         
         <div style={W()}>
           <div style={{ maxWidth: 800 }}>
-             <SH eyebrow="Education & Insights" title="Creator Knowledge Hub" sub="Expert guides and deep dives into the Indian creator economy." light mb={48} />
+             <Sh eyebrow="Education & Insights" title="Creator Knowledge Hub" sub="Expert guides and deep dives into the Indian creator economy." light mb={48} />
              
              <div className="au d2" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 {categories.map(c => (
@@ -66,13 +66,17 @@ export default function BlogPage() {
 
       <div style={{ padding: mob ? '40px 20px' : '80px 20px', background: '#FAFAFA' }}>
         <div style={W()}>
-          {loading ? (
+          {loading && (
             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(auto-fill, minmax(360px, 1fr))', gap: 32 }}>
                {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
             </div>
-          ) : filtered.length === 0 ? (
+          )}
+          
+          {!loading && filtered.length === 0 && (
             <Empty icon="📝" title="No articles found" sub="Check back later for new content." />
-          ) : (
+          )}
+          
+          {!loading && filtered.length > 0 && (
             <div className="au" style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(auto-fill, minmax(360px, 1fr))', gap: 40 }}>
               {filtered.map((b, i) => (
                  <div key={b.id} className={`au d${(i % 5) + 1}`}>

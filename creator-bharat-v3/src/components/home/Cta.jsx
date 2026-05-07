@@ -1,8 +1,15 @@
 import React from 'react';
-import { T } from '../../theme';
+import PropTypes from 'prop-types';
 import { W } from '../../utils/helpers';
 
 export default function Cta({ mob, go }) {
+  const handleHoverStart = (e) => {
+    e.currentTarget.style.transform = 'translateY(-4px)';
+  };
+  const handleHoverEnd = (e) => {
+    e.currentTarget.style.transform = 'translateY(0)';
+  };
+
   return (
     <section style={{ padding: mob ? '20px' : '60px 20px 120px 20px', background: '#fff' }}>
       <div style={{ ...W(1100), position: 'relative' }}>
@@ -66,25 +73,29 @@ export default function Cta({ mob, go }) {
                 <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: 20, justifyContent: 'center' }}>
                    <button 
                      onClick={() => go('apply')}
+                     onMouseOver={handleHoverStart}
+                     onMouseOut={handleHoverEnd}
+                     onFocus={handleHoverStart}
+                     onBlur={handleHoverEnd}
                      style={{ 
                        padding: '20px 48px', fontSize: 16, fontWeight: 900, borderRadius: 100, 
                        background: '#111', color: '#fff', border: 'none', cursor: 'pointer',
                        boxShadow: '0 10px 30px rgba(0,0,0,0.1)', transition: 'all 0.3s'
                      }}
-                     onMouseOver={e => e.currentTarget.style.transform = 'translateY(-4px)'}
-                     onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
                    >
                      Launch My Portfolio
                    </button>
                    <button 
                      onClick={() => go('creators')}
+                     onMouseOver={handleHoverStart}
+                     onMouseOut={handleHoverEnd}
+                     onFocus={handleHoverStart}
+                     onBlur={handleHoverEnd}
                      style={{ 
                        padding: '20px 48px', fontSize: 16, fontWeight: 900, borderRadius: 100, 
                        background: 'transparent', color: '#111', border: '1.5px solid rgba(0,0,0,0.1)', 
                        cursor: 'pointer', transition: 'all 0.3s'
                      }}
-                     onMouseOver={e => e.currentTarget.style.transform = 'translateY(-4px)'}
-                     onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
                    >
                      Explore Discovery
                    </button>
@@ -94,7 +105,7 @@ export default function Cta({ mob, go }) {
                 <div style={{ marginTop: 64, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
                    <div style={{ display: 'flex', marginLeft: 15 }}>
                       {[1,2,3,4,5].map(i => (
-                        <div key={i} style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid #fff', marginLeft: -12, overflow: 'hidden', background: '#f0f0f0' }}>
+                        <div key={`avatar-${i}`} style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid #fff', marginLeft: -12, overflow: 'hidden', background: '#f0f0f0' }}>
                           <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 10}`} style={{ width: '100%', height: '100%' }} alt="" />
                         </div>
                       ))}
@@ -122,3 +133,8 @@ export default function Cta({ mob, go }) {
     </section>
   );
 }
+
+Cta.propTypes = {
+  mob: PropTypes.bool,
+  go: PropTypes.func.isRequired
+};

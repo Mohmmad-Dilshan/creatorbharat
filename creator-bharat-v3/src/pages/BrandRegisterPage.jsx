@@ -2,22 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../context';
 import { T } from '../theme';
-import { W, scrollToTop, LS } from '../utils/helpers';
+import { LS } from '../utils/helpers';
 import { Btn, Fld } from '../components/Primitives';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Building2, Target, ShieldCheck, Users, ArrowRight, Check, Mail, Lock, User } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Target, ShieldCheck, Users, ArrowRight } from 'lucide-react';
 
 export default function BrandRegisterPage() {
   const { dsp } = useApp();
   const navigate = useNavigate();
-  const [mob, setMob] = useState(window.innerWidth < 768);
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [F, setF] = useState({ companyName: '', industry: '', email: '', contactName: '', password: '', about: '' });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
   const upF = (k, v) => setF(p => ({ ...p, [k]: v }));
@@ -55,10 +55,12 @@ export default function BrandRegisterPage() {
           
           <div style={{ marginBottom: 60, position: 'relative', zIndex: 2 }}>
              <Link to="/" style={{ textDecoration: 'none', display: 'inline-block' }}>
-               <h1 style={{ fontSize: 24, fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span style={{ width: 40, height: 40, background: '#10B981', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>CB</span>
-                  Brand Console
-               </h1>
+                <h1 style={{ fontSize: 24, fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: 12 }}>
+                   <span style={{ width: 40, height: 40, background: '#10B981', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                      CB
+                   </span>
+                   <span>Brand Console</span>
+                </h1>
              </Link>
           </div>
 
@@ -70,13 +72,13 @@ export default function BrandRegisterPage() {
                {benefits.map((item, i) => {
                  const Icon = item.i;
                  return (
-                   <motion.div 
-                     initial={{ opacity: 0, x: -20 }}
-                     animate={{ opacity: 1, x: 0 }}
-                     transition={{ delay: i * 0.1 }}
-                     key={i} 
-                     style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}
-                   >
+                    <motion.div 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.1 }}
+                      key={item.t} 
+                      style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}
+                    >
                       <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: item.c, border: '1px solid rgba(255,255,255,0.1)' }}>
                         <Icon size={22} />
                       </div>

@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { T } from '../theme';
 import { W, scrollToTop, LS, fmt } from '../utils/helpers';
-import { SH, Card, Bdg, Chip, Empty, Btn } from '../components/Primitives';
+import { Card, Bdg, Empty } from '../components/Primitives';
 import EliteHeader from '../components/layout/EliteHeader';
 
 export default function ApplicationsPage() {
   const { st, dsp } = useApp();
-  const [mob, setMob] = useState(window.innerWidth < 768);
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [filter, setFilter] = useState('');
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
   const go = (p) => { dsp({ t: 'GO', p }); scrollToTop(); };
@@ -43,7 +42,7 @@ export default function ApplicationsPage() {
            <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 2 }}>
               <button 
                 onClick={() => setFilter('')} 
-                style={{ padding: '8px 16px', borderRadius: 100, border: 'none', background: !filter ? '#111' : '#f1f5f9', color: !filter ? '#fff' : '#64748b', fontSize: 11, fontWeight: 900, cursor: 'pointer', transition: '0.2s' }}
+                style={{ padding: '8px 16px', borderRadius: 100, border: 'none', background: filter === '' ? '#111' : '#f1f5f9', color: filter === '' ? '#fff' : '#64748b', fontSize: 11, fontWeight: 900, cursor: 'pointer', transition: '0.2s' }}
               >
                 ALL
               </button>

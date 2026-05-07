@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { T } from '../theme';
 import { W, scrollToTop, LS } from '../utils/helpers';
 import { apiCall } from '../utils/api';
-import { SH, Empty, Chip, Bdg } from '../components/Primitives';
+import { Empty } from '../components/Primitives';
 import { CreatorCard, CampCard } from '../components/Cards';
 
 export default function SavedPage() {

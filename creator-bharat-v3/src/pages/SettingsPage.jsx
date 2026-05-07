@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
-import { T } from '../theme';
-import { W, scrollToTop, LS } from '../utils/helpers';
+import { W, LS } from '../utils/helpers';
 import { Btn, Card, Fld, Empty, Bdg } from '../components/Primitives';
+import EliteHeader from '../components/layout/EliteHeader';
 
 export default function SettingsPage() {
   const { st, dsp } = useApp();
@@ -86,7 +86,7 @@ export default function SettingsPage() {
                    ))}
                    <div style={{ margin: '12px 0', height: 1, background: 'rgba(0,0,0,0.04)' }} />
                    <button 
-                      onClick={() => { if (window.confirm('Are you sure you want to logout?')) dsp({ t: 'LOGOUT' }) }} 
+                      onClick={() => { if (globalThis.confirm('Are you sure you want to logout?')) dsp({ t: 'LOGOUT' }) }} 
                       style={{ width: '100%', padding: '12px 16px', borderRadius: 12, background: 'transparent', border: 'none', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', color: '#EF4444', fontSize: 13, fontWeight: 700 }}
                    >
                       <span style={{ fontSize: 16 }}>🚪</span>

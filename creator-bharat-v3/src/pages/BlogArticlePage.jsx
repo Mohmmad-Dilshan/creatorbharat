@@ -2,25 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
 import { T } from '../theme';
 import { W, scrollToTop, fmt } from '../utils/helpers';
-import { Btn, PL, Bdg, SH, Card, Empty } from '../components/Primitives';
+import { Btn, Bdg, Empty } from '../components/Primitives';
 
 export default function BlogArticlePage() {
   const { st, dsp } = useApp();
-  const [mob, setMob] = useState(window.innerWidth < 768);
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [readPct, setReadPct] = useState(0);
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
     const scroll = () => {
       const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
       const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
       setReadPct((winScroll / height) * 100);
     };
-    window.addEventListener('scroll', scroll);
+    globalThis.addEventListener('scroll', scroll);
     return () => {
-      window.removeEventListener('resize', h);
-      window.removeEventListener('scroll', scroll);
+      globalThis.removeEventListener('resize', h);
+      globalThis.removeEventListener('scroll', scroll);
     };
   }, []);
 

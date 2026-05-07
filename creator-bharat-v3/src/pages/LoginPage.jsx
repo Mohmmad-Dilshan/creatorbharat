@@ -1,8 +1,8 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../context';
 import { T } from '../theme';
-import { W, scrollToTop } from '../utils/helpers';
 import { Btn, Fld } from '../components/Primitives';
 import { motion } from 'framer-motion';
 import { Lock, Mail, ArrowRight } from 'lucide-react';
@@ -35,12 +35,12 @@ export default function LoginPage() {
   const [F, setF] = useState({ email: '', password: '' });
   const [role, setRole] = useState('creator'); // 'creator' or 'brand'
   const [loading, setLoading] = useState(false);
-  const [mob, setMob] = useState(window.innerWidth < 768);
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
   const handleLogin = (e) => {
@@ -80,7 +80,7 @@ export default function LoginPage() {
           <div style={{ position: 'relative', zIndex: 2, marginBottom: 80 }}>
              <Link to="/" style={{ textDecoration: 'none', display: 'inline-block' }}>
                <h1 style={{ fontSize: 28, fontWeight: 900, color: '#fff', display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span style={{ width: 44, height: 44, background: T.gd, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>CB</span>
+                  <span style={{ width: 44, height: 44, background: T.gd, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>CB</span>{' '}
                   CreatorBharat
                </h1>
              </Link>

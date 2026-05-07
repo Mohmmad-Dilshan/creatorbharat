@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context';
-import { T } from '../theme';
 import { W, scrollToTop, LS } from '../utils/helpers';
-import { apiCall } from '../utils/api';
-import { Btn, Fld, Card, Bdg, Empty } from '../components/Primitives';
+import { Fld, Card, Empty } from '../components/Primitives';
 import EliteHeader from '../components/layout/EliteHeader';
 
 export default function CampaignBuilderPage() {
   const { st, dsp } = useApp();
-  const [mob, setMob] = useState(window.innerWidth < 768);
-  const [loading, setLoading] = useState(false);
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [step, setStep] = useState(1);
   const [F, setF] = useState({ 
     title: '', 
@@ -25,9 +22,9 @@ export default function CampaignBuilderPage() {
   });
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
   const upF = (k, v) => setF(p => ({ ...p, [k]: v }));
@@ -178,21 +175,27 @@ export default function CampaignBuilderPage() {
                   </div>
 
                   <div style={{ marginTop: 24 }}>
-                    <label style={{ fontSize: 13, fontWeight: 800, color: '#475569', marginBottom: 12, display: 'block' }}>PRIORITY LEVEL</label>
-                    <div 
-                      onClick={() => upF('urgent', !F.urgent)} 
+                    <p style={{ fontSize: 13, fontWeight: 800, color: '#475569', marginBottom: 12, display: 'block' }}>PRIORITY LEVEL</p>
+                    <label 
                       style={{ 
-                        display: 'flex', alignItems: 'center', gap: 16, padding: '20px', 
+                        display: 'flex', alignItems: 'center', gap: 16, padding: '20px', width: '100%',
                         borderRadius: 20, background: F.urgent ? '#FEF2F2' : '#F8FAFC', 
                         border: `1.5px solid ${F.urgent ? '#FECACA' : 'rgba(0,0,0,0.03)'}`,
-                        cursor: 'pointer', transition: 'all 0.3s'
+                        cursor: 'pointer', transition: 'all 0.3s', textAlign: 'left'
                       }}
                     >
+                      <input 
+                        type="checkbox"
+                        checked={F.urgent}
+                        onChange={() => upF('urgent', !F.urgent)}
+                        style={{ position: 'absolute', opacity: 0, width: 0, height: 0 }}
+                      />
                       <div style={{ 
                         width: 24, height: 24, borderRadius: 8, 
                         border: '2px solid ' + (F.urgent ? '#EF4444' : '#cbd5e1'), 
                         display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                        background: F.urgent ? '#EF4444' : 'transparent', color: '#fff', fontSize: 14
+                        background: F.urgent ? '#EF4444' : 'transparent', color: '#fff', fontSize: 14,
+                        flexShrink: 0
                       }}>
                         {F.urgent && '✓'}
                       </div>
@@ -200,7 +203,7 @@ export default function CampaignBuilderPage() {
                         <p style={{ fontSize: 16, fontWeight: 800, color: F.urgent ? '#B91C1C' : '#1e293b' }}>Urgent Deployment</p>
                         <p style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>Need content within 7 days? Mark as urgent for higher visibility.</p>
                       </div>
-                    </div>
+                    </label>
                   </div>
                 </motion.div>
               )}

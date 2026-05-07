@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import Lenis from '@studio-freight/lenis';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -92,8 +93,12 @@ function FloatingMobileNav({ hide }) {
   );
 }
 
+FloatingMobileNav.propTypes = {
+  hide: PropTypes.bool
+};
+
 export default function Layout({ children }) {
-  const { st, dsp } = useApp();
+  const { st } = useApp();
   const [mob, setMob] = useState(window.innerWidth < 768);
 
   useEffect(() => {
@@ -213,3 +218,7 @@ export default function Layout({ children }) {
     </div>
   );
 }
+
+Layout.propTypes = {
+  children: PropTypes.node.isRequired
+};

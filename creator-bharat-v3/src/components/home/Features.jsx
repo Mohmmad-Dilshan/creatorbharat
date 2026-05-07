@@ -1,5 +1,5 @@
 import React from 'react';
-import { T } from '../../theme';
+import PropTypes from 'prop-types';
 import { W } from '../../utils/helpers';
 import { Btn } from '../Primitives';
 
@@ -32,7 +32,7 @@ export default function Features({ mob }) {
             </div>
             <div style={{ flex: 1, width: '100%', maxWidth: 300, background: '#fff', borderRadius: 24, padding: 20, boxShadow: '0 30px 60px rgba(255,148,49,0.15)', border: '1px solid rgba(255,148,49,0.1)', transform: 'rotate(2deg)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&q=80" style={{ width: 44, height: 44, borderRadius: '50%' }} />
+                <img alt="Creator avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&q=80" style={{ width: 44, height: 44, borderRadius: '50%' }} />
                 <div style={{ flex: 1 }}>
                   <div style={{ height: 10, width: '60%', background: '#eee', borderRadius: 5, marginBottom: 6 }} />
                   <div style={{ height: 6, width: '30%', background: '#f5f5f5', borderRadius: 3 }} />
@@ -61,8 +61,8 @@ export default function Features({ mob }) {
                 { b: 'Starbucks', a: '₹15k', i: '☕' },
                 { b: 'Samsung', a: '₹60k', i: '📱' },
                 { b: 'Myntra', a: '₹35k', i: '👗' }
-              ].map((d, i) => (
-                <div key={i} style={{ background: 'rgba(255,255,255,0.05)', padding: '14px 18px', borderRadius: 20, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
+              ].map((d) => (
+                <div key={d.b} style={{ background: 'rgba(255,255,255,0.05)', padding: '14px 18px', borderRadius: 20, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 12 }}>
                   <div style={{ fontSize: 20 }}>{d.i}</div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 14, fontWeight: 800 }}>{d.b}</div>
@@ -79,13 +79,27 @@ export default function Features({ mob }) {
             <h3 style={{ fontSize: 22, fontWeight: 900, marginBottom: 8 }}>Apni Value Jano</h3>
             <p style={{ color: 'rgba(0,0,0,0.5)', fontSize: 14, lineHeight: 1.5, marginBottom: 20 }}>Track every single follower and click. Know exactly how much your post is worth.</p>
             <div style={{ height: 60, display: 'flex', alignItems: 'flex-end', gap: 4 }}>
-              {[40, 70, 45, 90, 65, 100, 80, 50].map((h, i) => <div key={i} style={{ flex: 1, height: h + '%', background: '#FF9431', borderRadius: '4px 4px 2px 2px', opacity: 0.2 + (i * 0.1) }} />)}
+              {[
+                { v: 40, k: 'b1' }, { v: 70, k: 'b2' }, { v: 45, k: 'b3' }, { v: 90, k: 'b4' },
+                { v: 65, k: 'b5' }, { v: 100, k: 'b6' }, { v: 80, k: 'b7' }, { v: 50, k: 'b8' }
+              ].map((bar, idx) => (
+                <div 
+                  key={bar.k} 
+                  style={{ 
+                    flex: 1, 
+                    height: bar.v + '%', 
+                    background: '#FF9431', 
+                    borderRadius: '4px 4px 2px 2px', 
+                    opacity: 0.2 + (idx * 0.1) 
+                  }} 
+                />
+              ))}
             </div>
           </div>
 
           {/* AI Matchmaker */}
           <div className="bento-item au d3" style={{ gridColumn: mob ? '1' : '6 / 9', gridRow: 'span 2', background: 'linear-gradient(135deg, #111, #333)', color: '#fff', padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>🔥</div>
+            <div style={{ fontSize: 32, marginBottom: 12 }} aria-hidden="true">🔥</div>
             <h3 style={{ fontSize: 20, fontWeight: 900 }}>Hype Engine</h3>
             <p style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>Predicting your next viral content topic...</p>
             <div style={{ marginTop: 16, height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 2, overflow: 'hidden' }}>
@@ -98,3 +112,7 @@ export default function Features({ mob }) {
     </section>
   );
 }
+
+Features.propTypes = {
+  mob: PropTypes.bool
+};

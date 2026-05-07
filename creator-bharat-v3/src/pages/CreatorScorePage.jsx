@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context';
 import { T } from '../theme';
 import { W, scrollToTop, fmt } from '../utils/helpers';
-import { SH, Card, Ring, Btn, Bdg, Bar } from '../components/Primitives';
+import { Card, Ring, Btn, Bdg, Bar } from '../components/Primitives';
 import EliteHeader from '../components/layout/EliteHeader';
 
 export default function CreatorScorePage() {
   const { st, dsp } = useApp();
-  const [mob, setMob] = useState(window.innerWidth < 768);
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
   const go = (p) => { dsp({ t: 'GO', p }); scrollToTop(); };
