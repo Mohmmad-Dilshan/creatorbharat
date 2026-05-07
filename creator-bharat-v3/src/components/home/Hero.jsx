@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import PropTypes from 'prop-types';
 import { T } from '../../theme';
 import { W, LS } from '../../utils/helpers';
@@ -6,31 +6,38 @@ import { apiCall } from '../../utils/api';
 import { Btn } from '../Primitives';
 import { User, BookOpen, Radio, MapPin, CreditCard, Zap } from 'lucide-react';
 
-export function Typewriter({ words, interval = 1000 }) {
+const TYPEWRITER_WORDS = ['Identity', 'Portfolio', 'Empire', 'Legacy'];
+
+export const Typewriter = memo(function Typewriter({ words = TYPEWRITER_WORDS, interval = 1000 }) {
   const [idx, setIdx] = useState(0);
   const [sub, setSub] = useState('');
   const [del, setDel] = useState(false);
   const mob = globalThis.window !== undefined && globalThis.window.innerWidth < 768;
 
   useEffect(() => {
-    const word = words[idx % words.length];
-    let speed = 35;
-    if (mob) {
-      speed = del ? 10 : 20;
-    } else if (del) {
-      speed = 15;
+    const currentWord = words[idx % words.length];
+    let speed;
+    
+    if (del) {
+      speed = mob ? 10 : 15;
+    } else {
+      speed = mob ? 20 : 35;
     }
 
     const timeout = setTimeout(() => {
-      if (!del && sub === word) {
+      if (!del && sub === currentWord) {
         setTimeout(() => setDel(true), mob ? 500 : interval);
       } else if (del && sub === '') {
         setDel(false);
-        setIdx(i => i + 1);
+        setIdx(prev => prev + 1);
       } else {
-        setSub(del ? word.substring(0, sub.length - 1) : word.substring(0, sub.length + 1));
+        const nextSub = del 
+          ? currentWord.substring(0, sub.length - 1) 
+          : currentWord.substring(0, sub.length + 1);
+        setSub(nextSub);
       }
     }, speed);
+
     return () => clearTimeout(timeout);
   }, [sub, del, idx, words, mob, interval]);
 
@@ -43,55 +50,63 @@ export function Typewriter({ words, interval = 1000 }) {
       </svg>
     </span>
   );
-}
+});
 
 Typewriter.propTypes = {
-  words: PropTypes.arrayOf(PropTypes.string).isRequired,
+  words: PropTypes.arrayOf(PropTypes.string),
   interval: PropTypes.number
 };
 
-const TirangaGlow = ({ mob }) => (
-  <div style={{
-    position: 'absolute', top: 0, left: 0, right: 0, height: mob ? 600 : 900,
-    zIndex: 0, pointerEvents: 'none', overflow: 'hidden',
-    maskImage: 'linear-gradient(to bottom, black 75%, transparent 100%)',
-    WebkitMaskImage: 'linear-gradient(to bottom, black 75%, transparent 100%)'
-  }}>
+const TirangaGlow = memo(({ mob }) => {
+  const chakraLines = useMemo(() => {
+    return new Array(24).fill(0).map((_, i) => {
+      const deg = i * 15;
+      const rad = deg * (Math.PI / 180);
+      return (
+        <line
+          key={`chakra-deg-${deg}`}
+          x1="12"
+          y1="12"
+          x2={12 + 9.5 * Math.cos(rad)}
+          y2={12 + 9.5 * Math.sin(rad)}
+          stroke="#000080"
+          strokeWidth="0.1"
+        />
+      );
+    });
+  }, []);
+
+  return (
     <div style={{
-      position: 'absolute', top: '-15%', left: '-5%', width: '70%', height: '70%',
-      background: 'radial-gradient(circle, rgba(255,153,51,0.22) 0%, transparent 75%)',
-      filter: 'blur(80px)', animation: 'float-slow 20s infinite alternate'
-    }} />
-    <div style={{
-      position: 'absolute', bottom: '5%', right: '-5%', width: '70%', height: '70%',
-      background: 'radial-gradient(circle, rgba(19,136,8,0.18) 0%, transparent 75%)',
-      filter: 'blur(80px)', animation: 'float-slow 25s infinite alternate-reverse'
-    }} />
-    <div style={{ position: 'absolute', top: '38%', left: '50%', transform: 'translate(-50%, -50%)', opacity: 0.1, zIndex: 0 }}>
-      <svg width={mob ? 300 : 600} height={mob ? 300 : 600} viewBox="0 0 24 24" style={{ animation: 'slowRotate 60s linear infinite', filter: 'drop-shadow(0 0 15px rgba(0,0,128,0.1))' }}>
-        <circle cx="12" cy="12" r="9.5" fill="none" stroke="#000080" strokeWidth="0.2" />
-        <circle cx="12" cy="12" r="0.8" fill="#000080" />
-        {new Array(24).fill(0).map((_, i) => {
-          const deg = i * 15;
-          return (
-            <line
-              key={`chakra-deg-${deg}`}
-              x1="12"
-              y1="12"
-              x2={12 + 9.5 * Math.cos(deg * (Math.PI / 180))}
-              y2={12 + 9.5 * Math.sin(deg * (Math.PI / 180))}
-              stroke="#000080"
-              strokeWidth="0.1"
-            />
-          );
-        })}
-      </svg>
+      position: 'absolute', top: 0, left: 0, right: 0, height: mob ? 600 : 900,
+      zIndex: 0, pointerEvents: 'none', overflow: 'hidden',
+      maskImage: 'linear-gradient(to bottom, black 75%, transparent 100%)',
+      WebkitMaskImage: 'linear-gradient(to bottom, black 75%, transparent 100%)'
+    }}>
+      <div style={{
+        position: 'absolute', top: '-15%', left: '-5%', width: '70%', height: '70%',
+        background: 'radial-gradient(circle, rgba(255,153,51,0.22) 0%, transparent 75%)',
+        filter: 'blur(80px)', animation: 'float-slow 20s infinite alternate'
+      }} />
+      <div style={{
+        position: 'absolute', bottom: '5%', right: '-5%', width: '70%', height: '70%',
+        background: 'radial-gradient(circle, rgba(19,136,8,0.18) 0%, transparent 75%)',
+        filter: 'blur(80px)', animation: 'float-slow 25s infinite alternate-reverse'
+      }} />
+      <div style={{ position: 'absolute', top: '38%', left: '50%', transform: 'translate(-50%, -50%)', opacity: 0.1, zIndex: 0 }}>
+        <svg width={mob ? 300 : 600} height={mob ? 300 : 600} viewBox="0 0 24 24" style={{ animation: 'slowRotate 60s linear infinite', filter: 'drop-shadow(0 0 15px rgba(0,0,128,0.1))' }}>
+          <circle cx="12" cy="12" r="9.5" fill="none" stroke="#000080" strokeWidth="0.2" />
+          <circle cx="12" cy="12" r="0.8" fill="#000080" />
+          {chakraLines}
+        </svg>
+      </div>
     </div>
-  </div>
-);
+  );
+});
+
 TirangaGlow.propTypes = { mob: PropTypes.bool };
 
-const HeroHeader = ({ mob }) => (
+const HeroHeader = memo(({ mob }) => (
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: 1000 }}>
     <div className="au" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: mob ? '8px 16px' : '12px 32px', borderRadius: 100, background: '#fff', border: '1px solid rgba(0,0,0,0.08)', marginBottom: 40, boxShadow: '0 4px 20px rgba(0,0,0,0.02)', position: 'relative', maxWidth: '90vw' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -105,17 +120,18 @@ const HeroHeader = ({ mob }) => (
       </div>
     </div>
     <h1 className="au d1" style={{ fontSize: mob ? 'clamp(28px,9vw,36px)' : 'clamp(76px,9vw,104px)', fontWeight: 900, color: '#111', lineHeight: mob ? 1.15 : 1.02, marginBottom: mob ? 20 : 32, letterSpacing: '-0.05em', maxWidth: '100%', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
-      Your Digital <Typewriter words={['Identity', 'Portfolio', 'Empire', 'Legacy']} /> <br />
+      Your Digital <Typewriter /> <br />
       Built for <span style={{ background: 'linear-gradient(90deg, #FF9431, #128807)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: mob ? 5 : 15, display: 'inline-block' }}>Bharat.</span>
     </h1>
     <p className="au d2" style={{ fontSize: mob ? 15 : 22, color: 'rgba(0,0,0,0.6)', lineHeight: 1.6, marginBottom: mob ? 32 : 48, fontWeight: 500, maxWidth: 720 }}>
       The all-in-one platform where Tier 2 & Tier 3 creators get the support, identity, and growth they deserve. Your journey from local to national starts here.
     </p>
   </div>
-);
+));
+
 HeroHeader.propTypes = { mob: PropTypes.bool };
 
-const HeroCTA = ({ mob, go, dsp }) => (
+const HeroCTA = memo(({ mob, go, dsp }) => (
   <div className="au d3" style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: mob ? 12 : 16, marginBottom: 48, justifyContent: 'center', width: 'auto', alignItems: 'center' }}>
     <Btn lg full={false} onClick={() => go('apply')} className="hero-primary-btn" style={{ padding: mob ? '16px 32px' : '22px 48px', fontSize: mob ? 15 : 18, background: T.gd, color: '#fff', borderRadius: 100, fontWeight: 900, border: 'none', boxShadow: '0 12px 32px rgba(255,148,49,0.35)', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
       <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 10 }}>🚀 Claim Your Link Free</span>
@@ -126,10 +142,11 @@ const HeroCTA = ({ mob, go, dsp }) => (
       <span>👁️ View Live Demo</span>
     </Btn>
   </div>
-);
+));
+
 HeroCTA.propTypes = { mob: PropTypes.bool, go: PropTypes.func.isRequired, dsp: PropTypes.func.isRequired };
 
-const SearchSugs = ({ sugs, go }) => (
+const SearchSugs = memo(({ sugs, go }) => (
   <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff', borderRadius: 16, marginTop: 8, boxShadow: '0 10px 40px rgba(0,0,0,0.1)', overflow: 'hidden', border: '1px solid #E2E8F0', zIndex: 1000 }}>
     {sugs.map((s, idx) => (
       <button 
@@ -147,27 +164,30 @@ const SearchSugs = ({ sugs, go }) => (
       </button>
     ))}
   </div>
-);
+));
+
 SearchSugs.propTypes = { sugs: PropTypes.array.isRequired, go: PropTypes.func.isRequired };
 
-const SearchInput = ({ mob, q, dsp, onKeyDown, sugs, go }) => (
+const SearchInput = memo(({ mob, q, dsp, onKeyDown, sugs, go }) => (
   <div style={{ flex: 1.2, position: 'relative', padding: mob ? '12px 16px' : '0 40px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderRight: mob ? 'none' : '1px solid rgba(0,0,0,0.05)', borderBottom: mob ? '1px solid rgba(0,0,0,0.05)' : 'none' }}>
     <label htmlFor="hero-search-input" style={{ fontSize: 9, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 4, opacity: 0.8 }}>Who are you looking for?</label>
     <input id="hero-search-input" value={q || ''} onKeyDown={onKeyDown} onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} placeholder="Name, niche or city..." style={{ width: '100%', border: 'none', background: 'none', fontSize: mob ? 16 : 18, outline: 'none', fontWeight: 700, color: '#111' }} />
     {sugs.length > 0 && <SearchSugs sugs={sugs} go={go} />}
   </div>
-);
+));
+
 SearchInput.propTypes = { mob: PropTypes.bool, q: PropTypes.string, dsp: PropTypes.func.isRequired, onKeyDown: PropTypes.func, sugs: PropTypes.array, go: PropTypes.func.isRequired };
 
-const LocationPicker = ({ mob, state }) => (
+const LocationPicker = memo(({ mob, state }) => (
   <div style={{ flex: 0.8, padding: mob ? '10px 16px' : '0 40px', textAlign: 'left', width: '100%' }}>
     <label htmlFor="hero-location-select" style={{ fontSize: 9, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 2, opacity: 0.8 }}>Location</label>
     <div id="hero-location-select" style={{ fontSize: mob ? 15 : 17, fontWeight: 700, color: '#111', cursor: 'pointer' }}>{state || 'All over India'}</div>
   </div>
-);
+));
+
 LocationPicker.propTypes = { mob: PropTypes.bool, state: PropTypes.string };
 
-const SearchBar = ({ mob, st, dsp, go, sugs, onKeyDown }) => (
+const SearchBar = memo(({ mob, st, dsp, go, sugs, onKeyDown }) => (
   <div className="au d3" style={{ width: '100%', maxWidth: 1000, padding: 2, borderRadius: mob ? 24 : 102, position: 'relative', overflow: 'hidden', background: 'rgba(0,0,0,0.05)', marginBottom: mob ? 40 : 80, zIndex: 100, boxShadow: mob ? '0 20px 40px rgba(0,0,0,0.06)' : '0 40px 120px -20px rgba(0,0,0,0.12)', boxSizing: 'border-box' }}>
     {!mob && (
       <div style={{ position: 'absolute', top: '50%', left: '50%', width: '200%', height: '500%', background: 'conic-gradient(from 0deg, #138808 0%, #FFFFFF 20%, #FF9933 40%, #FF9933 60%, #FFFFFF 80%, #138808 100%)', animation: 'spinBorder 5s linear infinite', transform: 'translate(-50%, -50%)', zIndex: 0 }} />
@@ -180,17 +200,11 @@ const SearchBar = ({ mob, st, dsp, go, sugs, onKeyDown }) => (
       </div>
     </div>
   </div>
-);
-SearchBar.propTypes = {
-  mob: PropTypes.bool,
-  st: PropTypes.object.isRequired,
-  dsp: PropTypes.func.isRequired,
-  go: PropTypes.func.isRequired,
-  sugs: PropTypes.array,
-  onKeyDown: PropTypes.func
-};
+));
 
-const EcosystemHeader = ({ mob }) => (
+SearchBar.propTypes = { mob: PropTypes.bool, st: PropTypes.object.isRequired, dsp: PropTypes.func.isRequired, go: PropTypes.func.isRequired, sugs: PropTypes.array, onKeyDown: PropTypes.func };
+
+const EcosystemHeader = memo(({ mob }) => (
   <div style={{ textAlign: 'center', marginBottom: mob ? 40 : 60, marginTop: mob ? 20 : 60 }}>
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 20px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 100, marginBottom: 24 }}>
       <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#3B82F6', boxShadow: '0 0 10px rgba(59, 130, 246, 0.6)' }} />
@@ -200,25 +214,25 @@ const EcosystemHeader = ({ mob }) => (
       Empowering Bharat&apos;s <br /> <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #10B981 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: '10px' }}>Digital Success.</span>
     </h2>
   </div>
-);
+));
+
 EcosystemHeader.propTypes = { mob: PropTypes.bool };
 
-const SupportCard = ({ p, mob }) => (
-  <div className="elite-support-card" style={{ position: 'relative', borderRadius: mob ? 16 : 24, padding: mob ? '20px 16px' : 32, background: '#fff', border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 10px 40px -10px rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column', gap: mob ? 16 : 24, transition: 'all 0.3s', overflow: 'hidden' }}>
-    <div className="card-hover-bg" style={{ position: 'absolute', inset: 0, background: `linear-gradient(135deg, transparent, ${p.bg}, transparent)`, opacity: 0, transition: 'opacity 0.4s' }} />
-    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', position: 'relative', zIndex: 1, flexDirection: mob ? 'column' : 'row', gap: mob ? 12 : 0 }}>
-       <div style={{ width: mob ? 44 : 64, height: mob ? 44 : 64, borderRadius: mob ? 12 : 20, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: p.c, border: `1px solid ${p.c}30`, boxShadow: `0 8px 24px ${p.c}20` }}>
-         <p.i size={mob ? 20 : 28} strokeWidth={2.5} />
-       </div>
-       <div style={{ padding: mob ? '4px 8px' : '6px 14px', borderRadius: 100, background: '#f8fafc', fontSize: mob ? 9 : 11, fontWeight: 800, color: '#64748b', border: '1px solid #e2e8f0' }}>{p.t}</div>
+const SupportCard = memo(({ p, mob }) => (
+  <div className="elite-support-card au d4" style={{ background: '#fff', borderRadius: mob ? 24 : 32, padding: mob ? 24 : 40, border: '1px solid rgba(0,0,0,0.05)', textAlign: 'left', transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div className="card-hover-bg" style={{ position: 'absolute', inset: 0, background: `linear-gradient(135deg, ${p.bg} 0%, transparent 100%)`, opacity: 0, transition: 'opacity 0.6s' }} />
+    <div style={{ width: mob ? 48 : 64, height: mob ? 48 : 64, borderRadius: 20, background: p.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
+      <p.i size={mob ? 24 : 32} color={p.c} strokeWidth={2.5} />
     </div>
-    <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column' }}>
-      <h3 style={{ fontSize: mob ? 16 : 22, fontWeight: 900, color: '#0f172a', marginBottom: mob ? 6 : 12, fontFamily: "'Outfit', sans-serif", lineHeight: 1.2 }}>{p.h}</h3>
-      <p style={{ fontSize: mob ? 12 : 15, color: '#475569', lineHeight: 1.5, fontWeight: 500, flex: 1 }}>{p.d}</p>
+    <div style={{ position: 'relative', zIndex: 1 }}>
+      <div style={{ fontSize: 12, fontWeight: 900, color: p.c, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8 }}>{p.t}</div>
+      <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 18 : 24, fontWeight: 900, color: '#111', marginBottom: 12 }}>{p.h}</h3>
+      <p style={{ fontSize: mob ? 14 : 16, color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, fontWeight: 500 }}>{p.d}</p>
     </div>
-    <div className="card-accent-line" style={{ position: 'absolute', bottom: 0, left: 0, width: '0%', height: 4, background: p.c, transition: 'width 0.4s ease-out' }} />
+    <div className="card-accent-line" style={{ position: 'absolute', bottom: 0, left: 0, height: 4, width: 0, background: p.c, transition: 'width 0.6s' }} />
   </div>
-);
+));
+
 SupportCard.propTypes = { p: PropTypes.object.isRequired, mob: PropTypes.bool };
 
 const mergeResults = (api, local) => {
@@ -233,7 +247,7 @@ export default function Hero({ mob, st, dsp, go }) {
   const [sugs, setSugs] = useState([]);
   const [activeIdx, setActiveIdx] = useState(-1);
 
-  const trending = ['Fashion', 'Tech', 'Travel', 'Lifestyle', 'Gaming', 'Food'];
+  const trending = useMemo(() => ['Fashion', 'Tech', 'Travel', 'Lifestyle', 'Gaming', 'Food'], []);
 
   useEffect(() => {
     const q = st?.cf?.q || '';
@@ -276,14 +290,14 @@ export default function Hero({ mob, st, dsp, go }) {
     } else if (e.key === 'Escape') setSugs([]);
   }, [st.cf.q, activeIdx, sugs, trending, dsp, go]);
 
-  const supportFeatures = [
+  const supportFeatures = useMemo(() => [
     { t: 'Identity', h: 'Pro Portfolio', d: 'Verified identity jo brands ko instantly impress karegi.', i: User, c: '#FF9431', bg: 'rgba(255,148,49,0.08)' },
     { t: 'Growth', h: 'Insights & Analytics', d: 'Deep data analytics se apne growth ko measure karein.', i: BookOpen, c: '#10B981', bg: 'rgba(16,185,129,0.08)' },
     { t: 'Spotlight', h: 'National Exposure', d: 'Tier 2/3 cities se seedha national brands tak pahunch.', i: Radio, c: '#3B82F6', bg: 'rgba(59,130,246,0.08)' },
     { t: 'Reach', h: 'Hyperlocal Campaigns', d: 'Targeted brand deals exactly aapke area ke liye.', i: MapPin, c: '#8B5CF6', bg: 'rgba(139,92,246,0.08)' },
     { t: 'Freedom', h: '0% Platform Fee', d: 'Aapki mehnat, aapka paisa. Hum middlemen nahi hain.', i: CreditCard, c: '#F59E0B', bg: 'rgba(245,158,11,0.08)' },
     { t: 'Scale', h: 'Free Forever', d: 'Basic features will always be free for verified creators.', i: Zap, c: '#EF4444', bg: 'rgba(239,68,68,0.08)' }
-  ];
+  ], []);
 
   return (
     <section style={{ background: '#fff', minHeight: mob ? 'auto' : '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: mob ? 24 : 80, paddingBottom: 40, position: 'relative', overflow: 'visible', textAlign: 'center' }}>

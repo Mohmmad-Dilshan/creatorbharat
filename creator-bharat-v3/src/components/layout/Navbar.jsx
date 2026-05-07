@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useApp } from '../../context';
 import { Logo, Btn } from '../Primitives';
@@ -9,14 +9,34 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [scroll, setScroll] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const lastY = useRef(0);
   const [mob, setMob] = useState(window.innerWidth < 768);
 
   useEffect(() => {
     const h = () => {
-      setScroll(window.scrollY > 20);
-      setMob(window.innerWidth < 768);
+      const curY = window.scrollY;
+      const isMob = window.innerWidth < 768;
+      setScroll(curY > 20);
+      setMob(isMob);
+      
+      // Smart Sticky Logic (Mobile Only)
+      if (isMob) {
+        const diff = curY - lastY.current;
+        if (curY < 50) {
+          setVisible(true); // Always show at top
+        } else if (diff > 10) {
+          setVisible(false); // Hide on significant scroll down
+        } else if (diff < -10) {
+          setVisible(true); // Show on significant scroll up
+        }
+      } else {
+        setVisible(true); // Always persistent on desktop
+      }
+      
+      lastY.current = curY;
     };
-    window.addEventListener('scroll', h);
+    window.addEventListener('scroll', h, { passive: true });
     window.addEventListener('resize', h);
     return () => {
       window.removeEventListener('scroll', h);
@@ -42,6 +62,7 @@ export default function Navbar() {
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 999995,
       padding: mob ? '12px 16px' : (scroll ? '16px 40px' : '24px 40px'),
       transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+      transform: (mob && !visible) ? 'translateY(-120%)' : 'none',
       pointerEvents: 'none'
     }}>
       <div style={{

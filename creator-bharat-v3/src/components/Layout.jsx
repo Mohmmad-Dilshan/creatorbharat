@@ -101,6 +101,8 @@ export default function Layout({ children }) {
   const { st } = useApp();
   const [mob, setMob] = useState(window.innerWidth < 768);
 
+  const isModalOpen = st.ui.authModal || st.ui.demoModal || st.ui.mobileMenu;
+
   useEffect(() => {
     const isMobile = window.innerWidth < 768;
     let lenis = null;
@@ -175,7 +177,7 @@ export default function Layout({ children }) {
         }
         .mobile-nav-sheet {
           position: fixed; left: 12px; right: 12px; bottom: 12px; background: rgba(255, 255, 255, 0.95); 
-          backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+          backdrop-filter: blur(200px); -webkit-backdrop-filter: blur(20px);
           border: 1px solid rgba(0,0,0,0.05); border-radius: 40px;
           padding: 40px 24px; z-index: 999992; box-shadow: 0 -20px 60px rgba(0,0,0,0.15);
           animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -198,15 +200,26 @@ export default function Layout({ children }) {
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       `}</style>
 
-      <Navbar />
+      {/* Navbar stays OUTSIDE the transformed container to remain truly FIXED to viewport */}
+      {!isModalOpen && <Navbar />}
 
-      <main style={{ flex: 1, position: 'relative', paddingTop: mob ? 64 : 80 }}>
-        {children}
-      </main>
+      <div style={{ 
+        transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+        filter: isModalOpen ? 'blur(12px)' : 'none',
+        transform: isModalOpen ? 'scale(0.98)' : 'none',
+        opacity: isModalOpen ? 0.6 : 1,
+        pointerEvents: isModalOpen ? 'none' : 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        flex: 1
+      }}>
+        <main style={{ flex: 1, position: 'relative', paddingTop: mob ? 64 : 80 }}>
+          {children}
+        </main>
+        <Footer mob={mob} />
+      </div>
 
-      <Footer mob={mob} />
-
-      {mob && <FloatingMobileNav hide={st.ui.hideNav || st.ui.mobileMenu} />}
+      {mob && <FloatingMobileNav hide={st.ui.hideNav || isModalOpen} />}
 
       <MobileMenu open={st.ui.mobileMenu} />
 

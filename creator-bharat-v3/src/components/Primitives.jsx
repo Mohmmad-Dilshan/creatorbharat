@@ -301,36 +301,53 @@ Modal.propTypes = {
 };
 
 export function Card({ children, style: sx = {}, onClick, glass }) {
-  const [isHovered, setIsHovered] = useState(false);
   const base = {
     background: glass ? 'rgba(255,255,255,0.03)' : '#fff',
     backdropFilter: glass ? 'blur(16px)' : 'none',
     border: glass ? '1px solid rgba(255,255,255,0.1)' : `1px solid ${T.bd}`,
     borderRadius: 20,
-    transition: 'all .3s cubic-bezier(0.4, 0, 0.2, 1)',
-    boxShadow: isHovered ? T.sh3 : T.sh1,
-    transform: isHovered && onClick ? 'translateY(-4px)' : 'none',
-    cursor: onClick ? 'pointer' : 'default',
+    boxShadow: T.sh1,
     overflow: 'hidden',
     textAlign: 'left',
     width: '100%',
+    position: 'relative',
     ...sx
   };
-  
-  if (onClick) {
-    return (
-      <button 
-        onClick={onClick} 
-        onMouseEnter={() => setIsHovered(true)} 
-        onMouseLeave={() => setIsHovered(false)} 
-        style={{ ...base, border: base.border, padding: 0, outline: 'none' }}
-      >
-        {children}
-      </button>
-    );
-  }
-  
-  return <div style={base}>{children}</div>;
+
+  return (
+    <div 
+      className={`cb-card ${glass ? 'cb-card-glass' : ''}`}
+      style={base}
+    >
+      {onClick && (
+        <button 
+          type="button"
+          onClick={onClick}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            background: 'transparent',
+            border: 'none',
+            padding: 0,
+            margin: 0,
+            cursor: 'pointer',
+            zIndex: 0,
+            opacity: 0,
+            outline: 'none'
+          }}
+          aria-label="View Details"
+        />
+      )}
+      
+      <div style={{ position: 'relative', zIndex: 1, pointerEvents: 'none', height: '100%' }}>
+        <div style={{ pointerEvents: 'auto', height: '100%' }}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 Card.propTypes = {
