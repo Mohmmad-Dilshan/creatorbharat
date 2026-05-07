@@ -12,7 +12,7 @@ import { apiCall } from './api';
 import { LS } from './helpers';
 
 // ─── Creators ───────────────────────────────────────────────
-export async function fetchCreators({ limit = 1000 } = {}) {
+export async function fetchCreators({ limit = 250 } = {}) {
   try {
     const res = await apiCall(`/creators?limit=${limit}`);
     const remote = res.creators || (Array.isArray(res) ? res : []);
@@ -34,7 +34,7 @@ export async function fetchCreators({ limit = 1000 } = {}) {
 }
 
 // ─── Campaigns ──────────────────────────────────────────────
-export async function fetchCampaigns({ limit = 500 } = {}) {
+export async function fetchCampaigns({ limit = 100 } = {}) {
   try {
     const res = await apiCall(`/campaigns?limit=${limit}`);
     return res.campaigns || (Array.isArray(res) ? res : []);

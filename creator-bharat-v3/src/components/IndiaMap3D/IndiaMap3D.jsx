@@ -4,8 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import styles from "./IndiaMap3D.module.css";
 
-const GEOJSON_URL =
-  "https://raw.githubusercontent.com/Subhash9325/GeoJson-Data-of-Indian-States/master/Indian_States";
+const GEOJSON_URL = "/india_states.json";
 
 const FLAG_COLORS = ["#FF9933", "#FFFFFF", "#138808"];
 
@@ -81,7 +80,7 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
       .attr("stroke-opacity", 0.2)
       .style("cursor", "pointer")
       .on("click", function(event, d) {
-        let name = d.properties.NAME_1 || d.properties.State_Name || d.properties.state || "";
+        let name = d.properties.name || "";
         
         // Normalize names to match ALL_STATES
         if (name === "Orissa") name = "Odisha";

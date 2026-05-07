@@ -15,7 +15,7 @@ export function useStateCreatorCounts() {
   useEffect(() => {
     let cancelled = false;
 
-    fetchCreators({ limit: 2000 })
+    fetchCreators({ limit: 500 })
       .then(creators => {
         if (cancelled) return;
 

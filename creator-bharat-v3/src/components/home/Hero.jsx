@@ -133,11 +133,11 @@ HeroHeader.propTypes = { mob: PropTypes.bool };
 
 const HeroCTA = memo(({ mob, go, dsp }) => (
   <div className="au d3" style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: mob ? 12 : 16, marginBottom: 48, justifyContent: 'center', width: 'auto', alignItems: 'center' }}>
-    <Btn lg full={false} onClick={() => go('apply')} className="hero-primary-btn" style={{ padding: mob ? '16px 32px' : '22px 48px', fontSize: mob ? 15 : 18, background: T.gd, color: '#fff', borderRadius: 100, fontWeight: 900, border: 'none', boxShadow: '0 12px 32px rgba(255,148,49,0.35)', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+    <Btn lg full={false} onClick={() => go('apply')} className="hero-primary-btn" aria-label="Claim your free creator portfolio link" style={{ padding: mob ? '16px 32px' : '22px 48px', fontSize: mob ? 15 : 18, background: T.gd, color: '#fff', borderRadius: 100, fontWeight: 900, border: 'none', boxShadow: '0 12px 32px rgba(255,148,49,0.35)', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
       <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 10 }}>🚀 Claim Your Link Free</span>
       <div style={{ position: 'absolute', top: 0, left: '-100%', width: '50%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)', animation: 'shimmer 3s infinite', transform: 'skewX(-20deg)' }} />
     </Btn>
-    <Btn lg variant="ghost" full={false} onClick={() => dsp({ t: 'UI', v: { demoModal: true } })} className="hero-secondary-btn" style={{ padding: mob ? '15px 32px' : '20px 40px', fontSize: mob ? 14 : 17, background: 'rgba(0,0,0,0.03)', color: '#111', borderRadius: 100, fontWeight: 700, border: '1.5px solid rgba(0,0,0,0.08)', backdropFilter: 'blur(10px)', justifyContent: 'center', position: 'relative' }}>
+    <Btn lg variant="ghost" full={false} onClick={() => dsp({ t: 'UI', v: { demoModal: true } })} className="hero-secondary-btn" aria-label="View live demo of the platform" style={{ padding: mob ? '15px 32px' : '20px 40px', fontSize: mob ? 14 : 17, background: 'rgba(0,0,0,0.03)', color: '#111', borderRadius: 100, fontWeight: 700, border: '1.5px solid rgba(0,0,0,0.08)', backdropFilter: 'blur(10px)', justifyContent: 'center', position: 'relative' }}>
       <span className="live-dot" style={{ position: 'absolute', top: 12, left: 12, width: 8, height: 8, background: '#EF4444', borderRadius: '50%', animation: 'pulse-red 1.5s infinite' }} />
       <span>👁️ View Live Demo</span>
     </Btn>
@@ -156,7 +156,7 @@ const SearchSugs = memo(({ sugs, go }) => (
         onMouseEnter={e => e.currentTarget.style.background = '#F8FAFC'} 
         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
       >
-        <img src={s.photo || s.avatarUrl} alt="" style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover' }} />
+        <img src={s.photo || s.avatarUrl} alt={s.name} style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover' }} />
         <div>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#111' }}>{s.name}</div>
           <div style={{ fontSize: 11, color: '#64748B' }}>{s.niche} • {s.city}</div>
@@ -196,7 +196,7 @@ const SearchBar = memo(({ mob, st, dsp, go, sugs, onKeyDown }) => (
       <SearchInput mob={mob} q={st?.cf?.q} dsp={dsp} onKeyDown={onKeyDown} sugs={sugs} go={go} />
       <LocationPicker mob={mob} state={st?.cf?.state} />
       <div style={{ padding: mob ? 8 : 4, width: mob ? '100%' : 'auto' }}>
-        <Btn lg full={mob} onClick={() => go('creators')} className="hero-find-btn" style={{ borderRadius: mob ? 18 : 100, padding: mob ? '14px' : '18px 48px', background: '#111', color: '#fff', border: 'none', fontWeight: 900, fontSize: mob ? 14 : 16, transition: 'all 0.3s' }}>Find Creators ⚡</Btn>
+        <Btn lg full={mob} onClick={() => go('creators')} className="hero-find-btn" aria-label="Search creators" style={{ borderRadius: mob ? 18 : 100, padding: mob ? '14px' : '18px 48px', background: '#111', color: '#fff', border: 'none', fontWeight: 900, fontSize: mob ? 14 : 16, transition: 'all 0.3s' }}>Find Creators ⚡</Btn>
       </div>
     </div>
   </div>

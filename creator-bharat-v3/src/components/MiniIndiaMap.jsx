@@ -13,8 +13,7 @@
 import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 
-const GEOJSON_URL =
-  'https://raw.githubusercontent.com/Subhash9325/GeoJson-Data-of-Indian-States/master/Indian_States';
+const GEOJSON_URL = '/india_states.json';
 
 export default function MiniIndiaMap({ width = 160, height = 190 }) {
   const svgRef = useRef(null);
@@ -72,7 +71,7 @@ export default function MiniIndiaMap({ width = 160, height = 190 }) {
           .style('cursor', 'default')
           .on('mouseover', function (_, d) {
             d3.select(this).attr('fill', '#FF9431').attr('fill-opacity', 1);
-            setHoveredState(d.properties?.NAME_1 || d.properties?.State_Name || '');
+            setHoveredState(d.properties?.name || '');
           })
           .on('mouseout', function () {
             d3.select(this).attr('fill', 'url(#miniMapGrad)').attr('fill-opacity', 1);
