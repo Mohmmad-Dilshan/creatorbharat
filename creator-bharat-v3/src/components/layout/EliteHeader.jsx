@@ -170,7 +170,7 @@ const EliteHeader = memo(({
 EliteHeader.propTypes = {
   eyebrow: PropTypes.string,
   title: PropTypes.node.isRequired,
-  sub: PropTypes.string,
+  sub: PropTypes.node,
   children: PropTypes.node,
   maxWidth: PropTypes.number,
   light: PropTypes.bool,

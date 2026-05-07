@@ -1,49 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useApp } from '../context';
-import { T } from '../theme';
 import { W, scrollToTop, LS, fmt } from '../utils/helpers';
-import { Btn, SH as Sh, Empty, Bdg } from '../components/Primitives';
+import { Btn, Empty, Bdg } from '../components/Primitives';
+import EliteHeader from '../components/layout/EliteHeader';
+import { motion } from 'framer-motion';
+import { Check, Info, Trash2 } from 'lucide-react';
 
 export default function ComparePage() {
   const { st, dsp } = useApp();
-  const [mob, setMob] = useState(globalThis.innerWidth < 768);
-
-  useEffect(() => {
-    const h = () => setMob(globalThis.innerWidth < 768);
-    globalThis.addEventListener('resize', h);
-    return () => globalThis.removeEventListener('resize', h);
-  }, []);
 
   const go = (p, sel) => { dsp({ t: 'GO', p, sel }); scrollToTop(); };
   
-  // Get creators from the compared list in state
   const allC = LS.get('cb_creators', []);
   const creators = st.compared.map(id => allC.find(c => c.id === id)).filter(Boolean);
 
   if (creators.length < 2) {
     return (
-      <div style={{ ...W(), padding: '120px 20px', textAlign: 'center' }}>
-        <Empty 
-          icon="⚖️" 
-          title="Comparison Bench Empty" 
-          sub="At least 2 creators ko compare karne ke liye select karein. Search page par 'Compare' button use karein." 
-          ctaLabel="Browse Creators" 
-          onCta={() => go('creators')} 
+      <div style={{ background: '#fff', minHeight: '100vh' }}>
+        <EliteHeader 
+          eyebrow="Benchmarking"
+          title="Creator Comparison"
+          sub="At least 2 creators are required for a side-by-side analysis."
+          gradient="gold"
+          compact
         />
+        <div style={{ ...W(), padding: '80px 20px', textAlign: 'center' }}>
+          <Empty 
+            icon="⚖️" 
+            title="Comparison Bench Empty" 
+            sub="Go back to the creators marketplace and select 'Compare' on multiple profiles." 
+            ctaLabel="Browse Creators" 
+            onCta={() => go('creators')} 
+          />
+        </div>
       </div>
     );
   }
 
   const fields = [
-    ['Reach / Followers', c => fmt.num(c.followers), 'followers'],
-    ['Engagement Rate', c => (c.er || 4.2).toFixed(1) + '%', 'er'],
-    ['Creator Score', c => c.score || fmt.score(c), 'score'],
-    ['Min Collaboration', c => fmt.inr(c.rateMin), 'rateMin'],
-    ['Location', c => c.city, 'city'],
-    ['Niches', c => (Array.isArray(c.niche) ? c.niche : [c.niche]).join(', '), 'niche']
+    { label: 'Elite Trust Score', getValue: c => c.score || fmt.score(c), key: 'score', desc: 'Weighted influence metric' },
+    { label: 'Follower Base', getValue: c => fmt.num(c.followers), key: 'followers', desc: 'Total cross-platform reach' },
+    { label: 'Engagement Rate', getValue: c => (c.er || 4.2).toFixed(1) + '%', key: 'er', desc: 'Interaction per post' },
+    { label: 'Base Rate', getValue: c => fmt.inr(c.rateMin), key: 'rateMin', desc: 'Starting collaboration fee' },
+    { label: 'Primary Location', getValue: c => c.city || 'Bharat', key: 'city', desc: 'Base geographic influence' }
   ];
 
-  // Helper to find the "best" in a row
   const getBest = (fieldKey, values) => {
     if (['followers', 'er', 'score'].includes(fieldKey)) {
        return Math.max(...values.map(v => Number.parseFloat(v) || 0));
@@ -55,82 +56,101 @@ export default function ComparePage() {
   };
 
   return (
-    <div style={{ background: '#fff', minHeight: '100vh', paddingBottom: 100 }}>
-      {/* Header */}
-      <div style={{ background: '#050505', padding: mob ? '120px 20px 48px' : '160px 20px 80px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255,148,49,0.1), transparent 70%)' }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #FF9431, #fff, #128807)' }} />
-        
-        <div style={W()}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 24 }}>
-             <Sh eyebrow="Benchmarking" title="Side-by-Side Analysis" sub="Compare creator metrics and commercials to find the perfect fit for your campaign." light mb={0} />
-             <Btn variant="white" onClick={() => dsp({ t: 'COMPARE_CLEAR' })}>Clear Bench</Btn>
-          </div>
+    <div style={{ background: '#f8fafc', minHeight: '100vh', paddingBottom: 100 }}>
+      <EliteHeader 
+        eyebrow="Precision Analysis"
+        title={<>Side-by-Side <span style={{ background: 'linear-gradient(90deg, #FF9431 20%, #475569 50%, #138808 80%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Benchmarking</span></>}
+        sub="The data-driven way to choose the perfect face for your brand's mission."
+        gradient="dark"
+      >
+        <div style={{ marginTop: 32, display: 'flex', justifyContent: 'center' }}>
+           <Btn variant="white" onClick={() => dsp({ t: 'COMPARE_CLEAR' })} style={{ borderRadius: 100, padding: '12px 32px' }}>
+              <Trash2 size={16} style={{ marginRight: 8 }} /> Clear All Selections
+           </Btn>
         </div>
-      </div>
+      </EliteHeader>
 
-      <div style={{ padding: mob ? '40px 0' : '60px 0', overflowX: 'auto' }}>
-        <div style={W()}>
-          <div style={{ minWidth: 800, padding: '0 20px' }}>
-            <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '12px 0' }}>
-              <thead>
-                <tr>
-                  <th style={{ width: 200, padding: '24px', textAlign: 'left', background: '#FAFAFA', borderRadius: '24px 24px 0 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
-                     <span style={{ fontSize: 13, fontWeight: 800, color: T.t3, textTransform: 'uppercase' }}>Feature Comparison</span>
-                  </th>
-                  {creators.map(c => (
-                    <th key={c.id} style={{ padding: '24px', background: '#fff', borderRadius: '24px 24px 0 0', border: '1.5px solid rgba(0,0,0,0.05)', borderBottom: 'none' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                        <img src={c.photo || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=FF9431&color=fff`} style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid #fff', boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }} alt="" />
-                        <div>
-                          <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 18, fontWeight: 900, color: '#111', marginBottom: 4 }}>{c.name}</h3>
-                          <Bdg sm color="blue">Verified</Bdg>
-                        </div>
-                      </div>
+      <div style={{ marginTop: -80, position: 'relative', zIndex: 10 }}>
+        <div style={W(1200)}>
+          <div style={{ overflowX: 'auto', padding: '0 20px', paddingBottom: 40 }}>
+            <div style={{ minWidth: 800, background: '#fff', borderRadius: 32, boxShadow: '0 40px 100px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.04)', overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <th style={{ width: 300, padding: '40px 32px', textAlign: 'left', background: '#FAFAFA' }}>
+                      <p style={{ fontSize: 11, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: 8 }}>COMPARISON GRID</p>
+                      <h4 style={{ fontSize: 18, fontWeight: 900, color: '#111', fontFamily: "'Outfit', sans-serif" }}>Creator Profiles</h4>
                     </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {fields.map(([label, getValue, key], rowIdx) => {
-                  const values = creators.map(c => getValue(c));
-                  const bestValue = getBest(key, values);
+                    {creators.map(c => (
+                      <th key={c.id} style={{ padding: '40px 32px', textAlign: 'center', minWidth: 200 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+                          <div style={{ position: 'relative' }}>
+                            <img src={c.photo || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=FF9431&color=fff`} style={{ width: 100, height: 100, borderRadius: 28, objectFit: 'cover', boxShadow: '0 15px 35px rgba(0,0,0,0.1)' }} alt="" />
+                            {c.verified && <div style={{ position: 'absolute', bottom: -5, right: -5, background: '#10B981', color: '#fff', padding: 4, borderRadius: '50%', border: '3px solid #fff' }}><Check size={12} strokeWidth={4} /></div>}
+                          </div>
+                          <div>
+                            <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 18, fontWeight: 900, color: '#111', marginBottom: 4 }}>{c.name}</h3>
+                            <p style={{ fontSize: 12, color: '#94a3b8', fontWeight: 700 }}>@{c.handle || 'creator'}</p>
+                          </div>
+                        </div>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {fields.map((f, rowIdx) => {
+                    const values = creators.map(c => f.getValue(c));
+                    const bestValue = getBest(f.key, values);
+                    
+                    return (
+                      <tr key={f.key} style={{ borderBottom: rowIdx === fields.length - 1 ? 'none' : '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '32px', background: '#FAFAFA' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+                            <span style={{ fontSize: 14, fontWeight: 900, color: '#111' }}>{f.label}</span>
+                            <div title={f.desc} style={{ color: '#cbd5e1', cursor: 'help' }}><Info size={14} /></div>
+                          </div>
+                          <p style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>{f.desc}</p>
+                        </td>
+                        {creators.map((c) => {
+                          const val = f.getValue(c);
+                          const isBest = bestValue !== null && (Number.parseFloat(val) === bestValue || val === bestValue);
+                          return (
+                            <td key={c.id} style={{ padding: '32px', textAlign: 'center' }}>
+                              <motion.div 
+                                initial={isBest ? { scale: 0.9, opacity: 0 } : false}
+                                animate={{ scale: 1, opacity: 1 }}
+                                style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center' }}
+                              >
+                                <span style={{ fontSize: 18, fontWeight: 900, color: isBest ? '#10B981' : '#111' }}>{val}</span>
+                                {isBest && (
+                                  <div style={{ marginTop: 8 }}>
+                                    <Bdg sm color="green">TOP PERFORMER</Bdg>
+                                  </div>
+                                )}
+                              </motion.div>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
                   
-                  return (
-                    <tr key={key}>
-                      <td style={{ padding: '24px', background: '#FAFAFA', borderBottom: '1px solid rgba(0,0,0,0.03)', borderRight: '1px solid rgba(0,0,0,0.03)', fontWeight: 800, fontSize: 14, color: T.t2 }}>{label}</td>
-                      {creators.map((c) => {
-                        const val = getValue(c);
-                        const isBest = bestValue !== null && (Number.parseFloat(val) === bestValue || val === bestValue);
-                        return (
-                          <td key={c.id} style={{ 
-                            padding: '24px', 
-                            textAlign: 'center', 
-                            background: isBest ? 'rgba(16,185,129,0.02)' : '#fff', 
-                            borderLeft: '1.5px solid rgba(0,0,0,0.05)', 
-                            borderRight: '1.5px solid rgba(0,0,0,0.05)', 
-                            borderBottom: rowIdx === fields.length - 1 ? '1.5px solid rgba(0,0,0,0.05)' : '1px solid rgba(0,0,0,0.03)',
-                            borderRadius: rowIdx === fields.length - 1 ? '0 0 24px 24px' : '0'
-                          }}>
-                            <span style={{ fontSize: 16, fontWeight: 900, color: isBest ? '#10B981' : '#111' }}>{val}</span>
-                            {isBest && <div style={{ fontSize: 10, fontWeight: 900, color: '#10B981', marginTop: 4 }}>BEST IN CLASS</div>}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
-                {/* Final Row: CTA */}
-                <tr>
-                   <td style={{ padding: '24px' }}></td>
-                   {creators.map(c => (
-                     <td key={c.id} style={{ padding: '24px', textAlign: 'center' }}>
-                        <Btn full onClick={() => go('creator-profile', { creator: c })}>Book Creator</Btn>
-                     </td>
-                   ))}
-                </tr>
-              </tbody>
-            </table>
+                  {/* Action Row */}
+                  <tr style={{ background: '#f8fafc' }}>
+                    <td style={{ padding: '40px 32px' }}>
+                      <p style={{ fontSize: 14, fontWeight: 900, color: '#111' }}>Ready to proceed?</p>
+                    </td>
+                    {creators.map(c => (
+                      <td key={c.id} style={{ padding: '40px 32px', textAlign: 'center' }}>
+                         <Btn full onClick={() => go('creator-profile', { creator: c })} style={{ borderRadius: 12, height: 48, fontSize: 13, fontWeight: 900 }}>
+                            Secure Booking
+                         </Btn>
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

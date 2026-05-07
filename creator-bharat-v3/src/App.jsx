@@ -82,7 +82,8 @@ export default function App() {
     '/settings', 
     '/wallet', 
     '/applications', 
-    '/campaign-builder'
+    '/campaign-builder',
+    '/creator-score'
   ];
 
   const isNoLayout = noLayoutPaths.includes(location.pathname);
