@@ -133,7 +133,7 @@ HeroHeader.propTypes = { mob: PropTypes.bool };
 
 const HeroCTA = memo(({ mob, go, dsp }) => (
   <div className="au d3" style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: mob ? 12 : 16, marginBottom: 48, justifyContent: 'center', width: 'auto', alignItems: 'center' }}>
-    <Btn lg full={false} onClick={() => go('apply')} className="hero-primary-btn" aria-label="Claim your free creator portfolio link" style={{ padding: mob ? '16px 32px' : '22px 48px', fontSize: mob ? 15 : 18, background: T.gd, color: '#fff', borderRadius: 100, fontWeight: 900, border: 'none', boxShadow: '0 12px 32px rgba(255,148,49,0.35)', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+    <Btn lg full={false} onClick={() => dsp({ t: 'UI', v: { authModal: true, authView: 'register' } })} className="hero-primary-btn" aria-label="Claim your free creator portfolio link" style={{ padding: mob ? '16px 32px' : '22px 48px', fontSize: mob ? 15 : 18, background: T.gd, color: '#fff', borderRadius: 100, fontWeight: 900, border: 'none', boxShadow: '0 12px 32px rgba(255,148,49,0.35)', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
       <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 10 }}>🚀 Claim Your Link Free</span>
       <div style={{ position: 'absolute', top: 0, left: '-100%', width: '50%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)', animation: 'shimmer 3s infinite', transform: 'skewX(-20deg)' }} />
     </Btn>

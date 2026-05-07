@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context';
 import { Btn } from '../Primitives';
 
@@ -304,7 +303,6 @@ export default function DemoModal({ open }) {
   const { dsp } = useApp();
   const [step, setStep] = useState(1);
   const [mob, setMob] = useState(window.innerWidth < 768);
-  const navigate = useNavigate();
   const STEP_DURATION = 5000;
 
   useEffect(() => {
@@ -326,9 +324,7 @@ export default function DemoModal({ open }) {
   if (!open) return null;
 
   const handleJoin = () => {
-    dsp({ t: 'GO', p: 'apply' });
-    dsp({ t: 'UI', v: { demoModal: false } });
-    navigate('/apply');
+    dsp({ t: 'UI', v: { demoModal: false, authModal: true, authView: 'register' } });
   };
 
   const close = () => dsp({ t: 'UI', v: { demoModal: false } });

@@ -22,14 +22,22 @@ export default function ForgotPasswordPage() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', padding: '20px' }}>
       <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-         <div style={{ position: 'absolute', top: '-10%', right: '-10%', width: '40%', height: '40%', background: 'rgba(255,148,49,0.03)', borderRadius: '50%', filter: 'blur(80px)' }} />
-         <div style={{ position: 'absolute', bottom: '-10%', left: '-10%', width: '40%', height: '40%', background: 'rgba(18,136,7,0.03)', borderRadius: '50%', filter: 'blur(80px)' }} />
+         <motion.div 
+           animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+           transition={{ duration: 10, repeat: Infinity }}
+           style={{ position: 'absolute', top: '-20%', right: '-10%', width: '60%', height: '60%', background: 'radial-gradient(circle, rgba(255,148,49,0.08) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(100px)' }} 
+         />
+         <motion.div 
+           animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
+           transition={{ duration: 12, repeat: Infinity, delay: 1 }}
+           style={{ position: 'absolute', bottom: '-20%', left: '-10%', width: '70%', height: '70%', background: 'radial-gradient(circle, rgba(18,136,7,0.08) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(120px)' }} 
+         />
       </div>
 
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        style={{ width: '100%', maxWidth: 440, background: '#fff', padding: '48px', borderRadius: 32, boxShadow: '0 40px 100px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.03)', position: 'relative', zIndex: 10 }}
+        style={{ width: '100%', maxWidth: 480, background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(20px)', padding: '56px', borderRadius: 40, boxShadow: '0 40px 120px rgba(0,0,0,0.08)', border: '1px solid rgba(255,255,255,0.5)', position: 'relative', zIndex: 10 }}
       >
         <AnimatePresence mode="wait">
           {step === 1 ? (

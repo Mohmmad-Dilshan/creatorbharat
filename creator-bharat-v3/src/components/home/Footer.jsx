@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
+import { useApp } from '../../context';
 import { W } from '../../utils/helpers';
 import { Logo } from '../Primitives';
 import { Send, Mail, Globe, ShieldCheck } from 'lucide-react';
@@ -8,9 +9,14 @@ import { Send, Mail, Globe, ShieldCheck } from 'lucide-react';
 export default function Footer({ mob }) {
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
-  const [email, setEmail] = useState('');
-
-  const go = (p) => { navigate(p); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  const [email, setEmail] = React.useState('');
+  const { dsp } = useApp();
+  const go = (p) => { 
+    if (p === '/apply') return dsp({ t: 'UI', v: { authModal: true, authView: 'register' } });
+    if (p === '/login') return dsp({ t: 'UI', v: { authModal: true, authView: 'login' } });
+    navigate(p); 
+    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+  };
 
   const linkGroups = [
     {

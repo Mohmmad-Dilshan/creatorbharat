@@ -264,7 +264,7 @@ export default function MobileMenu({ open }) {
                     </div>
                   </div>
                   <Btn full lg onClick={() => { dsp({ t: 'UI', v: { authModal: true, mobileMenu: false } }); }} style={{ padding: '14px', borderRadius: 10, fontSize: 14, background: '#111', color: '#fff', border: 'none' }}>Sign In to Portal</Btn>
-                  <Btn full lg variant="outline" onClick={() => { go('/apply'); dsp({ t: 'UI', v: { mobileMenu: false } }); }} style={{ padding: '14px', borderRadius: 10, fontSize: 14, background: '#fff', border: '1px solid rgba(0,0,0,0.1)', color: '#111' }}>Create Free Account</Btn>
+                  <Btn full lg variant="outline" onClick={() => { dsp({ t: 'UI', v: { authModal: true, authView: 'register', mobileMenu: false } }); }} style={{ padding: '14px', borderRadius: 10, fontSize: 14, background: '#fff', border: '1px solid rgba(0,0,0,0.1)', color: '#111' }}>Create Free Account</Btn>
                 </div>
               ) : (
                 <div>

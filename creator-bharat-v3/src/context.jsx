@@ -13,7 +13,7 @@ export const IS = {
   compared: [],
   applied: [],
   toasts: [],
-  ui: { authModal: false, mobileMenu: false, hideNav: false },
+  ui: { authModal: false, authView: 'gateway', mobileMenu: false, hideNav: false },
   cf: { q: '', state: '', niche: [], platform: [], sort: 'score', verified: false, minFollowers: '', minER: '' },
   cpf: { q: '', niche: '', urgent: false }
 };
