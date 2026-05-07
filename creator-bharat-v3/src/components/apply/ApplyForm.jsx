@@ -96,8 +96,8 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
               <Fld label="Full Name" value={F.name} icon={User} onChange={e => upF('name', e.target.value)} placeholder="Aman Deep" error={errors.name} sm required />
               <Fld label="Work Email" type="email" icon={Mail} value={F.email} onChange={e => upF('email', e.target.value)} placeholder="aman@bhilwara.me" error={errors.email} sm required />
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <Fld label="Password" type="password" icon={Lock} value={F.password} onChange={e => upF('password', e.target.value)} placeholder="••••" error={errors.password} sm required />
-                <Fld label="Confirm" type="password" icon={Lock} value={F.confirm} onChange={e => upF('confirm', e.target.value)} placeholder="••••" error={errors.confirm} sm required />
+                <Fld label="Password" type="password" icon={Lock} value={F.password} onChange={e => upF('password', e.target.value)} placeholder="Password" error={errors.password} sm required />
+                <Fld label="Confirm" type="password" icon={Lock} value={F.confirm} onChange={e => upF('confirm', e.target.value)} placeholder="Confirm" error={errors.confirm} sm required />
               </div>
               <Fld label="City" value={F.city} icon={MapPin} onChange={e => upF('city', e.target.value)} options={['Bhilwara', 'Jaipur', 'Udaipur', 'Delhi', 'Mumbai']} sm required />
             </div>
@@ -120,7 +120,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
 
           {step === 3 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-              <Fld label="Min Collaboration Rate (₹)" type="number" icon={IndianRupee} value={F.rateMin} onChange={e => upF('rateMin', e.target.value)} placeholder="5000" error={errors.rateMin} sm required />
+              <Fld label="Min Collaboration Rate (INR)" type="number" icon={IndianRupee} value={F.rateMin} onChange={e => upF('rateMin', e.target.value)} placeholder="5000" error={errors.rateMin} sm required />
               <div>
                 <p style={sL}>Services Offered</p>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{SERVICES.map(s => <Chip key={s} label={s} active={F.services.includes(s)} onClick={() => toggleArr('services', s)} sm />)}</div>
@@ -157,7 +157,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
               </Btn>
             ) : (
               <Btn full lg loading={loading} onClick={submit} style={{ borderRadius: 100, background: T.saffron, color: '#fff', border: 'none', height: 54, fontWeight: 900, boxShadow: '0 10px 20px rgba(255,148,49,0.3)' }}>
-                Launch Profile 🚀
+                Launch Profile
               </Btn>
             )}
           </div>

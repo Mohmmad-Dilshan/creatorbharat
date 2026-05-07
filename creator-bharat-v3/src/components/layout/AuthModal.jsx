@@ -1,162 +1,526 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Briefcase,
+  CheckCircle2,
+  Lock,
+  Mail,
+  RefreshCw,
+  ShieldCheck,
+  Sparkles,
+  User,
+  Users,
+  X
+} from 'lucide-react';
 import { useApp } from '../../context';
+import { LS } from '../../utils/helpers';
 import { Modal, Btn, Fld } from '../Primitives';
-import { User, Briefcase, X, ArrowRight, Sparkles, ChevronLeft, Mail, Lock, ShieldCheck, Star } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import ApplyForm from '../apply/ApplyForm';
 
-const GatewayView = ({ onCreator, onBrand, themeColor }) => (
-  <motion.div 
-    key="gateway"
-    initial={{ opacity: 0, y: 10 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -10 }}
-    transition={{ duration: 0.3 }}
-  >
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 20 }}>
-       <motion.button 
-         whileHover={{ y: -4, scale: 1.01 }}
-         whileTap={{ scale: 0.99 }}
-         onClick={onCreator}
-         style={{ 
-           padding: '24px', borderRadius: 24, border: '1.5px solid rgba(255,148,49,0.15)', 
-           background: 'rgba(255,148,49,0.03)', textAlign: 'left', cursor: 'pointer', transition: 'all 0.3s',
-           display: 'flex', alignItems: 'center', gap: 20, position: 'relative', overflow: 'hidden'
-         }}
-         onMouseEnter={e => { e.currentTarget.style.borderColor = '#FF9431'; e.currentTarget.style.background = 'rgba(255,148,49,0.06)'; }}
-         onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,148,49,0.15)'; e.currentTarget.style.background = 'rgba(255,148,49,0.03)'; }}
-       >
-          <div style={{ width: 56, height: 56, borderRadius: 16, background: '#FF9431', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 24px rgba(255,148,49,0.3)' }}>
-             <User size={26} />
-          </div>
-          <div style={{ flex: 1 }}>
-             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <p style={{ fontSize: 10, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Creator Portal</p>
-                <div style={{ padding: '2px 8px', borderRadius: 100, background: 'rgba(255,148,49,0.1)', color: '#FF9431', fontSize: 9, fontWeight: 900 }}>TRENDING</div>
-             </div>
-             <h4 style={{ fontSize: 18, fontWeight: 900, color: '#111', fontFamily: "'Outfit', sans-serif" }}>Join as Creator</h4>
-             <p style={{ fontSize: 13, color: '#64748b', fontWeight: 500, marginTop: 2 }}>Monetize your content & reach.</p>
-          </div>
-          <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-             <ArrowRight size={18} color="#FF9431" />
-          </div>
-       </motion.button>
+const VIEW_COPY = {
+  gateway: {
+    title: 'Choose your workspace',
+    sub: 'One secure CreatorBharat account for creators, brands, campaigns, and deal tracking.'
+  },
+  login: {
+    title: 'Sign in to CreatorBharat',
+    sub: 'Access your creator portfolio or brand campaign console.'
+  },
+  register: {
+    title: 'Create your creator profile',
+    sub: 'Build a verified creator workspace brands can trust.'
+  },
+  'brand-register': {
+    title: 'Create your brand console',
+    sub: 'Launch campaigns, discover creators, and manage collaborations from one dashboard.'
+  },
+  forgot: {
+    title: 'Recover your account',
+    sub: 'Enter your email and we will simulate secure recovery instructions.'
+  }
+};
 
-       <motion.button 
-         whileHover={{ y: -4, scale: 1.01 }}
-         whileTap={{ scale: 0.99 }}
-         onClick={onBrand}
-         style={{ 
-           padding: '24px', borderRadius: 24, border: '1.5px solid rgba(16,185,129,0.15)', 
-           background: 'rgba(16,185,129,0.03)', textAlign: 'left', cursor: 'pointer', transition: 'all 0.3s',
-           display: 'flex', alignItems: 'center', gap: 20, position: 'relative', overflow: 'hidden'
-         }}
-         onMouseEnter={e => { e.currentTarget.style.borderColor = '#10B981'; e.currentTarget.style.background = 'rgba(16,185,129,0.06)'; }}
-         onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(16,185,129,0.15)'; e.currentTarget.style.background = 'rgba(16,185,129,0.03)'; }}
-       >
-          <div style={{ width: 56, height: 56, borderRadius: 16, background: '#10B981', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 24px rgba(16,185,129,0.3)' }}>
-             <Briefcase size={26} />
-          </div>
-          <div style={{ flex: 1 }}>
-             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <p style={{ fontSize: 10, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Brand Console</p>
-                <div style={{ padding: '2px 8px', borderRadius: 100, background: 'rgba(16,185,129,0.1)', color: '#10B981', fontSize: 9, fontWeight: 900 }}>ENTERPRISE</div>
-             </div>
-             <h4 style={{ fontSize: 18, fontWeight: 900, color: '#111', fontFamily: "'Outfit', sans-serif" }}>Join as Brand</h4>
-             <p style={{ fontSize: 13, color: '#64748b', fontWeight: 500, marginTop: 2 }}>Scale with verified influencers.</p>
-          </div>
-          <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-             <ArrowRight size={18} color="#10B981" />
-          </div>
-       </motion.button>
-    </div>
+const CONTENT_MAX_HEIGHT = 'min(78vh, 760px)';
 
-    <div style={{ marginTop: 40, padding: '24px', borderRadius: 24, background: '#f8fafc', border: '1px solid #f1f5f9' }}>
-       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ display: 'flex' }}>
-             {[1,2,3,4].map(i => (
-                <div key={i} style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid #fff', background: '#e2e8f0', marginLeft: i === 1 ? 0 : -12, overflow: 'hidden' }}>
-                   <img src={`https://i.pravatar.cc/100?u=${i}`} alt="user" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-             ))}
+const AuthSidePanel = ({ role, view, mob }) => {
+  const isBrand = role === 'brand' || view === 'brand-register';
+  const accent = isBrand ? '#10B981' : '#FF9431';
+  const stats = isBrand
+    ? [['500+', 'brand-ready creators'], ['42', 'active city clusters'], ['0%', 'middleman commission']]
+    : [['10k+', 'creator profiles'], ['4.8x', 'better discovery'], ['24h', 'profile launch']];
+
+  if (mob) return null;
+
+  return (
+    <aside
+      style={{
+        minHeight: 620,
+        padding: 32,
+        background: '#0B1220',
+        color: '#fff',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background:
+            'linear-gradient(135deg, rgba(255,148,49,0.18), transparent 38%), linear-gradient(315deg, rgba(16,185,129,0.16), transparent 42%)'
+        }}
+      />
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 56 }}>
+          <div
+            style={{
+              width: 42,
+              height: 42,
+              borderRadius: 12,
+              background: 'linear-gradient(135deg, #FF9431, #fff 48%, #128807)',
+              display: 'grid',
+              placeItems: 'center',
+              color: '#0B1220',
+              fontWeight: 900,
+              fontSize: 13
+            }}
+          >
+            CB
           </div>
           <div>
-             <p style={{ fontSize: 13, fontWeight: 800, color: '#111' }}>Join 10,000+ Elite Members</p>
-             <p style={{ fontSize: 11, color: '#64748b', fontWeight: 600 }}>Highest engagement network in Bharat</p>
+            <p style={{ fontSize: 16, fontWeight: 900, letterSpacing: 0 }}>CreatorBharat</p>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontWeight: 700 }}>SaaS workspace</p>
           </div>
-       </div>
+        </div>
+
+        <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 38, lineHeight: 1.05, fontWeight: 900, letterSpacing: 0, marginBottom: 16 }}>
+          {isBrand ? 'Find local influence without messy spreadsheets.' : 'Turn your creator identity into a real business.'}
+        </h2>
+        <p style={{ maxWidth: 360, color: 'rgba(255,255,255,0.64)', fontSize: 15, lineHeight: 1.7, fontWeight: 500 }}>
+          {isBrand
+            ? 'A focused console for campaign briefs, creator shortlists, deal status, and performance clarity.'
+            : 'A polished profile, campaign applications, wallet, analytics, and brand discovery in one place.'}
+        </p>
+      </div>
+
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <div
+          style={{
+            border: '1px solid rgba(255,255,255,0.12)',
+            background: 'rgba(255,255,255,0.06)',
+            borderRadius: 24,
+            padding: 18,
+            backdropFilter: 'blur(16px)'
+          }}
+        >
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+            {stats.map(([num, label]) => (
+              <div key={label} style={{ padding: '14px 10px', borderRadius: 16, background: 'rgba(255,255,255,0.06)' }}>
+                <p style={{ fontSize: 19, fontWeight: 900, color: accent }}>{num}</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.58)', fontWeight: 700, lineHeight: 1.35 }}>{label}</p>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 18 }}>
+            <ShieldCheck size={18} color={accent} />
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.68)', fontWeight: 700 }}>
+              Secure demo access with role-aware dashboards.
+            </p>
+          </div>
+        </div>
+      </div>
+    </aside>
+  );
+};
+
+const ModeButton = ({ active, icon: Icon, title, sub, color, onClick }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    style={{
+      border: `1.5px solid ${active ? color : '#E5E7EB'}`,
+      background: active ? `${color}0F` : '#fff',
+      borderRadius: 18,
+      padding: 16,
+      display: 'flex',
+      gap: 12,
+      alignItems: 'center',
+      textAlign: 'left',
+      cursor: 'pointer',
+      minHeight: 82,
+      transition: 'all .2s ease'
+    }}
+  >
+    <div
+      style={{
+        width: 42,
+        height: 42,
+        borderRadius: 14,
+        display: 'grid',
+        placeItems: 'center',
+        background: active ? color : '#F8FAFC',
+        color: active ? '#fff' : color,
+        flex: '0 0 auto'
+      }}
+    >
+      <Icon size={20} />
+    </div>
+    <div>
+      <p style={{ fontSize: 14, fontWeight: 900, color: '#111827', marginBottom: 3 }}>{title}</p>
+      <p style={{ fontSize: 12, lineHeight: 1.45, color: '#64748B', fontWeight: 600 }}>{sub}</p>
+    </div>
+  </button>
+);
+
+const ViewTabs = ({ view, setView }) => {
+  const tabs = [
+    ['login', 'Sign in'],
+    ['register', 'Creator signup'],
+    ['brand-register', 'Brand register']
+  ];
+
+  return (
+    <div style={{ display: 'flex', gap: 6, padding: 5, borderRadius: 16, background: '#F8FAFC', border: '1px solid #EEF2F7', marginBottom: 26 }}>
+      {tabs.map(([id, label]) => {
+        const active = view === id;
+        return (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setView(id)}
+            style={{
+              flex: 1,
+              border: 'none',
+              background: active ? '#fff' : 'transparent',
+              color: active ? '#111827' : '#64748B',
+              boxShadow: active ? '0 8px 20px rgba(15,23,42,0.08)' : 'none',
+              borderRadius: 12,
+              minHeight: 42,
+              fontSize: 12,
+              fontWeight: 900,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {label}
+          </button>
+        );
+      })}
+    </div>
+  );
+};
+
+const GatewayView = ({ setView, setRole }) => (
+  <motion.div key="gateway" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
+    <div style={{ display: 'grid', gap: 14 }}>
+      <ModeButton
+        active
+        icon={User}
+        title="Creator workspace"
+        sub="Portfolio, applications, rates, wallet, and creator dashboard."
+        color="#FF9431"
+        onClick={() => {
+          setRole('creator');
+          setView('register');
+        }}
+      />
+      <ModeButton
+        active
+        icon={Briefcase}
+        title="Brand workspace"
+        sub="Register your brand and manage campaigns from a SaaS console."
+        color="#10B981"
+        onClick={() => {
+          setRole('brand');
+          setView('brand-register');
+        }}
+      />
+    </div>
+    <div style={{ marginTop: 24, padding: 18, borderRadius: 18, background: '#F8FAFC', border: '1px solid #EEF2F7', display: 'flex', gap: 12, alignItems: 'center' }}>
+      <Sparkles size={20} color="#FF9431" />
+      <p style={{ fontSize: 13, lineHeight: 1.55, color: '#475569', fontWeight: 650 }}>
+        Already onboarded? Use the sign-in tab and choose Creator or Brand before login.
+      </p>
     </div>
   </motion.div>
 );
 
-GatewayView.propTypes = {
-  onCreator: PropTypes.func.isRequired,
-  onBrand: PropTypes.func.isRequired,
-  themeColor: PropTypes.string.isRequired
-};
-
-
-const LoginView = ({ role, setRole, onLogin, loading, themeColor }) => {
+const LoginView = ({ role, setRole, onLogin, loading, setView }) => {
   const isCreator = role === 'creator';
-  const isBrand = role === 'brand';
+  const themeColor = isCreator ? '#FF9431' : '#10B981';
+
   return (
-    <motion.div 
-      key="login"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.3 }}
-    >
-      <div style={{ display: 'flex', background: '#f8fafc', padding: '6px', borderRadius: '18px', marginBottom: 32, border: '1px solid #f1f5f9', position: 'relative' }}>
-        <motion.div 
-          animate={{ x: isCreator ? 0 : '100%' }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          style={{ 
-            position: 'absolute', top: 6, bottom: 6, 
-            left: 6, width: 'calc(50% - 6px)',
-            background: '#fff', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', zIndex: 0
-          }}
-        />
-        <button onClick={() => setRole('creator')} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: 'none', fontSize: 11, fontWeight: 900, position: 'relative', zIndex: 1, background: 'transparent', color: isCreator ? '#FF9431' : '#94a3b8', cursor: 'pointer', transition: 'all 0.3s', textTransform: 'uppercase', letterSpacing: '1px' }}>CREATOR</button>
-        <button onClick={() => setRole('brand')} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: 'none', fontSize: 11, fontWeight: 900, position: 'relative', zIndex: 1, background: 'transparent', color: isBrand ? '#10B981' : '#94a3b8', cursor: 'pointer', transition: 'all 0.3s', textTransform: 'uppercase', letterSpacing: '1px' }}>BRAND</button>
+    <motion.div key="login" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 22 }}>
+        <ModeButton active={isCreator} icon={User} title="Creator" sub="Dashboard, wallet, deals" color="#FF9431" onClick={() => setRole('creator')} />
+        <ModeButton active={!isCreator} icon={Briefcase} title="Brand" sub="Campaign console" color="#10B981" onClick={() => setRole('brand')} />
       </div>
 
-      <form onSubmit={onLogin} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-         <Fld label="Elite Email" type="email" icon={Mail} placeholder="name@domain.com" required />
-         <Fld label="Secure Password" type="password" icon={Lock} placeholder="••••••••" required />
-         
-         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: -4 }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: '#64748b', cursor: 'pointer', fontWeight: 600 }}>
-               <input type="checkbox" style={{ accentColor: themeColor, width: 16, height: 16 }} /> Remember device
-            </label>
-            <button type="button" style={{ background: 'none', border: 'none', color: themeColor, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>Forgot password?</button>
-         </div>
+      <form onSubmit={onLogin}>
+        <Fld label="Email address" type="email" icon={Mail} placeholder="name@domain.com" required />
+        <Fld label="Password" type="password" icon={Lock} placeholder="Password" required />
 
-         <Btn full lg loading={loading} style={{ height: 60, borderRadius: 100, background: themeColor, color: '#fff', border: 'none', fontWeight: 900, boxShadow: `0 12px 24px ${themeColor}30`, fontSize: 16 }}>
-            Log In to {isCreator ? 'Creator Portal' : 'Brand Console'}
-         </Btn>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginTop: -2, marginBottom: 20, flexWrap: 'wrap' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 13, color: '#64748B', fontWeight: 700, cursor: 'pointer' }}>
+            <input type="checkbox" style={{ accentColor: themeColor, width: 16, height: 16 }} /> Remember me
+          </label>
+          <button type="button" onClick={() => setView('forgot')} style={{ border: 'none', background: 'transparent', color: themeColor, fontSize: 13, fontWeight: 900, cursor: 'pointer' }}>
+            Forgot password?
+          </button>
+        </div>
+
+        <Btn full lg loading={loading} style={{ height: 56, borderRadius: 16, background: '#111827', color: '#fff', border: 'none', fontWeight: 900 }}>
+          Sign in as {isCreator ? 'Creator' : 'Brand'} <ArrowRight size={18} />
+        </Btn>
       </form>
-
-      <div style={{ margin: '28px 0', display: 'flex', alignItems: 'center', gap: 16 }}>
-         <div style={{ flex: 1, height: 1, background: '#f1f5f9' }} />
-         <span style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>Quick Access</span>
-         <div style={{ flex: 1, height: 1, background: '#f1f5f9' }} />
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-         <button style={{ padding: '12px', borderRadius: 16, border: '1.5px solid #f1f5f9', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, cursor: 'pointer', transition: '0.3s' }} onMouseEnter={e => e.currentTarget.style.borderColor = '#e2e8f0'}>
-            <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-            <span style={{ fontSize: 13, fontWeight: 800, color: '#111' }}>Google</span>
-         </button>
-         <button style={{ padding: '12px', borderRadius: 16, border: '1.5px solid #f1f5f9', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, cursor: 'pointer', transition: '0.3s' }} onMouseEnter={e => e.currentTarget.style.borderColor = '#e2e8f0'}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#E4405F' }}><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-            <span style={{ fontSize: 13, fontWeight: 800, color: '#111' }}>Instagram</span>
-         </button>
-      </div>
     </motion.div>
   );
+};
+
+const BrandRegisterView = ({ mob, onSuccess }) => {
+  const { dsp } = useApp();
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [form, setForm] = useState({
+    companyName: '',
+    industry: '',
+    email: '',
+    contactName: '',
+    password: '',
+    about: ''
+  });
+
+  const up = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
+
+  const submit = (e) => {
+    e.preventDefault();
+    const nextErrors = {};
+    if (!form.companyName) nextErrors.companyName = 'Company name is required';
+    if (!form.industry) nextErrors.industry = 'Industry is required';
+    if (!form.email || !/^\S+@\S+\.\S+$/.test(form.email)) nextErrors.email = 'Valid work email is required';
+    if (!form.contactName) nextErrors.contactName = 'Contact name is required';
+    if (!form.password || form.password.length < 6) nextErrors.password = 'Minimum 6 characters';
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length) return;
+
+    setLoading(true);
+    setTimeout(() => {
+      const user = { ...form, id: 'b-' + Date.now(), role: 'brand' };
+      LS.set('cb_brands', [...LS.get('cb_brands', []), user]);
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Brand console created' } });
+      onSuccess(user);
+      setLoading(false);
+    }, 900);
+  };
+
+  return (
+    <motion.form key="brand-register" onSubmit={submit} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 0 : 14 }}>
+        <Fld label="Company name" value={form.companyName} onChange={e => up('companyName', e.target.value)} placeholder="Nykaa, boAt, local brand..." error={errors.companyName} required />
+        <Fld label="Industry" value={form.industry} onChange={e => up('industry', e.target.value)} options={['', 'Beauty', 'Fashion', 'Tech', 'Food', 'Education', 'Finance', 'Real Estate']} error={errors.industry} required />
+      </div>
+      <Fld label="Work email" type="email" icon={Mail} value={form.email} onChange={e => up('email', e.target.value)} placeholder="team@company.com" error={errors.email} required />
+      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 0 : 14 }}>
+        <Fld label="Contact person" value={form.contactName} onChange={e => up('contactName', e.target.value)} placeholder="Aman Deep" error={errors.contactName} required />
+        <Fld label="Password" type="password" icon={Lock} value={form.password} onChange={e => up('password', e.target.value)} placeholder="Password" error={errors.password} required />
+      </div>
+      <Fld label="Campaign goal" rows={3} value={form.about} onChange={e => up('about', e.target.value)} placeholder="Tell us what kind of creators you want to work with." />
+      <Btn full lg loading={loading} style={{ height: 56, borderRadius: 16, background: '#10B981', color: '#fff', border: 'none', fontWeight: 900 }}>
+        Create Brand Console <ArrowRight size={18} />
+      </Btn>
+    </motion.form>
+  );
+};
+
+const ForgotView = ({ setView }) => {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const submit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setTimeout(() => {
+      setSent(true);
+      setLoading(false);
+    }, 800);
+  };
+
+  return (
+    <motion.div key="forgot" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
+      {sent ? (
+        <div style={{ padding: 24, borderRadius: 20, background: '#F0FDF4', border: '1px solid #BBF7D0', textAlign: 'center' }}>
+          <CheckCircle2 size={42} color="#10B981" />
+          <h3 style={{ fontSize: 22, fontWeight: 900, color: '#111827', marginTop: 14, marginBottom: 8 }}>Recovery link sent</h3>
+          <p style={{ color: '#475569', fontSize: 14, lineHeight: 1.6, fontWeight: 600 }}>
+            We sent demo recovery instructions to {email || 'your email'}.
+          </p>
+        </div>
+      ) : (
+        <form onSubmit={submit}>
+          <Fld label="Registered email" type="email" icon={Mail} value={email} onChange={e => setEmail(e.target.value)} placeholder="name@domain.com" required />
+          <Btn full lg loading={loading} style={{ height: 56, borderRadius: 16, background: '#111827', color: '#fff', border: 'none', fontWeight: 900 }}>
+            Send reset link <RefreshCw size={18} />
+          </Btn>
+        </form>
+      )}
+      <button type="button" onClick={() => setView('login')} style={{ marginTop: 22, border: 'none', background: 'transparent', color: '#FF9431', fontWeight: 900, fontSize: 14, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+        <ArrowLeft size={16} /> Back to sign in
+      </button>
+    </motion.div>
+  );
+};
+
+export default function AuthModal() {
+  const { st, dsp } = useApp();
+  const navigate = useNavigate();
+  const [view, setView] = useState(st.ui.authView || 'gateway');
+  const [role, setRole] = useState(st.ui.authView === 'brand-register' ? 'brand' : 'creator');
+  const [loading, setLoading] = useState(false);
+  const [mob, setMob] = useState(globalThis.innerWidth < 760);
+
+  useEffect(() => {
+    const onResize = () => setMob(globalThis.innerWidth < 760);
+    globalThis.addEventListener('resize', onResize);
+    return () => globalThis.removeEventListener('resize', onResize);
+  }, []);
+
+  useEffect(() => {
+    if (st.ui.authModal && st.ui.authView) {
+      setView(st.ui.authView);
+      if (st.ui.authView === 'brand-register') setRole('brand');
+      if (st.ui.authView === 'register') setRole('creator');
+    }
+  }, [st.ui.authModal, st.ui.authView]);
+
+  const copy = VIEW_COPY[view] || VIEW_COPY.gateway;
+  const isBrandContext = role === 'brand' || view === 'brand-register';
+  const themeColor = isBrandContext ? '#10B981' : '#FF9431';
+  const modalWidth = view === 'register' || view === 'brand-register' ? 1060 : 980;
+
+  const onClose = () => dsp({ t: 'UI', v: { authModal: false, authView: 'gateway' } });
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setTimeout(() => {
+      dsp({ t: 'LOGIN', u: { name: role === 'brand' ? 'Brand Team' : 'Aman Creator', id: role === 'brand' ? 'brand-demo' : 'creator-demo' }, role });
+      onClose();
+      navigate(role === 'brand' ? '/brand-dashboard' : '/dashboard');
+      setLoading(false);
+    }, 900);
+  };
+
+  const handleCreatorSuccess = (user) => {
+    dsp({ t: 'LOGIN', u: user, role: 'creator' });
+    onClose();
+    navigate('/dashboard');
+  };
+
+  const handleBrandSuccess = (user) => {
+    dsp({ t: 'LOGIN', u: user, role: 'brand' });
+    onClose();
+    navigate('/brand-dashboard');
+  };
+
+  const content = useMemo(() => {
+    if (view === 'gateway') return <GatewayView setView={setView} setRole={setRole} />;
+    if (view === 'login') return <LoginView role={role} setRole={setRole} onLogin={handleLogin} loading={loading} setView={setView} />;
+    if (view === 'register') return <ApplyForm onSuccess={handleCreatorSuccess} onBackToLogin={() => setView('login')} />;
+    if (view === 'brand-register') return <BrandRegisterView mob={mob} onSuccess={handleBrandSuccess} />;
+    if (view === 'forgot') return <ForgotView setView={setView} />;
+    return null;
+  }, [view, role, loading, mob]);
+
+  return (
+    <Modal
+      open
+      onClose={onClose}
+      hideHeader
+      width={modalWidth}
+      style={{ padding: 0 }}
+    >
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: mob ? '1fr' : '0.9fr 1.1fr',
+          background: '#fff',
+          borderRadius: 28,
+          overflow: 'hidden',
+          border: '1px solid rgba(226,232,240,0.9)'
+        }}
+      >
+        <AuthSidePanel role={role} view={view} mob={mob} />
+        <main style={{ padding: mob ? '22px 18px 24px' : '30px 34px 34px', minWidth: 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 22 }}>
+            <div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: themeColor, marginBottom: 10 }}>
+                <ShieldCheck size={17} />
+                <span style={{ fontSize: 11, fontWeight: 900, textTransform: 'uppercase', letterSpacing: 1.2 }}>Secure access</span>
+              </div>
+              <h1 style={{ fontFamily: "'Outfit', sans-serif", color: '#111827', fontSize: mob ? 27 : 34, lineHeight: 1.08, fontWeight: 900, letterSpacing: 0, marginBottom: 8 }}>
+                {copy.title}
+              </h1>
+              <p style={{ color: '#64748B', fontSize: 14, lineHeight: 1.6, fontWeight: 600, maxWidth: 520 }}>{copy.sub}</p>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close auth"
+              style={{ width: 40, height: 40, borderRadius: 14, border: '1px solid #E5E7EB', background: '#fff', color: '#64748B', display: 'grid', placeItems: 'center', cursor: 'pointer', flex: '0 0 auto' }}
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {view !== 'gateway' && view !== 'forgot' && <ViewTabs view={view} setView={setView} />}
+
+          <div style={{ maxHeight: mob ? 'none' : CONTENT_MAX_HEIGHT, overflowY: mob ? 'visible' : 'auto', paddingRight: mob ? 0 : 4 }}>
+            <AnimatePresence mode="wait">{content}</AnimatePresence>
+          </div>
+
+          <div style={{ marginTop: 24, paddingTop: 18, borderTop: '1px solid #EEF2F7', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+            <p style={{ color: '#94A3B8', fontSize: 12, fontWeight: 800 }}>No credit card needed for demo access.</p>
+            <button type="button" onClick={() => setView(view === 'login' ? 'gateway' : 'login')} style={{ border: 'none', background: 'transparent', color: themeColor, fontSize: 13, fontWeight: 900, cursor: 'pointer' }}>
+              {view === 'login' ? 'Choose another role' : 'Already have an account? Sign in'}
+            </button>
+          </div>
+        </main>
+      </div>
+    </Modal>
+  );
+}
+
+AuthSidePanel.propTypes = {
+  role: PropTypes.string.isRequired,
+  view: PropTypes.string.isRequired,
+  mob: PropTypes.bool.isRequired
+};
+
+ModeButton.propTypes = {
+  active: PropTypes.bool,
+  icon: PropTypes.elementType.isRequired,
+  title: PropTypes.string.isRequired,
+  sub: PropTypes.string.isRequired,
+  color: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired
+};
+
+ViewTabs.propTypes = {
+  view: PropTypes.string.isRequired,
+  setView: PropTypes.func.isRequired
+};
+
+GatewayView.propTypes = {
+  setView: PropTypes.func.isRequired,
+  setRole: PropTypes.func.isRequired
 };
 
 LoginView.propTypes = {
@@ -164,216 +528,14 @@ LoginView.propTypes = {
   setRole: PropTypes.func.isRequired,
   onLogin: PropTypes.func.isRequired,
   loading: PropTypes.bool,
-  themeColor: PropTypes.string.isRequired
+  setView: PropTypes.func.isRequired
 };
 
-const ModalBackgroundBlobs = ({ isCreator, themeColor }) => (
-  <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
-    <motion.div 
-      animate={{ x: isCreator ? [0, 50, 0] : [0, -50, 0], y: [0, -40, 0], scale: [1, 1.4, 1] }}
-      transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-      style={{ position: 'absolute', top: '-40%', right: '-30%', width: '500px', height: '500px', background: `radial-gradient(circle, ${themeColor}30 0%, transparent 70%)`, filter: 'blur(90px)', transition: 'background 0.8s ease' }}
-    />
-    <motion.div 
-      animate={{ x: isCreator ? [0, -40, 0] : [0, 40, 0], y: [0, 60, 0] }}
-      transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-      style={{ position: 'absolute', bottom: '-30%', left: '-20%', width: '450px', height: '450px', background: `radial-gradient(circle, ${isCreator ? '#10B98120' : '#FF943120'} 0%, transparent 70%)`, filter: 'blur(100px)' }}
-    />
-  </div>
-);
-
-const ModalHeader = ({ view, themeColor, HeaderIcon, RoleLabel, setView, onClose }) => {
-  const isLogin = view === 'login';
-  const isRegister = view === 'register';
-  
-  let statusMsg = 'Select your portal to begin';
-  if (isLogin) statusMsg = 'Welcome back to the elite network';
-  else if (isRegister) statusMsg = 'Complete your onboarding';
-
-  return (
-    <div style={{ marginBottom: 40 }}>
-      {/* Top Bar with Close */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
-        <button onClick={onClose} style={{ background: 'rgba(0,0,0,0.03)', border: 'none', width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b', transition: '0.3s' }} onMouseEnter={e => { e.currentTarget.style.color = '#111'; e.currentTarget.style.background = 'rgba(0,0,0,0.06)'; }}>
-          <X size={18} />
-        </button>
-      </div>
-
-      {/* Tabs / Title */}
-      <div style={{ display: 'flex', gap: 24, alignItems: 'flex-end', borderBottom: '1px solid #f1f5f9', paddingBottom: 16 }}>
-        <button 
-          onClick={() => setView('gateway')}
-          style={{ 
-            background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-            fontSize: 24, fontWeight: 900, fontFamily: "'Outfit', sans-serif",
-            color: view === 'gateway' || view === 'register' ? '#111' : '#cbd5e1', transition: 'all 0.3s',
-            position: 'relative'
-          }}
-        >
-          Join Now
-          {view !== 'login' && <motion.div layoutId="tabActive" style={{ position: 'absolute', bottom: -17, left: 0, right: 0, height: 3, background: themeColor, borderRadius: '10px 10px 0 0' }} />}
-        </button>
-        <button 
-          onClick={() => setView('login')}
-          style={{ 
-            background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-            fontSize: 24, fontWeight: 900, fontFamily: "'Outfit', sans-serif",
-            color: isLogin ? '#111' : '#cbd5e1', transition: 'all 0.3s',
-            position: 'relative'
-          }}
-        >
-          Sign In
-          {isLogin && <motion.div layoutId="tabActive" style={{ position: 'absolute', bottom: -17, left: 0, right: 0, height: 3, background: themeColor, borderRadius: '10px 10px 0 0' }} />}
-        </button>
-      </div>
-
-      {/* Breadcrumb / Status */}
-      <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
-         <div style={{ width: 40, height: 40, background: `${themeColor}10`, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: themeColor }}>
-            {isRegister && <ChevronLeft size={20} style={{ cursor: 'pointer' }} onClick={() => setView('gateway')} />}
-            {!isRegister && <HeaderIcon size={20} />}
-         </div>
-         <div>
-            <p style={{ fontSize: 11, fontWeight: 900, color: themeColor, textTransform: 'uppercase', letterSpacing: '1.5px' }}>{RoleLabel}</p>
-            <p style={{ fontSize: 13, color: '#64748b', fontWeight: 600 }}>{statusMsg}</p>
-         </div>
-      </div>
-    </div>
-  );
+BrandRegisterView.propTypes = {
+  mob: PropTypes.bool.isRequired,
+  onSuccess: PropTypes.func.isRequired
 };
 
-export default function AuthModal() {
-  const { st, dsp } = useApp();
-  const navigate = useNavigate();
-  const [view, setView] = useState(st.ui.authView || 'gateway'); 
-  const [role, setRole] = useState('creator'); 
-  const [loading, setLoading] = useState(false);
-
-  // Sync internal view with global authView if modal just opened
-  React.useEffect(() => {
-    if (st.ui.authModal && st.ui.authView) {
-      setView(st.ui.authView);
-    }
-  }, [st.ui.authModal, st.ui.authView]);
-
-  const isCreator = role === 'creator';
-  const themeColor = isCreator ? '#FF9431' : '#10B981';
-
-  let HeaderIcon = Sparkles;
-  if (view === 'login') HeaderIcon = Lock;
-  else if (view === 'register') HeaderIcon = Star;
-
-  const onClose = () => dsp({ t: 'UI', v: { authModal: false, authView: 'gateway' } });
-
-  const go = (p) => {
-    onClose();
-    navigate(p);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleLogin = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-       dsp({ t: 'LOGIN', u: { name: isCreator ? 'Aman' : 'Enterprise', id: '1' }, role });
-       onClose();
-       setLoading(false);
-    }, 1500);
-  };
-
-  const handleRegisterSuccess = (user) => {
-     dsp({ t: 'LOGIN', u: user, role: 'creator' });
-     onClose();
-     navigate('/dashboard');
-  };
-
-  let RoleLabel = "India's Elite Network";
-  if (view === 'login') RoleLabel = isCreator ? 'Creator Access' : 'Brand Console';
-  else if (view === 'register') RoleLabel = 'Creator Onboarding';
-
-  return (
-    <Modal 
-      open={true} 
-      onClose={onClose} 
-      hideHeader 
-      width={view === 'register' ? 640 : 540}
-      style={{ 
-        padding: 0, 
-        overflow: 'hidden', 
-        borderRadius: 32,
-        background: '#fff',
-        boxShadow: '0 40px 100px rgba(0,0,0,0.25)'
-      }}
-    >
-      <div style={{ position: 'relative', overflow: 'hidden', minHeight: 600, display: 'flex', flexDirection: 'column' }}>
-        <ModalBackgroundBlobs isCreator={isCreator} themeColor={themeColor} />
-
-        {/* Top Accent Bar (Tiranga) */}
-        <div style={{ height: 4, width: '100%', display: 'flex', position: 'relative', zIndex: 10 }}>
-           <div style={{ flex: 1, background: '#FF9431' }} />
-           <div style={{ flex: 1, background: '#fff' }} />
-           <div style={{ flex: 1, background: '#128807' }} />
-        </div>
-
-        <div style={{ padding: '40px 48px 48px', position: 'relative', zIndex: 1, flex: 1 }}>
-          <ModalHeader 
-            view={view} 
-            themeColor={themeColor} 
-            HeaderIcon={HeaderIcon} 
-            RoleLabel={RoleLabel} 
-            setView={setView} 
-            onClose={onClose} 
-          />
-
-          <AnimatePresence mode="wait">
-            {view === 'gateway' && (
-              <GatewayView 
-                onCreator={() => setView('register')} 
-                onBrand={() => go('/brand-register')} 
-                themeColor={themeColor} 
-              />
-            )}
-            {view === 'login' && (
-              <LoginView 
-                role={role} 
-                setRole={setRole} 
-                onLogin={handleLogin} 
-                loading={loading} 
-                themeColor={themeColor} 
-              />
-            )}
-            {view === 'register' && (
-              <ApplyForm 
-                onSuccess={handleRegisterSuccess}
-                onBackToLogin={() => setView('login')}
-              />
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Footer info */}
-        <div style={{ padding: '24px 48px', background: '#f8fafc', borderTop: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 1 }}>
-           <div style={{ display: 'flex', alignItems: 'center', gap: 8, opacity: 0.6 }}>
-              <ShieldCheck size={14} color="#64748b" />
-              <span style={{ fontSize: 10, fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px' }}>Encrypted Access</span>
-           </div>
-           <p style={{ fontSize: 11, color: '#94a3b8', fontWeight: 700 }}>© 2026 CreatorBharat Elite</p>
-        </div>
-      </div>
-    </Modal>
-  );
-}
-
-ModalBackgroundBlobs.propTypes = {
-  isCreator: PropTypes.bool.isRequired,
-  themeColor: PropTypes.string.isRequired
-};
-
-ModalHeader.propTypes = {
-  view: PropTypes.string.isRequired,
-  themeColor: PropTypes.string.isRequired,
-  HeaderIcon: PropTypes.elementType.isRequired,
-  RoleLabel: PropTypes.string.isRequired,
-  setView: PropTypes.func.isRequired,
-  onClose: PropTypes.func.isRequired
+ForgotView.propTypes = {
+  setView: PropTypes.func.isRequired
 };
