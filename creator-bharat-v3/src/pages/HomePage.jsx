@@ -31,8 +31,23 @@ export default function HomePage() {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  const go = (path) => {
-    navigate(path);
+  const go = (path, sel) => {
+    // Standardize path with leading slash if it's a direct route
+    const targetPath = path.startsWith('/') ? path : `/${path}`;
+    
+    if (path === 'creator-profile') {
+      const id = sel?.creator?.id || sel?.id;
+      if (id) {
+        dsp({ t: 'GO', p: 'creator-profile', sel });
+        navigate(`/creator/${id}`);
+      } else {
+        navigate('/creators');
+      }
+    } else {
+      // Use standard GO action for context-aware navigation
+      dsp({ t: 'GO', p: path.replace(/^\//, ''), sel });
+      navigate(targetPath);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -41,7 +56,7 @@ export default function HomePage() {
     { id: 'hero',      comp: <Hero mob={mob} st={st} dsp={dsp} go={go} /> },
     { id: 'creators',  comp: <FeaturedCreators mob={mob} creators={creators} go={go} loading={loading} /> },
     { id: 'impact',    comp: <ImpactStats mob={mob} /> },
-    { id: 'map',       comp: <IndiaMap3D mob={mob} stateCounts={stateCounts} /> },
+    { id: 'map',       comp: <IndiaMap3D mob={mob} stateCounts={stateCounts} onSelectState={s => { dsp({ t: 'CF', v: { state: s, district: '' } }); go('creators'); }} /> },
     { id: 'roadmap',   comp: <CommunityPulse mob={mob} go={go} /> },
     { id: 'showcase',  comp: <PlatformShowcase mob={mob} /> },
     { id: 'manifesto', comp: <Manifesto mob={mob} /> },

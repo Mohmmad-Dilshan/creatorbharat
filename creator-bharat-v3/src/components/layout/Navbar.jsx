@@ -1,8 +1,90 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../../context';
 import { Logo, Btn } from '../Primitives';
-import { Menu, X, User as UserIcon } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+
+const NavLinks = ({ links, location, go }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, justifyContent: 'center' }}>
+    {links.map(([path, label]) => {
+      const active = location.pathname === path;
+      return (
+        <button
+          key={path}
+          onClick={() => go(path)}
+          className="nav-link"
+          style={{
+            padding: '10px 18px', borderRadius: 100, border: 'none',
+            background: active ? 'rgba(0,0,0,0.04)' : 'transparent',
+            color: active ? '#111' : 'rgba(0,0,0,0.5)',
+            fontWeight: 800, fontSize: 13, cursor: 'pointer',
+            transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+          }}
+        >
+          {label}
+        </button>
+      );
+    })}
+  </div>
+);
+
+NavLinks.propTypes = {
+  links: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+  location: PropTypes.shape({ pathname: PropTypes.string }).isRequired,
+  go: PropTypes.func.isRequired
+};
+
+const UserActions = ({ st, dsp, go, mob }) => {
+  if (st.user) {
+    return (
+      <button
+        onClick={() => dsp({ t: 'UI', v: { mobileMenu: !st.ui.mobileMenu } })}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 10, background: '#fff',
+          border: '1px solid rgba(0,0,0,0.06)', borderRadius: 100,
+          padding: mob ? '4px' : '5px 16px 5px 5px', cursor: 'pointer',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.03)', transition: '0.2s'
+        }}
+      >
+        <img src={st.user.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name)}&background=FF9431&color=fff`} style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover' }} alt={st.user.name} />
+        {!mob && <span style={{ fontSize: 13, fontWeight: 900, color: '#111' }}>{st.user.name.split(' ')[0]}</span>}
+      </button>
+    );
+  }
+
+  return (
+    <>
+      {!mob && <button onClick={() => go('/login')} style={{ background: 'transparent', border: 'none', color: '#111', fontSize: 13, fontWeight: 800, cursor: 'pointer', padding: '0 16px' }}>Sign In</button>}
+      <Btn lg onClick={() => go('/apply')} style={{ fontWeight: 900, borderRadius: 100, padding: mob ? '10px 20px' : '12px 32px', fontSize: 13, background: '#111', color: '#fff', border: 'none', boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }}>
+        {mob ? 'Join' : 'Claim Your Profile'}
+      </Btn>
+      {mob && (
+        <button
+          onClick={() => dsp({ t: 'UI', v: { mobileMenu: !st.ui.mobileMenu } })}
+          style={{ background: '#f1f5f9', border: 'none', width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#111' }}
+        >
+          {st.ui.mobileMenu ? <X size={22} /> : <Menu size={22} />}
+        </button>
+      )}
+    </>
+  );
+};
+
+UserActions.propTypes = {
+  st: PropTypes.shape({
+    user: PropTypes.shape({
+      name: PropTypes.string,
+      photo: PropTypes.string
+    }),
+    ui: PropTypes.shape({
+      mobileMenu: PropTypes.bool
+    })
+  }).isRequired,
+  dsp: PropTypes.func.isRequired,
+  go: PropTypes.func.isRequired,
+  mob: PropTypes.bool
+};
 
 export default function Navbar() {
   const { st, dsp } = useApp();
@@ -14,33 +96,28 @@ export default function Navbar() {
   const [mob, setMob] = useState(window.innerWidth < 768);
 
   useEffect(() => {
-    const h = () => {
+    const handleScroll = () => {
       const curY = window.scrollY;
       const isMob = window.innerWidth < 768;
       setScroll(curY > 20);
       setMob(isMob);
       
-      // Smart Sticky Logic (Mobile Only)
       if (isMob) {
         const diff = curY - lastY.current;
-        if (curY < 50) {
-          setVisible(true); // Always show at top
-        } else if (diff > 10) {
-          setVisible(false); // Hide on significant scroll down
-        } else if (diff < -10) {
-          setVisible(true); // Show on significant scroll up
-        }
+        if (curY < 50) setVisible(true);
+        else if (diff > 10) setVisible(false);
+        else if (diff < -10) setVisible(true);
       } else {
-        setVisible(true); // Always persistent on desktop
+        setVisible(true);
       }
-      
       lastY.current = curY;
     };
-    window.addEventListener('scroll', h, { passive: true });
-    window.addEventListener('resize', h);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
     return () => {
-      window.removeEventListener('scroll', h);
-      window.removeEventListener('resize', h);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
     };
   }, []);
 
@@ -50,19 +127,25 @@ export default function Navbar() {
     dsp({ t: 'UI', v: { mobileMenu: false } });
   };
 
-  const isCreator = st.role === 'creator', isBrand = st.role === 'brand';
-  const links = isCreator
-    ? [['/dashboard', 'Dashboard'], ['/campaigns', 'Deals'], ['/leaderboard', 'Top List'], ['/blog', 'Articles']]
-    : isBrand
-      ? [['/creators', 'Discover'], ['/campaigns', 'Campaigns'], ['/blog', 'Articles']]
-      : [['/creators', 'Marketplace'], ['/campaigns', 'Opportunities'], ['/monetize', 'Monetize'], ['/blog', 'News']];
+  const links = (() => {
+    if (st.role === 'creator') return [['/dashboard', 'Dashboard'], ['/campaigns', 'Deals'], ['/leaderboard', 'Top List'], ['/blog', 'Articles']];
+    if (st.role === 'brand') return [['/creators', 'Discover'], ['/campaigns', 'Campaigns'], ['/blog', 'Articles']];
+    return [['/creators', 'Marketplace'], ['/campaigns', 'Opportunities'], ['/monetize', 'Monetize'], ['/blog', 'News']];
+  })();
+
+  const getPadding = () => {
+    if (mob) return '12px 16px';
+    return scroll ? '16px 40px' : '24px 40px';
+  };
+
+  const navTransform = (mob && !visible) ? 'translateY(-120%)' : 'none';
 
   return (
     <div style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 999995,
-      padding: mob ? '12px 16px' : (scroll ? '16px 40px' : '24px 40px'),
+      padding: getPadding(),
       transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-      transform: (mob && !visible) ? 'translateY(-120%)' : 'none',
+      transform: navTransform,
       pointerEvents: 'none'
     }}>
       <div style={{
@@ -72,7 +155,6 @@ export default function Navbar() {
         transition: 'all 0.5s ease',
         background: 'rgba(255, 255, 255, 0.1)'
       }}>
-        {/* Exact Vercel-style Spinning Border Layer */}
         <div style={{
           position: 'absolute', top: '50%', left: '50%', width: '200%', height: '500%',
           background: 'conic-gradient(rgb(19, 136, 8) 0%, rgb(255, 255, 255) 20%, rgb(255, 153, 51) 40%, rgb(255, 153, 51) 60%, rgb(255, 255, 255) 80%, rgb(19, 136, 8) 100%)',
@@ -93,9 +175,7 @@ export default function Navbar() {
             -webkit-text-fill-color: transparent;
             animation: flagSweep 3s linear infinite;
           }
-          @keyframes flagSweep {
-            to { background-position: 200% center; }
-          }
+          @keyframes flagSweep { to { background-position: 200% center; } }
         `}</style>
 
         <nav style={{
@@ -106,61 +186,9 @@ export default function Navbar() {
           height: mob ? 54 : 72, display: 'flex', alignItems: 'center', gap: 24
         }}>
           <Logo onClick={() => go('/')} sm={mob} />
-
-          {!mob && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, justifyContent: 'center' }}>
-              {links.map(([path, label]) => {
-                const active = location.pathname === path;
-                return (
-                  <button
-                    key={path}
-                    onClick={() => go(path)}
-                    className="nav-link"
-                    style={{
-                      padding: '10px 18px', borderRadius: 100, border: 'none',
-                      background: active ? 'rgba(0,0,0,0.04)' : 'transparent',
-                      color: active ? '#111' : 'rgba(0,0,0,0.5)',
-                      fontWeight: 800, fontSize: 13, cursor: 'pointer',
-                      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-                    }}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
+          {!mob && <NavLinks links={links} location={location} go={go} />}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginLeft: 'auto' }}>
-            {st.user ? (
-              <button
-                onClick={() => dsp({ t: 'UI', v: { mobileMenu: !st.ui.mobileMenu } })}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 10, background: '#fff',
-                  border: '1px solid rgba(0,0,0,0.06)', borderRadius: 100,
-                  padding: mob ? '4px' : '5px 16px 5px 5px', cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.03)', transition: '0.2s'
-                }}
-              >
-                <img src={st.user.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name)}&background=FF9431&color=fff`} style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover' }} alt={st.user.name} />
-                {!mob && <span style={{ fontSize: 13, fontWeight: 900, color: '#111' }}>{st.user.name.split(' ')[0]}</span>}
-              </button>
-            ) : (
-              <>
-                {!mob && <button onClick={() => go('/login')} style={{ background: 'transparent', border: 'none', color: '#111', fontSize: 13, fontWeight: 800, cursor: 'pointer', padding: '0 16px' }}>Sign In</button>}
-                <Btn lg onClick={() => go('/apply')} style={{ fontWeight: 900, borderRadius: 100, padding: mob ? '10px 20px' : '12px 32px', fontSize: 13, background: '#111', color: '#fff', border: 'none', boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }}>
-                  {mob ? 'Join' : 'Claim Your Profile'}
-                </Btn>
-                {mob && (
-                  <button
-                    onClick={() => dsp({ t: 'UI', v: { mobileMenu: !st.ui.mobileMenu } })}
-                    style={{ background: '#f1f5f9', border: 'none', width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#111' }}
-                  >
-                    {st.ui.mobileMenu ? <X size={22} /> : <Menu size={22} />}
-                  </button>
-                )}
-              </>
-            )}
+            <UserActions st={st} dsp={dsp} go={go} mob={mob} />
           </div>
         </nav>
       </div>
