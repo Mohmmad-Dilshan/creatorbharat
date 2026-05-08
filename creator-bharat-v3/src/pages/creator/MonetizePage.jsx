@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context';
 import { W, scrollToTop } from '../../utils/helpers';
 import { Btn, Bdg } from '../../components/Primitives';
 
 export default function MonetizePage() {
   const { dsp } = useApp();
+  const navigate = useNavigate();
   const [mob, setMob] = useState(window.innerWidth < 768);
 
   useEffect(() => {
@@ -13,7 +15,7 @@ export default function MonetizePage() {
     return () => window.removeEventListener('resize', h);
   }, []);
 
-  const go = (p) => { dsp({ t: 'GO', p }); scrollToTop(); };
+  const go = (p) => { dsp({ t: 'GO', p }); navigate(`/${p}`); scrollToTop(); };
 
   return (
     <div style={{ background: '#0F172A', color: '#fff', minHeight: '100vh', overflow: 'hidden' }}>

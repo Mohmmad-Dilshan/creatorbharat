@@ -283,46 +283,63 @@ export function CampCard({ campaign: c, onApply }) {
   const { st, dsp } = useApp();
   const applied = st.applied.includes(c.id);
   const fillPct = c.slots > 0 ? Math.round((c.filled / c.slots) * 100) : 0;
-  const daysLeft = c.deadline ? Math.max(0, Math.ceil((new Date(c.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : null;
+  const daysLeft = c.deadline ? Math.max(0, Math.ceil((new Date(c.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : 7;
+  const brandImg = `https://ui-avatars.com/api/?name=${encodeURIComponent(typeof c.brand === 'object' ? c.brand.companyName : c.brand)}&background=f1f5f9&color=111&size=100`;
 
   return (
-    <Card style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-            {c.urgent && <Bdg sm color="red">URGENT</Bdg>}
-            {ensureArray(c.niche).map(n => <Bdg key={n} sm color="blue">{n}</Bdg>)}
-          </div>
-          <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 18, fontWeight: 900, color: '#111', lineHeight: 1.2 }}>{c.title}</h3>
-          <p style={{ fontSize: 14, color: T.t3, fontWeight: 700, marginTop: 6 }}>{typeof c.brand === 'object' ? c.brand.companyName : c.brand}</p>
+    <Card 
+      style={{ 
+        padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px', borderRadius: '32px',
+        border: c.urgent ? '1.5px solid rgba(239, 68, 68, 0.2)' : '1px solid #f1f5f9',
+        background: '#fff', transition: 'all 0.3s ease', position: 'relative', overflow: 'hidden'
+      }}
+      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.06)'; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+    >
+      {c.urgent && (
+        <div style={{ position: 'absolute', top: '16px', right: '-35px', background: '#EF4444', color: '#fff', fontSize: '10px', fontWeight: 900, padding: '4px 40px', transform: 'rotate(45deg)', boxShadow: '0 4px 10px rgba(239, 68, 68, 0.2)' }}>
+          URGENT
         </div>
-        <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <div style={{ fontSize: 18, fontWeight: 900, color: '#10B981' }}>{fmt.inr(c.budgetMin)}</div>
-          <div style={{ fontSize: 11, color: T.t4, fontWeight: 700 }}>Starting Budget</div>
+      )}
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+           <img src={brandImg} style={{ width: '56px', height: '56px', borderRadius: '16px', objectFit: 'cover', border: '1px solid #f1f5f9' }} alt="" />
+           <div>
+              <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '20px', fontWeight: 900, color: '#0f172a', lineHeight: 1.2, marginBottom: '4px' }}>{c.title}</h3>
+              <p style={{ fontSize: '14px', color: '#64748b', fontWeight: 700 }}>by {typeof c.brand === 'object' ? c.brand.companyName : c.brand}</p>
+           </div>
         </div>
       </div>
 
-      <p style={{ fontSize: 14, color: T.t2, lineHeight: 1.6, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{c.description || c.desc}</p>
-      
-      <div style={{ background: 'rgba(0,0,0,0.02)', borderRadius: 16, padding: '16px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-          <span style={{ fontSize: 12, fontWeight: 800, color: T.t3 }}>Campaign Progress</span>
-          <span style={{ fontSize: 12, fontWeight: 800, color: fillPct >= 100 ? T.gd : '#111' }}>{c.filled || 0} / {c.slots || 10} Creators</span>
-        </div>
-        <Bar value={fillPct} color={fillPct >= 90 ? T.gd : '#10B981'} height={6} />
+      <div style={{ display: 'flex', gap: '12px' }}>
+         <div style={{ background: '#f8fafc', padding: '12px 20px', borderRadius: '16px', flex: 1 }}>
+            <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', marginBottom: '4px' }}>Budget</div>
+            <div style={{ fontSize: '18px', fontWeight: 950, color: '#10B981' }}>{fmt.inr(c.budgetMin)}</div>
+         </div>
+         <div style={{ background: '#f8fafc', padding: '12px 20px', borderRadius: '16px', flex: 1 }}>
+            <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', marginBottom: '4px' }}>Deadline</div>
+            <div style={{ fontSize: '18px', fontWeight: 950, color: daysLeft <= 3 ? '#EF4444' : '#0f172a' }}>{daysLeft} Days</div>
+         </div>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 14 }}>⏳</span>
-          <span style={{ fontSize: 13, fontWeight: 700, color: daysLeft <= 3 ? '#EF4444' : T.t3 }}>{daysLeft} days left</span>
-        </div>
-        {applied ? (
-          <Bdg color="green">APPLICATION SENT</Bdg>
-        ) : (
-          <Btn onClick={() => onApply?.(c)} style={{ borderRadius: 100, padding: '10px 24px' }}>Apply to Campaign</Btn>
-        )}
+      <p style={{ fontSize: '15px', color: '#475569', lineHeight: 1.6, fontWeight: 500 }}>{c.description || c.desc}</p>
+
+      <div style={{ marginTop: 'auto', paddingTop: '24px', borderTop: '1px solid #f1f5f9' }}>
+         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <span style={{ fontSize: '13px', fontWeight: 800, color: '#64748b' }}>Capacity</span>
+            <span style={{ fontSize: '13px', fontWeight: 900, color: '#0f172a' }}>{c.filled || 0} applied / {c.slots || 10} slots</span>
+         </div>
+         <Bar value={fillPct} color={fillPct >= 90 ? '#FF9431' : '#10B981'} height={8} />
       </div>
+
+      {applied ? (
+        <div style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10B981', padding: '16px', borderRadius: '100px', textAlign: 'center', fontSize: '14px', fontWeight: 900 }}>
+          APPLICATION SUBMITTED
+        </div>
+      ) : (
+        <Btn onClick={() => onApply?.(c)} style={{ borderRadius: '100px', padding: '16px', fontSize: '15px', fontWeight: 900, background: '#0f172a', color: '#fff' }}>Apply to Campaign</Btn>
+      )}
       <div style={{ display: 'none' }}>{dsp && null}</div>
     </Card>
   );

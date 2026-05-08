@@ -5,7 +5,7 @@ import { useApp } from '../../context';
 import { Btn, Logo } from '../Primitives';
 import { scrollToTop } from '../../utils/helpers';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Users, Megaphone, Target, BookOpen, Heart, LogOut, LayoutDashboard, Briefcase, Bookmark, Settings, ChevronRight, User, LifeBuoy, MessageSquare, Sparkles, Search } from 'lucide-react';
+import { X, Users, Megaphone, BookOpen, Heart, LogOut, LayoutDashboard, Briefcase, Bookmark, Settings, ChevronRight, User, LifeBuoy, MessageSquare, Sparkles, Search, Calculator } from 'lucide-react';
 
 export default function MobileMenu({ open }) {
   const { st, dsp } = useApp();
@@ -18,16 +18,17 @@ export default function MobileMenu({ open }) {
   };
 
   const links = [
-    { path: '/creators', l: 'Find Creators', i: Users },
-    { path: '/campaigns', l: 'Campaigns', i: Megaphone },
-    { path: '/roadmap', l: 'Roadmap & Vision', i: Target },
-    { path: '/blog', l: 'Creator Academy', i: BookOpen },
+    { path: '/creators', l: 'Elite Marketplace', i: Users },
+    { path: '/campaigns', l: 'Brand Deals', i: Megaphone },
+    { path: '/leaderboard', l: 'Leaderboard', i: Sparkles },
+    { path: '/rate-calc', l: 'Rate Calculator', i: Calculator },
+    { path: '/blog', l: 'News & Hub', i: BookOpen },
     { path: '/about', l: 'Our Story', i: Heart }
   ];
 
   const supportLinks = [
-    { path: '/contact', l: 'Help & Support', i: LifeBuoy },
-    { path: '/contact', l: 'Feedback', i: MessageSquare }
+    { path: '/faq', l: 'Help Center', i: LifeBuoy },
+    { path: '/contact', l: 'Contact Support', i: MessageSquare }
   ];
 
   const isCreator = st.role === 'creator';

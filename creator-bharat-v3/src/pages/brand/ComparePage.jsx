@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context';
 import { W, scrollToTop, LS, fmt } from '../../utils/helpers';
 import { Btn, Empty, Bdg } from '../../components/Primitives';
@@ -8,8 +9,18 @@ import { Check, Info, Trash2 } from 'lucide-react';
 
 export default function ComparePage() {
   const { st, dsp } = useApp();
+  const navigate = useNavigate();
 
-  const go = (p, sel) => { dsp({ t: 'GO', p, sel }); scrollToTop(); };
+  const go = (p, sel) => {
+    if (sel) dsp({ t: 'GO', p, sel });
+    if (p === 'creator-profile') {
+      const creator = sel?.creator;
+      navigate(`/creator/${creator?.handle || creator?.id || ''}`);
+    } else {
+      navigate(`/${p}`);
+    }
+    scrollToTop();
+  };
   
   const allC = LS.get('cb_creators', []);
   const creators = st.compared.map(id => allC.find(c => c.id === id)).filter(Boolean);
@@ -64,7 +75,7 @@ export default function ComparePage() {
         gradient="dark"
       >
         <div style={{ marginTop: 32, display: 'flex', justifyContent: 'center' }}>
-           <Btn variant="white" onClick={() => dsp({ t: 'COMPARE_CLEAR' })} style={{ borderRadius: 100, padding: '12px 32px' }}>
+           <Btn variant="white" onClick={() => dsp({ t: 'CLEAR_COMPARE' })} style={{ borderRadius: 100, padding: '12px 32px' }}>
               <Trash2 size={16} style={{ marginRight: 8 }} /> Clear All Selections
            </Btn>
         </div>

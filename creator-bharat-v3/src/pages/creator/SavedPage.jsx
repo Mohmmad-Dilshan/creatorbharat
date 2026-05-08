@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context';
 import { W, scrollToTop, LS } from '../../utils/helpers';
 import { apiCall } from '../../utils/api';
@@ -7,6 +8,7 @@ import { CreatorCard, CampCard } from '../../components/Cards';
 
 export default function SavedPage() {
   const { st, dsp } = useApp();
+  const navigate = useNavigate();
   const [mob, setMob] = useState(window.innerWidth < 768);
   const [tab, setTab] = useState('creators');
   const [allC, setAllC] = useState([]);
@@ -23,7 +25,16 @@ export default function SavedPage() {
     return () => window.removeEventListener('resize', h);
   }, []);
 
-  const go = (p, sel) => { dsp({ t: 'GO', p, sel }); scrollToTop(); };
+  const go = (p, sel) => {
+    if (sel) dsp({ t: 'GO', p, sel });
+    if (p === 'creator-profile') {
+      const creator = sel?.creator || sel;
+      navigate(`/creator/${creator?.handle || creator?.id || ''}`);
+    } else {
+      navigate(`/${p}`);
+    }
+    scrollToTop();
+  };
   const savedCreators = allC.filter(c => st.saved.includes(c.id));
   const savedCamps = allCp.filter(c => st.saved.includes(c.id));
 

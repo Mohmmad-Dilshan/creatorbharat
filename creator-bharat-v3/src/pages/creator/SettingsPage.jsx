@@ -1,12 +1,67 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context';
-import { W, LS } from '../../utils/helpers';
-import { Btn, Card, Fld, Empty, Bdg } from '../../components/Primitives';
+import { W, LS, fmt } from '../../utils/helpers';
+import { Btn, Card, Fld, Empty, Bdg, Ring, Bar } from '../../components/Primitives';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  User, 
+  Globe, 
+  Wallet, 
+  Shield, 
+  Camera, 
+  CheckCircle2, 
+  ChevronRight, 
+  Sparkles, 
+  Zap, 
+  ExternalLink,
+  Save
+} from 'lucide-react';
+
+const StepNavItem = ({ id, label, icon: Icon, active, completed, onClick }) => (
+  <button
+    onClick={onClick}
+    style={{
+      width: '100%',
+      padding: '16px 20px',
+      borderRadius: '16px',
+      background: active ? '#0f172a' : 'transparent',
+      border: 'none',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      cursor: 'pointer',
+      transition: 'all 0.2s',
+      textAlign: 'left'
+    }}
+  >
+    <div style={{ 
+      width: '32px', 
+      height: '32px', 
+      borderRadius: '10px', 
+      background: active ? 'rgba(255,255,255,0.1)' : (completed ? 'rgba(16, 185, 129, 0.1)' : '#f1f5f9'), 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      color: active ? '#fff' : (completed ? '#10B981' : '#64748b')
+    }}>
+       {completed && !active ? <CheckCircle2 size={18} /> : <Icon size={18} />}
+    </div>
+    <span style={{ 
+      fontSize: '14px', 
+      fontWeight: active ? 800 : 600, 
+      color: active ? '#fff' : '#475569',
+      flex: 1
+    }}>
+      {label}
+    </span>
+    {active && <ChevronRight size={16} color="#fff" style={{ opacity: 0.5 }} />}
+  </button>
+);
 
 export default function SettingsPage() {
   const { st, dsp } = useApp();
-  const [mob, setMob] = useState(window.innerWidth < 768);
-  const [tab, setTab] = useState('profile');
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
+  const [tab, setTab] = useState('identity');
   const c = st.creatorProfile;
   const [F, setF] = useState({ 
     name: c?.name || '', 
@@ -16,13 +71,14 @@ export default function SettingsPage() {
     instagram: c?.instagram || '', 
     youtube: c?.youtube || '', 
     rateMin: c?.rateMin || '', 
-    rateMax: c?.rateMax || '' 
+    rateMax: c?.rateMax || '',
+    portfolio: c?.portfolio || ''
   });
 
   useEffect(() => {
-    const h = () => setMob(window.innerWidth < 768);
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
   const upF = (k, v) => setF(p => ({ ...p, [k]: v }));
@@ -37,134 +93,188 @@ export default function SettingsPage() {
   const saveProfile = () => {
     if (st.role === 'creator' && c) {
       dsp({ t: 'UPD_CP', id: c.id, patch: F });
-      
-      // Update persistent storage
       const allC = LS.get('cb_creators', []);
       const updated = allC.map(cr => cr.id === c.id ? { ...cr, ...F } : cr);
       LS.set('cb_creators', updated);
-      
-      toast('Profile updated successfully!', 'success');
+      toast('Profile synchronized with Bharat Cloud!', 'success');
     }
   };
 
+  const comp = c ? fmt.completeness(c) : { pct: 0, missing: [] };
+  const score = c?.score || 85;
+
   return (
-    <div style={{ paddingBottom: 80 }}>
-      {/* Settings Top Section */}
-      <div style={{ marginBottom: 32 }}>
-        <p style={{ fontSize: 13, fontWeight: 800, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8 }}>Console Management</p>
-        <h1 style={{ fontSize: 32, fontWeight: 900, color: '#111', fontFamily: "'Outfit', sans-serif" }}>Settings</h1>
-        <p style={{ fontSize: 15, color: '#64748b', marginTop: 4, fontWeight: 500 }}>Control your identity, security, and commercial configurations.</p>
+    <div style={{ background: '#fcfcfc', minHeight: '100vh', padding: mob ? '100px 20px 100px' : '120px 40px 100px' }}>
+      
+      {/* Header */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto 48px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FF9431', fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
+           <Shield size={14} fill="#FF9431" /> SECURE CONSOLE
+        </div>
+        <h1 style={{ fontSize: '36px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em' }}>Profile Builder</h1>
+        <p style={{ fontSize: '16px', color: '#64748b', marginTop: '4px', fontWeight: 500 }}>Build your digital empire and unlock high-ticket brand deals.</p>
       </div>
 
-      <div style={{ position: 'relative', zIndex: 10 }}>
-        <div>
-          <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: 24, padding: mob ? '0 16px' : 0 }}>
-             {/* Sidebar Navigation */}
-             <div style={{ width: mob ? '100%' : 260, flexShrink: 0 }}>
-                <Card style={{ padding: '12px', background: '#fff', borderRadius: 24, border: '1px solid rgba(0,0,0,0.04)' }}>
-                   {[
-                     { id: 'profile', label: 'Identity Profile', icon: '👤' },
-                     { id: 'billing', label: 'Commercials', icon: '💰' },
-                     { id: 'account', label: 'Security', icon: '🔒' }
-                   ].map(item => (
-                     <button 
-                       key={item.id} 
-                       onClick={() => setTab(item.id)} 
-                       style={{ 
-                         width: '100%', padding: '12px 16px', borderRadius: 12, 
-                         background: tab === item.id ? '#111' : 'transparent', 
-                         border: 'none', textAlign: 'left', display: 'flex', 
-                         alignItems: 'center', gap: 12, cursor: 'pointer', transition: 'all 0.2s' 
-                       }}
-                     >
-                       <span style={{ fontSize: 16 }}>{item.icon}</span>
-                       <span style={{ fontSize: 13, fontWeight: tab === item.id ? 800 : 600, color: tab === item.id ? '#fff' : '#64748b' }}>{item.label}</span>
-                     </button>
-                   ))}
-                   <div style={{ margin: '12px 0', height: 1, background: 'rgba(0,0,0,0.04)' }} />
-                   <button 
-                      onClick={() => { if (globalThis.confirm('Are you sure you want to logout?')) dsp({ t: 'LOGOUT' }) }} 
-                      style={{ width: '100%', padding: '12px 16px', borderRadius: 12, background: 'transparent', border: 'none', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', color: '#EF4444', fontSize: 13, fontWeight: 700 }}
-                   >
-                      <span style={{ fontSize: 16 }}>🚪</span>
-                      <span>Logout Account</span>
-                   </button>
-                </Card>
-             </div>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: mob ? '1fr' : '300px 1fr', gap: '48px' }}>
+         
+         {/* Sidebar Progression */}
+         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            <Card style={{ padding: '32px', borderRadius: '32px', background: '#fff', border: '1px solid #f1f5f9' }}>
+               <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                  <p style={{ fontSize: '12px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '16px' }}>Identity Strength</p>
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                     <Ring score={score} size={140} strokeWidth={12} color="#FF9431" />
+                  </div>
+                  <Bdg color="saffron">Elite Creator</Bdg>
+               </div>
 
-             {/* Content Area */}
-             <div style={{ flex: 1 }}>
-                {tab === 'profile' && (
-                  <Card style={{ padding: mob ? '24px' : '32px', background: '#fff', borderRadius: 28, border: '1px solid rgba(0,0,0,0.04)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-                       <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 900, color: '#111' }}>Identity Profile</h3>
-                       <Bdg sm color="blue">ELITE VERIFIED</Bdg>
-                    </div>
-                    
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 32, padding: '20px', background: '#f8fafc', borderRadius: 20, border: '1px solid rgba(0,0,0,0.02)' }}>
-                       <div style={{ width: 64, height: 64, borderRadius: 16, background: '#e2e8f0', overflow: 'hidden', border: '2px solid #fff' }}>
-                          <img src={c?.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name)}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
-                       </div>
-                       <div>
-                          <button style={{ background: '#111', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 8, fontSize: 11, fontWeight: 800, cursor: 'pointer' }}>CHANGE PHOTO</button>
-                          <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 6, fontWeight: 600 }}>Recommended: 400x400px (Max 2MB)</p>
-                       </div>
-                    </div>
+               <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                     <span style={{ fontSize: '13px', fontWeight: 800, color: '#64748b' }}>Completion</span>
+                     <span style={{ fontSize: '14px', fontWeight: 900, color: '#FF9431' }}>{comp.pct}%</span>
+                  </div>
+                  <Bar value={comp.pct} color="#FF9431" height={6} />
+               </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                      <Fld label="Display Name" value={F.name} onChange={e => upF('name', e.target.value)} />
-                      <Fld label="Creative Bio" value={F.bio} onChange={e => upF('bio', e.target.value)} rows={4} placeholder="Your story for potential brand partners..." />
+               <div style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <StepNavItem id="identity" label="Basic Identity" icon={User} active={tab === 'identity'} completed={F.name && F.bio} onClick={() => setTab('identity')} />
+                  <StepNavItem id="ecosystem" label="Social Ecosystem" icon={Globe} active={tab === 'ecosystem'} completed={F.instagram || F.youtube} onClick={() => setTab('ecosystem')} />
+                  <StepNavItem id="monetize" label="Commercials" icon={Wallet} active={tab === 'monetize'} completed={F.rateMin} onClick={() => setTab('monetize')} />
+                  <StepNavItem id="security" label="Account Security" icon={Shield} active={tab === 'security'} completed={true} onClick={() => setTab('security')} />
+               </div>
+            </Card>
+
+            {!mob && (
+               <Card style={{ padding: '32px', borderRadius: '32px', background: '#0f172a', color: '#fff' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                     <Sparkles size={18} color="#FF9431" fill="#FF9431" />
+                     <span style={{ fontSize: '14px', fontWeight: 900, textTransform: 'uppercase' }}>Pro Tip</span>
+                  </div>
+                  <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>
+                    Profiles with 90%+ completion are 5x more likely to be shortlisted by premium brands.
+                  </p>
+               </Card>
+            )}
+         </div>
+
+         {/* Form Area */}
+         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            <AnimatePresence mode="wait">
+               {tab === 'identity' && (
+                 <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="identity">
+                   <Card style={{ padding: '48px', borderRadius: '40px' }}>
+                      <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '32px' }}>Step 1: Personal Identity</h3>
                       
-                      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 20 }}>
-                        <Fld label="City / Region" value={F.city} onChange={e => upF('city', e.target.value)} />
-                        <Fld label="State" value={F.state} onChange={e => upF('state', e.target.value)} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '24px', marginBottom: '48px', padding: '24px', background: '#f8fafc', borderRadius: '32px', border: '1px solid #f1f5f9' }}>
+                         <div style={{ width: '80px', height: '80px', borderRadius: '24px', overflow: 'hidden', border: '4px solid #fff', boxShadow: '0 10px 20px rgba(0,0,0,0.05)' }}>
+                            <img src={c?.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name)}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                         </div>
+                         <div>
+                            <button style={{ background: '#0f172a', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '100px', fontSize: '13px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                               <Camera size={14} /> Update Visual
+                            </button>
+                            <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '8px', fontWeight: 600 }}>JPEG/PNG up to 2MB allowed.</p>
+                         </div>
                       </div>
 
-                      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 20 }}>
-                        <Fld label="Instagram ID" value={F.instagram} onChange={e => upF('instagram', e.target.value)} placeholder="@username" />
-                        <Fld label="YouTube Link" value={F.youtube} onChange={e => upF('youtube', e.target.value)} placeholder="Channel URL" />
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                         <Fld label="Full Name" value={F.name} onChange={e => upF('name', e.target.value)} placeholder="Amit Sharma" />
+                         <Fld label="Cinematic Bio" value={F.bio} onChange={e => upF('bio', e.target.value)} rows={4} placeholder="I create high-impact tech reviews for regional India..." />
+                         <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px' }}>
+                            <Fld label="Base City" value={F.city} onChange={e => upF('city', e.target.value)} placeholder="Jaipur" />
+                            <Fld label="State / Region" value={F.state} onChange={e => upF('state', e.target.value)} placeholder="Rajasthan" />
+                         </div>
                       </div>
-                    </div>
 
-                    <div style={{ marginTop: 32, paddingTop: 24, borderTop: '1px solid rgba(0,0,0,0.04)', display: 'flex', justifyContent: 'flex-end' }}>
-                       <Btn lg full={mob} onClick={saveProfile} style={{ borderRadius: 100, background: '#111', color: '#fff', padding: '14px 40px', fontSize: 14 }}>Deploy Changes</Btn>
-                    </div>
-                  </Card>
-                )}
+                      <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'flex-end' }}>
+                         <Btn lg style={{ borderRadius: '100px', padding: '16px 48px', fontSize: '15px' }} onClick={saveProfile}>Save Identity</Btn>
+                      </div>
+                   </Card>
+                 </motion.div>
+               )}
 
-                {tab === 'billing' && (
-                  <Card style={{ padding: '32px', background: '#fff', borderRadius: 28 }}>
-                    <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 900, color: '#111', marginBottom: 32 }}>Commercial Settings</h3>
-                    <p style={{ fontSize: 14, color: '#64748b', marginBottom: 32, lineHeight: 1.6 }}>Define your standard payout range. This helps brands filter their search based on their budget capacity.</p>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 32 }}>
-                       <Fld label="Minimum Rate (₹)" type="number" value={F.rateMin} onChange={e => upF('rateMin', e.target.value)} />
-                       <Fld label="Maximum Rate (₹)" type="number" value={F.rateMax} onChange={e => upF('rateMax', e.target.value)} />
-                    </div>
-                    <Btn lg full onClick={saveProfile} style={{ borderRadius: 100, background: '#111', color: '#fff' }}>Sync Rates</Btn>
-                  </Card>
-                )}
+               {tab === 'ecosystem' && (
+                 <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="ecosystem">
+                   <Card style={{ padding: '48px', borderRadius: '40px' }}>
+                      <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '32px' }}>Step 2: Social Ecosystem</h3>
+                      <p style={{ fontSize: '15px', color: '#64748b', marginBottom: '40px', lineHeight: 1.6 }}>Link your active social channels. We use these to verify your audience reach and engagement metrics.</p>
+                      
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                         <div style={{ position: 'relative' }}>
+                            <Fld label="Instagram Profile" value={F.instagram} onChange={e => upF('instagram', e.target.value)} placeholder="@username" />
+                            <div style={{ position: 'absolute', top: '48px', left: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#10B981', fontWeight: 800 }}>
+                               <CheckCircle2 size={14} /> Ready to Sync
+                            </div>
+                         </div>
+                         <Fld label="YouTube Channel Link" value={F.youtube} onChange={e => upF('youtube', e.target.value)} placeholder="https://youtube.com/c/..." />
+                         <Fld label="Portfolio / Website" value={F.portfolio} onChange={e => upF('portfolio', e.target.value)} placeholder="https://mywork.com" />
+                      </div>
 
-                {tab === 'account' && (
-                  <Card style={{ padding: '32px', background: '#fff', borderRadius: 28 }}>
-                    <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 20, fontWeight: 900, color: '#111', marginBottom: 32 }}>Security Center</h3>
-                    
-                    <div style={{ marginBottom: 40 }}>
-                       <p style={{ fontSize: 11, fontWeight: 900, color: '#94a3b8', marginBottom: 10, textTransform: 'uppercase' }}>Verified Email</p>
-                       <div style={{ padding: '14px 18px', background: '#f8fafc', borderRadius: 12, border: '1px solid rgba(0,0,0,0.04)', fontSize: 14, fontWeight: 700, color: '#111' }}>
-                          {st.user.email}
-                       </div>
-                    </div>
+                      <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                         <button onClick={() => setTab('identity')} style={{ background: 'none', border: 'none', color: '#64748b', fontWeight: 800, fontSize: '14px', cursor: 'pointer' }}>Previous Step</button>
+                         <Btn lg style={{ borderRadius: '100px', padding: '16px 48px', fontSize: '15px' }} onClick={saveProfile}>Sync Ecosystem</Btn>
+                      </div>
+                   </Card>
+                 </motion.div>
+               )}
 
-                    <div style={{ padding: '24px', background: '#FEF2F2', borderRadius: 20, border: '1px solid #FECACA' }}>
-                       <h4 style={{ fontSize: 16, fontWeight: 900, color: '#991B1B', marginBottom: 6 }}>Identity Removal</h4>
-                       <p style={{ fontSize: 13, color: '#B91C1C', marginBottom: 20, opacity: 0.8 }}>Permanently delete your identity and all associated data from CreatorBharat. This cannot be undone.</p>
-                       <button style={{ background: '#EF4444', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: 10, fontSize: 12, fontWeight: 800, cursor: 'pointer' }}>DELETE IDENTITY</button>
-                    </div>
-                  </Card>
-                )}
-             </div>
-          </div>
-        </div>
+               {tab === 'monetize' && (
+                 <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="monetize">
+                   <Card style={{ padding: '48px', borderRadius: '40px' }}>
+                      <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '32px' }}>Step 3: Commercial Config</h3>
+                      <p style={{ fontSize: '15px', color: '#64748b', marginBottom: '40px', lineHeight: 1.6 }}>Define your standard rates. Brands will use this to match their campaign budgets with your profile.</p>
+                      
+                      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px', marginBottom: '32px' }}>
+                         <Fld label="Min. Rate per Reel (₹)" type="number" value={F.rateMin} onChange={e => upF('rateMin', e.target.value)} placeholder="5,000" />
+                         <Fld label="Max. Rate per Reel (₹)" type="number" value={F.rateMax} onChange={e => upF('rateMax', e.target.value)} placeholder="25,000" />
+                      </div>
+
+                      <div style={{ padding: '24px', background: '#FFF9F2', borderRadius: '24px', border: '1px solid #FFEDD5', display: 'flex', gap: '16px' }}>
+                         <Zap size={24} color="#FF9431" style={{ flexShrink: 0 }} />
+                         <p style={{ fontSize: '14px', color: '#9A3412', fontWeight: 600, lineHeight: 1.5 }}>
+                            <strong>Smart Pricing:</strong> We recommend keeping your minimum rate competitive to attract more startup brands from Tier 2 cities.
+                         </p>
+                      </div>
+
+                      <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                         <button onClick={() => setTab('ecosystem')} style={{ background: 'none', border: 'none', color: '#64748b', fontWeight: 800, fontSize: '14px', cursor: 'pointer' }}>Previous Step</button>
+                         <Btn lg style={{ borderRadius: '100px', padding: '16px 48px', fontSize: '15px' }} onClick={saveProfile}>Save Commercials</Btn>
+                      </div>
+                   </Card>
+                 </motion.div>
+               )}
+
+               {tab === 'security' && (
+                 <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="security">
+                   <Card style={{ padding: '48px', borderRadius: '40px' }}>
+                      <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '32px' }}>Account Security</h3>
+                      
+                      <div style={{ marginBottom: '40px' }}>
+                         <p style={{ fontSize: '12px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '12px' }}>Verified Credentials</p>
+                         <div style={{ padding: '20px 24px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                               <div style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a' }}>{st.user.email}</div>
+                               <div style={{ fontSize: '12px', color: '#10B981', fontWeight: 800, marginTop: '4px' }}>Primary Verification Email</div>
+                            </div>
+                            <CheckCircle2 size={24} color="#10B981" />
+                         </div>
+                      </div>
+
+                      <div style={{ padding: '32px', background: '#FEF2F2', borderRadius: '32px', border: '1px solid #FECACA' }}>
+                         <h4 style={{ fontSize: '18px', fontWeight: 900, color: '#991B1B', marginBottom: '8px' }}>Danger Zone</h4>
+                         <p style={{ fontSize: '14px', color: '#B91C1C', marginBottom: '24px', lineHeight: 1.5 }}>
+                            Permanently delete your identity, media kit, and application history from CreatorBharat. This action is irreversible.
+                         </p>
+                         <button style={{ background: '#EF4444', color: '#fff', border: 'none', padding: '14px 28px', borderRadius: '12px', fontSize: '13px', fontWeight: 800, cursor: 'pointer' }}>
+                            TERMINATE IDENTITY
+                         </button>
+                      </div>
+                   </Card>
+                 </motion.div>
+               )}
+            </AnimatePresence>
+         </div>
+
       </div>
     </div>
   );

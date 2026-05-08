@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context';
 import { T } from '../../theme';
 import { W, scrollToTop } from '../../utils/helpers';
@@ -6,6 +7,7 @@ import { Btn, SH as Sh, Card, Bdg } from '../../components/Primitives';
 
 export default function MonetizationPage() {
   const { st, dsp } = useApp();
+  const navigate = useNavigate();
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
 
   useEffect(() => {
@@ -14,7 +16,7 @@ export default function MonetizationPage() {
     return () => globalThis.removeEventListener('resize', h);
   }, []);
 
-  const go = (p) => { dsp({ t: 'GO', p }); scrollToTop(); };
+  const go = (p) => { dsp({ t: 'GO', p }); navigate(`/${p}`); scrollToTop(); };
   const toast = (msg, type) => { dsp({ t: 'TOAST', d: { type: type || 'info', msg } }); };
 
   const streams = [

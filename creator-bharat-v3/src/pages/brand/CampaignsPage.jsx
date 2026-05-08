@@ -5,26 +5,42 @@ import { apiCall } from '../../utils/api';
 import { Btn, SkeletonCard, Empty, Modal, Fld } from '../../components/Primitives';
 import { CampCard } from '../../components/Cards';
 import EliteHeader from '../../components/layout/EliteHeader';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
+import { LayoutGrid, Smartphone, ChevronLeft, ChevronRight, Zap, CheckCircle2, XCircle } from 'lucide-react';
 
-const filterCampaigns = (all, f) => {
-  return all.filter(c => {
-    const title = (c.title || '').toLowerCase();
-    const brandName = typeof c.brand === 'object' && c.brand ? c.brand.companyName : (c.brand || '');
-    const q = (f.q || '').toLowerCase();
-    
-    if (q && !title.includes(q) && !brandName.toLowerCase().includes(q)) return false;
-    
-    if (f.niche) {
-      const cn = Array.isArray(c.niche) ? c.niche : [c.niche];
-      if (!cn.includes(f.niche)) return false;
-    }
-    
-    if (f.urgent && !c.urgent) return false;
-    
-    const status = (c.status || '').toLowerCase();
-    return status === 'live' || status === 'active' || !status;
-  });
+const SwipeCard = ({ campaign: c, onSwipe, onApply }) => {
+  const x = useMotionValue(0);
+  const rotate = useTransform(x, [-200, 200], [-25, 25]);
+  const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
+  const colorRight = useTransform(x, [50, 150], ['rgba(16, 185, 129, 0)', 'rgba(16, 185, 129, 1)']);
+  const colorLeft = useTransform(x, [-150, -50], ['rgba(239, 68, 68, 1)', 'rgba(239, 68, 68, 0)']);
+
+  const handleDragEnd = (event, info) => {
+    if (info.offset.x > 100) onSwipe('right', c);
+    else if (info.offset.x < -100) onSwipe('left', c);
+  };
+
+  return (
+    <motion.div
+      style={{ x, rotate, opacity, position: 'absolute', width: '100%', height: '100%', cursor: 'grab' }}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      onDragEnd={handleDragEnd}
+      whileTap={{ cursor: 'grabbing' }}
+    >
+      <div style={{ position: 'relative', width: '100%', height: '100%', pointerEvents: 'none' }}>
+        <CampCard campaign={c} onApply={() => onApply(c)} />
+        
+        {/* Swipe Feedback Overlays */}
+        <motion.div style={{ position: 'absolute', inset: 0, background: colorRight, borderRadius: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 20 }}>
+           <CheckCircle2 size={100} color="#fff" />
+        </motion.div>
+        <motion.div style={{ position: 'absolute', inset: 0, background: colorLeft, borderRadius: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', zIndex: 20 }}>
+           <XCircle size={100} color="#fff" />
+        </motion.div>
+      </div>
+    </motion.div>
+  );
 };
 
 export default function CampaignsPage() {
@@ -36,6 +52,8 @@ export default function CampaignsPage() {
   const [modal, setModal] = useState(null);
   const [done, setDone] = useState(false);
   const [aF, setAF] = useState({ pitch: '', portfolio: '', rate: '' });
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'swipe'
+  const [swipeIndex, setSwipeIndex] = useState(0);
 
   useEffect(() => {
     const h = () => setMob(globalThis.innerWidth < 768);
@@ -53,171 +71,193 @@ export default function CampaignsPage() {
   }, []);
 
   const toast = (msg, type) => dsp({ t: 'TOAST', d: { type: type || 'info', msg } });
+  const filtered = all.filter(c => {
+    const q = (f.q || '').toLowerCase();
+    const title = (c.title || '').toLowerCase();
+    const brand = (typeof c.brand === 'object' ? c.brand.companyName : (c.brand || '')).toLowerCase();
+    if (q && !title.includes(q) && !brand.includes(q)) return false;
+    if (f.niche && !ensureArray(c.niche).includes(f.niche)) return false;
+    if (f.urgent && !c.urgent) return false;
+    return true;
+  });
 
-  const filtered = filterCampaigns(all, f);
+  const ensureArray = val => Array.isArray(val) ? val : (val ? [val] : []);
+  const niches = [...new Set(all.flatMap(c => ensureArray(c.niche)).filter(Boolean))];
 
-  const niches = [...new Set(all.flatMap(c => Array.isArray(c.niche) ? c.niche : [c.niche]).filter(Boolean))];
-
-  const submitApply = () => {
+  const submitApply = (overrideCamp) => {
+    const target = overrideCamp || modal;
     if (!st.user) { dsp({ t: 'UI', v: { authModal: true, authTab: 'login' } }); return; }
-    if (!aF.pitch) { toast('Please write your pitch first', 'error'); return; }
     
     LS.push('cb_applications', { 
       id: 'app-' + Date.now(), 
-      campaignId: modal.id, 
-      campaignTitle: modal.title, 
-      brand: modal.brand, 
+      campaignId: target.id, 
+      campaignTitle: target.title, 
+      brand: target.brand, 
       applicantEmail: st.user?.email, 
       applicantName: st.user?.name, 
-      pitch: aF.pitch, 
+      pitch: aF.pitch || 'Quick Apply via Swipe', 
       portfolio: aF.portfolio, 
       rate: aF.rate, 
       status: 'applied', 
       date: new Date().toISOString() 
     });
     
-    dsp({ t: 'APPLY', id: modal.id }); 
+    dsp({ t: 'APPLY', id: target.id }); 
     setDone(true);
-    toast(`Application sent for "${modal.title}"`, 'success');
+    toast(`Application sent for "${target.title}"`, 'success');
+  };
+
+  const handleSwipe = (dir, camp) => {
+    if (dir === 'right') {
+      submitApply(camp);
+    }
+    setSwipeIndex(p => p + 1);
   };
 
   const clearFilters = () => dsp({ t: 'CPF', v: { q: '', niche: '', urgent: false } });
 
   return (
-    <div style={{ background: '#fff', minHeight: '100vh' }}>
+    <div style={{ background: '#fcfcfc', minHeight: '100vh' }}>
       <EliteHeader 
-        eyebrow="Collaborations"
-        title="Find Your Next Big Deal"
-        sub="Connect with India's fastest-growing brands. From Jaipur startups to global giants."
-        gradient="blue"
+        eyebrow="Marketplace"
+        title="Opportunities for Bharat"
+        sub="Connect with high-growth brands and scale your digital influence."
         light={true}
+        compact={viewMode === 'swipe'}
       >
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', width: '100%', maxWidth: 800, justifyContent: 'center' }}>
-          <div style={{ flex: 1, minWidth: mob ? '100%' : 400, position: 'relative' }}>
-            <motion.div 
-              style={{ 
-                display: 'flex', alignItems: 'center', background: '#fff', borderRadius: 100, padding: '8px 8px 8px 24px',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05)',
-                border: '1px solid rgba(0,0,0,0.05)'
-              }}
-            >
-              <span style={{ fontSize: 20, marginRight: 16 }}>🔍</span>
-              <input 
-                value={f.q} 
-                onChange={e => dsp({ t: 'CPF', v: { q: e.target.value } })} 
-                placeholder="Search campaigns, brands..." 
-                style={{ flex: 1, border: 'none', background: 'none', color: '#111', fontSize: 16, fontWeight: 500, outline: 'none' }} 
-              />
-            </motion.div>
-          </div>
-          
-          <div style={{ display: 'flex', gap: 12, width: mob ? '100%' : 'auto' }}>
-            <select 
-              value={f.niche} 
-              onChange={e => dsp({ t: 'CPF', v: { niche: e.target.value } })} 
-              style={{ padding: '0 24px', borderRadius: 100, border: '1px solid rgba(0,0,0,0.08)', background: '#fff', color: '#1e293b', fontSize: 14, fontWeight: 800, outline: 'none', cursor: 'pointer', height: 56, minWidth: 160 }}
-            >
-              <option value="">All Categories</option>
-              {niches.map(n => <option key={n} value={n}>{n}</option>)}
-            </select>
-            
-            <button 
-              onClick={() => dsp({ t: 'CPF', v: { urgent: !f.urgent } })}
-              style={{ 
-                padding: '0 28px', borderRadius: 100, border: '1.5px solid ' + (f.urgent ? '#EF4444' : 'rgba(0,0,0,0.08)'), 
-                background: f.urgent ? 'rgba(239,68,68,0.05)' : '#fff', color: f.urgent ? '#EF4444' : '#64748b', 
-                fontSize: 14, fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s', height: 56
-              }}
-            >
-              🔥 Urgent
-            </button>
-          </div>
+        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', width: '100%', maxWidth: '800px', justifyContent: 'center', marginBottom: '24px' }}>
+           <div style={{ flex: 1, minWidth: mob ? '100%' : '400px', position: 'relative' }}>
+              <div style={{ display: 'flex', alignItems: 'center', background: '#fff', borderRadius: '100px', padding: '8px 8px 8px 24px', boxShadow: '0 10px 30px rgba(0,0,0,0.04)', border: '1px solid #f1f5f9' }}>
+                 <span style={{ fontSize: '18px', marginRight: '12px' }}>🔍</span>
+                 <input 
+                   value={f.q} 
+                   onChange={e => dsp({ t: 'CPF', v: { q: e.target.value } })} 
+                   placeholder="Search brands, products..." 
+                   style={{ flex: 1, border: 'none', background: 'none', outline: 'none', fontWeight: 600, fontSize: '15px' }}
+                 />
+              </div>
+           </div>
+           
+           <div style={{ display: 'flex', gap: '12px' }}>
+              <div style={{ display: 'flex', background: '#f1f5f9', padding: '4px', borderRadius: '100px' }}>
+                 <button onClick={() => setViewMode('grid')} style={{ padding: '8px 20px', borderRadius: '100px', border: 'none', background: viewMode === 'grid' ? '#fff' : 'transparent', boxShadow: viewMode === 'grid' ? '0 4px 10px rgba(0,0,0,0.05)' : 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 800, color: viewMode === 'grid' ? '#0f172a' : '#64748b' }}>
+                    <LayoutGrid size={16} /> Grid
+                 </button>
+                 <button onClick={() => setViewMode('swipe')} style={{ padding: '8px 20px', borderRadius: '100px', border: 'none', background: viewMode === 'swipe' ? '#fff' : 'transparent', boxShadow: viewMode === 'swipe' ? '0 4px 10px rgba(0,0,0,0.05)' : 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 800, color: viewMode === 'swipe' ? '#0f172a' : '#64748b' }}>
+                    <Smartphone size={16} /> Swipe
+                 </button>
+              </div>
+           </div>
         </div>
       </EliteHeader>
 
-      <div style={{ padding: mob ? '40px 16px' : '60px 20px', background: '#fdfdfd' }}>
-        <div style={W(1200)}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
-            <h2 style={{ fontSize: mob ? 20 : 26, fontWeight: 900, color: '#111', fontFamily: "'Outfit', sans-serif" }}>
-               Latest Opportunities <span style={{ color: '#94a3b8', fontSize: 15, fontWeight: 800, marginLeft: 12 }}>{filtered.length} Live Campaigns</span>
-            </h2>
-            {(f.q || f.niche || f.urgent) && (
-              <button onClick={clearFilters} style={{ background: 'none', border: 'none', color: '#FF9431', fontWeight: 900, fontSize: 13, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Clear All</button>
-            )}
-          </div>
-
-          {loading && (
-            <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(auto-fill, minmax(360px, 1fr))', gap: 32 }}>
-              {[1, 2, 3, 4, 5, 6].map(i => <SkeletonCard key={i} />)}
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: mob ? '0 20px 100px' : '0 40px 100px' }}>
+        
+        {viewMode === 'grid' ? (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+               <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#0f172a' }}>
+                  {filtered.length} Opportunities <span style={{ color: '#FF9431', marginLeft: '8px' }}>Live Now</span>
+               </h2>
+               {(f.q || f.niche || f.urgent) && <button onClick={clearFilters} style={{ background: 'none', border: 'none', color: '#64748b', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}>Reset Filters</button>}
             </div>
-          )}
 
-          {!loading && filtered.length === 0 && (
-            <div style={{ padding: '100px 0' }}>
-               <Empty 
-                icon="📋" 
-                title="No Campaigns Found" 
-                sub="Hum naye brand campaigns par kaam kar rahe hain. Tab tak dusre categories check karein!" 
-                ctaLabel="Browse All Opportunities" 
-                onCta={clearFilters} 
-               />
-            </div>
-          )}
-
-          {!loading && filtered.length > 0 && (
-            <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(auto-fill, minmax(360px, 1fr))', gap: 32 }}>
-              {filtered.map((c, i) => (
-                <motion.div 
-                  key={c.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.05 }}
-                >
-                  <CampCard campaign={c} onApply={camp => { setModal(camp); setDone(false); setAF({ pitch: '', portfolio: '', rate: '' }) }} />
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <Modal open={!!modal} title={'Campaign Application'} onClose={() => { setModal(null); setDone(false) }} width={600}>
-        {done ? (
-          <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-            <div style={{ width: 100, height: 100, background: 'rgba(16,185,129,0.06)', color: '#10B981', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48, margin: '0 auto 32px' }}>✓</div>
-            <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 32, color: '#111', marginBottom: 16, fontWeight: 900 }}>Application Sent!</h3>
-            <p style={{ fontSize: 16, color: '#64748b', marginBottom: 40, lineHeight: 1.6, maxWidth: 420, margin: '0 auto 40px' }}>Aapka application brand tak pahunch gaya hai. Shortlist hone par hum aapko notify karenge.</p>
-            <Btn lg onClick={() => { setModal(null); setDone(false) }} style={{ borderRadius: 100, padding: '16px 60px' }}>Done, Browse More</Btn>
-          </div>
-        ) : (
-          <div style={{ padding: '10px' }}>
-            <div style={{ background: '#f8fafc', borderRadius: 24, padding: '28px', marginBottom: 40, border: '1px solid rgba(0,0,0,0.04)', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: -20, right: -20, width: 120, height: 120, background: '#FF9431', borderRadius: '50%', filter: 'blur(60px)', opacity: 0.08 }} />
-              <p style={{ fontSize: 11, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Applying for:</p>
-              <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 900, color: '#111', marginBottom: 12 }}>{modal?.title}</h3>
-              <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(16,185,129,0.08)', borderRadius: 100, fontSize: 14, fontWeight: 800, color: '#10B981' }}>
-                Est. Budget: {fmt.inr(modal?.budgetMin)} - {fmt.inr(modal?.budgetMax)}
+            {loading ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '32px' }}>
+                 {[1,2,3,4,5,6].map(i => <SkeletonCard key={i} />)}
               </div>
-            </div>
-            
-            <Fld 
-              label="Why should the brand choose you? *" 
-              value={aF.pitch} 
-              onChange={e => setAF(p => ({ ...p, pitch: e.target.value }))} 
-              rows={4} 
-              placeholder="Share your unique style, audience demographics, and why this brand fits your niche..." 
-              required 
-            />
-            
-            <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 20, marginBottom: 16 }}>
-              <Fld label="Your Quote (₹)" type="number" value={aF.rate} onChange={e => setAF(p => ({ ...p, rate: e.target.value }))} placeholder="15,000" />
-              <Fld label="Past Work Link" value={aF.portfolio} onChange={e => setAF(p => ({ ...p, portfolio: e.target.value }))} placeholder="Portfolio or Reel URL" />
-            </div>
-            
-            <Btn full lg onClick={submitApply} style={{ height: 64, borderRadius: 100, fontSize: 18, background: '#111', color: '#fff', border: 'none', marginTop: 16, fontWeight: 900 }}>Submit Application 🚀</Btn>
+            ) : filtered.length === 0 ? (
+              <Empty icon="📦" title="No Deals Found" sub="Try adjusting your search or filters to find more deals." ctaLabel="Clear Filters" onCta={clearFilters} />
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '32px' }}>
+                {filtered.map((c, i) => (
+                  <motion.div 
+                    key={c.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                  >
+                    <CampCard campaign={c} onApply={camp => { setModal(camp); setDone(false); setAF({ pitch: '', portfolio: '', rate: '' }); }} />
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '500px', position: 'relative' }}>
+             <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FF9431', fontWeight: 900, fontSize: '13px', justifyContent: 'center', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                   <Zap size={14} fill="#FF9431" /> QUICK DISCOVERY
+                </div>
+                <h3 style={{ fontSize: '20px', fontWeight: 900, color: '#0f172a', marginTop: '8px' }}>Swipe Right to Apply instantly</h3>
+             </div>
+
+             <div style={{ position: 'relative', width: mob ? '100%' : '450px', height: '550px' }}>
+                <AnimatePresence>
+                  {filtered.slice(swipeIndex, swipeIndex + 2).reverse().map((c, i) => (
+                    <SwipeCard 
+                      key={c.id} 
+                      campaign={c} 
+                      onSwipe={handleSwipe} 
+                      onApply={(camp) => { setModal(camp); setDone(false); }}
+                    />
+                  ))}
+                </AnimatePresence>
+                
+                {swipeIndex >= filtered.length && (
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+                     <div style={{ width: '80px', height: '80px', background: '#f1f5f9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>🏁</div>
+                     <h4 style={{ fontSize: '20px', fontWeight: 900 }}>All caught up!</h4>
+                     <p style={{ color: '#64748b', fontSize: '15px', marginTop: '8px' }}>You've reviewed all active campaigns.</p>
+                     <Btn style={{ marginTop: '24px' }} onClick={() => setSwipeIndex(0)}>Refresh List</Btn>
+                  </div>
+                )}
+             </div>
+
+             <div style={{ display: 'flex', gap: '24px', marginTop: '48px' }}>
+                <button onClick={() => handleSwipe('left', filtered[swipeIndex])} style={{ width: '64px', height: '64px', borderRadius: '50%', border: 'none', background: '#fff', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', cursor: 'pointer', color: '#EF4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                   <XCircle size={32} />
+                </button>
+                <button onClick={() => handleSwipe('right', filtered[swipeIndex])} style={{ width: '64px', height: '64px', borderRadius: '50%', border: 'none', background: '#0f172a', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', cursor: 'pointer', color: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                   <CheckCircle2 size={32} />
+                </button>
+             </div>
           </div>
         )}
+      </div>
+
+      <Modal open={!!modal} title={'Deploy Application'} onClose={() => { setModal(null); setDone(false); }} width={600}>
+         {done ? (
+           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+              <div style={{ width: '80px', height: '80px', background: 'rgba(16,185,129,0.1)', color: '#10B981', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+                 <CheckCircle2 size={40} />
+              </div>
+              <h3 style={{ fontSize: '28px', fontWeight: 900, marginBottom: '12px' }}>Application Sent!</h3>
+              <p style={{ color: '#64748b', lineHeight: 1.6, marginBottom: '32px' }}>The brand will review your profile and pitch. We'll notify you if you're shortlisted.</p>
+              <Btn full lg onClick={() => setModal(null)}>Back to Discovery</Btn>
+           </div>
+         ) : (
+           <div style={{ padding: '10px' }}>
+              <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '24px', marginBottom: '32px', border: '1px solid #f1f5f9' }}>
+                 <p style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px' }}>CAMPAIGN</p>
+                 <h4 style={{ fontSize: '20px', fontWeight: 900 }}>{modal?.title}</h4>
+                 <div style={{ marginTop: '12px', fontSize: '16px', fontWeight: 900, color: '#10B981' }}>{fmt.inr(modal?.budgetMin)} - {fmt.inr(modal?.budgetMax)}</div>
+              </div>
+              
+              <Fld 
+                label="Your Pitch *" 
+                value={aF.pitch} 
+                onChange={e => setAF(p => ({ ...p, pitch: e.target.value }))} 
+                rows={4} 
+                placeholder="Why are you a great fit for this brand?"
+              />
+              <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '20px', marginTop: '12px' }}>
+                 <Fld label="Expected Rate (₹)" type="number" value={aF.rate} onChange={e => setAF(p => ({ ...p, rate: e.target.value }))} placeholder="15,000" />
+                 <Fld label="Portfolio Link" value={aF.portfolio} onChange={e => setAF(p => ({ ...p, portfolio: e.target.value }))} placeholder="Instagram/Reel Link" />
+              </div>
+              <Btn full lg style={{ marginTop: '32px', borderRadius: '100px', height: '60px' }} onClick={() => submitApply()}>Submit Application 🚀</Btn>
+           </div>
+         )}
       </Modal>
     </div>
   );

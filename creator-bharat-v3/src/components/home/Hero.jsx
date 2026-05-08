@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
 import { T } from '../../theme';
 import { W, LS } from '../../utils/helpers';
 import { apiCall } from '../../utils/api';
 import { Btn } from '../Primitives';
-import { User, BookOpen, Radio, MapPin, CreditCard, Zap } from 'lucide-react';
+import { User, BookOpen, Radio, MapPin, CreditCard, Zap, ChevronRight, Sparkles } from 'lucide-react';
 
 const TYPEWRITER_WORDS = ['Identity', 'Portfolio', 'Empire', 'Legacy'];
 
@@ -107,24 +108,30 @@ const TirangaGlow = memo(({ mob }) => {
 TirangaGlow.propTypes = { mob: PropTypes.bool };
 
 const HeroHeader = memo(({ mob }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: 1000 }}>
-    <div className="au" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: mob ? '8px 16px' : '12px 32px', borderRadius: 100, background: '#fff', border: '1px solid rgba(0,0,0,0.08)', marginBottom: 40, boxShadow: '0 4px 20px rgba(0,0,0,0.02)', position: 'relative', maxWidth: '90vw' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <div style={{ background: '#FF9431', color: '#fff', padding: '4px 10px', borderRadius: 100, fontSize: 10, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>New</div>
-        <span style={{ fontSize: mob ? 11 : 13, fontWeight: 800, color: '#111', letterSpacing: '0.2px' }}>India&apos;s First Unified Creator Support & Identity System</span>
-        <div style={{ width: 1, height: 16, background: 'rgba(0,0,0,0.1)' }} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', animation: 'pulse-green 1.5s infinite' }} />
-          <span style={{ fontSize: 10, fontWeight: 900, color: '#10B981', textTransform: 'uppercase' }}>Live Now</span>
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: 1100 }}>
+    <motion.div 
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="au" 
+      style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: mob ? '10px 20px' : '14px 36px', borderRadius: 100, background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(20px)', border: '1px solid rgba(0,0,0,0.06)', marginBottom: 48, boxShadow: '0 20px 40px rgba(0,0,0,0.03)', position: 'relative' }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', padding: '6px 14px', borderRadius: 100, fontSize: 11, fontWeight: 950, textTransform: 'uppercase', letterSpacing: '1.5px' }}>ELITE</div>
+        <span style={{ fontSize: mob ? 12 : 14, fontWeight: 900, color: '#0f172a', letterSpacing: '0.2px' }}>Empowering Bharat&apos;s Next 100M Creators</span>
+        <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.1)' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 12px #10B981', animation: 'pulse-green 2s infinite' }} />
+          <span style={{ fontSize: 11, fontWeight: 950, color: '#10B981', textTransform: 'uppercase' }}>National Pulse</span>
         </div>
       </div>
-    </div>
-    <h1 className="au d1" style={{ fontSize: mob ? 'clamp(28px,9vw,36px)' : 'clamp(76px,9vw,104px)', fontWeight: 900, color: '#111', lineHeight: mob ? 1.15 : 1.02, marginBottom: mob ? 20 : 32, letterSpacing: '-0.05em', maxWidth: '100%', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+    </motion.div>
+
+    <h1 className="au d1" style={{ fontSize: mob ? 'clamp(36px,10vw,48px)' : 'clamp(80px,10vw,110px)', fontWeight: 950, color: '#0f172a', lineHeight: 0.95, marginBottom: mob ? 24 : 40, letterSpacing: '-0.06em', maxWidth: '100%', textAlign: 'center' }}>
       Your Digital <Typewriter /> <br />
-      Built for <span style={{ background: 'linear-gradient(90deg, #FF9431, #128807)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: mob ? 5 : 15, display: 'inline-block' }}>Bharat.</span>
+      Built for <span style={{ background: 'linear-gradient(90deg, #FF9431, #128807)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: mob ? 5 : 15 }}>Bharat.</span>
     </h1>
-    <p className="au d2" style={{ fontSize: mob ? 15 : 22, color: 'rgba(0,0,0,0.6)', lineHeight: 1.6, marginBottom: mob ? 32 : 48, fontWeight: 500, maxWidth: 720 }}>
-      The all-in-one platform where Tier 2 & Tier 3 creators get the support, identity, and growth they deserve. Your journey from local to national starts here.
+    <p className="au d2" style={{ fontSize: mob ? 16 : 24, color: '#475569', lineHeight: 1.6, marginBottom: mob ? 40 : 64, fontWeight: 600, maxWidth: 800, margin: '0 auto 64px' }}>
+      The definitive all-in-one platform providing Tier 2 & 3 talent with professional identity, regional missions, and national growth.
     </p>
   </div>
 ));
@@ -132,14 +139,13 @@ const HeroHeader = memo(({ mob }) => (
 HeroHeader.propTypes = { mob: PropTypes.bool };
 
 const HeroCTA = memo(({ mob, go, dsp }) => (
-  <div className="au d3" style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: mob ? 12 : 16, marginBottom: 48, justifyContent: 'center', width: 'auto', alignItems: 'center' }}>
-    <Btn lg full={false} onClick={() => dsp({ t: 'UI', v: { authModal: true, authView: 'register' } })} className="hero-primary-btn" aria-label="Claim your free creator portfolio link" style={{ padding: mob ? '16px 32px' : '22px 48px', fontSize: mob ? 15 : 18, background: T.gd, color: '#fff', borderRadius: 100, fontWeight: 900, border: 'none', boxShadow: '0 12px 32px rgba(255,148,49,0.35)', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
-      <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 10 }}>🚀 Claim Your Link Free</span>
-      <div style={{ position: 'absolute', top: 0, left: '-100%', width: '50%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)', animation: 'shimmer 3s infinite', transform: 'skewX(-20deg)' }} />
+  <div className="au d3" style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: mob ? 16 : 20, marginBottom: 80, justifyContent: 'center', width: 'auto', alignItems: 'center' }}>
+    <Btn lg full={false} onClick={() => dsp({ t: 'UI', v: { authModal: true, authView: 'register' } })} style={{ padding: mob ? '20px 40px' : '28px 64px', fontSize: mob ? 16 : 20, background: '#0f172a', color: '#fff', borderRadius: 100, fontWeight: 950, border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden' }}>
+      <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 12 }}>🚀 Claim Your Handle Free</span>
+      <div style={{ position: 'absolute', top: 0, left: '-100%', width: '50%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)', animation: 'shimmer 3s infinite', transform: 'skewX(-20deg)' }} />
     </Btn>
-    <Btn lg variant="ghost" full={false} onClick={() => dsp({ t: 'UI', v: { demoModal: true } })} className="hero-secondary-btn" aria-label="View live demo of the platform" style={{ padding: mob ? '15px 32px' : '20px 40px', fontSize: mob ? 14 : 17, background: 'rgba(0,0,0,0.03)', color: '#111', borderRadius: 100, fontWeight: 700, border: '1.5px solid rgba(0,0,0,0.08)', backdropFilter: 'blur(10px)', justifyContent: 'center', position: 'relative' }}>
-      <span className="live-dot" style={{ position: 'absolute', top: 12, left: 12, width: 8, height: 8, background: '#EF4444', borderRadius: '50%', animation: 'pulse-red 1.5s infinite' }} />
-      <span>👁️ View Live Demo</span>
+    <Btn lg variant="ghost" full={false} onClick={() => dsp({ t: 'UI', v: { demoModal: true } })} style={{ padding: mob ? '18px 40px' : '26px 56px', fontSize: mob ? 15 : 18, background: 'rgba(255,255,255,0.8)', color: '#0f172a', borderRadius: 100, fontWeight: 950, border: '1.5px solid #f1f5f9', backdropFilter: 'blur(20px)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+      <span>👁️ Elite Demo</span>
     </Btn>
   </div>
 ));
@@ -147,20 +153,21 @@ const HeroCTA = memo(({ mob, go, dsp }) => (
 HeroCTA.propTypes = { mob: PropTypes.bool, go: PropTypes.func.isRequired, dsp: PropTypes.func.isRequired };
 
 const SearchSugs = memo(({ sugs, go }) => (
-  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff', borderRadius: 16, marginTop: 8, boxShadow: '0 10px 40px rgba(0,0,0,0.1)', overflow: 'hidden', border: '1px solid #E2E8F0', zIndex: 1000 }}>
+  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff', borderRadius: 24, marginTop: 12, boxShadow: '0 30px 60px rgba(0,0,0,0.12)', overflow: 'hidden', border: '1.5px solid #f1f5f9', zIndex: 10000 }}>
     {sugs.map((s, idx) => (
       <button 
         key={s.id} 
         onClick={() => go('creator-profile', { creator: s })} 
-        style={{ width: '100%', padding: '12px 20px', cursor: 'pointer', border: 'none', borderBottom: idx === sugs.length - 1 ? 'none' : '1px solid #F1F5F9', background: 'transparent', display: 'flex', alignItems: 'center', gap: 12, textAlign: 'left', transition: 'background 0.2s' }}
+        style={{ width: '100%', padding: '16px 24px', cursor: 'pointer', border: 'none', borderBottom: idx === sugs.length - 1 ? 'none' : '1px solid #F8FAFC', background: 'transparent', display: 'flex', alignItems: 'center', gap: 16, textAlign: 'left', transition: 'all 0.2s ease' }}
         onMouseEnter={e => e.currentTarget.style.background = '#F8FAFC'} 
         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
       >
-        <img src={s.photo || s.avatarUrl} alt={s.name} style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover' }} />
+        <img src={s.photo || s.avatarUrl} alt={s.name} style={{ width: 40, height: 40, borderRadius: 12, objectFit: 'cover', border: '1px solid #f1f5f9' }} />
         <div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: '#111' }}>{s.name}</div>
-          <div style={{ fontSize: 11, color: '#64748B' }}>{s.niche} • {s.city}</div>
+          <div style={{ fontSize: 15, fontWeight: 900, color: '#0f172a' }}>{s.name}</div>
+          <div style={{ fontSize: 12, color: '#94a3b8', fontWeight: 700 }}>{s.niche} • {s.city}</div>
         </div>
+        <ChevronRight size={16} style={{ marginLeft: 'auto', color: '#cbd5e1' }} />
       </button>
     ))}
   </div>
@@ -169,9 +176,9 @@ const SearchSugs = memo(({ sugs, go }) => (
 SearchSugs.propTypes = { sugs: PropTypes.array.isRequired, go: PropTypes.func.isRequired };
 
 const SearchInput = memo(({ mob, q, dsp, onKeyDown, sugs, go }) => (
-  <div style={{ flex: 1.2, position: 'relative', padding: mob ? '12px 16px' : '0 40px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderRight: mob ? 'none' : '1px solid rgba(0,0,0,0.05)', borderBottom: mob ? '1px solid rgba(0,0,0,0.05)' : 'none' }}>
-    <label htmlFor="hero-search-input" style={{ fontSize: 9, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 4, opacity: 0.8 }}>Who are you looking for?</label>
-    <input id="hero-search-input" value={q || ''} onKeyDown={onKeyDown} onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} placeholder="Name, niche or city..." style={{ width: '100%', border: 'none', background: 'none', fontSize: mob ? 16 : 18, outline: 'none', fontWeight: 700, color: '#111' }} />
+  <div style={{ flex: 1.2, position: 'relative', padding: mob ? '16px 24px' : '0 48px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderRight: mob ? 'none' : '1.5px solid #f1f5f9', borderBottom: mob ? '1.5px solid #f1f5f9' : 'none' }}>
+    <label htmlFor="hero-search-input" style={{ fontSize: 10, fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 6 }}>Who are you looking for?</label>
+    <input id="hero-search-input" value={q || ''} onKeyDown={onKeyDown} onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} placeholder="Name, niche or city..." style={{ width: '100%', border: 'none', background: 'none', fontSize: mob ? 17 : 20, outline: 'none', fontWeight: 900, color: '#0f172a' }} />
     {sugs.length > 0 && <SearchSugs sugs={sugs} go={go} />}
   </div>
 ));
@@ -179,24 +186,26 @@ const SearchInput = memo(({ mob, q, dsp, onKeyDown, sugs, go }) => (
 SearchInput.propTypes = { mob: PropTypes.bool, q: PropTypes.string, dsp: PropTypes.func.isRequired, onKeyDown: PropTypes.func, sugs: PropTypes.array, go: PropTypes.func.isRequired };
 
 const LocationPicker = memo(({ mob, state }) => (
-  <div style={{ flex: 0.8, padding: mob ? '10px 16px' : '0 40px', textAlign: 'left', width: '100%' }}>
-    <label htmlFor="hero-location-select" style={{ fontSize: 9, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1.2px', marginBottom: 2, opacity: 0.8 }}>Location</label>
-    <div id="hero-location-select" style={{ fontSize: mob ? 15 : 17, fontWeight: 700, color: '#111', cursor: 'pointer' }}>{state || 'All over India'}</div>
+  <div style={{ flex: 0.8, padding: mob ? '16px 24px' : '0 48px', textAlign: 'left', width: '100%' }}>
+    <label htmlFor="hero-location-select" style={{ fontSize: 10, fontWeight: 950, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 6 }}>Location</label>
+    <div id="hero-location-select" style={{ fontSize: mob ? 16 : 18, fontWeight: 900, color: '#0f172a', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+       <MapPin size={16} color="#10B981" /> {state || 'All over Bharat'}
+    </div>
   </div>
 ));
 
 LocationPicker.propTypes = { mob: PropTypes.bool, state: PropTypes.string };
 
 const SearchBar = memo(({ mob, st, dsp, go, sugs, onKeyDown }) => (
-  <div className="au d3" style={{ width: '100%', maxWidth: 1000, padding: 2, borderRadius: mob ? 24 : 102, position: 'relative', overflow: 'hidden', background: 'rgba(0,0,0,0.05)', marginBottom: mob ? 40 : 80, zIndex: 100, boxShadow: mob ? '0 20px 40px rgba(0,0,0,0.06)' : '0 40px 120px -20px rgba(0,0,0,0.12)', boxSizing: 'border-box' }}>
+  <div className="au d3" style={{ width: '100%', maxWidth: 1100, padding: 3, borderRadius: mob ? 32 : 110, position: 'relative', overflow: 'hidden', background: '#f1f5f9', marginBottom: 80, zIndex: 100, boxShadow: '0 40px 100px -20px rgba(0,0,0,0.1)' }}>
     {!mob && (
-      <div style={{ position: 'absolute', top: '50%', left: '50%', width: '200%', height: '500%', background: 'conic-gradient(from 0deg, #138808 0%, #FFFFFF 20%, #FF9933 40%, #FF9933 60%, #FFFFFF 80%, #138808 100%)', animation: 'spinBorder 5s linear infinite', transform: 'translate(-50%, -50%)', zIndex: 0 }} />
+      <div style={{ position: 'absolute', top: '50%', left: '50%', width: '200%', height: '500%', background: 'conic-gradient(from 0deg, #10B981 0%, #fff 25%, #FF9431 50%, #fff 75%, #10B981 100%)', animation: 'spinBorder 10s linear infinite', transform: 'translate(-50%, -50%)', zIndex: 0, opacity: 0.4 }} />
     )}
-    <div style={{ width: '100%', background: 'rgba(255,255,255,0.98)', backdropFilter: 'blur(24px)', borderRadius: mob ? 32 : 100, padding: mob ? 6 : 8, display: 'flex', flexDirection: mob ? 'column' : 'row', alignItems: mob ? 'stretch' : 'center', gap: mob ? 4 : 0, position: 'relative', zIndex: 1, minHeight: mob ? 'auto' : 84 }}>
+    <div style={{ width: '100%', background: 'rgba(255,255,255,0.98)', backdropFilter: 'blur(32px)', borderRadius: mob ? 28 : 100, padding: mob ? 8 : 12, display: 'flex', flexDirection: mob ? 'column' : 'row', alignItems: mob ? 'stretch' : 'center', gap: mob ? 8 : 0, position: 'relative', zIndex: 1, minHeight: mob ? 'auto' : 100 }}>
       <SearchInput mob={mob} q={st?.cf?.q} dsp={dsp} onKeyDown={onKeyDown} sugs={sugs} go={go} />
       <LocationPicker mob={mob} state={st?.cf?.state} />
       <div style={{ padding: mob ? 8 : 4, width: mob ? '100%' : 'auto' }}>
-        <Btn lg full={mob} onClick={() => go('creators')} className="hero-find-btn" aria-label="Search creators" style={{ borderRadius: mob ? 18 : 100, padding: mob ? '14px' : '18px 48px', background: T.gd, color: '#fff', border: 'none', fontWeight: 900, fontSize: mob ? 14 : 16, transition: 'all 0.3s', boxShadow: `0 8px 24px rgba(255,148,49,0.2)` }}>Find Creators ⚡</Btn>
+        <Btn lg full={mob} onClick={() => go('creators')} style={{ borderRadius: mob ? 24 : 100, padding: mob ? '18px' : '22px 56px', background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', border: 'none', fontWeight: 950, fontSize: mob ? 15 : 18, transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)', boxShadow: `0 12px 24px rgba(255,148,49,0.2)` }}>Search Creators ⚡</Btn>
       </div>
     </div>
   </div>
@@ -205,13 +214,13 @@ const SearchBar = memo(({ mob, st, dsp, go, sugs, onKeyDown }) => (
 SearchBar.propTypes = { mob: PropTypes.bool, st: PropTypes.object.isRequired, dsp: PropTypes.func.isRequired, go: PropTypes.func.isRequired, sugs: PropTypes.array, onKeyDown: PropTypes.func };
 
 const EcosystemHeader = memo(({ mob }) => (
-  <div style={{ textAlign: 'center', marginBottom: mob ? 40 : 60, marginTop: mob ? 20 : 60 }}>
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 20px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 100, marginBottom: 24 }}>
-      <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#3B82F6', boxShadow: '0 0 10px rgba(59, 130, 246, 0.6)' }} />
-      <span style={{ fontSize: 12, fontWeight: 900, color: '#3B82F6', textTransform: 'uppercase', letterSpacing: '3px' }}>Support Ecosystem</span>
+  <div style={{ textAlign: 'center', marginBottom: mob ? 48 : 80, marginTop: 40 }}>
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: '10px 24px', background: '#fff', border: '1.5px solid #f1f5f9', borderRadius: 100, marginBottom: 24, boxShadow: '0 10px 20px rgba(0,0,0,0.02)' }}>
+      <Sparkles size={16} color="#3B82F6" fill="#3B82F6" />
+      <span style={{ fontSize: 13, fontWeight: 950, color: '#3B82F6', textTransform: 'uppercase', letterSpacing: '4px' }}>Support Infrastructure</span>
     </div>
-    <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 36 : 56, fontWeight: 900, color: '#0f172a', lineHeight: 1.1, letterSpacing: '-0.03em', marginBottom: 20 }}>
-      Empowering Bharat&apos;s <br /> <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #10B981 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: '10px' }}>Digital Success.</span>
+    <h2 style={{ fontSize: mob ? 40 : 64, fontWeight: 950, color: '#0f172a', lineHeight: 1.05, letterSpacing: '-0.04em', marginBottom: 24 }}>
+      Empowering the <br /> <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #10B981 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: '10px' }}>Voice of Bharat.</span>
     </h2>
   </div>
 ));
@@ -284,7 +293,12 @@ export default function Hero({ mob, st, dsp, go }) {
     if (e.key === 'ArrowDown') { e.preventDefault(); setActiveIdx(prev => (prev < maxIdx ? prev + 1 : prev)); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); setActiveIdx(prev => (prev > 0 ? prev - 1 : -1)); }
     else if (e.key === 'Enter') {
-      if (isTrending) { if (activeIdx >= 0) dsp({ t: 'GO', p: 'creators', sel: { q: trending[activeIdx] } }); }
+      if (isTrending) {
+        if (activeIdx >= 0) {
+          dsp({ t: 'CF', v: { q: trending[activeIdx] } });
+          go('creators');
+        }
+      }
       else if (activeIdx >= 0 && activeIdx < sugs.length) go('creator-profile', { creator: sugs[activeIdx] });
       else if (activeIdx === sugs.length || activeIdx === -1) go('creators');
     } else if (e.key === 'Escape') setSugs([]);

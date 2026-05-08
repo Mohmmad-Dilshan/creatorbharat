@@ -6,26 +6,31 @@ import AppRoutes from './AppRoutes';
 
 export default function App() {
   const location = useLocation();
+  const path = location.pathname;
 
-  // Pages that should not use the standard layout (Auth/Landing focus)
+  // Pages that skip the standard public layout (no navbar/footer)
   const noLayoutPaths = ['/apply', '/brand-register', '/login', '/forgot-password'];
-  
-  // Pages that should use the dashboard layout (Internal focus)
-  const dashboardPaths = [
-    '/dashboard', 
-    '/brand-dashboard', 
-    '/settings', 
-    '/wallet', 
-    '/applications', 
+
+  // Pages that use the internal dashboard layout
+  const dashboardPrefixes = [
+    '/dashboard',
+    '/brand-dashboard',
+    '/settings',
+    '/wallet',
+    '/applications',
     '/campaign-builder',
-    '/creator-score'
+    '/creator-score',
+    '/saved',
+    '/monetize',
+    '/monetization',
+    '/compare',
   ];
 
-  const isNoLayout = noLayoutPaths.includes(location.pathname);
-  const isDashboard = dashboardPaths.includes(location.pathname);
+  const isNoLayout = noLayoutPaths.includes(path);
+  const isDashboard = dashboardPrefixes.some(p => path === p || path.startsWith(p + '/'));
 
   if (isNoLayout) return <AppRoutes location={location} />;
   if (isDashboard) return <DashboardLayout><AppRoutes location={location} /></DashboardLayout>;
-  
+
   return <Layout><AppRoutes location={location} /></Layout>;
 }

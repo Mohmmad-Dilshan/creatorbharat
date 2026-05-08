@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import { useApp } from '../../context';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 export default function CompareBar() {
   const { st, dsp } = useApp();
+  const navigate = useNavigate();
   const mob = globalThis.window === undefined ? false : globalThis.window.innerWidth < 768;
 
   useEffect(() => {
@@ -16,8 +18,8 @@ export default function CompareBar() {
 
   if (st.compared.length === 0) return <AnimatePresence />;
 
-  const go = (p) => { 
-    dsp({ t: 'GO', p }); 
+  const go = (path) => {
+    navigate(path);
     globalThis.window.scrollTo({ top: 0, behavior: 'smooth' }); 
   };
 
@@ -72,7 +74,7 @@ export default function CompareBar() {
               {st.compared.length} Selected
             </span>
             <button 
-              onClick={() => go('compare')} 
+              onClick={() => go('/compare')}
               style={{ 
                 background: '#FF9431', color: '#fff', border: 'none', 
                 padding: '8px 16px', borderRadius: 100, fontWeight: 900, 

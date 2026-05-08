@@ -1,10 +1,118 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context';
-import { scrollToTop, LS, fmt } from '../../utils/helpers';
-import { Card, Bdg, Empty } from '../../components/Primitives';
+import { scrollToTop, LS, fmt, W } from '../../utils/helpers';
+import { Card, Bdg, Empty, Bar } from '../../components/Primitives';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Search, 
+  Filter, 
+  Briefcase, 
+  Clock, 
+  CheckCircle2, 
+  XCircle, 
+  MessageSquare, 
+  ExternalLink,
+  Zap,
+  TrendingUp,
+  Eye
+} from 'lucide-react';
+
+const StatusTimeline = ({ status }) => {
+  const steps = ['applied', 'shortlisted', 'selected', 'paid'];
+  const currentIndex = steps.indexOf(status?.toLowerCase() || 'applied');
+  
+  return (
+    <div style={{ marginTop: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+         {steps.map((s, i) => (
+           <div key={s} style={{ 
+             fontSize: '9px', 
+             fontWeight: 900, 
+             textTransform: 'uppercase', 
+             color: i <= currentIndex ? '#10B981' : '#cbd5e1',
+             letterSpacing: '0.05em'
+           }}>
+             {s}
+           </div>
+         ))}
+      </div>
+      <div style={{ height: '4px', background: '#f1f5f9', borderRadius: '10px', display: 'flex', gap: '4px' }}>
+         {steps.map((s, i) => (
+           <div key={s} style={{ 
+             flex: 1, 
+             height: '100%', 
+             background: i <= currentIndex ? '#10B981' : 'transparent',
+             borderRadius: '10px',
+             transition: 'all 0.5s ease'
+           }} />
+         ))}
+      </div>
+    </div>
+  );
+};
+
+const ApplicationCard = ({ app: a, mob, onAction, delay = 0 }) => {
+  const brandImg = `https://ui-avatars.com/api/?name=${encodeURIComponent(typeof a.brand === 'object' ? a.brand.companyName : a.brand)}&background=f8fafc&color=111&size=100`;
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay }}
+    >
+      <Card style={{ padding: mob ? '24px' : '32px', borderRadius: '32px', background: '#fff', border: '1px solid #f1f5f9' }}>
+         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
+            <div style={{ display: 'flex', gap: '20px', flex: 1, minWidth: '280px' }}>
+               <img src={brandImg} style={{ width: '64px', height: '64px', borderRadius: '18px', border: '1px solid #f1f5f9' }} alt="" />
+               <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                     <span style={{ fontSize: '13px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase' }}>{typeof a.brand === 'object' ? a.brand.companyName : a.brand}</span>
+                     <Bdg sm color="blue">Verified Brand</Bdg>
+                  </div>
+                  <h4 style={{ fontSize: '20px', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.02em' }}>{a.campaignTitle}</h4>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '12px', color: '#64748b', fontSize: '13px', fontWeight: 700 }}>
+                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Clock size={14} /> {fmt.date(a.date)}</div>
+                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Zap size={14} /> {fmt.inr(a.rate || 15000)} bid</div>
+                  </div>
+               </div>
+            </div>
+
+            <div style={{ textAlign: mob ? 'left' : 'right' }}>
+               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10B981', fontWeight: 800, fontSize: '12px', marginBottom: '8px', justifyContent: mob ? 'flex-start' : 'flex-end' }}>
+                  <Eye size={14} /> Brand viewed 2h ago
+               </div>
+               <Bdg lg color={a.status === 'selected' ? 'green' : (a.status === 'shortlisted' ? 'purple' : 'blue')}>
+                  { (a.status || 'applied').toUpperCase() }
+               </Bdg>
+            </div>
+         </div>
+
+         {/* Status Timeline */}
+         <StatusTimeline status={a.status} />
+
+         {/* Pitch Preview */}
+         <div style={{ marginTop: '24px', padding: '20px', background: '#f8fafc', borderRadius: '20px', border: '1px solid #f1f5f9', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: '-10px', left: '20px', background: '#fff', border: '1px solid #f1f5f9', padding: '2px 10px', borderRadius: '100px', fontSize: '10px', fontWeight: 900, color: '#94a3b8' }}>MY PROPOSAL</div>
+            <p style={{ fontSize: '14px', color: '#475569', lineHeight: 1.6, fontWeight: 500 }}>"{a.pitch || 'Quick apply via swipe'}"</p>
+         </div>
+
+         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
+            <button style={{ background: 'none', border: 'none', color: '#64748b', fontWeight: 800, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+               <MessageSquare size={16} /> Chat with Brand
+            </button>
+            <button onClick={() => onAction(a)} style={{ background: '#0f172a', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '100px', fontSize: '13px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+               Full Brief <ExternalLink size={14} />
+            </button>
+         </div>
+      </Card>
+    </motion.div>
+  );
+};
 
 export default function ApplicationsPage() {
   const { st, dsp } = useApp();
+  const navigate = useNavigate();
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [filter, setFilter] = useState('');
 
@@ -14,10 +122,8 @@ export default function ApplicationsPage() {
     return () => globalThis.removeEventListener('resize', h);
   }, []);
 
-  const go = (p) => { dsp({ t: 'GO', p }); scrollToTop(); };
   const myApps = LS.get('cb_applications', []).filter(a => a.applicantEmail === st.user?.email);
   const filtered = filter ? myApps.filter(a => (a.status || 'applied') === filter) : myApps;
-  const STATUS_COLORS = { applied: 'blue', 'under-review': 'yellow', shortlisted: 'purple', selected: 'green', rejected: 'red' };
 
   if (!st.user || st.role !== 'creator') return (
     <div style={{ padding: '120px 20px', textAlign: 'center' }}>
@@ -26,104 +132,54 @@ export default function ApplicationsPage() {
   );
 
   return (
-    <div style={{ paddingBottom: 80 }}>
-      {/* Page Header */}
-      <div style={{ marginBottom: 32 }}>
-        <p style={{ fontSize: 13, fontWeight: 800, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8 }}>Mission Tracking</p>
-        <h1 style={{ fontSize: 32, fontWeight: 900, color: '#111', fontFamily: "'Outfit', sans-serif" }}>My Applications</h1>
-        <p style={{ fontSize: 15, color: '#64748b', marginTop: 4, fontWeight: 500 }}>Monitor your collaboration status and deal progression.</p>
+    <div style={{ background: '#fcfcfc', minHeight: '100vh', padding: mob ? '100px 20px 100px' : '120px 40px 100px' }}>
+      
+      {/* Header */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto 48px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FF9431', fontWeight: 900, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
+           <TrendingUp size={14} /> MISSION CONTROL
+        </div>
+        <h1 style={{ fontSize: '36px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em' }}>Application Hub</h1>
+        <p style={{ fontSize: '16px', color: '#64748b', marginTop: '4px', fontWeight: 500 }}>Track your deals from pitch to payout in real-time.</p>
       </div>
 
-      <div style={{ marginBottom: 32, display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 8 }}>
-          <button 
-            onClick={() => setFilter('')} 
-            style={{ 
-              padding: '10px 20px', 
-              borderRadius: 12, 
-              background: filter === '' ? '#111' : '#fff', 
-              color: filter === '' ? '#fff' : '#64748b', 
-              fontSize: 12, 
-              fontWeight: 800, 
-              cursor: 'pointer', 
-              transition: '0.2s', 
-              border: '1px solid ' + (filter === '' ? '#111' : 'rgba(0,0,0,0.05)'), 
-              whiteSpace: 'nowrap' 
-            }}
-          >
-            ALL DEALS
-          </button>
-          {['under-review', 'shortlisted', 'selected', 'rejected'].map(s => (
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+         {/* Filter Bar */}
+         <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '20px', marginBottom: '32px', scrollbarWidth: 'none' }}>
             <button 
-              key={s} 
-              onClick={() => setFilter(filter === s ? '' : s)} 
-              style={{ 
-                padding: '10px 20px', 
-                borderRadius: 12, 
-                background: filter === s ? '#111' : '#fff', 
-                color: filter === s ? '#fff' : '#64748b', 
-                fontSize: 12, 
-                fontWeight: 800, 
-                cursor: 'pointer', 
-                transition: '0.2s', 
-                border: '1px solid ' + (filter === s ? '#111' : 'rgba(0,0,0,0.05)'), 
-                whiteSpace: 'nowrap' 
-              }}
+              onClick={() => setFilter('')} 
+              style={{ padding: '12px 24px', borderRadius: '100px', border: 'none', background: filter === '' ? '#0f172a' : '#fff', color: filter === '' ? '#fff' : '#64748b', fontSize: '13px', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 4px 10px rgba(0,0,0,0.03)' }}
             >
-              {s.replace('-', ' ').toUpperCase()}
+              All Pulsing Deals
             </button>
-          ))}
-      </div>
-
-      <div style={{ position: 'relative', zIndex: 10 }}>
-        {filtered.length === 0 ? (
-          <div style={{ padding: '40px 0' }}>
-             <Empty icon="📋" title="No Applications Found" sub="You haven't applied to any missions matching this status." ctaLabel="Explore Missions" onCta={() => go('campaigns')} />
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {filtered.map((a) => (
-              <Card key={a.id} style={{ padding: '24px', background: '#fff', borderRadius: 24, border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
-                  <div style={{ flex: 1, minWidth: 280 }}>
-                    <p style={{ fontSize: 12, fontWeight: 800, color: '#FF9431', marginBottom: 4, textTransform: 'uppercase' }}>{typeof a.brand === 'object' && a.brand ? a.brand.companyName : a.brand}</p>
-                    <h4 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 18, fontWeight: 900, color: '#111', marginBottom: 12 }}>{a.campaignTitle}</h4>
-                    
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                           <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 800 }}>DATE:</span>
-                           <span style={{ fontSize: 13, color: '#111', fontWeight: 700 }}>{fmt.date(a.date)}</span>
-                        </div>
-                        <div style={{ width: 1, height: 12, background: '#e2e8f0' }} />
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                           <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 800 }}>BID:</span>
-                           <span style={{ fontSize: 13, color: '#10B981', fontWeight: 800 }}>{fmt.inr(a.rate || 0)}</span>
-                        </div>
-                    </div>
-                  </div>
-                  
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: mob ? 'flex-start' : 'flex-end' }}>
-                     <Bdg sm color={STATUS_COLORS[a.status || 'applied']}>
-                        { (a.status || 'applied').toUpperCase() }
-                     </Bdg>
-                     <button 
-                       onClick={() => go('campaigns')}
-                       style={{ background: 'none', border: 'none', color: '#3B82F6', fontSize: 12, fontWeight: 800, cursor: 'pointer', padding: 0 }}
-                     >
-                       View Details →
-                     </button>
-                  </div>
-                </div>
-                
-                {a.pitch && (
-                  <div style={{ marginTop: 20, padding: '16px', background: '#F8FAFC', borderRadius: 16, border: '1px solid rgba(0,0,0,0.02)', position: 'relative' }}>
-                     <div style={{ position: 'absolute', top: -8, left: 12, background: '#fff', padding: '0 8px', fontSize: 10, fontWeight: 900, color: '#cbd5e1' }}>MY PITCH</div>
-                     <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.5, fontWeight: 500 }}>"{a.pitch}"</p>
-                  </div>
-                )}
-              </Card>
+            {['shortlisted', 'selected', 'rejected'].map(s => (
+               <button 
+                 key={s} 
+                 onClick={() => setFilter(s)} 
+                 style={{ padding: '12px 24px', borderRadius: '100px', border: 'none', background: filter === s ? '#0f172a' : '#fff', color: filter === s ? '#fff' : '#64748b', fontSize: '13px', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 4px 10px rgba(0,0,0,0.03)' }}
+               >
+                 {s.toUpperCase()}
+               </button>
             ))}
-          </div>
-        )}
+         </div>
+
+         {filtered.length === 0 ? (
+           <div style={{ padding: '80px 0' }}>
+              <Empty 
+                icon="📊" 
+                title="No Active Pulses" 
+                sub="Your applications matching this status will appear here. Keep applying to scale!" 
+                ctaLabel="Find New Opportunities" 
+                onCta={() => { dsp({ t: 'GO', p: 'campaigns' }); navigate('/campaigns'); scrollToTop(); }}
+              />
+           </div>
+         ) : (
+           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              {filtered.map((a, i) => (
+                <ApplicationCard key={a.id} app={a} mob={mob} delay={i * 0.1} onAction={(app) => { dsp({ t: 'GO', p: 'campaigns', sel: app }); navigate('/campaigns'); scrollToTop(); }} />
+              ))}
+           </div>
+         )}
       </div>
     </div>
   );

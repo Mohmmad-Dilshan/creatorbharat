@@ -196,6 +196,53 @@ export default function CreatorsPage() {
         show={showFilters} onClose={() => setShowFilters(false)} 
         f={f} dsp={dsp} mob={mob} niches={NICHES} platforms={PLATFORMS} 
       />
+
+      {/* Floating Comparison Bench */}
+      <AnimatePresence>
+        {st.compared.length > 0 && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            style={{
+              position: 'fixed', bottom: 32, left: '50%', transform: 'translateX(-50%)',
+              width: mob ? '90%' : 'auto', minWidth: mob ? 0 : 400,
+              background: '#0f172a', borderRadius: 24, padding: '16px 24px',
+              display: 'flex', alignItems: 'center', gap: 24, zIndex: 1000000,
+              boxShadow: '0 20px 50px rgba(0,0,0,0.3)', color: '#fff',
+              border: '1px solid rgba(255,255,255,0.1)'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+               <div style={{ background: '#FF9431', width: 40, height: 40, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900 }}>
+                  {st.compared.length}
+               </div>
+               <div>
+                  <h4 style={{ fontSize: 14, fontWeight: 900 }}>Comparison Bench</h4>
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', fontWeight: 700 }}>Talent selected for analysis</p>
+               </div>
+            </div>
+
+            <div style={{ height: 32, width: 1, background: 'rgba(255,255,255,0.1)' }} />
+
+            <div style={{ display: 'flex', gap: 12 }}>
+               <button 
+                 onClick={() => dsp({ t: 'CLEAR_COMPARE' })}
+                 style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}
+               >
+                 Clear
+               </button>
+               <Btn 
+                 sm 
+                 onClick={() => { navigate('/compare'); scrollToTop(); }}
+                 style={{ borderRadius: 12, background: '#FF9431', color: '#fff', fontSize: 12, fontWeight: 900, padding: '10px 20px' }}
+               >
+                 Analyze Side-by-Side →
+               </Btn>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
