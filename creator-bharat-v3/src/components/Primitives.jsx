@@ -1,80 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { T } from '../theme';
-
-const getBtnStyles = (variant, h) => {
-  const vs = {
-    primary: { background: T.gd, color: '#fff', boxShadow: h ? '0 8px 24px rgba(255,148,49,0.25)' : 'none', transform: h ? 'translateY(-1px)' : 'none' },
-    outline: { background: 'transparent', color: T.t1, border: `1.5px solid ${T.bd2}`, boxShadow: h ? T.sh2 : 'none' },
-    ghost: { background: h ? T.bg3 : 'transparent', color: T.t2 },
-    dark: { background: T.n8, color: '#fff', boxShadow: h ? T.sh3 : 'none' },
-    white: { background: '#fff', color: T.t1, boxShadow: T.sh2, transform: h ? 'translateY(-1px)' : 'none' },
-    text: { background: 'none', color: T.t1, padding: '0', fontWeight: 700, fontSize: 'inherit' },
-    success: { background: T.ok, color: '#fff', boxShadow: h ? '0 8px 24px rgba(16,185,129,0.25)' : 'none' }
-  };
-  return vs[variant] || vs.primary;
-};
-
-export function Btn({ children, onClick, variant = 'primary', sm, lg, full, disabled, loading, style: sx = {}, href, className }) {
-  const [isHovered, setIsHovered] = useState(false);
-  
-  let fontSize = 14;
-  if (lg) fontSize = 16;
-  else if (sm) fontSize = 12;
-
-  let padding = '12px 24px';
-  if (lg) padding = '16px 32px';
-  else if (sm) padding = '8px 16px';
-  
-  const base = {
-    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-    fontFamily: 'inherit', fontWeight: 700, cursor: disabled || loading ? 'not-allowed' : 'pointer',
-    border: 'none', borderRadius: 12, transition: 'all .2s cubic-bezier(0.4,0,0.2,1)',
-    textDecoration: 'none', fontSize, padding,
-    opacity: disabled ? .55 : 1, width: full ? '100%' : 'auto', ...sx
-  };
-
-  const Tag = href ? 'a' : 'button';
-  return (
-    <Tag 
-      className={`btn-int ${className || ''}`} 
-      onClick={onClick} 
-      disabled={disabled || loading} 
-      href={href}
-      style={{ ...getBtnStyles(variant, isHovered), ...base }}
-      onMouseEnter={() => setIsHovered(true)} 
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {loading ? (
-        <span className="spin" style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,.3)', borderTopColor: '#fff', borderRadius: '50%' }} />
-      ) : children}
-    </Tag>
-  );
-}
-
-Btn.propTypes = {
-  children: PropTypes.node,
-  onClick: PropTypes.func,
-  variant: PropTypes.string,
-  sm: PropTypes.bool,
-  lg: PropTypes.bool,
-  full: PropTypes.bool,
-  disabled: PropTypes.bool,
-  loading: PropTypes.bool,
-  style: PropTypes.object,
-  href: PropTypes.string,
-  className: PropTypes.string
-};
+export { Button as Btn, Input as Fld, Modal } from './ui';
 
 export function Bdg({ children, color = 'gray', sm }) {
   const m = {
-    red: { bg: 'rgba(239,68,68,0.1)', col: '#EF4444' },
+    red: { bg: T.ga, col: T.gd },
     green: { bg: T.okl, col: T.ok },
     yellow: { bg: T.wnl, col: T.wn },
     blue: { bg: T.infol, col: T.info },
     purple: { bg: 'rgba(124,58,237,.1)', col: '#7C3AED' },
     gray: { bg: T.bg3, col: T.t2 },
-    gold: { bg: 'rgba(217,119,6,.1)', col: T.wn },
+    gold: { bg: 'rgba(217,119,6,.1)', col: T.gold },
     platinum: { bg: 'rgba(124,58,237,.1)', col: T.platinum },
     silver: { bg: 'rgba(156,163,175,.15)', col: '#6B7280' },
     rising: { bg: 'rgba(107,114,128,.1)', col: '#6B7280' },
@@ -94,87 +31,6 @@ Bdg.propTypes = {
   sm: PropTypes.bool
 };
 
-export function Fld({ label, value, onChange, type = 'text', placeholder, options, rows, helper, required, error, sm, readOnly, id: providedId, icon: Icon, ...props }) {
-  const [foc, setFoc] = useState(false);
-  const idRef = useRef(providedId || `fld-${Math.random().toString(36).slice(2, 11)}`);
-  const id = idRef.current;
-  
-  const borderColor = error ? '#EF4444' : (foc ? '#FF9431' : T.bd);
-  const shadowColor = error ? 'rgba(239,68,68,0.15)' : 'rgba(255,148,49,0.15)';
-  
-  const getPadding = () => {
-    if (Icon) return sm ? '10px 14px 10px 42px' : '14px 18px 14px 48px';
-    return sm ? '10px 14px' : '14px 18px';
-  };
-
-  const s = {
-    width: '100%', padding: getPadding(),
-    border: `1.5px solid ${borderColor}`,
-    borderRadius: 12, fontSize: sm ? 13 : 15, color: T.n8,
-    background: readOnly ? T.bg3 : '#fff', transition: 'all .2s cubic-bezier(0.4,0,0.2,1)',
-    boxSizing: 'border-box', fontFamily: 'inherit', outline: 'none',
-    boxShadow: foc ? `0 0 0 4px ${shadowColor}` : 'none'
-  };
-
-  const renderInput = () => {
-    if (options) {
-      return (
-        <div style={{ position: 'relative' }}>
-          <select id={id} value={value} onChange={onChange} onFocus={() => setFoc(true)} onBlur={() => setFoc(false)} style={{ ...s, appearance: 'none' }} required={required} {...props}>
-            <option value="" disabled>{placeholder || 'Select an option'}</option>
-            {options.map(o => {
-              const val = typeof o === 'string' ? o : o.v;
-              const lbl = typeof o === 'string' ? o : o.l;
-              return <option key={val} value={val}>{lbl}</option>;
-            })}
-          </select>
-          <div style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: T.t3, fontSize: 10 }}>▼</div>
-        </div>
-      );
-    }
-    if (rows) {
-      return <textarea id={id} value={value} onChange={onChange} onFocus={() => setFoc(true)} onBlur={() => setFoc(false)} style={{ ...s, height: 'auto', resize: 'vertical' }} placeholder={placeholder} rows={rows} required={required} {...props} />;
-    }
-    return <input id={id} type={type} value={value} onChange={onChange} onFocus={() => setFoc(true)} onBlur={() => setFoc(false)} style={s} placeholder={placeholder} required={required} {...props} />;
-  };
-
-  return (
-    <div style={{ marginBottom: 18 }}>
-      {label && (
-        <label 
-          htmlFor={id} 
-          style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 700, color: T.n8, marginBottom: 8, cursor: 'pointer' }}
-        >
-          {label}{required && <span style={{ color: '#EF4444' }}>*</span>}
-        </label>
-      )}
-      <div style={{ position: 'relative' }}>
-        {Icon && <Icon size={sm ? 16 : 18} style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: foc ? '#FF9431' : '#94a3b8', transition: 'all .2s', zIndex: 2 }} />}
-        {renderInput()}
-      </div>
-      {error && <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, color: '#EF4444', fontSize: 12, fontWeight: 600 }}><span>⚠️</span> {error}</div>}
-      {helper && !error && <div style={{ fontSize: 12, color: T.t3, marginTop: 6 }}>{helper}</div>}
-    </div>
-  );
-}
-
-Fld.propTypes = {
-  label: PropTypes.string,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  onChange: PropTypes.func,
-  type: PropTypes.string,
-  placeholder: PropTypes.string,
-  options: PropTypes.array,
-  rows: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  helper: PropTypes.string,
-  required: PropTypes.bool,
-  error: PropTypes.string,
-  sm: PropTypes.bool,
-  readOnly: PropTypes.bool,
-  id: PropTypes.string,
-  icon: PropTypes.elementType
-};
-
 export function Logo({ sm, light, onClick }) {
   const sz = sm ? 34 : 44;
   const Tag = onClick ? 'button' : 'div';
@@ -189,9 +45,7 @@ export function Logo({ sm, light, onClick }) {
       }}
     >
       <div style={{ position: 'relative', width: sz, height: sz, borderRadius: '50%', padding: 2, overflow: 'hidden', boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}>
-        {/* Logo Spinning Border */}
         <div style={{ position: 'absolute', top: '50%', left: '50%', width: sm ? '150%' : '200%', height: sm ? '150%' : '200%', background: 'conic-gradient(from 0deg, #FF9431, #fff, #128807, #fff, #FF9431)', animation: 'spinBorder 4s linear infinite', zIndex: 0 }} />
-        
         <div style={{ position: 'relative', zIndex: 1, width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '33.33%', background: '#FF9431' }} />
           <div style={{ position: 'absolute', top: '33.33%', left: 0, right: 0, height: '33.34%', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -243,83 +97,6 @@ SH.propTypes = {
   center: PropTypes.bool,
   light: PropTypes.bool,
   mb: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-};
-
-export function Modal({ open, onClose, title, children, width = 500, hideHeader }) {
-  const ref = useRef(null);
-
-  useEffect(() => {
-    if (open) {
-      ref.current?.showModal();
-    } else {
-      ref.current?.close();
-    }
-  }, [open]);
-
-  // Handle ESC key and backdrop clicks via the dialog API
-  useEffect(() => {
-    const dialog = ref.current;
-    if (!dialog) return;
-
-    const handleCancel = (e) => {
-      e.preventDefault();
-      onClose();
-    };
-
-    dialog.addEventListener('cancel', handleCancel);
-    return () => dialog.removeEventListener('cancel', handleCancel);
-  }, [onClose]);
-
-  if (!open) return null;
-
-  return (
-    <dialog
-      ref={ref}
-      style={{
-        padding: 0,
-        border: 'none',
-        borderRadius: 28,
-        background: 'transparent',
-        maxWidth: '100vw',
-        maxHeight: '100vh',
-        overflow: 'visible',
-        outline: 'none'
-      }}
-      className="modal-native"
-    >
-      <div 
-        style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, backdropFilter: 'blur(10px)' }}
-      >
-        <button 
-          aria-label="Close modal"
-          onClick={onClose}
-          style={{ position: 'absolute', inset: 0, background: 'transparent', border: 'none', cursor: 'default' }}
-        />
-        <div 
-          className="si" 
-          aria-labelledby="modal-title"
-          style={{ background: '#fff', borderRadius: 28, width: '100%', maxWidth: width, maxHeight: '90vh', overflowY: 'auto', boxShadow: T.sh4, border: '1px solid rgba(255,255,255,0.2)', position: 'relative', zIndex: 1 }}
-        >
-          {!hideHeader && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 32px', borderBottom: `1px solid ${T.bd}`, position: 'sticky', top: 0, background: '#fff', zIndex: 100, boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-              <h3 id="modal-title" style={{ fontFamily: "'Outfit', sans-serif", fontSize: 22, fontWeight: 900, color: T.n8 }}>{title}</h3>
-              <button onClick={onClose} style={{ background: T.bg2, border: 'none', width: 36, height: 36, borderRadius: '50%', cursor: 'pointer', fontSize: 20, color: T.t2, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all .2s', marginRight: 4 }}>×</button>
-            </div>
-          )}
-          <div style={{ padding: hideHeader ? 0 : '32px 32px 48px' }}>{children}</div>
-        </div>
-      </div>
-    </dialog>
-  );
-}
-
-Modal.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  title: PropTypes.string,
-  children: PropTypes.node,
-  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  hideHeader: PropTypes.bool
 };
 
 export function Card({ children, style: sx = {}, onClick, glass }) {
