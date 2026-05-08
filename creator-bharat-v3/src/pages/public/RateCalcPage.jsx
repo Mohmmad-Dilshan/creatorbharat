@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
 import { 
   Calculator, 
   Camera as Instagram, 
@@ -7,19 +8,14 @@ import {
   Briefcase as Linkedin, 
   Globe as Twitter, 
   TrendingUp, 
-  Info, 
   ArrowRight,
-  ShieldCheck,
-  Zap,
   PieChart,
-  Target,
   Sparkles,
-  BarChart3,
   Flame,
   Globe
 } from 'lucide-react';
-import { Btn, Card, Bdg, Bar } from '../../components/Primitives';
-import { W, fmt } from '../../utils/helpers';
+import { Btn, Card, Bdg } from '../../components/Primitives';
+import { fmt } from '../../utils/helpers';
 
 const RollingNumber = ({ value }) => {
   const [display, setDisplay] = useState(value);
@@ -42,6 +38,10 @@ const RollingNumber = ({ value }) => {
   }, [value]);
 
   return <span>₹{display.toLocaleString('en-IN')}</span>;
+};
+
+RollingNumber.propTypes = {
+  value: PropTypes.number.isRequired
 };
 
 const ContentCard = ({ title, amount, demand, icon: Icon, delay = 0 }) => (
@@ -71,6 +71,14 @@ const ContentCard = ({ title, amount, demand, icon: Icon, delay = 0 }) => (
     </div>
   </motion.div>
 );
+
+ContentCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  amount: PropTypes.number.isRequired,
+  demand: PropTypes.string.isRequired,
+  icon: PropTypes.elementType.isRequired,
+  delay: PropTypes.number
+};
 
 export default function RateCalcPage() {
   const [F, setF] = useState({ platform: 'Instagram', followers: 25000, niche: 'Lifestyle', er: 4.2 });
@@ -178,7 +186,7 @@ export default function RateCalcPage() {
               
               {/* Platform Chips */}
               <div style={{ marginBottom: '40px' }}>
-                 <label style={{ display: 'block', fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '0.05em' }}>Deployment Platform</label>
+                 <div style={{ display: 'block', fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '0.05em' }}>Deployment Platform</div>
                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
                     {[
                       { id: 'Instagram', icon: Instagram },
@@ -211,10 +219,11 @@ export default function RateCalcPage() {
               {/* Followers Input */}
               <div style={{ marginBottom: '40px' }}>
                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '16px' }}>
-                    <label style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Follower Reach</label>
+                    <label htmlFor="followersRange" style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Follower Reach</label>
                     <span style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a' }}>{fmt.num(F.followers)}</span>
                  </div>
                  <input 
+                   id="followersRange"
                    type="range" min="1000" max="1000000" step="1000"
                    value={F.followers}
                    onChange={(e) => setF({ ...F, followers: e.target.value })}
@@ -225,10 +234,11 @@ export default function RateCalcPage() {
               {/* Engagement Input */}
               <div style={{ marginBottom: '40px' }}>
                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '16px' }}>
-                    <label style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Engagement Pulse</label>
+                    <label htmlFor="erRange" style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Engagement Pulse</label>
                     <span style={{ fontSize: '24px', fontWeight: 950, color: '#10B981' }}>{F.er}%</span>
                  </div>
                  <input 
+                   id="erRange"
                    type="range" min="0.5" max="25" step="0.1"
                    value={F.er}
                    onChange={(e) => setF({ ...F, er: e.target.value })}
@@ -238,7 +248,7 @@ export default function RateCalcPage() {
 
               {/* Niche Grid */}
               <div>
-                 <label style={{ display: 'block', fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '0.05em' }}>Content Niche</label>
+                 <div style={{ display: 'block', fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '0.05em' }}>Content Niche</div>
                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                     {['Lifestyle', 'Finance', 'Tech', 'Gaming', 'Beauty', 'Travel', 'Food'].map(n => (
                       <button

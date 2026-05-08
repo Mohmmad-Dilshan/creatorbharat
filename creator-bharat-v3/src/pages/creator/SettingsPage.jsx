@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useApp } from '../../context';
 import { W, LS, fmt } from '../../utils/helpers';
 import { Btn, Card, Fld, Empty, Bdg, Ring, Bar } from '../../components/Primitives';
@@ -12,9 +13,7 @@ import {
   CheckCircle2, 
   ChevronRight, 
   Sparkles, 
-  Zap, 
-  ExternalLink,
-  Save
+  Zap
 } from 'lucide-react';
 
 const StepNavItem = ({ id, label, icon: Icon, active, completed, onClick }) => (
@@ -38,11 +37,19 @@ const StepNavItem = ({ id, label, icon: Icon, active, completed, onClick }) => (
       width: '32px', 
       height: '32px', 
       borderRadius: '10px', 
-      background: active ? 'rgba(255,255,255,0.1)' : (completed ? 'rgba(16, 185, 129, 0.1)' : '#f1f5f9'), 
+      background: (() => {
+        if (active) return 'rgba(255,255,255,0.1)';
+        if (completed) return 'rgba(16, 185, 129, 0.1)';
+        return '#f1f5f9';
+      })(), 
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
-      color: active ? '#fff' : (completed ? '#10B981' : '#64748b')
+      color: (() => {
+        if (active) return '#fff';
+        if (completed) return '#10B981';
+        return '#64748b';
+      })()
     }}>
        {completed && !active ? <CheckCircle2 size={18} /> : <Icon size={18} />}
     </div>
@@ -57,6 +64,15 @@ const StepNavItem = ({ id, label, icon: Icon, active, completed, onClick }) => (
     {active && <ChevronRight size={16} color="#fff" style={{ opacity: 0.5 }} />}
   </button>
 );
+
+StepNavItem.propTypes = {
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  icon: PropTypes.elementType.isRequired,
+  active: PropTypes.bool.isRequired,
+  completed: PropTypes.bool,
+  onClick: PropTypes.func.isRequired
+};
 
 export default function SettingsPage() {
   const { st, dsp } = useApp();

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, 
   ChevronDown, 
   HelpCircle, 
   ShieldCheck, 
-  CreditCard, 
   Zap, 
   Users, 
   MessageCircle,
@@ -15,7 +15,6 @@ import {
   Command,
   Lock,
   Wallet,
-  Settings,
   Target
 } from 'lucide-react';
 import { Btn, Card, Bdg } from '../../components/Primitives';
@@ -78,6 +77,12 @@ const FAQAccordion = ({ q, a, delay = 0 }) => {
       </AnimatePresence>
     </motion.div>
   );
+};
+
+FAQAccordion.propTypes = {
+  q: PropTypes.string.isRequired,
+  a: PropTypes.string.isRequired,
+  delay: PropTypes.number
 };
 
 export default function FAQPage() {
@@ -210,7 +215,7 @@ export default function FAQPage() {
                 <AnimatePresence mode="wait">
                    <motion.div key={activeCat + search} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                       {filtered.map((f, i) => (
-                        <FAQAccordion key={i} q={f.q} a={f.a} delay={0.1 * i} />
+                        <FAQAccordion key={f.q} q={f.q} a={f.a} delay={0.1 * i} />
                       ))}
                       {filtered.length === 0 && (
                         <div style={{ textAlign: 'center', padding: '100px 0', background: '#f8fafc', borderRadius: '40px' }}>
@@ -244,9 +249,9 @@ export default function FAQPage() {
                      { t: 'Security Protocols', icon: ShieldCheck, d: 'How we verify creator IDs.' },
                      { t: 'Monetization 101', icon: Zap, d: 'Guide to your first brand deal.' },
                      { t: 'Brand Manual', icon: Target, d: 'Optimizing mission deployment.' }
-                   ].map((item, i) => (
+                   ].map((item) => (
                      <motion.div
-                       key={i}
+                       key={item.t}
                        whileHover={{ x: 10 }}
                        style={{ padding: '24px 32px', background: '#fff', borderRadius: '24px', border: '1px solid #f1f5f9', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '20px' }}
                      >

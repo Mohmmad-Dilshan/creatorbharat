@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useApp } from '../../context';
-import { W, fmt, LS } from '../../utils/helpers';
+import { fmt, LS } from '../../utils/helpers';
 import { apiCall } from '../../utils/api';
 import { Btn, SkeletonCard, Empty, Modal, Fld } from '../../components/Primitives';
 import { CampCard } from '../../components/Cards';
 import EliteHeader from '../../components/layout/EliteHeader';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
-import { LayoutGrid, Smartphone, ChevronLeft, ChevronRight, Zap, CheckCircle2, XCircle } from 'lucide-react';
+import { LayoutGrid, Smartphone, Zap, CheckCircle2, XCircle } from 'lucide-react';
 
 const SwipeCard = ({ campaign: c, onSwipe, onApply }) => {
   const x = useMotionValue(0);
@@ -41,6 +42,12 @@ const SwipeCard = ({ campaign: c, onSwipe, onApply }) => {
       </div>
     </motion.div>
   );
+};
+
+SwipeCard.propTypes = {
+  campaign: PropTypes.object.isRequired,
+  onSwipe: PropTypes.func.isRequired,
+  onApply: PropTypes.func.isRequired
 };
 
 export default function CampaignsPage() {
@@ -81,8 +88,10 @@ export default function CampaignsPage() {
     return true;
   });
 
-  const ensureArray = val => Array.isArray(val) ? val : (val ? [val] : []);
-  const niches = [...new Set(all.flatMap(c => ensureArray(c.niche)).filter(Boolean))];
+  const ensureArray = val => {
+    if (Array.isArray(val)) return val;
+    return val ? [val] : [];
+  };
 
   const submitApply = (overrideCamp) => {
     const target = overrideCamp || modal;
@@ -162,26 +171,32 @@ export default function CampaignsPage() {
                {(f.q || f.niche || f.urgent) && <button onClick={clearFilters} style={{ background: 'none', border: 'none', color: '#64748b', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}>Reset Filters</button>}
             </div>
 
-            {loading ? (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '32px' }}>
-                 {[1,2,3,4,5,6].map(i => <SkeletonCard key={i} />)}
-              </div>
-            ) : filtered.length === 0 ? (
-              <Empty icon="📦" title="No Deals Found" sub="Try adjusting your search or filters to find more deals." ctaLabel="Clear Filters" onCta={clearFilters} />
-            ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '32px' }}>
-                {filtered.map((c, i) => (
-                  <motion.div 
-                    key={c.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                  >
-                    <CampCard campaign={c} onApply={camp => { setModal(camp); setDone(false); setAF({ pitch: '', portfolio: '', rate: '' }); }} />
-                  </motion.div>
-                ))}
-              </div>
-            )}
+            {(() => {
+              if (loading) {
+                return (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '32px' }}>
+                    {[1, 2, 3, 4, 5, 6].map(i => <SkeletonCard key={i} />)}
+                  </div>
+                );
+              }
+              if (filtered.length === 0) {
+                return <Empty icon="📦" title="No Deals Found" sub="Try adjusting your search or filters to find more deals." ctaLabel="Clear Filters" onCta={clearFilters} />;
+              }
+              return (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '32px' }}>
+                  {filtered.map((c, i) => (
+                    <motion.div 
+                      key={c.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                    >
+                      <CampCard campaign={c} onApply={camp => { setModal(camp); setDone(false); setAF({ pitch: '', portfolio: '', rate: '' }); }} />
+                    </motion.div>
+                  ))}
+                </div>
+              );
+            })()}
           </>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '500px', position: 'relative' }}>

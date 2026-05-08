@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context';
 import { W, LS, fmt } from '../../utils/helpers';
 import { Btn, Card, Bdg, Bar, Empty, Ring } from '../../components/Primitives';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
-  LayoutDashboard, 
-  Megaphone, 
-  Trophy, 
   ShieldCheck, 
   ExternalLink, 
   TrendingUp, 
@@ -15,7 +13,6 @@ import {
   Zap, 
   Briefcase, 
   ChevronRight,
-  Sparkles,
   Wallet,
   Star
 } from 'lucide-react';
@@ -56,6 +53,15 @@ const StatCard = ({ label, value, trend, icon: Icon, color, delay = 0 }) => (
   </motion.div>
 );
 
+StatCard.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  trend: PropTypes.string,
+  icon: PropTypes.elementType.isRequired,
+  color: PropTypes.string.isRequired,
+  delay: PropTypes.number
+};
+
 const MatchingCampaign = ({ title, brand, budget, delay = 0 }) => (
   <motion.div
     initial={{ opacity: 0, x: 20 }}
@@ -80,6 +86,13 @@ const MatchingCampaign = ({ title, brand, budget, delay = 0 }) => (
     </div>
   </motion.div>
 );
+
+MatchingCampaign.propTypes = {
+  title: PropTypes.string.isRequired,
+  brand: PropTypes.string.isRequired,
+  budget: PropTypes.string.isRequired,
+  delay: PropTypes.number
+};
 
 export default function DashboardPage() {
   const { st, dsp } = useApp();
@@ -192,8 +205,8 @@ export default function DashboardPage() {
                   {comp.missing.length > 0 && (
                      <div style={{ marginTop: '32px' }}>
                         <p style={{ fontSize: '12px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '16px' }}>Priority Tasks</p>
-                        {comp.missing.slice(0, 2).map((m, i) => (
-                           <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#fff', border: '1px solid #f1f5f9', borderRadius: '16px', marginBottom: '8px' }}>
+                        {comp.missing.slice(0, 2).map((m) => (
+                           <div key={m} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#fff', border: '1px solid #f1f5f9', borderRadius: '16px', marginBottom: '8px' }}>
                               <span style={{ fontSize: '14px', fontWeight: 700, color: '#475569' }}>{m}</span>
                               <ChevronRight size={16} color="#FF9431" />
                            </div>
@@ -248,7 +261,11 @@ export default function DashboardPage() {
                                </div>
                             </div>
                             <div style={{ textAlign: 'right' }}>
-                               <Bdg color={a.status === 'selected' ? 'green' : (a.status === 'shortlisted' ? 'purple' : 'blue')}>
+                               <Bdg color={(() => {
+                                  if (a.status === 'selected') return 'green';
+                                  if (a.status === 'shortlisted') return 'purple';
+                                  return 'blue';
+                               })()}>
                                   {a.status?.toUpperCase() || 'SENT'}
                                </Bdg>
                                <p style={{ fontSize: '10px', color: '#cbd5e1', fontWeight: 900, marginTop: '4px' }}>{fmt.date(a.date)}</p>

@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context';
 import { apiCall } from '../../utils/api';
 import { W, scrollToTop, fmt, LS } from '../../utils/helpers';
 import { Btn, Bdg, Ring, Empty, Modal, Fld, Card } from '../../components/Primitives';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   ShieldCheck, 
   MapPin, 
@@ -16,7 +17,6 @@ import {
   Users, 
   TrendingUp,
   Briefcase,
-  ExternalLink,
   Info
 } from 'lucide-react';
 
@@ -29,6 +29,13 @@ const StatBlock = ({ label, value, icon: Icon, color }) => (
     <div style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.02em' }}>{value}</div>
   </div>
 );
+
+StatBlock.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  icon: PropTypes.elementType.isRequired,
+  color: PropTypes.string.isRequired
+};
 
 export default function CreatorProfilePage() {
   const { id } = useParams();

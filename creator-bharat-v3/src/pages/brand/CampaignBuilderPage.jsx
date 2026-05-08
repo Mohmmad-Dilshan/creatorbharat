@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context';
@@ -52,6 +53,13 @@ const StepIndicator = ({ step, n, label, icon: Icon }) => (
     )}
   </div>
 );
+
+StepIndicator.propTypes = {
+  step: PropTypes.number.isRequired,
+  n: PropTypes.number.isRequired,
+  label: PropTypes.string.isRequired,
+  icon: PropTypes.elementType.isRequired
+};
 
 export default function CampaignBuilderPage() {
   const { st, dsp } = useApp();

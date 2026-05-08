@@ -1,4 +1,5 @@
 import React, { lazy, Suspense } from 'react';
+import PropTypes from 'prop-types';
 import { Routes, Route } from 'react-router-dom';
 
 // Public Pages
@@ -95,3 +96,7 @@ export default function AppRoutes({ location }) {
     </Suspense>
   );
 }
+
+AppRoutes.propTypes = {
+  location: PropTypes.object
+};

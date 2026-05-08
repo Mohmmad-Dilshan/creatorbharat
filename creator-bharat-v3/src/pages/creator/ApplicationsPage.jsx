@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context';
-import { scrollToTop, LS, fmt, W } from '../../utils/helpers';
-import { Card, Bdg, Empty, Bar } from '../../components/Primitives';
-import { motion, AnimatePresence } from 'framer-motion';
+import { scrollToTop, LS, fmt } from '../../utils/helpers';
+import { Card, Bdg, Empty } from '../../components/Primitives';
+import { motion } from 'framer-motion';
 import { 
-  Search, 
-  Filter, 
-  Briefcase, 
   Clock, 
-  CheckCircle2, 
-  XCircle, 
   MessageSquare, 
   ExternalLink,
   Zap,
@@ -52,6 +48,10 @@ const StatusTimeline = ({ status }) => {
   );
 };
 
+StatusTimeline.propTypes = {
+  status: PropTypes.string
+};
+
 const ApplicationCard = ({ app: a, mob, onAction, delay = 0 }) => {
   const brandImg = `https://ui-avatars.com/api/?name=${encodeURIComponent(typeof a.brand === 'object' ? a.brand.companyName : a.brand)}&background=f8fafc&color=111&size=100`;
   
@@ -82,7 +82,11 @@ const ApplicationCard = ({ app: a, mob, onAction, delay = 0 }) => {
                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10B981', fontWeight: 800, fontSize: '12px', marginBottom: '8px', justifyContent: mob ? 'flex-start' : 'flex-end' }}>
                   <Eye size={14} /> Brand viewed 2h ago
                </div>
-               <Bdg lg color={a.status === 'selected' ? 'green' : (a.status === 'shortlisted' ? 'purple' : 'blue')}>
+               <Bdg lg color={(() => {
+                  if (a.status === 'selected') return 'green';
+                  if (a.status === 'shortlisted') return 'purple';
+                  return 'blue';
+               })()}>
                   { (a.status || 'applied').toUpperCase() }
                </Bdg>
             </div>
@@ -108,6 +112,21 @@ const ApplicationCard = ({ app: a, mob, onAction, delay = 0 }) => {
       </Card>
     </motion.div>
   );
+};
+
+ApplicationCard.propTypes = {
+  app: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    brand: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+    campaignTitle: PropTypes.string.isRequired,
+    date: PropTypes.string,
+    rate: PropTypes.number,
+    status: PropTypes.string,
+    pitch: PropTypes.string
+  }).isRequired,
+  mob: PropTypes.bool,
+  onAction: PropTypes.func.isRequired,
+  delay: PropTypes.number
 };
 
 export default function ApplicationsPage() {

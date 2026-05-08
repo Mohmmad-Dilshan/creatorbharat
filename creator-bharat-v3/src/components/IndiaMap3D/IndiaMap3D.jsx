@@ -1,6 +1,6 @@
-/* eslint-disable react/prop-types */
 "use client";
 import { useEffect, useRef, useState } from "react";
+import PropTypes from "prop-types";
 import { motion, useScroll, useTransform } from "framer-motion";
 import styles from "./IndiaMap3D.module.css";
 
@@ -227,3 +227,9 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
     </section>
   );
 }
+
+IndiaMap3D.propTypes = {
+  mob: PropTypes.bool,
+  onSelectState: PropTypes.func,
+  stateCounts: PropTypes.object
+};

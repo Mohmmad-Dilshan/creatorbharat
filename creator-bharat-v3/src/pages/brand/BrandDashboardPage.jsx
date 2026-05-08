@@ -1,20 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context';
-import { LS, fmt, W } from '../../utils/helpers';
+import { LS, fmt } from '../../utils/helpers';
 import { Btn, Card, Bdg, Empty, Bar } from '../../components/Primitives';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   Rocket, 
-  FileText, 
   Star, 
-  Eye, 
-  Search, 
-  Plus, 
   ExternalLink, 
-  Zap,
   TrendingUp,
-  BarChart2,
   Users,
   Target,
   PieChart,
@@ -46,6 +41,15 @@ const StatCard = ({ label, value, color, icon: Icon, trend, delay = 0 }) => (
     <div style={{ fontSize: '13px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
   </motion.div>
 );
+
+StatCard.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  color: PropTypes.string.isRequired,
+  icon: PropTypes.elementType.isRequired,
+  trend: PropTypes.string,
+  delay: PropTypes.number
+};
 
 const CampaignRow = ({ camp: c, onAction, delay = 0 }) => {
   const fillPct = Math.round(((c.filled || 0) / (c.slots || 10)) * 100);
@@ -97,6 +101,18 @@ const CampaignRow = ({ camp: c, onAction, delay = 0 }) => {
   );
 };
 
+CampaignRow.propTypes = {
+  camp: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    title: PropTypes.string.isRequired,
+    filled: PropTypes.number,
+    slots: PropTypes.number,
+    budgetMin: PropTypes.number
+  }).isRequired,
+  onAction: PropTypes.func.isRequired,
+  delay: PropTypes.number
+};
+
 export default function BrandDashboardPage() {
   const { st, dsp } = useApp();
   const navigate = useNavigate();
@@ -121,7 +137,6 @@ export default function BrandDashboardPage() {
   );
 
   const myCamps = LS.get('cb_campaigns', []).filter(c => c.brandEmail === st.user.email);
-  const myApps = LS.get('cb_applications', []).filter(a => myCamps.some(c => c.id === a.campaignId));
   const shortlisted = LS.get('cb_creators', []).filter(c => (st.brand?.shortlisted || []).includes(c.id));
 
   return (

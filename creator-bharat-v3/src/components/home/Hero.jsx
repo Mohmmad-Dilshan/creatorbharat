@@ -130,7 +130,7 @@ const HeroHeader = memo(({ mob }) => (
       Your Digital <Typewriter /> <br />
       Built for <span style={{ background: 'linear-gradient(90deg, #FF9431, #128807)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: mob ? 5 : 15 }}>Bharat.</span>
     </h1>
-    <p className="au d2" style={{ fontSize: mob ? 16 : 24, color: '#475569', lineHeight: 1.6, marginBottom: mob ? 40 : 64, fontWeight: 600, maxWidth: 800, margin: '0 auto 64px' }}>
+    <p className="au d2" style={{ fontSize: mob ? 16 : 24, color: '#475569', lineHeight: 1.6, marginTop: 0, marginRight: 'auto', marginBottom: mob ? 40 : 64, marginLeft: 'auto', fontWeight: 600, maxWidth: 800 }}>
       The definitive all-in-one platform providing Tier 2 & 3 talent with professional identity, regional missions, and national growth.
     </p>
   </div>

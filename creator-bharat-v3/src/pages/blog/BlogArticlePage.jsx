@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { motion, useScroll, useSpring } from 'framer-motion';
 import { 
   ArrowLeft, 
   Clock, 
-  Calendar, 
-  Share2, 
   MessageCircle as Twitter, 
   Briefcase as Linkedin,
   MessageCircle,
@@ -34,6 +33,11 @@ const SocialButton = ({ icon: Icon, color }) => (
     <Icon size={18} />
   </motion.button>
 );
+
+SocialButton.propTypes = {
+  icon: PropTypes.elementType.isRequired,
+  color: PropTypes.string.isRequired
+};
 
 export default function BlogArticlePage() {
   const [mob, setMob] = useState(globalThis.innerWidth < 768);

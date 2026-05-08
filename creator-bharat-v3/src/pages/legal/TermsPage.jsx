@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { Gavel, Users, Briefcase, Zap, ChevronRight, Scale } from 'lucide-react';
 
@@ -20,6 +21,12 @@ const Section = ({ title, icon: Icon, children }) => (
     </div>
   </motion.div>
 );
+
+Section.propTypes = {
+  title: PropTypes.string.isRequired,
+  icon: PropTypes.elementType.isRequired,
+  children: PropTypes.node.isRequired
+};
 
 export default function TermsPage() {
   const sections = [

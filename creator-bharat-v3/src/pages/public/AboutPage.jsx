@@ -1,7 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { 
-  Users, 
   Target, 
   Zap, 
   ShieldCheck, 
@@ -10,14 +10,11 @@ import {
   ChevronRight,
   TrendingUp,
   Heart,
-  MapPin,
-  Sparkles,
   Command
 } from 'lucide-react';
 import { Btn, Card, Bdg } from '../../components/Primitives';
-import { W } from '../../utils/helpers';
 
-const StatBlock = ({ icon: Icon, value, label, delay = 0 }) => (
+const StatBlock = ({ value, label, delay = 0 }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -29,6 +26,12 @@ const StatBlock = ({ icon: Icon, value, label, delay = 0 }) => (
     <div style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.5)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</div>
   </motion.div>
 );
+
+StatBlock.propTypes = {
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  label: PropTypes.string.isRequired,
+  delay: PropTypes.number
+};
 
 const TimelineStep = ({ year, title, desc, delay = 0 }) => (
   <motion.div
@@ -44,6 +47,13 @@ const TimelineStep = ({ year, title, desc, delay = 0 }) => (
     <p style={{ fontSize: '16px', color: '#64748b', lineHeight: 1.7, maxWidth: '500px' }}>{desc}</p>
   </motion.div>
 );
+
+TimelineStep.propTypes = {
+  year: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  desc: PropTypes.string.isRequired,
+  delay: PropTypes.number
+};
 
 export default function AboutPage() {
   return (
@@ -198,8 +208,8 @@ export default function AboutPage() {
               { title: 'Pehchan (Identity)', desc: 'Professionalizing creators with verified portfolios and data-backed trust scores.', icon: Award, color: '#FF9431' },
               { title: 'Paisa (Monetization)', desc: 'Connecting talent directly to national brands with secure, commission-free deals.', icon: Target, color: '#10B981' },
               { title: 'Pragati (Growth)', desc: 'Providing the tools and insights needed to scale from a local star to a national icon.', icon: TrendingUp, color: '#3B82F6' }
-            ].map((v, i) => (
-              <Card key={i} style={{ padding: '56px 40px', borderRadius: '48px', border: '1px solid #f1f5f9' }}>
+            ].map((v) => (
+              <Card key={v.title} style={{ padding: '56px 40px', borderRadius: '48px', border: '1px solid #f1f5f9' }}>
                  <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: `${v.color}15`, color: v.color, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '32px' }}>
                     <v.icon size={32} />
                  </div>

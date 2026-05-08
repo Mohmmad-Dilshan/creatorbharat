@@ -1,20 +1,16 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Check, 
-  HelpCircle, 
   Zap, 
   ShieldCheck, 
-  Star, 
   ArrowRight,
-  Minus,
-  Plus,
-  CreditCard,
-  Lock,
   Target,
   Sparkles,
   BarChart3,
-  Globe
+  Globe,
+  Wallet
 } from 'lucide-react';
 import { Btn, Bdg } from '../../components/Primitives';
 import { W } from '../../utils/helpers';
@@ -127,6 +123,19 @@ const PricingCard = ({ plan, delay = 0 }) => {
   );
 };
 
+PricingCard.propTypes = {
+  plan: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    desc: PropTypes.string.isRequired,
+    price: PropTypes.string.isRequired,
+    period: PropTypes.string.isRequired,
+    features: PropTypes.arrayOf(PropTypes.string).isRequired,
+    cta: PropTypes.string.isRequired
+  }).isRequired,
+  delay: PropTypes.number
+};
+
 const TabButton = ({ active, label, icon: Icon, onClick }) => (
   <button
     onClick={onClick}
@@ -152,6 +161,13 @@ const TabButton = ({ active, label, icon: Icon, onClick }) => (
     {label}
   </button>
 );
+
+TabButton.propTypes = {
+  active: PropTypes.bool.isRequired,
+  label: PropTypes.string.isRequired,
+  icon: PropTypes.elementType.isRequired,
+  onClick: PropTypes.func.isRequired
+};
 
 export default function PricingPage() {
   const [tab, setTab] = useState('creator');
@@ -323,8 +339,8 @@ export default function PricingPage() {
                  { title: 'Verified Trust', desc: 'Our Elite Blue badge builds instant credibility with top national brands.', icon: ShieldCheck },
                  { title: 'Global Discovery', desc: 'Your profile is optimized for SEO and reachable by brands worldwide.', icon: Globe },
                  { title: 'Data Analytics', desc: 'Get professional insights into your reach, engagement, and growth.', icon: BarChart3 }
-               ].map((item, i) => (
-                 <div key={i} style={{ padding: '32px', borderRadius: '32px', background: '#f8fafc', border: '1px solid #f1f5f9' }}>
+               ].map((item) => (
+                 <div key={item.title} style={{ padding: '32px', borderRadius: '32px', background: '#f8fafc', border: '1px solid #f1f5f9' }}>
                     <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', color: '#FF9431', boxShadow: '0 10px 20px rgba(0,0,0,0.03)' }}>
                        <item.icon size={24} />
                     </div>

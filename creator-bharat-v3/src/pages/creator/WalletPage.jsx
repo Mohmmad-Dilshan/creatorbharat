@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { fmt, W } from '../../utils/helpers';
+import PropTypes from 'prop-types';
+import { fmt } from '../../utils/helpers';
 import { Card, Btn, Bdg, Bar } from '../../components/Primitives';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   Wallet, 
   ArrowDownLeft, 
   Clock, 
   CheckCircle2, 
-  CreditCard,
   TrendingUp,
-  ArrowUpRight,
   Download,
   Building,
   ShieldCheck,
@@ -57,13 +56,29 @@ const TransactionItem = ({ tx, delay = 0 }) => (
     <div style={{ textAlign: 'right' }}>
       <div style={{ fontSize: '18px', fontWeight: 950, color: '#0f172a' }}>{tx.amount > 0 ? '+' : ''}{fmt.inr(tx.amount)}</div>
       <div style={{ marginTop: '4px' }}>
-         <Bdg sm color={tx.status === 'paid' ? 'green' : (tx.status === 'processing' ? 'blue' : 'orange')}>
+         <Bdg sm color={(() => {
+            if (tx.status === 'paid') return 'green';
+            if (tx.status === 'processing') return 'blue';
+            return 'orange';
+         })()}>
             {tx.status?.toUpperCase()}
          </Bdg>
       </div>
     </div>
   </motion.div>
 );
+
+TransactionItem.propTypes = {
+  tx: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    campaign: PropTypes.string.isRequired,
+    brand: PropTypes.string.isRequired,
+    amount: PropTypes.number.isRequired,
+    status: PropTypes.string.isRequired,
+    date: PropTypes.string.isRequired
+  }).isRequired,
+  delay: PropTypes.number
+};
 
 export default function WalletPage() {
   const [mob, setMob] = useState(globalThis.innerWidth < 768);

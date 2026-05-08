@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
 import { 
   Search, 
   ChevronRight, 
@@ -7,7 +8,6 @@ import {
   Calendar, 
   ArrowRight,
   Sparkles,
-  BookOpen,
   Newspaper,
   Rocket
 } from 'lucide-react';
@@ -67,6 +67,18 @@ const BlogCard = ({ blog, delay = 0 }) => (
     </div>
   </motion.div>
 );
+
+BlogCard.propTypes = {
+  blog: PropTypes.shape({
+    image: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    category: PropTypes.string.isRequired,
+    date: PropTypes.string.isRequired,
+    readTime: PropTypes.string.isRequired,
+    excerpt: PropTypes.string.isRequired
+  }).isRequired,
+  delay: PropTypes.number
+};
 
 export default function BlogPage() {
   const [cat, setCat] = useState('All');
