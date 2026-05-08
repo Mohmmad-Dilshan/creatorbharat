@@ -1,23 +1,25 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useApp } from '../../context';
-import AuthRedirectScreen from './AuthRedirectScreen';
+import React from 'react';
+import { AuthContent } from '../../components/auth/AuthContent';
+import { Logo } from '../../components/ui';
 
 export default function ApplyPage() {
-  const { dsp } = useApp();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // Open the registration modal on the home page
-    dsp({ t: 'UI', v: { authModal: true, authView: 'register' } });
-    navigate('/', { replace: true });
-  }, [dsp, navigate]);
-
   return (
-    <AuthRedirectScreen
-      title="Preparing creator onboarding"
-      sub="Loading the verified profile builder for your creator workspace."
-      mode="creator"
-    />
+    <div style={{ 
+      minHeight: '100vh', 
+      background: 'radial-gradient(circle at 82% 18%, rgba(255,148,49,0.06), transparent 30%), #F8FAFC', 
+      padding: '60px 20px',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center'
+    }}>
+      <div style={{ maxWidth: 1200, width: '100%', margin: '0 auto' }}>
+        <div style={{ marginBottom: 48, display: 'flex', justifyContent: 'center' }}>
+          <Logo />
+        </div>
+        <div style={{ maxWidth: 1060, margin: '0 auto', width: '100%' }}>
+          <AuthContent initialView="register" isPage />
+        </div>
+      </div>
+    </div>
   );
 }

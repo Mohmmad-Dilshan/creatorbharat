@@ -90,6 +90,8 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
     er: '',
     rateMin: '',
     services: [],
+    interests: [], // Added for Podcast, Articles, Events
+    portfolio: '' // Added for existing portfolio link
   });
   const [errors, setErrors] = useState({});
 
@@ -105,19 +107,23 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
     [key]: prev[key].includes(value) ? prev[key].filter(x => x !== value) : [...prev[key], value],
   }));
 
+  const validateStep1 = (errs) => {
+    if (!F.name) errs.name = 'Full name is required';
+    if (!F.email || !/^\S+@\S+\.\S+$/.test(F.email)) errs.email = 'Valid email is required';
+    if (!F.password || F.password.length < 6) errs.password = 'Minimum 6 characters';
+    if (F.password !== F.confirm) errs.confirm = 'Passwords do not match';
+  };
+
+  const validateStep2 = (errs) => {
+    if (F.niche.length === 0) errs.niche = 'Select at least one niche';
+    if (F.platform.length === 0) errs.platform = 'Select at least one platform';
+    if (!F.followers) errs.followers = 'Audience reach is required';
+  };
+
   const validate = (activeStep) => {
     const nextErrors = {};
-    if (activeStep === 1) {
-      if (!F.name) nextErrors.name = 'Full name is required';
-      if (!F.email || !/^\S+@\S+\.\S+$/.test(F.email)) nextErrors.email = 'Valid email is required';
-      if (!F.password || F.password.length < 6) nextErrors.password = 'Minimum 6 characters';
-      if (F.password !== F.confirm) nextErrors.confirm = 'Passwords do not match';
-    }
-    if (activeStep === 2) {
-      if (F.niche.length === 0) nextErrors.niche = 'Select at least one niche';
-      if (F.platform.length === 0) nextErrors.platform = 'Select at least one platform';
-      if (!F.followers) nextErrors.followers = 'Audience reach is required';
-    }
+    if (activeStep === 1) validateStep1(nextErrors);
+    if (activeStep === 2) validateStep2(nextErrors);
     if (activeStep === 3 && !F.rateMin) nextErrors.rateMin = 'Starting rate is required';
 
     setErrors(nextErrors);
@@ -140,7 +146,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
   const CurrentIcon = current.icon;
 
   return (
-    <div className="apply-form-shell">
+    <div className="apply-form-shell" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <StepHeader step={step} />
 
       <div className="apply-progress" aria-hidden="true">
@@ -193,6 +199,22 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
                   ))}
                 </div>
                 {errors.niche && <p className="apply-error">{errors.niche}</p>}
+              </div>
+
+              <div className="apply-choice-block">
+                <div className="apply-choice-head">
+                  <strong>Content Ecosystem</strong>
+                  <span>{F.interests.length} selected</span>
+                </div>
+                <div className="apply-chip-grid">
+                  {['Podcasts', 'Articles/Blogs', 'Live Events', 'Short Films', 'Newsletters'].map(item => (
+                    <SelectChip key={item} label={item} active={F.interests.includes(item)} onClick={() => toggleArr('interests', item)} />
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 16 }}>
+                 <Fld label="Existing Portfolio/Website (Optional)" value={F.portfolio} onChange={e => upF('portfolio', e.target.value)} placeholder="https://mybrand.com" />
               </div>
 
               <div className="apply-choice-block">
@@ -256,6 +278,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
                 <div className="apply-preview-meta">
                   <span>{F.city}, {F.state}</span>
                   <span>{F.niche.slice(0, 2).join(', ') || 'Digital Creator'}</span>
+                  {F.interests.length > 0 && <span>{F.interests.slice(0, 2).join(' • ')}</span>}
                   <span>{F.rateMin ? `From INR ${Number(F.rateMin).toLocaleString('en-IN')}` : 'Rate pending'}</span>
                 </div>
               </div>
