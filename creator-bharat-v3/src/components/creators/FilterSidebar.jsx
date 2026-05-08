@@ -84,12 +84,12 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches, plat
                   <span style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 16, letterSpacing: '1px' }}>Creator Niche</span>
                   <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                     {niches.map(n => {
-                      const isSel = f.niche.includes(n);
+                      const isSel = f?.niche?.includes(n) || false;
                       return (
                         <button
                           key={n}
                           aria-pressed={isSel}
-                          onClick={() => dsp({ t: 'CF', v: { niche: isSel ? f.niche.filter(x => x !== n) : [...f.niche, n] } })}
+                          onClick={() => dsp?.({ t: 'CF', v: { niche: isSel ? f.niche.filter(x => x !== n) : [...(f.niche || []), n] } })}
                           style={{
                             padding: '12px 22px', borderRadius: 100,
                             border: '1.5px solid ' + (isSel ? '#FF9431' : 'rgba(0,0,0,0.06)'),

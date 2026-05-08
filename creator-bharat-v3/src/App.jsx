@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
 import DashboardLayout from './components/layout/DashboardLayout';
 import AppRoutes from './AppRoutes';
+import { useApp } from './context';
 
 export default function App() {
   const location = useLocation();
@@ -29,8 +30,15 @@ export default function App() {
   const isNoLayout = noLayoutPaths.includes(path);
   const isDashboard = dashboardPrefixes.some(p => path === p || path.startsWith(p + '/'));
 
-  if (isNoLayout) return <AppRoutes location={location} />;
-  if (isDashboard) return <DashboardLayout><AppRoutes location={location} /></DashboardLayout>;
+  const { st } = useApp();
 
+  if (isNoLayout) return <AppRoutes location={location} />;
+  
+  // Only use DashboardLayout if it's a dashboard path AND the user is logged in
+  if (isDashboard && st.user) {
+    return <DashboardLayout><AppRoutes location={location} /></DashboardLayout>;
+  }
+
+  // Otherwise, use the standard public layout (e.g., for home page or unauthenticated dashboard gatekeeper)
   return <Layout><AppRoutes location={location} /></Layout>;
 }

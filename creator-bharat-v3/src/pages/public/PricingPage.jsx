@@ -13,7 +13,6 @@ import {
   Wallet
 } from 'lucide-react';
 import { Btn, Bdg } from '../../components/Primitives';
-import { W } from '../../utils/helpers';
 
 const PricingCard = ({ plan, delay = 0 }) => {
   const isPro = plan.id === 'pro' || plan.id === 'brand_pro';
@@ -70,8 +69,8 @@ const PricingCard = ({ plan, delay = 0 }) => {
       </div>
 
       <div style={{ flex: 1, marginBottom: '48px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {plan.features.map((feature, i) => (
-          <div key={i} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+        {plan.features.map((feature) => (
+          <div key={feature} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
             <div style={{ 
               width: '24px', 
               height: '24px', 

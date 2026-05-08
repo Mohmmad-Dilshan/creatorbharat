@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context';
 import { LS, fmt } from '../../utils/helpers';
-import { Btn, Card, Bdg, Empty, Bar } from '../../components/Primitives';
+import { Btn, Card, Bdg, Empty, Bar, Logo } from '../../components/Primitives';
 import { motion } from 'framer-motion';
 import { 
   Rocket, 
@@ -124,17 +124,90 @@ export default function BrandDashboardPage() {
     return () => globalThis.removeEventListener('resize', h);
   }, []);
 
-  if (!st.user || st.role !== 'brand') return (
-    <div style={{ padding: '120px 20px', textAlign: 'center' }}>
-       <Empty 
-         icon="🔒" 
-         title="Brand Console Access Only" 
-         sub="Please log in with your brand credentials to access the management console." 
-         ctaLabel="Join as Brand" 
-         onCta={() => navigate('/brand-register')} 
-       />
-    </div>
-  );
+  if (!st.user || st.role !== 'brand') {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px 20px', background: '#fcfcfc', position: 'relative', overflow: 'hidden' }}>
+        {/* Cinematic Background Elements */}
+        <div style={{ position: 'absolute', top: '-10%', left: '-5%', width: '40%', height: '40%', background: '#10B981', filter: 'blur(120px)', opacity: 0.1, borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', bottom: '0', right: '-5%', width: '40%', height: '40%', background: '#3B82F6', filter: 'blur(120px)', opacity: 0.1, borderRadius: '50%' }} />
+        
+        {/* Mock Blurred Brand Console Content */}
+        <div style={{ 
+          position: 'absolute', inset: '40px', opacity: 0.08, filter: 'blur(12px)', 
+          display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '40px', pointerEvents: 'none'
+        }}>
+           {[1,2,3,4,5,6].map(i => (
+             <div key={i} style={{ background: '#fff', borderRadius: '40px', border: '1px solid #e2e8f0', padding: '40px' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: '#f1f5f9', marginBottom: '24px' }} />
+                <div style={{ height: '24px', width: '80%', background: '#f1f5f9', borderRadius: '8px', marginBottom: '16px' }} />
+                <div style={{ height: '14px', width: '40%', background: '#f1f5f9', borderRadius: '8px' }} />
+             </div>
+           ))}
+        </div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 40, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          style={{ 
+            position: 'relative', zIndex: 10, maxWidth: '640px', width: '100%', 
+            background: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)',
+            borderRadius: '56px', padding: mob ? '48px 24px' : '72px 56px', 
+            textAlign: 'center', border: '1px solid rgba(255, 255, 255, 0.8)',
+            boxShadow: '0 50px 120px rgba(0,0,0,0.12)'
+          }}
+        >
+           {/* Pulsing Logo Container */}
+           <div style={{ position: 'relative', width: '100px', height: '100px', margin: '0 auto 40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <motion.div 
+                animate={{ scale: [1, 1.25, 1], opacity: [0.3, 0.1, 0.3] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ position: 'absolute', inset: 0, background: '#10B981', borderRadius: '50%', filter: 'blur(28px)' }}
+              />
+              <div style={{ 
+                position: 'relative', width: '80px', height: '80px', background: '#fff', 
+                borderRadius: '50%', display: 'flex', alignItems: 'center', 
+                justifyContent: 'center', boxShadow: '0 25px 50px rgba(0,0,0,0.1)',
+                border: '1px solid rgba(0,0,0,0.03)', zIndex: 2
+              }}>
+                 <Logo iconOnly />
+              </div>
+           </div>
+
+           <div style={{ marginBottom: '40px' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(16,185,129,0.1)', padding: '6px 14px', borderRadius: '100px', marginBottom: '16px' }}>
+                 <Rocket size={14} color="#10B981" />
+                 <span style={{ fontSize: '11px', fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1px' }}>Brand Command Center</span>
+              </div>
+              <h2 style={{ fontSize: mob ? '32px' : '40px', fontWeight: 950, color: '#0f172a', marginBottom: '20px', letterSpacing: '-0.05em', lineHeight: 1.1 }}>
+                Launch Your <span style={{ color: '#10B981' }}>Brand's Mission</span>
+              </h2>
+              <p style={{ fontSize: '17px', color: '#64748b', lineHeight: 1.6, fontWeight: 500, maxWidth: '520px', margin: '0 auto' }}>
+                Verified creators ke saath apne campaigns scale karein. Login karein aur **Direct Talent Scout** karein, apni **Missions** launch karein aur **Real-time ROI** track karein.
+              </p>
+           </div>
+
+           <div style={{ display: 'grid', gap: '16px', marginBottom: '48px' }}>
+              <Btn full lg onClick={() => dsp({ t: 'UI', v: { authModal: true, authView: 'login' } })} style={{ height: '68px', borderRadius: '24px', background: '#0f172a', color: '#fff', fontSize: '17px', fontWeight: 900, boxShadow: '0 12px 35px rgba(15,23,42,0.25)' }}>
+                Console Login Karein <ChevronRight size={20} style={{ marginLeft: '8px' }} />
+              </Btn>
+              <Btn full lg variant="outline" onClick={() => dsp({ t: 'UI', v: { authModal: true, authView: 'brand-register' } })} style={{ height: '68px', borderRadius: '24px', fontSize: '17px', fontWeight: 800, border: '2px solid #e2e8f0' }}>
+                Register Your Brand
+              </Btn>
+           </div>
+
+           <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '32px', display: 'flex', justifyContent: 'center', gap: '32px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 800, color: '#94a3b8' }}>
+                 <Zap size={16} color="#10B981" fill="#10B981" /> High ROI Deals
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 800, color: '#94a3b8' }}>
+                 <Users size={16} color="#3B82F6" fill="#3B82F6" /> Verified Talent
+              </div>
+           </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   const myCamps = LS.get('cb_campaigns', []).filter(c => c.brandEmail === st.user.email);
   const shortlisted = LS.get('cb_creators', []).filter(c => (st.brand?.shortlisted || []).includes(c.id));

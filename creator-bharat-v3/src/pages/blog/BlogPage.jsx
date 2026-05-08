@@ -3,322 +3,298 @@ import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { 
   Search, 
-  ChevronRight, 
   Clock, 
   Calendar, 
-  ArrowRight,
-  Sparkles,
   Newspaper,
-  Rocket
+  Rocket,
+  Share2,
+  Bookmark
 } from 'lucide-react';
+import { Btn, Bdg } from '../../components/Primitives';
+import { useNavigate } from 'react-router-dom';
 
-const BlogCard = ({ blog, delay = 0 }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay, duration: 0.5 }}
-    style={{
-      background: '#fff',
-      borderRadius: '32px',
-      overflow: 'hidden',
-      border: '1px solid #f1f5f9',
-      transition: 'all 0.3s ease',
-      cursor: 'pointer'
-    }}
-    whileHover={{ y: -10, boxShadow: '0 30px 60px rgba(0,0,0,0.05)', borderColor: '#FF9431' }}
-  >
-    <div style={{ position: 'relative', width: '100%', height: '240px', overflow: 'hidden' }}>
-      <img src={blog.image} alt={blog.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+const categories = ['All', 'Industry News', 'Creator Guides', 'Brand Stories', 'Regional Trends', 'Reports'];
+
+const blogData = [
+  { id: 1, title: 'The Silent Revolution: How Tier 3 India is Redefining Digital Content', category: 'Industry News', date: 'May 08, 2026', readTime: '12 min', excerpt: 'Deep dive into the rural creator economy that is outpacing urban growth by 40%. Why brands are shifting their budgets to regional influencers.', image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200', featured: true, author: 'Anita Deshmukh' },
+  { id: 2, title: 'Algorithm Decoded: 5 Hacks to Double Your Reach in Bharat', category: 'Creator Guides', date: 'May 07, 2026', readTime: '6 min', excerpt: 'Stop fighting the algorithm. Start using these five proven strategies to make your content go viral in local circles.', image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800', author: 'Vikram Seth' },
+  { id: 3, title: 'Case Study: How a Local Snack Brand Hit 50M Impressions', category: 'Brand Stories', date: 'May 05, 2026', readTime: '8 min', excerpt: 'The inside story of the most successful regional campaign of 2026. Zero celebrity budget, 100% creator driven.', image: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=800', author: 'Rahul Kapoor' },
+  { id: 4, title: 'The Rise of Bhojpuri Pop Culture in Digital Spaces', category: 'Regional Trends', date: 'May 02, 2026', readTime: '10 min', excerpt: 'Exploring the massive impact of regional music and comedy on global streaming platforms.', image: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=800', author: 'Priya Verma' },
+  { id: 5, title: 'Creator Monetization Report 2026: The New Gold Rush', category: 'Reports', date: 'April 30, 2026', readTime: '15 min', excerpt: 'Our exclusive annual report on the state of earnings for mid-tier creators in India.', image: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=800', author: 'Arjun Mehta' },
+  { id: 6, title: 'Platform Update: Smart Media Kits are Now Live!', category: 'Industry News', date: 'April 28, 2026', readTime: '3 min', excerpt: 'Announcing our most requested feature yet. Create professional kits in 60 seconds.', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800', author: 'Team CreatorBharat' }
+];
+
+const BlogCard = ({ blog, horizontal = false }) => {
+  const navigate = useNavigate();
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      onClick={() => navigate(`/blog/${blog.id}`)}
+      style={{
+        display: horizontal ? 'grid' : 'block',
+        gridTemplateColumns: horizontal ? '300px 1fr' : 'none',
+        gap: '32px',
+        padding: '24px 0',
+        borderBottom: '1px solid #f1f5f9',
+        cursor: 'pointer',
+        transition: 'all 0.3s ease'
+      }}
+      whileHover={{ background: 'rgba(248, 250, 252, 0.5)', paddingLeft: '12px', paddingRight: '12px' }}
+    >
       <div style={{ 
-        position: 'absolute', 
-        top: '20px', 
-        left: '20px', 
-        background: 'rgba(255, 255, 255, 0.9)', 
-        backdropFilter: 'blur(10px)',
-        padding: '6px 14px', 
-        borderRadius: '100px', 
-        fontSize: '12px', 
-        fontWeight: 900,
-        color: '#FF9431',
-        letterSpacing: '0.05em'
+        width: '100%', 
+        height: horizontal ? '200px' : '280px', 
+        borderRadius: '24px', 
+        overflow: 'hidden',
+        background: '#f1f5f9',
+        marginBottom: horizontal ? '0' : '24px'
       }}>
-        {blog.category.toUpperCase()}
+        <img src={blog.image} alt={blog.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }} />
       </div>
-    </div>
-    <div style={{ padding: '32px' }}>
-      <div style={{ display: 'flex', gap: '16px', marginBottom: '16px', color: '#94a3b8', fontSize: '13px', fontWeight: 700 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <Calendar size={14} /> {blog.date}
+      <div style={{ flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+          <Bdg color="orange" sm>{blog.category.toUpperCase()}</Bdg>
+          <span style={{ fontSize: '13px', color: '#94a3b8', fontWeight: 700 }}>{blog.readTime} Read</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <Clock size={14} /> {blog.readTime}
+        <h3 style={{ 
+          fontSize: horizontal ? '24px' : '20px', 
+          fontWeight: 950, 
+          color: '#0f172a', 
+          lineHeight: 1.25, 
+          marginBottom: '12px',
+          letterSpacing: '-0.03em'
+        }}>
+          {blog.title}
+        </h3>
+        <p style={{ fontSize: '15px', color: '#64748b', lineHeight: 1.6, marginBottom: '20px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          {blog.excerpt}
+        </p>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#0f172a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 900 }}>
+                 {blog.author.split(' ').map(n => n[0]).join('')}
+              </div>
+              <span style={{ fontSize: '13px', fontWeight: 800, color: '#334155' }}>{blog.author}</span>
+           </div>
+           <div style={{ display: 'flex', gap: '16px', color: '#94a3b8' }}>
+              <Bookmark size={18} />
+              <Share2 size={18} />
+           </div>
         </div>
       </div>
-      <h3 style={{ fontSize: '22px', fontWeight: 900, color: '#0f172a', lineHeight: 1.3, marginBottom: '16px', letterSpacing: '-0.02em' }}>
-        {blog.title}
-      </h3>
-      <p style={{ fontSize: '15px', color: '#64748b', lineHeight: 1.6, marginBottom: '24px' }}>
-        {blog.excerpt}
-      </p>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FF9431', fontWeight: 900, fontSize: '14px' }}>
-        Read Full Article <ArrowRight size={16} />
-      </div>
-    </div>
-  </motion.div>
-);
+    </motion.div>
+  );
+};
 
 BlogCard.propTypes = {
-  blog: PropTypes.shape({
-    image: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    category: PropTypes.string.isRequired,
-    date: PropTypes.string.isRequired,
-    readTime: PropTypes.string.isRequired,
-    excerpt: PropTypes.string.isRequired
-  }).isRequired,
-  delay: PropTypes.number
+  blog: PropTypes.object.isRequired,
+  horizontal: PropTypes.bool
 };
 
 export default function BlogPage() {
-  const [cat, setCat] = useState('All');
+  const [activeTab, setActiveTab] = useState('All');
   const [search, setSearch] = useState('');
-
-  const blogs = [
-    { id: 1, title: 'How to Monetize Your Local Audience', category: 'Guides', date: 'April 15, 2026', readTime: '5 min', excerpt: 'Discover the secrets of working with hyper-local brands in Tier 2 cities and how to price your services for maximum value.', image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800' },
-    { id: 2, title: 'Top 10 Creators in Rajasthan for 2026', category: 'Trends', date: 'April 10, 2026', readTime: '8 min', excerpt: 'Our curated list of the most influential voices from the Pink City and beyond. Who is making waves in Bharat?', image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800' },
-    { id: 3, title: 'Understanding Brand Deals in Hindi', category: 'Industry', date: 'April 05, 2026', readTime: '6 min', excerpt: 'Negotiating contracts can be tricky when languages vary. Here is what every creator needs to know about professional agreements.', image: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=800' },
-    { id: 4, title: 'The Rise of Regional Content Creators', category: 'Culture', date: 'March 28, 2026', readTime: '10 min', excerpt: 'Why Bharat is no longer just watching — it is creating. A deep dive into the cultural shift in Indian digital spaces.', image: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=800' },
-    { id: 5, title: 'SEO for Creators: Get Found Locally', category: 'Guides', date: 'March 22, 2026', readTime: '4 min', excerpt: 'Simple tips to make your creator portfolio rank on Google when brands search for local talent in your city.', image: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=800' },
-    { id: 6, title: 'CreatorBharat v3: What is New?', category: 'News', date: 'March 15, 2026', readTime: '3 min', excerpt: 'Announcing the launch of our most advanced platform yet. Built with ❤️ for the next generation of digital Bharat.', image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800' }
-  ];
-
-  const categories = ['All', 'Guides', 'Trends', 'Industry', 'Culture', 'News'];
-  const filtered = blogs.filter(b => 
-    (cat === 'All' || b.category === cat) && 
-    (b.title.toLowerCase().includes(search.toLowerCase()))
+  const featured = blogData.find(b => b.featured);
+  const filtered = blogData.filter(b => 
+    !b.featured && 
+    (activeTab === 'All' || b.category === activeTab) &&
+    b.title.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div style={{ background: '#fcfcfc', minHeight: '100vh', overflowX: 'hidden' }}>
-      {/* Hero */}
-      <section style={{ 
-        background: '#050505', 
-        padding: '160px 24px 100px', 
+    <div style={{ background: '#fff', minHeight: '100vh', color: '#0f172a' }}>
+      
+      {/* Newspaper Header */}
+      <header style={{ 
+        padding: '160px 24px 60px', 
+        borderBottom: '2px solid #0f172a', 
         textAlign: 'center',
-        position: 'relative',
-        overflow: 'hidden'
+        background: '#fcfcfc'
       }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 70% 30%, rgba(255, 148, 49, 0.1), transparent 70%)' }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #FF9431, #fff, #128807)' }} />
-
-        <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              gap: '8px', 
-              background: 'rgba(255, 255, 255, 0.05)', 
-              padding: '8px 16px', 
-              borderRadius: '100px',
-              marginBottom: '32px',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
-            }}
-          >
-            <Sparkles size={14} color="#FF9431" />
-            <span style={{ fontSize: '13px', fontWeight: 800, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Insights & News</span>
-          </motion.div>
-
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            style={{ fontSize: 'clamp(40px, 8vw, 64px)', fontWeight: 950, color: '#fff', marginBottom: '24px', letterSpacing: '-0.04em' }}
-          >
-            The Voice of <br />
-            <span style={{ color: '#FF9431' }}>Digital Bharat.</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            style={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.6)', maxWidth: '600px', margin: '0 auto 48px', lineHeight: 1.6 }}
-          >
-            Stay updated with the latest trends, guides, and stories from India's rising creator economy.
-          </motion.p>
-
-          {/* Search Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            style={{ 
-              maxWidth: '500px', 
-              margin: '0 auto',
-              position: 'relative'
-            }}
-          >
-            <Search style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.4)' }} size={20} />
-            <input 
-              type="text" 
-              placeholder="Search articles..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{ 
-                width: '100%', 
-                padding: '20px 20px 20px 60px', 
-                borderRadius: '100px', 
-                border: '1px solid rgba(255,255,255,0.1)', 
-                background: 'rgba(255,255,255,0.05)', 
-                color: '#fff',
-                fontSize: '16px',
-                outline: 'none',
-                backdropFilter: 'blur(10px)'
-              }}
-            />
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Category Filter */}
-      <section style={{ padding: '40px 24px', background: '#fff', borderBottom: '1px solid #f1f5f9' }}>
-         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
-            {categories.map(c => (
-              <button 
-                key={c}
-                onClick={() => setCat(c)}
-                style={{
-                  padding: '10px 24px',
-                  borderRadius: '100px',
-                  border: '1.5px solid ' + (cat === c ? '#FF9431' : '#f1f5f9'),
-                  background: cat === c ? 'rgba(255, 148, 49, 0.05)' : 'transparent',
-                  color: cat === c ? '#FF9431' : '#64748b',
-                  fontSize: '14px',
-                  fontWeight: 900,
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                {c.toUpperCase()}
-              </button>
-            ))}
-         </div>
-      </section>
-
-      {/* Blog Grid */}
-      <section style={{ padding: '80px 24px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', 
-            gap: '40px' 
-          }}>
-            {filtered.map((blog, i) => (
-              <BlogCard key={blog.id} blog={blog} delay={0.1 * (i % 3)} />
-            ))}
-          </div>
-
-          {filtered.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '100px 0' }}>
-               <Newspaper size={64} color="#cbd5e1" style={{ marginBottom: '24px' }} />
-               <h3 style={{ fontSize: '24px', fontWeight: 900, color: '#475569' }}>No articles found matching your search.</h3>
-               <button 
-                 onClick={() => {setCat('All'); setSearch('');}}
-                 style={{ color: '#FF9431', fontWeight: 800, background: 'none', border: 'none', cursor: 'pointer', marginTop: '16px' }}
-               >
-                 Clear all filters
-               </button>
+         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }}
+              style={{ fontSize: '13px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.3em', marginBottom: '16px', color: '#64748b' }}
+            >
+              Bharat's Premium Creator Intelligence Hub
+            </motion.div>
+            <motion.h1 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{ fontSize: 'clamp(48px, 10vw, 120px)', fontWeight: 950, letterSpacing: '-0.06em', margin: '0 0 24px', lineHeight: 0.85 }}
+            >
+              THE BHARAT <span style={{ color: '#FF9431' }}>JOURNAL.</span>
+            </motion.h1>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '24px', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', padding: '16px 0' }}>
+               <span style={{ fontSize: '13px', fontWeight: 900, color: '#0f172a' }}>VOL. III NO. 08</span>
+               <div style={{ height: '14px', width: '1px', background: '#cbd5e1' }} />
+               <span style={{ fontSize: '13px', fontWeight: 900, color: '#0f172a' }}>{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase()}</span>
+               <div style={{ height: '14px', width: '1px', background: '#cbd5e1' }} />
+               <span style={{ fontSize: '13px', fontWeight: 900, color: '#FF9431' }}>LIVE UPDATES</span>
             </div>
-          )}
-        </div>
-      </section>
+         </div>
+      </header>
 
-      {/* Newsletter Section */}
-      <section style={{ padding: '100px 24px', background: '#f8fafc' }}>
-        <div style={{ 
-          maxWidth: '1000px', 
-          margin: '0 auto', 
-          background: '#fff', 
-          borderRadius: '40px', 
-          padding: '80px 40px', 
-          border: '1px solid #e2e8f0',
-          textAlign: 'center',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-           <div style={{ 
-             position: 'absolute', 
-             top: '-50%', 
-             left: '-10%', 
-             width: '40%', 
-             height: '100%', 
-             background: 'rgba(255, 148, 49, 0.03)', 
-             borderRadius: '50%', 
-             filter: 'blur(60px)' 
-           }} />
-           
-           <div style={{ position: 'relative', zIndex: 1 }}>
-              <div style={{ 
-                width: '64px', 
-                height: '64px', 
-                background: 'rgba(255, 148, 49, 0.1)', 
-                borderRadius: '20px', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                color: '#FF9431',
-                margin: '0 auto 24px'
-              }}>
-                 <Rocket size={32} />
-              </div>
-              <h2 style={{ fontSize: '36px', fontWeight: 950, color: '#0f172a', marginBottom: '16px', letterSpacing: '-0.02em' }}>Never Miss a Story.</h2>
-              <p style={{ color: '#64748b', fontSize: '18px', maxWidth: '500px', margin: '0 auto 40px', lineHeight: 1.6 }}>
-                Join 5,000+ creators and brands receiving weekly insights on Bharat's digital landscape.
-              </p>
-              
-              <div style={{ 
-                maxWidth: '500px', 
-                margin: '0 auto', 
-                display: 'flex', 
-                gap: '12px',
-                flexDirection: 'column'
-              }}>
-                <input 
-                  type="email" 
-                  placeholder="Enter your email address" 
-                  style={{ 
-                    width: '100%', 
-                    padding: '20px 24px', 
-                    borderRadius: '100px', 
-                    border: '1px solid #e2e8f0', 
-                    fontSize: '16px', 
-                    fontWeight: 600,
-                    outline: 'none'
-                  }} 
-                />
-                <button style={{ 
-                  width: '100%', 
-                  padding: '20px', 
-                  borderRadius: '100px', 
-                  background: '#0f172a', 
-                  color: '#fff', 
-                  border: 'none', 
-                  fontSize: '16px', 
-                  fontWeight: 900, 
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px'
-                }}>
-                  Subscribe to Newsletter <ChevronRight size={18} />
-                </button>
-              </div>
-           </div>
-        </div>
-      </section>
+      {/* Categories Navigation */}
+      <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(20px)', borderBottom: '1px solid #f1f5f9' }}>
+         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', overflowX: 'auto', padding: '0 24px', scrollbarWidth: 'none' }}>
+            {categories.map(c => (
+               <button
+                 key={c}
+                 onClick={() => setActiveTab(c)}
+                 style={{
+                   padding: '20px 24px',
+                   border: 'none',
+                   background: 'none',
+                   fontSize: '13px',
+                   fontWeight: 900,
+                   color: activeTab === c ? '#FF9431' : '#64748b',
+                   cursor: 'pointer',
+                   whiteSpace: 'nowrap',
+                   borderBottom: '2px solid ' + (activeTab === c ? '#FF9431' : 'transparent'),
+                   transition: 'all 0.2s ease'
+                 }}
+               >
+                 {c.toUpperCase()}
+               </button>
+            ))}
+            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', padding: '0 20px' }}>
+               <Search size={18} color="#94a3b8" />
+            </div>
+         </div>
+      </nav>
+
+      {/* Main Content Layout */}
+      <main style={{ maxWidth: '1200px', margin: '60px auto 120px', padding: '0 24px' }}>
+         
+         <div style={{ display: 'grid', gridTemplateColumns: globalThis.innerWidth > 1024 ? '1fr 340px' : '1fr', gap: '60px' }}>
+            
+            {/* Left Column: Feed */}
+            <div>
+               {/* Featured Article */}
+               {activeTab === 'All' && !search && featured && (
+                  <motion.section 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    style={{ marginBottom: '80px', borderBottom: '4px solid #0f172a', paddingBottom: '60px' }}
+                  >
+                     <div style={{ position: 'relative', width: '100%', height: '500px', borderRadius: '40px', overflow: 'hidden', marginBottom: '40px' }}>
+                        <img src={featured.image} alt={featured.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)' }} />
+                        <div style={{ position: 'absolute', bottom: '40px', left: '40px', right: '40px' }}>
+                           <Bdg color="orange">{featured.category.toUpperCase()}</Bdg>
+                           <h2 style={{ fontSize: 'clamp(32px, 5vw, 56px)', fontWeight: 950, color: '#fff', margin: '20px 0', lineHeight: 1.05, letterSpacing: '-0.04em' }}>
+                              {featured.title}
+                           </h2>
+                           <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: 'rgba(255,255,255,0.8)', fontSize: '15px', fontWeight: 600 }}>
+                              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Calendar size={16} /> {featured.date}</span>
+                              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Clock size={16} /> {featured.readTime} Read</span>
+                           </div>
+                        </div>
+                     </div>
+                     <p style={{ fontSize: '20px', color: '#475569', lineHeight: 1.6, fontWeight: 500, maxWidth: '800px' }}>
+                        {featured.excerpt}
+                     </p>
+                     <Btn lg style={{ marginTop: '32px', borderRadius: '100px' }}>Read Full Exclusive Story</Btn>
+                  </motion.section>
+               )}
+
+               {/* Latest News Feed */}
+               <section>
+                  <h2 style={{ fontSize: '32px', fontWeight: 950, marginBottom: '40px', letterSpacing: '-0.03em' }}>
+                     {activeTab === 'All' ? 'Latest Headlines' : `${activeTab} Headlines`}
+                  </h2>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                     {filtered.map(blog => (
+                        <BlogCard key={blog.id} blog={blog} horizontal={globalThis.innerWidth > 768} />
+                     ))}
+                  </div>
+               </section>
+            </div>
+
+            {/* Right Column: Sidebar */}
+            {globalThis.innerWidth > 1024 && (
+               <aside style={{ position: 'sticky', top: '100px', height: 'fit-content' }}>
+                  
+                  {/* Search Sidebar */}
+                  <div style={{ marginBottom: '60px' }}>
+                     <h3 style={{ fontSize: '18px', fontWeight: 900, marginBottom: '24px', borderBottom: '2px solid #0f172a', display: 'inline-block' }}>SEARCH ARCHIVE</h3>
+                     <div style={{ position: 'relative' }}>
+                        <Search style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} size={18} />
+                        <input 
+                          type="text" 
+                          placeholder="Type keywords..." 
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          style={{ 
+                            width: '100%', 
+                            padding: '16px', 
+                            borderRadius: '12px', 
+                            border: '1px solid #f1f5f9', 
+                            background: '#f8fafc',
+                            fontSize: '14px',
+                            fontWeight: 600,
+                            outline: 'none'
+                          }} 
+                        />
+                     </div>
+                  </div>
+
+                  {/* Trending Now */}
+                  <div style={{ marginBottom: '60px' }}>
+                     <h3 style={{ fontSize: '18px', fontWeight: 900, marginBottom: '24px', borderBottom: '2px solid #0f172a', display: 'inline-block' }}>TRENDING NOW</h3>
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                        {blogData.slice(0, 4).map((b, i) => (
+                           <div key={b.id} style={{ display: 'flex', gap: '16px', cursor: 'pointer' }}>
+                              <span style={{ fontSize: '32px', fontWeight: 950, color: '#e2e8f0', lineHeight: 0.8 }}>0{i+1}</span>
+                              <div>
+                                 <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a', margin: '0 0 6px', lineHeight: 1.4 }}>{b.title}</h4>
+                                 <span style={{ fontSize: '12px', color: '#FF9431', fontWeight: 900 }}>{b.category.toUpperCase()}</span>
+                              </div>
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+
+                  {/* Newsletter Widget */}
+                  <div style={{ background: '#0f172a', padding: '32px', borderRadius: '32px', color: '#fff' }}>
+                     <Rocket size={32} color="#FF9431" style={{ marginBottom: '20px' }} />
+                     <h3 style={{ fontSize: '24px', fontWeight: 950, marginBottom: '12px', lineHeight: 1.1 }}>Join 10k+ Decision Makers.</h3>
+                     <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginBottom: '24px', lineHeight: 1.6 }}>Get the weekly creator intelligence report directly in your inbox.</p>
+                     <input 
+                        type="email" 
+                        placeholder="Email address" 
+                        style={{ 
+                           width: '100%', 
+                           padding: '14px', 
+                           borderRadius: '12px', 
+                           border: 'none', 
+                           background: 'rgba(255,255,255,0.1)', 
+                           color: '#fff', 
+                           marginBottom: '12px',
+                           fontSize: '14px'
+                        }} 
+                     />
+                     <Btn style={{ width: '100%', background: '#FF9431', color: '#fff', border: 'none', borderRadius: '12px' }}>SUBSCRIBE</Btn>
+                  </div>
+
+               </aside>
+            )}
+
+         </div>
+
+      </main>
+
+      {/* Footer Branding */}
+      <footer style={{ padding: '80px 24px', borderTop: '1px solid #f1f5f9', textAlign: 'center', background: '#fcfcfc' }}>
+         <Newspaper size={40} color="#cbd5e1" style={{ marginBottom: '24px' }} />
+         <p style={{ fontSize: '14px', color: '#94a3b8', fontWeight: 600 }}>&copy; 2026 CreatorBharat Media. All rights reserved. <br /> Built for the Next Billion Creators.</p>
+      </footer>
+
     </div>
   );
 }
+

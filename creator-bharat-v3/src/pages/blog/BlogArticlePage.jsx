@@ -2,44 +2,48 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion, useScroll, useSpring } from 'framer-motion';
 import { 
-  ArrowLeft, 
   Clock, 
-  MessageCircle as Twitter, 
-  Briefcase as Linkedin,
-  MessageCircle,
+  Twitter,
+  Linkedin,
+  Facebook,
   Bookmark,
-  ChevronRight,
-  Sparkles
+  Sparkles,
+  Copy
 } from 'lucide-react';
+import { Btn, Bdg } from '../../components/Primitives';
+import { useNavigate } from 'react-router-dom';
 
-const SocialButton = ({ icon: Icon, color }) => (
+const SocialButton = ({ icon: Icon, color, label }) => (
   <motion.button
-    whileHover={{ scale: 1.1, backgroundColor: color, color: '#fff' }}
+    whileHover={{ scale: 1.1, backgroundColor: color + '10' }}
     whileTap={{ scale: 0.9 }}
+    aria-label={label}
     style={{
-      width: '44px',
-      height: '44px',
-      borderRadius: '12px',
+      width: '48px',
+      height: '48px',
+      borderRadius: '16px',
       border: '1px solid #f1f5f9',
       background: '#fff',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      color: '#64748b',
+      color: color,
       cursor: 'pointer',
       transition: 'all 0.2s ease'
     }}
   >
-    <Icon size={18} />
+    <Icon size={20} />
   </motion.button>
 );
 
 SocialButton.propTypes = {
   icon: PropTypes.elementType.isRequired,
-  color: PropTypes.string.isRequired
+  color: PropTypes.string.isRequired,
+  label: PropTypes.string
 };
 
 export default function BlogArticlePage() {
+  const navigate = useNavigate();
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -54,18 +58,25 @@ export default function BlogArticlePage() {
     return () => globalThis.removeEventListener('resize', h);
   }, []);
 
-  // Mock article data (fallback if not selected)
   const article = {
-    title: 'How to Monetize Your Local Audience',
-    category: 'Guides',
-    date: 'April 15, 2026',
-    readTime: '5 min',
-    image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200',
-    excerpt: 'Beyond the vanity metrics of likes and followers, lies the real potential of Tier 2 & 3 Bharat. Here is how you can convert your local influence into a sustainable business.',
+    id: 1,
+    title: 'The Silent Revolution: How Tier 3 India is Redefining Digital Content',
+    category: 'Industry News',
+    date: 'May 08, 2026',
+    readTime: '12 min',
+    excerpt: 'Deep dive into the rural creator economy that is outpacing urban growth by 40%. Why brands are shifting their budgets to regional influencers.',
+    image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200',
+    author: {
+      name: 'Anita Deshmukh',
+      role: 'Chief Editor, Bharat Journal',
+      bio: 'Anita has over 15 years of experience in regional media and digital transformation. She leads our creator intelligence unit.',
+      avatar: 'AD'
+    }
   };
 
   return (
-    <div style={{ background: '#fff', minHeight: '100vh', overflowX: 'hidden' }}>
+    <div style={{ background: '#fff', minHeight: '100vh', color: '#0f172a' }}>
+      
       {/* Reading Progress Bar */}
       <motion.div
         style={{
@@ -73,294 +84,199 @@ export default function BlogArticlePage() {
           top: 0,
           left: 0,
           right: 0,
-          height: '4px',
+          height: '5px',
           background: '#FF9431',
           transformOrigin: '0%',
-          zIndex: 1001,
+          zIndex: 2000,
           scaleX
         }}
       />
 
-      {/* Header / Hero */}
-      <section style={{ 
-        background: '#050505', 
-        padding: '160px 24px 80px', 
-        position: 'relative',
-        overflow: 'hidden'
+      {/* Article Header (Logo Only) */}
+      <header style={{ 
+        padding: '160px 24px 40px', 
+        textAlign: 'center',
+        background: '#fcfcfc',
+        borderBottom: '1px solid #f1f5f9'
       }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 30% 70%, rgba(255, 148, 49, 0.1), transparent 70%)' }} />
-        
-        <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <motion.button 
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            style={{ 
-              background: 'rgba(255, 255, 255, 0.05)', 
-              border: '1px solid rgba(255, 255, 255, 0.1)', 
-              color: '#fff', 
-              padding: '10px 20px', 
-              borderRadius: '100px', 
-              fontSize: '13px', 
-              fontWeight: 800, 
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              marginBottom: '32px'
-            }}
-          >
-            <ArrowLeft size={16} /> Back to Hub
-          </motion.button>
-
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            style={{ display: 'flex', gap: '12px', marginBottom: '24px', alignItems: 'center' }}
-          >
-            <span style={{ 
-              background: 'rgba(255, 148, 49, 0.15)', 
-              color: '#FF9431', 
-              padding: '6px 16px', 
-              borderRadius: '100px', 
-              fontSize: '12px', 
-              fontWeight: 900,
-              letterSpacing: '0.05em'
-            }}>
-              {article.category.toUpperCase()}
-            </span>
-            <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }} />
-            <span style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '14px', fontWeight: 600 }}>
-              {article.date} • {article.readTime} Read
-            </span>
-          </motion.div>
-
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            style={{ 
-              fontSize: 'clamp(32px, 6vw, 56px)', 
-              fontWeight: 950, 
-              color: '#fff', 
-              lineHeight: 1.1, 
-              marginBottom: '40px',
-              letterSpacing: '-0.04em'
-            }}
-          >
-            {article.title}
-          </motion.h1>
-
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            style={{ display: 'flex', alignItems: 'center', gap: '16px' }}
-          >
-            <div style={{ 
-              width: '48px', 
-              height: '48px', 
-              borderRadius: '50%', 
-              background: 'linear-gradient(135deg, #FF9431, #FFC187)',
-              border: '2px solid rgba(255, 255, 255, 0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 900,
-              color: '#fff'
-            }}>CB</div>
-            <div>
-              <div style={{ color: '#fff', fontSize: '16px', fontWeight: 800 }}>CreatorBharat Editorial</div>
-              <div style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '13px', fontWeight: 600 }}>Expert Analysis for Bharat</div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Article Content */}
-      <section style={{ padding: '80px 24px', background: '#fff' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: mob ? '1fr' : '80px 1fr 300px', gap: '60px' }}>
-          
-          {/* Left Sidebar (Desktop Only) */}
-          {!mob && (
-            <div style={{ position: 'sticky', top: '100px', height: 'fit-content', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <SocialButton icon={Twitter} color="#1DA1F2" />
-              <SocialButton icon={Linkedin} color="#0077B5" />
-              <SocialButton icon={MessageCircle} color="#25D366" />
-              <SocialButton icon={Bookmark} color="#FF9431" />
-            </div>
-          )}
-
-          {/* Main Content */}
-          <div style={{ maxWidth: '800px' }}>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-              style={{ 
-                borderRadius: '40px', 
-                overflow: 'hidden', 
-                marginBottom: '60px',
-                boxShadow: '0 40px 80px rgba(0,0,0,0.1)'
-              }}
+         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+            <motion.h2 
+              onClick={() => navigate('/blog')}
+              style={{ cursor: 'pointer', fontSize: '24px', fontWeight: 950, letterSpacing: '-0.04em', margin: 0, display: 'inline-block' }}
             >
-              <img src={article.image} alt={article.title} style={{ width: '100%', display: 'block' }} />
-            </motion.div>
+              THE BHARAT <span style={{ color: '#FF9431' }}>JOURNAL.</span>
+            </motion.h2>
+         </div>
+      </header>
 
-            <article style={{ 
-              fontSize: '20px', 
-              color: '#334155', 
-              lineHeight: 1.8,
-              fontFamily: "'Inter', sans-serif"
+      <main style={{ maxWidth: '1200px', margin: '60px auto 120px', padding: '0 24px' }}>
+         
+         {/* Article Breadcrumb & Meta */}
+         <div style={{ maxWidth: '800px', margin: '0 auto 40px', textAlign: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+               <Bdg color="orange">{article.category.toUpperCase()}</Bdg>
+               <span style={{ fontSize: '13px', color: '#94a3b8', fontWeight: 700 }}>{article.date}</span>
+            </div>
+            <h1 style={{ 
+              fontSize: 'clamp(32px, 6vw, 64px)', 
+              fontWeight: 950, 
+              lineHeight: 1.05, 
+              letterSpacing: '-0.05em',
+              marginBottom: '32px'
             }}>
-              <p style={{ fontSize: '24px', fontWeight: 700, color: '#0f172a', marginBottom: '40px', lineHeight: 1.5, letterSpacing: '-0.01em' }}>
-                {article.excerpt}
-              </p>
+              {article.title}
+            </h1>
+            <p style={{ fontSize: '20px', color: '#475569', lineHeight: 1.6, fontWeight: 500, margin: '0 auto 40px' }}>
+               {article.excerpt}
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px' }}>
+               <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#0f172a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>
+                  {article.author.avatar}
+               </div>
+               <div style={{ textAlign: 'left' }}>
+                  <div style={{ fontSize: '15px', fontWeight: 900 }}>{article.author.name}</div>
+                  <div style={{ fontSize: '13px', color: '#64748b', fontWeight: 700 }}>{article.author.role}</div>
+               </div>
+            </div>
+         </div>
 
-              <p>Bharat ki creator economy ab tezi se badh rahi hai. Tier 2 aur Tier 3 cities ke creators ab national brands ki pehli pasand ban rahe hain. Iska sabse bada kaaran hai unka 'Authenticity' aur local connect.</p>
-              
-              <h3 style={{ fontSize: '28px', fontWeight: 900, color: '#0f172a', margin: '48px 0 24px', letterSpacing: '-0.02em' }}>1. Local Language ka Power</h3>
-              <p>Hindi, Tamil, Telugu, aur Marathi jaise languages mein content banane wale creators ki engagement rate metro creators se 3x zyada hoti hai. Brands ko pata hai ki asli Bharat inhi languages mein basta hai. Jab aap apni boli mein baat karte hain, toh audience aap par zyada trust karti hai.</p>
-              
-              <blockquote style={{ 
-                borderLeft: '4px solid #FF9431', 
-                padding: '32px 40px', 
-                background: '#f8fafc', 
-                borderRadius: '0 24px 24px 0',
-                margin: '48px 0',
-                fontSize: '22px',
-                fontWeight: 700,
-                color: '#0f172a',
-                fontStyle: 'italic',
-                lineHeight: 1.5
-              }}>
-                "Future of influence is local. Metro markets are saturated, growth is coming from the heartlands. If you are a creator in a Tier 2 city, you are sitting on a goldmine."
-              </blockquote>
-              
-              <h3 style={{ fontSize: '28px', fontWeight: 900, color: '#0f172a', margin: '48px 0 24px', letterSpacing: '-0.02em' }}>2. Professionalism is Key</h3>
-              <p>Sirf video banana kaafi nahi hai. Ek professional portfolio, clear rates, aur timely delivery hi aapko ek professional creator banati hai. CreatorBharat inhi cheezon mein aapki help karta hai. Aapka media kit aapka sabse bada marketing tool hai.</p>
-              
-              <p>Aaj ke digital era mein, brands sirf followers nahi, balki convertion aur engagement dhund rahe hain. Tier 2/3 India ke creators ke paas wo dedicated audience hai jo unke har suggestion ko follow karti hai.</p>
+         {/* Hero Image */}
+         <div style={{ width: '100%', height: 'clamp(300px, 60vh, 700px)', borderRadius: '40px', overflow: 'hidden', marginBottom: '60px', boxShadow: '0 40px 100px rgba(0,0,0,0.1)' }}>
+            <img src={article.image} alt={article.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+         </div>
+
+         {/* Content Grid */}
+         <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '80px 1fr 300px', gap: '60px' }}>
+            
+            {/* Share Sidebar */}
+            {!mob && (
+               <aside style={{ position: 'sticky', top: '120px', height: 'fit-content', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <SocialButton icon={Twitter} color="#1DA1F2" label="Share on Twitter" />
+                  <SocialButton icon={Linkedin} color="#0077B5" label="Share on LinkedIn" />
+                  <SocialButton icon={Facebook} color="#1877F2" label="Share on Facebook" />
+                  <SocialButton icon={Copy} color="#64748b" label="Copy Link" />
+                  <div style={{ height: '40px', width: '1px', background: '#e2e8f0', margin: '12px auto' }} />
+                  <SocialButton icon={Bookmark} color="#FF9431" label="Save Article" />
+               </aside>
+            )}
+
+            {/* Main Article Content */}
+            <article style={{ maxWidth: '800px', margin: '0 auto' }}>
+               <div style={{ 
+                 fontSize: '20px', 
+                 lineHeight: 1.8, 
+                 color: '#334155',
+                 fontFamily: 'Inter, system-ui, sans-serif'
+               }}>
+                  <p>Bharat ki digital landscape mein ek anokhi kranti aa rahi hai. Jab hum digital Bharat ki baat karte hain, toh aksar hamara dhyan sirf metro cities jaise Delhi, Mumbai ya Bangalore par jata hai. Lekin asli kahani toh Tier 2 aur Tier 3 Bharat ke chote shehron aur gaon mein likhi ja rahi hai.</p>
+                  
+                  <h2 style={{ fontSize: '32px', fontWeight: 950, color: '#0f172a', margin: '48px 0 24px', letterSpacing: '-0.03em' }}>The Power of Hyper-Localism</h2>
+                  <p>Regional content creators ab sirf 'entertainers' nahi rahe, balki wo ab apne community ke sabse bade 'opinion leaders' ban chuke hain. Ek local creator jo apni boli (dialect) mein baat karta hai, uska trust factor ek global influencer se kahi zyada hota hai.</p>
+                  
+                  <blockquote style={{ 
+                    borderLeft: '4px solid #FF9431', 
+                    padding: '32px 40px', 
+                    background: '#f8fafc', 
+                    borderRadius: '0 24px 24px 0',
+                    margin: '48px 0',
+                    fontSize: '22px',
+                    fontWeight: 700,
+                    color: '#0f172a',
+                    fontStyle: 'italic',
+                    lineHeight: 1.5
+                  }}>
+                    "The Next Billion Users won't consume content in English. They will consume it in the language they dream in. That's where the future of Bharat's economy lies."
+                  </blockquote>
+
+                  <p>Brands ab is baat ko samajh chuke hain. Is saal ke marketing reports ke mutabiq, 60% se zyada leading brands ne apna budget regional marketing ki taraf shift kiya hai. Iska seedha fayda Tier 3 creators ko mil raha hai jo apne culture aur roots se jude hue hain.</p>
+
+                  <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', margin: '40px 0 20px', letterSpacing: '-0.02em' }}>Monetization Challenges & Solutions</h3>
+                  <p>Lekin sirf popularity kaafi nahi hai. Ek creator ko businessman banne ke liye sahi tools aur ecosystem ki zaroorat hoti hai. CreatorBharat isi gap ko bharne ke liye banaya gaya hai. Hum creators ko sirf brands se nahi jodte, balki unhe professional media kits aur dashboard analytics provide karte hain taaki wo apna business scale kar sakein.</p>
+                  
+                  <div style={{ padding: '40px', background: '#0f172a', borderRadius: '32px', color: '#fff', margin: '60px 0' }}>
+                     <Sparkles size={32} color="#FF9431" style={{ marginBottom: '24px' }} />
+                     <h3 style={{ fontSize: '24px', fontWeight: 950, marginBottom: '16px' }}>Ready to Scale Your Journey?</h3>
+                     <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '32px' }}>Join the elite 1% of regional creators on Bharat's first professional marketplace.</p>
+                     <Btn style={{ background: '#FF9431', color: '#fff', border: 'none' }}>Create Your Media Kit Now</Btn>
+                  </div>
+               </div>
+
+               {/* Author Bio Card */}
+               <div style={{ marginTop: '100px', padding: '48px', background: '#f8fafc', borderRadius: '40px', display: 'flex', flexWrap: mob ? 'wrap' : 'nowrap', gap: '32px', alignItems: 'center' }}>
+                  <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: '#0f172a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '24px', flexShrink: 0 }}>
+                     {article.author.avatar}
+                  </div>
+                  <div>
+                     <h4 style={{ fontSize: '20px', fontWeight: 950, marginBottom: '8px' }}>About {article.author.name}</h4>
+                     <p style={{ fontSize: '15px', color: '#64748b', lineHeight: 1.6, margin: 0 }}>{article.author.bio}</p>
+                     <div style={{ display: 'flex', gap: '16px', marginTop: '20px' }}>
+                        <Btn sm style={{ borderRadius: '8px' }}>Follow Anita</Btn>
+                        <Btn sm outline style={{ borderRadius: '8px' }}>Read More Posts</Btn>
+                     </div>
+                  </div>
+               </div>
             </article>
 
-            {/* Author Footer */}
-            <div style={{ 
-              marginTop: '80px', 
-              paddingTop: '60px', 
-              borderTop: '1px solid #f1f5f9',
-              display: 'flex',
-              gap: '24px',
-              alignItems: 'center'
-            }}>
-               <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#f1f5f9', flexShrink: 0, overflow: 'hidden' }}>
-                  <img src="https://ui-avatars.com/api/?name=Creator+Bharat&background=050505&color=fff" alt="Author" style={{ width: '100%', height: '100%' }} />
-               </div>
-               <div>
-                  <h4 style={{ fontSize: '20px', fontWeight: 900, color: '#0f172a', marginBottom: '8px' }}>Written by CreatorBharat Team</h4>
-                  <p style={{ color: '#64748b', fontSize: '15px', lineHeight: 1.6, margin: 0 }}>
-                    We are on a mission to build India's elite infrastructure for the next generation of digital creators. Join us as we build the future of Bharat.
-                  </p>
-               </div>
-            </div>
-          </div>
+            {/* Right Sidebar: Related & Trending */}
+            {!mob && (
+               <aside style={{ position: 'sticky', top: '120px', height: 'fit-content' }}>
+                  <h3 style={{ fontSize: '16px', fontWeight: 950, marginBottom: '24px', borderBottom: '2px solid #0f172a', display: 'inline-block' }}>CONTINUE READING</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                     {[2, 3, 4].map(i => (
+                        <button 
+                          key={i} 
+                          style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, textAlign: 'left', width: '100%', fontFamily: 'inherit', color: 'inherit' }} 
+                          onClick={() => navigate(`/blog/${i}`)}
+                          aria-label="Read related article"
+                        >
+                           <div style={{ height: '120px', width: '100%', background: '#f1f5f9', borderRadius: '16px', marginBottom: '12px', overflow: 'hidden' }}>
+                              <img src={`https://images.unsplash.com/photo-${1500000000000 + i * 100000}?w=400`} alt="related" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                           </div>
+                           <h4 style={{ fontSize: '14px', fontWeight: 800, lineHeight: 1.4, margin: '0 0 6px' }}>Exploring the impact of regional music on digital trends</h4>
+                           <span style={{ fontSize: '11px', color: '#FF9431', fontWeight: 900 }}>TRENDS • 6 MIN READ</span>
+                        </button>
+                     ))}
+                  </div>
+               </aside>
+            )}
 
-          {/* Right Sidebar (Desktop Only) */}
-          {!mob && (
-            <div style={{ position: 'sticky', top: '100px', height: 'fit-content' }}>
-              <div style={{ 
-                background: '#f8fafc', 
-                borderRadius: '32px', 
-                padding: '32px', 
-                border: '1px solid #e2e8f0' 
-              }}>
-                <h4 style={{ fontSize: '18px', fontWeight: 900, color: '#0f172a', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Sparkles size={18} color="#FF9431" /> Pro Tips
-                </h4>
-                <ul style={{ padding: 0, margin: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <li style={{ fontSize: '14px', color: '#475569', fontWeight: 600, display: 'flex', gap: '8px' }}>
-                    <ChevronRight size={14} color="#FF9431" style={{ flexShrink: 0, marginTop: '2px' }} />
-                    Verify your identity early for 2x trust.
-                  </li>
-                  <li style={{ fontSize: '14px', color: '#475569', fontWeight: 600, display: 'flex', gap: '8px' }}>
-                    <ChevronRight size={14} color="#FF9431" style={{ flexShrink: 0, marginTop: '2px' }} />
-                    Link all social accounts to your CB profile.
-                  </li>
-                  <li style={{ fontSize: '14px', color: '#475569', fontWeight: 600, display: 'flex', gap: '8px' }}>
-                    <ChevronRight size={14} color="#FF9431" style={{ flexShrink: 0, marginTop: '2px' }} />
-                    Update your rates every quarter.
-                  </li>
-                </ul>
-              </div>
+         </div>
 
-              {/* Newsletter Small */}
-              <div style={{ 
-                background: '#050505', 
-                borderRadius: '32px', 
-                padding: '32px', 
-                marginTop: '24px',
-                color: '#fff'
-              }}>
-                 <h5 style={{ fontSize: '16px', fontWeight: 900, marginBottom: '12px' }}>Subscribe to News</h5>
-                 <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '20px' }}>Join 5k+ creators getting early insights.</p>
-                 <input 
-                  type="email" 
-                  placeholder="Your email" 
-                  style={{ 
-                    width: '100%', 
-                    padding: '12px 16px', 
-                    borderRadius: '12px', 
-                    border: 'none', 
-                    background: 'rgba(255,255,255,0.1)', 
-                    color: '#fff', 
-                    marginBottom: '12px',
-                    fontSize: '14px'
-                  }} 
-                 />
-                 <button style={{ 
-                   width: '100%', 
-                   padding: '12px', 
-                   borderRadius: '12px', 
-                   background: '#FF9431', 
-                   color: '#fff', 
-                   border: 'none', 
-                   fontWeight: 800, 
-                   fontSize: '14px', 
-                   cursor: 'pointer' 
-                 }}>
-                   Sign Up
-                 </button>
-              </div>
+      </main>
+
+      {/* Footer / More Articles Section */}
+      <section style={{ padding: '120px 24px', background: '#fcfcfc', borderTop: '1px solid #f1f5f9' }}>
+         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+            <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+               <h2 style={{ fontSize: '48px', fontWeight: 950, letterSpacing: '-0.04em' }}>From The <span style={{ color: '#FF9431' }}>Newsroom.</span></h2>
+               <p style={{ color: '#64748b', fontSize: '18px' }}>More exclusive insights for the modern creator economy.</p>
             </div>
-          )}
-        </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '40px' }}>
+               {[5, 6].map(i => (
+                  <button 
+                    key={i} 
+                    style={{ cursor: 'pointer', background: 'none', border: 'none', padding: 0, textAlign: 'left', width: '100%', fontFamily: 'inherit', color: 'inherit' }} 
+                    onClick={() => navigate(`/blog/${i}`)}
+                    aria-label="Read article"
+                  >
+                     <div style={{ width: '100%', height: '240px', background: '#f1f5f9', borderRadius: '32px', overflow: 'hidden', marginBottom: '24px' }}>
+                        <img src={`https://images.unsplash.com/photo-${1510000000000 + i * 100000}?w=600`} alt="related" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                     </div>
+                     <Bdg color="orange">INDUSTRY</Bdg>
+                     <h3 style={{ fontSize: '24px', fontWeight: 950, margin: '16px 0', lineHeight: 1.2 }}>Algorithm decoded: 5 hacks to double your reach in 2026</h3>
+                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#94a3b8', fontSize: '14px', fontWeight: 700 }}>
+                        <Clock size={16} /> 10 MIN READ
+                     </div>
+                  </button>
+               ))}
+            </div>
+            <div style={{ textAlign: 'center', marginTop: '80px' }}>
+               <Btn lg outline style={{ borderRadius: '100px' }} onClick={() => navigate('/blog')}>Back to All Headlines</Btn>
+            </div>
+         </div>
       </section>
 
-      {/* Related Posts */}
-      <section style={{ padding: '80px 24px', background: '#fcfcfc', borderTop: '1px solid #f1f5f9' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '48px' }}>
-            <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.02em' }}>More from the Hub</h2>
-            <button style={{ color: '#FF9431', fontWeight: 800, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              View all articles <ArrowRight size={18} />
-            </button>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px' }}>
-            {[1, 2, 3].map(i => (
-              <div key={i} style={{ background: '#fff', borderRadius: '24px', overflow: 'hidden', border: '1px solid #f1f5f9' }}>
-                 <div style={{ height: '180px', background: '#f1f5f9' }} />
-                 <div style={{ padding: '24px' }}>
-                    <div style={{ color: '#FF9431', fontSize: '12px', fontWeight: 900, marginBottom: '8px' }}>TRENDS</div>
-                    <h4 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a', marginBottom: '12px' }}>Upcoming Creator Trends in Bharat for 2026</h4>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b', fontSize: '13px' }}>
-                       <Clock size={14} /> 8 min read
-                    </div>
-                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
+

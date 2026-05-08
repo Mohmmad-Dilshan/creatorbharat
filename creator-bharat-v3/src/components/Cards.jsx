@@ -4,7 +4,7 @@ import { useApp } from '../context';
 import { T } from '../theme';
 import { fmt } from '../utils/helpers';
 import { Card, Bdg, Btn, Bar } from './Primitives';
-import { Heart, MapPin, Camera, Play, Briefcase, Ghost, AtSign, Smartphone, Check, Scale } from 'lucide-react';
+import { Heart, MapPin, Camera, Play, Briefcase, Ghost, AtSign, Smartphone, Check, Scale, Zap } from 'lucide-react';
 
 const Sparkline = ({ color }) => (
   <svg width="40" height="16" viewBox="0 0 40 20" fill="none" style={{ opacity: 0.8 }}>
@@ -156,39 +156,40 @@ const CreatorFooter = ({ c, mob, compared, onView, dsp }) => (
     <button 
       onClick={(e) => { e.stopPropagation(); onView?.(c); }} 
       style={{ 
-        flex: 1, borderRadius: 12, fontWeight: 800, fontSize: mob ? 11 : 14, 
-        background: '#FF9431', color: '#fff', border: 'none', cursor: 'pointer', 
-        transition: 'all 0.2s', padding: mob ? '8px' : '14px',
-        boxShadow: '0 4px 12px rgba(255, 148, 49, 0.2)',
-        textTransform: mob ? 'uppercase' : 'none', letterSpacing: mob ? '0.05em' : 'normal'
+        flex: 1, borderRadius: 16, fontWeight: 950, fontSize: mob ? 11 : 14, 
+        background: '#0f172a', color: '#fff', border: 'none', cursor: 'pointer', 
+        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)', padding: mob ? '10px' : '16px',
+        boxShadow: '0 10px 20px rgba(15, 23, 42, 0.1)',
+        textTransform: 'uppercase', letterSpacing: '0.05em',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
       }}
       onMouseEnter={e => { 
-        e.currentTarget.style.transform = 'translateY(-2px)'; 
-        e.currentTarget.style.boxShadow = '0 6px 16px rgba(19, 136, 8, 0.3)';
-        e.currentTarget.style.background = '#138808'; 
+        e.currentTarget.style.transform = 'translateY(-4px)'; 
+        e.currentTarget.style.boxShadow = '0 15px 30px rgba(15, 23, 42, 0.2)';
+        e.currentTarget.style.background = '#FF9431'; 
       }}
       onMouseLeave={e => { 
         e.currentTarget.style.transform = 'translateY(0)'; 
-        e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 148, 49, 0.2)';
-        e.currentTarget.style.background = '#FF9431'; 
+        e.currentTarget.style.boxShadow = '0 10px 20px rgba(15, 23, 42, 0.1)';
+        e.currentTarget.style.background = '#0f172a'; 
       }}
     >
-      {mob ? 'View' : 'View Portfolio'}
+      <Zap size={mob ? 12 : 16} fill="currentColor" /> {mob ? 'Preview' : 'Quick View'}
     </button>
     <button 
-      onClick={e => { e.stopPropagation(); dsp({ t: 'COMPARE', id: c.id }); }} 
+      onClick={e => { e.stopPropagation(); dsp?.({ t: 'COMPARE', id: c?.id }); }} 
       style={{ 
-        width: mob ? 32 : 48, height: mob ? 32 : 48, borderRadius: 12, 
-        border: '2px solid ' + (compared ? '#FF9431' : '#E2E8F0'), 
+        width: mob ? 36 : 56, height: mob ? 36 : 56, borderRadius: 16, 
+        border: '2.5px solid ' + (compared ? '#FF9431' : '#f1f5f9'), 
         background: compared ? 'rgba(255,148,49,0.1)' : '#fff', 
         cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', 
-        transition: 'all 0.2s', color: compared ? '#FF9431' : '#64748B'
+        transition: 'all 0.3s', color: compared ? '#FF9431' : '#64748B'
       }}
       title="Compare"
-      onMouseEnter={e => { if(!compared) e.currentTarget.style.borderColor = '#CBD5E1'; }}
-      onMouseLeave={e => { if(!compared) e.currentTarget.style.borderColor = '#E2E8F0'; }}
+      onMouseEnter={e => { if(!compared) { e.currentTarget.style.borderColor = '#FF943140'; e.currentTarget.style.background = '#FF943105'; } }}
+      onMouseLeave={e => { if(!compared) { e.currentTarget.style.borderColor = '#f1f5f9'; e.currentTarget.style.background = '#fff'; } }}
     >
-      <Scale size={mob ? 14 : 20} color={compared ? "#FF9431" : "#64748B"} strokeWidth={2.5} />
+      <Scale size={mob ? 16 : 22} color={compared ? "#FF9431" : "#64748B"} strokeWidth={2.5} />
     </button>
   </div>
 );
@@ -198,19 +199,24 @@ CreatorFooter.propTypes = {
   mob: PropTypes.bool,
   compared: PropTypes.bool,
   onView: PropTypes.func,
-  dsp: PropTypes.func.isRequired
+  dsp: PropTypes.func
 };
 
 export function CreatorCard({ creator: c, onView }) {
-  const { st, dsp } = useApp();
-  const saved = st.saved.includes(c.id);
-  const compared = st.compared.includes(c.id);
+  const context = useApp();
+  const st = context?.st || { saved: [], compared: [] };
+  const dsp = context?.dsp;
+  
+  if (!c) return null;
+
+  const saved = st.saved?.includes(c.id) || false;
+  const compared = st.compared?.includes(c.id) || false;
   const score = c.score || fmt.score(c);
   const tier = fmt.tier(score);
-  const img = c.photo || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=FF9431&color=fff&size=200`;
+  const img = c.photo || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name || 'C')}&background=FF9431&color=fff&size=200`;
   const isBrowser = globalThis.window !== undefined;
   const mob = isBrowser && globalThis.window.innerWidth < 768;
-  const isMega = c.followers >= 100000;
+  const isMega = (c.followers || 0) >= 100000;
   
   const cp = ensureArray(c.platform);
   const cn = ensureArray(c.niche);
@@ -235,7 +241,7 @@ export function CreatorCard({ creator: c, onView }) {
         e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.03)';
       }}
     >
-      <CardHeader coverUrl={c.coverUrl} id={c.id} saved={saved} dsp={dsp} mob={mob} tierLabel={tier.label} />
+      <CardHeader coverUrl={c.coverUrl} id={c.id} saved={saved} dsp={dsp} mob={mob} tierLabel={tier?.label || 'Rising'} />
 
       <div style={{ padding: mob ? '0 10px' : '0 24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
         <CreatorIdentity c={c} mob={mob} img={img} score={score} />
@@ -255,7 +261,7 @@ export function CreatorCard({ creator: c, onView }) {
         </div>
         
         <CreatorStats c={c} mob={mob} />
-        <CreatorFooter c={c} mob={mob} compared={compared} onView={onView} dsp={dsp} />
+        {dsp && <CreatorFooter c={c} mob={mob} compared={compared} onView={onView} dsp={dsp} />}
       </div>
     </Card>
   );

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context';
 import { W, scrollToTop, LS, fmt } from '../../utils/helpers';
-import { Fld, Card, Empty, Btn, Bdg, Bar } from '../../components/Primitives';
+import { Fld, Card, Empty, Btn } from '../../components/Primitives';
 import { CampCard } from '../../components/Cards';
 import { 
   Rocket, 
@@ -15,7 +15,6 @@ import {
   ChevronLeft, 
   CheckCircle2, 
   Zap, 
-  Users, 
   Globe,
   Sparkles,
   Layout
@@ -59,6 +58,32 @@ StepIndicator.propTypes = {
   n: PropTypes.number.isRequired,
   label: PropTypes.string.isRequired,
   icon: PropTypes.elementType.isRequired
+};
+
+const SuccessView = ({ title, onReset, onGoDashboard }) => (
+  <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fcfcfc', padding: '20px' }}>
+     <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} style={{ maxWidth: '600px', width: '100%', textAlign: 'center' }}>
+        <Card style={{ padding: '80px 40px', borderRadius: '40px', background: '#fff' }}>
+           <div style={{ width: '100px', height: '100px', background: 'rgba(16, 185, 129, 0.1)', color: '#10B981', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 32px' }}>
+              <CheckCircle2 size={50} />
+           </div>
+           <h2 style={{ fontSize: '32px', fontWeight: 950, marginBottom: '16px' }}>Mission Deployed!</h2>
+           <p style={{ fontSize: '16px', color: '#64748b', lineHeight: 1.6, marginBottom: '40px' }}>
+              Your campaign <strong>"{title}"</strong> is now live on the marketplace. Creators in Bharat are being notified.
+           </p>
+           <div style={{ display: 'flex', gap: '16px' }}>
+              <Btn full lg variant="outline" onClick={onReset}>Launch Another</Btn>
+              <Btn full lg onClick={onGoDashboard}>Go to Dashboard</Btn>
+           </div>
+        </Card>
+     </motion.div>
+  </div>
+);
+
+SuccessView.propTypes = {
+  title: PropTypes.string.isRequired,
+  onReset: PropTypes.func.isRequired,
+  onGoDashboard: PropTypes.func.isRequired
 };
 
 export default function CampaignBuilderPage() {
@@ -146,24 +171,22 @@ export default function CampaignBuilderPage() {
   };
 
   if (done) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fcfcfc', padding: '20px' }}>
-       <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} style={{ maxWidth: '600px', width: '100%', textAlign: 'center' }}>
-          <Card style={{ padding: '80px 40px', borderRadius: '40px', background: '#fff' }}>
-             <div style={{ width: '100px', height: '100px', background: 'rgba(16, 185, 129, 0.1)', color: '#10B981', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 32px' }}>
-                <CheckCircle2 size={50} />
-             </div>
-             <h2 style={{ fontSize: '32px', fontWeight: 950, marginBottom: '16px' }}>Mission Deployed!</h2>
-             <p style={{ fontSize: '16px', color: '#64748b', lineHeight: 1.6, marginBottom: '40px' }}>
-                Your campaign <strong>"{F.title}"</strong> is now live on the marketplace. Creators in Bharat are being notified.
-             </p>
-             <div style={{ display: 'flex', gap: '16px' }}>
-                <Btn full lg variant="outline" onClick={() => { setDone(false); setStep(1); setF({ title: '', desc: '', niche: '', budgetMin: '', budgetMax: '', slots: 10, urgent: false, status: 'live', platform: 'Instagram', deadline: '' }); }}>Launch Another</Btn>
-                <Btn full lg onClick={() => go('brand-dashboard')}>Go to Dashboard</Btn>
-             </div>
-          </Card>
-       </motion.div>
-    </div>
+    <SuccessView 
+      title={F.title} 
+      onReset={() => { 
+        setDone(false); 
+        setStep(1); 
+        setF({ title: '', desc: '', niche: '', budgetMin: '', budgetMax: '', slots: 10, urgent: false, status: 'live', platform: 'Instagram', deadline: '' }); 
+      }} 
+      onGoDashboard={() => go('brand-dashboard')} 
+    />
   );
+
+  const getButtonText = () => {
+    if (loading) return 'DEPLOYING MISSION...';
+    if (step === 4) return 'LAUNCH CAMPAIGN 🚀';
+    return 'NEXT STEP';
+  };
 
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', padding: mob ? '100px 20px 100px' : '120px 40px 100px' }}>
@@ -219,11 +242,14 @@ export default function CampaignBuilderPage() {
                           
                           <div style={{ marginTop: '12px' }}>
                              <p style={{ fontSize: '13px', fontWeight: 900, color: '#475569', marginBottom: '16px', textTransform: 'uppercase' }}>Mission Urgency</p>
-                             <label style={{ 
-                               display: 'flex', alignItems: 'center', gap: '16px', padding: '24px', borderRadius: '24px',
-                               background: F.urgent ? '#FEF2F2' : '#f8fafc', border: `1.5px solid ${F.urgent ? '#FECACA' : '#f1f5f9'}`,
-                               cursor: 'pointer', transition: 'all 0.3s'
-                             }}>
+                             <label 
+                               aria-label="Mark campaign as high priority"
+                               style={{ 
+                                 display: 'flex', alignItems: 'center', gap: '16px', padding: '24px', borderRadius: '24px',
+                                 background: F.urgent ? '#FEF2F2' : '#f8fafc', border: `1.5px solid ${F.urgent ? '#FECACA' : '#f1f5f9'}`,
+                                 cursor: 'pointer', transition: 'all 0.3s'
+                               }}
+                             >
                                 <input type="checkbox" checked={F.urgent} onChange={e => upF('urgent', e.target.checked)} style={{ width: '20px', height: '20px', cursor: 'pointer' }} />
                                 <div>
                                    <div style={{ fontSize: '16px', fontWeight: 900, color: F.urgent ? '#B91C1C' : '#0f172a' }}>Mark as High Priority</div>
@@ -312,7 +338,7 @@ export default function CampaignBuilderPage() {
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px'
                     }}
                   >
-                    {loading ? 'DEPLOYING MISSION...' : (step === 4 ? 'LAUNCH CAMPAIGN 🚀' : 'NEXT STEP')}
+                    {getButtonText()}
                     {step < 4 && !loading && <ChevronRight size={18} />}
                   </button>
                </div>

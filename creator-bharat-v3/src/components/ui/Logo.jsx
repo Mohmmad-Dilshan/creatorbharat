@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export function Logo({ sm, light, onClick }) {
+export function Logo({ sm, light, onClick, iconOnly }) {
   const sz = sm ? 34 : 44;
   const Tag = onClick ? 'button' : 'div';
   
@@ -10,7 +10,7 @@ export function Logo({ sm, light, onClick }) {
       onClick={onClick} 
       className="logo-container" 
       style={{ 
-        display: 'flex', 
+        display: 'inline-flex', 
         alignItems: 'center', 
         gap: sm ? 10 : 14, 
         cursor: onClick ? 'pointer' : 'default', 
@@ -36,9 +36,11 @@ export function Logo({ sm, light, onClick }) {
           <div style={{ position: 'absolute', top: '66.67%', left: 0, right: 0, height: '33.33%', background: '#128807' }} />
         </div>
       </div>
-      <span className="logo-text-animated" style={{ fontFamily: "'Inter', sans-serif", fontSize: sm ? 19 : 28, fontWeight: 900, letterSpacing: '-0.04em', display: 'flex', alignItems: 'center', color: light ? '#fff' : 'inherit' }}>
-        CreatorBharat
-      </span>
+      {!iconOnly && (
+        <span className="logo-text-animated" style={{ fontFamily: "'Inter', sans-serif", fontSize: sm ? 19 : 28, fontWeight: 900, letterSpacing: '-0.04em', display: 'flex', alignItems: 'center', color: light ? '#fff' : 'inherit' }}>
+          CreatorBharat
+        </span>
+      )}
     </Tag>
   );
 }
@@ -46,7 +48,8 @@ export function Logo({ sm, light, onClick }) {
 Logo.propTypes = {
   sm: PropTypes.bool,
   light: PropTypes.bool,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  iconOnly: PropTypes.bool
 };
 
 export default Logo;

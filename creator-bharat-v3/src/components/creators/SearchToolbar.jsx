@@ -175,9 +175,46 @@ ToolbarButtons.propTypes = {
   filterCount: PropTypes.number.isRequired
 };
 
+const CategoryChips = ({ niches, f, dsp, mob }) => (
+  <div 
+    style={{ 
+      display: 'flex', gap: 10, overflowX: 'auto', padding: '16px 0 4px', 
+      scrollbarWidth: 'none', msOverflowStyle: 'none',
+      maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)'
+    }} 
+    className="no-scrollbar"
+  >
+    {niches.map(n => {
+      const isSel = f?.niche?.includes(n) || false;
+      return (
+        <button
+          key={n}
+          onClick={() => dsp?.({ t: 'CF', v: { niche: isSel ? f.niche.filter(x => x !== n) : [...(f.niche || []), n] } })}
+          style={{
+            flexShrink: 0, padding: mob ? '8px 16px' : '10px 20px', borderRadius: 100,
+            border: '1.5px solid ' + (isSel ? '#FF9431' : 'rgba(0,0,0,0.06)'),
+            background: isSel ? '#FF9431' : '#fff',
+            color: isSel ? '#fff' : '#475569',
+            fontSize: mob ? 12 : 13, fontWeight: 800, cursor: 'pointer',
+            transition: 'all 0.2s',
+            boxShadow: isSel ? '0 8px 16px rgba(255,148,49,0.2)' : 'none'
+          }}
+        >
+          {n}
+        </button>
+      );
+    })}
+  </div>
+);
+
+CategoryChips.propTypes = {
+  niches: PropTypes.arrayOf(PropTypes.string).isRequired,
+  f: PropTypes.object.isRequired,
+  dsp: PropTypes.func.isRequired,
+  mob: PropTypes.bool
+};
+
 export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, showMap, setShowFilters, niches }) {
-  const clearFilters = () => dsp({ t: 'CF', v: { q: '', niche: [], state: '', district: '', platform: [], verified: false, minFollowers: '', sort: 'score', gender: '', language: '', minER: '' } });
-  
   const filterCount = Object.values(f).filter(v => 
     Array.isArray(v) ? v.length > 0 : (v && v !== 'score' && v !== '' && v !== false)
   ).length;
@@ -189,18 +226,16 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
       position: 'sticky', top: 0, zIndex: 1000,
       background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(30px)',
       borderBottom: '1px solid rgba(0,0,0,0.05)',
-      padding: mob ? '10px 0 12px' : '16px 0',
+      padding: mob ? '12px 0' : '20px 0',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
     }}>
-      <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px', display: 'flex', flexDirection: 'column', gap: mob ? 14 : 12 }}>
+      <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px', display: 'flex', flexDirection: 'column' }}>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <SearchInput mob={mob} f={f} dsp={dsp} niches={niches} />
 
           {!mob && (
             <>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <LocationSelect f={f} dsp={dsp} />
-              </div>
+              <LocationSelect f={f} dsp={dsp} />
               <ViewSwitcher view={view} setView={setView} />
             </>
           )}
@@ -215,20 +250,12 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
           />
         </div>
 
-        {mob && (
-          <MobileQuickChips 
-            f={f} 
-            dsp={dsp} 
-            niches={niches} 
-            clearFilters={clearFilters} 
-            hasFilters={hasFilters} 
-            setShowFilters={setShowFilters} 
-          />
-        )}
+        <CategoryChips niches={niches} f={f} dsp={dsp} mob={mob} />
       </div>
     </div>
   );
 }
+
 
 SearchToolbar.propTypes = {
   mob: PropTypes.bool,
