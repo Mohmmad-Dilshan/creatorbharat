@@ -43,7 +43,7 @@ const VIEW_COPY = {
   }
 };
 
-const CONTENT_MAX_HEIGHT = 'min(78vh, 760px)';
+const AUTH_MODAL_HEIGHT = 'min(86vh, 760px)';
 
 const AuthSidePanel = ({ role, view, mob }) => {
   const isBrand = role === 'brand' || view === 'brand-register';
@@ -57,7 +57,8 @@ const AuthSidePanel = ({ role, view, mob }) => {
   return (
     <aside
       style={{
-        minHeight: 620,
+        minHeight: 0,
+        height: '100%',
         padding: 32,
         background: '#0B1220',
         color: '#fff',
@@ -444,12 +445,14 @@ export default function AuthModal() {
       onClose={onClose}
       hideHeader
       width={modalWidth}
-      style={{ padding: 0 }}
+      contentStyle={{ overflow: 'hidden', maxHeight: '86vh' }}
     >
       <div
         style={{
           display: 'grid',
           gridTemplateColumns: mob ? '1fr' : '0.9fr 1.1fr',
+          height: mob ? 'auto' : AUTH_MODAL_HEIGHT,
+          maxHeight: mob ? '90vh' : AUTH_MODAL_HEIGHT,
           background: '#fff',
           borderRadius: 28,
           overflow: 'hidden',
@@ -457,14 +460,14 @@ export default function AuthModal() {
         }}
       >
         <AuthSidePanel role={role} view={view} mob={mob} />
-        <main style={{ padding: mob ? '22px 18px 24px' : '30px 34px 34px', minWidth: 0 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 22 }}>
+        <main style={{ padding: mob ? '22px 18px 24px' : '24px 30px 24px', minWidth: 0, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: mob ? 20 : 16, flex: '0 0 auto' }}>
             <div>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: themeColor, marginBottom: 10 }}>
                 <ShieldCheck size={17} />
                 <span style={{ fontSize: 11, fontWeight: 900, textTransform: 'uppercase', letterSpacing: 1.2 }}>Secure access</span>
               </div>
-              <h1 style={{ fontFamily: "'Outfit', sans-serif", color: '#111827', fontSize: mob ? 27 : 34, lineHeight: 1.08, fontWeight: 900, letterSpacing: 0, marginBottom: 8 }}>
+              <h1 style={{ fontFamily: "'Outfit', sans-serif", color: '#111827', fontSize: mob ? 27 : 30, lineHeight: 1.08, fontWeight: 900, letterSpacing: 0, marginBottom: 6 }}>
                 {copy.title}
               </h1>
               <p style={{ color: '#64748B', fontSize: 14, lineHeight: 1.6, fontWeight: 600, maxWidth: 520 }}>{copy.sub}</p>
@@ -479,13 +482,15 @@ export default function AuthModal() {
             </button>
           </div>
 
-          {view !== 'gateway' && view !== 'forgot' && <ViewTabs view={view} setView={setView} />}
+          <div style={{ flex: '0 0 auto' }}>
+            {view !== 'gateway' && view !== 'forgot' && <ViewTabs view={view} setView={setView} />}
+          </div>
 
-          <div style={{ maxHeight: mob ? 'none' : CONTENT_MAX_HEIGHT, overflowY: mob ? 'visible' : 'auto', paddingRight: mob ? 0 : 4 }}>
+          <div style={{ flex: mob ? '0 1 auto' : '1 1 auto', minHeight: 0, overflowY: mob ? 'visible' : 'auto', paddingRight: mob ? 0 : 6 }}>
             <AnimatePresence mode="wait">{content}</AnimatePresence>
           </div>
 
-          <div style={{ marginTop: 24, paddingTop: 18, borderTop: '1px solid #EEF2F7', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+          <div style={{ marginTop: mob ? 22 : 14, paddingTop: mob ? 18 : 12, borderTop: '1px solid #EEF2F7', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', flex: '0 0 auto' }}>
             <p style={{ color: '#94A3B8', fontSize: 12, fontWeight: 800 }}>No credit card needed for demo access.</p>
             <button type="button" onClick={() => setView(view === 'login' ? 'gateway' : 'login')} style={{ border: 'none', background: 'transparent', color: themeColor, fontSize: 13, fontWeight: 900, cursor: 'pointer' }}>
               {view === 'login' ? 'Choose another role' : 'Already have an account? Sign in'}
