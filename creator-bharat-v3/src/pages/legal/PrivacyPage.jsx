@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { Shield, Lock, Eye, FileText, ChevronRight } from 'lucide-react';
 
-const Section = ({ title, icon: Icon, children }) => (
+const Section = ({ id, title, icon: Icon, children }) => (
   <motion.div 
+    id={id}
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
@@ -23,6 +24,7 @@ const Section = ({ title, icon: Icon, children }) => (
 );
 
 Section.propTypes = {
+  id: PropTypes.string,
   title: PropTypes.string.isRequired,
   icon: PropTypes.elementType.isRequired,
   children: PropTypes.node.isRequired,
