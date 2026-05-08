@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
+
 
 export default function AIChatbot({ mob }) {
   const [open, setOpen] = useState(false);
-  const [msgs, setMsgs] = useState([{ role: 'assistant', content: 'Namaste! 🇮🇳 Main CreatorBharat ka AI assistant hoon.' }]);
+  const [msgs, setMsgs] = useState([{ id: 'init', role: 'assistant', content: 'Namaste! 🇮🇳 Main CreatorBharat ka AI assistant hoon.' }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef(null);
@@ -13,11 +15,11 @@ export default function AIChatbot({ mob }) {
 
   const send = async () => {
     if (!input.trim() || loading) return;
-    setMsgs([...msgs, { role: 'user', content: input.trim() }]);
+    setMsgs([...msgs, { id: `u-${Date.now()}`, role: 'user', content: input.trim() }]);
     setInput('');
     setLoading(true);
     setTimeout(() => {
-      setMsgs(prev => [...prev, { role: 'assistant', content: 'Sahi sawal hai! Main development mein hoon, jald batata hoon. 🙏' }]);
+      setMsgs(prev => [...prev, { id: `a-${Date.now()}`, role: 'assistant', content: 'Sahi sawal hai! Main development mein hoon, jald batata hoon. 🙏' }]);
       setLoading(false);
     }, 1000);
   };
@@ -54,7 +56,7 @@ export default function AIChatbot({ mob }) {
           <div style={{ flex: 1, overflowY: 'auto', padding: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
             {msgs.map((m, i) => (
               <div 
-                key={i} 
+                key={m.id} 
                 style={{ 
                   alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start', 
                   maxWidth: '80%', padding: '12px 16px', borderRadius: 20, 
@@ -83,3 +85,7 @@ export default function AIChatbot({ mob }) {
     </>
   );
 }
+
+AIChatbot.propTypes = {
+  mob: PropTypes.bool
+};

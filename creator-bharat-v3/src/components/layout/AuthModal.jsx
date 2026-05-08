@@ -13,7 +13,6 @@ import {
   ShieldCheck,
   Sparkles,
   User,
-  Users,
   X
 } from 'lucide-react';
 import { useApp } from '../../context';
