@@ -9,4 +9,5 @@ export { Ring } from './Ring';
 export { ProgressBar } from './ProgressBar';
 export { Skeleton, SkeletonCard } from './Skeleton';
 export { EmptyState } from './EmptyState';
+export { default as BottomSheet } from './BottomSheet';
 export { StatusChip } from './StatusChip';

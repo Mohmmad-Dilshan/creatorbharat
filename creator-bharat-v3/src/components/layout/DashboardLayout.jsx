@@ -7,7 +7,6 @@ import {
   LayoutDashboard, 
   User, 
   Megaphone, 
-  Wallet, 
   BarChart3, 
   Settings, 
   LogOut, 
@@ -16,8 +15,11 @@ import {
   X,
   Bell,
   Search,
-  Trophy
+  Trophy,
+  Activity,
+  Zap
 } from 'lucide-react';
+import { Logo } from '../ui';
 
 const SidebarItem = ({ icon: Icon, label, path, active, collapsed, onClick }) => (
   <button
@@ -26,28 +28,40 @@ const SidebarItem = ({ icon: Icon, label, path, active, collapsed, onClick }) =>
       width: '100%',
       display: 'flex',
       alignItems: 'center',
-      gap: 12,
+      gap: 14,
       padding: '12px 16px',
-      borderRadius: 16,
+      borderRadius: 14,
       border: 'none',
-      background: active ? 'rgba(255, 148, 49, 0.1)' : 'transparent',
+      background: active ? 'linear-gradient(135deg, rgba(255, 148, 49, 0.12), rgba(255, 148, 49, 0.05))' : 'transparent',
       color: active ? '#FF9431' : '#64748b',
       cursor: 'pointer',
-      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-      marginBottom: 4,
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      marginBottom: 6,
       position: 'relative',
-      overflow: 'hidden'
+      outline: 'none'
     }}
+    onMouseEnter={(e) => !active && (e.currentTarget.style.background = 'rgba(0,0,0,0.02)')}
+    onMouseLeave={(e) => !active && (e.currentTarget.style.background = 'transparent')}
   >
     {active && (
       <motion.div 
-        layoutId="sidebar-active"
-        style={{ position: 'absolute', left: 0, top: '20%', bottom: '20%', width: 4, background: '#FF9431', borderRadius: '0 4px 4px 0' }}
+        layoutId="sidebar-active-glow"
+        style={{ 
+          position: 'absolute', 
+          inset: 0, 
+          borderRadius: 14, 
+          border: '1.5px solid rgba(255, 148, 49, 0.3)',
+          boxShadow: '0 4px 12px rgba(255, 148, 49, 0.08)'
+        }}
       />
     )}
-    <Icon size={20} strokeWidth={active ? 2.5 : 2} />
+    <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Icon size={20} strokeWidth={active ? 2.5 : 2} />
+    </div>
     {!collapsed && (
-      <span style={{ fontSize: 14, fontWeight: active ? 800 : 600 }}>{label}</span>
+      <span style={{ position: 'relative', zIndex: 1, fontSize: 14, fontWeight: active ? 800 : 600, letterSpacing: '-0.01em' }}>
+        {label}
+      </span>
     )}
   </button>
 );
@@ -71,35 +85,37 @@ export default function DashboardLayout({ children }) {
 
   useEffect(() => {
     const h = () => {
-      setMob(globalThis.innerWidth < 768);
+      const isMobile = globalThis.innerWidth < 768;
+      setMob(isMobile);
       if (globalThis.innerWidth < 1200) setCollapsed(true);
-      else setCollapsed(false);
+      else if (!isMobile) setCollapsed(false);
     };
     globalThis.addEventListener('resize', h);
     return () => globalThis.removeEventListener('resize', h);
   }, []);
 
   const role = st.role || 'creator';
+  const isBrand = role === 'brand';
   
   const creatorLinks = [
     { label: 'Overview', icon: LayoutDashboard, path: '/dashboard' },
     { label: 'My Identity', icon: User, path: '/settings' },
-    { label: 'Deals & Apps', icon: Megaphone, path: '/applications' },
+    { label: 'Brand Deals', icon: Zap, path: '/applications' },
     { label: 'Leaderboard', icon: Trophy, path: '/leaderboard' },
-    { label: 'Insights', icon: BarChart3, path: '/creator-score' },
-    { label: 'Wallet', icon: Wallet, path: '/saved' },
+    { label: 'Creator Score', icon: Activity, path: '/creator-score' },
+    { label: 'Ecosystem', icon: Megaphone, path: '/creators' },
     { label: 'Settings', icon: Settings, path: '/settings' }
   ];
 
   const brandLinks = [
-    { label: 'Mission Control', icon: LayoutDashboard, path: '/brand-dashboard' },
+    { label: 'Control Center', icon: LayoutDashboard, path: '/brand-dashboard' },
     { label: 'Campaigns', icon: Megaphone, path: '/campaigns' },
-    { label: 'Talent Bench', icon: User, path: '/creators' },
-    { label: 'Analytics', icon: BarChart3, path: '/brand-dashboard' },
+    { label: 'Talent Discovery', icon: Search, path: '/creators' },
+    { label: 'Performance', icon: BarChart3, path: '/brand-dashboard' },
     { label: 'Settings', icon: Settings, path: '/settings' }
   ];
 
-  const links = role === 'brand' ? brandLinks : creatorLinks;
+  const links = isBrand ? brandLinks : creatorLinks;
 
   const handleNav = (path) => {
     navigate(path);
@@ -112,39 +128,34 @@ export default function DashboardLayout({ children }) {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#f8fafc' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#fcfcfd' }}>
       {/* Desktop Sidebar */}
       {!mob && (
         <motion.aside
-          animate={{ width: collapsed ? 88 : 280 }}
+          animate={{ width: collapsed ? 100 : 280 }}
+          transition={{ type: 'spring', damping: 20, stiffness: 100 }}
           style={{
             background: '#fff',
-            borderRight: '1px solid rgba(0,0,0,0.05)',
-            padding: '24px 16px',
+            borderRight: '1px solid #f1f5f9',
+            padding: '32px 16px',
             display: 'flex',
             flexDirection: 'column',
             position: 'sticky',
             top: 0,
             height: '100vh',
             zIndex: 100,
-            boxShadow: '10px 0 30px rgba(0,0,0,0.02)'
+            boxShadow: '4px 0 24px rgba(0,0,0,0.02)'
           }}
         >
           {/* Logo Section */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 48, paddingLeft: 8 }}>
-             <div style={{ width: 40, height: 40, background: '#111', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900 }}>CB</div>
-             {!collapsed && (
-               <motion.span 
-                 initial={{ opacity: 0 }} 
-                 animate={{ opacity: 1 }} 
-                 style={{ fontWeight: 900, fontSize: 18, color: '#111' }}
-               >
-                 CreatorBharat
-               </motion.span>
-             )}
+          <div style={{ marginBottom: 48, paddingLeft: collapsed ? 14 : 8, transition: 'all 0.3s' }}>
+             <Logo sm={collapsed} onClick={() => navigate('/')} />
           </div>
 
           <nav style={{ flex: 1 }}>
+            <div style={{ paddingLeft: 12, marginBottom: 12 }}>
+               {!collapsed && <p style={{ fontSize: 10, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Main Menu</p>}
+            </div>
             {links.map(link => (
               <SidebarItem 
                 key={link.path}
@@ -156,13 +167,28 @@ export default function DashboardLayout({ children }) {
             ))}
           </nav>
 
-          <div style={{ paddingTop: 20, borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+          <div style={{ paddingTop: 24, borderTop: '1px solid #f1f5f9' }}>
             <SidebarItem 
               icon={LogOut} 
-              label="Logout" 
+              label="Sign Out" 
               collapsed={collapsed} 
               onClick={handleLogout} 
             />
+            {!collapsed && (
+              <div style={{ 
+                marginTop: 20, 
+                padding: '16px', 
+                background: 'linear-gradient(135deg, #1e293b, #0f172a)', 
+                borderRadius: 16, 
+                color: '#fff',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                <div style={{ position: 'absolute', top: -10, right: -10, width: 60, height: 60, background: 'rgba(255,148,49,0.2)', borderRadius: '50%', filter: 'blur(20px)' }} />
+                <p style={{ fontSize: 12, fontWeight: 800, marginBottom: 4 }}>Elite Support</p>
+                <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', lineHeight: 1.4 }}>Get 24/7 priority assistance for your campaigns.</p>
+              </div>
+            )}
           </div>
         </motion.aside>
       )}
@@ -171,59 +197,132 @@ export default function DashboardLayout({ children }) {
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         {/* Top Header */}
         <header style={{ 
-          height: 72, 
-          borderBottom: '1px solid rgba(0,0,0,0.05)', 
-          padding: '0 24px',
+          height: 80, 
+          borderBottom: '1px solid #f1f5f9', 
+          padding: '0 32px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           position: 'sticky',
           top: 0,
           zIndex: 90,
-          backdropFilter: 'blur(12px)',
-          background: 'rgba(255,255,255,0.8)'
+          background: 'rgba(255,255,255,0.85)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.01)'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
             {mob ? (
-              <button onClick={() => setMobOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#111' }}>
-                <Menu size={24} />
+              <button 
+                onClick={() => setMobOpen(true)} 
+                style={{ 
+                  background: '#f8fafc', 
+                  border: '1px solid #e2e8f0', 
+                  cursor: 'pointer', 
+                  color: '#1e293b',
+                  width: 44,
+                  height: 44,
+                  borderRadius: 12,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <Menu size={22} />
               </button>
             ) : (
-              <button onClick={() => setCollapsed(!collapsed)} style={{ background: '#f1f5f9', border: 'none', padding: 8, borderRadius: 8, cursor: 'pointer', color: '#64748b' }}>
-                <ChevronRight size={18} style={{ transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'all 0.3s' }} />
+              <button 
+                onClick={() => setCollapsed(!collapsed)} 
+                style={{ 
+                  background: '#f8fafc', 
+                  border: '1px solid #e2e8f0', 
+                  padding: 8, 
+                  borderRadius: 10, 
+                  cursor: 'pointer', 
+                  color: '#64748b',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'}
+                onMouseLeave={(e) => e.currentTarget.style.background = '#f8fafc'}
+              >
+                <ChevronRight size={18} style={{ transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)' }} />
               </button>
             )}
             {!mob && (
               <div style={{ position: 'relative' }}>
-                <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                 <input 
                   type="text" 
-                  placeholder="Search in ecosystem..." 
-                  style={{ background: '#f1f5f9', border: 'none', padding: '10px 16px 10px 40px', borderRadius: 10, fontSize: 13, width: 260, fontWeight: 600, outline: 'none' }}
+                  placeholder="Search campaigns, talent..." 
+                  style={{ 
+                    background: '#f8fafc', 
+                    border: '1px solid #e2e8f0', 
+                    padding: '12px 16px 12px 42px', 
+                    borderRadius: 12, 
+                    fontSize: 14, 
+                    width: 320, 
+                    fontWeight: 500, 
+                    outline: 'none',
+                    transition: 'all 0.2s'
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.width = '380px';
+                    e.currentTarget.style.background = '#fff';
+                    e.currentTarget.style.borderColor = '#FF9431';
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(255,148,49,0.06)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.width = '320px';
+                    e.currentTarget.style.background = '#f8fafc';
+                    e.currentTarget.style.borderColor = '#e2e8f0';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
                 />
               </div>
             )}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', position: 'relative', padding: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <button style={{ 
+              background: '#f8fafc', 
+              border: '1px solid #e2e8f0', 
+              cursor: 'pointer', 
+              color: '#64748b', 
+              position: 'relative', 
+              width: 44,
+              height: 44,
+              borderRadius: 12,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.2s'
+            }}>
               <Bell size={20} />
-              <div style={{ position: 'absolute', top: 6, right: 6, width: 8, height: 8, background: '#ef4444', borderRadius: '50%', border: '2px solid #fff' }} />
+              <div style={{ position: 'absolute', top: 12, right: 12, width: 8, height: 8, background: '#FF9431', borderRadius: '50%', border: '2px solid #fff' }} />
             </button>
-            <div style={{ width: 1, height: 24, background: 'rgba(0,0,0,0.05)', margin: '0 8px' }} />
+            <div style={{ width: 1, height: 28, background: '#f1f5f9', margin: '0 4px' }} />
             <button 
-              style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', background: 'none', border: 'none', padding: 4, borderRadius: 14, transition: 'background 0.2s' }} 
+              style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', background: 'none', border: 'none', padding: 4, borderRadius: 16, transition: 'all 0.2s' }} 
               onClick={() => navigate('/settings')}
-              onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
             >
               {!mob && (
                 <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: 13, fontWeight: 800, color: '#111', lineHeight: 1 }}>{st.user?.name || 'User'}</p>
-                  <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 4, textTransform: 'uppercase', fontWeight: 700 }}>{role}</p>
+                  <p style={{ fontSize: 14, fontWeight: 900, color: '#1e293b', lineHeight: 1.2 }}>{st.user?.name || 'User Account'}</p>
+                  <p style={{ fontSize: 11, color: '#FF9431', marginTop: 2, textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>{role} PRO</p>
                 </div>
               )}
-              <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, #FF9431, #FFB471)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 16, fontWeight: 900 }}>
+              <div style={{ 
+                width: 44, 
+                height: 44, 
+                borderRadius: 12, 
+                background: 'linear-gradient(135deg, #1e293b, #334155)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                color: '#fff', 
+                fontSize: 16, 
+                fontWeight: 900,
+                boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+              }}>
                 {st.user?.name?.[0] || 'U'}
               </div>
             </button>
@@ -231,7 +330,7 @@ export default function DashboardLayout({ children }) {
         </header>
 
         {/* Page Content */}
-        <div style={{ padding: mob ? '24px 16px' : '32px', flex: 1 }}>
+        <div style={{ padding: mob ? '24px 16px' : '40px', flex: 1 }}>
           {children}
         </div>
       </main>
@@ -245,7 +344,7 @@ export default function DashboardLayout({ children }) {
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }}
               onClick={() => setMobOpen(false)}
-              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', zIndex: 1000 }}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(8px)', zIndex: 1000 }}
             />
             <motion.aside
               initial={{ x: '-100%' }}
@@ -253,19 +352,21 @@ export default function DashboardLayout({ children }) {
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               style={{
-                position: 'fixed', top: 0, left: 0, bottom: 0, width: 280,
-                background: '#fff', zIndex: 1001, padding: '24px 20px',
-                display: 'flex', flexDirection: 'column'
+                position: 'fixed', top: 0, left: 0, bottom: 0, width: 300,
+                background: '#fff', zIndex: 1001, padding: '32px 24px',
+                display: 'flex', flexDirection: 'column',
+                boxShadow: '20px 0 60px rgba(0,0,0,0.1)'
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 40 }}>
-                <div style={{ fontWeight: 900, fontSize: 18, color: '#111' }}>CreatorBharat</div>
-                <button onClick={() => setMobOpen(false)} style={{ background: '#f1f5f9', border: 'none', padding: 8, borderRadius: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 48 }}>
+                <Logo sm onClick={() => { navigate('/'); setMobOpen(false); }} />
+                <button onClick={() => setMobOpen(false)} style={{ background: '#f8fafc', border: 'none', width: 40, height: 40, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <X size={20} />
                 </button>
               </div>
 
               <nav style={{ flex: 1 }}>
+                <p style={{ fontSize: 10, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16, paddingLeft: 12 }}>Menu</p>
                 {links.map(link => (
                   <SidebarItem 
                     key={link.path}
@@ -277,10 +378,10 @@ export default function DashboardLayout({ children }) {
                 ))}
               </nav>
 
-              <div style={{ paddingTop: 20, borderTop: '1px solid rgba(0,0,0,0.05)' }}>
+              <div style={{ paddingTop: 24, borderTop: '1px solid #f1f5f9' }}>
                 <SidebarItem 
                   icon={LogOut} 
-                  label="Logout" 
+                  label="Sign Out" 
                   collapsed={false} 
                   onClick={handleLogout} 
                 />
