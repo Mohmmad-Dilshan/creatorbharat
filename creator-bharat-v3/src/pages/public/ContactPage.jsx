@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../../context';
@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { Btn, Card } from '../../components/Primitives';
 
-const ContactMethodCard = ({ icon: Icon, title, value, sub, delay = 0 }) => (
+const ContactMethodCard = ({ icon: Icon, title, value, sub, delay = 0, mob }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -24,12 +24,13 @@ const ContactMethodCard = ({ icon: Icon, title, value, sub, delay = 0 }) => (
     transition={{ delay, duration: 0.6 }}
     style={{
       background: '#fff',
-      padding: '32px',
+      padding: mob ? '24px' : '32px',
       borderRadius: '32px',
       border: '1px solid #f1f5f9',
       display: 'flex',
-      gap: '24px',
-      alignItems: 'center',
+      flexDirection: mob ? 'column' : 'row',
+      gap: mob ? '16px' : '24px',
+      alignItems: mob ? 'flex-start' : 'center',
     }}
     whileHover={{ y: -8, borderColor: '#FF9431', boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}
   >
@@ -52,13 +53,14 @@ ContactMethodCard.propTypes = {
   title: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   sub: PropTypes.string,
-  delay: PropTypes.number
+  delay: PropTypes.number,
+  mob: PropTypes.bool
 };
 
-const ContactHero = () => (
+const ContactHero = ({ mob }) => (
   <section style={{ 
     background: '#050505', 
-    padding: '180px 24px 100px', 
+    padding: mob ? '120px 20px 60px' : '180px 24px 100px', 
     textAlign: 'center',
     position: 'relative',
     overflow: 'hidden'
@@ -107,14 +109,18 @@ const ContactHero = () => (
   </section>
 );
 
-const ContactChannels = ({ onMediaRequest }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-    <ContactMethodCard icon={Mail} title="Direct Support" value="support@creatorbharat.in" sub="Median response time: 4 hours" delay={0.1} />
-    <ContactMethodCard icon={Linkedin} title="Brand Solutions" value="solutions@creatorbharat.in" sub="For agency and large brand queries" delay={0.2} />
-    <ContactMethodCard icon={MessageCircle} title="Quick Chat" value="+91 9999-000000" sub="WhatsApp Support (Mon-Fri, 10am-7pm)" delay={0.3} />
-    <ContactMethodCard icon={Building2} title="Headquarters" value="Bhilwara, Rajasthan" sub="The heart and soul of Bharat's creation" delay={0.4} />
+ContactHero.propTypes = {
+  mob: PropTypes.bool
+};
 
-    <Card style={{ padding: '40px', borderRadius: '40px', background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)', color: '#fff', position: 'relative', overflow: 'hidden' }}>
+const ContactChannels = ({ onMediaRequest, mob }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <ContactMethodCard icon={Mail} title="Direct Support" value="support@creatorbharat.in" sub="Median response time: 4 hours" delay={0.1} mob={mob} />
+    <ContactMethodCard icon={Linkedin} title="Brand Solutions" value="solutions@creatorbharat.in" sub="For agency and large brand queries" delay={0.2} mob={mob} />
+    <ContactMethodCard icon={MessageCircle} title="Quick Chat" value="+91 9999-000000" sub="WhatsApp Support (Mon-Fri, 10am-7pm)" delay={0.3} mob={mob} />
+    <ContactMethodCard icon={Building2} title="Headquarters" value="Bhilwara, Rajasthan" sub="The heart and soul of Bharat's creation" delay={0.4} mob={mob} />
+
+    <Card style={{ padding: mob ? '32px' : '40px', borderRadius: '40px', background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)', color: '#fff', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: -20, right: -20, opacity: 0.1 }}><Sparkles size={150} /></div>
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
@@ -138,7 +144,8 @@ const ContactChannels = ({ onMediaRequest }) => (
 );
 
 ContactChannels.propTypes = {
-  onMediaRequest: PropTypes.func.isRequired
+  onMediaRequest: PropTypes.func.isRequired,
+  mob: PropTypes.bool
 };
 
 const SuccessMessage = ({ onReset }) => (
@@ -165,17 +172,17 @@ SuccessMessage.propTypes = {
   onReset: PropTypes.func.isRequired
 };
 
-const FormContent = ({ tab, setTab, handleSubmit, formState }) => (
+const FormContent = ({ tab, setTab, handleSubmit, formState, mob }) => (
   <div key="form">
     <div style={{ display: 'flex', gap: '8px', marginBottom: '40px', background: '#f8fafc', padding: '6px', borderRadius: '100px', width: 'fit-content' }}>
-        <button onClick={() => setTab('creator')} style={{ padding: '10px 24px', borderRadius: '100px', border: 'none', background: tab === 'creator' ? '#fff' : 'transparent', color: tab === 'creator' ? '#0f172a' : '#94a3b8', fontSize: '14px', fontWeight: 900, cursor: 'pointer', boxShadow: tab === 'creator' ? '0 5px 15px rgba(0,0,0,0.05)' : 'none' }}>Creator</button>
-        <button onClick={() => setTab('brand')} style={{ padding: '10px 24px', borderRadius: '100px', border: 'none', background: tab === 'brand' ? '#fff' : 'transparent', color: tab === 'brand' ? '#0f172a' : '#94a3b8', fontSize: '14px', fontWeight: 900, cursor: 'pointer', boxShadow: tab === 'brand' ? '0 5px 15px rgba(0,0,0,0.05)' : 'none' }}>Brand</button>
+        <button onClick={() => setTab('creator')} style={{ padding: mob ? '8px 16px' : '10px 24px', borderRadius: '100px', border: 'none', background: tab === 'creator' ? '#fff' : 'transparent', color: tab === 'creator' ? '#0f172a' : '#94a3b8', fontSize: '14px', fontWeight: 900, cursor: 'pointer', boxShadow: tab === 'creator' ? '0 5px 15px rgba(0,0,0,0.05)' : 'none' }}>Creator</button>
+        <button onClick={() => setTab('brand')} style={{ padding: mob ? '8px 16px' : '10px 24px', borderRadius: '100px', border: 'none', background: tab === 'brand' ? '#fff' : 'transparent', color: tab === 'brand' ? '#0f172a' : '#94a3b8', fontSize: '14px', fontWeight: 900, cursor: 'pointer', boxShadow: tab === 'brand' ? '0 5px 15px rgba(0,0,0,0.05)' : 'none' }}>Brand</button>
     </div>
 
-    <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', marginBottom: '40px', letterSpacing: '-0.02em' }}>Inquiry Details</h3>
+    <h3 style={{ fontSize: mob ? '24px' : '28px', fontWeight: 950, color: '#0f172a', marginBottom: '40px', letterSpacing: '-0.02em' }}>Inquiry Details</h3>
     
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px' }}>
           <div>
               <label htmlFor="fullName" style={{ display: 'block', fontSize: '12px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '10px' }}>Full Name</label>
               <input id="fullName" required type="text" placeholder="Arjun Mehta" style={{ width: '100%', padding: '18px 24px', borderRadius: '18px', border: '2px solid #f1f5f9', background: '#fcfcfc', fontSize: '16px', fontWeight: 600, outline: 'none' }} />
@@ -223,17 +230,18 @@ FormContent.propTypes = {
   tab: PropTypes.string.isRequired,
   setTab: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-  formState: PropTypes.string.isRequired
+  formState: PropTypes.string.isRequired,
+  mob: PropTypes.bool
 };
 
-const ContactForm = ({ tab, setTab, formState, setFormState, handleSubmit }) => (
+const ContactForm = ({ tab, setTab, formState, setFormState, handleSubmit, mob }) => (
   <motion.div
     initial={{ opacity: 0, x: -30 }}
     animate={{ opacity: 1, x: 0 }}
     style={{ 
       background: '#fff', 
       borderRadius: '48px', 
-      padding: '56px', 
+      padding: mob ? '24px' : '56px', 
       boxShadow: '0 40px 100px rgba(0,0,0,0.06)',
       border: '1px solid #f1f5f9',
       position: 'relative'
@@ -248,6 +256,7 @@ const ContactForm = ({ tab, setTab, formState, setFormState, handleSubmit }) => 
           setTab={setTab} 
           handleSubmit={handleSubmit} 
           formState={formState} 
+          mob={mob}
         />
       )}
     </AnimatePresence>
@@ -259,13 +268,21 @@ ContactForm.propTypes = {
   setTab: PropTypes.func.isRequired,
   formState: PropTypes.string.isRequired,
   setFormState: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func.isRequired
+  handleSubmit: PropTypes.func.isRequired,
+  mob: PropTypes.bool
 };
 
 export default function ContactPage() {
   const { dsp } = useApp();
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [tab, setTab] = useState('creator');
   const [formState, setFormState] = useState('idle');
+
+  useEffect(() => {
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
+  }, []);
 
   const onMediaRequest = () => {
     dsp({ t: 'TOAST', d: { t: 'Media Kit request sent! Our team will contact you soon.', type: 'success' } });
@@ -279,17 +296,18 @@ export default function ContactPage() {
 
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', overflowX: 'hidden' }}>
-      <ContactHero />
-      <section style={{ padding: '0 24px 120px', marginTop: '-60px', position: 'relative', zIndex: 2 }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '48px', alignItems: 'start' }}>
+      <ContactHero mob={mob} />
+      <section style={{ padding: mob ? '0 20px 80px' : '0 24px 120px', marginTop: mob ? '-40px' : '-60px', position: 'relative', zIndex: 2 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(auto-fit, minmax(400px, 1fr))', gap: mob ? '32px' : '48px', alignItems: 'start' }}>
           <ContactForm 
             tab={tab} 
             setTab={setTab} 
             formState={formState} 
             setFormState={setFormState} 
             handleSubmit={handleSubmit} 
+            mob={mob}
           />
-          <ContactChannels onMediaRequest={onMediaRequest} />
+          <ContactChannels onMediaRequest={onMediaRequest} mob={mob} />
         </div>
       </section>
     </div>

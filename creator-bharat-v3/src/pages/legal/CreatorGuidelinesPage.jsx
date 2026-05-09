@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   BadgeCheck,
@@ -33,9 +33,17 @@ const sections = [
 ];
 
 export default function CreatorGuidelinesPage() {
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
+
+  useEffect(() => {
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
+  }, []);
+
   return (
     <div style={{ background: '#fff', minHeight: '100vh' }}>
-      <section style={{ background: '#050505', color: '#fff', padding: '150px 24px 80px', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ background: '#050505', color: '#fff', padding: mob ? '120px 20px 60px' : '150px 24px 80px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 20% 20%, rgba(255,148,49,0.16), transparent 34%), radial-gradient(circle at 82% 28%, rgba(19,136,8,0.13), transparent 30%)' }} />
         <div style={{ maxWidth: 960, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 14px', borderRadius: 999, background: 'rgba(255,148,49,0.12)', color: '#FF9431', fontSize: 12, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 22 }}>
@@ -50,8 +58,8 @@ export default function CreatorGuidelinesPage() {
         </div>
       </section>
 
-      <main style={{ maxWidth: 1080, margin: '0 auto', padding: '70px 24px 96px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 18 }}>
+      <main style={{ maxWidth: 1080, margin: '0 auto', padding: mob ? '40px 20px 60px' : '70px 24px 96px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(auto-fit, minmax(230px, 1fr))', gap: mob ? 20 : 18 }}>
           {sections.map(item => {
             const Icon = item.icon;
             return (
@@ -79,7 +87,7 @@ export default function CreatorGuidelinesPage() {
           </div>
         </section>
 
-        <div style={{ marginTop: 32, display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+        <div style={{ marginTop: 32, display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: mob ? 'center' : 'flex-start' }}>
           <Link to="/privacy" style={{ color: '#0f172a', fontWeight: 850, textDecoration: 'none', padding: '12px 18px', borderRadius: 999, border: '1px solid #e2e8f0' }}>Privacy Policy</Link>
           <Link to="/terms" style={{ color: '#0f172a', fontWeight: 850, textDecoration: 'none', padding: '12px 18px', borderRadius: 999, border: '1px solid #e2e8f0' }}>Terms of Service</Link>
           <Link to="/contact" style={{ color: '#fff', background: '#0f172a', fontWeight: 850, textDecoration: 'none', padding: '12px 18px', borderRadius: 999 }}>Contact Support</Link>

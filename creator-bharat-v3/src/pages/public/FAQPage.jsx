@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { Btn, Card, Bdg } from '../../components/Primitives';
 
-const FAQAccordion = ({ q, a, delay = 0 }) => {
+const FAQAccordion = ({ q, a, delay = 0, mob }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -43,7 +43,7 @@ const FAQAccordion = ({ q, a, delay = 0 }) => {
         onClick={() => setIsOpen(!isOpen)}
         style={{
           width: '100%',
-          padding: '32px 40px',
+          padding: mob ? '24px 20px' : '32px 40px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -67,7 +67,7 @@ const FAQAccordion = ({ q, a, delay = 0 }) => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            style={{ padding: '0 40px 40px', color: '#64748b', fontSize: '16px', lineHeight: 1.8, fontWeight: 500 }}
+            style={{ padding: mob ? '0 20px 24px' : '0 40px 40px', color: '#64748b', fontSize: mob ? '15px' : '16px', lineHeight: 1.8, fontWeight: 500 }}
           >
             <div style={{ padding: '24px', background: '#f8fafc', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
                {a}
@@ -82,13 +82,21 @@ const FAQAccordion = ({ q, a, delay = 0 }) => {
 FAQAccordion.propTypes = {
   q: PropTypes.string.isRequired,
   a: PropTypes.string.isRequired,
-  delay: PropTypes.number
+  delay: PropTypes.number,
+  mob: PropTypes.bool
 };
 
 export default function FAQPage() {
   const navigate = useNavigate();
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [search, setSearch] = useState('');
   const [activeCat, setActiveCat] = useState('Creators');
+
+  useEffect(() => {
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
+  }, []);
 
   const faqs = [
     { cat: 'General', q: 'What makes CreatorBharat "Elite"?', a: 'Unlike generic platforms, CreatorBharat uses a custom "Elite Score" to verify talent authenticity. We focus on Tier 2 & 3 city creators who represent the real, massive heart of India\'s consumer market.' },
@@ -113,12 +121,12 @@ export default function FAQPage() {
   );
 
   return (
-    <div style={{ background: '#fcfcfc', minHeight: '100vh', overflowX: 'hidden' }}>
+    <div style={{ background: '#fcfcfc', minHeight: '100vh' }}>
       
-      {/* Search Header Section */}
+      {/* Search Hero */}
       <section style={{ 
         background: '#050505', 
-        padding: '180px 24px 120px', 
+        padding: mob ? '120px 20px 60px' : '160px 24px 100px', 
         textAlign: 'center',
         position: 'relative',
         overflow: 'hidden'
@@ -160,20 +168,26 @@ export default function FAQPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            style={{ maxWidth: '700px', margin: '0 auto', position: 'relative' }}
+            style={{ position: 'relative', maxWidth: '600px', margin: '0 auto' }}
           >
-             <Search style={{ position: 'absolute', left: '32px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.4)' }} size={24} />
-             <input 
-               type="text" 
-               placeholder="Search features, verification, payouts..."
-               value={search}
-               onChange={(e) => setSearch(e.target.value)}
-               style={{ 
-                 width: '100%', padding: '28px 32px 28px 72px', borderRadius: '100px', 
-                 border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', 
-                 color: '#fff', fontSize: '18px', fontWeight: 600, outline: 'none', backdropFilter: 'blur(20px)'
-               }}
-             />
+            <Search style={{ position: 'absolute', left: '24px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} size={20} />
+            <input 
+              type="text" 
+              placeholder="Search your question..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ 
+                width: '100%', 
+                padding: mob ? '16px 20px 16px 60px' : '20px 24px 20px 64px', 
+                borderRadius: '100px', 
+                border: 'none', 
+                background: 'rgba(255,255,255,0.1)', 
+                color: '#fff', 
+                fontSize: '16px',
+                outline: 'none',
+                backdropFilter: 'blur(10px)'
+              }} 
+            />
           </motion.div>
         </div>
       </section>
@@ -204,7 +218,7 @@ export default function FAQPage() {
              ))}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '60px', alignItems: 'start' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(auto-fit, minmax(400px, 1fr))', gap: '60px', alignItems: 'start' }}>
              
              {/* FAQ List */}
              <div>
@@ -215,8 +229,8 @@ export default function FAQPage() {
                 
                 <AnimatePresence mode="wait">
                    <motion.div key={activeCat + search} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                      {filtered.map((f, i) => (
-                        <FAQAccordion key={f.q} q={f.q} a={f.a} delay={0.1 * i} />
+                      {filtered.map((faq, i) => (
+                        <FAQAccordion key={faq.q} q={faq.q} a={faq.a} delay={i * 0.1} mob={mob} />
                       ))}
                       {filtered.length === 0 && (
                         <div style={{ textAlign: 'center', padding: '100px 0', background: '#f8fafc', borderRadius: '40px' }}>

@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { Gavel, Users, Briefcase, Zap, ChevronRight, Scale } from 'lucide-react';
 
-const Section = ({ title, icon: Icon, children }) => (
+const Section = ({ id, title, icon: Icon, children, mob }) => (
   <motion.div 
+    id={id}
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
@@ -16,19 +17,29 @@ const Section = ({ title, icon: Icon, children }) => (
       </div>
       <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#0f172a', margin: 0 }}>{title}</h2>
     </div>
-    <div style={{ fontSize: '17px', color: '#64748b', lineHeight: '1.8', paddingLeft: '56px' }}>
+    <div style={{ fontSize: mob ? '15px' : '17px', color: '#64748b', lineHeight: '1.8', paddingLeft: mob ? '0' : '56px' }}>
       {children}
     </div>
   </motion.div>
 );
 
 Section.propTypes = {
+  id: PropTypes.string,
   title: PropTypes.string.isRequired,
   icon: PropTypes.elementType.isRequired,
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
+  mob: PropTypes.bool
 };
 
 export default function TermsPage() {
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
+
+  useEffect(() => {
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
+  }, []);
+
   const sections = [
     { id: 'acceptance', title: '1. Acceptance', icon: Gavel },
     { id: 'identity', title: '2. Creator Identity', icon: Users },
@@ -41,7 +52,7 @@ export default function TermsPage() {
       {/* Header */}
       <section style={{ 
         background: '#050505', 
-        padding: '160px 24px 80px', 
+        padding: mob ? '120px 20px 60px' : '160px 24px 80px', 
         textAlign: 'center',
         position: 'relative',
         overflow: 'hidden'
@@ -58,11 +69,11 @@ export default function TermsPage() {
       </section>
 
       {/* Content */}
-      <section style={{ padding: '80px 24px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: globalThis.innerWidth > 1024 ? '300px 1fr' : '1fr', gap: '80px' }}>
+      <section style={{ padding: mob ? '40px 20px' : '80px 24px' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: (!mob && globalThis.innerWidth > 1024) ? '300px 1fr' : '1fr', gap: mob ? '40px' : '80px' }}>
           
           {/* Sidebar Navigation */}
-          {globalThis.innerWidth > 1024 && (
+          {(!mob && globalThis.innerWidth > 1024) && (
             <div style={{ position: 'sticky', top: '120px', height: 'fit-content' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {sections.map(s => (

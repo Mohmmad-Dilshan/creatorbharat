@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { 
   Calculator, 
   Camera as Instagram, 
-  Video as Youtube, 
-  Briefcase as Linkedin, 
-  Globe as Twitter, 
-  TrendingUp, 
   ArrowRight,
   PieChart,
   Sparkles,
-  Flame,
-  Globe
+  Flame
 } from 'lucide-react';
-import { Btn, Card, Bdg } from '../../components/Primitives';
+import { Btn, Bdg } from '../../components/Primitives';
 import { fmt } from '../../utils/helpers';
 
 const RollingNumber = ({ value }) => {
@@ -81,8 +77,16 @@ ContentCard.propTypes = {
 };
 
 export default function RateCalcPage() {
+  const navigate = useNavigate();
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [F, setF] = useState({ platform: 'Instagram', followers: 25000, niche: 'Lifestyle', er: 4.2 });
   const [result, setResult] = useState(null);
+
+  useEffect(() => {
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
+  }, []);
 
   const calculateRates = () => {
     const f = Number(F.followers);
@@ -113,12 +117,12 @@ export default function RateCalcPage() {
   }, [F]);
 
   return (
-    <div style={{ background: '#fcfcfc', minHeight: '100vh', overflowX: 'hidden' }}>
+    <div style={{ background: '#fcfcfc', minHeight: '100vh' }}>
       
-      {/* Header Section */}
+      {/* Cinematic Header */}
       <section style={{ 
         background: '#050505', 
-        padding: '180px 24px 120px', 
+        padding: mob ? '120px 20px 60px' : '160px 24px 100px', 
         textAlign: 'center',
         position: 'relative',
         overflow: 'hidden'
@@ -159,211 +163,175 @@ export default function RateCalcPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            style={{ fontSize: '20px', color: 'rgba(255, 255, 255, 0.6)', maxWidth: '650px', margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}
+            style={{ fontSize: mob ? '16px' : '20px', color: 'rgba(255, 255, 255, 0.6)', maxWidth: '650px', margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}
           >
             Use real-time algorithms powered by 25,000+ Bharat creators to calculate exactly what you should be charging brands.
           </motion.p>
         </div>
       </section>
 
-      {/* Main Console */}
-      <section style={{ padding: '0 24px 120px', marginTop: '-60px', position: 'relative', zIndex: 2 }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '48px', alignItems: 'start' }}>
-           
-           {/* Control Hub */}
-           <motion.div
-             initial={{ opacity: 0, x: -30 }}
-             animate={{ opacity: 1, x: 0 }}
-             style={{ 
-               background: '#fff', 
-               borderRadius: '40px', 
-               padding: '48px', 
-               boxShadow: '0 40px 100px rgba(0,0,0,0.06)',
-               border: '1px solid #f1f5f9'
-             }}
-           >
-              <h3 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', marginBottom: '40px', letterSpacing: '-0.02em' }}>Audit Parameters</h3>
-              
-              {/* Platform Chips */}
-              <div style={{ marginBottom: '40px' }}>
-                 <div style={{ display: 'block', fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '0.05em' }}>Deployment Platform</div>
-                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
-                    {[
-                      { id: 'Instagram', icon: Instagram },
-                      { id: 'YouTube', icon: Youtube },
-                      { id: 'LinkedIn', icon: Linkedin },
-                      { id: 'Twitter', icon: Twitter }
-                    ].map(p => (
-                      <button
-                        key={p.id}
-                        onClick={() => setF({ ...F, platform: p.id })}
-                        style={{
-                          height: '64px',
-                          borderRadius: '16px',
-                          border: '2px solid ' + (F.platform === p.id ? '#FF9431' : '#f1f5f9'),
-                          background: F.platform === p.id ? '#FF943108' : '#fff',
-                          color: F.platform === p.id ? '#FF9431' : '#94a3b8',
-                          cursor: 'pointer',
-                          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}
-                      >
-                         <p.icon size={22} strokeWidth={2.5} />
-                      </button>
-                    ))}
-                 </div>
-              </div>
+      {/* Main App Container */}
+      <main style={{ maxWidth: '1100px', margin: mob ? '-40px auto 120px' : '-80px auto 120px', padding: '0 20px', position: 'relative', zIndex: 10 }}>
+         <div style={{ background: '#fff', borderRadius: '48px', padding: mob ? '24px' : '60px', boxShadow: '0 40px 100px rgba(0,0,0,0.06)', border: '1px solid #f1f5f9' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.2fr 0.8fr', gap: mob ? '40px' : '80px' }}>
+               
+               {/* Left: Input Console */}
+               <div>
+                  <h2 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                     Campaign Intel <Calculator size={20} color="#FF9431" />
+                  </h2>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                     <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+                        <legend style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px', display: 'block' }}>Primary Platform</legend>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px' }}>
+                           {['Instagram', 'YouTube', 'LinkedIn', 'Twitter'].map(p => {
+                               const active = F.platform === p;
+                               return (
+                                  <button
+                                    key={p}
+                                    onClick={() => setF({...F, platform: p})}
+                                    style={{
+                                      padding: '16px',
+                                      borderRadius: '20px',
+                                      border: `2px solid ${active ? '#FF9431' : '#f1f5f9'}`,
+                                      background: active ? '#FF943110' : 'transparent',
+                                      color: active ? '#FF9431' : '#64748b',
+                                      fontWeight: 900,
+                                      fontSize: '14px',
+                                      cursor: 'pointer',
+                                      transition: 'all 0.3s ease'
+                                    }}
+                                  >
+                                    {p}
+                                  </button>
+                               );
+                           })}
+                        </div>
+                     </fieldset>
 
-              {/* Followers Input */}
-              <div style={{ marginBottom: '40px' }}>
-                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '16px' }}>
-                    <label htmlFor="followersRange" style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Follower Reach</label>
-                    <span style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a' }}>{fmt.num(F.followers)}</span>
-                 </div>
-                 <input 
-                   id="followersRange"
-                   type="range" min="1000" max="1000000" step="1000"
-                   value={F.followers}
-                   onChange={(e) => setF({ ...F, followers: e.target.value })}
-                   style={{ width: '100%', accentColor: '#FF9431', height: '6px', borderRadius: '100px', cursor: 'pointer' }}
-                 />
-              </div>
+                     <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px' }}>
+                        <div>
+                           <label htmlFor="followers" style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px', display: 'block' }}>Follower Count</label>
+                           <input 
+                             id="followers"
+                             type="number" 
+                             value={F.followers} 
+                             onChange={e => setF({...F, followers: e.target.value})}
+                             style={{ width: '100%', padding: '18px 24px', borderRadius: '20px', border: '2px solid #f1f5f9', background: '#f8fafc', fontSize: '18px', fontWeight: 900, outline: 'none', color: '#0f172a' }}
+                           />
+                        </div>
+                        <div>
+                           <label htmlFor="er" style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px', display: 'block' }}>Engagement Rate (%)</label>
+                           <input 
+                             id="er"
+                             type="number" 
+                             value={F.er} 
+                             onChange={e => setF({...F, er: e.target.value})}
+                             style={{ width: '100%', padding: '18px 24px', borderRadius: '20px', border: '2px solid #f1f5f9', background: '#f8fafc', fontSize: '18px', fontWeight: 900, outline: 'none', color: '#0f172a' }}
+                           />
+                        </div>
+                     </div>
 
-              {/* Engagement Input */}
-              <div style={{ marginBottom: '40px' }}>
-                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '16px' }}>
-                    <label htmlFor="erRange" style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Engagement Pulse</label>
-                    <span style={{ fontSize: '24px', fontWeight: 950, color: '#10B981' }}>{F.er}%</span>
-                 </div>
-                 <input 
-                   id="erRange"
-                   type="range" min="0.5" max="25" step="0.1"
-                   value={F.er}
-                   onChange={(e) => setF({ ...F, er: e.target.value })}
-                   style={{ width: '100%', accentColor: '#10B981', height: '6px', borderRadius: '100px', cursor: 'pointer' }}
-                 />
-              </div>
+                     <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+                        <legend style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px', display: 'block' }}>Content Niche</legend>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                           {['Lifestyle', 'Finance', 'Tech', 'Fashion', 'Travel', 'Gaming', 'Beauty'].map(n => {
+                               const active = F.niche === n;
+                               return (
+                                  <button
+                                    key={n}
+                                    onClick={() => setF({...F, niche: n})}
+                                    style={{
+                                      padding: '10px 20px',
+                                      borderRadius: '100px',
+                                      border: `1.5px solid ${active ? '#0f172a' : '#f1f5f9'}`,
+                                      background: active ? '#0f172a' : 'transparent',
+                                      color: active ? '#fff' : '#64748b',
+                                      fontWeight: 800,
+                                      fontSize: '13px',
+                                      cursor: 'pointer',
+                                      transition: 'all 0.2s ease'
+                                    }}
+                                  >
+                                    {n}
+                                  </button>
+                               );
+                           })}
+                        </div>
+                     </fieldset>
+                  </div>
+               </div>
 
-              {/* Niche Grid */}
-              <div>
-                 <div style={{ display: 'block', fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '0.05em' }}>Content Niche</div>
-                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                    {['Lifestyle', 'Finance', 'Tech', 'Gaming', 'Beauty', 'Travel', 'Food'].map(n => (
-                      <button
-                        key={n}
-                        onClick={() => setF({ ...F, niche: n })}
-                        style={{
-                          padding: '12px 20px',
-                          borderRadius: '100px',
-                          border: '1.5px solid ' + (F.niche === n ? '#0f172a' : '#f1f5f9'),
-                          background: F.niche === n ? '#0f172a' : 'transparent',
-                          color: F.niche === n ? '#fff' : '#64748b',
-                          fontSize: '13px',
-                          fontWeight: 800,
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease'
-                        }}
-                      >
-                         {n}
-                      </button>
-                    ))}
-                 </div>
-              </div>
-           </motion.div>
+               {/* Right: Results Display */}
+               <div>
+                  {result ? (
+                     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
+                        <div style={{ background: '#0f172a', borderRadius: '40px', padding: mob ? '32px' : '48px', color: '#fff', position: 'relative', overflow: 'hidden' }}>
+                           <div style={{ position: 'absolute', top: 0, right: 0, width: '150px', height: '150px', background: 'radial-gradient(circle at 100% 0%, rgba(255, 148, 49, 0.2), transparent 70%)' }} />
+                           
+                           <div style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '12px' }}>Estimated Rate</div>
+                           <div style={{ fontSize: mob ? '48px' : '64px', fontWeight: 950, letterSpacing: '-0.04em', marginBottom: '32px' }}>
+                              <RollingNumber value={result.post} />
+                           </div>
 
-           {/* Results Dashboard */}
-           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              
-              {/* Negotiation Score Card */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                style={{ 
-                  background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', 
-                  borderRadius: '32px', 
-                  padding: '32px', 
-                  color: '#fff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '24px',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}
-              >
-                 <div style={{ position: 'absolute', top: -20, right: -20, opacity: 0.1 }}><Sparkles size={120} /></div>
-                 <div style={{ position: 'relative', width: '80px', height: '80px', flexShrink: 0 }}>
-                    <svg style={{ transform: 'rotate(-90deg)', width: '80px', height: '80px' }}>
-                       <circle cx="40" cy="40" r="34" stroke="rgba(255,255,255,0.05)" strokeWidth="8" fill="none" />
-                       <motion.circle 
-                         cx="40" cy="40" r="34" 
-                         stroke="#FF9431" strokeWidth="8" fill="none"
-                         strokeDasharray="213.6"
-                         initial={{ strokeDashoffset: 213.6 }}
-                         animate={{ strokeDashoffset: 213.6 - (213.6 * (result?.power || 0) / 100) }}
-                         transition={{ duration: 1 }}
-                       />
-                    </svg>
-                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 950 }}>
-                       {result?.power}%
-                    </div>
-                 </div>
-                 <div style={{ position: 'relative', zIndex: 1 }}>
-                    <h4 style={{ fontSize: '18px', fontWeight: 950, marginBottom: '4px' }}>Market Leverage</h4>
-                    <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.5, fontWeight: 500 }}>
-                       Based on {F.niche} niche metrics. Your high {F.er}% engagement gives you a <strong>Premium Rating</strong>.
-                    </p>
-                 </div>
-              </motion.div>
+                           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '16px' }}>
+                                 <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>Min. Expected</span>
+                                 <span style={{ fontSize: '16px', fontWeight: 800 }}>₹{fmt.num(result.post * 0.8)}</span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '16px' }}>
+                                 <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>Max. Potential</span>
+                                 <span style={{ fontSize: '16px', fontWeight: 800 }}>₹{fmt.num(result.post * 1.3)}</span>
+                              </div>
+                           </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
-                 <ContentCard title="Static Post" amount={result?.post || 0} demand="Medium" icon={PieChart} delay={0.1} />
-                 <ContentCard title="Cinematic Reel" amount={result?.reel || 0} demand="High" icon={Flame} delay={0.2} />
-                 <ContentCard title="Story Set (3x)" amount={result?.story || 0} demand="High" icon={Globe} delay={0.3} />
-                 <ContentCard title="Full Integration" amount={result?.integration || 0} demand="Elite" icon={TrendingUp} delay={0.4} />
-              </div>
+                           <Btn 
+                             full lg 
+                             onClick={() => navigate('/apply')}
+                             style={{ marginTop: '40px', background: '#FF9431', color: '#fff', border: 'none', borderRadius: '100px', padding: '20px', fontWeight: 950 }}
+                           >
+                              Claim My Elite Profile <ArrowRight size={20} />
+                           </Btn>
+                        </div>
 
-              {/* Optimization Advice */}
-              <Card style={{ padding: '32px', borderRadius: '32px', background: '#F0FDF4', border: '1px solid #DCFCE7' }}>
-                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-                    <Sparkles size={20} color="#166534" fill="#166534" />
-                    <h4 style={{ fontSize: '15px', fontWeight: 900, color: '#166534', textTransform: 'uppercase' }}>Growth Advice</h4>
-                 </div>
-                 <p style={{ fontSize: '14px', color: '#166534', lineHeight: 1.6, fontWeight: 600 }}>
-                    In the {F.niche} niche, creators with your reach are currently seeing a <strong>22% increase</strong> in deal closures by offering bundled Reel + Story packages.
-                 </p>
-              </Card>
+                        <div style={{ marginTop: '40px' }}>
+                           <h3 style={{ fontSize: '16px', fontWeight: 900, color: '#0f172a', marginBottom: '24px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Suggested Content Mix</h3>
+                           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '16px' }}>
+                              <ContentCard title="Video Reel" amount={Math.round(result.post * 1.5)} demand="High" icon={Instagram} delay={0.1} />
+                              <ContentCard title="Series Post" amount={result.post} demand="Medium" icon={Instagram} delay={0.2} />
+                           </div>
+                        </div>
+                     </motion.div>
+                  ) : (
+                     <div style={{ height: '100%', minHeight: '400px', background: '#f8fafc', borderRadius: '40px', border: '2px dashed #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px', textAlign: 'center' }}>
+                        <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', boxShadow: '0 10px 20px rgba(0,0,0,0.05)' }}>
+                           <PieChart size={32} color="#cbd5e1" />
+                        </div>
+                        <h3 style={{ fontSize: '20px', fontWeight: 900, color: '#0f172a', marginBottom: '12px' }}>Analysis Pending</h3>
+                        <p style={{ fontSize: '15px', color: '#64748b', lineHeight: 1.6 }}>Fill in your metrics to generate an AI-driven market rate assessment.</p>
+                     </div>
+                  )}
+               </div>
+            </div>
+         </div>
+      </main>
 
-              {/* Onboarding Bridge */}
-              <motion.div
-                whileHover={{ y: -5 }}
-                style={{ 
-                  background: '#050505', 
-                  borderRadius: '32px', 
-                  padding: '40px', 
-                  textAlign: 'center',
-                  color: '#fff',
-                  boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
-                }}
-              >
-                 <h4 style={{ fontSize: '22px', fontWeight: 950, marginBottom: '12px', letterSpacing: '-0.02em' }}>Ready to Book at these Rates?</h4>
-                 <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.5)', marginBottom: '32px', fontWeight: 500 }}>
-                    Create your professional Smart Media Kit in 2 minutes and start sharing these data-backed rates with brands.
-                 </p>
-                 <Btn 
-                   full lg 
-                   onClick={() => navigate('/apply')}
-                   style={{ padding: '20px', borderRadius: '100px', background: '#FF9431', color: '#fff', fontSize: '16px', fontWeight: 950 }}
-                 >
-                    Claim My Elite Profile <ArrowRight size={20} />
-                 </Btn>
-              </motion.div>
-           </div>
-
-        </div>
+      {/* Trust Footer */}
+      <section style={{ padding: '0 24px 120px', textAlign: 'center' }}>
+         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', flexWrap: 'wrap' }}>
+               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#94a3b8' }}>
+                  <Sparkles size={20} />
+                  <span style={{ fontSize: '14px', fontWeight: 700 }}>AI Price Discovery</span>
+               </div>
+               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#94a3b8' }}>
+                  <Flame size={20} />
+                  <span style={{ fontSize: '14px', fontWeight: 700 }}>Bharat Market Real-time</span>
+               </div>
+            </div>
+         </div>
       </section>
-
     </div>
   );
 }
