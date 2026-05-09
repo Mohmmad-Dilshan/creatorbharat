@@ -164,11 +164,6 @@
 .annoLineLeft::after { right: -3px; }
 .annoLineRight::after { left: -3px; }
 
-@media (max-width: 1200px) {
-  .annotationLeft { left: -50px; width: 180px; }
-  .annotationRight { right: -50px; width: 180px; }
-}
-
 .floatingTag {
   position: absolute;
   font-size: 10px;
@@ -199,10 +194,22 @@
   50% { transform: translateY(-8px) scale(1.05); }
 }
 
-/* Specific centering animations */
 @keyframes breatheCenter {
   0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
   50% { transform: translateX(-50%) translateY(-8px) scale(1.05); }
+}
+
+@media (max-width: 1200px) {
+  .annotationLeft { left: 0; width: 160px; }
+  .annotationRight { right: 0; width: 160px; }
+  .midRight { right: -40px; }
+  .midLeft { left: -40px; }
+}
+
+@media (max-width: 1024px) {
+  .annotationLeft, .annotationRight, .floatingTag {
+    display: none;
+  }
 }
 
 @media (max-width: 768px) {
@@ -213,12 +220,10 @@
   }
   .svgWrap {
     transform: perspective(1000px) rotateX(20deg) rotateZ(-2deg);
+    max-width: 100%;
   }
   .stateLabel {
     font-size: 16px;
     padding: 8px 16px;
-  }
-  .annotationLeft, .annotationRight, .floatingTag {
-    display: none;
   }
 }

@@ -269,7 +269,7 @@ export default function PlatformShowcase({ mob }) {
           <MobileCardCarousel />
         ) : (
           /* DESKTOP: 3 cards in a row */
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, marginBottom: 64 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))', gap: 24, marginBottom: 64 }}>
             {COMMITMENTS.map((c, i) => (
               <CommitmentCard key={c.id} c={c} idx={i} hovered={hovered} setHovered={setHovered} />
             ))}

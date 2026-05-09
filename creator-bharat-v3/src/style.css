@@ -26,6 +26,9 @@
   -moz-osx-font-smoothing: grayscale;
 
   @media (max-width: 1024px) {
+    font-size: 17px;
+  }
+  @media (max-width: 768px) {
     font-size: 16px;
   }
 }
@@ -157,8 +160,8 @@ code {
 }
 
 #app {
-  width: 1126px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
   text-align: center;
   min-height: 100svh;

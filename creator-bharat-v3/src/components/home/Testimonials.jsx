@@ -288,7 +288,7 @@ export default function Testimonials({ mob }) {
             <MobileControls steps={steps} current={current} goTo={goTo} prev={prev} next={next} />
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 360px), 1fr))', gap: 32 }}>
             {steps.map((s, i) => (
               <article 
                 key={s.id} 

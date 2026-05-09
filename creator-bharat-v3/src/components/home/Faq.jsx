@@ -215,7 +215,7 @@ export default function Faq({ mob }) {
             </div>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'stretch' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 480px), 1fr))', gap: mob ? 32 : 48, alignItems: 'stretch' }}>
             {DATA.map((c) => (
               <CardContent key={c.id} c={c} mob={false} />
             ))}

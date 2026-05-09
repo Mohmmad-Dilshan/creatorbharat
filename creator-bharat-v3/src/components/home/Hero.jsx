@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
-import { T } from '../../theme';
 import { W, LS } from '../../utils/helpers';
 import { apiCall } from '../../utils/api';
 import { Btn } from '../Primitives';
@@ -321,7 +320,7 @@ export default function Hero({ mob, st, dsp, go }) {
         <HeroCTA mob={mob} go={go} dsp={dsp} />
         <SearchBar mob={mob} st={st} dsp={dsp} go={go} sugs={sugs} onKeyDown={handleKeyDown} />
         <EcosystemHeader mob={mob} />
-        <div style={{ width: '100%', maxWidth: 1200, display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(3, 1fr)', gap: mob ? 12 : 32, padding: mob ? '0 16px' : 0, boxSizing: 'border-box' }}>
+        <div style={{ width: '100%', maxWidth: 1200, display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(320px, 1fr))', gap: mob ? 12 : 32, padding: mob ? '0 16px' : 0, boxSizing: 'border-box' }}>
           {supportFeatures.map((p) => <SupportCard key={p.h} p={p} mob={mob} />)}
         </div>
         <style>{`

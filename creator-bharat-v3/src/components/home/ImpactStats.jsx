@@ -251,7 +251,7 @@ export default function ImpactStats({ mob }) {
         </div>
 
         {/* KPI Row */}
-        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(4,1fr)', gap: mob ? 12 : 20, marginBottom: mob ? 16 : 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: mob ? 12 : 20, marginBottom: mob ? 16 : 20 }}>
           {loading
             ? [0,1,2,3].map(i => <SkeletonCard key={i} />)
             : buildKpis(analytics).map((k) => <KpiCard key={k.label} {...k} mob={mob} />)
