@@ -13,12 +13,15 @@ import {
   ShieldCheck,
   Sparkles,
   User,
-  X
+  X,
+  Phone,
+  MapPin
 } from 'lucide-react';
 import { useApp } from '../../context';
 import { LS } from '../../utils/helpers';
 import { Btn, Fld, Logo } from '../Primitives';
 import ApplyForm from '../apply/ApplyForm';
+import { INDIAN_STATES, MAJOR_CITIES, STATE_CITY_MAP } from '../../utils/geo';
 
 const VIEW_COPY = {
   gateway: {
@@ -287,13 +290,137 @@ const LoginView = ({ role, setRole, onLogin, loading, setView }) => {
            </svg>
            Continue with Google
         </button>
+
+        <button 
+          type="button"
+          style={{ 
+            width: '100%', height: 56, borderRadius: 16, border: '1px solid #E5E7EB', background: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, cursor: 'pointer',
+            fontSize: 14, fontWeight: 800, color: '#1f2937', marginTop: 12, transition: 'all .2s'
+          }}
+          onClick={() => {}}
+        >
+           <Phone size={18} color="#111827" />
+           Continue with Mobile No
+        </button>
       </form>
     </motion.div>
   );
 };
 
+const BrandStep1 = ({ form, up, errors, mob, otpSent, verified, loading, sendOTP, verifyOTP, next }) => (
+  <div style={{ display: 'grid', gap: 2 }}>
+    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 0 : 14 }}>
+      <Fld label="Company name" value={form.companyName} onChange={e => up('companyName', e.target.value)} placeholder="e.g. Nykaa, boAt..." error={errors.companyName} required />
+      <Fld label="Industry" value={form.industry} onChange={e => up('industry', e.target.value)} options={['', 'Beauty', 'Fashion', 'Tech', 'Food', 'Finance', 'Other']} error={errors.industry} required />
+    </div>
+    <Fld label="Official Work Email" type="email" icon={Mail} value={form.email} onChange={e => up('email', e.target.value)} placeholder="partnerships@company.com" error={errors.email} required />
+    
+    <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 0.6fr', gap: 10, alignItems: 'flex-end' }}>
+      <Fld label="Official Phone" type="tel" icon={Phone} value={form.phone} onChange={e => up('phone', e.target.value)} placeholder="9876543210" error={errors.phone} required readOnly={verified} />
+      {!verified && (
+        <Btn onClick={sendOTP} loading={loading && !otpSent} style={{ marginBottom: 18, height: 52, borderRadius: 12, background: otpSent ? '#F8FAFC' : '#111827', color: otpSent ? '#64748B' : '#fff', fontSize: 13, border: otpSent ? '1px solid #E2E8F0' : 'none' }}>
+          {otpSent ? 'Resend' : 'Send OTP'}
+        </Btn>
+      )}
+      {verified && (
+        <div style={{ marginBottom: 18, height: 52, display: 'flex', alignItems: 'center', gap: 6, color: '#10B981', fontWeight: 900, fontSize: 13 }}>
+          <CheckCircle2 size={18} /> Verified
+        </div>
+      )}
+    </div>
+
+    {otpSent && !verified && (
+      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 10, alignItems: 'flex-end', animation: 'fadeIn .3s ease', marginBottom: 10 }}>
+        <Fld label="4-digit OTP" type="number" value={form.otp} onChange={e => up('otp', e.target.value)} placeholder="1234" error={errors.otp} />
+        <Btn onClick={verifyOTP} loading={loading && otpSent} style={{ marginBottom: 18, height: 52, borderRadius: 12, background: '#10B981', color: '#fff', border: 'none' }}>
+          Verify OTP
+        </Btn>
+      </div>
+    )}
+
+    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 0 : 14 }}>
+      <Fld label="State" value={form.state} onChange={e => up('state', e.target.value)} options={INDIAN_STATES} required />
+      <Fld label="City / District" value={form.city} icon={MapPin} onChange={e => up('city', e.target.value)} options={STATE_CITY_MAP[form.state] || MAJOR_CITIES} required />
+    </div>
+    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 0 : 14 }}>
+      <Fld label="Contact person" value={form.contactName} onChange={e => up('contactName', e.target.value)} placeholder="Aman Deep" required />
+      <Fld label="Password" type="password" icon={Lock} value={form.password} onChange={e => up('password', e.target.value)} placeholder="Password" error={errors.password} required />
+    </div>
+    <Btn full lg onClick={next} type="button" style={{ height: 56, borderRadius: 16, background: '#111827', color: '#fff', border: 'none', fontWeight: 900, marginTop: 10 }}>
+      Continue to Verification <ArrowRight size={18} />
+    </Btn>
+  </div>
+);
+
+BrandStep1.propTypes = {
+  form: PropTypes.shape({
+    companyName: PropTypes.string,
+    industry: PropTypes.string,
+    email: PropTypes.string,
+    phone: PropTypes.string,
+    otp: PropTypes.string,
+    state: PropTypes.string,
+    city: PropTypes.string,
+    contactName: PropTypes.string,
+    password: PropTypes.string
+  }).isRequired,
+  up: PropTypes.func.isRequired,
+  errors: PropTypes.shape({
+    companyName: PropTypes.string,
+    industry: PropTypes.string,
+    email: PropTypes.string,
+    phone: PropTypes.string,
+    otp: PropTypes.string,
+    password: PropTypes.string
+  }).isRequired,
+  mob: PropTypes.bool,
+  otpSent: PropTypes.bool,
+  verified: PropTypes.bool,
+  loading: PropTypes.bool,
+  sendOTP: PropTypes.func.isRequired,
+  verifyOTP: PropTypes.func.isRequired,
+  next: PropTypes.func.isRequired,
+};
+
+const BrandStep2 = ({ form, up, errors, loading, setStep }) => (
+  <div style={{ display: 'grid', gap: 2 }}>
+    <div style={{ padding: '16px 20px', background: 'rgba(16,185,129,0.06)', borderRadius: 16, border: '1px solid rgba(16,185,129,0.1)', marginBottom: 12 }}>
+      <p style={{ fontSize: 13, fontWeight: 800, color: '#10B981', lineHeight: 1.5 }}>
+        🛡️ <strong>Elite Verification:</strong> To maintain platform quality, we only onboard authentic brands.
+      </p>
+    </div>
+    <Fld label="Company Website" value={form.website} onChange={e => up('website', e.target.value)} placeholder="https://www.company.com" error={errors.website} required />
+    <Fld label="Official LinkedIn Page" value={form.linkedin} onChange={e => up('linkedin', e.target.value)} placeholder="linkedin.com/company/..." error={errors.linkedin} required />
+    <Fld label="GSTIN / Business Registration ID (Optional)" value={form.gstin} onChange={e => up('gstin', e.target.value)} placeholder="27AAACR1234A1Z1" helper="Speeds up verification" />
+    
+    <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
+      <Btn variant="ghost" onClick={() => setStep(1)} style={{ flex: 0.5, borderRadius: 16 }}>Back</Btn>
+      <Btn full lg loading={loading} style={{ flex: 1.5, height: 56, borderRadius: 16, background: '#10B981', color: '#fff', border: 'none', fontWeight: 900 }}>
+        Complete Registration <ShieldCheck size={18} />
+      </Btn>
+    </div>
+  </div>
+);
+
+BrandStep2.propTypes = {
+  form: PropTypes.shape({
+    website: PropTypes.string,
+    linkedin: PropTypes.string,
+    gstin: PropTypes.string
+  }).isRequired,
+  up: PropTypes.func.isRequired,
+  errors: PropTypes.shape({
+    website: PropTypes.string,
+    linkedin: PropTypes.string
+  }).isRequired,
+  loading: PropTypes.bool,
+  setStep: PropTypes.func.isRequired,
+};
+
 const BrandRegisterView = ({ mob, onSuccess }) => {
   const { dsp } = useApp();
+  const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [form, setForm] = useState({
@@ -302,48 +429,113 @@ const BrandRegisterView = ({ mob, onSuccess }) => {
     email: '',
     contactName: '',
     password: '',
-    about: ''
+    phone: '',
+    otp: '',
+    website: '',
+    linkedin: '',
+    gstin: '',
+    about: '',
+    state: 'Maharashtra',
+    city: 'Mumbai'
   });
 
-  const up = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
+  const [otpSent, setOtpSent] = useState(false);
+  const [verified, setVerified] = useState(false);
+
+  const up = (key, value) => {
+    setForm(prev => {
+      const next = { ...prev, [key]: value };
+      if (key === 'state') {
+        const availableCities = STATE_CITY_MAP[value] || MAJOR_CITIES;
+        next.city = availableCities[0];
+      }
+      return next;
+    });
+  };
+
+  const next = () => {
+    const errs = {};
+    if (!form.companyName) errs.companyName = 'Company name is required';
+    if (!form.industry) errs.industry = 'Select industry';
+    if (!form.email || !/^\S+@\S+\.\S+$/.test(form.email)) errs.email = 'Valid work email required';
+    if (!verified) errs.phone = 'Please verify your phone number';
+    if (!form.password || form.password.length < 6) errs.password = 'Min 6 characters';
+    
+    setErrors(errs);
+    if (!Object.keys(errs).length) setStep(2);
+  };
+
+  const sendOTP = () => {
+    if (!form.phone || form.phone.length < 10) {
+      setErrors(prev => ({ ...prev, phone: 'Enter valid 10-digit number' }));
+      return;
+    }
+    setLoading(true);
+    setTimeout(() => {
+      setOtpSent(true);
+      setLoading(false);
+      setErrors(prev => ({ ...prev, phone: null }));
+      dsp({ t: 'TOAST', d: { type: 'info', msg: 'Demo OTP is 1234' } });
+    }, 800);
+  };
+
+  const verifyOTP = () => {
+    if (form.otp !== '1234') {
+      setErrors(prev => ({ ...prev, otp: 'Invalid OTP' }));
+      dsp({ t: 'TOAST', d: { type: 'error', msg: 'Invalid OTP. Please use 1234' } });
+      return;
+    }
+    setLoading(true);
+    setTimeout(() => {
+      setVerified(true);
+      setLoading(false);
+      setErrors(prev => ({ ...prev, otp: null }));
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Phone verified successfully' } });
+    }, 800);
+  };
 
   const submit = (e) => {
     e.preventDefault();
-    const nextErrors = {};
-    if (!form.companyName) nextErrors.companyName = 'Company name is required';
-    if (!form.industry) nextErrors.industry = 'Industry is required';
-    if (!form.email || !/^\S+@\S+\.\S+$/.test(form.email)) nextErrors.email = 'Valid work email is required';
-    if (!form.contactName) nextErrors.contactName = 'Contact name is required';
-    if (!form.password || form.password.length < 6) nextErrors.password = 'Minimum 6 characters';
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length) return;
+    const errs = {};
+    if (!form.website?.includes('.')) errs.website = 'Valid website required';
+    if (!form.linkedin) errs.linkedin = 'LinkedIn profile is required for verification';
+    
+    setErrors(errs);
+    if (Object.keys(errs).length) return;
 
     setLoading(true);
     setTimeout(() => {
       const user = { ...form, id: 'b-' + Date.now(), role: 'brand' };
       LS.set('cb_brands', [...LS.get('cb_brands', []), user]);
-      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Brand console created' } });
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Brand verification initiated' } });
       onSuccess(user);
       setLoading(false);
-    }, 900);
+    }, 1100);
   };
 
   return (
-    <motion.form key="brand-register" onSubmit={submit} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 0 : 14 }}>
-        <Fld label="Company name" value={form.companyName} onChange={e => up('companyName', e.target.value)} placeholder="Nykaa, boAt, local brand..." error={errors.companyName} required />
-        <Fld label="Industry" value={form.industry} onChange={e => up('industry', e.target.value)} options={['', 'Beauty', 'Fashion', 'Tech', 'Food', 'Education', 'Finance', 'Real Estate']} error={errors.industry} required />
+    <motion.div key="brand-reg" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 24 }}>
+        {[1, 2].map(s => (
+          <div key={s} style={{ flex: 1, height: 4, borderRadius: 2, background: step >= s ? '#10B981' : '#E5E7EB', transition: 'all .3s' }} />
+        ))}
       </div>
-      <Fld label="Work email" type="email" icon={Mail} value={form.email} onChange={e => up('email', e.target.value)} placeholder="team@company.com" error={errors.email} required />
-      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 0 : 14 }}>
-        <Fld label="Contact person" value={form.contactName} onChange={e => up('contactName', e.target.value)} placeholder="Aman Deep" error={errors.contactName} required />
-        <Fld label="Password" type="password" icon={Lock} value={form.password} onChange={e => up('password', e.target.value)} placeholder="Password" error={errors.password} required />
-      </div>
-      <Fld label="Campaign goal" rows={3} value={form.about} onChange={e => up('about', e.target.value)} placeholder="Tell us what kind of creators you want to work with." />
-      <Btn full lg loading={loading} style={{ height: 56, borderRadius: 16, background: '#10B981', color: '#fff', border: 'none', fontWeight: 900 }}>
-        Create Brand Console <ArrowRight size={18} />
-      </Btn>
-    </motion.form>
+
+      <form onSubmit={submit}>
+        {step === 1 ? (
+          <BrandStep1 
+            form={form} up={up} errors={errors} mob={mob} 
+            otpSent={otpSent} verified={verified} loading={loading}
+            sendOTP={sendOTP} verifyOTP={verifyOTP} next={next}
+          />
+        ) : (
+          <BrandStep2 
+            form={form} up={up} errors={errors} 
+            loading={loading} setStep={setStep} 
+          />
+        )}
+      </form>
+    </motion.div>
   );
 };
 

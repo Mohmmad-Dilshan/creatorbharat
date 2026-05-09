@@ -1,312 +1,164 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { AnimatePresence, motion } from 'framer-motion';
 import {
-  BadgeCheck,
-  BarChart3,
-  ChevronRight,
-  CreditCard,
   Hash,
-  IndianRupee,
   Lock,
   Mail,
   MapPin,
-  ShieldCheck,
   Sparkles,
   User,
+  ChevronRight,
+  Phone,
+  CheckCircle2
 } from 'lucide-react';
 import { Btn, Fld } from '../Primitives';
-import { fmt } from '../../utils/helpers';
 
-const NICHES = ['Travel', 'Lifestyle', 'Fashion', 'Beauty', 'Tech', 'Gaming', 'Food', 'Fitness', 'Education', 'Finance', 'Comedy', 'Art'];
-const PLATFORMS = ['Instagram', 'YouTube', 'Twitter', 'LinkedIn'];
-const SERVICES = ['Sponsored Posts', 'Reels', 'YouTube Videos', 'Stories', 'Product Reviews', 'Event Attendance'];
+import { INDIAN_STATES, MAJOR_CITIES, STATE_CITY_MAP } from '../../utils/geo';
 
-const STEPS = [
-  { title: 'Identity', icon: User, helper: 'Basic account and location' },
-  { title: 'Influence', icon: BarChart3, helper: 'Niche, platform, audience' },
-  { title: 'Commercials', icon: CreditCard, helper: 'Rates and services' },
-  { title: 'Review', icon: BadgeCheck, helper: 'Launch your profile' },
-];
-
-function SelectChip({ label, active, onClick }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`apply-chip ${active ? 'active' : ''}`}
-    >
-      {label}
-    </button>
-  );
-}
-
-SelectChip.propTypes = {
-  label: PropTypes.string.isRequired,
-  active: PropTypes.bool,
-  onClick: PropTypes.func.isRequired,
-};
-
-function StepHeader({ step }) {
-  return (
-    <div className="apply-stepper">
-      {STEPS.map((item, index) => {
-        const Icon = item.icon;
-        const active = step === index + 1;
-        const done = step > index + 1;
-        return (
-          <div key={item.title} className={`apply-step ${active ? 'active' : ''} ${done ? 'done' : ''}`}>
-            <div className="apply-step-icon"><Icon size={17} /></div>
-            <div>
-              <strong>{item.title}</strong>
-              <span>{item.helper}</span>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-StepHeader.propTypes = {
-  step: PropTypes.number.isRequired,
-};
-
+// Simplified 1-step registration flow
 export default function ApplyForm({ onSuccess, onBackToLogin }) {
-  const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [mob, setMob] = useState(globalThis.innerWidth < 720);
   const [F, setF] = useState({
     name: '',
     handle: '',
     email: '',
     password: '',
     confirm: '',
-    city: 'Bhilwara',
-    state: 'Rajasthan',
-    niche: [],
-    platform: [],
-    followers: '',
-    er: '',
-    rateMin: '',
-    services: [],
-    interests: [], // Added for Podcast, Articles, Events
-    portfolio: '' // Added for existing portfolio link
+    city: 'Mumbai',
+    state: 'Maharashtra',
+    phone: '',
+    otp: ''
   });
+  const [otpSent, setOtpSent] = useState(false);
+  const [verified, setVerified] = useState(false);
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    const onResize = () => setMob(globalThis.innerWidth < 720);
-    globalThis.addEventListener('resize', onResize);
-    return () => globalThis.removeEventListener('resize', onResize);
-  }, []);
+  const upF = (key, value) => {
+    setF(prev => {
+      const next = { ...prev, [key]: value };
+      // If state changes, reset city to first available in map or empty
+      if (key === 'state') {
+        const availableCities = STATE_CITY_MAP[value] || MAJOR_CITIES;
+        next.city = availableCities[0];
+      }
+      return next;
+    });
+  };
 
-  const upF = (key, value) => setF(prev => ({ ...prev, [key]: value }));
-  const toggleArr = (key, value) => setF(prev => ({
-    ...prev,
-    [key]: prev[key].includes(value) ? prev[key].filter(x => x !== value) : [...prev[key], value],
-  }));
-
-  const validateStep1 = (errs) => {
+  const validate = () => {
+    const errs = {};
     if (!F.name) errs.name = 'Full name is required';
-    if (!F.email || !/^\S+@\S+\.\S+$/.test(F.email)) errs.email = 'Valid email is required';
-    if (!F.password || F.password.length < 6) errs.password = 'Minimum 6 characters';
-    if (F.password !== F.confirm) errs.confirm = 'Passwords do not match';
+    if (!F.email || !/^\S+@\S+\.\S+$/.test(F.email)) errs.email = 'Valid email required';
+    if (!verified) errs.phone = 'Please verify your phone number';
+    if (!F.password || F.password.length < 6) errs.password = 'Min 6 characters';
+    if (F.password !== F.confirm) errs.confirm = 'Passwords mismatch';
+    
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
   };
 
-  const validateStep2 = (errs) => {
-    if (F.niche.length === 0) errs.niche = 'Select at least one niche';
-    if (F.platform.length === 0) errs.platform = 'Select at least one platform';
-    if (!F.followers) errs.followers = 'Audience reach is required';
-  };
-
-  const validate = (activeStep) => {
-    const nextErrors = {};
-    if (activeStep === 1) validateStep1(nextErrors);
-    if (activeStep === 2) validateStep2(nextErrors);
-    if (activeStep === 3 && !F.rateMin) nextErrors.rateMin = 'Starting rate is required';
-
-    setErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
-  };
-
-  const next = () => {
-    if (validate(step)) setStep(current => current + 1);
-  };
-
-  const submit = () => {
+  const sendOTP = () => {
+    if (!F.phone || F.phone.length < 10) {
+      setErrors(prev => ({ ...prev, phone: 'Enter valid 10-digit number' }));
+      return;
+    }
     setLoading(true);
     setTimeout(() => {
-      onSuccess({ ...F, id: 'u-' + Date.now(), role: 'creator', handle: F.handle || fmt.handle(F.name) });
+      setOtpSent(true);
+      setLoading(false);
+      setErrors(prev => ({ ...prev, phone: null }));
+      // Simulation: Telling the user the OTP
+      alert('Your demo OTP is 1234');
+    }, 800);
+  };
+
+  const verifyOTP = () => {
+    if (F.otp !== '1234') {
+      setErrors(prev => ({ ...prev, otp: 'Invalid OTP. Try 1234 for demo.' }));
+      return;
+    }
+    setLoading(true);
+    setTimeout(() => {
+      setVerified(true);
+      setLoading(false);
+      setErrors(prev => ({ ...prev, otp: null }));
+    }, 800);
+  };
+
+  const submit = (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+    setLoading(true);
+    setTimeout(() => {
+      onSuccess({ ...F, id: 'u-' + Date.now(), role: 'creator', handle: F.handle || F.name.toLowerCase().replaceAll(' ', '') });
       setLoading(false);
     }, 1100);
   };
 
-  const current = STEPS[step - 1];
-  const CurrentIcon = current.icon;
-
   return (
     <div className="apply-form-shell" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <StepHeader step={step} />
+      <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div className="apply-section-title" style={{ marginBottom: 20 }}>
+          <div><Sparkles size={19} /></div>
+          <span>Fast Track Onboarding</span>
+          <h3>Start your legacy.</h3>
+          <p>Join Bharat&apos;s most trusted creator ecosystem in seconds.</p>
+        </div>
 
-      <div className="apply-progress" aria-hidden="true">
-        <span style={{ width: `${(step / STEPS.length) * 100}%` }} />
-      </div>
-
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={step}
-          initial={{ opacity: 0, x: 16 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -16 }}
-          transition={{ duration: 0.24 }}
-        >
-          <div className="apply-section-title">
-            <div><CurrentIcon size={19} /></div>
-            <span>Step {step} of 4</span>
-            <h3>{current.title}</h3>
-            <p>{current.helper}</p>
+        <div className="apply-field-stack">
+          <div className="apply-two-col">
+            <Fld label="Full name" value={F.name} icon={User} onChange={e => upF('name', e.target.value)} placeholder="Aman Deep" error={errors.name} required />
+            <Fld label="Handle" value={F.handle} icon={Hash} onChange={e => upF('handle', e.target.value)} placeholder="amandeep" />
           </div>
-
-          {step === 1 && (
-            <div className="apply-field-stack">
-              <div className="apply-two-col">
-                <Fld label="Full name" value={F.name} icon={User} onChange={e => upF('name', e.target.value)} placeholder="Aman Deep" error={errors.name} required />
-                <Fld label="Creator handle" value={F.handle} icon={Hash} onChange={e => upF('handle', e.target.value)} placeholder="@amandeep" />
-              </div>
-              <Fld label="Work email" type="email" icon={Mail} value={F.email} onChange={e => upF('email', e.target.value)} placeholder="aman@bhilwara.me" error={errors.email} required />
-              <div className="apply-two-col">
-                <Fld label="Password" type="password" icon={Lock} value={F.password} onChange={e => upF('password', e.target.value)} placeholder="Password" error={errors.password} required />
-                <Fld label="Confirm password" type="password" icon={Lock} value={F.confirm} onChange={e => upF('confirm', e.target.value)} placeholder="Confirm" error={errors.confirm} required />
-              </div>
-              <div className="apply-two-col">
-                <Fld label="City" value={F.city} icon={MapPin} onChange={e => upF('city', e.target.value)} options={['Bhilwara', 'Jaipur', 'Udaipur', 'Delhi', 'Mumbai']} required />
-                <Fld label="State" value={F.state} onChange={e => upF('state', e.target.value)} options={['Rajasthan', 'Delhi', 'Maharashtra', 'Gujarat', 'Karnataka']} required />
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="apply-field-stack">
-              <div className="apply-choice-block">
-                <div className="apply-choice-head">
-                  <strong>Primary niches</strong>
-                  <span>{F.niche.length} selected</span>
-                </div>
-                <div className="apply-chip-grid">
-                  {NICHES.map(niche => (
-                    <SelectChip key={niche} label={niche} active={F.niche.includes(niche)} onClick={() => toggleArr('niche', niche)} />
-                  ))}
-                </div>
-                {errors.niche && <p className="apply-error">{errors.niche}</p>}
-              </div>
-
-              <div className="apply-choice-block">
-                <div className="apply-choice-head">
-                  <strong>Content Ecosystem</strong>
-                  <span>{F.interests.length} selected</span>
-                </div>
-                <div className="apply-chip-grid">
-                  {['Podcasts', 'Articles/Blogs', 'Live Events', 'Short Films', 'Newsletters'].map(item => (
-                    <SelectChip key={item} label={item} active={F.interests.includes(item)} onClick={() => toggleArr('interests', item)} />
-                  ))}
-                </div>
-              </div>
-
-              <div style={{ marginBottom: 16 }}>
-                 <Fld label="Existing Portfolio/Website (Optional)" value={F.portfolio} onChange={e => upF('portfolio', e.target.value)} placeholder="https://mybrand.com" />
-              </div>
-
-              <div className="apply-choice-block">
-                <div className="apply-choice-head">
-                  <strong>Social platforms</strong>
-                  <span>{F.platform.length} selected</span>
-                </div>
-                <div className="apply-chip-grid compact">
-                  {PLATFORMS.map(platform => (
-                    <SelectChip key={platform} label={platform} active={F.platform.includes(platform)} onClick={() => toggleArr('platform', platform)} />
-                  ))}
-                </div>
-                {errors.platform && <p className="apply-error">{errors.platform}</p>}
-              </div>
-
-              <div className="apply-two-col">
-                <Fld label="Total followers" type="number" icon={Hash} value={F.followers} onChange={e => upF('followers', e.target.value)} placeholder="25000" error={errors.followers} required />
-                <Fld label="Engagement rate" type="number" value={F.er} onChange={e => upF('er', e.target.value)} placeholder="4.8" helper="Optional percentage" />
-              </div>
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className="apply-field-stack">
-              <div className="apply-rate-card">
-                <div>
-                  <span>Suggested starter range</span>
-                  <strong>INR 5k - INR 25k</strong>
-                  <p>Keep your rate realistic for your reach and niche. You can update this later.</p>
-                </div>
-                <Sparkles size={30} />
-              </div>
-              <Fld label="Minimum collaboration rate" type="number" icon={IndianRupee} value={F.rateMin} onChange={e => upF('rateMin', e.target.value)} placeholder="5000" error={errors.rateMin} required />
-              <div className="apply-choice-block">
-                <div className="apply-choice-head">
-                  <strong>Services offered</strong>
-                  <span>{F.services.length} selected</span>
-                </div>
-                <div className="apply-chip-grid">
-                  {SERVICES.map(service => (
-                    <SelectChip key={service} label={service} active={F.services.includes(service)} onClick={() => toggleArr('services', service)} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {step === 4 && (
-            <div className="apply-review-grid">
-              <div className="apply-verified-card">
-                <div className="apply-verified-icon"><ShieldCheck size={34} /></div>
-                <h4>Creator profile ready</h4>
-                <p>Your verified workspace will become visible to premium brands after launch.</p>
-              </div>
-              <div className="apply-profile-preview">
-                <div className="apply-avatar">{(F.name || 'C').slice(0, 1).toUpperCase()}</div>
-                <div>
-                  <strong>{F.name || 'Creator Name'}</strong>
-                  <span>@{F.handle || fmt.handle(F.name || 'creator')}</span>
-                </div>
-                <div className="apply-preview-meta">
-                  <span>{F.city}, {F.state}</span>
-                  <span>{F.niche.slice(0, 2).join(', ') || 'Digital Creator'}</span>
-                  {F.interests.length > 0 && <span>{F.interests.slice(0, 2).join(' • ')}</span>}
-                  <span>{F.rateMin ? `From INR ${Number(F.rateMin).toLocaleString('en-IN')}` : 'Rate pending'}</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="apply-actions">
-            {step > 1 && (
-              <Btn variant="outline" onClick={() => setStep(s => s - 1)} style={{ borderRadius: 14, height: 52, padding: mob ? '0 16px' : '0 24px' }}>
-                Back
+          <Fld label="Email address" type="email" icon={Mail} value={F.email} onChange={e => upF('email', e.target.value)} placeholder="aman@creator.me" error={errors.email} required />
+          
+          <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 0.6fr', gap: 10, alignItems: 'flex-end' }}>
+            <Fld label="Mobile number" type="tel" icon={Phone} value={F.phone} onChange={e => upF('phone', e.target.value)} placeholder="9876543210" error={errors.phone} required readOnly={verified} />
+            {!verified && (
+              <Btn onClick={sendOTP} loading={loading && !otpSent} style={{ marginBottom: 18, height: 52, borderRadius: 12, background: otpSent ? '#F8FAFC' : '#111827', color: otpSent ? '#64748B' : '#fff', fontSize: 13, border: otpSent ? '1px solid #E2E8F0' : 'none' }}>
+                {otpSent ? 'Resend' : 'Send OTP'}
               </Btn>
             )}
-            {step < 4 ? (
-              <Btn full lg onClick={next} style={{ borderRadius: 14, background: '#111827', color: '#fff', border: 'none', height: 52, fontWeight: 900 }}>
-                Continue <ChevronRight size={18} />
-              </Btn>
-            ) : (
-              <Btn full lg loading={loading} onClick={submit} style={{ borderRadius: 14, background: '#FF9431', color: '#fff', border: 'none', height: 52, fontWeight: 950, boxShadow: '0 14px 30px rgba(255,148,49,0.25)' }}>
-                Launch Profile
-              </Btn>
+            {verified && (
+              <div style={{ marginBottom: 18, height: 52, display: 'flex', alignItems: 'center', gap: 6, color: '#10B981', fontWeight: 900, fontSize: 13 }}>
+                <CheckCircle2 size={18} /> Verified
+              </div>
             )}
           </div>
 
-          <button type="button" onClick={onBackToLogin} className="apply-login-link">
-            Already a member? <span>Sign in</span>
-          </button>
-        </motion.div>
-      </AnimatePresence>
+          {otpSent && !verified && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 10, alignItems: 'flex-end', animation: 'fadeIn .3s ease' }}>
+              <Fld label="Enter 4-digit OTP" type="number" value={F.otp} onChange={e => upF('otp', e.target.value)} placeholder="1234" error={errors.otp} />
+              <Btn onClick={verifyOTP} loading={loading && otpSent} style={{ marginBottom: 18, height: 52, borderRadius: 12, background: '#10B981', color: '#fff', border: 'none' }}>
+                Verify OTP
+              </Btn>
+            </div>
+          )}
+
+          <div className="apply-two-col">
+            <Fld label="Password" type="password" icon={Lock} value={F.password} onChange={e => upF('password', e.target.value)} placeholder="••••••" error={errors.password} required />
+            <Fld label="Confirm" type="password" icon={Lock} value={F.confirm} onChange={e => upF('confirm', e.target.value)} placeholder="••••••" error={errors.confirm} required />
+          </div>
+          <div className="apply-two-col">
+            <Fld label="State" value={F.state} onChange={e => upF('state', e.target.value)} options={INDIAN_STATES} required />
+            <Fld label="City / District" value={F.city} icon={MapPin} onChange={e => upF('city', e.target.value)} options={STATE_CITY_MAP[F.state] || MAJOR_CITIES} required />
+          </div>
+        </div>
+
+        <div style={{ marginTop: 20, padding: '14px 18px', background: 'rgba(255,148,49,0.05)', borderRadius: 16, border: '1px solid rgba(255,148,49,0.1)' }}>
+           <p style={{ fontSize: 12, fontWeight: 700, color: '#FF9431', margin: 0 }}>
+             ✨ You can build your full profile and add niches from your dashboard after signup.
+           </p>
+        </div>
+
+        <Btn full lg loading={loading} style={{ marginTop: 24, borderRadius: 14, background: '#111827', color: '#fff', border: 'none', height: 56, fontWeight: 950 }}>
+          Launch My Portfolio <ChevronRight size={18} />
+        </Btn>
+
+        <button type="button" onClick={onBackToLogin} className="apply-login-link">
+          Already a member? <span>Sign in</span>
+        </button>
+      </form>
 
       <style>{`
         .apply-form-shell {
