@@ -351,7 +351,11 @@ export default function RateCalcPage() {
                  <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.5)', marginBottom: '32px', fontWeight: 500 }}>
                     Create your professional Smart Media Kit in 2 minutes and start sharing these data-backed rates with brands.
                  </p>
-                 <Btn full lg style={{ padding: '20px', borderRadius: '100px', background: '#FF9431', color: '#fff', fontSize: '16px', fontWeight: 950 }}>
+                 <Btn 
+                   full lg 
+                   onClick={() => navigate('/apply')}
+                   style={{ padding: '20px', borderRadius: '100px', background: '#FF9431', color: '#fff', fontSize: '16px', fontWeight: 950 }}
+                 >
                     Claim My Elite Profile <ArrowRight size={20} />
                  </Btn>
               </motion.div>

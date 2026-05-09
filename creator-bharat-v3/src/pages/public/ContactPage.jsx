@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useApp } from '../../context';
 import { 
   Mail, 
   MessageCircle, 
@@ -106,7 +107,7 @@ const ContactHero = () => (
   </section>
 );
 
-const ContactChannels = () => (
+const ContactChannels = ({ onMediaRequest }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
     <ContactMethodCard icon={Mail} title="Direct Support" value="support@creatorbharat.in" sub="Median response time: 4 hours" delay={0.1} />
     <ContactMethodCard icon={Linkedin} title="Brand Solutions" value="solutions@creatorbharat.in" sub="For agency and large brand queries" delay={0.2} />
@@ -123,7 +124,7 @@ const ContactChannels = () => (
           <p style={{ fontSize: '16px', fontWeight: 600, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, marginBottom: '32px' }}>
               Are you writing about Bharat's creator economy? Connect directly with our press team for data and insights.
           </p>
-          <Btn full style={{ background: '#fff', color: '#EA580C', borderRadius: '100px', fontWeight: 950 }}>
+          <Btn full onClick={onMediaRequest} style={{ background: '#fff', color: '#EA580C', borderRadius: '100px', fontWeight: 950 }}>
               Request Media Kit
           </Btn>
         </div>
@@ -135,6 +136,10 @@ const ContactChannels = () => (
     </div>
   </div>
 );
+
+ContactChannels.propTypes = {
+  onMediaRequest: PropTypes.func.isRequired
+};
 
 const SuccessMessage = ({ onReset }) => (
   <motion.div
@@ -258,8 +263,13 @@ ContactForm.propTypes = {
 };
 
 export default function ContactPage() {
+  const { dsp } = useApp();
   const [tab, setTab] = useState('creator');
   const [formState, setFormState] = useState('idle');
+
+  const onMediaRequest = () => {
+    dsp({ t: 'TOAST', d: { t: 'Media Kit request sent! Our team will contact you soon.', type: 'success' } });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -279,7 +289,7 @@ export default function ContactPage() {
             setFormState={setFormState} 
             handleSubmit={handleSubmit} 
           />
-          <ContactChannels />
+          <ContactChannels onMediaRequest={onMediaRequest} />
         </div>
       </section>
     </div>

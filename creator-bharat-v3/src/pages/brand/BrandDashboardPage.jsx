@@ -187,14 +187,14 @@ export default function BrandDashboardPage() {
               </p>
            </div>
 
-           <div style={{ display: 'grid', gap: '16px', marginBottom: '48px' }}>
-              <Btn full lg onClick={() => dsp({ t: 'UI', v: { authModal: true, authView: 'login' } })} style={{ height: '68px', borderRadius: '24px', background: '#0f172a', color: '#fff', fontSize: '17px', fontWeight: 900, boxShadow: '0 12px 35px rgba(15,23,42,0.25)' }}>
+            <div style={{ display: 'grid', gap: '16px', marginBottom: '48px' }}>
+              <Btn full lg onClick={() => navigate('/login')} style={{ height: '68px', borderRadius: '24px', background: '#0f172a', color: '#fff', fontSize: '17px', fontWeight: 900, boxShadow: '0 12px 35px rgba(15,23,42,0.25)' }}>
                 Console Login Karein <ChevronRight size={20} style={{ marginLeft: '8px' }} />
               </Btn>
-              <Btn full lg variant="outline" onClick={() => dsp({ t: 'UI', v: { authModal: true, authView: 'brand-register' } })} style={{ height: '68px', borderRadius: '24px', fontSize: '17px', fontWeight: 800, border: '2px solid #e2e8f0' }}>
+              <Btn full lg variant="outline" onClick={() => navigate('/brand-register')} style={{ height: '68px', borderRadius: '24px', fontSize: '17px', fontWeight: 800, border: '2px solid #e2e8f0' }}>
                 Register Your Brand
               </Btn>
-           </div>
+            </div>
 
            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '32px', display: 'flex', justifyContent: 'center', gap: '32px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 800, color: '#94a3b8' }}>

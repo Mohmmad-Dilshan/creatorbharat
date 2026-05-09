@@ -173,10 +173,10 @@ export default function DashboardPage() {
            </div>
 
            <div style={{ display: 'grid', gap: '16px', marginBottom: '48px' }}>
-              <Btn full lg onClick={() => dsp({ t: 'UI', v: { authModal: true, authView: 'login' } })} style={{ height: '68px', borderRadius: '24px', background: '#0f172a', color: '#fff', fontSize: '17px', fontWeight: 900, boxShadow: '0 12px 35px rgba(15,23,42,0.25)' }}>
+              <Btn full lg onClick={() => navigate('/login')} style={{ height: '68px', borderRadius: '24px', background: '#0f172a', color: '#fff', fontSize: '17px', fontWeight: 900, boxShadow: '0 12px 35px rgba(15,23,42,0.25)' }}>
                 Apna Dashboard Open Karein <ChevronRight size={20} style={{ marginLeft: '8px' }} />
               </Btn>
-              <Btn full lg variant="outline" onClick={() => dsp({ t: 'UI', v: { authModal: true, authView: 'register' } })} style={{ height: '68px', borderRadius: '24px', fontSize: '17px', fontWeight: 800, border: '2px solid #e2e8f0' }}>
+              <Btn full lg variant="outline" onClick={() => navigate('/apply')} style={{ height: '68px', borderRadius: '24px', fontSize: '17px', fontWeight: 800, border: '2px solid #e2e8f0' }}>
                 Apply as Verified Creator
               </Btn>
            </div>

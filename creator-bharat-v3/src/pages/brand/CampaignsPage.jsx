@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context';
 import { fmt, LS } from '../../utils/helpers';
 import { apiCall } from '../../utils/api';
@@ -52,6 +53,7 @@ SwipeCard.propTypes = {
 
 export default function CampaignsPage() {
   const { st, dsp } = useApp();
+  const navigate = useNavigate();
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const { cpf: f } = st;
   const [loading, setLoading] = useState(true);
@@ -95,7 +97,7 @@ export default function CampaignsPage() {
 
   const submitApply = (overrideCamp) => {
     const target = overrideCamp || modal;
-    if (!st.user) { dsp({ t: 'UI', v: { authModal: true, authTab: 'login' } }); return; }
+    if (!st.user) { navigate('/login'); return; }
     
     LS.push('cb_applications', { 
       id: 'app-' + Date.now(), 
@@ -137,7 +139,7 @@ export default function CampaignsPage() {
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', width: '100%', maxWidth: '800px', justifyContent: 'center', marginBottom: '24px' }}>
            <div style={{ flex: 1, minWidth: mob ? '100%' : '400px', position: 'relative' }}>
               <div style={{ display: 'flex', alignItems: 'center', background: '#fff', borderRadius: '100px', padding: '8px 8px 8px 24px', boxShadow: '0 10px 30px rgba(0,0,0,0.04)', border: '1px solid #f1f5f9' }}>
-                 <span style={{ fontSize: '18px', marginRight: '12px' }}>🔍</span>
+                 <span style={{ fontSize: '18px', marginRight: '12px' }}>ðŸ”</span>
                  <input 
                    value={f.q} 
                    onChange={e => dsp({ t: 'CPF', v: { q: e.target.value } })} 
@@ -180,7 +182,7 @@ export default function CampaignsPage() {
                 );
               }
               if (filtered.length === 0) {
-                return <Empty icon="📦" title="No Deals Found" sub="Try adjusting your search or filters to find more deals." ctaLabel="Clear Filters" onCta={clearFilters} />;
+                return <Empty icon="ðŸ“¦" title="No Deals Found" sub="Try adjusting your search or filters to find more deals." ctaLabel="Clear Filters" onCta={clearFilters} />;
               }
               return (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '32px' }}>
@@ -221,7 +223,7 @@ export default function CampaignsPage() {
                 
                 {swipeIndex >= filtered.length && (
                   <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-                     <div style={{ width: '80px', height: '80px', background: '#f1f5f9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>🏁</div>
+                     <div style={{ width: '80px', height: '80px', background: '#f1f5f9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>ðŸ</div>
                      <h4 style={{ fontSize: '20px', fontWeight: 900 }}>All caught up!</h4>
                      <p style={{ color: '#64748b', fontSize: '15px', marginTop: '8px' }}>You've reviewed all active campaigns.</p>
                      <Btn style={{ marginTop: '24px' }} onClick={() => setSwipeIndex(0)}>Refresh List</Btn>
@@ -267,10 +269,10 @@ export default function CampaignsPage() {
                 placeholder="Why are you a great fit for this brand?"
               />
               <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '20px', marginTop: '12px' }}>
-                 <Fld label="Expected Rate (₹)" type="number" value={aF.rate} onChange={e => setAF(p => ({ ...p, rate: e.target.value }))} placeholder="15,000" />
+                 <Fld label="Expected Rate (â‚¹)" type="number" value={aF.rate} onChange={e => setAF(p => ({ ...p, rate: e.target.value }))} placeholder="15,000" />
                  <Fld label="Portfolio Link" value={aF.portfolio} onChange={e => setAF(p => ({ ...p, portfolio: e.target.value }))} placeholder="Instagram/Reel Link" />
               </div>
-              <Btn full lg style={{ marginTop: '32px', borderRadius: '100px', height: '60px' }} onClick={() => submitApply()}>Submit Application 🚀</Btn>
+              <Btn full lg style={{ marginTop: '32px', borderRadius: '100px', height: '60px' }} onClick={() => submitApply()}>Submit Application ðŸš€</Btn>
            </div>
          )}
       </Modal>

@@ -198,7 +198,7 @@ export default function BlogPage() {
                      <p style={{ fontSize: '20px', color: '#475569', lineHeight: 1.6, fontWeight: 500, maxWidth: '800px' }}>
                         {featured.excerpt}
                      </p>
-                     <Btn lg style={{ marginTop: '32px', borderRadius: '100px' }}>Read Full Exclusive Story</Btn>
+                     <Btn lg onClick={() => navigate(`/blog/${featured.id}`)} style={{ marginTop: '32px', borderRadius: '100px' }}>Read Full Exclusive Story</Btn>
                   </motion.section>
                )}
 

@@ -146,7 +146,7 @@ export default function ApplicationsPage() {
 
   if (!st.user || st.role !== 'creator') return (
     <div style={{ padding: '120px 20px', textAlign: 'center' }}>
-       <Empty icon="🔒" title="Access Locked" sub="Login as a creator to view your deal history." ctaLabel="Sign In Now" onCta={() => dsp({ t: 'UI', v: { authModal: true } })} />
+       <Empty icon="🔒" title="Access Locked" sub="Login as a creator to view your deal history." ctaLabel="Sign In Now" onCta={() => navigate('/login')} />
     </div>
   );
 

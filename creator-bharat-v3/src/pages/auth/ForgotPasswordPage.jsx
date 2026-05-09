@@ -1,22 +1,10 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useApp } from '../../context';
-import AuthRedirectScreen from './AuthRedirectScreen';
+import React from 'react';
+import AuthContent from '../../components/auth/AuthContent.jsx';
 
 export default function ForgotPasswordPage() {
-  const { dsp } = useApp();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    dsp({ t: 'UI', v: { authModal: true, authView: 'forgot' } });
-    navigate('/', { replace: true });
-  }, [dsp, navigate]);
-
   return (
-    <AuthRedirectScreen
-      title="Opening account recovery"
-      sub="Preparing a secure recovery panel for your CreatorBharat account."
-      mode="creator"
-    />
+    <div className="auth-page-wrapper">
+      <AuthContent initialView="forgot" isPage />
+    </div>
   );
 }

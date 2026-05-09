@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { 
   Search, 
   ChevronDown, 
@@ -85,6 +86,7 @@ FAQAccordion.propTypes = {
 };
 
 export default function FAQPage() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [activeCat, setActiveCat] = useState('Creators');
 
@@ -237,7 +239,7 @@ export default function FAQPage() {
                    <p style={{ fontSize: '15px', color: '#64748b', lineHeight: 1.6, marginBottom: '32px', fontWeight: 500 }}>
                       Aapka sawaal yahan nahi mila? Humari team 24/7 available hai aapki queries solve karne ke liye.
                    </p>
-                   <Btn full lg onClick={() => {}} style={{ padding: '20px', borderRadius: '100px', background: '#0f172a', color: '#fff', fontSize: '16px', fontWeight: 950 }}>
+                   <Btn full lg onClick={() => navigate('/contact')} style={{ padding: '20px', borderRadius: '100px', background: '#0f172a', color: '#fff', fontSize: '16px', fontWeight: 950 }}>
                       Connect with Support <ArrowRight size={20} />
                    </Btn>
                 </Card>

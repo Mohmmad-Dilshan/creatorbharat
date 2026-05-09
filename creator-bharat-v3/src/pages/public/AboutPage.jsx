@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { 
   Target, 
   Zap, 
@@ -56,6 +57,7 @@ TimelineStep.propTypes = {
 };
 
 export default function AboutPage() {
+  const navigate = useNavigate();
   return (
     <div style={{ background: '#fff', overflowX: 'hidden' }}>
       
@@ -257,7 +259,7 @@ export default function AboutPage() {
             <p style={{ fontSize: '20px', color: 'rgba(255,255,255,0.8)', marginBottom: '56px', maxWidth: '600px', margin: '0 auto 56px', fontWeight: 500 }}>
               Be part of the platform that's rewriting the rules of influence in Bharat.
             </p>
-            <Btn lg onClick={() => {}} style={{ padding: '24px 64px', borderRadius: '100px', background: '#fff', color: '#0f172a', fontSize: '18px', fontWeight: 950 }}>
+            <Btn lg onClick={() => navigate('/apply')} style={{ padding: '24px 64px', borderRadius: '100px', background: '#fff', color: '#0f172a', fontSize: '18px', fontWeight: 950 }}>
               Get Started Now <ChevronRight size={22} />
             </Btn>
          </motion.div>

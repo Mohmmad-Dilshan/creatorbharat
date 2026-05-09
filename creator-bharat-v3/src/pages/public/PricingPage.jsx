@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { 
   Check, 
   Zap, 
@@ -90,6 +91,10 @@ const PricingCard = ({ plan, delay = 0 }) => {
       </div>
 
       <button 
+        onClick={() => {
+          const target = plan.id.startsWith('brand') ? '/brand-register' : '/apply';
+          globalThis.location.href = target;
+        }}
         style={{
           width: '100%',
           padding: '20px',
@@ -169,6 +174,7 @@ TabButton.propTypes = {
 };
 
 export default function PricingPage() {
+  const navigate = useNavigate();
   const [tab, setTab] = useState('creator');
 
   const creatorPlans = [
@@ -371,7 +377,7 @@ export default function PricingPage() {
             <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.5)', marginBottom: '48px', maxWidth: '600px', margin: '0 auto 56px', fontWeight: 500 }}>
               Join the elite circle of creators and brands building the future of commerce in Bharat.
             </p>
-            <Btn lg onClick={() => {}} style={{ padding: '24px 64px', borderRadius: '100px', background: '#fff', color: '#0f172a', fontSize: '18px', fontWeight: 950 }}>
+            <Btn lg onClick={() => navigate('/apply')} style={{ padding: '24px 64px', borderRadius: '100px', background: '#fff', color: '#0f172a', fontSize: '18px', fontWeight: 950 }}>
               Get Started Now <ArrowRight size={22} />
             </Btn>
          </motion.div>

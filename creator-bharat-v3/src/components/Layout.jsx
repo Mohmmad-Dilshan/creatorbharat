@@ -9,7 +9,6 @@ import Navbar from './layout/Navbar';
 import MobileMenu from './layout/MobileMenu';
 import ToastBar from './layout/ToastBar';
 import CompareBar from './layout/CompareBar';
-import AuthModal from './layout/AuthModal';
 import DemoModal from './layout/DemoModal';
 import { Home, Users, Megaphone, Target } from 'lucide-react';
 
@@ -101,7 +100,7 @@ export default function Layout({ children }) {
   const { st } = useApp();
   const [mob, setMob] = useState(window.innerWidth < 768);
 
-  const isModalOpen = st.ui.authModal || st.ui.demoModal || st.ui.mobileMenu;
+  const isModalOpen = st.ui.demoModal || st.ui.mobileMenu;
 
   useEffect(() => {
     const isMobile = window.innerWidth < 768;
@@ -226,7 +225,6 @@ export default function Layout({ children }) {
       <ToastBar />
       <CompareBar />
 
-      {st.ui.authModal && <AuthModal />}
       {st.ui.demoModal && <DemoModal open={st.ui.demoModal} />}
     </div>
   );

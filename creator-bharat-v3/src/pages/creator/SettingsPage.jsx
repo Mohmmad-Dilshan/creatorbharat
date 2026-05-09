@@ -102,7 +102,7 @@ export default function SettingsPage() {
 
   if (!st.user) return (
     <div style={{ ...W(), padding: '120px 20px', textAlign: 'center' }}>
-      <Empty icon="🔒" title="Identity Required" sub="Settings change karne ke liye login kerna zaroori hai." ctaLabel="Login Now" onCta={() => dsp({ t: 'UI', v: { authModal: true } })} />
+      <Empty icon="🔒" title="Identity Required" sub="Settings change karne ke liye login kerna zaroori hai." ctaLabel="Login Now" onCta={() => navigate('/login')} />
     </div>
   );
 

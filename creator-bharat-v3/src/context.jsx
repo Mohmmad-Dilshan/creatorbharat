@@ -13,7 +13,7 @@ export const IS = {
   compared: [],
   applied: [],
   toasts: [],
-  ui: { authModal: false, authView: 'gateway', mobileMenu: false, hideNav: false },
+  ui: { mobileMenu: false, hideNav: false },
   cf: { q: '', state: '', niche: [], platform: [], sort: 'score', verified: false, minFollowers: '', minER: '' },
   cpf: { q: '', niche: '', urgent: false }
 };
@@ -27,7 +27,7 @@ export function reducer(s, a) {
         sel: a.sel ? { ...s.sel, ...a.sel } : s.sel, 
         ui: { ...s.ui, mobileMenu: false } 
       };
-    case 'LOGIN': return { ...s, user: a.u, role: a.role, ui: { ...s.ui, authModal: false } };
+    case 'LOGIN': return { ...s, user: a.u, role: a.role, ui: { ...s.ui, mobileMenu: false } };
     case 'LOGOUT': return { ...IS, page: 'home' };
     case 'SAVE': {
       const h = s.saved.includes(a.id);

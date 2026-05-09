@@ -294,8 +294,8 @@ export default function LeaderboardPage() {
                     Are you a creator with a unique voice and high engagement? Apply for verification and claim your spot on the leaderboard.
                  </p>
                  <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                    <Btn lg style={{ background: '#fff', color: '#EA580C', borderRadius: '100px', fontWeight: 950, padding: '20px 40px' }}>Apply for Verification</Btn>
-                    <Btn lg style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '100px', fontWeight: 950, padding: '20px 40px' }}>Learn More</Btn>
+                    <Btn lg onClick={() => navigate('/apply')} style={{ background: '#fff', color: '#EA580C', borderRadius: '100px', fontWeight: 950, padding: '20px 40px' }}>Apply for Verification</Btn>
+                    <Btn lg onClick={() => navigate('/about')} style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '100px', fontWeight: 950, padding: '20px 40px' }}>Learn More</Btn>
                  </div>
               </div>
            </Card>

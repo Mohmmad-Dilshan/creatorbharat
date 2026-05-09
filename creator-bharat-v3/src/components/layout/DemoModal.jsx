@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context';
 import { Btn } from '../Primitives';
 
@@ -301,6 +302,7 @@ VisionCopy.propTypes = {
 
 export default function DemoModal({ open }) {
   const { dsp } = useApp();
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [mob, setMob] = useState(window.innerWidth < 768);
   const STEP_DURATION = 5000;
@@ -324,7 +326,8 @@ export default function DemoModal({ open }) {
   if (!open) return null;
 
   const handleJoin = () => {
-    dsp({ t: 'UI', v: { demoModal: false, authModal: true, authView: 'register' } });
+    navigate('/apply');
+    dsp({ t: 'UI', v: { demoModal: false } });
   };
 
   const close = () => dsp({ t: 'UI', v: { demoModal: false } });

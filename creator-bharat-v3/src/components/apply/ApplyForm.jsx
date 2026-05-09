@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Hash,
@@ -11,12 +11,12 @@ import {
   Phone,
   CheckCircle2
 } from 'lucide-react';
-import { Btn, Fld } from '../Primitives';
+import { Btn, Fld } from '../Primitives.jsx';
 
 import { INDIAN_STATES, MAJOR_CITIES, STATE_CITY_MAP } from '../../utils/geo';
 
 // Simplified 1-step registration flow
-export default function ApplyForm({ onSuccess, onBackToLogin }) {
+export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
   const [loading, setLoading] = useState(false);
   const [F, setF] = useState({
     name: '',
@@ -32,6 +32,15 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
   const [otpSent, setOtpSent] = useState(false);
   const [verified, setVerified] = useState(false);
   const [errors, setErrors] = useState({});
+  const [timer, setTimer] = useState(0);
+
+  useEffect(() => {
+    let interval;
+    if (timer > 0) {
+      interval = setInterval(() => setTimer(prev => prev - 1), 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timer]);
 
   const upF = (key, value) => {
     setF(prev => {
@@ -78,6 +87,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
     setLoading(true);
     setTimeout(() => {
       setOtpSent(true);
+      setTimer(30); // 30 seconds timer
       setLoading(false);
       setErrors(prev => ({ ...prev, phone: null }));
       // Simulation: Telling the user the OTP
@@ -103,19 +113,45 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
     if (!validate()) return;
     setLoading(true);
     setTimeout(() => {
-      onSuccess({ ...F, id: 'u-' + Date.now(), role: 'creator', handle: F.handle || F.name.toLowerCase().replaceAll(' ', '') });
       setLoading(false);
+      // Simulation: Already registered check
+      if (F.email === 'exist@test.com') {
+        alert('This email is already registered. Please login instead.');
+        return;
+      }
+
+      onSuccess({ ...F, id: 'u-' + Date.now(), role: 'creator', handle: F.handle || F.name.toLowerCase().replaceAll(' ', '') });
     }, 1100);
   };
 
+  const isInactive = otpSent || timer > 0;
+  const btnBackground = isInactive ? '#F8FAFC' : '#111827';
+  const btnColor = isInactive ? '#64748B' : '#fff';
+  const btnBorder = isInactive ? '1px solid #E2E8F0' : 'none';
+  const btnCursor = timer > 0 ? 'not-allowed' : 'pointer';
+  
+  let btnLabel = 'Send OTP';
+  if (timer > 0) btnLabel = `Resend in ${timer}s`;
+  else if (otpSent) btnLabel = 'Resend';
+
   return (
-    <div className="apply-form-shell" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div className="apply-form-shell" style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <button 
+        type="button"
+        onClick={onBackToLogin}
+        style={{ position: 'absolute', top: -10, right: 0, border: 'none', background: 'rgba(0,0,0,0.04)', padding: '6px 12px', borderRadius: 10, fontSize: 11, fontWeight: 800, cursor: 'pointer', color: '#64748B', zIndex: 10 }}
+      >
+        ← BACK
+      </button>
+
       <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <div className="apply-section-title" style={{ marginBottom: 20 }}>
-          <div><Sparkles size={19} /></div>
-          <span>Fast Track Onboarding</span>
-          <h3>Start your legacy.</h3>
-          <p>Join Bharat&apos;s most trusted creator ecosystem in seconds.</p>
+        <div className="apply-section-title" style={{ marginBottom: 28 }}>
+          <div style={{ width: 44, height: 44, borderRadius: 14, background: 'rgba(255,148,49,0.12)', color: '#FF9431', display: 'grid', placeItems: 'center', marginBottom: 16 }}>
+            <Sparkles size={22} fill="currentColor" fillOpacity={0.2} />
+          </div>
+          <span style={{ color: '#FF9431', fontSize: 12, fontWeight: 950, letterSpacing: '1px', textTransform: 'uppercase' }}>Creator Elite Protocol</span>
+          <h3 style={{ fontSize: mob ? 24 : 32, fontWeight: 950, color: '#111827', marginTop: 4, letterSpacing: '-0.5px' }}>Start your legacy.</h3>
+          <p style={{ fontSize: 15, color: '#64748B', fontWeight: 650, marginTop: 4 }}>Join Bharat&apos;s most trusted creator ecosystem in seconds.</p>
         </div>
 
         <div className="apply-field-stack">
@@ -125,7 +161,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
           </div>
           <Fld label="Email address" type="email" icon={Mail} value={F.email} onChange={e => upF('email', e.target.value)} onBlur={() => blur('email')} placeholder="aman@creator.me" error={errors.email} required />
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 0.6fr', gap: 10, alignItems: 'flex-end' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.4fr 0.6fr', gap: 10, alignItems: 'flex-end' }}>
             <Fld 
               label="Mobile number" 
               type="tel" 
@@ -142,8 +178,22 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
               readOnly={verified} 
             />
             {!verified && (
-              <Btn onClick={sendOTP} loading={loading && !otpSent} style={{ marginBottom: 18, height: 52, borderRadius: 12, background: otpSent ? '#F8FAFC' : '#111827', color: otpSent ? '#64748B' : '#fff', fontSize: 13, border: otpSent ? '1px solid #E2E8F0' : 'none' }}>
-                {otpSent ? 'Resend' : 'Send OTP'}
+              <Btn 
+                onClick={sendOTP} 
+                loading={loading && !otpSent} 
+                disabled={timer > 0}
+                style={{ 
+                  marginBottom: 18, 
+                  height: 52, 
+                  borderRadius: 12, 
+                  background: btnBackground, 
+                  color: btnColor, 
+                  fontSize: 13, 
+                  border: btnBorder,
+                  cursor: btnCursor
+                }}
+              >
+                {btnLabel}
               </Btn>
             )}
             {verified && (
@@ -154,7 +204,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
           </div>
 
           {otpSent && !verified && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 10, alignItems: 'flex-end', animation: 'fadeIn .3s ease' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.2fr 0.8fr', gap: 10, alignItems: 'flex-end', animation: 'fadeIn .3s ease' }}>
               <Fld label="Enter 4-digit OTP" type="number" value={F.otp} onChange={e => upF('otp', e.target.value)} placeholder="1234" error={errors.otp} />
               <Btn onClick={verifyOTP} loading={loading && otpSent} style={{ marginBottom: 18, height: 52, borderRadius: 12, background: '#10B981', color: '#fff', border: 'none' }}>
                 Verify OTP
@@ -182,9 +232,18 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
           Launch My Portfolio <ChevronRight size={18} />
         </Btn>
 
-        <button type="button" onClick={onBackToLogin} className="apply-login-link">
-          Already a member? <span>Sign in</span>
-        </button>
+        <div style={{ marginTop: 24, textAlign: 'center', paddingBottom: 20 }}>
+          <p style={{ fontSize: 14, color: '#64748B', fontWeight: 650, margin: 0 }}>
+            Already have an account?{' '}
+            <button 
+              type="button" 
+              onClick={onBackToLogin}
+              style={{ border: 'none', background: 'none', color: '#111827', fontWeight: 950, cursor: 'pointer', padding: '8px 4px', fontSize: 14 }}
+            >
+              Sign in
+            </button>
+          </p>
+        </div>
       </form>
 
       <style>{`
@@ -608,4 +667,5 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
 ApplyForm.propTypes = {
   onSuccess: PropTypes.func.isRequired,
   onBackToLogin: PropTypes.func.isRequired,
+  mob: PropTypes.bool
 };

@@ -20,12 +20,12 @@ export default function MonetizationPage() {
   const toast = (msg, type) => { dsp({ t: 'TOAST', d: { type: type || 'info', msg } }); };
 
   const streams = [
-    { icon: '🛍️', title: 'Digital Store', desc: 'Sell presets, ebooks, and courses directly to your fans. You keep 90% of the revenue.', earning: '₹500 - 50k/unit', status: 'coming', color: '#FF9431' },
-    { icon: '🔗', title: 'Affiliate Manager', desc: 'Auto-track clicks and commissions from Amazon, Flipkart, and local brand partners.', earning: '5-15% commission', status: 'coming', color: '#10B981' },
-    { icon: '☕', title: 'Fan Support', desc: 'Instant UPI tips from your loyal audience. No hidden platform cuts for supporters.', earning: 'Unlimited tips', status: 'coming', color: '#FF6B00' },
-    { icon: '🎫', title: 'Premium Subscriptions', desc: 'Create a private circle for your biggest fans with exclusive content tiers.', earning: 'Stable Monthly Income', status: 'coming', color: '#7C3AED' },
-    { icon: '🤝', title: 'Marketplace Deals', desc: 'List your fixed-rate packages. Brands book you instantly without the back-and-forth.', earning: '₹5k - 2L/deal', status: 'live', color: '#3B82F6' },
-    { icon: '📣', title: 'Referral Rewards', desc: 'Refer fellow creators from your city and earn instant cash for every verified listing.', earning: '₹50 per creator', status: 'live', color: '#10B981' },
+    { icon: 'ðŸ›ï¸', title: 'Digital Store', desc: 'Sell presets, ebooks, and courses directly to your fans. You keep 90% of the revenue.', earning: 'â‚¹500 - 50k/unit', status: 'coming', color: '#FF9431' },
+    { icon: 'ðŸ”—', title: 'Affiliate Manager', desc: 'Auto-track clicks and commissions from Amazon, Flipkart, and local brand partners.', earning: '5-15% commission', status: 'coming', color: '#10B981' },
+    { icon: 'â˜•', title: 'Fan Support', desc: 'Instant UPI tips from your loyal audience. No hidden platform cuts for supporters.', earning: 'Unlimited tips', status: 'coming', color: '#FF6B00' },
+    { icon: 'ðŸŽ«', title: 'Premium Subscriptions', desc: 'Create a private circle for your biggest fans with exclusive content tiers.', earning: 'Stable Monthly Income', status: 'coming', color: '#7C3AED' },
+    { icon: 'ðŸ¤', title: 'Marketplace Deals', desc: 'List your fixed-rate packages. Brands book you instantly without the back-and-forth.', earning: 'â‚¹5k - 2L/deal', status: 'live', color: '#3B82F6' },
+    { icon: 'ðŸ“£', title: 'Referral Rewards', desc: 'Refer fellow creators from your city and earn instant cash for every verified listing.', earning: 'â‚¹50 per creator', status: 'live', color: '#10B981' },
   ];
 
   return (
@@ -50,7 +50,7 @@ export default function MonetizationPage() {
         <div style={W()}>
           <div style={{ display: 'flex', gap: mob ? 32 : 80, flexWrap: 'wrap', justifyContent: 'center' }}>
             {[
-              { v: '₹8Cr+', l: 'Paid to Creators' },
+              { v: 'â‚¹8Cr+', l: 'Paid to Creators' },
               { v: '2,400+', l: 'Active Sellers' },
               { v: '90%', l: 'Creator Revenue Share' },
               { v: '6', l: 'Income Streams' }
@@ -110,13 +110,13 @@ export default function MonetizationPage() {
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: '#10B981' }} />
         
         <div style={W(800)}>
-          <div style={{ fontSize: 64, marginBottom: 24 }}>🤝</div>
+          <div style={{ fontSize: 64, marginBottom: 24 }}>ðŸ¤</div>
           <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 32 : 48, fontWeight: 900, marginBottom: 16 }}>Creator Referral Program</h2>
-          <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.6)', marginBottom: 40, lineHeight: 1.6 }}>Invite fellow creators from your city. Earn <span style={{ color: '#10B981', fontWeight: 900 }}>₹50 instantly</span> for every verified portfolio listing. No limits, just growth.</p>
+          <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.6)', marginBottom: 40, lineHeight: 1.6 }}>Invite fellow creators from your city. Earn <span style={{ color: '#10B981', fontWeight: 900 }}>â‚¹50 instantly</span> for every verified portfolio listing. No limits, just growth.</p>
           
           <div style={{ display: 'inline-flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
             <Btn lg style={{ borderRadius: 100, padding: '18px 60px', background: '#fff', color: '#111', border: 'none' }} onClick={() => {
-              if (!st.user) { dsp({ t: 'UI', v: { authModal: true, authTab: 'login' } }); return; }
+              if (!st.user) { navigate('/login'); return; }
               const handle = st.creatorProfile?.handle || 'me';
               navigator.clipboard.writeText(`https://creatorbharat.in/apply?ref=${handle}`);
               toast('Referral link copied! Share it with your creator circle.', 'success');

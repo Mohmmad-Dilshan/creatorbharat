@@ -242,7 +242,7 @@ HeroHeader.propTypes = { mob: PropTypes.bool };
 const HeroCTA = memo(({ mob, go, dsp }) => (
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
     <div className="au d3" style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: mob ? 16 : 20, marginBottom: mob ? 32 : 80, justifyContent: 'center', width: 'auto', alignItems: 'center' }}>
-      <Btn lg full={false} onClick={() => dsp({ t: 'UI', v: { authModal: true, authView: 'register' } })} style={{ padding: mob ? '20px 40px' : '28px 64px', fontSize: mob ? 16 : 20, background: '#0f172a', color: '#fff', borderRadius: 100, fontWeight: 950, border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden' }}>
+      <Btn lg full={false} onClick={() => go('/apply')} style={{ padding: mob ? '20px 40px' : '28px 64px', fontSize: mob ? 16 : 20, background: '#0f172a', color: '#fff', borderRadius: 100, fontWeight: 950, border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden' }}>
         <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 12 }}>🚀 Claim Your Handle Free</span>
         <div style={{ position: 'absolute', top: 0, left: '-100%', width: '50%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)', animation: 'shimmer 3s infinite', transform: 'skewX(-20deg)' }} />
       </Btn>
