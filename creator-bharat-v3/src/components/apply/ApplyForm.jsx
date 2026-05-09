@@ -36,13 +36,26 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
   const upF = (key, value) => {
     setF(prev => {
       const next = { ...prev, [key]: value };
-      // If state changes, reset city to first available in map or empty
       if (key === 'state') {
         const availableCities = STATE_CITY_MAP[value] || MAJOR_CITIES;
         next.city = availableCities[0];
       }
       return next;
     });
+    // Clear error on change if any
+    if (errors[key]) setErrors(prev => ({ ...prev, [key]: null }));
+  };
+
+  const blur = (key) => {
+    const val = F[key];
+    let err = null;
+    if (key === 'name' && !val) err = 'Full name is required';
+    if (key === 'email' && (!val || !/^\S+@\S+\.\S+$/.test(val))) err = 'Valid email required';
+    if (key === 'password' && (!val || val.length < 6)) err = 'Min 6 characters';
+    if (key === 'confirm' && val !== F.password) err = 'Passwords mismatch';
+    if (key === 'phone' && (!val || val.length < 10)) err = 'Enter valid 10-digit number';
+    
+    if (err) setErrors(prev => ({ ...prev, [key]: err }));
   };
 
   const validate = () => {
@@ -107,13 +120,27 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
 
         <div className="apply-field-stack">
           <div className="apply-two-col">
-            <Fld label="Full name" value={F.name} icon={User} onChange={e => upF('name', e.target.value)} placeholder="Aman Deep" error={errors.name} required />
+            <Fld label="Full name" value={F.name} icon={User} onChange={e => upF('name', e.target.value)} onBlur={() => blur('name')} placeholder="Aman Deep" error={errors.name} required />
             <Fld label="Handle" value={F.handle} icon={Hash} onChange={e => upF('handle', e.target.value)} placeholder="amandeep" />
           </div>
-          <Fld label="Email address" type="email" icon={Mail} value={F.email} onChange={e => upF('email', e.target.value)} placeholder="aman@creator.me" error={errors.email} required />
+          <Fld label="Email address" type="email" icon={Mail} value={F.email} onChange={e => upF('email', e.target.value)} onBlur={() => blur('email')} placeholder="aman@creator.me" error={errors.email} required />
           
           <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 0.6fr', gap: 10, alignItems: 'flex-end' }}>
-            <Fld label="Mobile number" type="tel" icon={Phone} value={F.phone} onChange={e => upF('phone', e.target.value)} placeholder="9876543210" error={errors.phone} required readOnly={verified} />
+            <Fld 
+              label="Mobile number" 
+              type="tel" 
+              icon={Phone} 
+              value={F.phone} 
+              onChange={e => {
+                const val = e.target.value.replaceAll(/\D/g, '');
+                if (val.length <= 10) upF('phone', val);
+              }} 
+              onBlur={() => blur('phone')} 
+              placeholder="9876543210" 
+              error={errors.phone} 
+              required 
+              readOnly={verified} 
+            />
             {!verified && (
               <Btn onClick={sendOTP} loading={loading && !otpSent} style={{ marginBottom: 18, height: 52, borderRadius: 12, background: otpSent ? '#F8FAFC' : '#111827', color: otpSent ? '#64748B' : '#fff', fontSize: 13, border: otpSent ? '1px solid #E2E8F0' : 'none' }}>
                 {otpSent ? 'Resend' : 'Send OTP'}
@@ -136,8 +163,8 @@ export default function ApplyForm({ onSuccess, onBackToLogin }) {
           )}
 
           <div className="apply-two-col">
-            <Fld label="Password" type="password" icon={Lock} value={F.password} onChange={e => upF('password', e.target.value)} placeholder="••••••" error={errors.password} required />
-            <Fld label="Confirm" type="password" icon={Lock} value={F.confirm} onChange={e => upF('confirm', e.target.value)} placeholder="••••••" error={errors.confirm} required />
+            <Fld label="Password" type="password" icon={Lock} value={F.password} onChange={e => upF('password', e.target.value)} onBlur={() => blur('password')} placeholder="••••••" error={errors.password} required />
+            <Fld label="Confirm" type="password" icon={Lock} value={F.confirm} onChange={e => upF('confirm', e.target.value)} onBlur={() => blur('confirm')} placeholder="••••••" error={errors.confirm} required />
           </div>
           <div className="apply-two-col">
             <Fld label="State" value={F.state} onChange={e => upF('state', e.target.value)} options={INDIAN_STATES} required />

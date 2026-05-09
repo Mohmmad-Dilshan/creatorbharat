@@ -308,16 +308,33 @@ const LoginView = ({ role, setRole, onLogin, loading, setView }) => {
   );
 };
 
-const BrandStep1 = ({ form, up, errors, mob, otpSent, verified, loading, sendOTP, verifyOTP, next }) => (
+const BrandStep1 = ({ form, up, errors, mob, otpSent, verified, loading, sendOTP, verifyOTP, next, blur }) => (
   <div style={{ display: 'grid', gap: 2 }}>
     <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 0 : 14 }}>
-      <Fld label="Company name" value={form.companyName} onChange={e => up('companyName', e.target.value)} placeholder="e.g. Nykaa, boAt..." error={errors.companyName} required />
-      <Fld label="Industry" value={form.industry} onChange={e => up('industry', e.target.value)} options={['', 'Beauty', 'Fashion', 'Tech', 'Food', 'Finance', 'Other']} error={errors.industry} required />
+      <Fld label="Company name" value={form.companyName} onChange={e => up('companyName', e.target.value)} onBlur={() => blur('companyName')} placeholder="e.g. Nykaa, boAt..." error={errors.companyName} required />
+      <Fld label="Industry" value={form.industry} onChange={e => up('industry', e.target.value)} onBlur={() => blur('industry')} options={['', 'Beauty', 'Fashion', 'Tech', 'Food', 'Finance', 'Other']} error={errors.industry} required />
     </div>
-    <Fld label="Official Work Email" type="email" icon={Mail} value={form.email} onChange={e => up('email', e.target.value)} placeholder="partnerships@company.com" error={errors.email} required />
+    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 0 : 14 }}>
+      <Fld label="Contact person" value={form.contactName} onChange={e => up('contactName', e.target.value)} onBlur={() => blur('contactName')} placeholder="Aman Deep" error={errors.contactName} required />
+      <Fld label="Official Work Email" type="email" icon={Mail} value={form.email} onChange={e => up('email', e.target.value)} onBlur={() => blur('email')} placeholder="partnerships@company.com" error={errors.email} required />
+    </div>
     
     <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 0.6fr', gap: 10, alignItems: 'flex-end' }}>
-      <Fld label="Official Phone" type="tel" icon={Phone} value={form.phone} onChange={e => up('phone', e.target.value)} placeholder="9876543210" error={errors.phone} required readOnly={verified} />
+      <Fld 
+        label="Official Phone" 
+        type="tel" 
+        icon={Phone} 
+        value={form.phone} 
+        onChange={e => {
+          const val = e.target.value.replaceAll(/\D/g, '');
+          if (val.length <= 10) up('phone', val);
+        }} 
+        onBlur={() => blur('phone')} 
+        placeholder="9876543210" 
+        error={errors.phone} 
+        required 
+        readOnly={verified} 
+      />
       {!verified && (
         <Btn onClick={sendOTP} loading={loading && !otpSent} style={{ marginBottom: 18, height: 52, borderRadius: 12, background: otpSent ? '#F8FAFC' : '#111827', color: otpSent ? '#64748B' : '#fff', fontSize: 13, border: otpSent ? '1px solid #E2E8F0' : 'none' }}>
           {otpSent ? 'Resend' : 'Send OTP'}
@@ -332,7 +349,7 @@ const BrandStep1 = ({ form, up, errors, mob, otpSent, verified, loading, sendOTP
 
     {otpSent && !verified && (
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 10, alignItems: 'flex-end', animation: 'fadeIn .3s ease', marginBottom: 10 }}>
-        <Fld label="4-digit OTP" type="number" value={form.otp} onChange={e => up('otp', e.target.value)} placeholder="1234" error={errors.otp} />
+        <Fld label="4-digit OTP" type="number" value={form.otp} onChange={e => up('otp', e.target.value)} onBlur={() => blur('otp')} placeholder="1234" error={errors.otp} />
         <Btn onClick={verifyOTP} loading={loading && otpSent} style={{ marginBottom: 18, height: 52, borderRadius: 12, background: '#10B981', color: '#fff', border: 'none' }}>
           Verify OTP
         </Btn>
@@ -344,8 +361,8 @@ const BrandStep1 = ({ form, up, errors, mob, otpSent, verified, loading, sendOTP
       <Fld label="City / District" value={form.city} icon={MapPin} onChange={e => up('city', e.target.value)} options={STATE_CITY_MAP[form.state] || MAJOR_CITIES} required />
     </div>
     <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 0 : 14 }}>
-      <Fld label="Contact person" value={form.contactName} onChange={e => up('contactName', e.target.value)} placeholder="Aman Deep" required />
-      <Fld label="Password" type="password" icon={Lock} value={form.password} onChange={e => up('password', e.target.value)} placeholder="Password" error={errors.password} required />
+      <Fld label="Password" type="password" icon={Lock} value={form.password} onChange={e => up('password', e.target.value)} onBlur={() => blur('password')} placeholder="••••••" error={errors.password} required />
+      <Fld label="Confirm Password" type="password" icon={Lock} value={form.confirmPassword} onChange={e => up('confirmPassword', e.target.value)} onBlur={() => blur('confirmPassword')} placeholder="••••••" error={errors.confirmPassword} required />
     </div>
     <Btn full lg onClick={next} type="button" style={{ height: 56, borderRadius: 16, background: '#111827', color: '#fff', border: 'none', fontWeight: 900, marginTop: 10 }}>
       Continue to Verification <ArrowRight size={18} />
@@ -363,16 +380,20 @@ BrandStep1.propTypes = {
     state: PropTypes.string,
     city: PropTypes.string,
     contactName: PropTypes.string,
-    password: PropTypes.string
+    password: PropTypes.string,
+    confirmPassword: PropTypes.string
   }).isRequired,
   up: PropTypes.func.isRequired,
+  blur: PropTypes.func.isRequired,
   errors: PropTypes.shape({
     companyName: PropTypes.string,
     industry: PropTypes.string,
     email: PropTypes.string,
     phone: PropTypes.string,
     otp: PropTypes.string,
-    password: PropTypes.string
+    password: PropTypes.string,
+    confirmPassword: PropTypes.string,
+    contactName: PropTypes.string
   }).isRequired,
   mob: PropTypes.bool,
   otpSent: PropTypes.bool,
@@ -383,15 +404,15 @@ BrandStep1.propTypes = {
   next: PropTypes.func.isRequired,
 };
 
-const BrandStep2 = ({ form, up, errors, loading, setStep }) => (
+const BrandStep2 = ({ form, up, errors, loading, setStep, blur }) => (
   <div style={{ display: 'grid', gap: 2 }}>
     <div style={{ padding: '16px 20px', background: 'rgba(16,185,129,0.06)', borderRadius: 16, border: '1px solid rgba(16,185,129,0.1)', marginBottom: 12 }}>
       <p style={{ fontSize: 13, fontWeight: 800, color: '#10B981', lineHeight: 1.5 }}>
         🛡️ <strong>Elite Verification:</strong> To maintain platform quality, we only onboard authentic brands.
       </p>
     </div>
-    <Fld label="Company Website" value={form.website} onChange={e => up('website', e.target.value)} placeholder="https://www.company.com" error={errors.website} required />
-    <Fld label="Official LinkedIn Page" value={form.linkedin} onChange={e => up('linkedin', e.target.value)} placeholder="linkedin.com/company/..." error={errors.linkedin} required />
+    <Fld label="Company Website" value={form.website} onChange={e => up('website', e.target.value)} onBlur={() => blur('website')} placeholder="https://www.company.com" error={errors.website} required />
+    <Fld label="Official LinkedIn Page" value={form.linkedin} onChange={e => up('linkedin', e.target.value)} onBlur={() => blur('linkedin')} placeholder="linkedin.com/company/..." error={errors.linkedin} required />
     <Fld label="GSTIN / Business Registration ID (Optional)" value={form.gstin} onChange={e => up('gstin', e.target.value)} placeholder="27AAACR1234A1Z1" helper="Speeds up verification" />
     
     <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
@@ -410,12 +431,27 @@ BrandStep2.propTypes = {
     gstin: PropTypes.string
   }).isRequired,
   up: PropTypes.func.isRequired,
+  blur: PropTypes.func.isRequired,
   errors: PropTypes.shape({
     website: PropTypes.string,
     linkedin: PropTypes.string
   }).isRequired,
   loading: PropTypes.bool,
   setStep: PropTypes.func.isRequired,
+};
+
+const validateBrandField = (key, val, form) => {
+  const rules = {
+    companyName: v => v ? null : 'Company name is required',
+    industry: v => v ? null : 'Select industry',
+    email: v => /^\S+@\S+\.\S+$/.test(v || '') ? null : 'Valid work email required',
+    password: v => (v?.length >= 6) ? null : 'Min 6 characters',
+    confirmPassword: v => v === form?.password ? null : 'Passwords do not match',
+    phone: v => (v?.length === 10) ? null : 'Enter valid 10-digit number',
+    website: v => v?.includes('.') ? null : 'Valid website required',
+    linkedin: v => v ? null : 'LinkedIn profile is required'
+  };
+  return rules[key]?.(val) ?? null;
 };
 
 const BrandRegisterView = ({ mob, onSuccess }) => {
@@ -429,6 +465,7 @@ const BrandRegisterView = ({ mob, onSuccess }) => {
     email: '',
     contactName: '',
     password: '',
+    confirmPassword: '',
     phone: '',
     otp: '',
     website: '',
@@ -451,6 +488,12 @@ const BrandRegisterView = ({ mob, onSuccess }) => {
       }
       return next;
     });
+    if (errors[key]) setErrors(prev => ({ ...prev, [key]: null }));
+  };
+
+  const blur = (key) => {
+    const err = validateBrandField(key, form[key], form);
+    if (err) setErrors(prev => ({ ...prev, [key]: err }));
   };
 
   const next = () => {
@@ -460,6 +503,7 @@ const BrandRegisterView = ({ mob, onSuccess }) => {
     if (!form.email || !/^\S+@\S+\.\S+$/.test(form.email)) errs.email = 'Valid work email required';
     if (!verified) errs.phone = 'Please verify your phone number';
     if (!form.password || form.password.length < 6) errs.password = 'Min 6 characters';
+    if (form.password !== form.confirmPassword) errs.confirmPassword = 'Passwords do not match';
     
     setErrors(errs);
     if (!Object.keys(errs).length) setStep(2);
@@ -524,13 +568,13 @@ const BrandRegisterView = ({ mob, onSuccess }) => {
       <form onSubmit={submit}>
         {step === 1 ? (
           <BrandStep1 
-            form={form} up={up} errors={errors} mob={mob} 
+            form={form} up={up} blur={blur} errors={errors} mob={mob} 
             otpSent={otpSent} verified={verified} loading={loading}
             sendOTP={sendOTP} verifyOTP={verifyOTP} next={next}
           />
         ) : (
           <BrandStep2 
-            form={form} up={up} errors={errors} 
+            form={form} up={up} blur={blur} errors={errors} 
             loading={loading} setStep={setStep} 
           />
         )}
