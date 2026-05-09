@@ -23,7 +23,7 @@ export const blogData = [
     },
     seoKeywords: 'Tier 3 India digital content, regional influencers India, creator economy Bharat, rural marketing strategies',
     author: {
-      name: 'CreatorBharat Team',
+      name: 'CreatorBharat',
       role: 'Editorial Team',
       bio: 'The official editorial voice of CreatorBharat, bringing you the latest intelligence and insights from the heart of India\'s creator economy.',
       avatar: 'CB'
@@ -72,7 +72,7 @@ export const blogData = [
     },
     seoKeywords: 'social media algorithm India, how to go viral in Bharat, regional content strategy, digital growth hacks',
     author: {
-      name: 'CreatorBharat Team',
+      name: 'CreatorBharat',
       role: 'Editorial Team',
       bio: 'The official editorial voice of CreatorBharat, bringing you the latest intelligence and insights from the heart of India\'s creator economy.',
       avatar: 'CB'
@@ -106,7 +106,7 @@ export const blogData = [
     tags: ['Case Study', 'Influencer Marketing', 'ROI', 'Brand Growth'],
     seoKeywords: 'influencer marketing case study India, regional brand success story, ROI regional influencers, local branding India',
     author: {
-      name: 'CreatorBharat Team',
+      name: 'CreatorBharat',
       role: 'Editorial Team',
       bio: 'The official editorial voice of CreatorBharat, bringing you the latest intelligence and insights from the heart of India\'s creator economy.',
       avatar: 'CB'

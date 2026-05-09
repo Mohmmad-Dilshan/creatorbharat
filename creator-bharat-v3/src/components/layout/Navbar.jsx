@@ -129,9 +129,9 @@ export default function Navbar() {
   };
 
   const links = (() => {
-    if (st.role === 'creator') return [['/dashboard', 'Dashboard'], ['/campaigns', 'Deals'], ['/leaderboard', 'Leaderboard'], ['/blog', 'Hub']];
-    if (st.role === 'brand') return [['/creators', 'Discover'], ['/campaigns', 'Campaigns'], ['/pricing', 'Plans'], ['/blog', 'Hub']];
-    return [['/creators', 'Marketplace'], ['/leaderboard', 'Top List'], ['/blog', 'News'], ['/about', 'About']];
+    if (st.role === 'creator') return [['/dashboard', 'Dashboard'], ['/leaderboard', 'Leaderboard'], ['/blog', 'Hub'], ['/official-profile', 'Official']];
+    if (st.role === 'brand') return [['/creators', 'Discover'], ['/campaigns', 'Campaigns'], ['/blog', 'Hub'], ['/official-profile', 'Official']];
+    return [['/creators', 'Marketplace'], ['/leaderboard', 'Leaderboard'], ['/blog', 'Hub'], ['/official-profile', 'Official'], ['/about', 'About']];
   })();
 
   const getPadding = () => {

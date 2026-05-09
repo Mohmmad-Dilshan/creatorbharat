@@ -5,7 +5,7 @@ import { useApp } from '../../context';
 import { Btn, Logo } from '../Primitives';
 import { scrollToTop } from '../../utils/helpers';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Users, Megaphone, BookOpen, Heart, LogOut, LayoutDashboard, Briefcase, Bookmark, Settings, ChevronRight, User, LifeBuoy, MessageSquare, Sparkles, Search, Calculator } from 'lucide-react';
+import { X, Users, Megaphone, BookOpen, Heart, LogOut, LayoutDashboard, Briefcase, Bookmark, Settings, ChevronRight, User, LifeBuoy, MessageSquare, Sparkles, Search, Calculator, Trophy, ShieldCheck } from 'lucide-react';
 
 export default function MobileMenu({ open }) {
   const { st, dsp } = useApp();
@@ -18,11 +18,12 @@ export default function MobileMenu({ open }) {
   };
 
   const links = [
-    { path: '/creators', l: 'Elite Marketplace', i: Users },
+    { path: '/creators', l: 'Marketplace', i: Users },
     { path: '/campaigns', l: 'Brand Deals', i: Megaphone },
-    { path: '/leaderboard', l: 'Leaderboard', i: Sparkles },
+    { path: '/leaderboard', l: 'Leaderboard', i: Trophy },
     { path: '/rate-calc', l: 'Rate Calculator', i: Calculator },
-    { path: '/blog', l: 'News & Hub', i: BookOpen },
+    { path: '/blog', l: 'Hub', i: BookOpen },
+    { path: '/official-profile', l: 'Official Identity', i: ShieldCheck },
     { path: '/about', l: 'Our Story', i: Heart }
   ];
 

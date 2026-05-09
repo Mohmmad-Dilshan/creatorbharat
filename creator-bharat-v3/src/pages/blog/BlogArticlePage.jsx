@@ -16,7 +16,8 @@ import {
   ChevronUp,
   Play,
   RotateCcw,
-  Volume2
+  Volume2,
+  CheckCircle
 } from 'lucide-react';
 
 const TwitterIcon = ({ size = 20, color = 'currentColor' }) => (
@@ -88,12 +89,25 @@ const AuthorCard = ({ author, mob }) => (
     <div style={{ position: 'absolute', top: '-20px', left: '40px', background: '#000', color: '#fff', padding: '8px 20px', fontSize: '12px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
       The Author
     </div>
-    <div style={{ display: 'flex', gap: '40px', alignItems: 'center', flexDirection: mob ? 'column' : 'row', textAlign: mob ? 'center' : 'left' }}>
-      <div style={{ width: '120px', height: '120px', borderRadius: '50%', background: '#000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '38px', flexShrink: 0, border: `3px solid ${BRAND_ORANGE}`, boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}>
+    <Link 
+      to={author?.name === 'CreatorBharat' ? "/official-profile" : "#"} 
+      style={{ 
+        textDecoration: 'none', 
+        cursor: author?.name === 'CreatorBharat' ? 'pointer' : 'default',
+        display: 'flex', gap: '40px', alignItems: 'center', flexDirection: mob ? 'column' : 'row', textAlign: mob ? 'center' : 'left' 
+      }}
+    >
+        <motion.div 
+          whileHover={author?.name === 'CreatorBharat' ? { scale: 1.05 } : {}}
+          style={{ width: '120px', height: '120px', borderRadius: '50%', background: '#000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '38px', flexShrink: 0, border: `3px solid ${BRAND_ORANGE}`, boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}
+        >
         {author?.avatar}
-      </div>
+        </motion.div>
       <div>
-        <h4 style={{ fontFamily: '"Playfair Display", serif', fontSize: '32px', fontWeight: 900, marginBottom: '15px', color: '#000' }}>{author?.name}</h4>
+        <h4 style={{ fontFamily: '"Playfair Display", serif', fontSize: '32px', fontWeight: 900, marginBottom: '15px', color: '#000' }}>
+          {author?.name}
+          {author?.name === 'CreatorBharat' && <CheckCircle size={18} color={BRAND_ORANGE} style={{ marginLeft: '10px' }} />}
+        </h4>
         <p style={{ fontSize: '16px', color: '#475569', lineHeight: 1.7, marginBottom: '20px' }}>{author?.bio}</p>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: mob ? 'center' : 'flex-start', gap: '20px' }}>
           <div style={{ fontSize: '14px', fontWeight: 900, color: BRAND_ORANGE, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{author?.role}</div>
@@ -104,7 +118,7 @@ const AuthorCard = ({ author, mob }) => (
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   </motion.section>
 );
 

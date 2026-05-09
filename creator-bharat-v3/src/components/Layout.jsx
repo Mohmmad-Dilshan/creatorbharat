@@ -10,7 +10,7 @@ import MobileMenu from './layout/MobileMenu';
 import ToastBar from './layout/ToastBar';
 import CompareBar from './layout/CompareBar';
 import DemoModal from './layout/DemoModal';
-import { Home, Users, Megaphone, Target } from 'lucide-react';
+import { Home, Users, BookOpen, Target } from 'lucide-react';
 
 function FloatingMobileNav({ hide }) {
   const navigate = useNavigate();
@@ -25,8 +25,8 @@ function FloatingMobileNav({ hide }) {
 
   const navs = [
     { path: '/', l: 'Home', i: Home },
-    { path: '/creators', l: 'Talent', i: Users },
-    { path: '/campaigns', l: 'Deals', i: Megaphone },
+    { path: '/creators', l: 'Marketplace', i: Users },
+    { path: '/blog', l: 'Hub', i: BookOpen },
     { path: '/dashboard', l: 'Profile', i: Target }
   ];
 

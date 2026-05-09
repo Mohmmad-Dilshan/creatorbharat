@@ -10,6 +10,7 @@ const PricingPage = lazy(() => import('./pages/public/PricingPage'));
 const FAQPage = lazy(() => import('./pages/public/FAQPage'));
 const RateCalcPage = lazy(() => import('./pages/public/RateCalcPage'));
 const LeaderboardPage = lazy(() => import('./pages/public/LeaderboardPage'));
+const OfficialProfilePage = lazy(() => import('./pages/public/OfficialProfilePage'));
 
 // Brand/Marketplace Pages
 const CreatorsPage = lazy(() => import('./pages/brand/CreatorsPage'));
@@ -56,6 +57,7 @@ export default function AppRoutes({ location }) {
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/rate-calc" element={<RateCalcPage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
+        <Route path="/official-profile" element={<OfficialProfilePage />} />
         
         {/* Brand/Marketplace */}
         <Route path="/creators" element={<CreatorsPage />} />

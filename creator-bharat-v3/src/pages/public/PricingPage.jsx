@@ -314,19 +314,26 @@ export default function PricingPage() {
       {/* Pricing Grid */}
       <section style={{ padding: '0 24px 120px', marginTop: '-60px', position: 'relative', zIndex: 2 }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: activePlans.length === 1 ? '1fr' : 'repeat(auto-fit, minmax(340px, 1fr))', 
-            gap: '32px', 
-            justifyContent: 'center',
-            alignItems: 'stretch' 
-          }}>
-            <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={tab}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+              style={{ 
+                display: 'grid', 
+                gridTemplateColumns: activePlans.length === 1 ? '1fr' : 'repeat(auto-fit, minmax(340px, 1fr))', 
+                gap: '32px', 
+                justifyContent: 'center',
+                alignItems: 'stretch' 
+              }}
+            >
                {activePlans.map((plan, i) => (
-                 <PricingCard key={plan.id + tab} plan={plan} delay={0.1 * i} />
+                 <PricingCard key={plan.id} plan={plan} delay={0.1 * i} />
                ))}
-            </AnimatePresence>
-          </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </section>
 
