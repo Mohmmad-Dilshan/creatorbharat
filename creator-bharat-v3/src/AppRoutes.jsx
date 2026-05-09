@@ -88,7 +88,7 @@ export default function AppRoutes({ location }) {
 
         {/* Blog */}
         <Route path="/blog" element={<BlogPage />} />
-        <Route path="/blog/:id" element={<BlogArticlePage />} />
+        <Route path="/blog/:slug" element={<BlogArticlePage />} />
 
         {/* Fallback */}
         <Route path="*" element={<div style={{ padding: '100px', textAlign: 'center', background: '#050505', color: '#fff', minHeight: '100vh' }}><h1>404 - Page Not Found</h1><p>The page you are looking for does not exist.</p></div>} />
