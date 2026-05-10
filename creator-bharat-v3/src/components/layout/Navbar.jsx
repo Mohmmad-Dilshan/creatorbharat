@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useApp } from '../../context';
-import { Logo, Btn } from '../Primitives';
-import { T } from '../../theme';
+import { useApp } from '@/core/context';
+import { Logo, Btn } from '@/components/common/Primitives';
+import { T } from '@/core/theme';
 import { Menu, X } from 'lucide-react';
 
 const NavLinks = ({ links, location, go }) => (

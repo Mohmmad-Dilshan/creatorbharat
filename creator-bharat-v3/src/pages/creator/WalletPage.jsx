@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { fmt } from '../../utils/helpers';
-import { Card, Btn, Bdg, Bar } from '../../components/Primitives';
+import { Card, Btn, Bdg, Bar } from '@/components/common/Primitives';
 import { motion } from 'framer-motion';
 import { 
   Wallet, 

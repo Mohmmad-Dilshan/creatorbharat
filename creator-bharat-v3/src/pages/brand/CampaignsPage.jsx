@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../../context';
+import { useApp } from '@/core/context';
 import { fmt, LS } from '../../utils/helpers';
 import { apiCall } from '../../utils/api';
-import { Btn, SkeletonCard, Empty, Modal, Fld } from '../../components/Primitives';
-import { CampCard } from '../../components/Cards';
+import { Btn, SkeletonCard, Empty, Modal, Fld } from '@/components/common/Primitives';
+import { CampCard } from '@/components/common/Cards';
 import EliteHeader from '../../components/layout/EliteHeader';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { LayoutGrid, Smartphone, Zap, CheckCircle2, XCircle } from 'lucide-react';

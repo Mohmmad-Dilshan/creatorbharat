@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { W } from '../../utils/helpers';
-import { Btn } from '../Primitives';
+import { Btn } from '@/components/common/Primitives';
 
 export default function Features({ mob }) {
   return (

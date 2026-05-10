@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../../context';
+import { useApp } from '@/core/context';
 import { scrollToTop, LS, fmt } from '../../utils/helpers';
-import { Card, Bdg, Empty } from '../../components/Primitives';
+import { Card, Bdg, Empty } from '@/components/common/Primitives';
 import { motion } from 'framer-motion';
 import { 
   Clock, 

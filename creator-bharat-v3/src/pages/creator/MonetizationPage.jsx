@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../../context';
-import { T } from '../../theme';
+import { useApp } from '@/core/context';
+import { T } from '@/core/theme';
 import { W, scrollToTop } from '../../utils/helpers';
-import { Btn, SH as Sh, Card, Bdg } from '../../components/Primitives';
+import { Btn, SH as Sh, Card, Bdg } from '@/components/common/Primitives';
 
 export default function MonetizationPage() {
   const { st, dsp } = useApp();

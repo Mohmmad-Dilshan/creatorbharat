@@ -27,7 +27,6 @@ const ApplicationsPage = lazy(() => import('./pages/creator/ApplicationsPage'));
 const CreatorScorePage = lazy(() => import('./pages/creator/CreatorScorePage'));
 const CreatorProfilePage = lazy(() => import('./pages/creator/CreatorProfilePage'));
 const SavedPage = lazy(() => import('./pages/creator/SavedPage'));
-const MonetizePage = lazy(() => import('./pages/creator/MonetizePage'));
 const MonetizationPage = lazy(() => import('./pages/creator/MonetizationPage'));
 const MessagesPage = lazy(() => import('./pages/creator/MessagesPage'));
 
@@ -75,7 +74,7 @@ export default function AppRoutes({ location }) {
         <Route path="/creator-score" element={<CreatorScorePage />} />
         <Route path="/creator/:id" element={<CreatorProfilePage />} />
         <Route path="/saved" element={<SavedPage />} />
-        <Route path="/monetize" element={<MonetizePage />} />
+        <Route path="/monetize" element={<MonetizationPage />} />
         <Route path="/monetization" element={<MonetizationPage />} />
         <Route path="/messages" element={<MessagesPage />} />
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { Mail, ArrowRight, CheckCircle2 } from 'lucide-react';
-import { Btn, Fld } from '../../Primitives.jsx';
+import { Btn, Fld } from '@/components/common/Primitives';
 
 const ForgotView = ({ setView }) => {
   const [email, setEmail] = useState('');

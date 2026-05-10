@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { T } from '../../theme';
+import { T } from '@/core/theme';
 
 export function ProgressBar({ value, max = 100, color, label, showPct, height = 8 }) {
   const pct = Math.min(100, Math.round((value / max) * 100));

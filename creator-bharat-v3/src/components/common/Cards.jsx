@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useApp } from '../context';
-import { T } from '../theme';
-import { fmt } from '../utils/helpers';
+import { useApp } from '@/core/context';
+import { T } from '@/core/theme';
+import { fmt } from '@/utils/helpers';
 import { Card, Bdg, Btn, Bar } from './Primitives';
 import { Heart, MapPin, Camera, Play, Briefcase, Ghost, AtSign, Smartphone, Check, Scale, Zap } from 'lucide-react';
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { T } from '../../theme';
+import { T } from '@/core/theme';
 
 const getBtnStyles = (variant, h) => {
   const vs = {

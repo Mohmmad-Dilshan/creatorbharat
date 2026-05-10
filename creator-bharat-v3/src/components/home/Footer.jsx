@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Logo } from '../ui';
+import { Logo } from '@/components/common';
 import {
   ArrowRight,
   BadgeCheck,

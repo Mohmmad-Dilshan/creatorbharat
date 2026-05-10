@@ -35,7 +35,8 @@ import PropTypes from 'prop-types';
 import { LinkedinIcon } from '../../components/icons/SocialIcons';
 
 // Importing Founder Photo
-import DilshanImg from '../../assets/dilshan.png';
+// import DilshanImg from '../../assets/dilshan.png';
+const DilshanImg = "https://ui-avatars.com/api/?name=Mohmmad+Dilshan&background=0f172a&color=fff&size=512";
 
 // --- DATA ---
 const OFFICIAL_DATA = {

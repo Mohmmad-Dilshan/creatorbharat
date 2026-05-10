@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../../context';
-import { Btn } from '../Primitives';
+import { useApp } from '@/core/context';
+import { Btn } from '@/components/common/Primitives';
 
 // ── Constants ──────────────────────────────────────────────────────────────
 

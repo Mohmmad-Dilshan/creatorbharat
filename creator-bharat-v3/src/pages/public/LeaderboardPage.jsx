@@ -9,7 +9,7 @@ import {
   Zap,
   Globe
 } from 'lucide-react';
-import { Btn, Card, Bdg } from '../../components/Primitives';
+import { Btn, Card, Bdg } from '@/components/common/Primitives';
 import { useNavigate } from 'react-router-dom';
 
 const categories = ['Overall', 'Tech', 'Finance', 'Lifestyle', 'Gaming', 'Travel', 'Beauty'];

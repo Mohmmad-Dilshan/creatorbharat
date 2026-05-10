@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { W, LS } from '../../utils/helpers';
 import { apiCall } from '../../utils/api';
-import { Btn } from '../Primitives';
-import { User, BookOpen, Radio, MapPin, CreditCard, Zap, ChevronRight, Sparkles, Globe } from 'lucide-react';
+import { Btn } from '@/components/common/Primitives';
+import { User, BookOpen, Radio, MapPin, CreditCard, Zap, ChevronRight, Globe } from 'lucide-react';
 
 const HeroValueProps = memo(({ mob }) => (
   <div className="au d3" style={{ 
@@ -70,8 +70,9 @@ export const Typewriter = memo(function Typewriter({ words = TYPEWRITER_WORDS, i
 
   useEffect(() => {
     const currentWord = words[idx % words.length];
-    let speed;
     
+    // Fixed nested ternary logic
+    let speed;
     if (del) {
       speed = mob ? 10 : 15;
     } else {
@@ -297,8 +298,8 @@ SearchInput.propTypes = { mob: PropTypes.bool, q: PropTypes.string, dsp: PropTyp
 
 const LocationPicker = memo(({ mob, state }) => (
   <div style={{ flex: 0.8, padding: mob ? '16px 24px' : '0 48px', textAlign: 'left', width: '100%' }}>
-    <label htmlFor="hero-location-select" style={{ fontSize: 10, fontWeight: 950, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 6 }}>Location</label>
-    <div id="hero-location-select" style={{ fontSize: mob ? 16 : 18, fontWeight: 900, color: '#0f172a', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+    <label htmlFor="hero-location-display" style={{ fontSize: 10, fontWeight: 950, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 6 }}>Location</label>
+    <div id="hero-location-display" style={{ fontSize: mob ? 16 : 18, fontWeight: 900, color: '#0f172a', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
        <MapPin size={16} color="#10B981" /> {state || 'All over Bharat'}
     </div>
   </div>
@@ -326,7 +327,7 @@ SearchBar.propTypes = { mob: PropTypes.bool, st: PropTypes.object.isRequired, ds
 const EcosystemHeader = memo(({ mob }) => (
   <div style={{ textAlign: 'center', marginBottom: mob ? 48 : 80, marginTop: 40 }}>
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: '10px 24px', background: '#fff', border: '1.5px solid #f1f5f9', borderRadius: 100, marginBottom: 24, boxShadow: '0 10px 20px rgba(0,0,0,0.02)' }}>
-      <Sparkles size={16} color="#3B82F6" fill="#3B82F6" />
+      <Globe size={16} color="#3B82F6" />
       <span style={{ fontSize: 13, fontWeight: 950, color: '#3B82F6', textTransform: 'uppercase', letterSpacing: '4px' }}>Support Infrastructure</span>
     </div>
     <h2 style={{ fontSize: mob ? 40 : 64, fontWeight: 950, color: '#0f172a', lineHeight: 1.05, letterSpacing: '-0.04em', marginBottom: 24 }}>
@@ -448,6 +449,7 @@ export default function Hero({ mob, st, dsp, go }) {
           .elite-support-card:hover .card-hover-bg { opacity: 1 !important; }
           .elite-support-card:hover .card-accent-line { width: 100% !important; }
           ${mob ? '' : '.elite-support-card:hover { transform: translateY(-12px) scale(1.02); box-shadow: 0 32px 80px rgba(0,0,0,0.12); }'}
+          @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
         `}</style>
       </div>
     </section>

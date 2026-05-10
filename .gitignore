@@ -17,3 +17,15 @@ yarn-error.log*
 **/node_modules/
 **/.env
 SAAS_FRONTEND_MASTER_PLAN.md
+
+# EVERYTHING IN BACKUPS IS HIDDEN
+backups/
+v3-backup-stable/
+scratch/
+temp/
+*.bak
+*.tmp
+
+# Hide other projects if only pushing frontend
+# creatorbharat-admin/
+# creatorbharat-backend/

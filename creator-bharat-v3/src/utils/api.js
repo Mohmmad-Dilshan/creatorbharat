@@ -1,4 +1,4 @@
-const API_BASE = 'https://creatorbharat.onrender.com/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://creatorbharat.onrender.com/api';
 
 export async function apiCall(endpoint, options = {}) {
   const token = localStorage.getItem('cb_token');

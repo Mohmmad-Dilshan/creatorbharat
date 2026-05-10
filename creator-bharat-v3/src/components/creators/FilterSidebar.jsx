@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, User, Globe, Zap } from 'lucide-react';
 import { W, ALL_STATES, INDIA_STATES } from '../../utils/helpers';
-import { Btn } from '../Primitives';
+import { Btn } from '@/components/common/Primitives';
 import { 
   InstagramIcon, 
   YoutubeIcon, 

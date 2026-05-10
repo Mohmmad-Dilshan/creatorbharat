@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../../context';
+import { useApp } from '@/core/context';
 import { W, scrollToTop, LS, fmt } from '../../utils/helpers';
 import { apiCall } from '../../utils/api';
 import EliteHeader from '../../components/layout/EliteHeader';
@@ -13,7 +13,7 @@ import {
   ExternalLink,
   ChevronRight,
 } from 'lucide-react';
-import { Btn, Bdg } from '../../components/Primitives';
+import { Btn, Bdg } from '@/components/common/Primitives';
 
 const checkSearchQuery = (c, q) => {
   if (!q) return true;

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { T } from '../../theme';
+import { T } from '@/core/theme';
 
 export function Input({ label, value, onChange, type = 'text', placeholder, options, rows, helper, required, error, sm, readOnly, id: providedId, icon: Icon, ...props }) {
   const [foc, setFoc] = useState(false);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useApp } from '../../context';
+import { useApp } from '@/core/context';
 import { 
   Mail, 
   MessageCircle, 
@@ -13,7 +13,7 @@ import {
   ShieldCheck,
   Building2
 } from 'lucide-react';
-import { Btn, Card } from '../../components/Primitives';
+import { Btn, Card } from '@/components/common/Primitives';
 import { LinkedinIcon } from '../../components/icons/SocialIcons';
 
 

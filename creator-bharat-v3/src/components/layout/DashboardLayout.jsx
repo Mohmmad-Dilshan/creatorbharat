@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useApp } from '../../context';
+import { useApp } from '@/core/context';
 import { 
   LayoutDashboard, 
   User, 
@@ -19,7 +19,7 @@ import {
   Activity,
   Zap
 } from 'lucide-react';
-import { Logo } from '../ui';
+import { Logo } from '@/components/common';
 
 const SidebarItem = ({ icon: Icon, label, path, active, collapsed, onClick }) => (
   <button

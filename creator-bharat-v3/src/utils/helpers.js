@@ -1,4 +1,4 @@
-import { T } from '../theme';
+import { T } from '@/core/theme';
 
 export const fmt = {
   num(n) {

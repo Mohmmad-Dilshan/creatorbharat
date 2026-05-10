@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { Phone, ArrowLeft } from 'lucide-react';
-import { Btn, Fld } from '../../Primitives.jsx';
-import { useApp } from '../../../context.jsx';
+import { Btn, Fld } from '@/components/common/Primitives';
+import { useApp } from '@/core/context';
 
 const MobileLoginView = ({ onBack, onSuccess, themeColor }) => {
   const { dsp } = useApp();

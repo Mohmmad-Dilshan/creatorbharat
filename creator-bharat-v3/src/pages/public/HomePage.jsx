@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../../context';
+import { useApp } from '@/core/context';
 import { useFeaturedCreators } from '../../hooks/useFeaturedCreators';
 import { useStateCreatorCounts } from '../../hooks/useStateCreatorCounts';
 

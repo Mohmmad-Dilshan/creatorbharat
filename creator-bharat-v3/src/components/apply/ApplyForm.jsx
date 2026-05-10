@@ -11,7 +11,7 @@ import {
   Phone,
   CheckCircle2
 } from 'lucide-react';
-import { Btn, Fld } from '../Primitives.jsx';
+import { Btn, Fld } from '@/components/common/Primitives';
 
 import { INDIAN_STATES, MAJOR_CITIES, STATE_CITY_MAP } from '../../utils/geo';
 

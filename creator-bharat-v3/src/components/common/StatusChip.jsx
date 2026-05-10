@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { T } from '../../theme';
+import { T } from '@/core/theme';
 
 export function StatusChip({ label, active, onClick }) {
   return (

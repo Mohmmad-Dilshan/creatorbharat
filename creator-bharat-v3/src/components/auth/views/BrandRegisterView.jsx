@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { Mail, Phone, Lock, MapPin, CheckCircle2, ArrowRight, ShieldCheck } from 'lucide-react';
-import { Btn, Fld } from '../../Primitives.jsx';
-import { useApp } from '../../../context.jsx';
+import { Btn, Fld } from '@/components/common/Primitives';
+import { useApp } from '@/core/context';
 import { LS } from '../../../utils/storage.js';
 import { INDIAN_STATES, STATE_CITY_MAP, MAJOR_CITIES } from '../../../utils/geo.js';
 

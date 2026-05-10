@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { T } from '../../theme';
+import { T } from '@/core/theme';
 
 export function Skeleton(props) {
   const { width = '100%', height = 20, borderRadius = 12, style = {} } = props;

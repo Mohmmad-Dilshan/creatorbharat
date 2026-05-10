@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../../context';
+import { useApp } from '@/core/context';
 import { W, scrollToTop, LS } from '../../utils/helpers';
 import { apiCall } from '../../utils/api';
-import { Empty } from '../../components/Primitives';
-import { CreatorCard, CampCard } from '../../components/Cards';
+import { Empty } from '@/components/common/Primitives';
+import { CreatorCard, CampCard } from '@/components/common/Cards';
 
 export default function SavedPage() {
   const { st, dsp } = useApp();

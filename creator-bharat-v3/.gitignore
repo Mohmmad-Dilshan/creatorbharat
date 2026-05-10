@@ -7,20 +7,39 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
 dist
 dist-ssr
-*.local
+build
+out
 
-# Editor directories and files
+# Environment variables (CRITICAL)
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+.env.staging
+
+# OS Junk
+.DS_Store
+Thumbs.db
+
+# Editor/IDE
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
+# Project specific
 backups/
+scratch/
+temp/
+*.bak
+*.tmp

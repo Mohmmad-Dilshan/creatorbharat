@@ -13,7 +13,7 @@ import {
   Globe,
   Wallet
 } from 'lucide-react';
-import { Btn, Bdg } from '../../components/Primitives';
+import { Btn, Bdg } from '@/components/common/Primitives';
 
 const PricingCard = ({ plan, delay = 0 }) => {
   const isPro = plan.id === 'pro' || plan.id === 'brand_pro';

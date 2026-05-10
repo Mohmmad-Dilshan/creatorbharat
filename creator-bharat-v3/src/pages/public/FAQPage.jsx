@@ -18,7 +18,7 @@ import {
   Wallet,
   Target
 } from 'lucide-react';
-import { Btn, Card, Bdg } from '../../components/Primitives';
+import { Btn, Card, Bdg } from '@/components/common/Primitives';
 
 const FAQAccordion = ({ q, a, delay = 0, mob }) => {
   const [isOpen, setIsOpen] = useState(false);

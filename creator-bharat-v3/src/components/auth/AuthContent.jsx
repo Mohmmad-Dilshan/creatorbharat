@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { AnimatePresence } from 'framer-motion';
 import './auth.css';
 import { ShieldCheck } from 'lucide-react';
-import { useApp } from '../../context.jsx';
-import { Logo } from '../ui/index.js';
+import { useApp } from '@/core/context';
+import { Logo } from '@/components/common';
 import ApplyForm from '../apply/ApplyForm.jsx';
 
 

@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import Lenis from '@studio-freight/lenis';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useApp } from '../context';
-import Footer from './home/Footer';
-import Navbar from './layout/Navbar';
-import MobileMenu from './layout/MobileMenu';
-import ToastBar from './layout/ToastBar';
-import CompareBar from './layout/CompareBar';
-import DemoModal from './layout/DemoModal';
+import { useApp } from '@/core/context';
+import Footer from '../home/Footer';
+import Navbar from './Navbar';
+import MobileMenu from './MobileMenu';
+import ToastBar from './ToastBar';
+import CompareBar from './CompareBar';
+import DemoModal from './DemoModal';
 import { Home, Users, BookOpen, Target } from 'lucide-react';
 
 function FloatingMobileNav({ hide }) {

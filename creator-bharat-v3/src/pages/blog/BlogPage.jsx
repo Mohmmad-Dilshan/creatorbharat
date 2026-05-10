@@ -9,7 +9,7 @@ import {
   ArrowUpRight,
   Globe
 } from 'lucide-react';
-import { Btn, Bdg } from '../../components/Primitives';
+import { Btn, Bdg } from '@/components/common/Primitives';
 import { Link } from 'react-router-dom';
 import { blogData } from '../../data/blogData';
 

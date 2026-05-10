@@ -10,7 +10,7 @@ import {
   Sparkles,
   Flame
 } from 'lucide-react';
-import { Btn, Bdg } from '../../components/Primitives';
+import { Btn, Bdg } from '@/components/common/Primitives';
 import { fmt } from '../../utils/helpers';
 
 const RollingNumber = ({ value }) => {

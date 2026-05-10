@@ -1,5 +1,5 @@
 import React from 'react';
-import { useApp } from '../../context';
+import { useApp } from '@/core/context';
 
 export default function ToastBar() {
   const { st, dsp } = useApp();

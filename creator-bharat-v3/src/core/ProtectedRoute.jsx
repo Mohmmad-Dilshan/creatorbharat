@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useApp } from '../context';
+import { useApp } from '@/core/context';
 
 /**
  * ProtectedRoute: Ensures only authenticated users can access specific routes.

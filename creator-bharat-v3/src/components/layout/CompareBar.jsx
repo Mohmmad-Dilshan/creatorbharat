@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useApp } from '../../context';
+import { useApp } from '@/core/context';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 

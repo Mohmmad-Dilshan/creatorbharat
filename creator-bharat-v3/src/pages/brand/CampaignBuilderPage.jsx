@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../../context';
+import { useApp } from '@/core/context';
 import { W, scrollToTop, LS, fmt } from '../../utils/helpers';
-import { Fld, Card, Empty, Btn } from '../../components/Primitives';
-import { CampCard } from '../../components/Cards';
+import { Fld, Card, Empty, Btn } from '@/components/common/Primitives';
+import { CampCard } from '@/components/common/Cards';
 import { 
   Rocket, 
   Target, 

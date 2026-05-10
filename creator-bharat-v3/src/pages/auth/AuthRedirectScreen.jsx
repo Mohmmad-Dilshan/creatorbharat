@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { ArrowRight, LockKeyhole, ShieldCheck, Sparkles } from 'lucide-react';
-import { Logo } from '../../components/ui';
+import { Logo } from '@/components/common';
 
 export default function AuthRedirectScreen({ title, sub, mode = 'creator' }) {
   const isBrand = mode === 'brand';

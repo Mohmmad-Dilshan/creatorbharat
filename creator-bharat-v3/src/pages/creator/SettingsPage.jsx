@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useApp } from '../../context';
+import { useApp } from '@/core/context';
 import { W, LS, fmt } from '../../utils/helpers';
-import { Btn, Card, Fld, Empty, Bdg, Ring, Bar } from '../../components/Primitives';
+import { Btn, Card, Fld, Empty, Bdg, Ring, Bar } from '@/components/common/Primitives';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, 

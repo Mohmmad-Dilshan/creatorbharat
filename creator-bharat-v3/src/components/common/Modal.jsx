@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { T } from '../../theme';
+import { T } from '@/core/theme';
 
 export function Modal({ open, onClose, title, children, width = 500, hideHeader, contentStyle }) {
   const ref = useRef(null);

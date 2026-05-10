@@ -13,7 +13,7 @@ import {
   Heart,
   Command
 } from 'lucide-react';
-import { Btn, Card, Bdg } from '../../components/Primitives';
+import { Btn, Card, Bdg } from '@/components/common/Primitives';
 
 const StatBlock = ({ value, label, delay = 0 }) => (
   <motion.div

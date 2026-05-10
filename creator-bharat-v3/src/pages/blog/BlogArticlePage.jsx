@@ -20,7 +20,7 @@ import {
   CheckCircle
 } from 'lucide-react';
 
-import { Bdg, Btn } from '../../components/Primitives';
+import { Bdg, Btn } from '@/components/common/Primitives';
 import { 
   TwitterIcon, 
   LinkedinIcon, 

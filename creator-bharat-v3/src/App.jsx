@@ -1,9 +1,9 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import Layout from './components/Layout';
-import DashboardLayout from './components/layout/DashboardLayout';
-import AppRoutes from './AppRoutes';
-import { useApp } from './context';
+import PublicLayout from '@/components/layout/PublicLayout';
+import DashboardLayout from '@/components/layout/DashboardLayout';
+import AppRoutes from '@/AppRoutes';
+import { useApp } from '@/core/context';
 
 export default function App() {
   const location = useLocation();
@@ -40,5 +40,5 @@ export default function App() {
   }
 
   // Otherwise, use the standard public layout (e.g., for home page or unauthenticated dashboard gatekeeper)
-  return <Layout><AppRoutes location={location} /></Layout>;
+  return <PublicLayout><AppRoutes location={location} /></PublicLayout>;
 }

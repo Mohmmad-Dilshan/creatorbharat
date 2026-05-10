@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useApp } from '../../context';
+import { useApp } from '@/core/context';
 import { fmt } from '../../utils/helpers';
-import { Card, Ring, Btn, Bdg, Bar } from '../../components/Primitives';
+import { Card, Ring, Btn, Bdg, Bar } from '@/components/common/Primitives';
 import { motion } from 'framer-motion';
 import { 
   ShieldCheck, 

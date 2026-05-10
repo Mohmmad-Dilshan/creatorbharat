@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
-import { CreatorCard } from '../Cards';
-import { SkeletonCard, Empty, Bdg } from '../Primitives';
+import { CreatorCard } from '@/components/common/Cards';
+import { SkeletonCard, Empty, Bdg } from '@/components/common/Primitives';
 import { fmt } from '../../utils/helpers';
 import { TrendingUp, Activity, Star } from 'lucide-react';
 
