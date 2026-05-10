@@ -1,3 +1,4 @@
+// V3 Production Ready - Build Trigger 2026-05-10
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { scrollToTop } from '../../utils/helpers';
