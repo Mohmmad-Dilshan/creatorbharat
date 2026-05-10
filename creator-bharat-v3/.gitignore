@@ -38,6 +38,7 @@ Thumbs.db
 *.sw?
 
 # Project specific
+docs/
 backups/
 scratch/
 temp/
