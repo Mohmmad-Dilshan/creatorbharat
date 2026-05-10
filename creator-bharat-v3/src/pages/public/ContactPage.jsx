@@ -11,10 +11,11 @@ import {
   Globe,
   Sparkles,
   ShieldCheck,
-  Building2,
-  Briefcase as Linkedin
+  Building2
 } from 'lucide-react';
 import { Btn, Card } from '../../components/Primitives';
+import { LinkedinIcon } from '../../components/icons/SocialIcons';
+
 
 const ContactMethodCard = ({ icon: Icon, title, value, sub, delay = 0, mob }) => (
   <motion.div
@@ -116,7 +117,7 @@ ContactHero.propTypes = {
 const ContactChannels = ({ onMediaRequest, mob }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
     <ContactMethodCard icon={Mail} title="Direct Support" value="support@creatorbharat.in" sub="Median response time: 4 hours" delay={0.1} mob={mob} />
-    <ContactMethodCard icon={Linkedin} title="Brand Solutions" value="solutions@creatorbharat.in" sub="For agency and large brand queries" delay={0.2} mob={mob} />
+    <ContactMethodCard icon={LinkedinIcon} title="Brand Solutions" value="solutions@creatorbharat.in" sub="For agency and large brand queries" delay={0.2} mob={mob} />
     <ContactMethodCard icon={MessageCircle} title="Quick Chat" value="+91 9999-000000" sub="WhatsApp Support (Mon-Fri, 10am-7pm)" delay={0.3} mob={mob} />
     <ContactMethodCard icon={Building2} title="Headquarters" value="Bhilwara, Rajasthan" sub="The heart and soul of Bharat's creation" delay={0.4} mob={mob} />
 

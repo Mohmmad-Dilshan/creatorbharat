@@ -1,2 +1,5 @@
-import * as Lucide from 'lucide-react';
-console.log(Object.keys(Lucide).filter(k => k.toLowerCase().includes('insta')));
+import * as lucide from 'lucide-react';
+const keys = Object.keys(lucide);
+console.log('Github search:', keys.filter(k => k.toLowerCase().includes('github')));
+console.log('Facebook search:', keys.filter(k => k.toLowerCase().includes('facebook')));
+console.log('Slack search:', keys.filter(k => k.toLowerCase().includes('slack')));

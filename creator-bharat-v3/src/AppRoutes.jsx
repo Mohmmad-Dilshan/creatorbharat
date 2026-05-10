@@ -29,6 +29,7 @@ const CreatorProfilePage = lazy(() => import('./pages/creator/CreatorProfilePage
 const SavedPage = lazy(() => import('./pages/creator/SavedPage'));
 const MonetizePage = lazy(() => import('./pages/creator/MonetizePage'));
 const MonetizationPage = lazy(() => import('./pages/creator/MonetizationPage'));
+const MessagesPage = lazy(() => import('./pages/creator/MessagesPage'));
 
 // Legal
 const PrivacyPage = lazy(() => import('./pages/legal/PrivacyPage'));
@@ -76,6 +77,7 @@ export default function AppRoutes({ location }) {
         <Route path="/saved" element={<SavedPage />} />
         <Route path="/monetize" element={<MonetizePage />} />
         <Route path="/monetization" element={<MonetizationPage />} />
+        <Route path="/messages" element={<MessagesPage />} />
 
         {/* Legal */}
         <Route path="/privacy" element={<PrivacyPage />} />

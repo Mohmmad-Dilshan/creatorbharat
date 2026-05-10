@@ -1,355 +1,531 @@
 import React, { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { scrollToTop } from '../../utils/helpers';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, 
-  Megaphone, 
-  ShieldCheck, 
+  ShieldCheck,
   Globe,
-  Fingerprint,
+  CheckCircle2,
   Zap,
-  Star,
-  Activity
+  Activity,
+  Cpu,
+  Rocket,
+  Code2,
+  Grid,
+  MoreHorizontal,
+  ExternalLink,
+  FileText,
+  BarChart3,
+  Lock,
+  Languages,
+  X,
+  History,
+  TrendingUp,
+  Award,
+  Database,
+  ChevronRight,
+  Server,
+  BarChart,
+  Shield,
+  MapPin,
+  Mail
 } from 'lucide-react';
-import { useApp } from '../../context';
-import { Logo, Btn } from '../../components/Primitives';
 import PropTypes from 'prop-types';
+import { LinkedinIcon } from '../../components/icons/SocialIcons';
 
-const TwitterIcon = ({ size = 20, color = 'currentColor' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
-  </svg>
+// Importing Founder Photo
+import DilshanImg from '../../assets/dilshan.png';
+
+// --- DATA ---
+const OFFICIAL_DATA = {
+  en: {
+    username: 'creatorbharat',
+    displayName: 'CreatorBharat Official',
+    category: 'Science & Tech • Protocol Node 001',
+    bio: "Building the Mastermind of Bharat's Creator Economy. 🇮🇳\nInfrastructure of Trust for 1.4B Voices.",
+    website: 'www.creatorbharat.com',
+  },
+  hi: {
+    username: 'creatorbharat',
+    displayName: 'क्रिएटरभारत ऑफिशियल',
+    category: 'विज्ञान और तकनीक • प्रोटोकॉल नोड 001',
+    bio: "भारत की क्रिएटर इकोनॉमी का मास्टरमाइंड बनाना। 🇮🇳\n1.4B आवाजों के लिए विश्वास का बुनियादी ढांचा।",
+    website: 'www.creatorbharat.com',
+  },
+  baseStats: { posts: 1240, followers: '58.4K', following: 128 },
+  highlights: [
+    { id: 'v3', label: 'V3 Core', icon: Code2, color: '#0f172a', stories: [{ title: 'The V3 Vision', text: 'Migrating 50,000+ nodes to a decentralized ledger.', date: 'Live' }] },
+    { id: 'updates', label: 'Updates', icon: Zap, color: '#FF9431', stories: [{ title: 'New UI Live', text: 'Brand dashboards feature real-time sentiment analysis.', date: '2h ago' }] },
+    { id: 'roadmap', label: 'Roadmap', icon: Rocket, color: '#3B82F6', stories: [{ title: 'Phase 2', text: 'Onboarding Tier-2 regional aggregators.', date: 'Next' }] },
+    { id: 'founders', label: 'Founders', icon: Users, color: '#10B981', stories: [{ title: 'Leadership', text: 'Mohmmad Dilshan on the future of Bharat.', date: 'Official' }] }
+  ],
+  posts: [
+    { id: 1, title: 'V3_PROTOCOL', icon: Code2, color: '#0f172a' },
+    { id: 2, title: 'ROADMAP_Q3', icon: Rocket, color: '#FF9431' },
+    { id: 3, title: 'REGION_SYNC', icon: Globe, color: '#3B82F6' },
+    { id: 4, title: 'AUTH_NODE', icon: ShieldCheck, color: '#10B981' },
+    { id: 5, title: 'SCORE_V2', icon: Activity, color: '#7C3AED' },
+    { id: 6, title: 'DATA_LEDGER', icon: Cpu, color: '#000' }
+  ],
+  liveFeed: [
+    "Node 102 synced in Maharashtra",
+    "Protocol V3.2 deployment started",
+    "Security audit 100% completed",
+    "New brand cluster synced in Delhi",
+    "Regional shard update: UP-Node active"
+  ],
+  founder: {
+    name: 'Mohmmad Dilshan',
+    role: 'Founder & Chief Architect',
+    location: 'Bhilwara, Rajasthan',
+    vision: 'Democratizing the digital economy for the next billion users through decentralized intelligence.',
+    achievements: ['50K+ Nodes Scaled', 'Creator Economy Pioneer', 'Bharat Protocol Visionary']
+  },
+  shards: [
+    { id: 'S1', region: 'North Shard', status: 'Active', latency: '12ms', load: '64%' },
+    { id: 'S2', region: 'South Shard', status: 'Syncing', latency: '45ms', load: '12%' },
+    { id: 'S3', region: 'West Shard', status: 'Active', latency: '18ms', load: '82%' },
+    { id: 'S4', region: 'East Shard', status: 'Active', latency: '22ms', load: '41%' }
+  ],
+  analytics: {
+    growth: [45, 52, 48, 70, 65, 85, 92],
+    regions: [
+      { name: 'Maharashtra', count: '12.4K', trend: '+12%' },
+      { name: 'Delhi NCR', count: '8.9K', trend: '+8%' },
+      { name: 'Karnataka', count: '7.5K', trend: '+15%' }
+    ]
+  }
+};
+
+
+// --- COMPONENTS ---
+
+const IntelligenceHub = ({ mob }) => (
+  <div style={{ padding: '40px 0' }}>
+     <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+        <h3 style={{ fontSize: '20px', fontWeight: 900, letterSpacing: '2px', color: '#0f172a' }}>PROTOCOL ARCHITECTURE</h3>
+        <p style={{ color: '#64748b', fontSize: '14px', marginTop: '4px' }}>Decentralized node distribution & regional sharding status.</p>
+     </div>
+     
+     {/* Shard Directory */}
+     <div style={{ background: '#fff', border: '1px solid #f1f5f9', borderRadius: '32px', padding: '24px', marginBottom: '32px', boxShadow: '0 4px 24px rgba(0,0,0,0.03)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', padding: '0 8px' }}>
+           <div style={{ fontSize: '14px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}><Server size={18} color="#3B82F6" /> ACTIVE SHARD DIRECTORY</div>
+           <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>REFRESHING IN 12s...</div>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+           {OFFICIAL_DATA.shards.map((shard) => (
+             <div key={shard.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                   <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: shard.status === 'Active' ? '#10B98110' : '#FF943110', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Database size={20} color={shard.status === 'Active' ? '#10B981' : '#FF9431'} />
+                   </div>
+                   <div>
+                      <div style={{ fontSize: '14px', fontWeight: 700 }}>{shard.region}</div>
+                      <div style={{ fontSize: '11px', color: '#64748b' }}>Node ID: {shard.id}_PROT_001</div>
+                   </div>
+                </div>
+                <div style={{ textAlign: 'right', display: mob ? 'none' : 'block' }}>
+                   <div style={{ fontSize: '12px', fontWeight: 700, color: shard.status === 'Active' ? '#10B981' : '#FF9431' }}>{shard.status.toUpperCase()}</div>
+                   <div style={{ fontSize: '11px', color: '#64748b' }}>Latency: {shard.latency}</div>
+                </div>
+                <button style={{ background: '#fff', border: '1px solid #e2e8f0', padding: '8px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}>STATS</button>
+             </div>
+           ))}
+        </div>
+     </div>
+
+     {/* Protocol CTA */}
+     <div style={{ background: 'linear-gradient(90deg, #0f172a 0%, #1e293b 100%)', borderRadius: '24px', padding: '32px', display: 'flex', flexDirection: mob ? 'column' : 'row', justifyContent: 'space-between', alignItems: 'center', gap: '20px' }}>
+        <div>
+           <div style={{ color: '#fff', fontSize: '18px', fontWeight: 800 }}>Protocol V3.2 Technical Whitepaper</div>
+           <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', marginTop: '4px' }}>Explore the consensus logic and trust-score algorithms.</div>
+        </div>
+        <button style={{ background: '#3B82F6', color: '#fff', padding: '14px 28px', borderRadius: '14px', border: 'none', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+           VIEW DOCS <ExternalLink size={16} />
+        </button>
+     </div>
+  </div>
 );
+IntelligenceHub.propTypes = { mob: PropTypes.bool.isRequired };
 
-TwitterIcon.propTypes = { size: PropTypes.number, color: PropTypes.string };
-
-const LinkedinIcon = ({ size = 20, color = 'currentColor' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-    <rect x="2" y="9" width="4" height="12" />
-    <circle cx="4" cy="4" r="2" />
-  </svg>
-);
-
-LinkedinIcon.propTypes = { size: PropTypes.number, color: PropTypes.string };
-
-const GlassCard = ({ children, style = {}, delay = 0, mob }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
-    style={{
-      background: 'rgba(255, 255, 255, 0.02)',
-      backdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
-      borderRadius: mob ? '24px' : '32px',
-      padding: mob ? '24px' : '40px',
-      ...style
-    }}
-  >
-    {children}
-  </motion.div>
-);
-
-GlassCard.propTypes = { children: PropTypes.node, style: PropTypes.object, delay: PropTypes.number, mob: PropTypes.bool };
-
-const StatGlow = ({ icon: Icon, label, value, mob }) => (
-  <div style={{ textAlign: 'center', flex: 1, minWidth: mob ? '140px' : '200px' }}>
-    <div style={{ 
-      width: mob ? '48px' : '64px', 
-      height: mob ? '48px' : '64px', 
-      borderRadius: '50%', 
-      background: 'rgba(255,148,49,0.1)', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      margin: '0 auto 20px',
-      border: '1px solid rgba(255,148,49,0.2)',
-      boxShadow: '0 0 20px rgba(255,148,49,0.1)'
-    }}>
-      <Icon size={mob ? 20 : 28} color="#FF9431" />
+const InsightsGrid = ({ mob }) => (
+  <div style={{ padding: '40px 0' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '24px', marginBottom: '40px' }}>
+       {[
+         { l: 'Network Reach', v: '85.4M', i: Globe, c: '#3B82F6', t: '+4.2%' },
+         { l: 'Trust Handshakes', v: '12.4M', i: Shield, c: '#10B981', t: '+12.1%' },
+         { l: 'Protocol Revenue', v: '₹4.8Cr', i: Zap, c: '#7C3AED', t: '+8.4%' }
+       ].map((s) => (
+         <div key={s.l} style={{ background: '#fff', padding: '24px', borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+               <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: `${s.c}10`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><s.i size={22} color={s.c} /></div>
+               <div style={{ fontSize: '11px', fontWeight: 800, color: '#10B981', background: '#10B98110', padding: '4px 8px', borderRadius: '6px' }}>{s.t}</div>
+            </div>
+            <div style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a' }}>{s.v}</div>
+            <div style={{ fontSize: '12px', fontWeight: 700, color: '#64748b' }}>{s.l.toUpperCase()}</div>
+         </div>
+       ))}
     </div>
-    <div style={{ fontSize: mob ? '24px' : '36px', fontWeight: 900, color: '#fff', marginBottom: '4px', fontFamily: '"Playfair Display", serif' }}>{value}</div>
-    <div style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '2px' }}>{label}</div>
+
+    {/* Regional Growth Table */}
+    <div style={{ background: '#fff', border: '1px solid #f1f5f9', borderRadius: '32px', padding: '32px', boxShadow: '0 10px 40px rgba(0,0,0,0.04)' }}>
+       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <div style={{ fontSize: '16px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}><BarChart size={20} color="#3B82F6" /> REGIONAL PERFORMANCE</div>
+          <button style={{ color: '#3B82F6', fontSize: '13px', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>View Detailed Report</button>
+       </div>
+       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {OFFICIAL_DATA.analytics.regions.map((reg) => (
+            <div key={reg.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid #f1f5f9' }}>
+               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3B82F6' }} />
+                  <div style={{ fontSize: '14px', fontWeight: 600 }}>{reg.name}</div>
+               </div>
+               <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+                  <div style={{ textAlign: 'right' }}>
+                     <div style={{ fontSize: '14px', fontWeight: 700 }}>{reg.count}</div>
+                     <div style={{ fontSize: '10px', color: '#64748b' }}>CREATORS</div>
+                  </div>
+                  <div style={{ color: '#10B981', fontSize: '13px', fontWeight: 800 }}>{reg.trend}</div>
+                  <ChevronRight size={18} color="#cbd5e1" />
+               </div>
+            </div>
+          ))}
+       </div>
+    </div>
+  </div>
+);
+InsightsGrid.propTypes = { mob: PropTypes.bool.isRequired };
+
+const MastermindSection = ({ mob }) => (
+  <div style={{ padding: '40px 0' }}>
+     {/* Elite Founder Card - Updated for Mohmmad Dilshan */}
+     <div style={{ 
+        background: 'linear-gradient(145deg, #0f172a 0%, #1e293b 100%)', 
+        borderRadius: '32px', 
+        padding: mob ? '32px 24px' : '48px', 
+        color: '#fff', 
+        marginBottom: '40px', 
+        position: 'relative', 
+        overflow: 'hidden',
+        boxShadow: '0 25px 50px -12px rgba(15,23,42,0.4)',
+        border: '1px solid rgba(255,255,255,0.05)'
+     }}>
+        {/* Background Decor */}
+        <div style={{ position: 'absolute', right: '-40px', top: '-40px', width: '200px', height: '200px', background: 'radial-gradient(circle, #3B82F6 0%, transparent 70%)', opacity: 0.15, zIndex: 0 }} />
+        <div style={{ position: 'absolute', left: '-20px', bottom: '-20px', opacity: 0.03 }}><ShieldCheck size={200} /></div>
+
+        <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: '40px', alignItems: mob ? 'center' : 'flex-start', position: 'relative', zIndex: 1 }}>
+           {/* Founder Photo */}
+           <div style={{ position: 'relative', flexShrink: 0 }}>
+              <div style={{ 
+                width: '180px', 
+                height: '180px', 
+                borderRadius: '24px', 
+                overflow: 'hidden', 
+                border: '4px solid rgba(255,255,255,0.1)',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.3)'
+              }}>
+                 <img src={DilshanImg} alt="Mohmmad Dilshan" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+              <div style={{ 
+                position: 'absolute', 
+                bottom: '-10px', 
+                right: '-10px', 
+                background: '#3B82F6', 
+                color: '#fff', 
+                padding: '6px 12px', 
+                borderRadius: '100px', 
+                fontSize: '10px', 
+                fontWeight: 900,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                boxShadow: '0 4px 12px rgba(59,130,246,0.5)'
+              }}>
+                 <CheckCircle2 size={12} fill="#fff" color="#3B82F6" /> VERIFIED FOUNDER
+              </div>
+           </div>
+
+           {/* Founder Info */}
+           <div style={{ flex: 1, textAlign: mob ? 'center' : 'left' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '16px' }}>
+                 <h4 style={{ fontSize: '32px', fontWeight: 950, letterSpacing: '-0.03em' }}>{OFFICIAL_DATA.founder.name}</h4>
+                 <div style={{ color: '#3B82F6', fontSize: '14px', fontWeight: 800, letterSpacing: '1px' }}>{OFFICIAL_DATA.founder.role.toUpperCase()}</div>
+                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: mob ? 'center' : 'flex-start', gap: '6px', color: '#94a3b8', fontSize: '12px', marginTop: '4px' }}>
+                    <MapPin size={14} /> {OFFICIAL_DATA.founder.location}
+                 </div>
+              </div>
+              <p style={{ fontSize: '16px', opacity: 0.9, lineHeight: 1.7, marginBottom: '28px', maxWidth: '500px', fontWeight: 500 }}>
+                 "{OFFICIAL_DATA.founder.vision}"
+              </p>
+              
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: mob ? 'center' : 'flex-start', gap: '12px', marginBottom: '32px' }}>
+                 {OFFICIAL_DATA.founder.achievements.map((a) => (
+                   <div key={a} style={{ background: 'rgba(255,255,255,0.05)', padding: '8px 16px', borderRadius: '12px', fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                      <Award size={16} color="#FFD700" /> {a}
+                   </div>
+                 ))}
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: mob ? 'center' : 'flex-start', gap: '16px' }}>
+                 <button style={{ background: '#fff', color: '#0f172a', border: 'none', padding: '12px 24px', borderRadius: '12px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <LinkedinIcon size={18} /> Connect
+                 </button>
+                 <button style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '12px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Mail size={18} /> Contact
+                 </button>
+              </div>
+           </div>
+        </div>
+     </div>
+
+     {/* Updates Grid */}
+     <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '20px' }}>
+        <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
+           <History size={24} color="#64748b" style={{ marginBottom: '16px' }} />
+           <div style={{ fontSize: '14px', fontWeight: 800, marginBottom: '8px' }}>PAST UPDATES</div>
+           <div style={{ fontSize: '12px', color: '#64748b' }}>• Migration to V3.0 (April)<br/>• Security Audit V2 (Jan)<br/>• Global Shard Beta (Dec)</div>
+        </div>
+        <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '20px', border: '1px solid #f1f5f9' }}>
+           <TrendingUp size={24} color="#3B82F6" style={{ marginBottom: '16px' }} />
+           <div style={{ fontSize: '14px', fontWeight: 800, marginBottom: '8px' }}>FUTURE FEATURES</div>
+           <div style={{ fontSize: '12px', color: '#64748b' }}>• AI Reputation Score<br/>• Real-time Settlement<br/>• Node Marketplace</div>
+        </div>
+     </div>
+  </div>
+);
+MastermindSection.propTypes = { mob: PropTypes.bool.isRequired };
+
+const LiveTicker = () => (
+  <div style={{ background: '#f8fafc', borderBottom: '1px solid #f1f5f9', padding: '10px 0', overflow: 'hidden', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
+    <div style={{ background: '#0f172a', color: '#fff', fontSize: '10px', fontWeight: 900, padding: '4px 12px', borderRadius: '4px', margin: '0 20px', zIndex: 10, display: 'flex', alignItems: 'center', gap: '6px' }}>
+       <motion.div animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.5 }} style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981' }} />
+       LIVE ACTIVITY
+    </div>
+    <motion.div animate={{ x: [0, -1000] }} transition={{ repeat: Infinity, duration: 30, ease: "linear" }} style={{ display: 'flex', gap: '40px' }}>
+       {OFFICIAL_DATA.liveFeed.concat(OFFICIAL_DATA.liveFeed).map((item, i) => (
+         <span key={`${item}-${i}`} style={{ fontSize: '12px', color: '#64748b', fontWeight: 600 }}>{item}</span>
+       ))}
+    </motion.div>
   </div>
 );
 
-StatGlow.propTypes = { icon: PropTypes.elementType, label: PropTypes.string, value: PropTypes.string, mob: PropTypes.bool };
-
-const HeroSection = ({ mob, scale, opacity, followed, setFollowed }) => (
-  <section style={{ height: '100vh', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '0 24px' }}>
-    <motion.div style={{ position: 'fixed', inset: 0, scale, opacity, zIndex: 0 }}>
-      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255,148,49,0.1) 0%, transparent 70%)' }} />
-      <img 
-        src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=2000" 
-        alt="Hero" 
-        style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.3 }} 
-      />
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, #000)' }} />
-    </motion.div>
-
-    <div style={{ position: 'relative', zIndex: 1, maxWidth: '1000px' }}>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1 }}
-        style={{ marginBottom: '40px' }}
-      >
-        <div style={{ 
-          width: mob ? '90px' : '120px', 
-          height: mob ? '90px' : '120px', 
-          background: '#fff', 
-          borderRadius: mob ? '24px' : '36px', 
-          padding: mob ? '15px' : '20px', 
-          margin: '0 auto', 
-          boxShadow: '0 0 50px rgba(255,255,255,0.2)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <Logo sm={mob} />
-        </div>
-      </motion.div>
-
-      <motion.h1
-        initial={{ y: 30, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2, duration: 1 }}
-        style={{ fontSize: mob ? '60px' : '100px', fontWeight: 900, letterSpacing: '-4px', lineHeight: 0.9, marginBottom: '32px', fontFamily: '"Playfair Display", serif' }}
-      >
-        THE <span style={{ color: '#FF9431' }}>BHARAT</span> <br /> ENGINE.
-      </motion.h1>
-
-      <motion.p
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.4, duration: 1 }}
-        style={{ fontSize: mob ? '18px' : '24px', color: 'rgba(255,255,255,0.5)', maxWidth: '700px', margin: '0 auto 48px', lineHeight: 1.6, fontWeight: 500 }}
-      >
-        Official Identity of India's most powerful creator infrastructure. <br />
-        Verified. Audited. Scalable.
-      </motion.p>
-
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.6, duration: 1 }}
-        style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}
-      >
-        <Btn 
-          onClick={() => setFollowed(!followed)}
-          style={{ background: '#fff', color: '#000', padding: '20px 48px', borderRadius: '100px', fontWeight: 900, fontSize: '18px' }}
-        >
-          {followed ? 'IDENTITY FOLLOWED' : 'FOLLOW OFFICIAL'}
-        </Btn>
-      </motion.div>
-    </div>
-  </section>
+const RoadmapTimeline = () => (
+  <div style={{ padding: '40px 0', maxWidth: '600px', margin: '0 auto' }}>
+    {[
+      { id: 'v3', t: 'V3.0 Core Sync', d: 'Q2 2024', s: 'COMPLETE', c: '#10B981', icon: Code2 },
+      { id: 'ai', t: 'AI Matching Engine', d: 'Q3 2024', s: 'BETA', c: '#FF9431', icon: Cpu },
+      { id: 'sync', t: 'Global Sync Node', d: 'Q4 2024', s: 'PENDING', c: '#3B82F6', icon: Globe },
+      { id: 'v4', t: 'Protocol V4 Launch', d: '2025', s: 'PLANNED', c: '#7C3AED', icon: Rocket }
+    ].map((item, i, arr) => (
+      <div key={item.id} style={{ display: 'flex', gap: '20px', marginBottom: '32px', position: 'relative' }}>
+         {i < arr.length - 1 && <div style={{ position: 'absolute', left: '20px', top: '40px', bottom: '-32px', width: '2px', background: '#f1f5f9' }} />}
+         <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: `${item.c}10`, display: 'flex', alignItems: 'center', justifyContent: 'center' , zIndex: 1, border: `1px solid ${item.c}20` }}>
+            <item.icon size={20} color={item.c} />
+         </div>
+         <div>
+            <div style={{ fontSize: '11px', fontWeight: 900, color: item.c }}>{item.d} • {item.s}</div>
+            <div style={{ fontSize: '16px', fontWeight: 700, marginTop: '2px' }}>{item.t}</div>
+         </div>
+      </div>
+    ))}
+  </div>
 );
 
-HeroSection.propTypes = {
-  mob: PropTypes.bool,
-  scale: PropTypes.object,
-  opacity: PropTypes.object,
-  followed: PropTypes.bool,
-  setFollowed: PropTypes.func
-};
-
-const StatsSection = ({ mob }) => (
-  <section style={{ position: 'relative', marginTop: mob ? '-5vh' : '-10vh', padding: '0 24px', zIndex: 2 }}>
-    <GlassCard 
-      mob={mob}
-      style={{ 
-        maxWidth: '1200px', 
-        margin: '0 auto', 
-        display: 'grid', 
-        gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(auto-fit, minmax(200px, 1fr))', 
-        gap: mob ? '24px' : '40px' 
-      }}
-    >
-      <StatGlow icon={Users} label="Trusted Creators" value="50,000+" mob={mob} />
-      <StatGlow icon={Megaphone} label="Brand Missions" value="1,200+" mob={mob} />
-      <StatGlow icon={ShieldCheck} label="Verified Identity" value="100%" mob={mob} />
-      <StatGlow icon={Globe} label="Bharat Nodes" value="28 States" mob={mob} />
-    </GlassCard>
-  </section>
-);
-
-StatsSection.propTypes = { mob: PropTypes.bool };
-
-const BrandMarquee = ({ brands }) => (
-  <section style={{ padding: '100px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-    <p style={{ textAlign: 'center', fontSize: '12px', fontWeight: 800, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '4px', marginBottom: '60px' }}>Trusted By Global Giants</p>
-    <div style={{ display: 'flex', overflow: 'hidden', whiteSpace: 'nowrap', gap: '100px', opacity: 0.3 }}>
-       <motion.div 
-        animate={{ x: [0, -1000] }}
-        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-        style={{ display: 'flex', gap: '100px', alignItems: 'center' }}
-       >
-         {[...brands.map(b => ({u:b, id:'a'+b})), ...brands.map(b => ({u:b, id:'b'+b})), ...brands.map(b => ({u:b, id:'c'+b}))].map((b) => (
-           <img key={b.id} src={b.u} alt="brand" style={{ height: '40px', filter: 'grayscale(1) invert(1)' }} />
-         ))}
-       </motion.div>
-    </div>
-  </section>
-);
-
-BrandMarquee.propTypes = { brands: PropTypes.array };
-
-const IdentitySection = ({ mob }) => (
-  <section style={{ maxWidth: '1200px', margin: '120px auto 0', padding: '0 24px' }}>
-    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? '48px' : '80px', alignItems: 'center' }}>
-      <div>
-        <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#FF9431', fontWeight: 900, textTransform: 'uppercase', fontSize: '14px', letterSpacing: '2px', marginBottom: '20px' }}>
-            <ShieldCheck size={20} /> VERIFIED INFRASTRUCTURE
-          </div>
-          <h2 style={{ fontSize: mob ? '40px' : '64px', fontWeight: 900, lineHeight: 1.1, marginBottom: '32px', fontFamily: '"Playfair Display", serif' }}>
-            Built for the <br /> Next Billion.
-          </h2>
-          <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.8, marginBottom: '40px' }}>
-            CreatorBharat isn't just a platform; it's a protocol for trust. We've built an identity layer that ensures every interaction between a brand and a creator is backed by real-world data and verified digital footprints.
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255,148,49,0.1)', padding: '12px 20px', borderRadius: '16px', border: '1px solid rgba(255,148,49,0.2)' }}>
-              <Activity size={18} color="#FF9431" /> <span style={{ fontWeight: 800, fontSize: '14px' }}>Real-time Audit</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.05)', padding: '12px 20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
-              <Zap size={18} color="#fff" /> <span style={{ fontWeight: 800, fontSize: '14px' }}>Instant Verification</span>
-            </div>
-          </div>
+const AuthRequiredModal = ({ isOpen, onClose }) => (
+  <AnimatePresence>
+    {isOpen && (
+      <div style={{ position: 'fixed', inset: 0, zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)' }} />
+        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} style={{ position: 'relative', background: '#fff', padding: '40px 32px', borderRadius: '28px', maxWidth: '360px', width: '100%', textAlign: 'center', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
+           <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', border: '1px solid #f1f5f9' }}><Lock size={32} color="#0f172a" /></div>
+           <h3 style={{ fontSize: '22px', fontWeight: 900, marginBottom: '12px', color: '#0f172a' }}>Direct Connection</h3>
+           <p style={{ color: '#64748b', fontSize: '14px', lineHeight: 1.6, marginBottom: '32px' }}>Login to start a secure direct session with the Official CreatorBharat Node.</p>
+           <button onClick={() => { globalThis.location.href='/login'; }} style={{ width: '100%', padding: '16px', borderRadius: '14px', background: '#0f172a', color: '#fff', fontWeight: 700, border: 'none', cursor: 'pointer', marginBottom: '12px', fontSize: '16px' }}>Login to Chat</button>
+           <button onClick={onClose} style={{ width: '100%', padding: '16px', borderRadius: '14px', background: 'transparent', color: '#64748b', fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: '14px' }}>Maybe later</button>
         </motion.div>
       </div>
-
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.9 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        style={{ position: 'relative' }}
-      >
-        <div style={{ position: 'absolute', inset: 0, background: '#FF9431', filter: 'blur(100px)', opacity: 0.15, borderRadius: '50%' }} />
-        <GlassCard mob={mob} style={{ textAlign: 'center', padding: '60px 40px' }}>
-           <Fingerprint size={80} color="#FF9431" style={{ marginBottom: '32px' }} />
-           <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '16px' }}>Digital Seal of Authenticity</h3>
-           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '15px', lineHeight: 1.6, marginBottom: '32px' }}>
-             Every creator on our platform undergoes a 4-tier biometric and social verification process.
-           </p>
-           <div style={{ background: '#000', padding: '20px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'left' }}>
-             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-               <span style={{ fontSize: '12px', fontWeight: 800, color: 'rgba(255,255,255,0.3)' }}>ID_STATUS</span>
-               <span style={{ fontSize: '12px', fontWeight: 900, color: '#10B981' }}>ENCRYPTED</span>
-             </div>
-             <div style={{ height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
-               <motion.div initial={{ width: 0 }} whileInView={{ width: '100%' }} transition={{ duration: 2 }} style={{ height: '100%', background: '#FF9431' }} />
-             </div>
-           </div>
-        </GlassCard>
-      </motion.div>
-    </div>
-  </section>
+    )}
+  </AnimatePresence>
 );
+AuthRequiredModal.propTypes = { isOpen: PropTypes.bool.isRequired, onClose: PropTypes.func.isRequired };
 
-IdentitySection.propTypes = { mob: PropTypes.bool };
-
-const FounderSection = ({ mob }) => (
-  <section style={{ maxWidth: '1200px', margin: '160px auto 0', padding: '0 24px' }}>
-    <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-       <Bdg label="The Collective" />
-       <h2 style={{ fontSize: mob ? '40px' : '56px', fontWeight: 900, fontFamily: '"Playfair Display", serif', marginTop: '20px' }}>Command Center.</h2>
-    </div>
-
-    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '32px' }}>
-       {[
-         { name: 'The Architect', role: 'Chief Executive Officer', bio: 'Pioneering the data-first approach to regional influencer marketing. Engineering the future of Bharat.', icon: 'A' },
-         { name: 'The Strategist', role: 'Chief Operating Officer', bio: 'Scaling operations from 0 to 50,000+ verified creators across 28 Indian states.', icon: 'S' }
-       ].map((f) => (
-         <GlassCard key={f.name} mob={mob} style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-               <div style={{ width: '80px', height: '80px', background: '#FF9431', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', fontWeight: 900, color: '#000' }}>
-                  {f.icon}
-               </div>
-               <div style={{ display: 'flex', gap: '12px' }}>
-                  <button style={{ background: 'rgba(255,255,255,0.05)', border: 'none', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><TwitterIcon size={18} color="rgba(255,255,255,0.4)" /></button>
-                  <button style={{ background: 'rgba(255,255,255,0.05)', border: 'none', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><LinkedinIcon size={18} color="rgba(255,255,255,0.4)" /></button>
-               </div>
-            </div>
-            <div>
-               <h4 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '8px' }}>{f.name}</h4>
-               <p style={{ color: '#FF9431', fontWeight: 800, fontSize: '14px', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '20px' }}>{f.role}</p>
-               <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '16px', lineHeight: 1.6 }}>{f.bio}</p>
-            </div>
-         </GlassCard>
-       ))}
-    </div>
-  </section>
-);
-
-FounderSection.propTypes = { mob: PropTypes.bool };
-
-const CtaSection = ({ mob }) => (
-  <section style={{ maxWidth: '1200px', margin: '160px auto 0', padding: '0 24px', textAlign: 'center' }}>
-    <motion.div 
-      whileHover={{ scale: 1.01 }}
-      style={{ 
-        background: 'linear-gradient(135deg, rgba(255,148,49,0.2) 0%, rgba(0,0,0,0) 100%)', 
-        padding: mob ? '60px 24px' : '120px 40px', 
-        borderRadius: mob ? '32px' : '60px', 
-        border: '1px solid rgba(255,148,49,0.3)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}
-    >
-      <div style={{ position: 'absolute', top: '-50%', left: '-50%', width: '100%', height: '100%', background: 'radial-gradient(circle, rgba(255,148,49,0.1) 0%, transparent 70%)' }} />
-      <h2 style={{ fontSize: mob ? '40px' : '72px', fontWeight: 900, marginBottom: '24px', fontFamily: '"Playfair Display", serif' }}>Join the Movement.</h2>
-      <p style={{ fontSize: '20px', color: 'rgba(255,255,255,0.6)', marginBottom: '48px', maxWidth: '600px', margin: '0 auto 56px' }}>
-        Whether you are a global brand or a regional creator, the future of commerce in Bharat starts here.
-      </p>
-      <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
-         <Btn lg style={{ background: '#fff', color: '#000', borderRadius: '100px', fontWeight: 900, padding: '20px 48px' }}>Apply for Verification</Btn>
-         <Btn variant="outline" lg style={{ border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '100px', padding: '20px 48px' }}>Contact Official HQ</Btn>
+const StoryViewer = ({ highlight, onClose }) => {
+  const Icon = highlight.icon;
+  const story = highlight.stories[0];
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'fixed', inset: 0, zIndex: 2000, background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <button onClick={onClose} style={{ position: 'absolute', top: '40px', right: '20px', background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }} aria-label="Close story"><X size={32} /></button>
+      <div style={{ width: '100%', maxWidth: '400px', textAlign: 'center', color: '#fff', padding: '20px' }}>
+         <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: highlight.color, margin: '0 auto 32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon size={40} /></div>
+         <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '12px' }}>{story.title}</h2>
+         <p style={{ fontSize: '16px', opacity: 0.8 }}>{story.text}</p>
+         <div style={{ marginTop: '20px', opacity: 0.5 }}>{story.date}</div>
       </div>
     </motion.div>
-  </section>
-);
+  );
+};
+StoryViewer.propTypes = { 
+  highlight: PropTypes.shape({
+    icon: PropTypes.elementType.isRequired,
+    color: PropTypes.string,
+    stories: PropTypes.arrayOf(PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      text: PropTypes.string.isRequired,
+      date: PropTypes.string.isRequired
+    })).isRequired
+  }).isRequired, 
+  onClose: PropTypes.func.isRequired 
+};
 
-CtaSection.propTypes = { mob: PropTypes.bool };
+// --- MAIN PAGE ---
 
 export default function OfficialProfilePage() {
-  const { mob } = useApp();
-  const { scrollYProgress } = useScroll();
-  const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.8]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-  const [followed, setFollowed] = useState(false);
+  const navigate = useNavigate();
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
+  const [activeTab, setActiveTab] = useState('posts');
+  const [activeStory, setActiveStory] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [lang, setLang] = useState('en');
+
+  const handleInteraction = (target) => {
+    const isLoggedIn = false; // Replace with real auth state
+    if (isLoggedIn) {
+      navigate(target);
+    } else {
+      setShowAuthModal(true);
+    }
+  };
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    scrollToTop();
+    return () => globalThis.removeEventListener('resize', h);
   }, []);
 
-  const brands = [
-    'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg',
-    'https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg',
-    'https://upload.wikimedia.org/wikipedia/commons/b/b1/Tata_logo.svg',
-    'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg',
-    'https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg'
-  ];
+  const content = OFFICIAL_DATA[lang];
 
   return (
-    <div style={{ background: '#000', minHeight: '100vh', color: '#fff', paddingBottom: '120px', overflowX: 'hidden' }}>
-      <HeroSection mob={mob} scale={scale} opacity={opacity} followed={followed} setFollowed={setFollowed} />
-      <StatsSection mob={mob} />
-      <BrandMarquee brands={brands} />
-      <IdentitySection mob={mob} />
-      <FounderSection mob={mob} />
-      <CtaSection mob={mob} />
+    <div style={{ background: '#fff', minHeight: '100vh', color: '#262626', paddingBottom: '100px', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
+      
+      <LiveTicker />
+
+      <div style={{ maxWidth: '935px', margin: '0 auto', padding: mob ? '24px 16px' : '60px 20px 0' }}>
+        
+        {/* Header Block */}
+        <div style={{ display: 'flex', gap: mob ? '28px' : '100px', alignItems: 'center', marginBottom: mob ? '24px' : '44px' }}>
+          <div style={{ flexShrink: 0 }}>
+             <div style={{ width: mob ? '77px' : '150px', height: mob ? '77px' : '150px', borderRadius: '50%', background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)', padding: '3px' }}>
+                <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#fff', padding: '3px' }}>
+                   <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <ShieldCheck size={mob ? 40 : 80} color="#fff" />
+                   </div>
+                </div>
+             </div>
+          </div>
+          <div style={{ flex: 1 }}>
+             <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', alignItems: mob ? 'flex-start' : 'center', gap: '20px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><h1 style={{ fontSize: '20px', fontWeight: 600 }}>{content.username}</h1><CheckCircle2 size={18} color="#3897f0" fill="#3897f0" /></div>
+                <div style={{ display: 'flex', gap: '8px', width: mob ? '100%' : 'auto' }}>
+                   <button onClick={() => handleInteraction('/follow/creatorbharat')} style={{ flex: 1, padding: '7px 16px', background: '#0095f6', border: 'none', color: '#fff', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>Follow</button>
+                   <button onClick={() => handleInteraction('/chat/creatorbharat')} style={{ flex: 1, padding: '7px 16px', background: '#efefef', border: 'none', color: '#262626', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>Message</button>
+                   <button onClick={() => setLang(lang === 'en' ? 'hi' : 'en')} style={{ padding: '7px 12px', background: '#efefef', border: 'none', color: '#262626', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}><Languages size={16} /> {lang.toUpperCase()}</button>
+                </div>
+                {mob ? null : <MoreHorizontal size={24} style={{ cursor: 'pointer' }} />}
+             </div>
+             {!mob && (
+               <div style={{ display: 'flex', gap: '40px', marginBottom: '20px' }}>
+                  <span><strong>{OFFICIAL_DATA.baseStats.posts}</strong> posts</span>
+                  <span><strong>{OFFICIAL_DATA.baseStats.followers}</strong> followers</span>
+                  <span><strong>{OFFICIAL_DATA.baseStats.following}</strong> following</span>
+               </div>
+             )}
+             <div style={{ fontSize: '14px', lineHeight: 1.5 }}>
+                <div style={{ fontWeight: 600 }}>{content.displayName}</div>
+                <div style={{ color: '#8e8e8e' }}>{content.category}</div>
+                <div style={{ whiteSpace: 'pre-line' }}>{content.bio}</div>
+                <div style={{ color: '#00376b', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}><ExternalLink size={12} /> {content.website}</div>
+             </div>
+          </div>
+        </div>
+
+        {/* Mobile Stats Row */}
+        {mob && (
+           <div style={{ display: 'flex', justifyContent: 'space-around', padding: '12px 0', borderTop: '1px solid #dbdbdb', borderBottom: '1px solid #dbdbdb', marginBottom: '24px', fontSize: '14px', textAlign: 'center' }}>
+              <div style={{ flex: 1 }}><strong>{OFFICIAL_DATA.baseStats.posts}</strong><div style={{ color: '#8e8e8e' }}>posts</div></div>
+              <div style={{ flex: 1 }}><strong>{OFFICIAL_DATA.baseStats.followers}</strong><div style={{ color: '#8e8e8e' }}>followers</div></div>
+              <div style={{ flex: 1 }}><strong>{OFFICIAL_DATA.baseStats.following}</strong><div style={{ color: '#8e8e8e' }}>following</div></div>
+           </div>
+        )}
+
+        {/* Highlights */}
+        <div style={{ display: 'flex', gap: mob ? '16px' : '44px', marginBottom: '52px', overflowX: 'auto', scrollbarWidth: 'none', padding: '0 4px' }}>
+           {OFFICIAL_DATA.highlights.map(h => (
+             <button key={h.id} onClick={() => setActiveStory(h)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'center', outline: 'none', fontFamily: 'inherit', color: 'inherit' }}>
+                <div style={{ width: '72px', height: '72px', borderRadius: '50%', border: '1px solid #dbdbdb', padding: '3px', background: '#fff', marginBottom: '8px' }}>
+                  <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><h.icon size={28} color={h.color} /></div>
+                </div>
+                <span style={{ fontSize: '12px', fontWeight: 600 }}>{h.label}</span>
+             </button>
+           ))}
+        </div>
+
+        {/* Tabs Selection */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: mob ? '24px' : '60px', borderTop: '1px solid #dbdbdb' }}>
+           {[
+             { id: 'posts', icon: Grid, label: 'POSTS' },
+             { id: 'mastermind', icon: FileText, label: 'PROTOCOL' },
+             { id: 'insights', icon: BarChart3, label: 'INSIGHTS' }
+           ].map(tab => (
+             <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', padding: '18px 0', borderTop: activeTab === tab.id ? '1px solid #262626' : 'none', marginTop: '-1px', color: activeTab === tab.id ? '#262626' : '#8e8e8e', fontSize: '12px', fontWeight: 600, letterSpacing: '1px', outline: 'none', fontFamily: 'inherit' }}>
+                <tab.icon size={12} /> {tab.label}
+             </button>
+           ))}
+        </div>
+
+        {/* Tab Content Rendering */}
+        <AnimatePresence mode="wait">
+          <motion.div key={activeTab} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+             {activeTab === 'posts' && (
+               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: mob ? '3px' : '28px' }}>
+                  {OFFICIAL_DATA.posts.map(post => {
+                    const Icon = post.icon;
+                    return (
+                      <div key={post.id} style={{ aspectRatio: '1/1', background: post.color, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'default' }}>
+                         <Icon size={40} color="#fff" />
+                      </div>
+                    );
+                  })}
+               </div>
+             )}
+             {activeTab === 'mastermind' && (
+                <div>
+                   <IntelligenceHub mob={mob} />
+                   <div style={{ borderTop: '1px solid #f1f5f9', margin: '40px 0' }} />
+                   <RoadmapTimeline />
+                   <div style={{ borderTop: '1px solid #f1f5f9', margin: '40px 0' }} />
+                   <MastermindSection mob={mob} />
+                </div>
+             )}
+             {activeTab === 'insights' && <InsightsGrid mob={mob} />}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      <AuthRequiredModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      <AnimatePresence>{activeStory && <StoryViewer highlight={activeStory} onClose={() => setActiveStory(null)} />}</AnimatePresence>
+
+      {/* Mobile Sticky Footer */}
+      {mob && (
+        <div style={{ position: 'fixed', bottom: 0, left: 0, width: '100%', background: '#fff', borderTop: '1px solid #dbdbdb', padding: '12px 0', display: 'flex', justifyContent: 'space-around', zIndex: 100 }}>
+           <Grid size={24} style={{ cursor: 'pointer' }} onClick={() => setActiveTab('posts')} />
+           <Rocket size={24} style={{ cursor: 'pointer' }} onClick={() => setActiveTab('mastermind')} />
+           <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ShieldCheck size={14} color="#fff" /></div>
+        </div>
+      )}
     </div>
   );
 }
-
-const Bdg = ({ label }) => (
-  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,148,49,0.1)', padding: '8px 16px', borderRadius: '100px', border: '1px solid rgba(255,148,49,0.2)' }}>
-    <Star size={14} color="#FF9431" fill="#FF9431" />
-    <span style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px' }}>{label}</span>
-  </div>
-);
-
-Bdg.propTypes = { label: PropTypes.string };
