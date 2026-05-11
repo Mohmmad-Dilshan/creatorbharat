@@ -53,7 +53,7 @@ const CreatorListItem = ({ c, i, mob, onCardView }) => (
     <div style={{ flex: 1.5, display: 'flex', alignItems: 'center', gap: 16 }}>
       <img 
         src={c.photo || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}`} 
-        alt={`${c.name}'s profile`}
+        alt={`Profile photo of ${c.name}, ${typeof c.city === 'object' ? c.city.name : (c.city || 'creator')}`}
         style={{ width: mob ? 48 : 60, height: mob ? 48 : 60, borderRadius: 16, objectFit: 'cover', background: '#f1f5f9' }} 
       />
       <div>

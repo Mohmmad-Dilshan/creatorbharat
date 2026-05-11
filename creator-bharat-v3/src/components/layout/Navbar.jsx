@@ -114,11 +114,17 @@ export default function Navbar() {
       lastY.current = curY;
     };
 
+    const handleResize = () => setMob(window.innerWidth < 768);
     window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll);
+    window.addEventListener('resize', handleResize);
+    
+    // Initial check
+    handleScroll();
+    handleResize();
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 

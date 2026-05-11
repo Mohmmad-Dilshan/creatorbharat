@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
+import Seo from '@/components/common/SEO';
 import { useApp } from '@/core/context';
 import { 
   Mail, 
@@ -297,6 +298,11 @@ export default function ContactPage() {
 
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', overflowX: 'hidden' }}>
+      <Seo 
+        title="Contact Us"
+        description="Get in touch with the CreatorBharat team. We're here to help you scale."
+        keywords="contact us, support, brand help, creator support"
+      />
       <ContactHero mob={mob} />
       <section style={{ padding: mob ? '0 20px 80px' : '0 24px 120px', marginTop: mob ? '-40px' : '-60px', position: 'relative', zIndex: 2 }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(auto-fit, minmax(400px, 1fr))', gap: mob ? '32px' : '48px', alignItems: 'start' }}>

@@ -298,7 +298,7 @@ SearchInput.propTypes = { mob: PropTypes.bool, q: PropTypes.string, dsp: PropTyp
 
 const LocationPicker = memo(({ mob, state }) => (
   <div style={{ flex: 0.8, padding: mob ? '16px 24px' : '0 48px', textAlign: 'left', width: '100%' }}>
-    <label htmlFor="hero-location-display" style={{ fontSize: 10, fontWeight: 950, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 6 }}>Location</label>
+    <span style={{ fontSize: 10, fontWeight: 950, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 6, display: 'block' }}>Location</span>
     <div id="hero-location-display" style={{ fontSize: mob ? 16 : 18, fontWeight: 900, color: '#0f172a', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
        <MapPin size={16} color="#10B981" /> {state || 'All over Bharat'}
     </div>

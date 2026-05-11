@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Btn, Bdg } from '@/components/common/Primitives';
 import { fmt } from '../../utils/helpers';
+import Seo from '@/components/common/SEO';
 
 const RollingNumber = ({ value }) => {
   const [display, setDisplay] = useState(value);
@@ -118,6 +119,11 @@ export default function RateCalcPage() {
 
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh' }}>
+      <Seo 
+        title="Creator Rate Calculator"
+        description="Calculate your worth with our data-driven influencer rate calculator. Based on real brand deals from across Bharat."
+        keywords="creator rate calculator, influencer earnings, brand deal calculator india"
+      />
       
       {/* Cinematic Header */}
       <section style={{ 

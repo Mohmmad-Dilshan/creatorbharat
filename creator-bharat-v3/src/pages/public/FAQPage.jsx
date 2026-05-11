@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import Seo from '@/components/common/SEO';
 import { 
   Search, 
   ChevronDown, 
@@ -122,6 +123,11 @@ export default function FAQPage() {
 
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh' }}>
+      <Seo 
+        title="Frequently Asked Questions"
+        description="Everything you need to know about CreatorBharat."
+        keywords="faq, help, questions, how it works"
+      />
       
       {/* Search Hero */}
       <section style={{ 

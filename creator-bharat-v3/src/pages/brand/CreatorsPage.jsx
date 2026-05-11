@@ -14,6 +14,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { Btn, Bdg } from '@/components/common/Primitives';
+import Seo from '@/components/common/SEO';
 
 const checkSearchQuery = (c, q) => {
   if (!q) return true;
@@ -231,6 +232,11 @@ export default function CreatorsPage() {
 
   return (
     <div style={{ background: '#fff', minHeight: '100vh' }}>
+      <Seo 
+        title="Verified Creators Marketplace"
+        description="Browse and connect with thousands of verified content creators across Bharat. Filter by niche, location, and impact scores."
+        keywords="creator marketplace, hire influencers india, verified creators, brand collaborations india"
+      />
       <EliteHeader
         eyebrow="Marketplace Hub"
         title={<>Discover the <span style={{ color: '#FF9431' }}>Elite</span> Talent of Bharat</>}

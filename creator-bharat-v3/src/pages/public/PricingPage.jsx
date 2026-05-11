@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import Seo from '@/components/common/SEO';
 import { 
   Check, 
   Zap, 
@@ -237,6 +238,11 @@ export default function PricingPage() {
 
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', overflowX: 'hidden' }}>
+      <Seo 
+        title="Pricing & Plans"
+        description="Choose the perfect plan for your brand or creator journey. Elite tools for elite growth."
+        keywords="pricing, brand plans, creator monetization"
+      />
       
       {/* Cinematic Hero */}
       <section style={{ 

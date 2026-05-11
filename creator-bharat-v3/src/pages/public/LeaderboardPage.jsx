@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Btn, Card, Bdg } from '@/components/common/Primitives';
 import { useNavigate } from 'react-router-dom';
+import Seo from '@/components/common/SEO';
 
 const categories = ['Overall', 'Tech', 'Finance', 'Lifestyle', 'Gaming', 'Travel', 'Beauty'];
 
@@ -37,6 +38,11 @@ export default function LeaderboardPage() {
 
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', overflowX: 'hidden' }}>
+      <Seo 
+        title="Creator Leaderboard"
+        description="Discover the most influential voices shaping the digital landscape of Bharat. Ranked by engagement, trust, and impact."
+        keywords="creator leaderboard, top influencers india, top creators bharat"
+      />
       
       {/* Hero Section */}
       <section style={{ 

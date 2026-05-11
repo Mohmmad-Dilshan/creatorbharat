@@ -12,6 +12,7 @@ import {
 import { Btn, Bdg } from '@/components/common/Primitives';
 import { Link } from 'react-router-dom';
 import { blogData } from '../../data/blogData';
+import Seo from '@/components/common/SEO';
 
 /**
  * THEME: CreatorBharat Elite Edition
@@ -61,7 +62,7 @@ const NewspaperHeader = ({ mob }) => (
       }}>
         THE BHARAT <span style={{ color: BRAND_ORANGE }}>JOURNAL.</span>
       </h1>
-      <div style={{ 
+      <p style={{ 
         fontSize: mob ? '10px' : '14px', 
         fontWeight: 900, 
         textTransform: 'uppercase', 
@@ -70,7 +71,7 @@ const NewspaperHeader = ({ mob }) => (
         color: '#000'
       }}>
         The Pulse of India's Creator Economy
-      </div>
+      </p>
     </div>
 
     <div style={{ 
@@ -198,7 +199,7 @@ const NewsCard = ({ blog, size = 'medium' }) => {
               </p>
             )}
           </div>
-          <div style={{ marginTop: '15px', fontSize: '12px', fontWeight: 700, color: '#334155' }}>By {blog.author.name}</div>
+          <p style={{ marginTop: '15px', fontSize: '12px', fontWeight: 700, color: '#334155' }}>By {blog.author.name}</p>
         </motion.div>
       </Link>
     </article>
@@ -277,9 +278,9 @@ const BlogContent = ({ activeTab, search, mob, featured, remaining, filtered }) 
 
   return (
     <div style={{ minHeight: '400px' }}>
-      <h3 style={{ fontFamily: '"Playfair Display", serif', fontSize: '32px', fontWeight: 900, marginBottom: '40px' }}>
+      <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '32px', fontWeight: 900, marginBottom: '40px' }}>
         {search ? `Search Results for "${search}"` : activeTab}
-      </h3>
+      </h2>
       {filtered.length > 0 ? (
         <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '40px' }}>
           {filtered.map(blog => <NewsCard key={blog.id} blog={blog} />)}
@@ -309,10 +310,6 @@ export default function BlogPage() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    document.title = "The Bharat Journal | Latest Intelligence from Bharat's Creator Economy";
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) metaDesc.setAttribute('content', 'Deep dive into the rural creator economy, regional trends, and industry insights from Bharat Journal by CreatorBharat.');
-
     const link = document.createElement('link');
     link.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap';
     link.rel = 'stylesheet';
@@ -328,6 +325,11 @@ export default function BlogPage() {
 
   return (
     <div style={{ background: '#fff', minHeight: '100vh', padding: mob ? '20px 0 0 0' : '40px 0' }}>
+      <Seo 
+        title="The Bharat Journal | Creator Economy Intelligence"
+        description="Deep dive into the rural creator economy, regional trends, and industry insights from Bharat Journal by CreatorBharat."
+        keywords="creator economy india, bharat journal, regional marketing trends, influencer data india"
+      />
       <div style={{ maxWidth: '1300px', margin: '0 auto', padding: mob ? '0' : '0 24px' }}>
         <NewspaperHeader mob={mob} />
         <NavSearch categories={categories} activeTab={activeTab} setActiveTab={setActiveTab} search={search} setSearch={setSearch} mob={mob} />

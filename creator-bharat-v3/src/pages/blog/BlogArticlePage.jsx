@@ -820,7 +820,7 @@ const BlogArticleView = ({
   liveCount, subscribed, email, setEmail, readingTime, handleShare, handleSubscribe,
   claps, handleClap, activeId
 }) => (
-  <div style={{ background: '#fff', minHeight: '100vh', paddingBottom: '100px' }}>
+  <div style={{ background: '#fff', minHeight: '100vh', paddingBottom: '100px', position: 'relative' }}>
     <motion.div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: '5px', background: BRAND_ORANGE, transformOrigin: '0%', zIndex: 2000, scaleX }} />
     
     <Masthead mob={mob} />

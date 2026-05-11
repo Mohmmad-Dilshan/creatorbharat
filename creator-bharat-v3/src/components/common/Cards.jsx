@@ -33,7 +33,7 @@ const CardHeader = ({ coverUrl, id, saved, dsp, mob, tierLabel }) => {
   return (
     <div style={{ position: 'relative', height: mob ? 80 : 150, background: fallbackGradient, flexShrink: 0 }}>
       {coverUrl && (
-        <img src={coverUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+        <img src={coverUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={`Cover image for ${tierLabel} creator`} />
       )}
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6))' }} />
       <div style={{ position: 'absolute', top: mob ? 8 : 12, right: mob ? 8 : 12, display: 'flex', gap: 8 }}>
@@ -310,7 +310,7 @@ export function CampCard({ campaign: c, onApply }) {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-           <img src={brandImg} style={{ width: '56px', height: '56px', borderRadius: '16px', objectFit: 'cover', border: '1px solid #f1f5f9' }} alt="" />
+           <img src={brandImg} style={{ width: '56px', height: '56px', borderRadius: '16px', objectFit: 'cover', border: '1px solid #f1f5f9' }} alt={`${typeof c.brand === 'object' ? c.brand.companyName : c.brand} brand logo`} />
            <div>
               <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '20px', fontWeight: 900, color: '#0f172a', lineHeight: 1.2, marginBottom: '4px' }}>{c.title}</h3>
               <p style={{ fontSize: '14px', color: '#64748b', fontWeight: 700 }}>by {typeof c.brand === 'object' ? c.brand.companyName : c.brand}</p>

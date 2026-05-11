@@ -15,6 +15,7 @@ import Manifesto from '../../components/home/Manifesto';
 import Testimonials from '../../components/home/Testimonials';
 import Faq from '../../components/home/Faq';
 import Cta from '../../components/home/Cta';
+import Seo from '@/components/common/SEO';
 
 export default function HomePage() {
   const { st, dsp } = useApp();
@@ -67,11 +68,17 @@ export default function HomePage() {
 
   return (
     <div style={{ background: '#fff', overflowX: 'hidden' }}>
+      <Seo 
+        title="India's Premier Creator Ecosystem"
+        description="Discover and collaborate with Bharat's top content creators. 2,400+ verified creators from Jaipur, Mumbai, Delhi & beyond."
+        keywords="creator bharat, indian influencers, tier 2 creators, jaipur influencers, influencer marketing india"
+      />
       {sections.map(s => (
-        <div key={s.id} id={s.id}>
+        <div key={s.id} id={s.id} style={{ position: 'relative' }}>
           {s.comp}
         </div>
       ))}
     </div>
   );
 }
+

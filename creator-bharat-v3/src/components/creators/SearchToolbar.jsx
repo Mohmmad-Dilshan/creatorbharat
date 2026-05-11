@@ -5,6 +5,8 @@ import { W, ALL_STATES } from '../../utils/helpers';
 
 const CategorySelect = ({ niches, f, dsp }) => (
   <select
+    id="toolbar-category-select"
+    name="category_filter"
     value=""
     onChange={e => {
       const val = e.target.value;
@@ -78,6 +80,8 @@ const LocationSelect = ({ f, dsp }) => (
   <div style={{ display: 'flex', gap: 8, alignItems: 'center', background: '#f8fafc', padding: '0 16px', borderRadius: 100, border: '1.5px solid rgba(0,0,0,0.04)', height: 54 }}>
     <MapPin size={16} color="#FF9431" />
     <select
+      id="toolbar-location-select"
+      name="state_filter"
       value={f.state}
       onChange={e => dsp({ t: 'CF', v: { state: e.target.value, district: '' } })}
       style={{
@@ -106,6 +110,8 @@ const SearchInput = ({ mob, f, dsp, niches }) => (
     <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
       <Search size={18} color="#94a3b8" style={{ position: 'absolute', left: 18 }} />
       <input
+        id="toolbar-search-input"
+        name="creator_search"
         value={f.q}
         onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })}
         placeholder={mob ? "Search talent..." : "Search elite talent by niche, name or city..."}

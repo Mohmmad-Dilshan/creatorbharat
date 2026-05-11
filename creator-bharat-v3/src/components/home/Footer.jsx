@@ -126,16 +126,18 @@ function Newsletter() {
         </motion.div>
       ) : (
         <form onSubmit={submit} className="footer-form">
-          <label className="footer-input-wrap">
-            <span>Email address</span>
+          <div className="footer-input-wrap">
+            <label htmlFor="footer-newsletter-email">Email address</label>
             <input
+              id="footer-newsletter-email"
+              name="newsletter_email"
               type="email"
               placeholder="you@brand.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
             />
-          </label>
+          </div>
           <motion.button
             type="submit"
             whileHover={{ y: -1 }}
@@ -206,7 +208,7 @@ export default function Footer() {
         <section className="footer-hero" aria-label="CreatorBharat footer">
           <div className="footer-hero-copy">
             <div className="footer-status">
-              <span className="status-dot" />
+              <span className="status-dot" />{' '}
               Bharat creator infrastructure is live
             </div>
             <h2>
@@ -364,10 +366,9 @@ export default function Footer() {
 
         .footer-hero {
           display: grid;
-          grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+          grid-template-columns: 1fr;
           gap: 28px;
-          align-items: stretch;
-          padding: 32px;
+          padding: 24px;
           border: 1px solid var(--footer-line);
           border-radius: 28px;
           background:
@@ -376,6 +377,13 @@ export default function Footer() {
           box-shadow: 0 28px 90px rgba(0, 0, 0, 0.35);
           backdrop-filter: blur(24px);
           -webkit-backdrop-filter: blur(24px);
+        }
+
+        @media (min-width: 1024px) {
+          .footer-hero {
+            grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+            padding: 32px;
+          }
         }
 
         .footer-status {
@@ -549,9 +557,15 @@ export default function Footer() {
 
         .footer-trust-grid {
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
+          grid-template-columns: repeat(2, 1fr);
           gap: 12px;
           margin: 18px 0 34px;
+        }
+
+        @media (min-width: 768px) {
+          .footer-trust-grid {
+            grid-template-columns: repeat(4, 1fr);
+          }
         }
 
         .footer-trust-item {
@@ -584,12 +598,18 @@ export default function Footer() {
 
         .footer-main {
           display: grid;
-          grid-template-columns: minmax(250px, 0.9fr) minmax(360px, 1.25fr) minmax(300px, 0.85fr);
-          gap: 30px;
-          align-items: start;
-          padding: 34px 0;
+          grid-template-columns: 1fr;
+          gap: 40px;
+          padding: 48px 0;
           border-top: 1px solid rgba(255,255,255,0.08);
           border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        @media (min-width: 1024px) {
+          .footer-main {
+            grid-template-columns: 0.9fr 1.25fr 0.85fr;
+            gap: 30px;
+          }
         }
 
         .footer-logo-wrap {
@@ -660,8 +680,15 @@ export default function Footer() {
 
         .footer-nav-grid {
           display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 22px;
+          grid-template-columns: 1fr;
+          gap: 32px;
+        }
+
+        @media (min-width: 640px) {
+          .footer-nav-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+          }
         }
 
         .footer-nav-col h3 {

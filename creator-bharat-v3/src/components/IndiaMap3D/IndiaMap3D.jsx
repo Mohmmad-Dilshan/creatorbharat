@@ -95,8 +95,8 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
   }
 
   return (
-    <section ref={wrapRef} className={styles.mapSection}>
-      <motion.div style={{ scale, opacity }} className={styles.contentWrap}>
+    <section ref={wrapRef} className={styles.mapSection} style={{ position: 'relative' }}>
+      <motion.div style={{ scale, opacity, position: 'relative' }} className={styles.contentWrap}>
         <div className={styles.header}>
           <span className={styles.tag}>Network</span>
           <h2 className={styles.title}>The Heart of <span className={styles.accent}>Bharat</span></h2>

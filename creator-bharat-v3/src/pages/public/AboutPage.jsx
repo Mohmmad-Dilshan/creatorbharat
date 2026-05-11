@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import Seo from '@/components/common/SEO';
 import { 
   Target, 
   Zap, 
@@ -60,6 +61,11 @@ export default function AboutPage() {
   const navigate = useNavigate();
   return (
     <div style={{ background: '#fff', overflowX: 'hidden' }}>
+      <Seo 
+        title="Our Story & Vision"
+        description="The mission to build the infrastructure of trust for Bharat's creator economy."
+        keywords="about us, creatorbharat story, mission, vision"
+      />
       
       {/* Dynamic Hero Section */}
       <section style={{ 
