@@ -8,8 +8,8 @@ export default function TermsPage() {
   return (
     <div className="page-wrap bg-soft">
       <Seo 
-        title="Terms of Service"
-        description="Review the terms and conditions for using the CreatorBharat platform. Our policies ensure a fair and secure ecosystem for creators and brands."
+        title="Terms of Service | CreatorBharat"
+        description="Read the terms and conditions for using the CreatorBharat platform. Rules for creators, brands, and agencies."
         keywords="terms of service, user agreement, creator bharat policies"
       />
       <div className="article-wrap">
