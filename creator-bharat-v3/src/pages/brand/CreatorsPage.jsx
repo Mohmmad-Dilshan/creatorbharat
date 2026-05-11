@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/core/context';
-import { W, scrollToTop, LS, fmt } from '../../utils/helpers';
-import { apiCall } from '../../utils/api';
+import { fetchCreators } from '../../utils/platformService';
+import { W, scrollToTop, fmt } from '../../utils/helpers';
 import EliteHeader from '../../components/layout/EliteHeader';
 import IndiaMap3D from '../../components/IndiaMap3D/IndiaMap3D';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -46,6 +46,11 @@ const checkMetrics = (c, f) => {
   return true;
 };
 
+import SearchToolbar from '../../components/creators/SearchToolbar';
+import FilterSidebar from '../../components/creators/FilterSidebar';
+import CreatorGrid from '../../components/creators/CreatorGrid';
+
+// Filter logic
 const filterCreators = (all, f) => {
   return all.filter(c => {
     if (!checkSearchQuery(c, f.q)) return false;
@@ -55,16 +60,6 @@ const filterCreators = (all, f) => {
     if (!checkPlatform(c, f.platform)) return false;
     return checkMetrics(c, f);
   });
-};
-
-const mergeCreators = (apiC, localC) => {
-  const merged = [...apiC];
-  localC.forEach(lc => { 
-    if (!merged.some(ac => ac.id === lc.id)) {
-      merged.push(lc);
-    }
-  });
-  return merged;
 };
 
 const QuickViewModal = ({ creator, onClose, onFullView }) => {
@@ -169,11 +164,6 @@ QuickViewModal.propTypes = {
   onFullView: PropTypes.func.isRequired
 };
 
-// Modular Components
-import SearchToolbar from '../../components/creators/SearchToolbar';
-import FilterSidebar from '../../components/creators/FilterSidebar';
-import CreatorGrid from '../../components/creators/CreatorGrid';
-
 const NICHES = ['Influencer', 'YouTuber', 'Lifestyle', 'Tech', 'Fashion', 'Beauty', 'Gaming', 'Finance', 'Travel', 'Comedy', 'Educational', 'Fitness', 'Food'];
 const PLATFORMS = ['Instagram', 'YouTube', 'Twitter', 'LinkedIn', 'Snapchat', 'Facebook'];
 
@@ -196,15 +186,14 @@ export default function CreatorsPage() {
     globalThis.addEventListener('resize', h);
     
     setLoading(true);
-    apiCall('/creators?limit=200').then(d => {
-      const apiC = d.creators || d || [];
-      const localC = LS.get('cb_creators', []);
-      setAll(mergeCreators(apiC, localC));
-      setLoading(false);
-    }).catch(() => {
-      setAll(LS.get('cb_creators', []));
-      setLoading(false);
-    });
+    fetchCreators({ limit: 200 })
+      .then(list => {
+        setAll(list);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
     
     return () => globalThis.removeEventListener('resize', h);
   }, []);

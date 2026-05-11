@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/core/context';
 import { fmt, LS } from '../../utils/helpers';
-import { apiCall } from '../../utils/api';
+import { fetchCampaigns } from '../../utils/platformService';
 import { Btn, SkeletonCard, Empty, Modal, Fld } from '@/components/common/Primitives';
 import { CampCard } from '@/components/common/Cards';
 import EliteHeader from '../../components/layout/EliteHeader';
@@ -68,12 +68,10 @@ export default function CampaignsPage() {
     const h = () => setMob(globalThis.innerWidth < 768);
     globalThis.addEventListener('resize', h);
     setLoading(true);
-    apiCall('/campaigns?limit=100').then(d => {
-      setAll(d.campaigns || d || []);
+    fetchCampaigns({ limit: 100 }).then(list => {
+      setAll(list);
       setLoading(false);
     }).catch(() => {
-       const seed = LS.get('cb_campaigns', []);
-       setAll(seed);
        setLoading(false);
     });
     return () => globalThis.removeEventListener('resize', h);

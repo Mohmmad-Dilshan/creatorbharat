@@ -54,6 +54,7 @@ export async function fetchCreators({ limit = 250, force = false } = {}) {
       _cache.expiry = Date.now() + CACHE_DURATION;
       return merged;
     } catch (err) {
+      if (err.status !== 429) console.error('fetchCreators failed:', err.message);
       _cache.lastFailure = Date.now();
       const local = LS.get('cb_creators', []);
       return local.length > 0 ? local : SEED_CREATORS;
@@ -63,6 +64,31 @@ export async function fetchCreators({ limit = 250, force = false } = {}) {
   })();
 
   return _creatorsPromise;
+}
+
+export async function fetchCreatorById(id) {
+  if (!id) return null;
+
+  // 1. Check Cache
+  if (_cache.creators) {
+    const found = _cache.creators.find(x => String(x.id) === String(id) || x.handle === id || x.slug === id);
+    if (found) return found;
+  }
+
+  // 2. Check LocalStorage
+  const local = LS.get('cb_creators', []);
+  const localFound = local.find(x => String(x.id) === String(id) || x.handle === id || x.slug === id);
+  if (localFound) return localFound;
+
+  // 3. API Call
+  try {
+    const res = await apiCall(`/creators/${id}`);
+    return res.creator || res;
+  } catch (err) {
+    if (err.status !== 429) console.error('fetchCreatorById failed:', err.message);
+    // 4. Seed Fallback
+    return SEED_CREATORS.find(x => String(x.id) === String(id) || x.handle === id || x.slug === id) || null;
+  }
 }
 
 // ─── Campaigns ──────────────────────────────────────────────
@@ -86,6 +112,7 @@ export async function fetchCampaigns({ limit = 100, force = false } = {}) {
       _cache.expiry = Date.now() + CACHE_DURATION;
       return list;
     } catch (err) {
+      if (err.status !== 429) console.error('fetchCampaigns failed:', err.message);
       _cache.lastFailure = Date.now();
       const local = LS.get('cb_campaigns', []);
       return local.length > 0 ? local : SEED_CAMPAIGNS;
