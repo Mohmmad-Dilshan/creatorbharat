@@ -52,11 +52,52 @@ const BlogPage = lazy(() => import('./pages/blog/BlogPage'));
 const BlogArticlePage = lazy(() => import('./pages/blog/BlogArticlePage'));
 
 const Fallback = () => (
-  <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#050505', color: '#fff', fontFamily: 'system-ui' }}>
-    <div style={{ textAlign: 'center' }}>
-       <h1 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '12px' }}>LOADING ELITE EXPERIENCE</h1>
-       <p style={{ opacity: 0.5, fontSize: '14px' }}>Bharat's Creator Ecosystem is warming up...</p>
+  <div style={{ 
+    height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+    background: '#050505', position: 'fixed', inset: 0, zIndex: 9999999 
+  }}>
+    <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
+       {/* ELITE SPINNER */}
+       <div style={{ position: 'relative', width: 60, height: 60 }}>
+          <div style={{ 
+            position: 'absolute', inset: 0, borderRadius: '50%', 
+            border: '2px solid rgba(255,255,255,0.05)', borderTopColor: '#FF9431',
+            animation: 'spin 1s linear infinite'
+          }} />
+          <div style={{ 
+            position: 'absolute', inset: 6, borderRadius: '50%', 
+            border: '2px solid rgba(255,255,255,0.05)', borderBottomColor: '#138808',
+            animation: 'spin 1.5s linear reverse infinite'
+          }} />
+       </div>
+
+       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <h1 className="nav-logo-text" style={{ 
+            fontSize: '20px', fontWeight: 950, letterSpacing: '4px', textTransform: 'uppercase',
+            margin: 0
+          }}>
+            CREATORBHARAT
+          </h1>
+          <p style={{ 
+            color: 'rgba(255,255,255,0.4)', fontSize: '12px', fontWeight: 700, 
+            letterSpacing: '1px', textTransform: 'uppercase' 
+          }}>
+            Entering Elite Ecosystem...
+          </p>
+       </div>
     </div>
+    
+    <style>{`
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .nav-logo-text {
+        background: linear-gradient(90deg, #FF9933 0%, #FFFFFF 50%, #138808 100%);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: flagSweep 3s linear infinite;
+      }
+      @keyframes flagSweep { to { background-position: 200% center; } }
+    `}</style>
   </div>
 );
 
