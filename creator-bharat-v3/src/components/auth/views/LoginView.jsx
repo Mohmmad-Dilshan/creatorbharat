@@ -48,8 +48,13 @@ const LoginView = ({ role, setRole, onLogin, loading, setView }) => {
         <Fld label="Password" type="password" icon={Lock} placeholder="Password" required />
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginTop: -2, marginBottom: 20, flexWrap: 'wrap' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 13, color: '#64748B', fontWeight: 700, cursor: 'pointer' }}>
-            <input type="checkbox" style={{ accentColor: themeColor, width: 16, height: 16 }} /> Remember me
+          <label htmlFor="remember-me" style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 13, color: '#64748B', fontWeight: 700, cursor: 'pointer' }}>
+            <input 
+              id="remember-me"
+              name="remember_me"
+              type="checkbox" 
+              style={{ accentColor: themeColor, width: 16, height: 16 }} 
+            /> Remember me
           </label>
           <button type="button" onClick={() => setView('forgot')} style={{ border: 'none', background: 'transparent', color: themeColor, fontSize: 13, fontWeight: 900, cursor: 'pointer' }}>
             Forgot password?

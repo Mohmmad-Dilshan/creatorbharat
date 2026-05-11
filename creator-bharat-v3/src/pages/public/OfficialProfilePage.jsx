@@ -348,7 +348,7 @@ const AuthRequiredModal = ({ isOpen, onClose }) => {
              <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', border: '1px solid #f1f5f9' }}><Lock size={32} color="#0f172a" /></div>
              <h3 style={{ fontSize: '22px', fontWeight: 900, marginBottom: '12px', color: '#0f172a' }}>Direct Connection</h3>
              <p style={{ color: '#64748b', fontSize: '14px', lineHeight: 1.6, marginBottom: '32px' }}>Login to start a secure direct session with the Official CreatorBharat Node.</p>
-             <button onClick={() => navigate('/login')} style={{ width: '100%', padding: '16px', borderRadius: '14px', background: '#0f172a', color: '#fff', fontWeight: 700, border: 'none', cursor: 'pointer', marginBottom: '12px', fontSize: '16px' }}>Login to Chat</button>
+             <button onClick={() => { navigate('/login'); }} style={{ width: '100%', padding: '16px', borderRadius: '14px', background: '#0f172a', color: '#fff', fontWeight: 700, border: 'none', cursor: 'pointer', marginBottom: '12px', fontSize: '16px' }}>Login to Chat</button>
              <button onClick={onClose} style={{ width: '100%', padding: '16px', borderRadius: '14px', background: 'transparent', color: '#64748b', fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: '14px' }}>Maybe later</button>
           </motion.div>
         </div>
@@ -426,24 +426,41 @@ export default function OfficialProfilePage() {
 
       <div style={{ maxWidth: '935px', margin: '0 auto', padding: mob ? '24px 16px' : '60px 20px 0' }}>
         
-        {/* Header Block */}
-        <div style={{ display: 'flex', gap: mob ? '28px' : '100px', alignItems: 'center', marginBottom: mob ? '24px' : '44px' }}>
+        {/* Header Block - Cinematic Refinement */}
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: mob ? 'column' : 'row',
+          gap: mob ? '32px' : '100px', 
+          alignItems: mob ? 'center' : 'center', 
+          textAlign: mob ? 'center' : 'left',
+          marginBottom: mob ? '40px' : '44px' 
+        }}>
           <div style={{ flexShrink: 0 }}>
-             <div style={{ width: mob ? '77px' : '150px', height: mob ? '77px' : '150px', borderRadius: '50%', background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)', padding: '3px' }}>
-                <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#fff', padding: '3px' }}>
+             <div style={{ 
+               width: mob ? '120px' : '150px', 
+               height: mob ? '120px' : '150px', 
+               borderRadius: '50%', 
+               background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)', 
+               padding: '4px',
+               boxShadow: '0 12px 30px rgba(220, 39, 67, 0.25)'
+             }}>
+                <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#fff', padding: '4px' }}>
                    <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <ShieldCheck size={mob ? 40 : 80} color="#fff" />
+                      <ShieldCheck size={mob ? 60 : 80} color="#fff" />
                    </div>
                 </div>
              </div>
           </div>
-          <div style={{ flex: 1 }}>
-             <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', alignItems: mob ? 'flex-start' : 'center', gap: '20px', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><h1 style={{ fontSize: '20px', fontWeight: 600 }}>{content.username}</h1><CheckCircle2 size={18} color="#3897f0" fill="#3897f0" /></div>
+          <div style={{ flex: 1, width: mob ? '100%' : 'auto' }}>
+             <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', alignItems: mob ? 'center' : 'center', gap: '20px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <h1 style={{ fontSize: '24px', fontWeight: 600, letterSpacing: '-0.02em' }}>{content.username}</h1>
+                  <CheckCircle2 size={20} color="#3897f0" fill="#3897f0" />
+                </div>
                 <div style={{ display: 'flex', gap: '8px', width: mob ? '100%' : 'auto' }}>
-                   <button onClick={() => handleInteraction('/follow/creatorbharat')} style={{ flex: 1, padding: '7px 16px', background: '#0095f6', border: 'none', color: '#fff', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>Follow</button>
-                   <button onClick={() => handleInteraction('/chat/creatorbharat')} style={{ flex: 1, padding: '7px 16px', background: '#efefef', border: 'none', color: '#262626', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>Message</button>
-                   <button onClick={() => setLang(lang === 'en' ? 'hi' : 'en')} style={{ padding: '7px 12px', background: '#efefef', border: 'none', color: '#262626', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}><Languages size={16} /> {lang.toUpperCase()}</button>
+                   <button onClick={() => handleInteraction('/follow/creatorbharat')} style={{ flex: 1, padding: '9px 16px', background: '#0095f6', border: 'none', color: '#fff', borderRadius: '8px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', transition: 'opacity 0.2s' }}>Follow</button>
+                   <button onClick={() => handleInteraction('/chat/creatorbharat')} style={{ flex: 1, padding: '9px 16px', background: '#efefef', border: 'none', color: '#262626', borderRadius: '8px', fontSize: '14px', fontWeight: 700, cursor: 'pointer' }}>Message</button>
+                   <button onClick={() => setLang(lang === 'en' ? 'hi' : 'en')} style={{ padding: '9px 12px', background: '#efefef', border: 'none', color: '#262626', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}><Languages size={16} /> {lang.toUpperCase()}</button>
                 </div>
                 {mob ? null : <MoreHorizontal size={24} style={{ cursor: 'pointer' }} />}
              </div>
@@ -454,11 +471,13 @@ export default function OfficialProfilePage() {
                   <span><strong>{OFFICIAL_DATA.baseStats.following}</strong> following</span>
                </div>
              )}
-             <div style={{ fontSize: '14px', lineHeight: 1.5 }}>
-                <div style={{ fontWeight: 600 }}>{content.displayName}</div>
-                <div style={{ color: '#8e8e8e' }}>{content.category}</div>
-                <div style={{ whiteSpace: 'pre-line' }}>{content.bio}</div>
-                <div style={{ color: '#00376b', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}><ExternalLink size={12} /> {content.website}</div>
+             <div style={{ fontSize: '15px', lineHeight: 1.6 }}>
+                <div style={{ fontWeight: 700, fontSize: '16px', marginBottom: '4px' }}>{content.displayName}</div>
+                <div style={{ color: '#8e8e8e', fontWeight: 500, marginBottom: '8px' }}>{content.category}</div>
+                <div style={{ whiteSpace: 'pre-line', color: '#262626' }}>{content.bio}</div>
+                <div style={{ color: '#00376b', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: mob ? 'center' : 'flex-start', gap: '4px', marginTop: '8px' }}>
+                  <ExternalLink size={14} /> {content.website}
+                </div>
              </div>
           </div>
         </div>

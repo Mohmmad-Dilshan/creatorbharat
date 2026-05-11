@@ -213,22 +213,28 @@
     padding: 0;
     background: #fff;
   }
-  .auth-modal-grid {
+  .auth-modal-grid,
+  .is-standalone-page .auth-modal-grid {
     grid-template-columns: 1fr;
     min-height: 100vh;
+    height: auto;
     border-radius: 0;
     width: 100%;
     box-shadow: none;
     overflow: visible;
     max-width: 100%;
     margin: 0;
+    border: none;
   }
-  .auth-aside {
+  .auth-aside,
+  .is-standalone-page .auth-aside {
     display: none;
   }
-  .auth-main {
+  .auth-main,
+  .is-standalone-page .auth-main {
     padding: 0;
     overflow: visible;
+    height: auto;
   }
   .auth-scroll-area {
     padding: 24px 20px 40px;

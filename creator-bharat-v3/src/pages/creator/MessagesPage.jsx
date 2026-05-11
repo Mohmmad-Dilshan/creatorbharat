@@ -151,6 +151,8 @@ export default function MessagesPage() {
                <div style={{ cursor: 'pointer', color: '#64748b' }}><Paperclip size={20} /></div>
                <input 
                  type="text" 
+                 id="chat-input"
+                 name="chat-input"
                  value={inputText}
                  onChange={(e) => setInputText(e.target.value)}
                  onKeyDown={(e) => e.key === 'Enter' && handleSend()}

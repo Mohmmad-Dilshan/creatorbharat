@@ -176,6 +176,8 @@ export default function DashboardLayout({ children }) {
                 <Search size={16} className="db-search-icon" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                 <input 
                   type="text" 
+                  id="db-global-search"
+                  name="db-global-search"
                   placeholder="Search campaigns, talent..." 
                   className="db-search-input"
                 />

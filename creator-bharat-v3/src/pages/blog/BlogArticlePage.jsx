@@ -216,6 +216,8 @@ const CommentsSection = ({ mob }) => {
               {editingId === comment.id ? (
                 <div style={{ marginBottom: '15px' }}>
                   <textarea 
+                    id="comment-edit-area"
+                    name="comment_edit"
                     value={editText} 
                     onChange={(e) => setEditText(e.target.value)}
                     style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #FF9431', outline: 'none', minHeight: '60px' }}
@@ -649,6 +651,8 @@ const DesktopSidebar = ({ subscribed, handleSubscribe, email, setEmail }) => (
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: '25px' }}>Get the exclusive "Bharat Intelligence" report delivered to your inbox every Monday.</p>
           <input 
             type="email" 
+            id="sidebar-newsletter-email"
+            name="sidebar-newsletter-email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -878,6 +882,8 @@ const BlogArticleView = ({
                   <div style={{ position: 'relative', width: mob ? '100%' : '300px' }}>
                     <input 
                       type="email" 
+                      id="incontent-newsletter-email"
+                      name="incontent-newsletter-email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}

@@ -6,6 +6,16 @@ import { ModeButton } from '../AuthShared.jsx';
 
 const GatewayView = ({ setView, setRole }) => (
   <motion.div key="gateway" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
+    <div style={{ marginBottom: 32, position: 'relative' }}>
+      <button 
+        onClick={() => setView('gateway')}
+        style={{ position: 'absolute', top: 0, right: 0, border: 'none', background: 'rgba(0,0,0,0.04)', padding: '6px 12px', borderRadius: 10, fontSize: 11, fontWeight: 800, cursor: 'pointer', color: '#64748B' }}
+      >
+        ← BACK
+      </button>
+      <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 28, fontWeight: 950, color: '#111827', marginBottom: 6, letterSpacing: '-0.5px' }}>Join the Elite</h2>
+      <p style={{ color: '#64748B', fontSize: 14, fontWeight: 650 }}>Choose your journey on Bharat's #1 platform.</p>
+    </div>
     <div style={{ display: 'grid', gap: 14 }}>
       <ModeButton
         active

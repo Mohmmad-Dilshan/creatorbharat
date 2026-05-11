@@ -118,7 +118,7 @@ const BrandStep2 = ({ form, up, errors, loading, setStep, blur, mob }) => (
     
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 12 }}>
       <Btn variant="ghost" onClick={() => setStep(1)} style={{ flex: mob ? '1 1 100%' : 0.5, borderRadius: 16 }}>Back</Btn>
-      <Btn full lg loading={loading} style={{ flex: mob ? '1 1 100%' : 1.5, height: 56, borderRadius: 16, background: '#10B981', color: '#fff', border: 'none', fontWeight: 900 }}>
+      <Btn full lg type="submit" loading={loading} style={{ flex: mob ? '1 1 100%' : 1.5, height: 56, borderRadius: 16, background: '#10B981', color: '#fff', border: 'none', fontWeight: 900 }}>
         Complete Registration <ShieldCheck size={18} />
       </Btn>
     </div>

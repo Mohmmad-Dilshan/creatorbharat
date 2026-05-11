@@ -179,6 +179,8 @@ export default function FAQPage() {
             <Search style={{ position: 'absolute', left: '24px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} size={20} />
             <input 
               type="text" 
+              id="faq-search"
+              name="faq-search"
               placeholder="Search your question..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}

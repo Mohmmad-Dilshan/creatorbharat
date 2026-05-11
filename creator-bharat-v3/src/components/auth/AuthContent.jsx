@@ -30,23 +30,17 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
 
   const handleSetView = (v) => {
     if (isPage) {
-      if (v === 'register') {
-        navigate('/apply');
-        return;
+      if (v === 'register') { navigate('/apply'); return; }
+      if (v === 'brand-register') { navigate('/brand-register'); return; }
+      if (v === 'login') { navigate('/login'); return; }
+      if (v === 'gateway') { 
+        // If we are already on a register/login page, back goes to Gateway (/join)
+        // If we are on Gateway (/join), back goes to Home (/)
+        if (initialView === 'gateway') navigate('/');
+        else navigate('/join');
+        return; 
       }
-      if (v === 'brand-register') {
-        navigate('/brand-register');
-        return;
-      }
-      if (v === 'login') {
-        navigate('/login');
-        return;
-      }
-      if (v === 'gateway') {
-        navigate('/');
-        return;
-      }
-      // For forgot, we can stay on the page and just switch view
+      if (v === 'forgot') { navigate('/forgot-password'); return; }
     }
     setView(v);
   };

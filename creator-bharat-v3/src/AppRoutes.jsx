@@ -40,9 +40,11 @@ const TermsPage = lazy(() => import('./pages/legal/TermsPage'));
 const CreatorGuidelinesPage = lazy(() => import('./pages/legal/CreatorGuidelinesPage'));
 
 // Auth
+import ProtectedRoute from '@/core/ProtectedRoute';
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const ApplyPage = lazy(() => import('./pages/auth/ApplyPage'));
 const BrandRegisterPage = lazy(() => import('./pages/auth/BrandRegisterPage'));
+const JoinPage = lazy(() => import('./pages/auth/JoinPage'));
 const ForgotPasswordPage = lazy(() => import('./pages/auth/ForgotPasswordPage'));
 
 // Blog
@@ -67,6 +69,7 @@ export default function AppRoutes({ location }) {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/apply" element={<ApplyPage />} />
         <Route path="/brand-register" element={<BrandRegisterPage />} />
+        <Route path="/join" element={<JoinPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
         {/* Public Layout Group */}
@@ -91,7 +94,7 @@ export default function AppRoutes({ location }) {
         </Route>
 
         {/* Dashboard Layout Group */}
-        <Route element={<DashboardLayout><Outlet /></DashboardLayout>}>
+        <Route element={<ProtectedRoute><DashboardLayout><Outlet /></DashboardLayout></ProtectedRoute>}>
           {/* Creator Dash */}
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/settings" element={<SettingsPage />} />

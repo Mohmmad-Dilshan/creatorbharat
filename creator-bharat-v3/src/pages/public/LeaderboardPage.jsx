@@ -132,6 +132,8 @@ export default function LeaderboardPage() {
             <Search style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} size={18} />
             <input 
               type="text" 
+              id="leaderboard-search"
+              name="leaderboard-search"
               placeholder="Search creator name..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}

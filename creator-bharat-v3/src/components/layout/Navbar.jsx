@@ -57,7 +57,7 @@ const UserActions = ({ st, dsp, go, mob }) => {
   return (
     <>
       {!mob && <button onClick={() => go('/login')} style={{ background: 'transparent', border: 'none', color: '#111', fontSize: 13, fontWeight: 800, cursor: 'pointer', padding: '0 16px' }}>Sign In</button>}
-      <Btn lg onClick={() => go('/apply')} style={{ fontWeight: 900, borderRadius: 100, padding: mob ? '10px 20px' : '12px 32px', fontSize: 13, background: T.gd, color: '#fff', border: 'none', boxShadow: `0 8px 24px rgba(255,148,49,0.2)` }}>
+      <Btn lg onClick={() => go('/join')} style={{ fontWeight: 900, borderRadius: 100, padding: mob ? '10px 20px' : '12px 32px', fontSize: 13, background: T.gd, color: '#fff', border: 'none', boxShadow: `0 8px 24px rgba(255,148,49,0.2)` }}>
         {mob ? 'Join' : 'Claim Your Profile'}
       </Btn>
       {mob && (
@@ -129,7 +129,12 @@ export default function Navbar() {
   }, []);
 
   const go = (path) => {
-    navigate(path);
+    const protectedPaths = ['/dashboard', '/brand-dashboard', '/campaign-builder', '/settings', '/wallet', '/applications', '/messages', '/saved'];
+    if (protectedPaths.includes(path) && !st.user) {
+      navigate('/login', { state: { from: location } });
+    } else {
+      navigate(path);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
     dsp({ t: 'UI', v: { mobileMenu: false } });
   };

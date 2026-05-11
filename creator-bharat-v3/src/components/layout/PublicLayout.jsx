@@ -15,10 +15,19 @@ import { Home, Users, BookOpen, Target } from 'lucide-react';
 function FloatingMobileNav({ hide }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { dsp } = useApp();
+  const { st, dsp } = useApp();
 
   const go = (path) => { 
-    navigate(path);
+    if (path === '/dashboard') {
+      if (st.user) {
+        const targetPath = st.role === 'brand' ? '/brand-dashboard' : '/dashboard';
+        navigate(targetPath);
+      } else {
+        navigate('/login');
+      }
+    } else {
+      navigate(path);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' }); 
     dsp({ t: 'UI', v: { mobileMenu: false } });
   };

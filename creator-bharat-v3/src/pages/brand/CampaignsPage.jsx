@@ -140,12 +140,14 @@ export default function CampaignsPage() {
            <div style={{ flex: 1, minWidth: mob ? '100%' : '400px', position: 'relative' }}>
               <div style={{ display: 'flex', alignItems: 'center', background: '#fff', borderRadius: '100px', padding: '8px 8px 8px 24px', boxShadow: '0 10px 30px rgba(0,0,0,0.04)', border: '1px solid #f1f5f9' }}>
                  <span style={{ fontSize: '18px', marginRight: '12px' }}>ðŸ”</span>
-                 <input 
-                   value={f.q} 
-                   onChange={e => dsp({ t: 'CPF', v: { q: e.target.value } })} 
-                   placeholder="Search brands, products..." 
-                   style={{ flex: 1, border: 'none', background: 'none', outline: 'none', fontWeight: 600, fontSize: '15px' }}
-                 />
+                  <input 
+                    id="campaign-search-input"
+                    name="campaign_q"
+                    value={f.q} 
+                    onChange={e => dsp({ t: 'CPF', v: { q: e.target.value } })} 
+                    placeholder="Search brands, products..." 
+                    style={{ flex: 1, border: 'none', background: 'none', outline: 'none', fontWeight: 600, fontSize: '15px' }}
+                  />
               </div>
            </div>
            

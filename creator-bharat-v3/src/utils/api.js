@@ -11,11 +11,24 @@ export async function apiCall(endpoint, options = {}) {
       ...options,
       body: options.body ? JSON.stringify(options.body) : undefined,
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'API Error');
+
+    let data;
+    const contentType = res.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      data = await res.json();
+    } else {
+      const text = await res.text();
+      if (!res.ok) throw new Error(text || `HTTP Error ${res.status}`);
+      return text;
+    }
+
+    if (!res.ok) throw new Error(data.error || `Error ${res.status}: ${res.statusText}`);
     return data;
   } catch (err) {
-    console.error(`API Call failed [${endpoint}]:`, err);
+    // Only log actual code errors, not expected rate limits which are handled by fallbacks
+    if (!err.message?.includes('429') && !err.message?.toLowerCase().includes('too many requests')) {
+      console.error(`API Call failed [${endpoint}]:`, err);
+    }
     throw err;
   }
 }

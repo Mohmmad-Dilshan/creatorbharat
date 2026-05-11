@@ -250,7 +250,14 @@ export default function CampaignBuilderPage() {
                                  cursor: 'pointer', transition: 'all 0.3s'
                                }}
                              >
-                                <input type="checkbox" checked={F.urgent} onChange={e => upF('urgent', e.target.checked)} style={{ width: '20px', height: '20px', cursor: 'pointer' }} />
+                                <input 
+                                  id="urgent-toggle"
+                                  name="urgent_priority"
+                                  type="checkbox" 
+                                  checked={F.urgent} 
+                                  onChange={e => upF('urgent', e.target.checked)} 
+                                  style={{ width: '20px', height: '20px', cursor: 'pointer' }} 
+                                />
                                 <div>
                                    <div style={{ fontSize: '16px', fontWeight: 900, color: F.urgent ? '#B91C1C' : '#0f172a' }}>Mark as High Priority</div>
                                    <p style={{ fontSize: '13px', color: F.urgent ? '#EF4444' : '#64748b', marginTop: '4px' }}>Campaigns closing within 7 days get 3x more visibility.</p>

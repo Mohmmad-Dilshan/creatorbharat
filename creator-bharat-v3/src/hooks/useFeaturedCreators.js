@@ -6,8 +6,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { apiCall } from '../utils/api';
-import { LS } from '../utils/helpers';
+import { fetchCreators } from '../utils/platformService';
 
 export function useFeaturedCreators(limit = 10) {
   const [creators, setCreators] = useState([]);
@@ -17,15 +16,14 @@ export function useFeaturedCreators(limit = 10) {
     let cancelled = false;
     setLoading(true);
 
-    apiCall(`/creators?limit=${limit}`)
-      .then(d => {
+    fetchCreators({ limit })
+      .then(list => {
         if (cancelled) return;
-        const remote = Array.isArray(d) ? d : (d.creators || []);
-        const list = remote.length > 0 ? remote : LS.get('cb_creators', []).slice(0, limit);
-        setCreators(list);
+        setCreators(list.slice(0, limit));
       })
       .catch(() => {
-        if (!cancelled) setCreators(LS.get('cb_creators', []).slice(0, limit));
+        // fetchCreators handles its own fallbacks, but we'll be safe
+        if (!cancelled) setCreators([]);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);

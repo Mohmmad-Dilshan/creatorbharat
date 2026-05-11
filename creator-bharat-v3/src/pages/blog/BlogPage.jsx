@@ -161,6 +161,8 @@ const NewsletterBanner = () => (
       <div style={{ display: 'flex', gap: '10px', maxWidth: '500px', margin: '0 auto', flexDirection: globalThis.innerWidth < 600 ? 'column' : 'row' }}>
         <input 
           type="email" 
+          id="newsletter-email"
+          name="newsletter-email"
           placeholder="ENTER YOUR EMAIL" 
           style={{ flex: 1, padding: '15px 20px', border: '2px solid #000', background: '#fff', fontSize: '14px', fontWeight: 800, outline: 'none' }} 
         />
@@ -221,7 +223,15 @@ const NavSearch = ({ categories, activeTab, setActiveTab, search, setSearch, mob
     </div>
     <div style={{ position: 'relative', width: mob ? '100%' : '300px' }}>
       <Search size={16} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#000' }} />
-      <input type="text" placeholder="SEARCH THE JOURNAL..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ width: '100%', padding: '10px 40px 10px 12px', border: '1px solid #000', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', outline: 'none' }} />
+      <input 
+        type="text" 
+        id="journal-search"
+        name="journal-search"
+        placeholder="SEARCH THE JOURNAL..." 
+        value={search} 
+        onChange={(e) => setSearch(e.target.value)} 
+        style={{ width: '100%', padding: '10px 40px 10px 12px', border: '1px solid #000', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', outline: 'none' }} 
+      />
     </div>
   </nav>
 );

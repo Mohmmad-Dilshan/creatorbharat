@@ -1461,8 +1461,10 @@ h1, h2, h3, h4, .font-outfit {
 }
 
 @media (max-width: 768px) {
-  .db-stat-grid { grid-template-columns: 1fr; }
-  .db-stat-card { padding: 20px; }
+  .db-stat-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .db-stat-card { padding: 16px; }
+  .db-stat-value { font-size: 24px; }
+  .db-stat-label { font-size: 11px; }
 }
 /* ==========================================================================
    SETTINGS & BUILDER (ELITE)
@@ -1733,16 +1735,28 @@ h1, h2, h3, h4, .font-outfit {
 }
 
 @media (max-width: 768px) {
-  .gate-title { font-size: 32px; }
-  .gatekeeper-card { border-radius: 32px; }
+  .gate-title { font-size: 28px; }
+  .gate-description { font-size: 14px; }
+  .gatekeeper-card { border-radius: 32px; padding: 40px 20px; }
+  .gate-actions { margin: 32px 0; }
 }
 
 /* ==========================================================================
    DASHBOARD PAGE LAYOUT (ELITE)
    ========================================================================== */
 
+.dashboard-page-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-page-container { padding: 24px 16px; }
+}
+
 .db-page-header {
-  margin-bottom: 48px;
+  margin-bottom: 32px;
 }
 
 .header-content {

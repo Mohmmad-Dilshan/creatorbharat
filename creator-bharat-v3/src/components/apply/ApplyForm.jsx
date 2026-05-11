@@ -228,7 +228,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
            </p>
         </div>
 
-        <Btn full lg loading={loading} style={{ marginTop: 24, borderRadius: 14, background: '#111827', color: '#fff', border: 'none', height: 56, fontWeight: 950 }}>
+        <Btn full lg type="submit" loading={loading} style={{ marginTop: 24, borderRadius: 14, background: '#111827', color: '#fff', border: 'none', height: 56, fontWeight: 950 }}>
           Launch My Portfolio <ChevronRight size={18} />
         </Btn>
 
@@ -632,7 +632,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
           }
         }
 
-        @media (max-width: 720px) {
+        @media (max-width: 768px) {
           .apply-two-col,
           .apply-review-grid {
             grid-template-columns: 1fr;

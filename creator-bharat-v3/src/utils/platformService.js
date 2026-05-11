@@ -10,37 +10,91 @@
 
 import { apiCall } from './api';
 import { LS } from './helpers';
+import { SEED_CREATORS, SEED_CAMPAIGNS } from '../data/seedData';
+
+let _creatorsPromise = null;
+let _campaignsPromise = null;
+let _cache = { creators: null, campaigns: null, expiry: 0, lastFailure: 0 };
+
+const CACHE_DURATION = 60000; // 1 minute
+const FAILURE_COOLDOWN = 30000; // 30 seconds cooldown after a failure
 
 // ─── Creators ───────────────────────────────────────────────
-export async function fetchCreators({ limit = 250 } = {}) {
-  try {
-    const res = await apiCall(`/creators?limit=${limit}`);
-    const remote = res.creators || (Array.isArray(res) ? res : []);
-
-    // Merge with locally registered creators (offline-first support)
-    const local = LS.get('cb_creators', []);
-    const merged = [...remote];
-    local.forEach(lc => {
-      if (!merged.some(c => c.id === lc.id || c.email === lc.email)) {
-        merged.push(lc);
-      }
-    });
-
-    return merged;
-  } catch {
-    // API unavailable — fall back to localStorage
-    return LS.get('cb_creators', []);
+export async function fetchCreators({ limit = 250, force = false } = {}) {
+  // Return cache if valid
+  if (!force && _cache.creators && Date.now() < _cache.expiry) {
+    return _cache.creators;
   }
+
+  // Return fallback if in failure cooldown
+  if (!force && Date.now() < _cache.lastFailure + FAILURE_COOLDOWN) {
+    const local = LS.get('cb_creators', []);
+    return local.length > 0 ? local : SEED_CREATORS;
+  }
+
+  // Deduplicate inflight requests
+  if (_creatorsPromise && !force) return _creatorsPromise;
+
+  _creatorsPromise = (async () => {
+    try {
+      // Use a larger limit by default for shared calls to satisfy all hooks
+      const fetchLimit = Math.max(limit, 500); 
+      const res = await apiCall(`/creators?limit=${fetchLimit}`);
+      const remote = res.creators || (Array.isArray(res) ? res : []);
+
+      const local = LS.get('cb_creators', []);
+      const merged = [...remote];
+      local.forEach(lc => {
+        if (!merged.some(c => c.id === lc.id || c.email === lc.email)) {
+          merged.push(lc);
+        }
+      });
+
+      _cache.creators = merged;
+      _cache.expiry = Date.now() + CACHE_DURATION;
+      return merged;
+    } catch (err) {
+      _cache.lastFailure = Date.now();
+      const local = LS.get('cb_creators', []);
+      return local.length > 0 ? local : SEED_CREATORS;
+    } finally {
+      _creatorsPromise = null;
+    }
+  })();
+
+  return _creatorsPromise;
 }
 
 // ─── Campaigns ──────────────────────────────────────────────
-export async function fetchCampaigns({ limit = 100 } = {}) {
-  try {
-    const res = await apiCall(`/campaigns?limit=${limit}`);
-    return res.campaigns || (Array.isArray(res) ? res : []);
-  } catch {
-    return LS.get('cb_campaigns', []);
+export async function fetchCampaigns({ limit = 100, force = false } = {}) {
+  if (!force && _cache.campaigns && Date.now() < _cache.expiry) {
+    return _cache.campaigns;
   }
+
+  if (!force && Date.now() < _cache.lastFailure + FAILURE_COOLDOWN) {
+    const local = LS.get('cb_campaigns', []);
+    return local.length > 0 ? local : SEED_CAMPAIGNS;
+  }
+
+  if (_campaignsPromise && !force) return _campaignsPromise;
+
+  _campaignsPromise = (async () => {
+    try {
+      const res = await apiCall(`/campaigns?limit=${limit}`);
+      const list = res.campaigns || (Array.isArray(res) ? res : []);
+      _cache.campaigns = list;
+      _cache.expiry = Date.now() + CACHE_DURATION;
+      return list;
+    } catch (err) {
+      _cache.lastFailure = Date.now();
+      const local = LS.get('cb_campaigns', []);
+      return local.length > 0 ? local : SEED_CAMPAIGNS;
+    } finally {
+      _campaignsPromise = null;
+    }
+  })();
+
+  return _campaignsPromise;
 }
 
 // ─── Platform Analytics (derived) ───────────────────────────

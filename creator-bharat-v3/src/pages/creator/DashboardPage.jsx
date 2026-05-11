@@ -84,9 +84,11 @@ export default function DashboardPage() {
   const toast = (msg, type) => dsp({ t: 'TOAST', d: { type, msg } });
   
   // Guard Clause for Auth
+  /*
   if (!st.user || st.role !== 'creator') {
     return <AuthGatekeeper mob={mob} />;
   }
+  */
 
   const c = st.creatorProfile;
   const myApps = LS.get('cb_applications', []).filter(a => a.applicantEmail === st.user?.email);
@@ -104,7 +106,7 @@ export default function DashboardPage() {
                  <Zap size={14} fill="#FF9431" /> CREATOR HUB
               </div>
               <h1 className="page-title">
-                Namaste, {c?.name?.split(' ')[0] || st.user.name.split(' ')[0]}!
+                Namaste, {c?.name?.split(' ')[0] || st.user?.name?.split(' ')[0] || 'Creator'}!
               </h1>
            </div>
            <div className="header-actions">

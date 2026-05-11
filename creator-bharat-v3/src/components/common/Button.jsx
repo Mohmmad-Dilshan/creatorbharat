@@ -15,7 +15,7 @@ const getBtnStyles = (variant, h) => {
   return vs[variant] || vs.primary;
 };
 
-export function Button({ children, onClick, variant = 'primary', sm, lg, full, disabled, loading, style: sx = {}, href, className }) {
+export function Button({ children, onClick, variant = 'primary', sm, lg, full, disabled, loading, style: sx = {}, href, className, ...props }) {
   const [isHovered, setIsHovered] = useState(false);
   
   let fontSize = 14;
@@ -44,6 +44,7 @@ export function Button({ children, onClick, variant = 'primary', sm, lg, full, d
       style={{ ...getBtnStyles(variant, isHovered), ...base }}
       onMouseEnter={() => setIsHovered(true)} 
       onMouseLeave={() => setIsHovered(false)}
+      {...props}
     >
       {loading ? (
         <span className="spin" style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,.3)', borderTopColor: '#fff', borderRadius: '50%' }} />

@@ -72,6 +72,8 @@ export default function AIChatbot({ mob }) {
           </div>
           <div style={{ padding: 20, borderTop: '1px solid #eee', display: 'flex', gap: 10 }}>
             <input 
+              id="chatbot-input"
+              name="chatbot-input"
               value={input} 
               onChange={e => setInput(e.target.value)} 
               onKeyDown={e => e.key === 'Enter' && send()} 
