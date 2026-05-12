@@ -24,7 +24,7 @@ const getSocialIcon = p => {
   return <Smartphone {...props} color="#64748B" />;
 };
 
-const CardHeader = ({ coverUrl, id, saved, dsp, mob, tierLabel }) => {
+const CardHeader = ({ coverUrl, id, saved, dsp, mob, tierLabel, requireBrand }) => {
   const idHash = id ? id.toString().split('').reduce((a, b) => a + (b.codePointAt(0) || 0), 0) : 0;
   const hue1 = (idHash * 137) % 360;
   const hue2 = (hue1 + 40) % 360;
@@ -33,12 +33,15 @@ const CardHeader = ({ coverUrl, id, saved, dsp, mob, tierLabel }) => {
   return (
     <div style={{ position: 'relative', height: mob ? 80 : 150, background: fallbackGradient, flexShrink: 0 }}>
       {coverUrl && (
-        <img src={coverUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={`Cover image for ${tierLabel} creator`} />
+        <img src={coverUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
       )}
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6))' }} />
       <div style={{ position: 'absolute', top: mob ? 8 : 12, right: mob ? 8 : 12, display: 'flex', gap: 8 }}>
         <button 
-          onClick={e => { e.stopPropagation(); dsp({ t: 'SAVE', id }); }} 
+          onClick={e => { 
+            e.stopPropagation(); 
+            if (requireBrand?.()) dsp({ t: 'SAVE', id }); 
+          }} 
           style={{ 
             background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
             border: '1px solid rgba(255,255,255,0.3)', borderRadius: '50%', width: mob ? 26 : 36, height: mob ? 26 : 36, 
@@ -69,7 +72,8 @@ CardHeader.propTypes = {
   saved: PropTypes.bool,
   dsp: PropTypes.func.isRequired,
   mob: PropTypes.bool,
-  tierLabel: PropTypes.string
+  tierLabel: PropTypes.string,
+  requireBrand: PropTypes.func
 };
 
 const CreatorIdentity = ({ c, mob, img, score }) => (
@@ -151,7 +155,7 @@ CreatorBio.propTypes = {
   mob: PropTypes.bool
 };
 
-const CreatorFooter = ({ c, mob, compared, onView, dsp }) => (
+const CreatorFooter = ({ c, mob, compared, onView, dsp, requireBrand }) => (
   <div style={{ display: 'flex', gap: mob ? 6 : 12, marginTop: mob ? 10 : 16, marginBottom: mob ? 12 : 24 }}>
     <button 
       onClick={(e) => { e.stopPropagation(); onView?.(c); }} 
@@ -177,7 +181,10 @@ const CreatorFooter = ({ c, mob, compared, onView, dsp }) => (
       <Zap size={mob ? 12 : 16} fill="currentColor" /> {mob ? 'Preview' : 'Quick View'}
     </button>
     <button 
-      onClick={e => { e.stopPropagation(); dsp?.({ t: 'COMPARE', id: c?.id }); }} 
+      onClick={e => { 
+        e.stopPropagation(); 
+        if (requireBrand?.()) dsp?.({ t: 'COMPARE', id: c?.id }); 
+      }} 
       style={{ 
         width: mob ? 36 : 56, height: mob ? 36 : 56, borderRadius: 16, 
         border: '2.5px solid ' + (compared ? '#FF9431' : '#f1f5f9'), 
@@ -199,13 +206,24 @@ CreatorFooter.propTypes = {
   mob: PropTypes.bool,
   compared: PropTypes.bool,
   onView: PropTypes.func,
-  dsp: PropTypes.func
+  dsp: PropTypes.func,
+  requireBrand: PropTypes.func
 };
 
 export function CreatorCard({ creator: c, onView }) {
   const context = useApp();
   const st = context?.st || { saved: [], compared: [] };
   const dsp = context?.dsp;
+  const navigate = context?.navigate;
+
+  const requireBrand = () => {
+    if (!st.user || st.user?.role !== 'brand') {
+      dsp?.({ t: 'TOAST', d: { type: 'error', msg: 'Only Brands can save or compare creators. Please login as a Brand.' } });
+      navigate?.('/login');
+      return false;
+    }
+    return true;
+  };
   
   if (!c) return null;
 
@@ -241,7 +259,7 @@ export function CreatorCard({ creator: c, onView }) {
         e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.03)';
       }}
     >
-      <CardHeader coverUrl={c.coverUrl} id={c.id} saved={saved} dsp={dsp} mob={mob} tierLabel={tier?.label || 'Rising'} />
+      <CardHeader coverUrl={c.coverUrl} id={c.id} saved={saved} dsp={dsp} mob={mob} tierLabel={tier?.label || 'Rising'} requireBrand={requireBrand} />
 
       <div style={{ padding: mob ? '0 10px' : '0 24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
         <CreatorIdentity c={c} mob={mob} img={img} score={score} />
@@ -261,7 +279,7 @@ export function CreatorCard({ creator: c, onView }) {
         </div>
         
         <CreatorStats c={c} mob={mob} />
-        {dsp && <CreatorFooter c={c} mob={mob} compared={compared} onView={onView} dsp={dsp} />}
+        {dsp && <CreatorFooter c={c} mob={mob} compared={compared} onView={onView} dsp={dsp} requireBrand={requireBrand} />}
       </div>
     </Card>
   );
@@ -310,7 +328,7 @@ export function CampCard({ campaign: c, onApply }) {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-           <img src={brandImg} style={{ width: '56px', height: '56px', borderRadius: '16px', objectFit: 'cover', border: '1px solid #f1f5f9' }} alt={`${typeof c.brand === 'object' ? c.brand.companyName : c.brand} brand logo`} />
+           <img src={brandImg} style={{ width: '56px', height: '56px', borderRadius: '16px', objectFit: 'cover', border: '1px solid #f1f5f9' }} alt="" />
            <div>
               <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '20px', fontWeight: 900, color: '#0f172a', lineHeight: 1.2, marginBottom: '4px' }}>{c.title}</h3>
               <p style={{ fontSize: '14px', color: '#64748b', fontWeight: 700 }}>by {typeof c.brand === 'object' ? c.brand.companyName : c.brand}</p>

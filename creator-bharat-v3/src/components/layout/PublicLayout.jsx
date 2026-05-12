@@ -55,7 +55,7 @@ export default function PublicLayout({ children }) {
   }, []);
 
   return (
-    <div className="public-layout-root" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fff', position: 'relative' }}>
+    <div className="public-layout-root" style={{ minHeight: '100vh', width: '100%', overflowX: 'hidden', display: 'flex', flexDirection: 'column', background: '#fff', position: 'relative' }}>
       
       {/* Navbar stays OUTSIDE the transformed container to remain truly FIXED to viewport */}
       {!isModalOpen && <Navbar />}

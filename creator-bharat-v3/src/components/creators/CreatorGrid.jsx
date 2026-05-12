@@ -53,7 +53,7 @@ const CreatorListItem = ({ c, i, mob, onCardView }) => (
     <div style={{ flex: 1.5, display: 'flex', alignItems: 'center', gap: 16 }}>
       <img 
         src={c.photo || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}`} 
-        alt={`Profile photo of ${c.name}, ${typeof c.city === 'object' ? c.city.name : (c.city || 'creator')}`}
+        alt={`${c.name} profile`}
         style={{ width: mob ? 48 : 60, height: mob ? 48 : 60, borderRadius: 16, objectFit: 'cover', background: '#f1f5f9' }} 
       />
       <div>
@@ -73,8 +73,9 @@ const CreatorListItem = ({ c, i, mob, onCardView }) => (
     )}
     {mob && (
       <div style={{ textAlign: 'right', flex: 1 }}>
-        <div style={{ fontSize: 14, fontWeight: 900, color: '#111' }}>{fmt.num(c.followers)}</div>
-        <div style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8' }}>REACH</div>
+        <div style={{ fontSize: 14, fontWeight: 950, color: '#111' }}>{fmt.num(c.followers)}</div>
+        <div style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', marginBottom: 4 }}>FOLLOWERS</div>
+        <Bdg color="orange" sm>{c.score || fmt.score(c)}</Bdg>
       </div>
     )}
   </motion.div>
@@ -95,7 +96,7 @@ export default function CreatorGrid({ loading, filtered, visible, view, mob, onC
 
     return (
       <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: mob ? 12 : 32 }}>
-        {[1, 2, 3, 4, 5, 6].map(i => <SkeletonCard key={i} />)}
+        {Array.from({ length: 12 }).map((_, i) => <SkeletonCard key={`elite-sk-${Math.sqrt(i + 1).toFixed(4)}`} mob={mob} />)}
       </div>
     );
   }
@@ -109,13 +110,22 @@ export default function CreatorGrid({ loading, filtered, visible, view, mob, onC
   const avgReach = filtered.length > 0 ? Math.round(filtered.reduce((sum, c) => sum + (Number(c.followers) || 0), 0) / filtered.length) : 0;
   const avgER = filtered.length > 0 ? (filtered.reduce((sum, c) => sum + (Number.parseFloat(c.er) || 0), 0) / filtered.length).toFixed(1) : 0;
 
+  const getGridColumns = () => {
+    if (mob) return 'repeat(2, 1fr)';
+    return 'repeat(auto-fill, minmax(340px, 1fr))';
+  };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: mob ? 24 : 32 }}>
       {/* Search Insights Panel */}
       {!mob && <SearchInsights avgReach={avgReach} avgER={avgER} count={filtered.length} />}
 
       {view === 'grid' ? (
-        <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(340px, 1fr))', gap: mob ? 12 : 32 }}>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: getGridColumns(), 
+          gap: mob ? 16 : 32 
+        }}>
           {visible.map((c, i) => (
             <motion.div
               key={c.id || i}

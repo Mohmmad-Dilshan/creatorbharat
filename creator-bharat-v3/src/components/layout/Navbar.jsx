@@ -150,7 +150,7 @@ export default function Navbar() {
     return scroll ? '16px 40px' : '24px 40px';
   };
 
-  const navTransform = (mob && !visible) ? 'translateY(-120%)' : 'none';
+  const navTransform = ((mob && !visible) || st.ui.hideNav) ? 'translateY(-120%)' : 'none';
 
   return (
     <div style={{

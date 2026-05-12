@@ -100,15 +100,18 @@ LocationSelect.propTypes = {
   dsp: PropTypes.func.isRequired
 };
 
-const SearchInput = ({ mob, f, dsp, niches }) => (
+const SearchInput = ({ mob, f, dsp }) => (
   <div style={{ 
-    display: 'flex', flex: 1, background: '#f8fafc', borderRadius: 100, 
-    border: '1.5px solid rgba(0,0,0,0.04)', overflow: 'hidden', height: mob ? 44 : 54,
-    alignItems: 'center'
-  }}>
-    {!mob && <CategorySelect niches={niches} f={f} dsp={dsp} />}
+    display: 'flex', flex: 1, minWidth: 0, background: '#fff', borderRadius: '24px', 
+    border: '1.5px solid rgba(0,0,0,0.06)', overflow: 'hidden', height: mob ? 54 : 64,
+    alignItems: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
+    transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+  }}
+  onFocusCapture={e => e.currentTarget.style.borderColor = '#FF9431'}
+  onBlurCapture={e => e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)'}
+  >
     <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
-      <Search size={18} color="#94a3b8" style={{ position: 'absolute', left: 18 }} />
+      <Search size={22} color="#FF9431" style={{ position: 'absolute', left: 24 }} />
       <input
         id="toolbar-search-input"
         name="creator_search"
@@ -116,8 +119,8 @@ const SearchInput = ({ mob, f, dsp, niches }) => (
         onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })}
         placeholder={mob ? "Search talent..." : "Search elite talent by niche, name or city..."}
         style={{ 
-          width: '100%', height: '100%', padding: '0 24px 0 48px', border: 'none', 
-          background: 'transparent', fontSize: 14, fontWeight: 600, color: '#111', outline: 'none' 
+          width: '100%', height: '100%', padding: '0 24px 0 64px', border: 'none', 
+          background: 'transparent', fontSize: '16px', fontWeight: 600, color: '#0f172a', outline: 'none' 
         }}
       />
     </div>
@@ -127,8 +130,7 @@ const SearchInput = ({ mob, f, dsp, niches }) => (
 SearchInput.propTypes = {
   mob: PropTypes.bool,
   f: PropTypes.object.isRequired,
-  dsp: PropTypes.func.isRequired,
-  niches: PropTypes.arrayOf(PropTypes.string).isRequired
+  dsp: PropTypes.func.isRequired
 };
 
 const ToolbarButtons = ({ mob, showMap, setShowMap, setShowFilters, hasFilters, filterCount }) => (
@@ -228,16 +230,14 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
   const hasFilters = filterCount > 0;
 
   return (
-    <div style={{
-      position: 'sticky', top: 0, zIndex: 1000,
-      background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(30px)',
-      borderBottom: '1px solid rgba(0,0,0,0.05)',
-      padding: mob ? '12px 0' : '20px 0',
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+    <div style={{ 
+      position: 'sticky', top: mob ? '60px' : '80px', zIndex: 100, background: 'rgba(255,255,255,0.8)', 
+      backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(0,0,0,0.05)', padding: '20px 0',
+      transition: 'all 0.3s ease', display: 'flex', justifyContent: 'center'
     }}>
-      <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <SearchInput mob={mob} f={f} dsp={dsp} niches={niches} />
+      <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px', display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
+        <div style={{ display: 'flex', gap: mob ? '8px' : '16px', alignItems: 'center' }}>
+          <SearchInput mob={mob} f={f} dsp={dsp} />
 
           {!mob && (
             <>
@@ -246,14 +246,16 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
             </>
           )}
 
-          <ToolbarButtons 
-            mob={mob} 
-            showMap={showMap} 
-            setShowMap={setShowMap} 
-            setShowFilters={setShowFilters} 
-            hasFilters={hasFilters} 
-            filterCount={filterCount} 
-          />
+          <div style={{ display: 'flex', gap: mob ? '8px' : '12px', flexShrink: 0 }}>
+            <ToolbarButtons 
+              mob={mob} 
+              showMap={showMap} 
+              setShowMap={setShowMap} 
+              setShowFilters={setShowFilters} 
+              hasFilters={hasFilters} 
+              filterCount={filterCount} 
+            />
+          </div>
         </div>
 
         <CategoryChips niches={niches} f={f} dsp={dsp} mob={mob} />

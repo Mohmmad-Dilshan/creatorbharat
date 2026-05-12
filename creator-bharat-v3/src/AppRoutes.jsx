@@ -137,7 +137,7 @@ export default function AppRoutes({ location }) {
           <Route path="/official-profile" element={<OfficialProfilePage />} />
           <Route path="/creators" element={<CreatorsPage />} />
           <Route path="/campaigns" element={<AuthLock><CampaignsPage /></AuthLock>} />
-          <Route path="/compare" element={<ComparePage />} />
+          <Route path="/compare" element={<ProtectedRoute allowedRole="brand"><ComparePage /></ProtectedRoute>} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<BlogArticlePage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
