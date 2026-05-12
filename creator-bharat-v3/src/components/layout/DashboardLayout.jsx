@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '@/core/context';
 import { 
@@ -11,8 +11,6 @@ import {
   Settings, 
   LogOut, 
   ChevronRight, 
-  Menu,
-  X,
   Bell,
   Search,
   Trophy,
@@ -59,12 +57,13 @@ SidebarItem.propTypes = {
   onClick: PropTypes.func.isRequired
 };
 
+import EliteMobileNav from './EliteMobileNav';
+
 export default function DashboardLayout({ children }) {
   const { st, dsp } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(globalThis.innerWidth < 1200);
-  const [mobOpen, setMobOpen] = useState(false);
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
 
   useEffect(() => {
@@ -83,19 +82,18 @@ export default function DashboardLayout({ children }) {
   
   const creatorLinks = [
     { label: 'Overview', icon: LayoutDashboard, path: '/dashboard' },
-    { label: 'My Identity', icon: User, path: '/settings' },
-    { label: 'Brand Deals', icon: Zap, path: '/applications' },
+    { label: 'Identity', icon: User, path: '/settings' },
+    { label: 'Deals', icon: Zap, path: '/applications' },
     { label: 'Leaderboard', icon: Trophy, path: '/leaderboard' },
-    { label: 'Creator Score', icon: Activity, path: '/creator-score' },
-    { label: 'Ecosystem', icon: Megaphone, path: '/creators' },
-    { label: 'Settings', icon: Settings, path: '/settings' }
+    { label: 'Score', icon: Activity, path: '/creator-score' },
+    { label: 'Ecosystem', icon: Megaphone, path: '/creators' }
   ];
 
   const brandLinks = [
-    { label: 'Control Center', icon: LayoutDashboard, path: '/brand-dashboard' },
-    { label: 'Campaigns', icon: Megaphone, path: '/campaigns' },
-    { label: 'Talent Discovery', icon: Search, path: '/creators' },
-    { label: 'Performance', icon: BarChart3, path: '/brand-dashboard' },
+    { label: 'Command', icon: LayoutDashboard, path: '/brand-dashboard' },
+    { label: 'Missions', icon: Megaphone, path: '/campaigns' },
+    { label: 'Discovery', icon: Search, path: '/creators' },
+    { label: 'Trends', icon: BarChart3, path: '/brand-dashboard' },
     { label: 'Settings', icon: Settings, path: '/settings' }
   ];
 
@@ -103,7 +101,6 @@ export default function DashboardLayout({ children }) {
 
   const handleNav = (path) => {
     navigate(path);
-    if (mob) setMobOpen(false);
   };
 
   const handleLogout = () => {
@@ -113,7 +110,7 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className="db-layout">
-      {/* Desktop Sidebar */}
+      {/* Desktop Sidebar (Only for Desktop) */}
       {!mob && (
         <motion.aside
           animate={{ width: collapsed ? 100 : 280 }}
@@ -126,7 +123,7 @@ export default function DashboardLayout({ children }) {
 
           <nav style={{ flex: 1 }}>
             <div style={{ paddingLeft: 12, marginBottom: 12 }}>
-               {!collapsed && <p className="db-sidebar-label">Main Menu</p>}
+               {!collapsed && <p className="db-sidebar-label">Main System</p>}
             </div>
             {links.map(link => (
               <SidebarItem 
@@ -142,17 +139,10 @@ export default function DashboardLayout({ children }) {
           <div className="db-sidebar-footer">
             <SidebarItem 
               icon={LogOut} 
-              label="Sign Out" 
+              label="Log Out" 
               collapsed={collapsed} 
               onClick={handleLogout} 
             />
-            {!collapsed && (
-              <div className="db-sidebar-promo">
-                <div className="promo-glow" />
-                <p className="promo-title">Elite Support</p>
-                <p className="promo-sub">Get 24/7 priority assistance for your campaigns.</p>
-              </div>
-            )}
           </div>
         </motion.aside>
       )}
@@ -163,25 +153,24 @@ export default function DashboardLayout({ children }) {
         <header className="db-header">
           <div className="db-header-left">
             {mob ? (
-              <button onClick={() => setMobOpen(true)} className="db-icon-btn">
-                <Menu size={22} />
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                 <Logo sm onClick={() => navigate('/')} />
+                 <div className="header-v-divider" style={{ height: 20, width: 1, background: '#f1f5f9' }} />
+                 <div style={{ 
+                   background: 'rgba(255,148,49,0.1)', 
+                   padding: '4px 12px', 
+                   borderRadius: '100px',
+                   border: '1px solid rgba(255,148,49,0.2)'
+                 }}>
+                   <p style={{ fontSize: 11, fontWeight: 900, color: '#FF9431', letterSpacing: '0.05em' }}>
+                     {role.toUpperCase()} HUB
+                   </p>
+                 </div>
+              </div>
             ) : (
               <button onClick={() => setCollapsed(!collapsed)} className="db-icon-btn">
-                <ChevronRight size={18} style={{ transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)' }} />
+                <ChevronRight size={18} style={{ transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.4s' }} />
               </button>
-            )}
-            {!mob && (
-              <div className="db-search-wrap">
-                <Search size={16} className="db-search-icon" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-                <input 
-                  type="text" 
-                  id="db-global-search"
-                  name="db-global-search"
-                  placeholder="Search campaigns, talent..." 
-                  className="db-search-input"
-                />
-              </div>
             )}
           </div>
 
@@ -194,8 +183,8 @@ export default function DashboardLayout({ children }) {
             <button className="db-user-profile" onClick={() => navigate('/settings')}>
               {!mob && (
                 <div style={{ textAlign: 'right' }}>
-                  <p className="db-user-name">{st.user?.name || 'User Account'}</p>
-                  <p className="db-user-role">{role} PRO</p>
+                  <p className="db-user-name">{st.user?.name || 'Partner Account'}</p>
+                  <p className="db-user-role">{role} ELITE</p>
                 </div>
               )}
               <div className="db-avatar">
@@ -206,68 +195,13 @@ export default function DashboardLayout({ children }) {
         </header>
 
         {/* Page Content */}
-        <div className="db-page-body">
+        <div className="db-page-body" style={{ paddingBottom: mob ? 100 : 40 }}>
           {children}
         </div>
       </main>
 
-      {/* Mobile Drawer */}
-      <AnimatePresence>
-        {mobOpen && (
-          <>
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }}
-              onClick={() => setMobOpen(false)}
-              className="db-mob-overlay"
-              style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(8px)', zIndex: 1000 }}
-            />
-            <motion.aside
-              initial={{ x: '-100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="db-mob-sidebar"
-              style={{
-                position: 'fixed', top: 0, left: 0, bottom: 0, width: 300,
-                background: '#fff', zIndex: 1001, padding: '32px 24px',
-                display: 'flex', flexDirection: 'column',
-                boxShadow: '20px 0 60px rgba(0,0,0,0.1)'
-              }}
-            >
-              <div className="db-mob-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 48 }}>
-                <Logo sm onClick={() => { navigate('/'); setMobOpen(false); }} />
-                <button onClick={() => setMobOpen(false)} className="db-icon-btn">
-                  <X size={20} />
-                </button>
-              </div>
-
-              <nav style={{ flex: 1 }}>
-                <p className="db-sidebar-label" style={{ paddingLeft: 12, marginBottom: 16 }}>Menu</p>
-                {links.map(link => (
-                  <SidebarItem 
-                    key={link.path}
-                    {...link}
-                    active={location.pathname === link.path}
-                    collapsed={false}
-                    onClick={handleNav}
-                  />
-                ))}
-              </nav>
-
-              <div className="db-sidebar-footer" style={{ paddingTop: 24, borderTop: '1px solid #f1f5f9' }}>
-                <SidebarItem 
-                  icon={LogOut} 
-                  label="Sign Out" 
-                  collapsed={false} 
-                  onClick={handleLogout} 
-                />
-              </div>
-            </motion.aside>
-          </>
-        )}
-      </AnimatePresence>
+      {/* ELITE MOBILE NAV - UNIFIED EXPERIENCE */}
+      {mob && <EliteMobileNav role={role} user={st.user} />}
     </div>
   );
 }

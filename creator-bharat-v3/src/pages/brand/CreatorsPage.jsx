@@ -185,6 +185,13 @@ export default function CreatorsPage() {
     const h = () => setMob(globalThis.innerWidth < 768);
     globalThis.addEventListener('resize', h);
     
+    // Parse URL Search Query
+    const params = new URLSearchParams(globalThis.location.search);
+    const q = params.get('q');
+    if (q) {
+      dsp({ t: 'CF', v: { q } });
+    }
+
     setLoading(true);
     fetchCreators({ limit: 200 })
       .then(list => {
@@ -196,7 +203,7 @@ export default function CreatorsPage() {
       });
     
     return () => globalThis.removeEventListener('resize', h);
-  }, []);
+  }, [dsp]);
 
   // Sync Global Nav with Filters (Z-index management)
   useEffect(() => {

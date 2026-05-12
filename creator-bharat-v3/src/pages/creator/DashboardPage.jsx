@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/core/context';
 import { LS, fmt } from '../../utils/helpers';
-import { Btn, Card, Bdg, Bar, Empty, Ring, Logo } from '@/components/common/Primitives';
+import { Btn, Card, Bdg, Bar, Empty, Ring } from '@/components/common/Primitives';
 import { motion } from 'framer-motion';
 import { 
   ShieldCheck, 
@@ -16,7 +16,7 @@ import {
   Wallet,
   Star
 } from 'lucide-react';
-import AuthGatekeeper from '@/components/auth/AuthGatekeeper';
+
 
 const StatCard = ({ label, value, trend, icon: Icon, color, delay = 0 }) => (
   <motion.div
@@ -73,22 +73,13 @@ MatchingCampaign.propTypes = {
 export default function DashboardPage() {
   const { st, dsp } = useApp();
   const navigate = useNavigate();
-  const [mob, setMob] = useState(globalThis.innerWidth < 768);
-
-  useEffect(() => {
-    const h = () => setMob(globalThis.innerWidth < 768);
-    globalThis.addEventListener('resize', h);
-    return () => globalThis.removeEventListener('resize', h);
-  }, []);
+  const getStatusColor = (status) => {
+    if (status === 'selected') return 'green';
+    if (status === 'shortlisted') return 'purple';
+    return 'blue';
+  };
 
   const toast = (msg, type) => dsp({ t: 'TOAST', d: { type, msg } });
-  
-  // Guard Clause for Auth
-  /*
-  if (!st.user || st.role !== 'creator') {
-    return <AuthGatekeeper mob={mob} />;
-  }
-  */
 
   const c = st.creatorProfile;
   const myApps = LS.get('cb_applications', []).filter(a => a.applicantEmail === st.user?.email);
@@ -223,7 +214,7 @@ export default function DashboardPage() {
                                </div>
                             </div>
                             <div className="item-right">
-                               <Bdg color={a.status === 'selected' ? 'green' : (a.status === 'shortlisted' ? 'purple' : 'blue')}>
+                               <Bdg color={getStatusColor(a.status)}>
                                   {a.status?.toUpperCase() || 'SENT'}
                                 </Bdg>
                                <p className="date-text">{fmt.date(a.date)}</p>

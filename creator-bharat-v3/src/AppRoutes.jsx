@@ -5,6 +5,8 @@ import { Routes, Route, Outlet } from 'react-router-dom';
 // Layouts
 import PublicLayout from '@/components/layout/PublicLayout';
 import DashboardLayout from '@/components/layout/DashboardLayout';
+import { useApp } from '@/core/context';
+import PremiumLock from '@/components/auth/PremiumLock';
 
 // Public Pages
 const HomePage = lazy(() => import('./pages/public/HomePage'));
@@ -101,6 +103,16 @@ const Fallback = () => (
   </div>
 );
 
+const AuthLock = ({ children }) => {
+  const { st } = useApp();
+  if (!st.user) return <PremiumLock>{children}</PremiumLock>;
+  return children;
+};
+
+AuthLock.propTypes = {
+  children: PropTypes.node.isRequired
+};
+
 export default function AppRoutes({ location }) {
   return (
     <Suspense fallback={<Fallback />}>
@@ -120,11 +132,11 @@ export default function AppRoutes({ location }) {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/faq" element={<FAQPage />} />
-          <Route path="/rate-calc" element={<RateCalcPage />} />
+          <Route path="/rate-calc" element={<AuthLock><RateCalcPage /></AuthLock>} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/official-profile" element={<OfficialProfilePage />} />
           <Route path="/creators" element={<CreatorsPage />} />
-          <Route path="/campaigns" element={<CampaignsPage />} />
+          <Route path="/campaigns" element={<AuthLock><CampaignsPage /></AuthLock>} />
           <Route path="/compare" element={<ComparePage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<BlogArticlePage />} />
@@ -134,22 +146,29 @@ export default function AppRoutes({ location }) {
           <Route path="/creator/:id" element={<CreatorProfilePage />} />
         </Route>
 
-        {/* Dashboard Layout Group */}
+        {/* Dashboard Layout Group - Unified Protection */}
         <Route element={<ProtectedRoute><DashboardLayout><Outlet /></DashboardLayout></ProtectedRoute>}>
-          {/* Creator Dash */}
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/wallet" element={<WalletPage />} />
-          <Route path="/applications" element={<ApplicationsPage />} />
-          <Route path="/creator-score" element={<CreatorScorePage />} />
-          <Route path="/saved" element={<SavedPage />} />
-          <Route path="/monetize" element={<MonetizationPage />} />
-          <Route path="/monetization" element={<MonetizationPage />} />
-          <Route path="/messages" element={<MessagesPage />} />
           
-          {/* Brand Dash */}
-          <Route path="/brand-dashboard" element={<BrandDashboardPage />} />
-          <Route path="/campaign-builder" element={<CampaignBuilderPage />} />
+          {/* Creator ONLY Routes */}
+          <Route element={<ProtectedRoute allowedRole="creator"><Outlet /></ProtectedRoute>}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/wallet" element={<WalletPage />} />
+            <Route path="/applications" element={<ApplicationsPage />} />
+            <Route path="/creator-score" element={<CreatorScorePage />} />
+            <Route path="/saved" element={<SavedPage />} />
+            <Route path="/monetize" element={<MonetizationPage />} />
+            <Route path="/monetization" element={<MonetizationPage />} />
+            <Route path="/messages" element={<MessagesPage />} />
+          </Route>
+          
+          {/* Brand ONLY Routes */}
+          <Route element={<ProtectedRoute allowedRole="brand"><Outlet /></ProtectedRoute>}>
+            <Route path="/brand-dashboard" element={<BrandDashboardPage />} />
+            <Route path="/campaign-builder" element={<CampaignBuilderPage />} />
+          </Route>
+
+          {/* Shared Dashboard Routes (Settings) */}
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
 
         {/* Fallback */}

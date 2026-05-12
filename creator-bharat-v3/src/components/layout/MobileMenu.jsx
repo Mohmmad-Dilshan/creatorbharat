@@ -5,7 +5,7 @@ import { useApp } from '@/core/context';
 import { Btn, Logo } from '@/components/common/Primitives';
 import { scrollToTop } from '../../utils/helpers';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Users, Megaphone, BookOpen, Heart, LogOut, LayoutDashboard, Briefcase, Bookmark, Settings, ChevronRight, User, LifeBuoy, MessageSquare, Sparkles, Search, Calculator, Trophy, ShieldCheck } from 'lucide-react';
+import { X, Users, Megaphone, BookOpen, Heart, LogOut, LayoutDashboard, Briefcase, Bookmark, Settings, ChevronRight, User, LifeBuoy, MessageSquare, Sparkles, Search, Calculator, Trophy, ShieldCheck, Home } from 'lucide-react';
 
 export default function MobileMenu({ open }) {
   const { st, dsp } = useApp();
@@ -22,20 +22,66 @@ export default function MobileMenu({ open }) {
     dsp({ t: 'UI', v: { mobileMenu: false } });
   };
 
+  const [search, setSearch] = React.useState('');
+  const [results, setResults] = React.useState({ pages: [], creators: [] });
+
+  // Top Creators for Search Results
+  const FEATURED_CREATORS = [
+    { id: 1, name: 'Mohit Sharma', handle: 'mohit.vlogs', photo: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=100&q=80' },
+    { id: 2, name: 'Ananya Pandey', handle: 'ananya.style', photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80' },
+    { id: 3, name: 'Raj Kumar', handle: 'raj.tech', photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80' }
+  ];
+
   const links = [
+    { path: '/', l: 'Home', i: Home },
     { path: '/creators', l: 'Marketplace', i: Users },
     { path: '/campaigns', l: 'Brand Deals', i: Megaphone },
     { path: '/leaderboard', l: 'Leaderboard', i: Trophy },
     { path: '/rate-calc', l: 'Rate Calculator', i: Calculator },
     { path: '/blog', l: 'Hub', i: BookOpen },
     { path: '/official-profile', l: 'Official Identity', i: ShieldCheck },
-    { path: '/about', l: 'Our Story', i: Heart }
+    { path: '/about', l: 'Our Story', i: Heart },
+    { path: '/pricing', l: 'Pricing', i: Sparkles }
   ];
 
   const supportLinks = [
     { path: '/faq', l: 'Help Center', i: LifeBuoy },
-    { path: '/contact', l: 'Contact Support', i: MessageSquare }
+    { path: '/contact', l: 'Contact Support', i: MessageSquare },
+    { path: '/creator-guidelines', l: 'Guidelines', i: BookOpen },
+    { path: '/privacy', l: 'Privacy Policy', i: ShieldCheck },
+    { path: '/terms', l: 'Terms of Service', i: ShieldCheck }
   ];
+
+  // Live Search Logic
+  React.useEffect(() => {
+    if (!search.trim()) {
+      setResults({ pages: [], creators: [] });
+      return;
+    }
+
+    const q = search.toLowerCase();
+    
+    // Filter Pages
+    const filteredPages = [...links, ...supportLinks].filter(p => 
+      p.l.toLowerCase().includes(q)
+    ).slice(0, 4);
+
+    // Filter Creators
+    const filteredCreators = FEATURED_CREATORS.filter(c => 
+      c.name.toLowerCase().includes(q) || c.handle.toLowerCase().includes(q)
+    ).slice(0, 3);
+
+    setResults({ pages: filteredPages, creators: filteredCreators });
+  }, [search]);
+
+  const handleSearch = (e) => {
+    if (e) e.preventDefault();
+    if (!search.trim()) return;
+    dsp({ t: 'UI', v: { mobileMenu: false } });
+    navigate(`/creators?q=${encodeURIComponent(search.trim())}`);
+    setSearch('');
+    scrollToTop();
+  };
 
   const isCreator = st.role === 'creator';
   const isBrand = st.role === 'brand';
@@ -54,7 +100,7 @@ export default function MobileMenu({ open }) {
               position: 'fixed', inset: 0, 
               background: 'rgba(0,0,0,0.4)', 
               backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
-              zIndex: 9500 
+              zIndex: 2000000 
             }} 
           />
 
@@ -68,7 +114,7 @@ export default function MobileMenu({ open }) {
               position: 'fixed', top: 0, right: 0, bottom: 0, 
               width: '100%', maxWidth: 360, 
               background: '#ffffff', 
-              zIndex: 9600,
+              zIndex: 2000001,
               display: 'flex', flexDirection: 'column',
               boxShadow: '-20px 0 60px rgba(0,0,0,0.15)',
               borderLeft: '1px solid rgba(0,0,0,0.05)',
@@ -96,18 +142,94 @@ export default function MobileMenu({ open }) {
             {/* SCROLLABLE CONTENT */}
             <div style={{ flex: 1, overflowY: 'auto', padding: '28px', display: 'flex', flexDirection: 'column', gap: 32 }}>
               
-              {/* QUICK SEARCH (MOCKUP) */}
-              <button 
-                onClick={() => { dsp({ t: 'UI', v: { mobileMenu: false } }); go('/creators'); }}
-                style={{ 
-                  display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', 
-                  background: '#F9FAFB', borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)',
-                  cursor: 'pointer', width: '100%', textAlign: 'left'
-                }}
-              >
-                <Search size={18} color="rgba(0,0,0,0.4)" />
-                <span style={{ fontSize: 14, color: 'rgba(0,0,0,0.5)', fontWeight: 500 }}>Search creators, campaigns...</span>
-              </button>
+              {/* REAL CREATOR SEARCH & RESULTS */}
+              <div style={{ position: 'relative' }}>
+                <form 
+                  onSubmit={handleSearch}
+                  style={{ 
+                    display: 'flex', alignItems: 'center', gap: 12, padding: '4px 14px', 
+                    background: '#F9FAFB', borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)',
+                    width: '100%'
+                  }}
+                >
+                  <button 
+                    type="submit" 
+                    style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                  >
+                    <Search size={18} color={search ? '#FF9431' : 'rgba(0,0,0,0.4)'} />
+                  </button>
+                  <input 
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search creators or pages..."
+                    style={{ 
+                      background: 'none', border: 'none', outline: 'none', 
+                      fontSize: 14, color: '#111', fontWeight: 600, 
+                      width: '100%', height: '44px'
+                    }}
+                  />
+                  {search && (
+                    <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', color: '#94a3b8' }}>
+                      <X size={16} />
+                    </button>
+                  )}
+                </form>
+
+                {/* Live Search Dropdown */}
+                <AnimatePresence>
+                  {search.trim() && (results.pages.length > 0 || results.creators.length > 0) && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      style={{
+                        position: 'absolute', top: '110%', left: 0, right: 0,
+                        background: '#fff', borderRadius: 16, 
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                        border: '1px solid rgba(0,0,0,0.05)',
+                        zIndex: 100, overflow: 'hidden', padding: '12px'
+                      }}
+                    >
+                      {results.pages.length > 0 && (
+                        <div style={{ marginBottom: 12 }}>
+                          <div style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', padding: '4px 8px' }}>Pages</div>
+                          {results.pages.map(p => (
+                            <button 
+                              key={p.path} 
+                              onClick={() => go(p.path)}
+                              style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 8px', background: 'none', border: 'none', borderRadius: 8, cursor: 'pointer', textAlign: 'left' }}
+                              onMouseEnter={e => e.currentTarget.style.background = '#F9FAFB'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                            >
+                              <p.i size={14} color="#FF9431" />
+                              <span style={{ fontSize: 13, fontWeight: 700, color: '#111' }}>{p.l}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      {results.creators.length > 0 && (
+                        <div>
+                          <div style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', padding: '4px 8px' }}>Creators</div>
+                          {results.creators.map(c => (
+                            <button 
+                              key={c.id} 
+                              onClick={() => { go(`/creator/${c.handle || c.id}`); setSearch(''); }}
+                              style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 8px', background: 'none', border: 'none', borderRadius: 8, cursor: 'pointer', textAlign: 'left' }}
+                              onMouseEnter={e => e.currentTarget.style.background = '#F9FAFB'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                            >
+                              <img src={c.photo || `https://ui-avatars.com/api/?name=${c.name}`} style={{ width: 24, height: 24, borderRadius: '50%' }} alt="" />
+                              <span style={{ fontSize: 13, fontWeight: 700, color: '#111' }}>{c.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
               {/* MAIN NAVIGATION */}
               <div>
@@ -134,7 +256,7 @@ export default function MobileMenu({ open }) {
                           transition: 'all 0.2s ease', border: 'none', width: '100%', textAlign: 'left'
                         }}
                       >
-                        <Icon size={18} color={isActive ? '#111' : 'rgba(0,0,0,0.6)'} />
+                        <Icon size={18} color={isActive ? '#FF9431' : 'rgba(0,0,0,0.6)'} />
                         <span style={{ 
                           fontWeight: isActive ? 700 : 500, 
                           fontSize: 15, 
@@ -236,7 +358,7 @@ export default function MobileMenu({ open }) {
                 <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8, lineHeight: 1.3 }}>Unlock premium tools & analytics</h4>
                 <p style={{ fontSize: 13, color: 'rgba(0,0,0,0.6)', marginBottom: 16, lineHeight: 1.4 }}>Get verified, access elite campaigns, and grow faster.</p>
                 <button 
-                  onClick={() => { dsp({ t: 'UI', v: { mobileMenu: false } }); go('/pricing'); }}
+                  onClick={() => go('/pricing')}
                   style={{ 
                     padding: '10px 16px', background: '#FF9431', color: '#fff', 
                     border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, 
