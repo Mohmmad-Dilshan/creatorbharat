@@ -234,7 +234,20 @@ export default function PricingPage() {
     }
   ];
 
-  const activePlans = tab === 'creator' ? creatorPlans : brandPlans;
+  const renderCellContent = (value, color) => {
+    if (typeof value === 'boolean') {
+      return value ? <Check size={18} color={color} style={{ margin: '0 auto' }} /> : '-';
+    }
+    return (
+      <span style={{ 
+        fontSize: '14px', 
+        fontWeight: color === '#FF9431' ? 900 : 700, 
+        color: color === '#FF9431' ? '#FF9431' : '#94a3b8' 
+      }}>
+        {value}
+      </span>
+    );
+  };
 
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', overflowX: 'hidden' }}>
@@ -376,14 +389,14 @@ export default function PricingPage() {
                   { f: 'Brand Direct Chat', s: false, p: true },
                   { f: 'AI SEO Optimizer', s: false, p: true },
                   { f: 'Platform Support', s: 'Community', p: '24/7 Priority' }
-                ].map((row, i) => (
-                  <tr key={i} style={{ borderTop: '1px solid #f1f5f9' }}>
+                ].map((row) => (
+                  <tr key={row.f} style={{ borderTop: '1px solid #f1f5f9' }}>
                     <td style={{ padding: '20px 32px', fontSize: '15px', fontWeight: 600, color: '#475569' }}>{row.f}</td>
                     <td style={{ padding: '20px 32px', textAlign: 'center' }}>
-                      {typeof row.s === 'boolean' ? (row.s ? <Check size={18} color="#10B981" style={{ margin: '0 auto' }} /> : '-') : <span style={{ fontSize: '14px', fontWeight: 700, color: '#94a3b8' }}>{row.s}</span>}
+                      {renderCellContent(row.s, '#10B981')}
                     </td>
                     <td style={{ padding: '20px 32px', textAlign: 'center', background: 'rgba(255, 148, 49, 0.02)' }}>
-                      {typeof row.p === 'boolean' ? (row.p ? <Check size={18} color="#FF9431" style={{ margin: '0 auto' }} /> : '-') : <span style={{ fontSize: '14px', fontWeight: 900, color: '#FF9431' }}>{row.p}</span>}
+                      {renderCellContent(row.p, '#FF9431')}
                     </td>
                   </tr>
                 ))}
