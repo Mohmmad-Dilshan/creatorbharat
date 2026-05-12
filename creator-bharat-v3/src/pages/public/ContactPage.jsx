@@ -20,7 +20,8 @@ import {
   BarChart3,
   ShieldAlert,
   Rocket,
-  Download
+  Download,
+  HelpCircle
 } from 'lucide-react';
 import { Btn, Card, Bdg, Modal } from '@/components/common/Primitives';
 import { LinkedinIcon } from '../../components/icons/SocialIcons';
@@ -240,7 +241,18 @@ export default function ContactPage() {
              <ContactMethodCard icon={Mail} title="Support Inbox" value="support@creatorbharat.in" sub="Quick resolutions 24/7" delay={0.1} mob={mob} />
              <ContactMethodCard icon={LinkedinIcon} title="Brand Partnerships" value="solutions@creatorbharat.in" sub="Direct channel for agencies" delay={0.2} mob={mob} />
              <ContactMethodCard icon={MessageCircle} title="WhatsApp Concierge" value="+91 9999-000000" sub="Mon-Fri, 10am to 7pm" delay={0.3} mob={mob} />
-             <ContactMethodCard icon={Building2} title="Global HQ" value="Bhilwara, Rajasthan" sub="The heart of creator economy" delay={0.4} mob={mob} />
+             <ContactMethodCard icon={Building2} title="The Bharat HQ" value="Bhilwara, Rajasthan" sub="311001, India" delay={0.4} mob={mob} />
+
+             {/* HELP CENTER SHORTCUTS */}
+             <div style={{ padding: '24px', background: '#f8fafc', borderRadius: '32px', border: '1px solid #f1f5f9' }}>
+                <h4 style={{ fontSize: '14px', fontWeight: 900, color: '#0f172a', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <HelpCircle size={16} color="#FF9431" /> Quick Help
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                   <button onClick={() => globalThis.location.href='/faq'} style={{ padding: '12px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '12px', fontWeight: 800, color: '#475569', cursor: 'pointer' }}>Payment FAQ</button>
+                   <button onClick={() => globalThis.location.href='/faq'} style={{ padding: '12px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '12px', fontWeight: 800, color: '#475569', cursor: 'pointer' }}>Verification</button>
+                </div>
+             </div>
 
              <Card style={{ padding: mob ? '32px' : '40px', borderRadius: '32px', background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)', color: '#fff', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: -20, right: -20, opacity: 0.1 }}><Sparkles size={150} /></div>
@@ -257,6 +269,25 @@ export default function ContactPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 900, color: '#94a3b8' }}><ShieldCheck size={14} /> SECURE PORTAL</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 900, color: '#94a3b8' }}><Globe size={14} /> NATIONAL REACH</div>
              </div>
+          </div>
+        </div>
+      </section>
+
+      {/* REGIONAL HUBS SECTION */}
+      <section style={{ padding: '80px 24px', background: '#fff', marginTop: '80px' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '32px' }}>
+            {[
+              { city: 'Bhilwara', type: 'Global HQ', focus: 'Strategy & Ops' },
+              { city: 'Indore', type: 'Regional Hub', focus: 'Influencer Growth' },
+              { city: 'Jaipur', type: 'Tech Hub', focus: 'AI & Data Lab' }
+            ].map((hub) => (
+              <div key={hub.city} style={{ padding: '32px', background: '#f8fafc', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
+                 <div style={{ fontSize: '11px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', marginBottom: '8px' }}>{hub.type}</div>
+                 <h4 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', marginBottom: '4px' }}>{hub.city}</h4>
+                 <div style={{ fontSize: '14px', color: '#64748b', fontWeight: 600 }}>{hub.focus}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

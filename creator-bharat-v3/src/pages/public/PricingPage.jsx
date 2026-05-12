@@ -343,6 +343,55 @@ export default function PricingPage() {
         </div>
       </section>
 
+      {/* DETAILED COMPARISON TABLE */}
+      <section style={{ padding: '80px 24px', background: '#fcfcfc' }}>
+        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+            <h2 style={{ fontSize: '36px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.02em' }}>Compare Features</h2>
+            <p style={{ color: '#64748b', fontWeight: 500 }}>Select the perfect plan for your professional journey.</p>
+          </div>
+
+          <div style={{ 
+            background: '#fff', 
+            borderRadius: '32px', 
+            border: '1px solid #f1f5f9', 
+            overflow: 'hidden',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.02)'
+          }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <thead>
+                <tr style={{ background: '#f8fafc' }}>
+                  <th style={{ padding: '24px 32px', fontSize: '14px', fontWeight: 900, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Core Feature</th>
+                  <th style={{ padding: '24px 32px', fontSize: '14px', fontWeight: 900, color: '#64748b', textAlign: 'center' }}>Starter</th>
+                  <th style={{ padding: '24px 32px', fontSize: '14px', fontWeight: 900, color: '#FF9431', textAlign: 'center' }}>Elite Pro</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { f: 'Smart Digital Portfolio', s: 'Basic', p: 'Cinematic' },
+                  { f: 'Search Priority', s: 'Standard', p: 'Top 1% Spot' },
+                  { f: 'Deal Applications', s: '3 per month', p: 'Unlimited' },
+                  { f: 'Verified Badge', s: false, p: 'Elite Blue' },
+                  { f: 'Brand Direct Chat', s: false, p: true },
+                  { f: 'AI SEO Optimizer', s: false, p: true },
+                  { f: 'Platform Support', s: 'Community', p: '24/7 Priority' }
+                ].map((row, i) => (
+                  <tr key={i} style={{ borderTop: '1px solid #f1f5f9' }}>
+                    <td style={{ padding: '20px 32px', fontSize: '15px', fontWeight: 600, color: '#475569' }}>{row.f}</td>
+                    <td style={{ padding: '20px 32px', textAlign: 'center' }}>
+                      {typeof row.s === 'boolean' ? (row.s ? <Check size={18} color="#10B981" style={{ margin: '0 auto' }} /> : '-') : <span style={{ fontSize: '14px', fontWeight: 700, color: '#94a3b8' }}>{row.s}</span>}
+                    </td>
+                    <td style={{ padding: '20px 32px', textAlign: 'center', background: 'rgba(255, 148, 49, 0.02)' }}>
+                      {typeof row.p === 'boolean' ? (row.p ? <Check size={18} color="#FF9431" style={{ margin: '0 auto' }} /> : '-') : <span style={{ fontSize: '14px', fontWeight: 900, color: '#FF9431' }}>{row.p}</span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       {/* Value Comparison */}
       <section style={{ padding: '80px 24px', background: '#fff', borderTop: '1px solid #f1f5f9' }}>
          <div style={{ maxWidth: '1000px', margin: '0 auto' }}>

@@ -12,7 +12,9 @@ import {
   ChevronRight,
   TrendingUp,
   Heart,
-  Command
+  Command,
+  MapPin,
+  Sparkles
 } from 'lucide-react';
 import { Btn, Card, Bdg } from '@/components/common/Primitives';
 
@@ -22,10 +24,10 @@ const StatBlock = ({ value, label, delay = 0 }) => (
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
     transition={{ delay, duration: 0.6 }}
-    style={{ textAlign: 'center' }}
+    style={{ textAlign: 'left' }}
   >
-    <div style={{ fontSize: '48px', fontWeight: 950, color: '#fff', marginBottom: '8px', letterSpacing: '-0.04em' }}>{value}</div>
-    <div style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.5)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</div>
+    <div style={{ fontSize: '56px', fontWeight: 950, color: '#fff', marginBottom: '8px', letterSpacing: '-0.04em', fontFamily: "'Outfit', sans-serif" }}>{value}</div>
+    <div style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.4)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em' }}>{label}</div>
   </motion.div>
 );
 
@@ -43,10 +45,10 @@ const TimelineStep = ({ year, title, desc, delay = 0 }) => (
     transition={{ delay, duration: 0.6 }}
     style={{ position: 'relative', paddingLeft: '48px', marginBottom: '64px' }}
   >
-    <div style={{ position: 'absolute', left: '0', top: '0', width: '20px', height: '20px', borderRadius: '50%', background: '#FF9431', border: '4px solid #fff', boxShadow: '0 0 0 8px rgba(255, 148, 49, 0.1)', zIndex: 2 }} />
-    <div style={{ fontSize: '18px', fontWeight: 950, color: '#FF9431', marginBottom: '8px', fontFamily: "'Outfit', sans-serif" }}>{year}</div>
-    <h4 style={{ fontSize: '24px', fontWeight: 900, color: '#0f172a', marginBottom: '12px' }}>{title}</h4>
-    <p style={{ fontSize: '16px', color: '#64748b', lineHeight: 1.7, maxWidth: '500px' }}>{desc}</p>
+    <div style={{ position: 'absolute', left: '0', top: '0', width: '18px', height: '18px', borderRadius: '50%', background: '#FF9431', border: '4px solid #fff', boxShadow: '0 0 0 8px rgba(255, 148, 49, 0.1)', zIndex: 2 }} />
+    <div style={{ fontSize: '14px', fontWeight: 900, color: '#FF9431', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{year}</div>
+    <h4 style={{ fontSize: '26px', fontWeight: 900, color: '#0f172a', marginBottom: '12px', letterSpacing: '-0.02em' }}>{title}</h4>
+    <p style={{ fontSize: '17px', color: '#64748b', lineHeight: 1.75, maxWidth: '540px' }}>{desc}</p>
   </motion.div>
 );
 
@@ -59,215 +61,237 @@ TimelineStep.propTypes = {
 
 export default function AboutPage() {
   const navigate = useNavigate();
+
+  // Structured Data for SEO
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "CreatorBharat",
+    "url": "https://creatorbharat.in",
+    "logo": "https://creatorbharat.in/logo.png",
+    "description": "The infrastructure of trust for India's regional creator economy.",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Bhilwara",
+      "addressRegion": "Rajasthan",
+      "addressCountry": "IN"
+    }
+  };
+
   return (
     <div style={{ background: '#fff', overflowX: 'hidden' }}>
       <Seo 
-        title="Our Story & Vision"
-        description="The mission to build the infrastructure of trust for Bharat's creator economy."
-        keywords="about us, creatorbharat story, mission, vision"
+        title="Our Mission & DNA"
+        description="We are building the trust layer for Bharat's regional creator economy. Discover the story of CreatorBharat."
+        keywords="about us, bharat creator economy, bhilwara startup, regional creators"
       />
+
+      <script type="application/ld+json">
+        {JSON.stringify(jsonLd)}
+      </script>
       
-      {/* Dynamic Hero Section */}
+      {/* CINEMATIC HERO SECTION */}
       <section style={{ 
-        background: '#050505', 
-        padding: '200px 24px 120px', 
-        textAlign: 'center',
+        background: '#0a0a0a', 
+        padding: '240px 24px 160px', 
         position: 'relative',
         overflow: 'hidden'
       }}>
-        {/* Animated Background Mesh */}
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255, 148, 49, 0.1), transparent 70%)', opacity: 0.8 }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #FF9431, #fff, #10B981)' }} />
+        {/* Advanced Decorative Elements */}
+        <div style={{ position: 'absolute', top: '-10%', right: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(255, 148, 49, 0.08) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        <div style={{ position: 'absolute', bottom: '-10%', left: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%)', filter: 'blur(60px)' }} />
         
-        <div style={{ maxWidth: '1100px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             style={{ 
               display: 'inline-flex', 
               alignItems: 'center', 
-              gap: '10px', 
-              background: 'rgba(255, 255, 255, 0.05)', 
-              padding: '10px 20px', 
+              gap: '12px', 
+              background: 'rgba(255, 255, 255, 0.03)', 
+              padding: '8px 20px', 
               borderRadius: '100px',
-              marginBottom: '40px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)'
+              marginBottom: '48px',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              backdropFilter: 'blur(20px)'
             }}
           >
-            <Command size={16} color="#FF9431" />
-            <span style={{ fontSize: '13px', fontWeight: 900, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Bhilwara Roots. National Vision.</span>
+            <Sparkles size={14} color="#FF9431" fill="#FF9431" />
+            <span style={{ fontSize: '12px', fontWeight: 900, color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', letterSpacing: '0.2em' }}>The Bharat Chapter</span>
           </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            style={{ 
-              fontSize: 'clamp(56px, 10vw, 120px)', 
-              fontWeight: 950, 
-              color: '#fff', 
-              lineHeight: 0.85, 
-              marginBottom: '40px',
-              letterSpacing: '-0.06em'
-            }}
-          >
-            Empowering the <br />
-            <span style={{ background: 'linear-gradient(90deg, #FF9431, #fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bharat Voice.</span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            style={{ 
-              fontSize: '22px', 
-              color: 'rgba(255, 255, 255, 0.6)', 
-              maxWidth: '800px', 
-              margin: '0 auto 80px',
-              lineHeight: 1.6,
-              fontWeight: 500
-            }}
-          >
-            We are building the digital infrastructure for India's next 100 million creators rising from Tier 2 & 3 cities. No gatekeepers, just growth.
-          </motion.p>
-
-          {/* Impact Snapshot */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '48px', paddingTop: '60px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-            <StatBlock value="15k+" label="Creators Mapped" delay={0.3} />
-            <StatBlock value="250+" label="Cities Reached" delay={0.4} />
-            <StatBlock value="₹1.2Cr" label="Monthly Payouts" delay={0.5} />
-            <StatBlock value="100%" label="Transparent" delay={0.6} />
-          </div>
-        </div>
-      </section>
-
-      {/* Origin Story Section */}
-      <section style={{ padding: '140px 24px', background: '#fff' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '100px', alignItems: 'start' }}>
-            
-            {/* Timeline Column */}
-            <div style={{ position: 'relative' }}>
-               <div style={{ position: 'absolute', left: '9px', top: '0', bottom: '64px', width: '2px', background: 'linear-gradient(to bottom, #FF9431, transparent)' }} />
-               
-               <TimelineStep 
-                 year="2024: THE SPARK" 
-                 title="Born in Bhilwara" 
-                 desc="We saw firsthand the struggle of talented local creators being ignored by metro-centric agencies. The idea for CreatorBharat was born."
-               />
-               <TimelineStep 
-                 year="2025: THE BUILD" 
-                 title="Technology First" 
-                 desc="Focused on creating the 'Elite Score' and AI Discovery tools to give every creator in Bharat a professional digital identity."
-                 delay={0.1}
-               />
-               <TimelineStep 
-                 year="2026: THE MISSION" 
-                 title="National Scale" 
-                 desc="Expanding to every district in India, ensuring that influence isn't just about English—it's about the real voices of Bharat."
-                 delay={0.2}
-               />
-            </div>
-
-            {/* Narrative Column */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '80px', alignItems: 'end' }}>
             <div>
-               <Bdg color="orange" sm>THE NARRATIVE</Bdg>
-               <h2 style={{ fontSize: '56px', fontWeight: 950, color: '#0f172a', lineHeight: 1, marginTop: '24px', marginBottom: '40px', letterSpacing: '-0.04em' }}>
-                 Influence shouldn't have a <span style={{ color: '#FF9431' }}>Pincode.</span>
-               </h2>
-               <p style={{ fontSize: '18px', color: '#475569', lineHeight: 1.8, marginBottom: '24px', fontWeight: 500 }}>
-                 Metros represent only 10% of India. The real power, the real purchasing influence, and the most authentic storytelling lies in the streets of Bhilwara, the markets of Indore, and the homes of Guwahati.
-               </p>
-               <p style={{ fontSize: '18px', color: '#475569', lineHeight: 1.8, marginBottom: '48px', fontWeight: 500 }}>
-                 CreatorBharat is a movement to decentralize the creator economy. We are giving local superstars the tools, the trust, and the deals they deserve.
-               </p>
-
-               <div style={{ padding: '40px', background: '#050505', borderRadius: '40px', color: '#fff', position: 'relative', overflow: 'hidden' }}>
-                  <div style={{ position: 'absolute', top: -20, right: -20, opacity: 0.1 }}><Globe size={150} /></div>
-                  <h4 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '16px' }}>Our Commitment</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                        <ShieldCheck size={20} color="#10B981" />
-                        <span style={{ fontSize: '15px', fontWeight: 700 }}>100% Identity Verification</span>
-                     </div>
-                     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                        <Zap size={20} color="#FF9431" />
-                        <span style={{ fontSize: '15px', fontWeight: 700 }}>Zero Platform Commission</span>
-                     </div>
-                  </div>
-               </div>
+              <motion.h1
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                style={{ 
+                  fontSize: 'clamp(56px, 9vw, 110px)', 
+                  fontWeight: 950, 
+                  color: '#fff', 
+                  lineHeight: 0.82, 
+                  letterSpacing: '-0.06em',
+                  marginBottom: '0'
+                }}
+              >
+                Building for the <br />
+                <span style={{ color: '#FF9431' }}>Next Billion.</span>
+              </motion.h1>
             </div>
+            
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              style={{ paddingBottom: '20px' }}
+            >
+              <p style={{ fontSize: '20px', color: 'rgba(255, 255, 255, 0.5)', lineHeight: 1.5, fontWeight: 500 }}>
+                Metros are saturated. Influence is migrating. We are the infrastructure for India's regional rising stars.
+              </p>
+            </motion.div>
+          </div>
 
+          <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '80px 0' }} />
+
+          {/* Stats Snapshot */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '60px' }}>
+            <StatBlock value="150+" label="Districts Covered" delay={0.2} />
+            <StatBlock value="4.9/5" label="Creator Rating" delay={0.3} />
+            <StatBlock value="10M+" label="Aggregate Reach" delay={0.4} />
+            <StatBlock value="0%" label="Broker Fees" delay={0.5} />
           </div>
         </div>
       </section>
 
-      {/* Core Values Section */}
-      <section style={{ padding: '120px 24px', background: '#f8fafc' }}>
+      {/* REGIONAL POWER SECTION - NEW */}
+      <section style={{ padding: '160px 24px', background: '#fff' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-            <h2 style={{ fontSize: '48px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.03em' }}>The Bharat Philosophy</h2>
-            <p style={{ fontSize: '18px', color: '#64748b', marginTop: '12px', fontWeight: 500 }}>Three pillars that define our professional standard.</p>
-          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '80px', alignItems: 'center' }}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              style={{ position: 'relative' }}
+            >
+              <div style={{ 
+                width: '100%', 
+                aspectRatio: '4/5', 
+                background: '#f8fafc', 
+                borderRadius: '60px', 
+                overflow: 'hidden',
+                border: '1px solid #e2e8f0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '40px'
+              }}>
+                <div style={{ textAlign: 'center' }}>
+                  <MapPin size={120} color="#FF9431" strokeWidth={1} style={{ marginBottom: '32px', opacity: 0.2 }} />
+                  <div style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Current Focus</div>
+                  <div style={{ fontSize: '32px', fontWeight: 950, color: '#0f172a', marginTop: '12px' }}>Tier 2 & 3 Bharat</div>
+                </div>
+              </div>
+              <div style={{ position: 'absolute', bottom: '-30px', right: '-30px', background: '#FF9431', color: '#fff', padding: '32px', borderRadius: '32px', boxShadow: '0 20px 40px rgba(255,148,49,0.3)' }}>
+                <div style={{ fontSize: '48px', fontWeight: 950, lineHeight: 1 }}>85%</div>
+                <div style={{ fontSize: '13px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '8px' }}>Regional Audience</div>
+              </div>
+            </motion.div>
 
+            <div>
+              <Bdg color="orange" sm>THE REGIONAL SHIFT</Bdg>
+              <h2 style={{ fontSize: '64px', fontWeight: 950, color: '#0f172a', lineHeight: 0.95, margin: '24px 0 40px', letterSpacing: '-0.04em' }}>
+                Influence is no longer <br /> <span style={{ color: '#FF9431' }}>Metro-Limited.</span>
+              </h2>
+              <p style={{ fontSize: '19px', color: '#475569', lineHeight: 1.8, marginBottom: '24px', fontWeight: 500 }}>
+                Metro cities represent the elite few. Bharat represents the massive many. We believe a creator in Bhilwara has more authentic influence over their community than a celebrity in Mumbai.
+              </p>
+              <p style={{ fontSize: '19px', color: '#475569', lineHeight: 1.8, marginBottom: '48px', fontWeight: 500 }}>
+                Our mission is to give these regional superstars a professional identity, direct brand access, and a global standard toolkit.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                <div style={{ padding: '24px', background: '#f8fafc', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
+                   <div style={{ fontSize: '14px', fontWeight: 900, color: '#0f172a', marginBottom: '8px' }}>Direct Impact</div>
+                   <div style={{ fontSize: '15px', color: '#64748b' }}>Cutting out the middleman and elite agencies.</div>
+                </div>
+                <div style={{ padding: '24px', background: '#f8fafc', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
+                   <div style={{ fontSize: '14px', fontWeight: 900, color: '#0f172a', marginBottom: '8px' }}>Global Tech</div>
+                   <div style={{ fontSize: '15px', color: '#64748b' }}>World-class analytics for local campaigns.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ORIGIN TIMELINE */}
+      <section style={{ padding: '140px 24px', background: '#f8fafc', borderRadius: '100px 100px 0 0' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '100px' }}>
+            <h2 style={{ fontSize: '56px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em' }}>Our Evolution</h2>
+            <p style={{ fontSize: '18px', color: '#64748b', marginTop: '16px' }}>The journey from a local idea to a national movement.</p>
+          </div>
+          
+          <div style={{ position: 'relative', maxWidth: '800px', margin: '0 auto' }}>
+            <div style={{ position: 'absolute', left: '8px', top: '0', bottom: '64px', width: '2px', background: 'linear-gradient(to bottom, #FF9431, transparent)' }} />
+            <TimelineStep year="2024: THE SPARK" title="The Bhilwara Prototype" desc="Identifying the gap between regional talent and national brand opportunities. The first version of CreatorBharat was tested." />
+            <TimelineStep year="2025: THE INFRASTRUCTURE" title="The Identity Layer" desc="Launched the Creator Score and Digital Pehchan tools to standardize trust in the creator economy." delay={0.1} />
+            <TimelineStep year="2026: THE REVOLUTION" title="National Empowerment" desc="Scaling to 28 states and 10,000+ districts, making CreatorBharat the default operating system for regional talent." delay={0.2} />
+          </div>
+        </div>
+      </section>
+
+      {/* PHILOSOPHY GRID */}
+      <section style={{ padding: '160px 24px', background: '#fff' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px' }}>
             {[
-              { title: 'Pehchan (Identity)', desc: 'Professionalizing creators with verified portfolios and data-backed trust scores.', icon: Award, color: '#FF9431' },
-              { title: 'Paisa (Monetization)', desc: 'Connecting talent directly to national brands with secure, commission-free deals.', icon: Target, color: '#10B981' },
-              { title: 'Pragati (Growth)', desc: 'Providing the tools and insights needed to scale from a local star to a national icon.', icon: TrendingUp, color: '#3B82F6' }
+              { title: 'Identity', desc: 'Giving every creator a verified, data-backed professional portfolio that brands can trust.', icon: Award, color: '#FF9431' },
+              { title: 'Access', desc: 'Removing gatekeepers. Creators in small towns now apply directly to the biggest national brands.', icon: Globe, color: '#10B981' },
+              { title: 'Growth', desc: 'Providing the financial tools and analytics to scale from a local star to a national icon.', icon: TrendingUp, color: '#3B82F6' }
             ].map((v) => (
-              <Card key={v.title} style={{ padding: '56px 40px', borderRadius: '48px', border: '1px solid #f1f5f9' }}>
-                 <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: `${v.color}15`, color: v.color, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '32px' }}>
+              <div key={v.title} style={{ padding: '60px 40px', borderRadius: '48px', border: '1px solid #f1f5f9', background: '#fcfcfc' }}>
+                 <div style={{ width: '64px', height: '64px', borderRadius: '24px', background: `${v.color}15`, color: v.color, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '40px' }}>
                     <v.icon size={32} />
                  </div>
-                 <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', marginBottom: '16px' }}>{v.title}</h3>
-                 <p style={{ fontSize: '16px', color: '#64748b', lineHeight: 1.7, fontWeight: 500 }}>{v.desc}</p>
-              </Card>
+                 <h3 style={{ fontSize: '32px', fontWeight: 950, color: '#0f172a', marginBottom: '20px', letterSpacing: '-0.02em' }}>{v.title}</h3>
+                 <p style={{ fontSize: '17px', color: '#64748b', lineHeight: 1.8, fontWeight: 500 }}>{v.desc}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Founder's Voice / Quote */}
-      <section style={{ padding: '140px 24px', textAlign: 'center' }}>
-         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-            <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#050505', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 40px', color: '#FF9431' }}>
-               <Heart size={32} fill="#FF9431" />
-            </div>
-            <p style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 950, color: '#0f172a', lineHeight: 1.2, letterSpacing: '-0.04em', marginBottom: '48px' }}>
-              "We are not just a marketplace. We are the architects of the new Indian Dream."
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-               <div style={{ fontWeight: 900, fontSize: '18px', color: '#0f172a' }}>TEAM CREATORBHARAT</div>
-               <div style={{ fontSize: '14px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '4px' }}>Bhilwara, Rajasthan</div>
-            </div>
-         </div>
-      </section>
-
-      {/* Final CTA */}
-      <section style={{ padding: '0 24px 120px' }}>
+      {/* FINAL VISION CTA */}
+      <section style={{ padding: '0 24px 160px' }}>
          <motion.div 
-           whileHover={{ scale: 0.98 }}
+           whileHover={{ scale: 0.99 }}
            style={{ 
             maxWidth: '1200px', 
             margin: '0 auto', 
-            background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)', 
-            borderRadius: '56px', 
-            padding: '100px 40px', 
+            background: '#0a0a0a', 
+            borderRadius: '80px', 
+            padding: '120px 40px', 
             color: '#fff',
             textAlign: 'center',
             position: 'relative',
             overflow: 'hidden',
-            boxShadow: '0 30px 60px rgba(255, 148, 49, 0.2)'
+            boxShadow: '0 40px 100px rgba(0,0,0,0.15)'
           }}>
-            <h2 style={{ fontSize: '56px', fontWeight: 950, marginBottom: '24px', letterSpacing: '-0.04em' }}>Join the Movement.</h2>
-            <p style={{ fontSize: '20px', color: 'rgba(255,255,255,0.8)', marginBottom: '56px', maxWidth: '600px', margin: '0 auto 56px', fontWeight: 500 }}>
-              Be part of the platform that's rewriting the rules of influence in Bharat.
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #FF9431, transparent, #10B981)' }} />
+            <h2 style={{ fontSize: 'clamp(48px, 6vw, 80px)', fontWeight: 950, marginBottom: '32px', letterSpacing: '-0.05em', lineHeight: 0.9 }}>Be part of the <br /> <span style={{ color: '#FF9431' }}>New Indian Dream.</span></h2>
+            <p style={{ fontSize: '22px', color: 'rgba(255,255,255,0.5)', marginBottom: '64px', maxWidth: '640px', margin: '0 auto 64px', fontWeight: 500 }}>
+              The future of influence isn't in English or in Metros. It's in the real voices of Bharat.
             </p>
-            <Btn lg onClick={() => navigate('/apply')} style={{ padding: '24px 64px', borderRadius: '100px', background: '#fff', color: '#0f172a', fontSize: '18px', fontWeight: 950 }}>
-              Get Started Now <ChevronRight size={22} />
-            </Btn>
+            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Btn lg onClick={() => navigate('/join')} style={{ padding: '24px 64px', borderRadius: '100px', background: '#FF9431', color: '#fff', fontSize: '18px', fontWeight: 950 }}>
+                Join as Creator
+              </Btn>
+              <Btn lg onClick={() => navigate('/creators')} variant="outline" style={{ padding: '24px 64px', borderRadius: '100px', borderColor: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: '18px', fontWeight: 950 }}>
+                Partner as Brand
+              </Btn>
+            </div>
          </motion.div>
       </section>
 
