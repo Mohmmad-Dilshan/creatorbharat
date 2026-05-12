@@ -56,7 +56,7 @@ const BlogArticlePage = lazy(() => import('./pages/blog/BlogArticlePage'));
 const Fallback = () => (
   <div style={{ 
     height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', 
-    background: '#050505', position: 'fixed', inset: 0, zIndex: 9999999 
+    background: '#fcfcfc', position: 'fixed', inset: 0, zIndex: 9999999 
   }}>
     <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24 }}>
        {/* ELITE SPINNER */}
@@ -81,7 +81,7 @@ const Fallback = () => (
             CREATORBHARAT
           </h1>
           <p style={{ 
-            color: 'rgba(255,255,255,0.4)', fontSize: '12px', fontWeight: 700, 
+            color: 'rgba(0,0,0,0.4)', fontSize: '12px', fontWeight: 700, 
             letterSpacing: '1px', textTransform: 'uppercase' 
           }}>
             Entering Elite Ecosystem...
@@ -92,7 +92,7 @@ const Fallback = () => (
     <style>{`
       @keyframes spin { to { transform: rotate(360deg); } }
       .nav-logo-text {
-        background: linear-gradient(90deg, #FF9933 0%, #FFFFFF 50%, #138808 100%);
+        background: linear-gradient(90deg, #FF9933 0%, #000000 50%, #138808 100%);
         background-size: 200% auto;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
