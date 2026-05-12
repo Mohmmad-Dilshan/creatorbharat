@@ -278,14 +278,14 @@ export default function ContactPage() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '32px' }}>
             {[
-              { city: 'Bhilwara', type: 'Global HQ', focus: 'Strategy & Ops' },
-              { city: 'Indore', type: 'Regional Hub', focus: 'Influencer Growth' },
-              { city: 'Jaipur', type: 'Tech Hub', focus: 'AI & Data Lab' }
+              { city: 'Bhilwara', type: 'Global HQ', focus: 'Strategy & Core Ops', state: 'Rajasthan' },
+              { city: 'Jaipur', type: 'Tech Hub', focus: 'AI & Data Lab', state: 'Rajasthan' },
+              { city: 'Udaipur', type: 'Regional Hub', focus: 'Influencer Growth', state: 'Rajasthan' }
             ].map((hub) => (
               <div key={hub.city} style={{ padding: '32px', background: '#f8fafc', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
-                 <div style={{ fontSize: '11px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', marginBottom: '8px' }}>{hub.type}</div>
+                 <div style={{ fontSize: '11px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.1em' }}>{hub.type}</div>
                  <h4 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', marginBottom: '4px' }}>{hub.city}</h4>
-                 <div style={{ fontSize: '14px', color: '#64748b', fontWeight: 600 }}>{hub.focus}</div>
+                 <div style={{ fontSize: '14px', color: '#64748b', fontWeight: 600 }}>{hub.state} • {hub.focus}</div>
               </div>
             ))}
           </div>
