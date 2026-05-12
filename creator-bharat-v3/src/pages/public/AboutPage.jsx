@@ -121,17 +121,22 @@ export default function AboutPage() {
             <span style={{ fontSize: '12px', fontWeight: 900, color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', letterSpacing: '0.2em' }}>The Bharat Chapter</span>
           </motion.div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '80px', alignItems: 'end' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: globalThis.innerWidth < 1024 ? '1fr' : '1.2fr 0.8fr', 
+            gap: globalThis.innerWidth < 768 ? '40px' : '80px', 
+            alignItems: 'end' 
+          }}>
             <div>
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
                 style={{ 
-                  fontSize: 'clamp(56px, 9vw, 110px)', 
+                  fontSize: 'clamp(44px, 10vw, 110px)', 
                   fontWeight: 950, 
                   color: '#fff', 
-                  lineHeight: 0.82, 
+                  lineHeight: 0.85, 
                   letterSpacing: '-0.06em',
                   marginBottom: '0'
                 }}
@@ -147,16 +152,20 @@ export default function AboutPage() {
               transition={{ delay: 0.4 }}
               style={{ paddingBottom: '20px' }}
             >
-              <p style={{ fontSize: '20px', color: 'rgba(255, 255, 255, 0.5)', lineHeight: 1.5, fontWeight: 500 }}>
+              <p style={{ fontSize: globalThis.innerWidth < 768 ? '18px' : '20px', color: 'rgba(255, 255, 255, 0.5)', lineHeight: 1.5, fontWeight: 500 }}>
                 Metros are saturated. Influence is migrating. We are the infrastructure for India's regional rising stars.
               </p>
             </motion.div>
           </div>
 
-          <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '80px 0' }} />
+          <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: globalThis.innerWidth < 768 ? '40px 0' : '80px 0' }} />
 
           {/* Stats Snapshot */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '60px' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', 
+            gap: globalThis.innerWidth < 768 ? '32px' : '60px' 
+          }}>
             <StatBlock value="150+" label="Districts Covered" delay={0.2} />
             <StatBlock value="4.9/5" label="Creator Rating" delay={0.3} />
             <StatBlock value="10M+" label="Aggregate Reach" delay={0.4} />
@@ -166,9 +175,14 @@ export default function AboutPage() {
       </section>
 
       {/* REGIONAL POWER SECTION - NEW */}
-      <section style={{ padding: '160px 24px', background: '#fff' }}>
+      <section style={{ padding: globalThis.innerWidth < 768 ? '80px 20px' : '160px 24px', background: '#fff' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '80px', alignItems: 'center' }}>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: globalThis.innerWidth < 1024 ? '1fr' : 'repeat(auto-fit, minmax(340px, 1fr))', 
+            gap: globalThis.innerWidth < 768 ? '60px' : '80px', 
+            alignItems: 'center' 
+          }}>
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}

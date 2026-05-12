@@ -355,10 +355,11 @@ export default function PricingPage() {
             background: '#fff', 
             borderRadius: '32px', 
             border: '1px solid #f1f5f9', 
-            overflow: 'hidden',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.02)'
+            overflowX: 'auto', // Added scroll for mobile
+            boxShadow: '0 20px 40px rgba(0,0,0,0.02)',
+            WebkitOverflowScrolling: 'touch'
           }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px' }}>
               <thead>
                 <tr style={{ background: '#f8fafc' }}>
                   <th style={{ padding: '24px 32px', fontSize: '14px', fontWeight: 900, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Core Feature</th>
