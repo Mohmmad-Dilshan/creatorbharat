@@ -4,19 +4,13 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Seo from '@/components/common/SEO';
 import { 
-  Target, 
-  Zap, 
-  ShieldCheck, 
   Globe, 
   Award,
-  ChevronRight,
   TrendingUp,
-  Heart,
-  Command,
   MapPin,
   Sparkles
 } from 'lucide-react';
-import { Btn, Card, Bdg } from '@/components/common/Primitives';
+import { Btn, Bdg } from '@/components/common/Primitives';
 
 const StatBlock = ({ value, label, delay = 0 }) => (
   <motion.div
