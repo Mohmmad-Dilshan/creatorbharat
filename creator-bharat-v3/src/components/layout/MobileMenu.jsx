@@ -47,7 +47,8 @@ export default function MobileMenu({ open }) {
   const supportLinks = [
     { path: '/faq', l: 'Help Center', i: LifeBuoy },
     { path: '/contact', l: 'Contact Support', i: MessageSquare },
-    { path: '/creator-guidelines', l: 'Guidelines', i: BookOpen },
+    { path: '/creator-guidelines', l: 'Creator Rules', i: BookOpen },
+    { path: '/brand-guidelines', l: 'Brand Rules', i: ShieldCheck },
     { path: '/privacy', l: 'Privacy Policy', i: ShieldCheck },
     { path: '/terms', l: 'Terms of Service', i: ShieldCheck }
   ];

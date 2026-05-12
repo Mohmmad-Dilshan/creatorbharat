@@ -40,6 +40,7 @@ const MessagesPage = lazy(() => import('./pages/creator/MessagesPage'));
 const PrivacyPage = lazy(() => import('./pages/legal/PrivacyPage'));
 const TermsPage = lazy(() => import('./pages/legal/TermsPage'));
 const CreatorGuidelinesPage = lazy(() => import('./pages/legal/CreatorGuidelinesPage'));
+const BrandGuidelinesPage = lazy(() => import('./pages/legal/BrandGuidelinesPage'));
 
 // Auth
 import ProtectedRoute from '@/core/ProtectedRoute';
@@ -143,6 +144,7 @@ export default function AppRoutes({ location }) {
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/creator-guidelines" element={<CreatorGuidelinesPage />} />
+          <Route path="/brand-guidelines" element={<BrandGuidelinesPage />} />
           <Route path="/creator/:id" element={<CreatorProfilePage />} />
         </Route>
 

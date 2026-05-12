@@ -15,7 +15,9 @@ import {
   Search,
   Trophy,
   Activity,
-  Zap
+  Zap,
+  BookOpen,
+  ShieldCheck as Shield
 } from 'lucide-react';
 import { Logo } from '@/components/common';
 
@@ -86,7 +88,8 @@ export default function DashboardLayout({ children }) {
     { label: 'Deals', icon: Zap, path: '/applications' },
     { label: 'Leaderboard', icon: Trophy, path: '/leaderboard' },
     { label: 'Score', icon: Activity, path: '/creator-score' },
-    { label: 'Ecosystem', icon: Megaphone, path: '/creators' }
+    { label: 'Ecosystem', icon: Megaphone, path: '/creators' },
+    { label: 'Guidelines', icon: BookOpen, path: '/creator-guidelines' }
   ];
 
   const brandLinks = [
@@ -94,6 +97,7 @@ export default function DashboardLayout({ children }) {
     { label: 'Missions', icon: Megaphone, path: '/campaigns' },
     { label: 'Discovery', icon: Search, path: '/creators' },
     { label: 'Trends', icon: BarChart3, path: '/brand-dashboard' },
+    { label: 'Guidelines', icon: Shield, path: '/brand-guidelines' },
     { label: 'Settings', icon: Settings, path: '/settings' }
   ];
 
