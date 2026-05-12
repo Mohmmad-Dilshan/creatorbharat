@@ -249,6 +249,8 @@ export default function PricingPage() {
     );
   };
 
+  const activePlans = tab === 'creator' ? creatorPlans : brandPlans;
+
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', overflowX: 'hidden' }}>
       <Seo 
