@@ -417,18 +417,57 @@ WorkTab.propTypes = { mob: PropTypes.bool };
 
 // --- MODALS ---
 
-const RateCreatorModal = ({ open, onClose, name, dsp }) => (
-  <Modal open={open} title={'Rate ' + name} onClose={onClose}>
-     <div style={{ padding: '10px' }}>
-        <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px' }}>Only verified accounts can provide ratings to ensure authenticity.</p>
-        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '32px' }}>
-           {[1,2,3,4,5].map(s => <Star key={s} size={40} color="#cbd5e1" style={{ cursor: 'pointer' }} />)}
-        </div>
-        <Fld label="Write a Review" rows={4} placeholder="Tell us about your collaboration experience..." />
-        <Btn full lg style={{ marginTop: '24px', borderRadius: '100px' }} onClick={() => { dsp({ t: 'TOAST', d: { type: 'success', msg: 'Thank you! Your review is under audit.' } }); onClose(); }}>SUBMIT RATING</Btn>
-     </div>
-  </Modal>
-);
+const RateCreatorModal = ({ open, onClose, name, dsp }) => {
+  const [rating, setRating] = useState(0);
+  const [hover, setHover] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = () => {
+    if (rating === 0) { dsp({ t: 'TOAST', d: { type: 'warn', msg: 'Please select a star rating' } }); return; }
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Review submitted! Our elite audit team will verify it shortly.' } });
+      onClose();
+    }, 1500);
+  };
+
+  return (
+    <Modal open={open} title={'Write a Review for ' + name} onClose={onClose} width={500}>
+       <div style={{ padding: '24px' }}>
+          <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px', fontWeight: 500 }}>Only verified brands and creators can provide feedback to maintain platform integrity.</p>
+          
+          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: '32px' }}>
+             {[1,2,3,4,5].map(s => (
+               <button 
+                 key={s} 
+                 onMouseEnter={() => setHover(s)}
+                 onMouseLeave={() => setHover(0)}
+                 onClick={() => setRating(s)}
+                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+               >
+                 <Star 
+                   size={40} 
+                   fill={s <= (hover || rating) ? '#FF9431' : 'none'} 
+                   color={s <= (hover || rating) ? '#FF9431' : '#cbd5e1'} 
+                   style={{ transition: 'all 0.2s transform', transform: s === hover ? 'scale(1.2)' : 'scale(1)' }}
+                 />
+               </button>
+             ))}
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+             <Fld label="Collaboration Feedback" type="textarea" placeholder="Tell the community about your professional experience with this creator..." />
+             
+             <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+                <Btn full lg onClick={onClose} style={{ background: '#f1f5f9', color: '#64748b', borderRadius: '100px' }}>Cancel</Btn>
+                <Btn full lg onClick={handleSubmit} loading={loading} style={{ background: '#0f172a', color: '#fff', borderRadius: '100px' }}>Submit Verified Review</Btn>
+             </div>
+          </div>
+       </div>
+    </Modal>
+  );
+};
 RateCreatorModal.propTypes = { open: PropTypes.bool.isRequired, onClose: PropTypes.func.isRequired, name: PropTypes.string.isRequired, dsp: PropTypes.func.isRequired };
 
 // --- HELPERS ---
@@ -820,7 +859,7 @@ const GalleryTab = ({ mob }) => {
 };
 GalleryTab.propTypes = { mob: PropTypes.bool };
 
-const ReviewsTab = ({ mob, navigate }) => (
+const ReviewsTab = ({ mob, navigate, onWriteReview }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.2fr 2fr', gap: '40px', marginBottom: '60px' }}>
         <div>
@@ -832,7 +871,7 @@ const ReviewsTab = ({ mob, navigate }) => (
               </div>
               <div style={{ fontSize: '14px', fontWeight: 700, color: '#94a3b8' }}>Based on 128 Verified Collaborations</div>
            </Card>
-           <Btn full lg onClick={() => navigate('/reviews/new')} style={{ borderRadius: '100px', background: '#fff', color: '#0f172a', border: '2px solid #0f172a', gap: '10px' }}>
+           <Btn full lg onClick={() => onWriteReview()} style={{ borderRadius: '100px', background: '#fff', color: '#0f172a', border: '2px solid #0f172a', gap: '10px' }}>
               <Star size={18} /> Write a Review
            </Btn>
         </div>
@@ -869,7 +908,7 @@ const ReviewsTab = ({ mob, navigate }) => (
      <TrustBadge />
   </motion.div>
 );
-ReviewsTab.propTypes = { mob: PropTypes.bool, navigate: PropTypes.func.isRequired };
+ReviewsTab.propTypes = { mob: PropTypes.bool, navigate: PropTypes.func.isRequired, onWriteReview: PropTypes.func.isRequired };
 
 const PackagesTab = ({ mob, onSelect }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
@@ -990,7 +1029,7 @@ export default function CreatorProfilePage() {
             {activeTab === 'story' && <StoryTab key="tab-story" c={c} mob={mob} />}
             {activeTab === 'gallery' && <GalleryTab key="tab-gallery" mob={mob} />}
             {activeTab === 'work' && <WorkTab key="tab-work" mob={mob} />}
-            {activeTab === 'reviews' && <ReviewsTab key="tab-reviews" mob={mob} navigate={navigate} />}
+            {activeTab === 'reviews' && <ReviewsTab key="tab-reviews" mob={mob} navigate={navigate} onWriteReview={handleRateClick} />}
             {activeTab === 'packages' && <PackagesTab key="tab-packages" mob={mob} onSelect={handlePackageSelect} />}
             {activeTab === 'connect' && (
               <motion.div key="tab-connect" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
