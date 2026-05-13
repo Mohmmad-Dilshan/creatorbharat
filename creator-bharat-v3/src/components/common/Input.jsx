@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { T } from '@/core/theme';
 
-export function Input({ label, value, onChange, type = 'text', placeholder, options, rows, helper, required, error, sm, readOnly, id: providedId, icon: Icon, ...props }) {
+export function Input({ label, value, onChange, type = 'text', placeholder, options, rows, helper, required, error, sm, full, readOnly, id: providedId, icon: Icon, ...props }) {
   const [foc, setFoc] = useState(false);
   const idRef = useRef(providedId || `fld-${Math.random().toString(36).slice(2, 11)}`);
   const id = idRef.current;
@@ -81,6 +81,7 @@ Input.propTypes = {
   required: PropTypes.bool,
   error: PropTypes.string,
   sm: PropTypes.bool,
+  full: PropTypes.bool,
   readOnly: PropTypes.bool,
   id: PropTypes.string,
   icon: PropTypes.elementType

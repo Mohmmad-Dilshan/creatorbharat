@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { T } from '@/core/theme';
 
-export function Badge({ children, color = 'gray', sm }) {
+export function Badge({ children, color = 'gray', sm, lg, dot, style: sx = {}, className, ...props }) {
   const m = {
     red: { bg: T.ga, col: T.gd },
     green: { bg: T.okl, col: T.ok },
@@ -14,24 +14,40 @@ export function Badge({ children, color = 'gray', sm }) {
     platinum: { bg: 'rgba(124,58,237,.1)', col: T.platinum },
     silver: { bg: 'rgba(156,163,175,.15)', col: '#6B7280' },
     rising: { bg: 'rgba(107,114,128,.1)', col: '#6B7280' },
-    dark: { bg: T.n8, col: '#fff' }
+    dark: { bg: T.n8, col: '#fff' },
+    orange: { bg: 'rgba(255,148,49,0.1)', col: '#FF9431' }
   };
   
   const c = m[color] || m.gray;
   
+  let fontSize = 11;
+  if (lg) fontSize = 13;
+  else if (sm) fontSize = 10;
+
+  let padding = '4px 12px';
+  if (lg) padding = '6px 16px';
+  else if (sm) padding = '2px 8px';
+
   return (
-    <span style={{ 
-      display: 'inline-flex', 
-      alignItems: 'center', 
-      gap: 4, 
-      padding: sm ? '2px 7px' : '3px 10px', 
-      borderRadius: 20, 
-      background: c.bg, 
-      color: c.col, 
-      fontSize: sm ? 10 : 11, 
-      fontWeight: 700, 
-      whiteSpace: 'nowrap' 
-    }}>
+    <span 
+      className={className}
+      style={{ 
+        display: 'inline-flex', 
+        alignItems: 'center', 
+        gap: 6, 
+        padding, 
+        borderRadius: 100, 
+        background: c.bg, 
+        color: c.col, 
+        fontSize, 
+        fontWeight: 800, 
+        whiteSpace: 'nowrap',
+        fontFamily: "'Outfit', sans-serif",
+        ...sx 
+      }}
+      {...props}
+    >
+      {dot && <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor' }} />}
       {children}
     </span>
   );
@@ -40,7 +56,11 @@ export function Badge({ children, color = 'gray', sm }) {
 Badge.propTypes = {
   children: PropTypes.node,
   color: PropTypes.string,
-  sm: PropTypes.bool
+  sm: PropTypes.bool,
+  lg: PropTypes.bool,
+  dot: PropTypes.bool,
+  style: PropTypes.object,
+  className: PropTypes.string
 };
 
 export default Badge;

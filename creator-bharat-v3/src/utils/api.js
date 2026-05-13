@@ -14,7 +14,7 @@ export async function apiCall(endpoint, options = {}) {
 
     let data;
     const contentType = res.headers.get('content-type');
-    if (contentType && contentType.includes('application/json')) {
+    if (contentType?.includes('application/json')) {
       data = await res.json();
     } else {
       const text = await res.text();

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/core/context';
 import { LS, fmt } from '../../utils/helpers';
-import { Btn, Card, Bdg, Empty, Bar, Logo } from '@/components/common/Primitives';
+import { Card, Bdg, Empty, Bar } from '@/components/common/Primitives';
 import { motion } from 'framer-motion';
 import { 
   Rocket, 
@@ -14,9 +14,7 @@ import {
   Target,
   PieChart,
   ArrowUpRight,
-  Sparkles,
-  ChevronRight,
-  Zap
+  Sparkles
 } from 'lucide-react';
 import AuthGatekeeper from '@/components/auth/AuthGatekeeper';
 

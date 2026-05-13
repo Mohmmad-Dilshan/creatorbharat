@@ -7,13 +7,9 @@ import PropTypes from 'prop-types';
  * while pointing to the new, modularized components.
  */
 export { 
-  Button as Btn, 
-  Input as Fld, 
   Modal, 
-  Badge as Bdg, 
   Logo, 
   SectionHeader as SH, 
-  Card, 
   Ring, 
   ProgressBar as Bar, 
   Skeleton, 
@@ -22,7 +18,109 @@ export {
   StatusChip as Chip 
 } from './index';
 
+import { Button, Input, Badge } from './index';
+
 // Page Layout (PL) remains here for now as it's more of a layout primitive
+export function Btn({ children, style: sx = {}, className, sm, lg, full, outline, active, loading, disabled, ...props }) {
+  let variant = 'secondary';
+  if (outline) variant = 'outline';
+  else if (active) variant = 'primary';
+  
+  return (
+    <Button 
+      variant={variant}
+      sm={sm}
+      lg={lg}
+      full={full}
+      loading={loading}
+      disabled={disabled}
+      style={sx}
+      className={className}
+      {...props}
+    >
+      {children}
+    </Button>
+  );
+}
+
+Btn.propTypes = {
+  children: PropTypes.node,
+  style: PropTypes.object,
+  className: PropTypes.string,
+  sm: PropTypes.bool,
+  lg: PropTypes.bool,
+  full: PropTypes.bool,
+  outline: PropTypes.bool,
+  active: PropTypes.bool,
+  loading: PropTypes.bool,
+  disabled: PropTypes.bool
+};
+
+export function Fld({ label, sm, full, error, icon, ...props }) {
+  return (
+    <Input 
+      label={label}
+      sm={sm}
+      full={full}
+      error={error}
+      icon={icon}
+      {...props}
+    />
+  );
+}
+
+Fld.propTypes = {
+  label: PropTypes.string,
+  sm: PropTypes.bool,
+  full: PropTypes.bool,
+  error: PropTypes.string,
+  icon: PropTypes.elementType
+};
+
+export function Bdg({ children, style: sx = {}, className, color = 'blue', sm, lg, dot, ...props }) {
+  return (
+    <Badge 
+      color={color} 
+      sm={sm} 
+      lg={lg} 
+      dot={dot}
+      style={sx}
+      className={className}
+      {...props}
+    >
+      {children}
+    </Badge>
+  );
+}
+
+Bdg.propTypes = {
+  children: PropTypes.node,
+  style: PropTypes.object,
+  className: PropTypes.string,
+  color: PropTypes.string,
+  sm: PropTypes.bool,
+  lg: PropTypes.bool,
+  dot: PropTypes.bool
+};
+
+export function Card({ children, style: sx = {}, className, ...props }) {
+  return (
+    <div 
+      className={className} 
+      style={{ background: '#fff', borderRadius: 24, padding: 32, border: '1px solid rgba(0,0,0,0.06)', ...sx }}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+Card.propTypes = {
+  children: PropTypes.node,
+  style: PropTypes.object,
+  className: PropTypes.string
+};
+
 export function PL({ children }) {
   return (
     <div className="page-layout">

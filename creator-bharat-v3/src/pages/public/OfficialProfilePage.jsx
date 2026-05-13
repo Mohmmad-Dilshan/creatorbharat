@@ -386,6 +386,40 @@ StoryViewer.propTypes = {
   onClose: PropTypes.func.isRequired 
 };
 
+const TabContent = ({ activeTab, mob }) => (
+  <AnimatePresence mode="wait">
+    <motion.div key={activeTab} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+       {activeTab === 'posts' && (
+         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: mob ? '3px' : '28px' }}>
+            {OFFICIAL_DATA.posts.map(post => {
+              const Icon = post.icon;
+              return (
+                <div key={post.id} style={{ aspectRatio: '1/1', background: post.color, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'default' }}>
+                   <Icon size={40} color="#fff" />
+                </div>
+              );
+            })}
+         </div>
+       )}
+       {activeTab === 'mastermind' && (
+          <div>
+             <IntelligenceHub mob={mob} />
+             <div style={{ borderTop: '1px solid #f1f5f9', margin: '40px 0' }} />
+             <RoadmapTimeline />
+             <div style={{ borderTop: '1px solid #f1f5f9', margin: '40px 0' }} />
+             <MastermindSection mob={mob} />
+          </div>
+       )}
+       {activeTab === 'insights' && <InsightsGrid mob={mob} />}
+    </motion.div>
+  </AnimatePresence>
+);
+
+TabContent.propTypes = {
+  activeTab: PropTypes.string.isRequired,
+  mob: PropTypes.bool.isRequired
+};
+
 // --- MAIN PAGE ---
 
 export default function OfficialProfilePage() {
@@ -431,7 +465,7 @@ export default function OfficialProfilePage() {
           display: 'flex', 
           flexDirection: mob ? 'column' : 'row',
           gap: mob ? '32px' : '100px', 
-          alignItems: mob ? 'center' : 'center', 
+          alignItems: 'center', 
           textAlign: mob ? 'center' : 'left',
           marginBottom: mob ? '40px' : '44px' 
         }}>
@@ -452,7 +486,7 @@ export default function OfficialProfilePage() {
              </div>
           </div>
           <div style={{ flex: 1, width: mob ? '100%' : 'auto' }}>
-             <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', alignItems: mob ? 'center' : 'center', gap: '20px', marginBottom: '20px' }}>
+             <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', alignItems: 'center', gap: '20px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <h1 style={{ fontSize: '24px', fontWeight: 600, letterSpacing: '-0.02em' }}>{content.username}</h1>
                   <CheckCircle2 size={20} color="#3897f0" fill="#3897f0" />
@@ -517,32 +551,7 @@ export default function OfficialProfilePage() {
         </div>
 
         {/* Tab Content Rendering */}
-        <AnimatePresence mode="wait">
-          <motion.div key={activeTab} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
-             {activeTab === 'posts' && (
-               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: mob ? '3px' : '28px' }}>
-                  {OFFICIAL_DATA.posts.map(post => {
-                    const Icon = post.icon;
-                    return (
-                      <div key={post.id} style={{ aspectRatio: '1/1', background: post.color, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'default' }}>
-                         <Icon size={40} color="#fff" />
-                      </div>
-                    );
-                  })}
-               </div>
-             )}
-             {activeTab === 'mastermind' && (
-                <div>
-                   <IntelligenceHub mob={mob} />
-                   <div style={{ borderTop: '1px solid #f1f5f9', margin: '40px 0' }} />
-                   <RoadmapTimeline />
-                   <div style={{ borderTop: '1px solid #f1f5f9', margin: '40px 0' }} />
-                   <MastermindSection mob={mob} />
-                </div>
-             )}
-             {activeTab === 'insights' && <InsightsGrid mob={mob} />}
-          </motion.div>
-        </AnimatePresence>
+        <TabContent activeTab={activeTab} mob={mob} />
       </div>
 
       <AuthRequiredModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />

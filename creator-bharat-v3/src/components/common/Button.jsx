@@ -1,53 +1,76 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { T } from '@/core/theme';
 
-const getBtnStyles = (variant, h) => {
-  const vs = {
-    primary: { background: T.gd, color: '#fff', boxShadow: h ? '0 8px 24px rgba(255,148,49,0.25)' : 'none', transform: h ? 'translateY(-1px)' : 'none' },
-    outline: { background: 'transparent', color: T.t1, border: `1.5px solid ${T.bd2}`, boxShadow: h ? T.sh2 : 'none' },
-    ghost: { background: h ? T.bg3 : 'transparent', color: T.t2 },
-    dark: { background: T.n8, color: '#fff', boxShadow: h ? T.sh3 : 'none' },
-    white: { background: '#fff', color: T.t1, boxShadow: T.sh2, transform: h ? 'translateY(-1px)' : 'none' },
-    text: { background: 'none', color: T.t1, padding: '0', fontWeight: 700, fontSize: 'inherit' },
-    success: { background: T.ok, color: '#fff', boxShadow: h ? '0 8px 24px rgba(16,185,129,0.25)' : 'none' }
-  };
-  return vs[variant] || vs.primary;
-};
-
-export function Button({ children, onClick, variant = 'primary', sm, lg, full, disabled, loading, style: sx = {}, href, className, ...props }) {
-  const [isHovered, setIsHovered] = useState(false);
-  
-  let fontSize = 14;
-  if (lg) fontSize = 16;
-  else if (sm) fontSize = 12;
-
-  let padding = '12px 24px';
-  if (lg) padding = '16px 32px';
-  else if (sm) padding = '8px 16px';
-  
-  const base = {
-    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-    fontFamily: 'inherit', fontWeight: 700, cursor: disabled || loading ? 'not-allowed' : 'pointer',
-    border: 'none', borderRadius: 12, transition: 'all .2s cubic-bezier(0.4,0,0.2,1)',
-    textDecoration: 'none', fontSize, padding,
-    opacity: disabled ? .55 : 1, width: full ? '100%' : 'auto', ...sx
-  };
-
+export function Button({ 
+  children, 
+  onClick, 
+  variant = 'primary', 
+  sm, 
+  lg, 
+  full, 
+  disabled, 
+  loading, 
+  style: sx = {}, 
+  href, 
+  className, 
+  // Omit custom props from spread to prevent prop-bleeding to DOM
+  ...props 
+}) {
   const Tag = href ? 'a' : 'button';
+  
+  const baseStyles = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    fontWeight: 800,
+    cursor: disabled || loading ? 'not-allowed' : 'pointer',
+    transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+    borderRadius: 14,
+    opacity: disabled || loading ? 0.6 : 1,
+    width: full ? '100%' : 'auto',
+    fontFamily: "'Outfit', sans-serif",
+    textDecoration: 'none',
+    boxSizing: 'border-box'
+  };
+
+  const variantStyles = {
+    primary: { background: '#FF9431', color: '#fff', border: 'none' },
+    secondary: { background: '#f8fafc', color: '#0f172a', border: '1.5px solid #f1f5f9' },
+    outline: { background: 'transparent', color: '#FF9431', border: '1.5px solid #FF9431' },
+    danger: { background: '#ef4444', color: '#fff', border: 'none' },
+    success: { background: '#10b981', color: '#fff', border: 'none' }
+  };
+
+  const sizeStyles = {
+    sm: { padding: '8px 16px', fontSize: 13 },
+    md: { padding: '14px 28px', fontSize: 15 },
+    lg: { padding: '20px 40px', fontSize: 17 }
+  };
+
+  let size = 'md';
+  if (sm) size = 'sm';
+  else if (lg) size = 'lg';
+
   return (
-    <Tag 
-      className={`btn-int ${className || ''}`} 
-      onClick={onClick} 
-      disabled={disabled || loading} 
+    <Tag
+      onClick={!disabled && !loading ? onClick : undefined}
       href={href}
-      style={{ ...getBtnStyles(variant, isHovered), ...base }}
-      onMouseEnter={() => setIsHovered(true)} 
-      onMouseLeave={() => setIsHovered(false)}
+      className={`btn-primitive ${className || ''}`}
+      style={{ 
+        ...baseStyles, 
+        ...variantStyles[variant] || variantStyles.primary, 
+        ...sizeStyles[size],
+        ...sx 
+      }}
+      disabled={disabled || loading}
       {...props}
     >
       {loading ? (
-        <span className="spin" style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,.3)', borderTopColor: '#fff', borderRadius: '50%' }} />
+        <>
+          <div className="btn-spinner" style={{ width: 16, height: 16, border: '2px solid currentColor', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+          <span>Please wait...</span>
+        </>
       ) : children}
     </Tag>
   );

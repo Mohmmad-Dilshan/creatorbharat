@@ -97,8 +97,8 @@ const AuthGatekeeper = ({ mob, role = 'creator' }) => {
          </div>
 
          <div className="gate-footer">
-            {c.footer.map((f, i) => (
-              <div key={i} className="footer-item">
+            {c.footer.map((f) => (
+              <div key={f.label} className="footer-item">
                  {f.icon} {f.label}
               </div>
             ))}
