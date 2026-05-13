@@ -32,8 +32,9 @@ const checkSearchQuery = (c, q) => {
 
 const checkNiche = (c, niche) => {
   if (!niche || niche.length === 0) return true;
-  const cn = Array.isArray(c.niche) ? c.niche : [c.niche];
-  return niche.some(n => cn.includes(n));
+  // Handle both 'niche' and 'category' keys for cross-compatibility
+  const cn = Array.isArray(c.niche) ? c.niche : (Array.isArray(c.category) ? c.category : [c.niche || c.category]);
+  return niche.some(n => cn.filter(Boolean).includes(n));
 };
 
 const checkPlatform = (c, platform) => {
@@ -70,7 +71,7 @@ const filterCreators = (all, f) => {
 const VisualPortal = ({ creator, mob }) => (
   <div style={{ width: mob ? '100%' : '45%', height: mob ? '300px' : 'auto', position: 'relative', background: '#050505' }}>
     <img 
-      src={creator.photo || creator.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(creator.name)}&background=FF9431&color=fff`} 
+      src={creator.photo || creator.avatarUrl || creator.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(creator.name)}&background=FF9431&color=fff`} 
       alt={creator.name}
       style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.9 }}
     />
@@ -128,7 +129,7 @@ const DataHub = ({ creator, mob, saved, compared, requireBrand, dsp, onFullView,
           <Sparkles size={14} /> AI Recommendation
        </div>
        <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: 700, lineHeight: 1.5 }}>
-          Best suited for <b>Lifestyle & Premium Tech</b> brands. High conversion potential for product launches in Tier-1 cities. 
+          Best suited for <b>{creator.niche || creator.category || 'Premium'}</b> brands. High conversion potential for product launches in {creator.city || 'Tier-1'} cities. 
        </p>
     </div>
 
@@ -527,7 +528,7 @@ const EliteSpotlight = ({ mob, all, setSelectedCreator, dsp, loading }) => {
                 }}
               >
                 <motion.img 
-                  src={creator.photo || creator.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(creator.name)}&background=FF9431&color=fff`} 
+                  src={creator.photo || creator.avatarUrl || creator.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(creator.name)}&background=FF9431&color=fff`} 
                   alt={creator.name}
                   whileHover={{ scale: 1.1 }}
                   transition={{ duration: 0.6 }}

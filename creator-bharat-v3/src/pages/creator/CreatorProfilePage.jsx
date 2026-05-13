@@ -71,7 +71,7 @@ BadgeRow.propTypes = { score: PropTypes.number.isRequired };
 
 // --- SOCIAL PULSE SYSTEM ---
 
-const EliteSocialPulse = ({ mob }) => {
+const EliteSocialPulse = ({ stats, mob }) => {
   const socials = [
     { n: 'Instagram', id: 'insta', c: '#E4405F', v: '150K+', p: 'High Engagement' },
     { n: 'YouTube', id: 'yt', c: '#FF0000', v: '85K+', p: 'Long-form Authority' },
@@ -88,7 +88,7 @@ const EliteSocialPulse = ({ mob }) => {
                 <div style={{ width: '8px', height: '8px', background: '#10B981', borderRadius: '50%', boxShadow: '0 0 10px #10B981' }} />
                 <span style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '2px', textTransform: 'uppercase', color: '#94a3b8' }}>Live Social Pulse</span>
              </div>
-             <h3 style={{ fontSize: mob ? '32px' : '48px', fontWeight: 950, marginBottom: '40px', letterSpacing: '-0.03em' }}>Total Global Reach: <span style={{ color: '#FF9431' }}>292K+</span></h3>
+             <h3 style={{ fontSize: mob ? '32px' : '48px', fontWeight: 950, marginBottom: '40px', letterSpacing: '-0.03em' }}>Total Global Reach: <span style={{ color: '#FF9431' }}>{fmt.num(stats.followers)}+</span></h3>
              
              <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(4, 1fr)', gap: '16px' }}>
                 {socials.map(s => (
@@ -116,7 +116,7 @@ const EliteSocialPulse = ({ mob }) => {
     </div>
   );
 };
-EliteSocialPulse.propTypes = { mob: PropTypes.bool };
+EliteSocialPulse.propTypes = { stats: PropTypes.object.isRequired, mob: PropTypes.bool };
 
 const SocialStack = ({ mob }) => {
   const socials = [
@@ -173,8 +173,8 @@ const GeoIntelligence = ({ c, mob }) => (
         <div>
            <div style={{ marginBottom: '24px' }}>
               <div style={{ fontSize: '11px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px' }}>Creator Location</div>
-              <div style={{ fontSize: '20px', fontWeight: 900, color: '#0f172a' }}>{c.city}, Bharat <span style={{ fontSize: '14px', fontWeight: 650, color: '#64748b' }}>- "The Pink City Heritage"</span></div>
-              <p style={{ fontSize: '13px', color: '#64748b', marginTop: '8px', lineHeight: 1.5 }}>Deeply rooted in local Rajasthani culture with a global storytelling vision.</p>
+              <div style={{ fontSize: '20px', fontWeight: 900, color: '#0f172a' }}>{c.city || 'Bharat'} <span style={{ fontSize: '14px', fontWeight: 650, color: '#64748b' }}>- "The {c.niche || 'Elite'} Heritage"</span></div>
+              <p style={{ fontSize: '13px', color: '#64748b', marginTop: '8px', lineHeight: 1.5 }}>Deeply rooted in local {c.city || 'regional'} culture with a global storytelling vision.</p>
            </div>
            <div>
               <div style={{ fontSize: '11px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '12px' }}>Audience Geography Hotspots</div>
@@ -223,35 +223,36 @@ CaseStudyCard.propTypes = { title: PropTypes.string.isRequired, brand: PropTypes
 
 // --- SUB-COMPONENTS ---
 
-const ContentPhilosophy = ({ mob }) => (
+const ContentPhilosophy = ({ c, mob }) => (
   <div style={{ padding: mob ? '24px' : '48px', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: '40px', color: '#fff', marginBottom: '40px', position: 'relative', overflow: 'hidden' }}>
      <div style={{ position: 'absolute', top: '-10%', right: '-5%', opacity: 0.1 }}><Zap size={200} color="#FF9431" /></div>
      <h3 style={{ fontSize: '24px', fontWeight: 950, marginBottom: '24px', color: '#FF9431' }}>Mera Content Philosophy (The 'Why')</h3>
-     <p style={{ fontSize: mob ? '16px' : '20px', fontWeight: 500, lineHeight: 1.7, maxWidth: '850px', marginBottom: '32px', color: 'rgba(255,255,255,0.9)' }}>"Main sirf videos nahi banata, main Bharat ki mitti ki kahaniyan sunata hoon. Brands ko emotional connect chahiye, aur meri audience ko authenticity—main in dono ko milata hoon cinematic rawness ke saath. My mission is to bridge the gap between traditional Bharat and the digital future."</p>
+     <p style={{ fontSize: mob ? '16px' : '20px', fontWeight: 500, lineHeight: 1.7, maxWidth: '850px', marginBottom: '32px', color: 'rgba(255,255,255,0.9)' }}>"Main sirf videos nahi banata, main {c.city || 'Bharat'} ki mitti ki kahaniyan sunata hoon. Brands ko emotional connect chahiye, aur meri audience ko authenticity—main in dono ko milata hoon cinematic rawness ke saath. My mission is to bridge the gap between traditional Bharat and the digital future."</p>
      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
         {['Cinematic Rawness', 'Relatable Humor', 'High Retention Editing', 'Cultural Storytelling'].map(t => <div key={t} style={{ background: 'rgba(255,255,255,0.1)', padding: '8px 16px', borderRadius: '100px', fontSize: '12px', fontWeight: 800, border: '1px solid rgba(255,255,255,0.2)' }}>{t}</div>)}
      </div>
   </div>
 );
-ContentPhilosophy.propTypes = { mob: PropTypes.bool };
+ContentPhilosophy.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
 
-const AboutMeLong = () => (
+const AboutMeLong = ({ c }) => (
   <div style={{ marginBottom: '48px' }}>
      <h3 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', marginBottom: '24px' }}>The Human Behind the Screen</h3>
      <div style={{ fontSize: '16px', color: '#475569', lineHeight: 1.8, fontWeight: 500 }}>
-        <p style={{ marginBottom: '20px' }}>Namaste! My journey began in the vibrant streets of Rajasthan, where every corner has a story. I started as a storyteller with nothing but a basic phone, and today, I'm honored to be part of the CreatorBharat Elite family.</p>
-        <p>I believe that content should not just be viewed; it should be felt. Whether I'm exploring a hidden food stall or talking about the latest tech innovation in rural Bharat, my goal is to remain 100% authentic to my roots while delivering world-class production quality.</p>
+        <p style={{ marginBottom: '20px' }}>Namaste! My journey began in the vibrant streets of {c.city || 'my hometown'}, where every corner has a story. I started as a storyteller with nothing but a basic phone, and today, I'm honored to be part of the CreatorBharat Elite family.</p>
+        <p>I believe that content should not just be viewed; it should be felt. Whether I'm exploring a local insight or talking about the latest tech innovation in rural Bharat, my goal is to remain 100% authentic to my roots while delivering world-class production quality.</p>
      </div>
   </div>
 );
+AboutMeLong.propTypes = { c: PropTypes.object.isRequired };
 
 
 // --- TAB CONTENTS ---
 
 const IdentityTab = ({ c, stats, onRate, mob }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-    <ContentPhilosophy mob={mob} />
-    <EliteSocialPulse mob={mob} />
+    <ContentPhilosophy c={c} mob={mob} />
+    <EliteSocialPulse stats={stats} mob={mob} />
     <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: mob ? '16px' : '24px', marginBottom: '40px' }}>
        {[{ l: 'Total Reach', v: fmt.num(stats.followers), sub: '+12K Monthly', c: '#0f172a' }, { l: 'Engagement', v: stats.er+'%', sub: 'Industry High', c: '#FF9431' }, { l: 'Avg Views', v: '82.4K', sub: 'Per Content', c: '#0f172a' }, { l: 'Consistency', v: '98%', sub: 'Velocity', c: '#10B981' }].map(x => (
          <div key={x.l} style={{ padding: mob ? '20px' : '32px', background: '#fff', borderRadius: mob ? '24px' : '32px', border: '1px solid #f1f5f9', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
@@ -265,7 +266,7 @@ const IdentityTab = ({ c, stats, onRate, mob }) => (
        <Btn lg style={{ borderRadius: '100px', background: '#0f172a', color: '#fff', gap: '10px', width: mob ? '100%' : 'auto' }}><Download size={18} /> Download Verified Media Kit (PDF)</Btn>
     </div>
     <GeoIntelligence c={c} mob={mob} />
-    <AboutMeLong />
+    <AboutMeLong c={c} />
     <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1.5fr', gap: mob ? '40px' : '32px', marginBottom: '40px' }}>
        <Card style={{ padding: mob ? '24px' : '40px', borderRadius: mob ? '24px' : '40px', border: '1px solid #f1f5f9' }}>
           <h3 style={{ fontSize: '20px', fontWeight: 950, marginBottom: '24px' }}>Skills & Expertise</h3>
@@ -489,7 +490,7 @@ const SocialIconsPanel = ({ mob }) => (
 );
 SocialIconsPanel.propTypes = { mob: PropTypes.bool };
 
-const ContactMetadata = ({ city, followers, mob }) => (
+const ContactMetadata = ({ city, followers, mob, onContact }) => (
   <>
      <div style={{ display: 'flex', flexWrap: 'wrap', gap: mob ? '12px' : '24px', color: '#6b7280', fontSize: '14px', fontWeight: 600, marginBottom: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={16} color="#9ca3af" /> {city || 'Bharat'}</div>
@@ -506,7 +507,7 @@ const ContactMetadata = ({ city, followers, mob }) => (
      </div>
   </>
 );
-ContactMetadata.propTypes = { city: PropTypes.string, followers: PropTypes.number.isRequired, mob: PropTypes.bool };
+ContactMetadata.propTypes = { city: PropTypes.string, followers: PropTypes.number.isRequired, mob: PropTypes.bool, onContact: PropTypes.func.isRequired };
 
 const IdentityHeader = ({ category, name, mob }) => {
   const catDisplay = Array.isArray(category) ? category.join(' • ') : category;
@@ -611,7 +612,7 @@ const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContact }) =>
       else { await navigator.clipboard.writeText(globalThis.location.href); dsp({ t: 'TOAST', d: { type: 'success', msg: 'Copied!' } }); }
     } catch (e) { console.error(e); }
   };
-  const dpImg = c?.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(c?.name || 'C')}&background=FF9431&color=fff&size=200`;
+  const dpImg = c?.photo || c?.avatarUrl || c?.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(c?.name || 'C')}&background=FF9431&color=fff&size=200`;
   const bannerImg = c?.cover_image || c?.banner_image || `https://picsum.photos/seed/${c?.id}/1600/500`;
   return (
     <section style={{ background: '#fff', borderBottom: '1px solid #e5e7eb' }}>
@@ -859,7 +860,7 @@ const GalleryTab = ({ mob }) => {
 };
 GalleryTab.propTypes = { mob: PropTypes.bool };
 
-const ReviewsTab = ({ mob, navigate, onWriteReview }) => (
+const ReviewsTab = ({ c, mob, navigate, onWriteReview }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.2fr 2fr', gap: '40px', marginBottom: '60px' }}>
         <div>
@@ -869,7 +870,7 @@ const ReviewsTab = ({ mob, navigate, onWriteReview }) => (
               <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', marginBottom: '16px' }}>
                  {[1,2,3,4,5].map(s => <Star key={s} size={20} fill="#FF9431" color="#FF9431" />)}
               </div>
-              <div style={{ fontSize: '14px', fontWeight: 700, color: '#94a3b8' }}>Based on 128 Verified Collaborations</div>
+              <div style={{ fontSize: '14px', fontWeight: 700, color: '#94a3b8' }}>Based on {c.reviews_count || '128'} Verified Collaborations</div>
            </Card>
            <Btn full lg onClick={() => onWriteReview()} style={{ borderRadius: '100px', background: '#fff', color: '#0f172a', border: '2px solid #0f172a', gap: '10px' }}>
               <Star size={18} /> Write a Review
@@ -908,7 +909,7 @@ const ReviewsTab = ({ mob, navigate, onWriteReview }) => (
      <TrustBadge />
   </motion.div>
 );
-ReviewsTab.propTypes = { mob: PropTypes.bool, navigate: PropTypes.func.isRequired, onWriteReview: PropTypes.func.isRequired };
+ReviewsTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, navigate: PropTypes.func.isRequired, onWriteReview: PropTypes.func.isRequired };
 
 const PackagesTab = ({ mob, onSelect }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
@@ -1029,7 +1030,7 @@ export default function CreatorProfilePage() {
             {activeTab === 'story' && <StoryTab key="tab-story" c={c} mob={mob} />}
             {activeTab === 'gallery' && <GalleryTab key="tab-gallery" mob={mob} />}
             {activeTab === 'work' && <WorkTab key="tab-work" mob={mob} />}
-            {activeTab === 'reviews' && <ReviewsTab key="tab-reviews" mob={mob} navigate={navigate} onWriteReview={handleRateClick} />}
+            {activeTab === 'reviews' && <ReviewsTab key="tab-reviews" c={c} mob={mob} navigate={navigate} onWriteReview={handleRateClick} />}
             {activeTab === 'packages' && <PackagesTab key="tab-packages" mob={mob} onSelect={handlePackageSelect} />}
             {activeTab === 'connect' && (
               <motion.div key="tab-connect" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>

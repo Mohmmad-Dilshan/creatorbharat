@@ -1,10 +1,18 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+
 import PropTypes from 'prop-types';
 import { useApp } from '@/core/context';
 import { T } from '@/core/theme';
 import { fmt } from '@/utils/helpers';
 import { Card, Bdg, Btn, Bar } from './Primitives';
-import { Heart, MapPin, Camera, Play, Briefcase, Ghost, AtSign, Smartphone, Check, Scale, Zap } from 'lucide-react';
+import { Heart, MapPin, Camera, Play, Briefcase, Ghost, AtSign, Smartphone, Check, Scale, Zap, Star } from 'lucide-react';
+
+const ensureArray = val => {
+  if (Array.isArray(val)) return val;
+  if (!val) return [];
+  return [val];
+};
 
 const Sparkline = ({ color }) => (
   <svg width="40" height="16" viewBox="0 0 40 20" fill="none" style={{ opacity: 0.8 }}>
@@ -130,11 +138,6 @@ CreatorStats.propTypes = {
   mob: PropTypes.bool
 };
 
-const ensureArray = val => {
-  if (Array.isArray(val)) return val;
-  if (val) return [val];
-  return [];
-};
 
 const CreatorBio = ({ c, mob }) => (
   <div style={{ marginBottom: mob ? 10 : 16 }}>
@@ -305,68 +308,132 @@ CreatorCard.propTypes = {
   onView: PropTypes.func
 };
 
-export function CampCard({ campaign: c, onApply }) {
+export function CampCard({ campaign: c, onApply, isTeaser = false }) {
   const { st, dsp } = useApp();
-  const applied = st.applied.includes(c.id);
+  const applied = !isTeaser && st.applied.includes(c.id);
   const fillPct = c.slots > 0 ? Math.round((c.filled / c.slots) * 100) : 0;
   const daysLeft = c.deadline ? Math.max(0, Math.ceil((new Date(c.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : 7;
-  const brandImg = `https://ui-avatars.com/api/?name=${encodeURIComponent(typeof c.brand === 'object' ? c.brand.companyName : c.brand)}&background=f1f5f9&color=111&size=100`;
+  
+  const brandName = isTeaser ? 'Verified Premium Brand' : (typeof c.brand === 'object' ? c.brand.companyName : c.brand);
+  const brandImg = isTeaser ? 'https://ui-avatars.com/api/?name=V+B&background=f1f5f9&color=111&size=100' : `https://ui-avatars.com/api/?name=${encodeURIComponent(brandName)}&background=f1f5f9&color=111&size=100`;
+  
+  // High-end Ad Thumbnail Fallback
+  const coverImg = c.coverImage || `https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=800`;
 
   return (
     <Card 
       style={{ 
-        padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px', borderRadius: '32px',
-        border: c.urgent ? '1.5px solid rgba(239, 68, 68, 0.2)' : '1px solid #f1f5f9',
-        background: '#fff', transition: 'all 0.3s ease', position: 'relative', overflow: 'hidden'
+        padding: '0px', display: 'flex', flexDirection: 'column', borderRadius: '32px',
+        border: '1px solid rgba(0,0,0,0.05)',
+        background: '#fff', 
+        transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)', 
+        position: 'relative', overflow: 'hidden',
+        boxShadow: '0 10px 40px rgba(0,0,0,0.03)',
+        cursor: isTeaser ? 'pointer' : 'default',
+        height: '100%'
       }}
-      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.06)'; }}
-      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+      onClick={() => isTeaser && onApply?.(c)}
+      onMouseEnter={e => { 
+        e.currentTarget.style.transform = 'translateY(-12px) scale(1.01)'; 
+        e.currentTarget.style.boxShadow = '0 40px 80px rgba(0,0,0,0.12)'; 
+      }}
+      onMouseLeave={e => { 
+        e.currentTarget.style.transform = 'translateY(0) scale(1)'; 
+        e.currentTarget.style.boxShadow = '0 10px 40px rgba(0,0,0,0.03)'; 
+      }}
     >
-      {c.urgent && (
-        <div style={{ position: 'absolute', top: '16px', right: '-35px', background: '#EF4444', color: '#fff', fontSize: '10px', fontWeight: 900, padding: '4px 40px', transform: 'rotate(45deg)', boxShadow: '0 4px 10px rgba(239, 68, 68, 0.2)' }}>
-          URGENT
-        </div>
-      )}
+      {/* Cinematic Ad Header (Image) */}
+      <div style={{ position: 'relative', height: '220px', overflow: 'hidden' }}>
+         <img src={coverImg} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%)' }} />
+         
+         {/* Ad Badges Over Image */}
+         <div style={{ position: 'absolute', top: '16px', left: '16px', display: 'flex', gap: '8px' }}>
+            <div style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', color: '#fff', fontSize: '10px', fontWeight: 900, padding: '6px 14px', borderRadius: '100px', border: '1px solid rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              {ensureArray(c.niche)[0] || 'Exclusive'}
+            </div>
+            {c.urgent && (
+              <div style={{ background: 'rgba(239, 68, 68, 0.9)', color: '#fff', fontSize: '10px', fontWeight: 900, padding: '6px 14px', borderRadius: '100px', display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 4px 10px rgba(239, 68, 68, 0.3)' }}>
+                <Zap size={10} fill="#fff" /> ACTIVE NOW
+              </div>
+            )}
+         </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-           <img src={brandImg} style={{ width: '56px', height: '56px', borderRadius: '16px', objectFit: 'cover', border: '1px solid #f1f5f9' }} alt="" />
-           <div>
-              <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '20px', fontWeight: 900, color: '#0f172a', lineHeight: 1.2, marginBottom: '4px' }}>{c.title}</h3>
-              <p style={{ fontSize: '14px', color: '#64748b', fontWeight: 700 }}>by {typeof c.brand === 'object' ? c.brand.companyName : c.brand}</p>
-           </div>
-        </div>
+         <div style={{ position: 'absolute', top: '16px', right: '16px' }}>
+            <button style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff' }}>
+               <Heart size={18} strokeWidth={2.5} />
+            </button>
+         </div>
+
+         <div style={{ position: 'absolute', bottom: '16px', left: '16px', right: '16px' }}>
+            <div style={{ fontSize: '12px', fontWeight: 900, color: '#10B981', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+               <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', animation: 'pulse 2s infinite' }} />
+               {isTeaser ? 'HIGH-TICKET CAMPAIGN' : 'VERIFIED DEAL'}
+            </div>
+            <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '24px', fontWeight: 950, color: '#fff', lineHeight: 1.1, letterSpacing: '-0.02em' }}>{c.title}</h3>
+         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '12px' }}>
-         <div style={{ background: '#f8fafc', padding: '12px 20px', borderRadius: '16px', flex: 1 }}>
-            <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', marginBottom: '4px' }}>Budget</div>
-            <div style={{ fontSize: '18px', fontWeight: 950, color: '#10B981' }}>{fmt.inr(c.budgetMin)}</div>
+      {/* Content Hub */}
+      <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+         
+         {/* Overlapping Brand Logo */}
+         <div style={{ position: 'absolute', top: '-32px', right: '24px' }}>
+            <div style={{ position: 'relative' }}>
+               <img src={brandImg} style={{ width: '64px', height: '64px', borderRadius: '20px', objectFit: 'cover', border: '4px solid #fff', boxShadow: '0 10px 20px rgba(0,0,0,0.1)', background: '#fff' }} alt="" />
+               <div style={{ position: 'absolute', bottom: '-2px', right: '-2px', width: '20px', height: '20px', background: '#3B82F6', borderRadius: '50%', border: '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Check size={12} color="#fff" strokeWidth={4} />
+               </div>
+            </div>
          </div>
-         <div style={{ background: '#f8fafc', padding: '12px 20px', borderRadius: '16px', flex: 1 }}>
-            <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', marginBottom: '4px' }}>Deadline</div>
-            <div style={{ fontSize: '18px', fontWeight: 950, color: daysLeft <= 3 ? '#EF4444' : '#0f172a' }}>{daysLeft} Days</div>
+
+         <div style={{ marginBottom: '20px' }}>
+            <p style={{ fontSize: '14px', color: '#64748b', fontWeight: 700, marginBottom: '12px' }}>Promoted by <span style={{ color: '#0f172a' }}>{brandName}</span></p>
+            <p style={{ fontSize: '15px', color: '#475569', lineHeight: 1.6, fontWeight: 500, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+              {c.description || c.desc || "Collaborate with this premium brand to create high-impact content for their upcoming launch."}
+            </p>
+         </div>
+
+         {/* Value Grid */}
+         <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+            <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: '16px', flex: 1, border: '1px solid #f1f5f9' }}>
+               <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Budget</div>
+               <div style={{ fontSize: '16px', fontWeight: 950, color: '#10B981' }}>{isTeaser ? '₹15K - 50K' : fmt.inr(c.budgetMin)}</div>
+            </div>
+            <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: '16px', flex: 1, border: '1px solid #f1f5f9' }}>
+               <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Platform</div>
+               <div style={{ fontSize: '16px', fontWeight: 950, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Camera size={14} color="#E1306C" /> Instagram
+               </div>
+            </div>
+         </div>
+
+         {/* Progress Section */}
+         <div style={{ marginTop: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+               <span style={{ fontSize: '12px', fontWeight: 800, color: '#64748b' }}>Selection Status</span>
+               <span style={{ fontSize: '12px', fontWeight: 900, color: '#0f172a' }}>{isTeaser ? '6/10 Slots Left' : `${c.slots - c.filled} slots open`}</span>
+            </div>
+            <Bar value={isTeaser ? 40 : fillPct} color={(isTeaser ? 40 : fillPct) >= 90 ? '#FF9431' : '#3B82F6'} height={6} />
+         </div>
+
+         {/* Primary CTA */}
+         <div style={{ marginTop: '24px' }}>
+            {isTeaser ? (
+              <Btn full lg style={{ borderRadius: '100px', padding: '16px', fontSize: '15px', fontWeight: 950, background: 'linear-gradient(90deg, #FF9431 0%, #FFB366 100%)', color: '#fff', border: 'none', boxShadow: '0 10px 20px rgba(255,148,49,0.2)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                Join Campaign
+              </Btn>
+            ) : applied ? (
+              <div style={{ background: '#f8fafc', color: '#10B981', padding: '16px', borderRadius: '100px', textAlign: 'center', fontSize: '14px', fontWeight: 950, border: '1px solid #e2e8f0' }}>
+                ✓ REQUEST PENDING
+              </div>
+            ) : (
+              <Btn full lg onClick={() => onApply?.(c)} style={{ borderRadius: '100px', padding: '16px', fontSize: '15px', fontWeight: 950, background: '#0f172a', color: '#fff', border: 'none', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                Apply to Deal
+              </Btn>
+            )}
          </div>
       </div>
-
-      <p style={{ fontSize: '15px', color: '#475569', lineHeight: 1.6, fontWeight: 500 }}>{c.description || c.desc}</p>
-
-      <div style={{ marginTop: 'auto', paddingTop: '24px', borderTop: '1px solid #f1f5f9' }}>
-         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <span style={{ fontSize: '13px', fontWeight: 800, color: '#64748b' }}>Capacity</span>
-            <span style={{ fontSize: '13px', fontWeight: 900, color: '#0f172a' }}>{c.filled || 0} applied / {c.slots || 10} slots</span>
-         </div>
-         <Bar value={fillPct} color={fillPct >= 90 ? '#FF9431' : '#10B981'} height={8} />
-      </div>
-
-      {applied ? (
-        <div style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10B981', padding: '16px', borderRadius: '100px', textAlign: 'center', fontSize: '14px', fontWeight: 900 }}>
-          APPLICATION SUBMITTED
-        </div>
-      ) : (
-        <Btn onClick={() => onApply?.(c)} style={{ borderRadius: '100px', padding: '16px', fontSize: '15px', fontWeight: 900, background: '#0f172a', color: '#fff' }}>Apply to Campaign</Btn>
-      )}
-      <div style={{ display: 'none' }}>{dsp && null}</div>
     </Card>
   );
 }
@@ -385,7 +452,8 @@ CampCard.propTypes = {
     urgent: PropTypes.bool,
     niche: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)])
   }).isRequired,
-  onApply: PropTypes.func
+  onApply: PropTypes.func,
+  isTeaser: PropTypes.bool
 };
 
 export function BlogCard({ article: b, onClick }) {

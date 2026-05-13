@@ -59,9 +59,66 @@ const BackgroundBlobs = memo(() => (
 
 BackgroundBlobs.displayName = 'BackgroundBlobs';
 
+const ActivityTicker = () => {
+  const activities = [
+    "🔥 @iam_ritik just applied to Nike Summer Campaign",
+    "✨ @prio_sharma secured a deal with Mamaearth",
+    "🚀 New High-Ticket campaign live: Coca-Cola India",
+    "💎 @karan_vlogs joined the Verified Network",
+    "📈 @shrutii_fash reached Platinum Tier",
+  ];
+  const isBrowser = globalThis.window !== undefined;
+  const mob = isBrowser && globalThis.window.innerWidth < 768;
+  
+  return (
+    <div style={{ 
+      width: '100%', 
+      background: 'rgba(15,23,42,0.02)', 
+      borderBottom: '1px solid rgba(15,23,42,0.05)',
+      padding: mob ? '10px 0' : '8px 0',
+      overflow: 'hidden',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      zIndex: 100,
+      maxWidth: '100vw'
+    }}>
+      <motion.div 
+        animate={{ x: [0, -1000] }}
+        transition={{ duration: mob ? 25 : 40, repeat: Infinity, ease: "linear" }}
+        style={{ display: 'flex', gap: mob ? '40px' : '60px', whiteSpace: 'nowrap', width: 'fit-content', maxWidth: 'none' }}
+      >
+        {[...activities, ...activities].map((a, i) => (
+          <span key={i} style={{ fontSize: mob ? '10px' : '11px', fontWeight: 900, color: '#64748b', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+            {a}
+          </span>
+        ))}
+      </motion.div>
+    </div>
+  );
+};
+
+const BrandScroller = () => {
+  const brands = ["Nike", "CocaCola", "Adidas", "Samsung", "Apple", "Puma", "RedBull"];
+  const isBrowser = globalThis.window !== undefined;
+  const mob = isBrowser && globalThis.window.innerWidth < 768;
+
+  return (
+    <div style={{ marginTop: mob ? '40px' : '60px', opacity: 0.4, padding: '20px 0' }}>
+      <p style={{ textAlign: 'center', fontSize: mob ? '9px' : '10px', fontWeight: 900, color: '#64748b', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: mob ? '16px' : '24px' }}>Trusted by Industry Leaders</p>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: mob ? '24px' : '48px', flexWrap: 'wrap' }}>
+        {brands.slice(0, mob ? 4 : 7).map((b, i) => (
+          <div key={i} style={{ fontSize: mob ? '18px' : '24px', fontWeight: 950, color: '#0f172a', letterSpacing: '-1px' }}>
+            {b}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 /**
  * EliteHeader: A premium, reusable header component for internal pages.
- * Features glassmorphism, animated gradients, and high-fidelity typography.
  */
 const EliteHeader = memo(({ 
   eyebrow, 
@@ -95,9 +152,15 @@ const EliteHeader = memo(({
       background: light ? 'linear-gradient(180deg, #fff 0%, #f8fafc 100%)' : '#050505', 
       padding: `${pt} 20px ${pb}`, 
       position: 'relative', 
-      overflow: 'hidden',
+      overflowX: 'hidden',
+      overflowY: 'visible',
+      width: '100%',
+      maxWidth: '100vw',
+      boxSizing: 'border-box',
       borderBottom: light ? '1px solid rgba(0,0,0,0.05)' : 'none'
     }}>
+      {!compact && <ActivityTicker />}
+
       {/* SaaS Dot Grid Background */}
       {light && (
         <div style={{ 
@@ -112,7 +175,15 @@ const EliteHeader = memo(({
       {/* Animated 'Tiranga' Lehrata Background Effect */}
       <BackgroundBlobs />
       
-      <div style={{ ...W(maxWidth), position: 'relative', zIndex: 10, textAlign: 'center' }}>
+      <div style={{ 
+        width: '100%', 
+        maxWidth: maxWidth + 'px', 
+        margin: '0 auto',
+        position: 'relative', 
+        zIndex: 10, 
+        textAlign: 'center', 
+        boxSizing: 'border-box'
+      }}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -131,20 +202,21 @@ const EliteHeader = memo(({
             </motion.div>
           )}
 
-          <h1 style={{ 
+          <div style={{ 
             fontSize: mob ? '36px' : 'clamp(40px, 6vw, 72px)', 
             fontWeight: 900, 
             color: light ? '#111' : '#fff', 
             fontFamily: "'Outfit', sans-serif",
             lineHeight: 1.05,
             marginBottom: 24,
-            letterSpacing: '-0.02em'
+            letterSpacing: '-0.02em',
+            textAlign: 'center'
           }}>
             {title}
-          </h1>
+          </div>
 
           {sub && (
-            <p style={{ 
+            <div style={{ 
               fontSize: mob ? '15px' : 'clamp(17px, 1.3vw, 21px)', 
               color: light ? '#64748b' : 'rgba(255,255,255,0.6)', 
               maxWidth: 700, 
@@ -153,7 +225,7 @@ const EliteHeader = memo(({
               fontWeight: 500
             }}>
               {sub}
-            </p>
+            </div>
           )}
           
           {children && (
@@ -161,6 +233,8 @@ const EliteHeader = memo(({
               {children}
             </div>
           )}
+
+          {!compact && <BrandScroller />}
         </motion.div>
       </div>
     </div>

@@ -144,10 +144,11 @@ export default function EliteMobileNav({ role, user }) {
         }
 
         .elite-dock-container {
-          position: absolute;
+          position: fixed;
           bottom: 24px;
           left: 50%;
-          width: 92%;
+          transform: translateX(-50%);
+          width: 92vw;
           max-width: 440px;
           background: rgba(255, 255, 255, 0.85);
           backdrop-filter: blur(24px) saturate(180%);

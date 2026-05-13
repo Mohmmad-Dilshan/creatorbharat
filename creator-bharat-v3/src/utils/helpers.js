@@ -121,7 +121,7 @@ export const fmt = {
 };
 
 export const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-export const W = (max = 1200) => ({ maxWidth: max, margin: '0 auto', padding: '0 20px' });
+export const W = (max = 1200) => ({ width: '100%', maxWidth: max, margin: '0 auto', padding: '0 20px', boxSizing: 'border-box' });
 
 export const LS = {
   get(k, fb = null) {

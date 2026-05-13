@@ -96,7 +96,7 @@ export default function ComparePage() {
                       <th key={c.id} style={{ padding: '40px 32px', textAlign: 'center', minWidth: 200 }}>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
                           <div style={{ position: 'relative' }}>
-                            <img src={c.photo || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=FF9431&color=fff`} style={{ width: 100, height: 100, borderRadius: 28, objectFit: 'cover', boxShadow: '0 15px 35px rgba(0,0,0,0.1)' }} alt="" />
+                            <img src={c.photo || c.avatarUrl || c.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=FF9431&color=fff`} style={{ width: 100, height: 100, borderRadius: 28, objectFit: 'cover', boxShadow: '0 15px 35px rgba(0,0,0,0.1)' }} alt="" />
                             {c.verified && <div style={{ position: 'absolute', bottom: -5, right: -5, background: '#10B981', color: '#fff', padding: 4, borderRadius: '50%', border: '3px solid #fff' }}><Check size={12} strokeWidth={4} /></div>}
                           </div>
                           <div>
