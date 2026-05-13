@@ -11,7 +11,8 @@ import {
   Zap, 
   Trophy, 
   Plus,
-  Newspaper
+  Newspaper,
+  IndianRupee
 } from 'lucide-react';
 
 /**
@@ -26,13 +27,14 @@ import {
 const NAV_SETS = {
   public: [
     { id: 'home', l: 'Home', icon: Home, p: '/' },
-    { id: 'marketplace', l: 'Marketplace', icon: Search, p: '/creators' },
+    { id: 'creators', l: 'Creators', icon: Search, p: '/creators' },
     { id: 'hub', l: 'Hub', icon: Newspaper, p: '/blog' },
     { id: 'login', l: 'Account', icon: User, p: 'AUTH' } // Dynamic path handled below
   ],
   creator: [
     { id: 'dash', l: 'Overview', icon: LayoutDashboard, p: '/dashboard' },
     { id: 'deals', l: 'Deals', icon: Zap, p: '/applications' },
+    { id: 'monetize', l: 'Earn', icon: IndianRupee, p: '/monetize' },
     { id: 'score', l: 'Score', icon: Trophy, p: '/creator-score' },
     { id: 'profile', l: 'Identity', icon: User, p: '/settings' }
   ],

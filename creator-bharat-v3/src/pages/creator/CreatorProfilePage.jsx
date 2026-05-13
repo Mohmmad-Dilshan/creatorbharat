@@ -262,7 +262,7 @@ const IdentityTab = ({ c, stats, onRate, mob }) => (
        ))}
     </div>
     <div style={{ marginBottom: '40px' }}>
-       <Btn lg style={{ borderRadius: '100px', background: '#0f172a', gap: '10px', width: mob ? '100%' : 'auto' }}><Download size={18} /> Download Verified Media Kit (PDF)</Btn>
+       <Btn lg style={{ borderRadius: '100px', background: '#0f172a', color: '#fff', gap: '10px', width: mob ? '100%' : 'auto' }}><Download size={18} /> Download Verified Media Kit (PDF)</Btn>
     </div>
     <GeoIntelligence c={c} mob={mob} />
     <AboutMeLong />
@@ -1058,7 +1058,7 @@ export default function CreatorProfilePage() {
                      <Briefcase size={24} color="#FF9431" />
                   </div>
                   <h4 style={{ fontSize: '20px', fontWeight: 900, color: '#fff', marginBottom: '12px' }}>I am a Brand</h4>
-                  <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px' }}>Hire {c?.name || 'Elite Creators'} or explore our elite marketplace for your next big campaign.</p>
+                  <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px' }}>Hire {c?.name || 'Elite Creators'} or explore our elite creators network for your next big campaign.</p>
                   <Btn full lg style={{ background: '#FF9431', borderRadius: '100px' }} onClick={() => navigate('/creators')}>Hire Elite Creators</Btn>
                </div>
 

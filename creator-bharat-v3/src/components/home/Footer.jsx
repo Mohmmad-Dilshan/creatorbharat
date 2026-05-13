@@ -22,8 +22,9 @@ const NAV_COLS = [
   {
     heading: 'Platform',
     links: [
-      { label: 'Marketplace', path: '/creators' },
+      { label: 'Creators', path: '/creators' },
       { label: 'Campaigns', path: '/campaigns' },
+      { label: 'Monetization', path: '/monetize' },
       { label: 'Leaderboard', path: '/leaderboard' },
       { label: 'Rate Calculator', path: '/rate-calc' },
       { label: 'Blog & Insights', path: '/blog' },

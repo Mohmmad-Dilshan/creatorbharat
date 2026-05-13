@@ -454,8 +454,8 @@ const EliteSpotlight = ({ mob, all, setSelectedCreator, dsp, loading }) => {
   const skeletons = [1, 2, 3, 4];
   
   return (
-    <section style={{ padding: mob ? '40px 0 20px' : '60px 0 40px', background: '#fcfcfc', borderBottom: '1px solid #f1f5f9', overflow: 'hidden', display: 'flex', justifyContent: 'center' }}>
-      <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px', width: '100%' }}>
+    <section style={{ padding: mob ? '40px 0 20px' : '60px 0 40px', background: '#fcfcfc', borderBottom: '1px solid #f1f5f9', overflow: 'hidden' }}>
+      <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px' }}>
         <div style={{ display: 'flex', alignItems: mob ? 'center' : 'flex-start', flexDirection: mob ? 'column' : 'row', textAlign: mob ? 'center' : 'left', justifyContent: 'space-between', marginBottom: mob ? '24px' : '32px' }}>
           <div>
             <Bdg color="orange" sm>HANDPICKED TALENT</Bdg>
@@ -477,7 +477,9 @@ const EliteSpotlight = ({ mob, all, setSelectedCreator, dsp, loading }) => {
             overflowX: 'auto', 
             paddingBottom: '20px', 
             scrollbarWidth: 'none',
-            WebkitOverflowScrolling: 'touch'
+            WebkitOverflowScrolling: 'touch',
+            scrollSnapType: mob ? 'x mandatory' : 'none',
+            scrollPadding: mob ? '0 24px' : '0'
           }} 
           className="no-scrollbar"
         >
@@ -493,7 +495,8 @@ const EliteSpotlight = ({ mob, all, setSelectedCreator, dsp, loading }) => {
                   borderRadius: mob ? '24px' : '48px',
                   background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
                   position: 'relative',
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  scrollSnapAlign: mob ? 'center' : 'none'
                 }}
               >
                 <div style={{ position: 'absolute', bottom: '40px', left: '40px', right: '40px' }}>
@@ -519,7 +522,8 @@ const EliteSpotlight = ({ mob, all, setSelectedCreator, dsp, loading }) => {
                   cursor: 'pointer',
                   background: '#050505',
                   boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-                  transition: 'box-shadow 0.3s'
+                  transition: 'box-shadow 0.3s',
+                  scrollSnapAlign: mob ? 'center' : 'none'
                 }}
               >
                 <motion.img 
@@ -673,8 +677,8 @@ export default function CreatorsPage() {
       />
 
       {/* MAP & DISCOVERY SECTIONS - CENTERED */}
-      <section style={{ background: '#fff', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'center' }}>
-        <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px', width: '100%' }}>
+      <section style={{ background: '#fff', borderTop: '1px solid #f1f5f9' }}>
+        <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px' }}>
           {showMap && (
             <div style={{ marginBottom: mob ? '40px' : '60px' }}>
               <IndiaMap3D 
@@ -691,8 +695,8 @@ export default function CreatorsPage() {
         </div>
       </section>
 
-      <div id="creators-grid-anchor" style={{ padding: mob ? '24px 16px 80px' : '60px 24px 100px', background: '#fdfdfd', display: 'flex', justifyContent: 'center' }}>
-        <div style={{ ...W(1280), width: '100%' }}>
+      <div id="creators-grid-anchor" style={{ padding: mob ? '24px 0 80px' : '60px 24px 100px', background: '#fdfdfd' }}>
+        <div style={{ ...W(1280), padding: mob ? '0 8px' : '0 24px', width: 'auto' }}>
           <MarketplaceHeader 
             mob={mob} setShowFilters={setShowFilters} 
             clearFilters={clearFilters} 

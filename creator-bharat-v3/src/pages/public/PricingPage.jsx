@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { Btn, Bdg } from '@/components/common/Primitives';
 
-const PricingCard = ({ plan, delay = 0 }) => {
+const PricingCard = ({ plan, delay = 0, navigate }) => {
   const isPro = plan.id === 'pro' || plan.id === 'brand_pro';
 
   return (
@@ -91,13 +91,11 @@ const PricingCard = ({ plan, delay = 0 }) => {
         ))}
       </div>
 
-      <button 
-        onClick={() => {
-          const target = plan.id.startsWith('brand') ? '/brand-register' : '/apply';
-          globalThis.location.href = target;
-        }}
+      <Btn 
+        full 
+        lg={isPro}
+        onClick={() => navigate('/join')}
         style={{
-          width: '100%',
           padding: '20px',
           borderRadius: '100px',
           background: isPro ? '#0f172a' : '#fff',
@@ -105,25 +103,11 @@ const PricingCard = ({ plan, delay = 0 }) => {
           border: isPro ? 'none' : '1.5px solid #f1f5f9',
           fontSize: '16px',
           fontWeight: 950,
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '10px',
-          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
           boxShadow: isPro ? '0 15px 30px rgba(15, 23, 42, 0.2)' : 'none'
-        }}
-        onMouseEnter={e => {
-          e.currentTarget.style.transform = 'translateY(-4px)';
-          if (isPro) e.currentTarget.style.boxShadow = '0 20px 40px rgba(15, 23, 42, 0.3)';
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.transform = 'translateY(0)';
-          if (isPro) e.currentTarget.style.boxShadow = '0 15px 30px rgba(15, 23, 42, 0.2)';
         }}
       >
         {plan.cta} <ArrowRight size={18} />
-      </button>
+      </Btn>
     </motion.div>
   );
 };
@@ -138,7 +122,8 @@ PricingCard.propTypes = {
     features: PropTypes.arrayOf(PropTypes.string).isRequired,
     cta: PropTypes.string.isRequired
   }).isRequired,
-  delay: PropTypes.number
+  delay: PropTypes.number,
+  navigate: PropTypes.func.isRequired
 };
 
 const TabButton = ({ active, label, icon: Icon, onClick }) => (
@@ -351,7 +336,7 @@ export default function PricingPage() {
               }}
             >
                {activePlans.map((plan, i) => (
-                 <PricingCard key={plan.id} plan={plan} delay={0.1 * i} />
+                 <PricingCard key={plan.id} plan={plan} delay={0.1 * i} navigate={navigate} />
                ))}
             </motion.div>
           </AnimatePresence>
@@ -455,7 +440,7 @@ export default function PricingPage() {
             <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.5)', marginBottom: '48px', maxWidth: '600px', margin: '0 auto 56px', fontWeight: 500 }}>
               Join the elite circle of creators and brands building the future of commerce in Bharat.
             </p>
-            <Btn lg onClick={() => navigate('/apply')} style={{ padding: '24px 64px', borderRadius: '100px', background: '#fff', color: '#0f172a', fontSize: '18px', fontWeight: 950 }}>
+            <Btn lg onClick={() => navigate('/join')} style={{ padding: '24px 64px', borderRadius: '100px', background: '#fff', color: '#0f172a', fontSize: '18px', fontWeight: 950 }}>
               Get Started Now <ArrowRight size={22} />
             </Btn>
          </motion.div>

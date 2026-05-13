@@ -77,7 +77,7 @@ CardHeader.propTypes = {
 };
 
 const CreatorIdentity = ({ c, mob, img, score }) => (
-  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: mob ? -24 : -48, marginBottom: mob ? 8 : 12, position: 'relative', zIndex: 2 }}>
+  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: mob ? -24 : -48, marginBottom: mob ? 8 : 12, position: 'relative', zIndex: 2, minWidth: 0 }}>
     <div style={{ position: 'relative' }}>
       <img src={img} alt={c.name} style={{ width: mob ? 48 : 96, height: mob ? 48 : 96, borderRadius: mob ? 16 : 28, objectFit: 'cover', border: (mob ? '2px' : '4px') + ' solid #fff', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', backgroundColor: '#fff' }} />
       <div style={{ position: 'absolute', bottom: 2, right: 2, width: mob ? 10 : 16, height: mob ? 10 : 16, background: '#10B981', border: (mob ? '2px' : '3px') + ' solid #fff', borderRadius: '50%', zIndex: 10 }}>
@@ -104,7 +104,7 @@ CreatorIdentity.propTypes = {
 };
 
 const CreatorStats = ({ c, mob }) => (
-  <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : '1fr 1fr 1fr', gap: mob ? 6 : 12, padding: (mob ? '12px' : '20px') + ' 0', borderTop: '1px dashed rgba(0,0,0,0.08)', marginTop: 'auto' }}>
+  <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : '1fr 1fr 1fr', gap: mob ? 4 : 12, padding: (mob ? '12px' : '20px') + ' 0', borderTop: '1px dashed rgba(0,0,0,0.08)', marginTop: 'auto', minWidth: 0 }}>
     <div>
       <div style={{ fontSize: mob ? 12 : 18, fontWeight: 900, color: '#0F172A', marginBottom: 2 }}>{fmt.num(c.followers)}</div>
       <div style={{ fontSize: mob ? 8 : 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Followers</div>
@@ -138,7 +138,7 @@ const ensureArray = val => {
 
 const CreatorBio = ({ c, mob }) => (
   <div style={{ marginBottom: mob ? 10 : 16 }}>
-    <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 15 : 26, fontWeight: 900, color: '#0F172A', marginBottom: mob ? 2 : 4, letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: 6 }}>
+    <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 14 : 26, fontWeight: 900, color: '#0F172A', marginBottom: mob ? 2 : 4, letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: 6 }}>
       {c.name} {mob && c.verified && <Check size={12} color="#3B82F6" strokeWidth={4} style={{ flexShrink: 0 }} />}
     </h3>
     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -247,7 +247,9 @@ export function CreatorCard({ creator: c, onView }) {
         transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)', 
         border: isMega ? '1px solid rgba(251, 191, 36, 0.5)' : '1px solid rgba(0,0,0,0.04)', 
         borderRadius: mob ? 16 : 32, overflow: 'hidden', background: '#fff',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
+        boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
+        padding: mob ? '8px' : '32px',
+        minWidth: 0
       }}
       onMouseEnter={e => {
         e.currentTarget.style.transform = 'translateY(-8px)';
@@ -261,7 +263,7 @@ export function CreatorCard({ creator: c, onView }) {
     >
       <CardHeader coverUrl={c.coverUrl} id={c.id} saved={saved} dsp={dsp} mob={mob} tierLabel={tier?.label || 'Rising'} requireBrand={requireBrand} />
 
-      <div style={{ padding: mob ? '0 10px' : '0 24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ padding: mob ? '0 2px' : '0 24px', flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <CreatorIdentity c={c} mob={mob} img={img} score={score} />
         <CreatorBio c={c} mob={mob} />
 

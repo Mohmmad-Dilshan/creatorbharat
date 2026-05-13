@@ -124,7 +124,7 @@ export default function CreatorGrid({ loading, filtered, visible, view, mob, onC
         <div style={{ 
           display: 'grid', 
           gridTemplateColumns: getGridColumns(), 
-          gap: mob ? 16 : 32 
+          gap: mob ? 10 : 32 
         }}>
           {visible.map((c, i) => (
             <motion.div

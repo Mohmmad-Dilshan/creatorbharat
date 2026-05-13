@@ -5,7 +5,7 @@ import { useApp } from '@/core/context';
 import { Btn, Logo } from '@/components/common/Primitives';
 import { scrollToTop } from '../../utils/helpers';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Users, Megaphone, BookOpen, Heart, LogOut, LayoutDashboard, Briefcase, Bookmark, Settings, ChevronRight, User, LifeBuoy, MessageSquare, Sparkles, Search, Calculator, Trophy, ShieldCheck, Home } from 'lucide-react';
+import { X, Users, Megaphone, BookOpen, Heart, LogOut, LayoutDashboard, Briefcase, Bookmark, Settings, ChevronRight, User, LifeBuoy, MessageSquare, Sparkles, Search, Calculator, Trophy, ShieldCheck, Home, IndianRupee } from 'lucide-react';
 
 export default function MobileMenu({ open }) {
   const { st, dsp } = useApp();
@@ -34,11 +34,12 @@ export default function MobileMenu({ open }) {
 
   const links = [
     { path: '/', l: 'Home', i: Home },
-    { path: '/creators', l: 'Marketplace', i: Users },
+    { path: '/creators', l: 'Creators', i: Users },
     { path: '/campaigns', l: 'Brand Deals', i: Megaphone },
     { path: '/leaderboard', l: 'Leaderboard', i: Trophy },
     { path: '/rate-calc', l: 'Rate Calculator', i: Calculator },
     { path: '/blog', l: 'Hub', i: BookOpen },
+    { path: '/monetize', l: 'Monetization', i: IndianRupee },
     { path: '/official-profile', l: 'Official Identity', i: ShieldCheck },
     { path: '/about', l: 'Our Story', i: Heart },
     { path: '/pricing', l: 'Pricing', i: Sparkles }
