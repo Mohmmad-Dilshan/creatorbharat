@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/core/context';
@@ -32,8 +32,17 @@ const checkSearchQuery = (c, q) => {
 
 const checkNiche = (c, niche) => {
   if (!niche || niche.length === 0) return true;
+  
   // Handle both 'niche' and 'category' keys for cross-compatibility
-  const cn = Array.isArray(c.niche) ? c.niche : (Array.isArray(c.category) ? c.category : [c.niche || c.category]);
+  let cn;
+  if (Array.isArray(c.niche)) {
+    cn = c.niche;
+  } else if (Array.isArray(c.category)) {
+    cn = c.category;
+  } else {
+    cn = [c.niche || c.category];
+  }
+  
   return niche.some(n => cn.filter(Boolean).includes(n));
 };
 
@@ -451,115 +460,211 @@ EliteConversion.propTypes = {
   navigate: PropTypes.func.isRequired
 };
 
+const SKEL_S = {
+  mob: { width: '240px', height: '340px', borderRadius: '24px', scrollSnapAlign: 'center' },
+  desk: { width: '340px', height: '460px', borderRadius: '48px', scrollSnapAlign: 'none' }
+};
+
+const SpotlightSkeleton = ({ mob }) => {
+  const v = mob ? SKEL_S.mob : SKEL_S.desk;
+  return (
+    <div 
+      className="skeleton-pulse"
+      style={{
+        flexShrink: 0,
+        background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
+        position: 'relative',
+        overflow: 'hidden',
+        ...v
+      }}
+    >
+      <div style={{ position: 'absolute', bottom: '40px', left: '40px', right: '40px' }}>
+         <div style={{ width: '40%', height: '12px', background: 'rgba(0,0,0,0.05)', borderRadius: '100px', marginBottom: '16px' }} />
+         <div style={{ width: '80%', height: '24px', background: 'rgba(0,0,0,0.05)', borderRadius: '100px', marginBottom: '12px' }} />
+         <div style={{ width: '60%', height: '14px', background: 'rgba(0,0,0,0.05)', borderRadius: '100px' }} />
+      </div>
+    </div>
+  );
+};
+
+SpotlightSkeleton.propTypes = { mob: PropTypes.bool };
+
+const CARD_S = {
+  mob: {
+    card: { width: '240px', height: '340px', borderRadius: '24px', scrollSnapAlign: 'center' },
+    badge: { top: '20px', right: '20px' },
+    badgeInner: { padding: '8px 16px', fontSize: '10px' },
+    content: { bottom: '24px', left: '24px', right: '24px' },
+    icon: 14,
+    verified: '10px',
+    name: '22px',
+    meta: '13px'
+  },
+  desk: {
+    card: { width: '340px', height: '460px', borderRadius: '48px', scrollSnapAlign: 'none' },
+    badge: { top: '28px', right: '28px' },
+    badgeInner: { padding: '10px 20px', fontSize: '12px' },
+    content: { bottom: '40px', left: '40px', right: '40px' },
+    icon: 18,
+    verified: '12px',
+    name: '30px',
+    meta: '15px'
+  }
+};
+
+const SpotlightCard = ({ creator, mob, onClick }) => {
+  const v = mob ? CARD_S.mob : CARD_S.desk;
+  const photo = creator.photo || creator.avatarUrl || creator.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(creator.name)}&background=FF9431&color=fff`;
+
+  return (
+    <motion.div
+      whileHover={mob ? {} : { y: -16, scale: 1.02 }}
+      onClick={() => onClick(creator)}
+      style={{
+        flexShrink: 0,
+        position: 'relative',
+        overflow: 'hidden',
+        cursor: 'pointer',
+        background: '#050505',
+        boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+        transition: 'box-shadow 0.3s',
+        ...v.card
+      }}
+    >
+      <motion.img 
+        src={photo} 
+        alt={creator.name}
+        whileHover={{ scale: 1.1 }}
+        transition={{ duration: 0.6 }}
+        style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }}
+      />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)' }} />
+      
+      <div style={{ position: 'absolute', ...v.badge }}>
+        <div style={{ 
+          background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', 
+          borderRadius: '100px', 
+          border: '1px solid rgba(255,255,255,0.1)', color: '#fff', 
+          fontWeight: 950, letterSpacing: '1px',
+          boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
+          ...v.badgeInner
+        }}>
+          {creator.score || '98'} SCORE
+        </div>
+      </div>
+
+      <div style={{ position: 'absolute', ...v.content }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+          <CheckCircle size={v.icon} color="#FF9431" fill="#FF9431" />
+          <span style={{ fontSize: v.verified, fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px' }}>Elite Verified</span>
+        </div>
+        <h3 style={{ fontSize: v.name, fontWeight: 950, color: '#fff', marginBottom: '6px', letterSpacing: '-0.03em' }}>{creator.name}</h3>
+        <p style={{ fontSize: v.meta, color: 'rgba(255,255,255,0.6)', fontWeight: 650 }}>{creator.city} • {fmt.num(creator.followers)} Reach</p>
+      </div>
+    </motion.div>
+  );
+};
+
+SpotlightCard.propTypes = {
+  creator: PropTypes.object.isRequired,
+  mob: PropTypes.bool,
+  onClick: PropTypes.func.isRequired
+};
+
+const SpotlightHeader = ({ mob, onAction }) => (
+  <div style={{ 
+    display: 'flex', 
+    alignItems: mob ? 'center' : 'flex-start', 
+    flexDirection: mob ? 'column' : 'row', 
+    textAlign: mob ? 'center' : 'left', 
+    justifyContent: 'space-between', 
+    marginBottom: mob ? '24px' : '32px' 
+  }}>
+    <div>
+      <Bdg color="orange" sm>HANDPICKED TALENT</Bdg>
+      <h2 style={{ fontSize: mob ? '24px' : '32px', fontWeight: 950, color: '#0f172a', marginTop: '8px', letterSpacing: '-0.04em' }}>Elite Spotlight</h2>
+    </div>
+    {!mob && <Btn outline sm onClick={onAction}>View All Verified</Btn>}
+  </div>
+);
+
+SpotlightHeader.propTypes = {
+  mob: PropTypes.bool,
+  onAction: PropTypes.func.isRequired
+};
+
+const SpotlightList = ({ loading, skeletons, spotlightCreators, mob, onSelect }) => {
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const handleWheel = (e) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        el.scrollLeft += e.deltaY;
+      }
+    };
+
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, []);
+
+  return (
+    <div 
+      ref={scrollRef}
+      style={{ 
+        display: 'flex', 
+        gap: mob ? '16px' : '24px', 
+        overflowX: 'auto', 
+        paddingBottom: '20px', 
+        scrollbarWidth: 'none',
+        WebkitOverflowScrolling: 'touch',
+        scrollSnapType: mob ? 'x mandatory' : 'none',
+        scrollPadding: mob ? '0 24px' : '0'
+      }} 
+      className="no-scrollbar"
+    >
+      {loading ? (
+        skeletons.map(i => <SpotlightSkeleton key={i} mob={mob} />)
+      ) : (
+        spotlightCreators.map((creator) => (
+          <SpotlightCard 
+            key={creator.id} 
+            creator={creator} 
+            mob={mob} 
+            onClick={onSelect} 
+          />
+        ))
+      )}
+    </div>
+  );
+};
+
+SpotlightList.propTypes = {
+  loading: PropTypes.bool,
+  skeletons: PropTypes.array.isRequired,
+  spotlightCreators: PropTypes.array.isRequired,
+  mob: PropTypes.bool,
+  onSelect: PropTypes.func.isRequired
+};
+
 const EliteSpotlight = ({ mob, all, setSelectedCreator, dsp, loading }) => {
   const skeletons = [1, 2, 3, 4];
-  
+  const spotlightCreators = useMemo(() => all.filter(c => c.verified).slice(0, 5), [all]);
+
   return (
     <section style={{ padding: mob ? '40px 0 20px' : '60px 0 40px', background: '#fcfcfc', borderBottom: '1px solid #f1f5f9', overflow: 'hidden' }}>
       <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px' }}>
-        <div style={{ display: 'flex', alignItems: mob ? 'center' : 'flex-start', flexDirection: mob ? 'column' : 'row', textAlign: mob ? 'center' : 'left', justifyContent: 'space-between', marginBottom: mob ? '24px' : '32px' }}>
-          <div>
-            <Bdg color="orange" sm>HANDPICKED TALENT</Bdg>
-            <h2 style={{ fontSize: mob ? '24px' : '32px', fontWeight: 950, color: '#0f172a', marginTop: '8px', letterSpacing: '-0.04em' }}>Elite Spotlight</h2>
-          </div>
-          {mob ? null : <Btn outline sm onClick={() => dsp({ t: 'CF', v: { verified: true } })}>View All Verified</Btn>}
-        </div>
-
-        <div 
-          onWheel={(e) => {
-            if (e.deltaY !== 0) {
-              e.preventDefault();
-              e.currentTarget.scrollLeft += e.deltaY;
-            }
-          }}
-          style={{ 
-            display: 'flex', 
-            gap: mob ? '16px' : '24px', 
-            overflowX: 'auto', 
-            paddingBottom: '20px', 
-            scrollbarWidth: 'none',
-            WebkitOverflowScrolling: 'touch',
-            scrollSnapType: mob ? 'x mandatory' : 'none',
-            scrollPadding: mob ? '0 24px' : '0'
-          }} 
-          className="no-scrollbar"
-        >
-          {loading ? (
-            skeletons.map(i => (
-              <div 
-                key={i} 
-                className="skeleton-pulse"
-                style={{
-                  flexShrink: 0,
-                  width: mob ? '240px' : '340px',
-                  height: mob ? '340px' : '460px',
-                  borderRadius: mob ? '24px' : '48px',
-                  background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  scrollSnapAlign: mob ? 'center' : 'none'
-                }}
-              >
-                <div style={{ position: 'absolute', bottom: '40px', left: '40px', right: '40px' }}>
-                   <div style={{ width: '40%', height: '12px', background: 'rgba(0,0,0,0.05)', borderRadius: '100px', marginBottom: '16px' }} />
-                   <div style={{ width: '80%', height: '24px', background: 'rgba(0,0,0,0.05)', borderRadius: '100px', marginBottom: '12px' }} />
-                   <div style={{ width: '60%', height: '14px', background: 'rgba(0,0,0,0.05)', borderRadius: '100px' }} />
-                </div>
-              </div>
-            ))
-          ) : (
-            all.filter(c => c.verified).slice(0, 5).map((creator) => (
-              <motion.div
-                key={creator.id}
-                whileHover={mob ? {} : { y: -16, scale: 1.02 }}
-                onClick={() => setSelectedCreator(creator)}
-                style={{
-                  flexShrink: 0,
-                  width: mob ? '240px' : '340px',
-                  height: mob ? '340px' : '460px',
-                  borderRadius: mob ? '24px' : '48px',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  cursor: 'pointer',
-                  background: '#050505',
-                  boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-                  transition: 'box-shadow 0.3s',
-                  scrollSnapAlign: mob ? 'center' : 'none'
-                }}
-              >
-                <motion.img 
-                  src={creator.photo || creator.avatarUrl || creator.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(creator.name)}&background=FF9431&color=fff`} 
-                  alt={creator.name}
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ duration: 0.6 }}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }}
-                />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)' }} />
-                
-                <div style={{ position: 'absolute', top: mob ? '20px' : '28px', right: mob ? '20px' : '28px' }}>
-                  <div style={{ 
-                    background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', 
-                    padding: mob ? '8px 16px' : '10px 20px', borderRadius: '100px', 
-                    border: '1px solid rgba(255,255,255,0.1)', color: '#fff', 
-                    fontSize: mob ? '10px' : '12px', fontWeight: 950, letterSpacing: '1px',
-                    boxShadow: '0 8px 16px rgba(0,0,0,0.2)'
-                  }}>
-                    {creator.score || '98'} SCORE
-                  </div>
-                </div>
-
-                <div style={{ position: 'absolute', bottom: mob ? '24px' : '40px', left: mob ? '24px' : '40px', right: mob ? '24px' : '40px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                    <CheckCircle size={mob ? 14 : 18} color="#FF9431" fill="#FF9431" />
-                    <span style={{ fontSize: mob ? '10px' : '12px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px' }}>Elite Verified</span>
-                  </div>
-                  <h3 style={{ fontSize: mob ? '22px' : '30px', fontWeight: 950, color: '#fff', marginBottom: '6px', letterSpacing: '-0.03em' }}>{creator.name}</h3>
-                  <p style={{ fontSize: mob ? '13px' : '15px', color: 'rgba(255,255,255,0.6)', fontWeight: 650 }}>{creator.city} • {fmt.num(creator.followers)} Reach</p>
-                </div>
-              </motion.div>
-            ))
-          )}
-        </div>
+        <SpotlightHeader mob={mob} onAction={() => dsp({ t: 'CF', v: { verified: true } })} />
+        <SpotlightList 
+          loading={loading} 
+          skeletons={skeletons} 
+          spotlightCreators={spotlightCreators} 
+          mob={mob} 
+          onSelect={setSelectedCreator} 
+        />
       </div>
       <style>{`
         .skeleton-pulse {
