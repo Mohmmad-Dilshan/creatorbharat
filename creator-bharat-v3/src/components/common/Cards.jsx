@@ -1,12 +1,11 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 
 import PropTypes from 'prop-types';
 import { useApp } from '@/core/context';
 import { T } from '@/core/theme';
 import { fmt } from '@/utils/helpers';
 import { Card, Bdg, Btn, Bar } from './Primitives';
-import { Heart, MapPin, Camera, Play, Briefcase, Ghost, AtSign, Smartphone, Check, Scale, Zap, Star } from 'lucide-react';
+import { Heart, MapPin, Camera, Play, Briefcase, Ghost, AtSign, Smartphone, Check, Scale, Zap } from 'lucide-react';
 
 const ensureArray = val => {
   if (Array.isArray(val)) return val;
@@ -309,13 +308,18 @@ CreatorCard.propTypes = {
 };
 
 export function CampCard({ campaign: c, onApply, isTeaser = false }) {
-  const { st, dsp } = useApp();
+  const { st } = useApp();
   const applied = !isTeaser && st.applied.includes(c.id);
   const fillPct = c.slots > 0 ? Math.round((c.filled / c.slots) * 100) : 0;
-  const daysLeft = c.deadline ? Math.max(0, Math.ceil((new Date(c.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : 7;
   
-  const brandName = isTeaser ? 'Verified Premium Brand' : (typeof c.brand === 'object' ? c.brand.companyName : c.brand);
-  const brandImg = isTeaser ? 'https://ui-avatars.com/api/?name=V+B&background=f1f5f9&color=111&size=100' : `https://ui-avatars.com/api/?name=${encodeURIComponent(brandName)}&background=f1f5f9&color=111&size=100`;
+  let brandName = 'Verified Premium Brand';
+  if (!isTeaser) {
+    brandName = typeof c.brand === 'object' ? c.brand.companyName : (c.brand || 'Premium Brand');
+  }
+
+  const brandImg = isTeaser 
+    ? 'https://ui-avatars.com/api/?name=V+B&background=f1f5f9&color=111&size=100' 
+    : `https://ui-avatars.com/api/?name=${encodeURIComponent(brandName)}&background=f1f5f9&color=111&size=100`;
   
   // High-end Ad Thumbnail Fallback
   const coverImg = c.coverImage || `https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=800`;
@@ -414,25 +418,30 @@ export function CampCard({ campaign: c, onApply, isTeaser = false }) {
                <span style={{ fontSize: '12px', fontWeight: 800, color: '#64748b' }}>Selection Status</span>
                <span style={{ fontSize: '12px', fontWeight: 900, color: '#0f172a' }}>{isTeaser ? '6/10 Slots Left' : `${c.slots - c.filled} slots open`}</span>
             </div>
-            <Bar value={isTeaser ? 40 : fillPct} color={(isTeaser ? 40 : fillPct) >= 90 ? '#FF9431' : '#3B82F6'} height={6} />
+            {(() => {
+              const barValue = isTeaser ? 40 : fillPct;
+              const barColor = barValue >= 90 ? '#FF9431' : '#3B82F6';
+              return <Bar value={barValue} color={barColor} height={6} />;
+            })()}
          </div>
 
-         {/* Primary CTA */}
-         <div style={{ marginTop: '24px' }}>
-            {isTeaser ? (
+          <div style={{ marginTop: '24px' }}>
+            {isTeaser && (
               <Btn full lg style={{ borderRadius: '100px', padding: '16px', fontSize: '15px', fontWeight: 950, background: 'linear-gradient(90deg, #FF9431 0%, #FFB366 100%)', color: '#fff', border: 'none', boxShadow: '0 10px 20px rgba(255,148,49,0.2)', textTransform: 'uppercase', letterSpacing: '1px' }}>
                 Join Campaign
               </Btn>
-            ) : applied ? (
+            )}
+            {!isTeaser && applied && (
               <div style={{ background: '#f8fafc', color: '#10B981', padding: '16px', borderRadius: '100px', textAlign: 'center', fontSize: '14px', fontWeight: 950, border: '1px solid #e2e8f0' }}>
                 ✓ REQUEST PENDING
               </div>
-            ) : (
+            )}
+            {!isTeaser && !applied && (
               <Btn full lg onClick={() => onApply?.(c)} style={{ borderRadius: '100px', padding: '16px', fontSize: '15px', fontWeight: 950, background: '#0f172a', color: '#fff', border: 'none', textTransform: 'uppercase', letterSpacing: '1px' }}>
                 Apply to Deal
               </Btn>
             )}
-         </div>
+          </div>
       </div>
     </Card>
   );
@@ -450,6 +459,7 @@ CampCard.propTypes = {
     filled: PropTypes.number,
     deadline: PropTypes.string,
     urgent: PropTypes.bool,
+    coverImage: PropTypes.string,
     niche: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)])
   }).isRequired,
   onApply: PropTypes.func,
