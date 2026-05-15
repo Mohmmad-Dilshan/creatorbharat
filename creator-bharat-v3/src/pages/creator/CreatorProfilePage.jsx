@@ -10,7 +10,6 @@ import {
   ShieldCheck, 
   Zap, 
   Briefcase,
-  Activity,
   Globe,
   CheckCircle2,
   Share2,
@@ -24,9 +23,17 @@ import {
   Play,
   UserPlus,
   UserCheck,
+  Activity,
+  ArrowLeft,
   ArrowRight,
   Send,
-  Image as ImageIcon
+  Image as ImageIcon,
+  TrendingUp,
+  BrainCircuit,
+  ScrollText,
+  Heart,
+  MessageSquare,
+  MapPin
 } from 'lucide-react';
 
 // --- CUSTOM ELITE SOCIAL ICONS (SVG) ---
@@ -53,7 +60,49 @@ const TrustBadge = () => (
       All metrics, location data, and brand history verified by CreatorBharat Official Audit
     </span>
   </div>
-);
+);const ProfileViewCounter = ({ mob }) => {
+  const [views, setViews] = useState(12840);
+  const [active, setActive] = useState(13);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActive(prev => Math.max(8, prev + (Math.random() > 0.5 ? 1 : -1)));
+      setViews(prev => prev + (Math.random() > 0.8 ? 1 : 0));
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div style={{ margin: '32px 0 48px', display: 'flex', gap: '20px', flexDirection: mob ? 'column' : 'row', position: 'relative' }}>
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100%', height: '100%', background: 'radial-gradient(circle, rgba(255,148,49,0.08) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
+      
+      <div style={{ flex: 1, background: '#fff', padding: '24px', borderRadius: '24px', border: '1.5px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: '16px', boxShadow: '0 12px 32px rgba(0,0,0,0.03)', position: 'relative', zIndex: 1 }}>
+        <div style={{ width: '48px', height: '48px', background: '#fef2f2', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Activity size={24} color="#ef4444" />
+        </div>
+        <div>
+          <div style={{ fontSize: '11px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Live Engagement</div>
+          <div style={{ fontSize: '22px', fontWeight: 950, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px', lineHeight: 1 }}>
+            {active} <span style={{ fontSize: '13px', color: '#10B981', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800 }}><div style={{ width: '10px', height: '10px', background: '#10B981', borderRadius: '50%', animation: 'pulse 2s infinite' }} /> Viewing Now</span>
+          </div>
+        </div>
+      </div>
+      
+      <div style={{ flex: 1, background: '#0f172a', padding: '24px', borderRadius: '24px', color: '#fff', display: 'flex', alignItems: 'center', gap: '16px', boxShadow: '0 20px 40px rgba(15,23,42,0.15)', position: 'relative', zIndex: 1 }}>
+        <div style={{ width: '48px', height: '48px', background: 'rgba(255,255,255,0.05)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Globe size={24} color="#FF9431" />
+        </div>
+        <div>
+          <div style={{ fontSize: '11px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Global Visibility</div>
+          <div style={{ fontSize: '22px', fontWeight: 950, color: '#fff', lineHeight: 1 }}>{fmt.num(views)}+ <span style={{ fontSize: '13px', color: '#FF9431', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Lifetime</span></div>
+        </div>
+      </div>
+      <style>{`@keyframes pulse { 0% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.3); opacity: 1; } 100% { transform: scale(0.9); opacity: 0.7; } }`}</style>
+    </div>
+  );
+};
+ProfileViewCounter.propTypes = { mob: PropTypes.bool };
+
 
 const BadgeRow = ({ score }) => (
   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '24px' }}>
@@ -67,9 +116,54 @@ const BadgeRow = ({ score }) => (
 );
 BadgeRow.propTypes = { score: PropTypes.number.isRequired };
 
-// --- SOCIAL STACK (EXHAUSTIVE) ---
+const RatingSection = ({ val, total, onRate }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+     <div style={{ display: 'flex', gap: '2px' }}>
+        {[1,2,3,4,5].map(s => <Star key={s} size={16} fill={s <= Math.floor(val) ? '#FF9431' : 'none'} color={s <= Math.floor(val) ? '#FF9431' : '#cbd5e1'} />)}
+     </div>
+     <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>{val} <span style={{ color: '#64748b', fontWeight: 600 }}>({total} Reviews)</span></div>
+     <button onClick={onRate} style={{ background: 'none', border: 'none', color: '#0073b1', fontSize: '13px', fontWeight: 800, cursor: 'pointer', textDecoration: 'underline', padding: 0 }}>Rate This Creator</button>
+  </div>
+);
+RatingSection.propTypes = { val: PropTypes.number.isRequired, total: PropTypes.number.isRequired, onRate: PropTypes.func.isRequired };
 
-// --- SOCIAL PULSE SYSTEM ---
+const HumanStory = ({ mob }) => (
+  <div style={{ marginBottom: '40px', background: 'linear-gradient(135deg, #fff 0%, #f8fafc 100%)', borderRadius: '40px', padding: mob ? '32px 24px' : '60px', border: '1.5px solid #f1f5f9', position: 'relative', overflow: 'hidden' }}>
+     <div style={{ position: 'absolute', top: '-40px', right: '-40px', opacity: 0.05 }}><ScrollText size={280} color="#0073b1" /></div>
+     <div style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+           <div style={{ width: '40px', height: '40px', background: '#0073b1', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 16px rgba(0,115,177,0.2)' }}>
+              <Heart size={20} color="#fff" fill="#fff" />
+           </div>
+           <span style={{ fontSize: '13px', fontWeight: 950, color: '#0073b1', textTransform: 'uppercase', letterSpacing: '1.5px' }}>The Human Behind the Screen</span>
+        </div>
+        
+        <h2 style={{ fontSize: mob ? '32px' : '52px', fontWeight: 950, color: '#0f172a', marginBottom: '32px', letterSpacing: '-0.04em', lineHeight: 1.1 }}>
+           Namaste! <span style={{ color: '#64748b', fontWeight: 400 }}>Main hoon aapka local storyteller.</span>
+        </h2>
+        
+         <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.5fr 1fr', gap: mob ? '32px' : '60px' }}>
+            <div style={{ fontSize: mob ? '16px' : '18px', color: '#475569', fontWeight: 500, lineHeight: 1.8 }}>
+               "Mera safar Bengaluru ki un galiyon se shuru hua jahan har mod par ek kahani hai. Ek basic phone se shuru karke aaj **CreatorBharat Elite** ka hissa banna mere liye ek garv ki baat hai. 
+               <br/><br/>
+               Mera manna hai ki content sirf dikhna nahi chahiye, balki mehsus hona chahiye. Chahe wo rural Bharat ki tech innovation ho ya local insights, mera maqsad hamesha **100% authenticity** aur **world-class quality** ka balance rakhna hai."
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: mob ? 'row' : 'column', gap: '20px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '8px' : '0' }}>
+               <div style={{ padding: '24px', background: '#fff', borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 10px 30px rgba(0,0,0,0.02)', flexShrink: 0, width: mob ? '200px' : 'auto' }}>
+                  <div style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', marginBottom: '4px' }}>2021</div>
+                  <div style={{ fontSize: '13px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>The First Story Told</div>
+               </div>
+               <div style={{ padding: '24px', background: '#0f172a', borderRadius: '24px', color: '#fff', boxShadow: '0 10px 30px rgba(15,23,42,0.2)', flexShrink: 0, width: mob ? '200px' : 'auto' }}>
+                  <div style={{ fontSize: '28px', fontWeight: 950, color: '#FF9431', marginBottom: '4px' }}>Elite</div>
+                  <div style={{ fontSize: '13px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>Certified Human Authority</div>
+               </div>
+            </div>
+         </div>
+     </div>
+  </div>
+);
+HumanStory.propTypes = { mob: PropTypes.bool };
 
 const EliteSocialPulse = ({ stats, mob }) => {
   const socials = [
@@ -90,9 +184,9 @@ const EliteSocialPulse = ({ stats, mob }) => {
              </div>
              <h3 style={{ fontSize: mob ? '32px' : '48px', fontWeight: 950, marginBottom: '40px', letterSpacing: '-0.03em' }}>Total Global Reach: <span style={{ color: '#FF9431' }}>{fmt.num(stats.followers)}+</span></h3>
              
-             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(4, 1fr)', gap: '16px' }}>
+             <div style={{ display: mob ? 'flex' : 'grid', gridTemplateColumns: mob ? 'none' : 'repeat(4, 1fr)', gap: '16px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
                 {socials.map(s => (
-                  <div key={s.id} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '24px', backdropFilter: 'blur(10px)' }}>
+                  <div key={s.id} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '24px', backdropFilter: 'blur(10px)', flexShrink: 0, width: mob ? '200px' : 'auto' }}>
                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                         <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: `${s.c}20`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                            <EliteSocialIcon type={s.id} size={20} color={s.c} />
@@ -118,81 +212,140 @@ const EliteSocialPulse = ({ stats, mob }) => {
 };
 EliteSocialPulse.propTypes = { stats: PropTypes.object.isRequired, mob: PropTypes.bool };
 
-const SocialStack = ({ mob }) => {
-  const socials = [
-    { n: 'Instagram', id: 'insta', c: '#E4405F', v: '150K' },
-    { n: 'YouTube', id: 'yt', c: '#FF0000', v: '85K' },
-    { n: 'LinkedIn', id: 'linkedin', c: '#0077B5', v: '12K' },
-    { n: 'Twitter', id: 'twitter', c: '#000000', v: '45K' },
-    { n: 'Spotify', id: 'spotify', c: '#1DB954', v: '5K' },
-    { n: 'Substack', id: 'substack', c: '#FF6719', v: '2K' }
-  ];
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '12px', marginTop: '24px' }}>
-       {socials.map(s => (
-         <div key={s.n} style={{ padding: '16px', background: '#fff', border: '1.5px solid #f1f5f9', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: `${s.c}10`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-               <EliteSocialIcon type={s.id} size={18} color={s.c} />
-            </div>
-            <div>
-               <div style={{ fontSize: '11px', fontWeight: 950, color: '#94a3b8' }}>{s.n}</div>
-               <div style={{ fontSize: '14px', fontWeight: 900, color: '#0f172a' }}>{s.v}</div>
-            </div>
-         </div>
-       ))}
-    </div>
-  );
-};
-SocialStack.propTypes = { mob: PropTypes.bool };
 
-// --- RATING SYSTEM ---
-
-const RatingSection = ({ val, total, onRate }) => (
-  <div style={{ marginBottom: '32px' }}>
-     <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fcfcfc', padding: '12px 24px', borderRadius: '100px', border: '1px solid #f1f5f9' }}>
-           <div style={{ display: 'flex', gap: '2px' }}>
-              {[1,2,3,4,5].map(s => <Star key={s} size={16} fill={s <= val ? '#FF9431' : 'none'} color={s <= val ? '#FF9431' : '#cbd5e1'} />)}
-           </div>
-           <span style={{ fontSize: '14px', fontWeight: 950 }}>{val}/5 ({total} Reviews)</span>
+const AIFitInsight = ({ c, mob }) => (
+  <Card style={{ padding: mob ? '24px' : '32px', borderRadius: '24px', marginBottom: '32px', background: 'linear-gradient(to right, #f8fafc, #fff)', border: '1.5px solid #f1f5f9' }}>
+     <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
+        <div style={{ width: '44px', height: '44px', background: '#0f172a', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+           <BrainCircuit size={22} color="#FF9431" />
         </div>
-        <button onClick={onRate} style={{ background: '#0f172a', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '100px', fontSize: '13px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-           <Star size={16} fill="#fff" /> Rate this Creator
-        </button>
+        <div>
+           <div style={{ fontSize: '11px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px' }}>AI Brand Match Insight</div>
+           <div style={{ fontSize: '18px', fontWeight: 900, color: '#0f172a' }}>94% Compatibility with {c.niche || 'Lifestyle'} Brands</div>
+        </div>
      </div>
-  </div>
+     <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, fontWeight: 500 }}>
+        Our Elite Intelligence engine has analyzed @{c.slug}'s audience sentiment. High affinity detected for brands in <b>Premium Tech</b>, <b>Regional Commerce</b>, and <b>Sustainable Lifestyle</b> sectors.
+     </p>
+  </Card>
 );
-RatingSection.propTypes = { val: PropTypes.number.isRequired, total: PropTypes.number.isRequired, onRate: PropTypes.func.isRequired };
+AIFitInsight.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
 
-// --- GEO INSIGHTS ---
+
+const EliteIntelligenceHub = ({ stats, mob }) => (
+  <Card style={{ padding: mob ? '24px' : '40px', borderRadius: '32px', marginBottom: '32px', border: '1.5px solid #f1f5f9', background: '#fff', boxShadow: '0 10px 40px rgba(0,0,0,0.02)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
+      <div style={{ width: '48px', height: '48px', background: '#0f172a', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <BrainCircuit size={24} color="#FF9431" />
+      </div>
+      <div>
+        <h3 style={{ fontSize: '20px', fontWeight: 950, color: '#0f172a' }}>Elite Audience Intelligence</h3>
+        <p style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>Deep-dive analysis of followers and potential brand impact.</p>
+      </div>
+    </div>
+    <div style={{ display: mob ? 'flex' : 'grid', gridTemplateColumns: mob ? 'none' : 'repeat(3, 1fr)', gap: '20px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
+      {[
+        { l: 'Authenticity Score', v: '98.2%', d: 'Verified human followers', i: ShieldCheck, c: '#10B981' },
+        { l: 'Brand Affinity', v: 'High', d: 'Premium Tech & Lifestyle', i: Zap, c: '#f97316' },
+        { l: 'Content Sentiment', v: '94% Positive', d: 'Elite community trust', i: Activity, c: '#0ea5e9' }
+      ].map(x => (
+        <div key={x.l} style={{ padding: '24px', background: '#f8fafc', borderRadius: '24px', border: '1px solid #f1f5f9', flexShrink: 0, width: mob ? '220px' : 'auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+            <x.i size={16} color={x.c} />
+            <span style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase' }}>{x.l}</span>
+          </div>
+          <div style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', marginBottom: '4px' }}>{x.v}</div>
+          <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 600 }}>{x.d}</div>
+        </div>
+      ))}
+    </div>
+  </Card>
+);
+EliteIntelligenceHub.propTypes = { stats: PropTypes.object.isRequired, mob: PropTypes.bool };
 
 const GeoIntelligence = ({ c, mob }) => (
-  <Card style={{ padding: mob ? '24px' : '40px', borderRadius: '32px', marginBottom: '32px', border: '1px solid #f1f5f9' }}>
-     <h3 style={{ fontSize: '20px', fontWeight: 950, marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}><Compass size={24} color="#FF9431" /> Geographic Authority</h3>
-     <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.5fr 1fr', gap: '40px' }}>
+  <Card style={{ padding: mob ? '28px' : '48px', borderRadius: '40px', marginBottom: '40px', border: '1.5px solid #f1f5f9', background: '#fff', position: 'relative', overflow: 'hidden' }}>
+     <div style={{ position: 'absolute', top: '20px', right: '40px', opacity: 0.03, pointerEvents: 'none' }}>
+        <Globe size={200} color="#000" />
+     </div>
+     
+     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '40px', position: 'relative', zIndex: 1 }}>
+        <div style={{ width: '44px', height: '44px', background: '#FF943110', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+           <Compass size={24} color="#FF9431" />
+        </div>
+        <h3 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a' }}>Roots & Regional Dominance</h3>
+     </div>
+
+     <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.2fr 1fr', gap: mob ? '40px' : '60px', position: 'relative', zIndex: 1 }}>
         <div>
-           <div style={{ marginBottom: '24px' }}>
-              <div style={{ fontSize: '11px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px' }}>Creator Location</div>
-              <div style={{ fontSize: '20px', fontWeight: 900, color: '#0f172a' }}>{c.city || 'Bharat'} <span style={{ fontSize: '14px', fontWeight: 650, color: '#64748b' }}>- "The {c.niche || 'Elite'} Heritage"</span></div>
-              <p style={{ fontSize: '13px', color: '#64748b', marginTop: '8px', lineHeight: 1.5 }}>Deeply rooted in local {c.city || 'regional'} culture with a global storytelling vision.</p>
+           <div style={{ marginBottom: mob ? '32px' : '48px', background: 'linear-gradient(to bottom right, #f8fafc, #fff)', padding: mob ? '24px' : '32px', borderRadius: '32px', border: '1.5px solid #f1f5f9', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
+                 <div style={{ width: mob ? '56px' : '72px', height: mob ? '56px' : '72px', borderRadius: '20px', background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 12px 24px rgba(15,23,42,0.2)' }}>
+                    <MapPin size={mob ? 24 : 32} color="#FF9431" />
+                 </div>
+                 <div>
+                    <div style={{ fontSize: '11px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '8px' }}>Home Base & Roots</div>
+                    <div style={{ fontSize: mob ? '22px' : '26px', fontWeight: 950, color: '#0f172a', lineHeight: 1.2 }}>{c.city || 'Bengaluru'} <br/><span style={{ fontSize: '14px', color: '#64748b' }}>"The Heart of {c.niche || 'Tech'} Culture"</span></div>
+                 </div>
+              </div>
+              <p style={{ fontSize: '14px', color: '#475569', marginTop: '16px', lineHeight: 1.7, fontWeight: 500 }}>
+                 Yahan ki mitti aur vibes meri storytelling ka base hain. Being in {c.city || 'Bengaluru'} gives me direct access to the latest trends while staying connected to my authentic regional roots.
+              </p>
            </div>
+
            <div>
-              <div style={{ fontSize: '11px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '12px' }}>Audience Geography Hotspots</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                 {['Delhi NCR (35%)', 'Mumbai (22%)', 'Bangalore (15%)', 'Indore (10%)'].map(h => (
-                   <div key={h} style={{ background: '#f8fafc', padding: '8px 16px', borderRadius: '100px', fontSize: '12px', fontWeight: 800, color: '#475569', border: '1.5px solid #f1f5f9' }}>{h}</div>
+              <div style={{ fontSize: '12px', fontWeight: 950, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                 <Activity size={16} color="#10B981" /> Where My Community Lives
+              </div>
+              <div style={{ display: mob ? 'flex' : 'grid', gridTemplateColumns: mob ? 'none' : 'repeat(2, 1fr)', gap: '20px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
+                 {[
+                   { city: 'Delhi NCR', val: '35%', c: '#FF9431' },
+                   { city: 'Mumbai', val: '22%', c: '#0ea5e9' },
+                   { city: 'Bangalore', val: '15%', c: '#10B981' },
+                   { city: 'Indore', val: '10%', c: '#6366f1' }
+                 ].map(h => (
+                   <div key={h.city} style={{ padding: '16px', background: '#f8fafc', borderRadius: '20px', border: '1px solid #f1f5f9', flexShrink: 0, width: mob ? '140px' : 'auto' }}>
+                      <div style={{ fontSize: '11px', fontWeight: 800, color: '#94a3b8', marginBottom: '4px' }}>{h.city}</div>
+                      <div style={{ fontSize: '20px', fontWeight: 950, color: '#0f172a' }}>{h.val}</div>
+                      <div style={{ height: '4px', background: '#e2e8f0', borderRadius: '100px', marginTop: '8px', overflow: 'hidden' }}>
+                         <div style={{ width: h.val, height: '100%', background: h.c }} />
+                      </div>
+                   </div>
                  ))}
               </div>
            </div>
         </div>
-        <div style={{ background: '#fcfcfc', padding: '24px', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
-           <div style={{ fontSize: '11px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '16px' }}>Past Brand Presence</div>
-           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {['Bengaluru (Tech Brands)', 'Mumbai (Lifestyle)', 'Delhi (Editorial)'].map(b => (
-                <div key={b} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', fontWeight: 750, color: '#334155' }}>
-                   <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FF9431' }} /> {b}
-                </div>
-              ))}
+
+        <div style={{ background: '#0f172a', padding: mob ? '32px' : '40px', borderRadius: '32px', color: '#fff', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+           <div style={{ position: 'absolute', bottom: '-20px', right: '-20px', opacity: 0.1 }}><Briefcase size={120} color="#fff" /></div>
+           
+           <div>
+              <h4 style={{ fontSize: '18px', fontWeight: 950, marginBottom: '32px', color: '#FF9431', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                 <ShieldCheck size={20} /> Regional Trust Wall
+              </h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                 {[
+                   { l: 'Bengaluru', d: 'Tech & Gaming Hub', icon: Zap },
+                   { l: 'Mumbai', d: 'Lifestyle & Fashion', icon: ImageIcon },
+                   { l: 'Delhi', d: 'Editorial Presence', icon: FileText }
+                 ].map(b => (
+                   <div key={b.l} style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                      <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                         <b.icon size={18} color="#FF9431" />
+                      </div>
+                      <div>
+                         <div style={{ fontSize: '14px', fontWeight: 900, color: '#fff' }}>{b.l}</div>
+                         <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 600 }}>{b.d}</div>
+                      </div>
+                   </div>
+                 ))}
+              </div>
+           </div>
+           
+           <div style={{ marginTop: '48px', paddingTop: '32px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+              <div style={{ fontSize: '10px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>Operational Strength</div>
+              <div style={{ fontSize: '15px', fontWeight: 800, color: '#fff' }}>100% Pan-Bharat Compatibility</div>
+              <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '6px', fontWeight: 500 }}>Ready to activate across all major Indian metros and regional hubs.</p>
            </div>
         </div>
      </div>
@@ -246,13 +399,163 @@ const AboutMeLong = ({ c }) => (
 );
 AboutMeLong.propTypes = { c: PropTypes.object.isRequired };
 
+const ExpertiseHub = ({ mob }) => (
+  <Card style={{ padding: mob ? '28px' : '48px', borderRadius: '40px', marginBottom: '40px', border: '1.5px solid #f1f5f9' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
+      <div style={{ width: '40px', height: '40px', background: '#0f172a', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Zap size={20} color="#FF9431" />
+      </div>
+      <h3 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a' }}>Technical & Creative Prowess</h3>
+    </div>
+    
+    <div style={{ display: mob ? 'flex' : 'grid', gridTemplateColumns: mob ? 'none' : 'repeat(3, 1fr)', gap: '24px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
+      {[
+        { t: 'Production', items: ['Cinematic 4K Rendering', 'Advanced Sound Design', 'Multi-Cam Editing'], i: Play, c: '#FF9431' },
+        { t: 'Creative', items: ['Cultural Storytelling', 'Scripting in Hinglish', 'Art Direction'], i: ImageIcon, c: '#0ea5e9' },
+        { t: 'Strategic', items: ['Brand Integration', 'Viral Hook Engineering', 'Audience Analytics'], i: TrendingUp, c: '#10B981' }
+      ].map(g => (
+        <div key={g.t} style={{ padding: '24px', background: '#f8fafc', borderRadius: '24px', border: '1px solid #f1f5f9', flexShrink: 0, width: mob ? '250px' : 'auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <g.i size={16} color={g.c} />
+            <span style={{ fontSize: '11px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>{g.t}</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {g.items.map(s => (
+              <div key={s} style={{ fontSize: '14px', fontWeight: 700, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '4px', height: '4px', background: g.c, borderRadius: '50%' }} /> {s}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </Card>
+);
+ExpertiseHub.propTypes = { mob: PropTypes.bool };
+
+const NationalToLocalBridge = ({ name, mob }) => (
+  <div style={{ padding: mob ? '32px 24px' : '60px', background: 'linear-gradient(135deg, #fff 0%, #f0f9ff 100%)', borderRadius: '40px', border: '1.5px solid #e0f2fe', marginBottom: '40px', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ position: 'absolute', top: '-30px', right: '-30px', opacity: 0.1 }}><Globe size={200} color="#0073b1" /></div>
+    <div style={{ position: 'relative', zIndex: 1 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+        <div style={{ width: '40px', height: '40px', background: '#0073b1', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <TrendingUp size={20} color="#fff" />
+        </div>
+        <span style={{ fontSize: '14px', fontWeight: 950, color: '#0073b1', textTransform: 'uppercase', letterSpacing: '1.5px' }}>The Bharat Bridge</span>
+      </div>
+      <h2 style={{ fontSize: mob ? '28px' : '48px', fontWeight: 950, color: '#0f172a', marginBottom: '24px', letterSpacing: '-0.04em' }}>Bridging {name}'s <span style={{ color: '#0073b1' }}>National Impact</span> to Local Bharat</h2>
+      <p style={{ fontSize: '18px', color: '#64748b', fontWeight: 500, lineHeight: 1.6, maxWidth: '800px' }}>
+        "Maine hamesha maana hai ki asli impact tab hota hai jab hum global standards ko apne regional roots ke saath jodte hain. Mera mission Bharat ke har kone tak authentic storytelling pahunchana hai."
+      </p>
+    </div>
+  </div>
+);
+NationalToLocalBridge.propTypes = { name: PropTypes.string, mob: PropTypes.bool };
+
+const TABS = [
+  { id: 'identity', label: 'Identity' },
+  { id: 'story', label: 'My Story' },
+  { id: 'gallery', label: 'Gallery' },
+  { id: 'work', label: 'Pro Work' },
+  { id: 'local', label: 'Local Hub' },
+  { id: 'reviews', label: 'Reviews' },
+  { id: 'packages', label: 'Packages' },
+  { id: 'connect', label: 'Connect' }
+];
+
+const TabNavigator = ({ activeTab, setActiveTab, mob }) => {
+  const currentIndex = TABS.findIndex(t => t.id === activeTab);
+  const prevTab = currentIndex > 0 ? TABS[currentIndex - 1] : null;
+  const nextTab = currentIndex < TABS.length - 1 ? TABS[currentIndex + 1] : null;
+
+  const scrollToContent = () => {
+    const el = document.getElementById('profile-content-area');
+    if (el) {
+      const yOffset = -120;
+      const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', justifyContent: 'space-between', gap: '16px', marginTop: '80px', paddingTop: '40px', borderTop: '1px solid #f1f5f9' }}>
+       {prevTab ? (
+         <button 
+           onClick={() => { setActiveTab(prevTab.id); scrollToContent(); }}
+           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', background: '#fff', border: '1.5px solid #f1f5f9', padding: '16px 32px', borderRadius: '100px', cursor: 'pointer', color: '#64748b', fontWeight: 800, fontSize: '14px', width: mob ? '100%' : 'auto' }}
+         >
+            <ArrowLeft size={18} /> Previous: {prevTab.label}
+         </button>
+       ) : <div />}
+
+       {nextTab ? (
+         <button 
+           onClick={() => { setActiveTab(nextTab.id); scrollToContent(); }}
+           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', background: '#0073b1', border: 'none', padding: '16px 32px', borderRadius: '100px', cursor: 'pointer', color: '#fff', fontWeight: 800, fontSize: '14px', boxShadow: '0 8px 24px rgba(0,115,177,0.2)', width: mob ? '100%' : 'auto' }}
+         >
+            Next: {nextTab.label} <ArrowRight size={18} />
+         </button>
+       ) : <div />}
+    </div>
+  );
+};
+TabNavigator.propTypes = { activeTab: PropTypes.string.isRequired, setActiveTab: PropTypes.func.isRequired, mob: PropTypes.bool };
+
+const InfluenceMedia = ({ mob }) => (
+  <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.5fr 1fr', gap: '32px', marginBottom: '60px' }}>
+     <Card style={{ padding: mob ? '24px' : '40px', borderRadius: '40px', border: '1.5px solid #f1f5f9' }}>
+        <h3 style={{ fontSize: '24px', fontWeight: 950, marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '12px', color: '#0f172a' }}>
+           <Mic2 size={24} color="#FF9431" /> Podcasts & Keynote Conversations
+        </h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+           {[
+             { t: 'The Future of Regional Bharat', p: 'The Digital Bridge Podcast', d: '45 mins', i: 'ep1' },
+             { t: 'Authenticity as a Currency', p: 'Creators Roundtable', d: '32 mins', i: 'ep2' }
+           ].map(ep => (
+              <div key={ep.i} style={{ padding: '24px', background: '#f8fafc', borderRadius: '24px', border: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: '24px', cursor: 'pointer' }}>
+                 <div style={{ width: '56px', height: '56px', background: '#fff', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 16px rgba(0,0,0,0.05)', flexShrink: 0 }}>
+                    <Play size={20} color="#FF9431" fill="#FF9431" />
+                 </div>
+                 <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '12px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>{ep.p}</div>
+                    <div style={{ fontSize: '18px', fontWeight: 900, color: '#0f172a' }}>{ep.t}</div>
+                    <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700, marginTop: '4px' }}>Duration: {ep.d} • Verified Content</div>
+                 </div>
+              </div>
+           ))}
+        </div>
+     </Card>
+
+     <Card style={{ padding: mob ? '24px' : '40px', borderRadius: '40px', border: '1.5px solid #f1f5f9', background: '#0f172a', color: '#fff' }}>
+        <h3 style={{ fontSize: '22px', fontWeight: 950, marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '12px', color: '#FF9431' }}>
+           <FileText size={24} color="#FF9431" /> Thought Leadership
+        </h3>
+        <div style={{ padding: '24px', background: 'rgba(255,255,255,0.03)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', marginBottom: '24px' }}>
+           <h4 style={{ fontSize: '18px', fontWeight: 900, marginBottom: '12px' }}>Why Authentic Content is the Future of Marketing</h4>
+           <p style={{ fontSize: '14px', color: '#94a3b8', lineHeight: 1.6, fontWeight: 500, marginBottom: '20px' }}>Exploring how the intersection of regional values and high-end production is redefining consumer trust in 2024.</p>
+           <button style={{ background: '#FF9431', border: 'none', color: '#fff', padding: '12px 24px', borderRadius: '100px', fontSize: '12px', fontWeight: 900, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              Read Full Article <ArrowRight size={14} />
+           </button>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', opacity: 0.6 }}>
+           <div style={{ width: '40px', height: '1px', background: '#fff' }} />
+           <span style={{ fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px' }}>Published on Medium & LinkedIn</span>
+        </div>
+     </Card>
+  </div>
+);
+InfluenceMedia.propTypes = { mob: PropTypes.bool };
+
 
 // --- TAB CONTENTS ---
 
-const IdentityTab = ({ c, stats, onRate, mob }) => (
+const IdentityTab = ({ c, stats, onRate, mob, setActiveTab }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+    <HumanStory mob={mob} />
+    <AIFitInsight c={c} mob={mob} />
     <ContentPhilosophy c={c} mob={mob} />
     <EliteSocialPulse stats={stats} mob={mob} />
+    <EliteIntelligenceHub stats={stats} mob={mob} />
     <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: mob ? '16px' : '24px', marginBottom: '40px' }}>
        {[{ l: 'Total Reach', v: fmt.num(stats.followers), sub: '+12K Monthly', c: '#0f172a' }, { l: 'Engagement', v: stats.er+'%', sub: 'Industry High', c: '#FF9431' }, { l: 'Avg Views', v: '82.4K', sub: 'Per Content', c: '#0f172a' }, { l: 'Consistency', v: '98%', sub: 'Velocity', c: '#10B981' }].map(x => (
          <div key={x.l} style={{ padding: mob ? '20px' : '32px', background: '#fff', borderRadius: mob ? '24px' : '32px', border: '1px solid #f1f5f9', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
@@ -266,23 +569,16 @@ const IdentityTab = ({ c, stats, onRate, mob }) => (
        <Btn lg style={{ borderRadius: '100px', background: '#0f172a', color: '#fff', gap: '10px', width: mob ? '100%' : 'auto' }}><Download size={18} /> Download Verified Media Kit (PDF)</Btn>
     </div>
     <GeoIntelligence c={c} mob={mob} />
-    <AboutMeLong c={c} />
-    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1.5fr', gap: mob ? '40px' : '32px', marginBottom: '40px' }}>
-       <Card style={{ padding: mob ? '24px' : '40px', borderRadius: mob ? '24px' : '40px', border: '1px solid #f1f5f9' }}>
-          <h3 style={{ fontSize: '20px', fontWeight: 950, marginBottom: '24px' }}>Skills & Expertise</h3>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>{['Scripting', 'Cinematography', 'Editing', 'Audio Engineering'].map(s => <Bdg key={s} color="orange" lg>{s}</Bdg>)}</div>
-       </Card>
-       <Card style={{ padding: mob ? '24px' : '40px', borderRadius: mob ? '24px' : '40px', border: '1px solid #f1f5f9' }}>
-          <h3 style={{ fontSize: '20px', fontWeight: 950, marginBottom: '24px' }}>Official Social Stack</h3>
-          <SocialStack mob={mob} />
-       </Card>
-    </div>
+    <ExpertiseHub mob={mob} />
+    <NationalToLocalBridge name={c.name} mob={mob} />
+    
     <TrustBadge />
+    <TabNavigator activeTab="identity" setActiveTab={setActiveTab} mob={mob} />
   </motion.div>
 );
-IdentityTab.propTypes = { c: PropTypes.object.isRequired, stats: PropTypes.object.isRequired, onRate: PropTypes.func.isRequired, mob: PropTypes.bool };
+IdentityTab.propTypes = { c: PropTypes.object.isRequired, stats: PropTypes.object.isRequired, onRate: PropTypes.func.isRequired, mob: PropTypes.bool, setActiveTab: PropTypes.func.isRequired };
 
-const StoryTab = ({ c, mob }) => {
+const StoryTab = ({ c, mob, setActiveTab }) => {
   const city = c?.city || 'Bharat';
   const milestones = [
     { y: '2021', t: 'The Foundation', d: 'Launched the first video series on regional heritage with zero budget.', i: Globe, c: '#FF9431' },
@@ -299,9 +595,9 @@ const StoryTab = ({ c, mob }) => {
             <p style={{ fontSize: '18px', color: '#64748b', fontWeight: 500, maxWidth: '650px', margin: '0 auto' }}>From a small-town vision in {city} to the digital screens of millions.</p>
          </div>
 
-         <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '24px', marginBottom: '80px' }}>
+         <div style={{ display: mob ? 'flex' : 'grid', gridTemplateColumns: mob ? 'none' : 'repeat(3, 1fr)', gap: '24px', marginBottom: '80px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
             {[{ t: 'Regional Pioneer', y: '2024', id: 'award-1' }, { t: 'Elite Hub Verified', y: '2023', id: 'award-2' }, { t: 'Cultural Impact', y: '2025', id: 'award-3' }].map(a => (
-               <Card key={a.id} style={{ padding: '32px', textAlign: 'center', borderRadius: '32px', border: '1px solid #f1f5f9', boxShadow: '0 8px 32px rgba(0,0,0,0.02)' }}>
+               <Card key={a.id} style={{ padding: '32px', textAlign: 'center', borderRadius: '32px', border: '1px solid #f1f5f9', boxShadow: '0 8px 32px rgba(0,0,0,0.02)', flexShrink: 0, width: mob ? '200px' : 'auto' }}>
                   <Trophy size={32} color="#FF9431" style={{ margin: '0 auto 20px' }} />
                   <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a', marginBottom: '4px' }}>{a.t}</div>
                   <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 800 }}>{a.y}</div>
@@ -352,22 +648,26 @@ const StoryTab = ({ c, mob }) => {
                   </p>
                </div>
                <div style={{ marginTop: '40px' }}>
-                  <Btn lg onClick={() => navigate(`/blog/creator-story-${c?.id || 'elite'}`)} style={{ borderRadius: '100px', background: '#0f172a', gap: '12px', padding: '16px 40px', width: mob ? '100%' : 'auto' }}>
+                  <Btn lg onClick={() => navigate(`/blog/creator-story-${c?.id || 'elite'}`)} style={{ borderRadius: '100px', background: '#0f172a', color: '#fff', gap: '12px', padding: '16px 40px', width: mob ? '100%' : 'auto' }}>
                      Read Full Detailed Biography on Blog <ArrowRight size={20} />
                   </Btn>
                </div>
             </div>
          </div>
 
-         <TrustBadge />
+         <ProfileViewCounter mob={mob} />
+    <TrustBadge />
+         <TabNavigator activeTab="story" setActiveTab={setActiveTab} mob={mob} />
       </div>
     </motion.div>
   );
 };
-StoryTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
+StoryTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, setActiveTab: PropTypes.func.isRequired };
 
-const WorkTab = ({ mob }) => (
+const WorkTab = ({ mob, setActiveTab }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+    <AchievementWall mob={mob} />
+    <ServiceCatalog mob={mob} />
     <div style={{ marginBottom: '60px' }}>
        <h3 style={{ fontSize: '24px', fontWeight: 950, marginBottom: '24px' }}>Viral Hall of Fame 🔥</h3>
        <div style={{ display: mob ? 'flex' : 'grid', gap: '16px', overflowX: mob ? 'auto' : 'hidden', scrollbarWidth: 'none', msOverflowStyle: 'none', paddingBottom: mob ? '12px' : '0', gridTemplateColumns: mob ? 'none' : 'repeat(3, 1fr)' }}>
@@ -391,30 +691,13 @@ const WorkTab = ({ mob }) => (
        <div style={{ flexShrink: 0, width: mob ? '300px' : 'auto' }}><CaseStudyCard title="Tech Rural Growth" brand="Amazon" results={[{ l: 'Views', v: '1.2M' }, { l: 'Shares', v: '10K' }]} /></div>
     </div>
 
-    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.5fr 1fr', gap: '32px', marginBottom: '60px' }}>
-       <div>
-          <h3 style={{ fontSize: mob ? '20px' : '24px', fontWeight: 950, marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}><Mic2 size={24} color="#FF9431" /> Podcasts & Conversations</h3>
-          {[1, 2].map(i => (
-             <div key={`pod-ep-${i}`} style={{ padding: '24px', background: '#fff', borderRadius: '24px', border: '1px solid #f1f5f9', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '20px' }}>
-                <div style={{ width: '48px', height: '48px', background: '#FF943110', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Play size={20} color="#FF9431" fill="#FF9431" /></div>
-                <div style={{ flex: 1 }}>
-                   <div style={{ fontSize: '16px', fontWeight: 900 }}>Episode #{i}: Breaking Digital Barriers</div>
-                </div>
-             </div>
-          ))}
-       </div>
-       <div>
-          <h3 style={{ fontSize: '22px', fontWeight: 950, marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}><FileText size={24} color="#0073b1" /> Thought Leadership</h3>
-          <div style={{ padding: '24px', background: '#fff', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
-             <h4 style={{ fontSize: '15px', fontWeight: 900 }}>Why Authentic Content is the Future of Marketing</h4>
-             <p style={{ fontSize: '13px', color: '#64748b', marginTop: '8px' }}>Read my latest article on Medium...</p>
-          </div>
-       </div>
-    </div>
+    <InfluenceMedia mob={mob} />
+    <ProfileViewCounter mob={mob} />
     <TrustBadge />
+    <TabNavigator activeTab="work" setActiveTab={setActiveTab} mob={mob} />
   </motion.div>
 );
-WorkTab.propTypes = { mob: PropTypes.bool };
+WorkTab.propTypes = { mob: PropTypes.bool, setActiveTab: PropTypes.func.isRequired };
 
 // --- MODALS ---
 
@@ -471,12 +754,131 @@ const RateCreatorModal = ({ open, onClose, name, dsp }) => {
 };
 RateCreatorModal.propTypes = { open: PropTypes.bool.isRequired, onClose: PropTypes.func.isRequired, name: PropTypes.string.isRequired, dsp: PropTypes.func.isRequired };
 
+const LocalCollabHub = ({ c, mob, setActiveTab }) => (
+  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+    <div style={{ padding: mob ? '32px 24px' : '60px', background: 'linear-gradient(135deg, #fff 0%, #fff7ed 100%)', borderRadius: '40px', border: '1.5px solid #ffedd5', marginBottom: '40px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: '-30px', right: '-30px', opacity: 0.1 }}><MapPin size={200} color="#f97316" /></div>
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+          <div style={{ width: '40px', height: '40px', background: '#f97316', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Globe size={20} color="#fff" />
+          </div>
+          <span style={{ fontSize: '14px', fontWeight: 950, color: '#f97316', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Vocal for Local Initiative</span>
+        </div>
+        <h2 style={{ fontSize: mob ? '28px' : '48px', fontWeight: 950, color: '#7c2d12', marginBottom: '24px', letterSpacing: '-0.04em' }}>Apne <span style={{ color: '#f97316' }}>Local Business</span> ko Global Banayein</h2>
+        <p style={{ fontSize: '18px', color: '#9a3412', fontWeight: 500, lineHeight: 1.6, maxWidth: '800px' }}>
+          "Main local brands aur homegrown startups ko support karne ke liye hamesha ready hoon. Chota ho ya bada, har business ki ek kahani hoti hai jo Bharat tak pahunchani chahiye."
+        </p>
+      </div>
+    </div>
+
+    <div style={{ display: mob ? 'flex' : 'grid', gridTemplateColumns: mob ? 'none' : 'repeat(3, 1fr)', gap: '24px', marginBottom: '40px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
+      <Card style={{ padding: '32px', borderRadius: '32px', border: '1.5px solid #f1f5f9', flexShrink: 0, width: mob ? '260px' : 'auto' }}>
+        <div style={{ width: '48px', height: '48px', background: '#f0fdf4', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
+          <MapPin size={24} color="#10b981" />
+        </div>
+        <h4 style={{ fontSize: '18px', fontWeight: 900, marginBottom: '12px' }}>Store Visits & Events</h4>
+        <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6 }}>Offline store visits, shop openings, aur local product reviews ke liye available.</p>
+      </Card>
+
+      <Card style={{ padding: '32px', borderRadius: '32px', border: '1.5px solid #f1f5f9', flexShrink: 0, width: mob ? '260px' : 'auto' }}>
+        <div style={{ width: '48px', height: '48px', background: '#eff6ff', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
+          <Mic2 size={24} color="#3b82f6" />
+        </div>
+        <h4 style={{ fontSize: '18px', fontWeight: 900, marginBottom: '12px' }}>Regional Voice Expertise</h4>
+        <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6 }}>Bhojpuri, Marwari, aur Hinglish mein content expertise for authentic local connect.</p>
+      </Card>
+
+      <Card style={{ padding: '32px', borderRadius: '32px', border: '1.5px solid #f1f5f9', flexShrink: 0, width: mob ? '260px' : 'auto' }}>
+        <div style={{ width: '48px', height: '48px', background: '#fef2f2', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
+          <Zap size={24} color="#ef4444" />
+        </div>
+        <h4 style={{ fontSize: '18px', fontWeight: 900, marginBottom: '12px' }}>Local Support Packages</h4>
+        <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6 }}>Small budgets aur barter collaborations ke liye special terms available.</p>
+      </Card>
+    </div>
+
+    <div style={{ background: '#f8fafc', padding: mob ? '32px' : '60px', borderRadius: '40px', border: '1.5px solid #f1f5f9', textAlign: 'center' }}>
+       <h3 style={{ fontSize: '24px', fontWeight: 950, marginBottom: '16px' }}>Mera Hyper-Local Impact Hub</h3>
+       <p style={{ color: '#64748b', fontWeight: 600, marginBottom: '40px' }}>In regions mein mera influence niche average se 2x zyada hai.</p>
+       <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: mob ? '32px' : '64px' }}>
+          {[{ l: 'Indore', v: '85%' }, { l: 'Bhopal', v: '72%' }, { l: 'Ujjain', v: '64%' }].map(x => (
+            <div key={x.l}>
+               <div style={{ fontSize: '48px', fontWeight: 950, color: '#f97316', lineHeight: 1 }}>{x.v}</div>
+               <div style={{ fontSize: '14px', fontWeight: 800, color: '#94a3b8', marginTop: '8px' }}>Reach in {x.l}</div>
+            </div>
+          ))}
+       </div>
+    </div>
+    <TabNavigator activeTab="local" setActiveTab={setActiveTab} mob={mob} />
+  </motion.div>
+);
+LocalCollabHub.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, setActiveTab: PropTypes.func.isRequired };
+
+
+const ServiceCatalog = ({ mob }) => (
+  <div style={{ marginBottom: '60px' }}>
+     <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', marginBottom: '32px', textAlign: 'center' }}>Professional Service Catalog</h3>
+     <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '24px' }}>
+        {[
+          { t: 'Cinematic Storytelling', d: '4K Cinematic Reels with professional grading and scripting.', i: Play, c: '#FF9431' },
+          { t: 'Regional Strategy', d: 'Consultation on how to launch products in local markets.', i: Globe, c: '#0ea5e9' },
+          { t: 'Product Integration', d: 'Seamless product placement in authentic life scenarios.', i: Briefcase, c: '#10b981' }
+        ].map(s => (
+          <Card key={s.t} style={{ padding: '40px', borderRadius: '32px', border: '1.5px solid #f1f5f9', textAlign: 'center' }}>
+             <div style={{ width: '60px', height: '60px', background: `${s.c}10`, borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+                <s.i size={28} color={s.c} />
+             </div>
+             <h4 style={{ fontSize: '18px', fontWeight: 900, color: '#0f172a', marginBottom: '16px' }}>{s.t}</h4>
+             <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, fontWeight: 500 }}>{s.d}</p>
+          </Card>
+        ))}
+     </div>
+  </div>
+);
+ServiceCatalog.propTypes = { mob: PropTypes.bool };
+
+const AchievementWall = ({ mob }) => (
+  <div style={{ marginBottom: '80px' }}>
+     <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', marginBottom: '40px' }}>The Milestone Hall of Fame</h3>
+     <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px' }}>
+        {[
+          { t: '10M+', d: 'Total Impressions', i: Activity, c: '#FF9431' },
+          { t: 'Elite 100', d: 'Ranked in Top 100', i: Trophy, c: '#f97316' },
+          { t: 'Verified', d: 'Official Audit Pass', i: ShieldCheck, c: '#10b981' },
+          { t: '50+', d: 'Brand Partners', i: UserCheck, c: '#3b82f6' }
+        ].map(a => (
+          <div key={a.d} style={{ padding: '32px 24px', background: '#fff', borderRadius: '32px', border: '1.5px solid #f1f5f9', textAlign: 'center' }}>
+             <div style={{ width: '40px', height: '40px', background: `${a.c}10`, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                <a.i size={20} color={a.c} />
+             </div>
+             <div style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', lineHeight: 1, marginBottom: '8px' }}>{a.t}</div>
+             <div style={{ fontSize: '12px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase' }}>{a.d}</div>
+          </div>
+        ))}
+     </div>
+  </div>
+);
+AchievementWall.propTypes = { mob: PropTypes.bool };
+
 // --- HELPERS ---
 
-const MapPin = ({ size, color = 'currentColor' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+const SocialStack = ({ mob }) => (
+  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+     {[
+       { id: 'insta', c: '#E4405F', l: 'Instagram' },
+       { id: 'yt', c: '#FF0000', l: 'YouTube' },
+       { id: 'linkedin', c: '#0077B5', l: 'LinkedIn' },
+       { id: 'twitter', c: '#000', l: 'Twitter' }
+     ].map(s => (
+       <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: '#f8fafc', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
+          <EliteSocialIcon type={s.id} size={16} color={s.c} />
+          <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569' }}>{s.l}</span>
+       </div>
+     ))}
+  </div>
 );
-MapPin.propTypes = { size: PropTypes.number.isRequired, color: PropTypes.string };
+SocialStack.propTypes = { mob: PropTypes.bool };
 
 const SocialIconsPanel = ({ mob }) => (
   <div style={{ display: 'flex', flexDirection: 'row', gap: '16px', alignItems: 'center', background: 'rgba(0,0,0,0.04)', padding: '10px 20px', borderRadius: '100px', width: 'fit-content', marginTop: mob ? '20px' : '0' }}>
@@ -513,9 +915,12 @@ const IdentityHeader = ({ category, name, mob }) => {
   const catDisplay = Array.isArray(category) ? category.join(' • ') : category;
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px', flexWrap: 'wrap' }}>
           <div style={{ background: '#FF9431', color: '#fff', padding: '4px 12px', borderRadius: '6px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>{catDisplay || 'Lifestyle & Culture'}</div>
           {!mob && <div style={{ background: '#eef2ff', color: '#4f46e5', padding: '4px 12px', borderRadius: '6px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>ELITE PARTNER</div>}
+          <div style={{ background: '#ecfdf5', color: '#059669', padding: '4px 12px', borderRadius: '6px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid #10b98120' }}>
+            <div style={{ width: '6px', height: '6px', background: '#10B981', borderRadius: '50%', boxShadow: '0 0 5px #10B981' }} /> Available Now
+          </div>
        </div>
      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
         <h1 style={{ fontSize: mob ? '28px' : '40px', fontWeight: 800, color: '#111827', letterSpacing: '-0.03em' }}>{name}</h1>
@@ -535,14 +940,12 @@ const IdentityDetails = ({ c, stats, mob, onRate, onContact }) => (
      <ContactMetadata city={c.city} followers={stats.followers} mob={mob} onContact={onContact} />
      <BadgeRow score={stats.score || 94} />
      <RatingSection val={4.9} total={24} onRate={onRate} />
+     <div style={{ marginTop: '32px' }}>
+        <ProfileViewCounter mob={mob} />
+     </div>
   </div>
 );
 IdentityDetails.propTypes = { c: PropTypes.object.isRequired, stats: PropTypes.object.isRequired, mob: PropTypes.bool, onRate: PropTypes.func.isRequired, onContact: PropTypes.func.isRequired };
-
-const MessageSquare = ({ size, color = 'currentColor' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-);
-MessageSquare.propTypes = { size: PropTypes.number.isRequired, color: PropTypes.string };
 
 const FollowBtn = ({ active, onClick, mob }) => (
   <button onClick={onClick} style={{ flex: mob ? 1 : 'initial', background: active ? '#fff' : '#0073b1', color: active ? '#374151' : '#fff', border: active ? '2px solid #374151' : 'none', padding: mob ? '12px 16px' : '14px 40px', borderRadius: '100px', fontSize: mob ? '15px' : '18px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', transition: 'all 0.3s' }}>
@@ -568,11 +971,6 @@ const ActionButtons = ({ followed, onAction, mob }) => {
 };
 ActionButtons.propTypes = { followed: PropTypes.bool.isRequired, onAction: PropTypes.func.isRequired, mob: PropTypes.bool };
 
-const ArrowLeft = ({ size, color = 'currentColor' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-);
-ArrowLeft.propTypes = { size: PropTypes.number.isRequired, color: PropTypes.string };
-
 const HeroBanner = ({ banner, mob, onBack, onShare }) => (
   <div style={{ height: mob ? '180px' : '300px', background: '#0f172a', position: 'relative', overflow: 'hidden' }}>
      <img src={banner} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.75 }} alt="banner" />
@@ -594,6 +992,7 @@ HeroBanner.propTypes = { banner: PropTypes.string.isRequired, mob: PropTypes.boo
 const ProfileImage = ({ src, mob }) => (
   <div style={{ position: 'relative', width: mob ? '110px' : '200px', height: mob ? '110px' : '200px', borderRadius: '50%', border: mob ? '4px solid #fff' : '8px solid #fff', overflow: 'hidden', background: '#fff', boxShadow: '0 12px 48px rgba(0,0,0,0.15)', flexShrink: 0 }}>
      <img src={src} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="profile" />
+     <div style={{ position: 'absolute', bottom: mob ? '10px' : '20px', right: mob ? '10px' : '20px', width: mob ? '16px' : '24px', height: mob ? '16px' : '24px', background: '#10B981', border: mob ? '2px solid #fff' : '4px solid #fff', borderRadius: '50%', zIndex: 5, boxShadow: '0 0 10px rgba(16,185,129,0.5)' }} />
   </div>
 );
 ProfileImage.propTypes = { src: PropTypes.string.isRequired, mob: PropTypes.bool };
@@ -703,14 +1102,30 @@ const QuickConnectHub = ({ c, mob, dsp, onBrief }) => {
                 </button>
              </div>
 
-             <div style={{ marginTop: '40px', padding: '24px', background: '#0f172a', borderRadius: '24px', color: '#fff' }}>
-                <div style={{ fontSize: '11px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px' }}>Direct Contact Info</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14px', fontWeight: 600 }}>
-                      <Globe size={16} color="#FF9431" /> collab@{c?.slug || 'creator'}.com
+             <div style={{ marginTop: '40px', padding: '32px', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: '32px', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div style={{ fontSize: '11px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                   <MapPin size={14} /> Regional Identity & Hub
+                </div>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '32px' }}>
+                   <div>
+                      <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, marginBottom: '4px' }}>Base of Operations</div>
+                      <div style={{ fontSize: '16px', fontWeight: 900 }}>{c?.city || 'Bengaluru'}</div>
+                      <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 600 }}>Karnataka, India</div>
                    </div>
-                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14px', fontWeight: 600 }}>
-                      <ShieldCheck size={16} color="#10B981" /> Verified Phone: +91 98XXX-X8XX
+                   <div>
+                      <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, marginBottom: '4px' }}>Primary Region</div>
+                      <div style={{ fontSize: '16px', fontWeight: 900 }}>South & West Bharat</div>
+                      <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 600 }}>Pan-India Ready</div>
+                   </div>
+                </div>
+
+                <div style={{ padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                   <div style={{ fontSize: '11px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', marginBottom: '12px' }}>Cultural & Language Roots</div>
+                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                      {['Kannada', 'Hinglish', 'Marathi (Expert)', 'Cultural Nuance'].map(tag => (
+                        <div key={tag} style={{ padding: '6px 12px', background: 'rgba(255,255,255,0.05)', borderRadius: '100px', fontSize: '11px', fontWeight: 800, color: '#f1f5f9', border: '1px solid rgba(255,255,255,0.1)' }}>{tag}</div>
+                      ))}
                    </div>
                 </div>
              </div>
@@ -789,11 +1204,6 @@ const CollabBriefModal = ({ open, onClose, pkg, creatorName, dsp }) => {
 };
 CollabBriefModal.propTypes = { open: PropTypes.bool.isRequired, onClose: PropTypes.func.isRequired, pkg: PropTypes.object, creatorName: PropTypes.string, dsp: PropTypes.func.isRequired };
 
-const HelpCircle = ({ size, color = 'currentColor' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-);
-HelpCircle.propTypes = { size: PropTypes.number.isRequired, color: PropTypes.string };
-
 const CollabFAQ = ({ mob }) => (
   <div style={{ marginTop: '80px', background: '#f8fafc', padding: mob ? '32px' : '60px', borderRadius: '40px', border: '1.5px solid #f1f5f9' }}>
      <h3 style={{ fontSize: '24px', fontWeight: 950, marginBottom: '40px', textAlign: 'center' }}>Collaboration Intelligence (FAQ)</h3>
@@ -833,7 +1243,7 @@ const GalleryItem = ({ i, mob, dsp }) => {
 };
 GalleryItem.propTypes = { i: PropTypes.number.isRequired, mob: PropTypes.bool, dsp: PropTypes.func.isRequired };
 
-const GalleryTab = ({ mob }) => {
+const GalleryTab = ({ mob, setActiveTab }) => {
   const { dsp } = useApp();
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
@@ -854,13 +1264,15 @@ const GalleryTab = ({ mob }) => {
              </Btn>
           </div>
        </div>
-       <TrustBadge />
+       <ProfileViewCounter mob={mob} />
+    <TrustBadge />
+       <TabNavigator activeTab="gallery" setActiveTab={setActiveTab} mob={mob} />
     </motion.div>
   );
 };
-GalleryTab.propTypes = { mob: PropTypes.bool };
+GalleryTab.propTypes = { mob: PropTypes.bool, setActiveTab: PropTypes.func.isRequired };
 
-const ReviewsTab = ({ c, mob, navigate, onWriteReview }) => (
+const ReviewsTab = ({ c, mob, navigate, onWriteReview, setActiveTab }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.2fr 2fr', gap: '40px', marginBottom: '60px' }}>
         <div>
@@ -906,22 +1318,27 @@ const ReviewsTab = ({ c, mob, navigate, onWriteReview }) => (
            ))}
         </div>
      </div>
-     <TrustBadge />
+     <ProfileViewCounter mob={mob} />
+<TrustBadge />
+     <TabNavigator activeTab="reviews" setActiveTab={setActiveTab} mob={mob} />
   </motion.div>
 );
-ReviewsTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, navigate: PropTypes.func.isRequired, onWriteReview: PropTypes.func.isRequired };
+ReviewsTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, navigate: PropTypes.func.isRequired, onWriteReview: PropTypes.func.isRequired, setActiveTab: PropTypes.func.isRequired };
 
-const PackagesTab = ({ mob, onSelect }) => (
+const PackagesTab = ({ mob, onSelect, setActiveTab }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '24px' }}>
+    <div style={{ display: mob ? 'flex' : 'grid', gridTemplateColumns: mob ? 'none' : 'repeat(3, 1fr)', gap: '24px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '20px' : '0' }}>
        <PackageCard onSelect={onSelect} p={{ l: 'Starter Boost', v: '₹12,500', pop: false, items: ['1 Cinematic Reel', '2 Sequential Stories', 'Link in Bio (24hrs)', 'Standard Captioning'] }} />
        <PackageCard onSelect={onSelect} p={{ l: 'Growth Engine', v: '₹35,000', pop: true, items: ['3 Premium Reels', '5 High-Impact Stories', 'Managed Briefing', 'Analytics Report', 'Scripting Included'] }} />
        <PackageCard onSelect={onSelect} p={{ l: 'Brand Partner', v: 'Custom', pop: false, items: ['Exclusive Partnership', '6 Reels per Month', 'Product Integration', 'Usage Rights (6mo)', 'Event Attendance'] }} />
     </div>
     <CollabFAQ mob={mob} />
+    <ProfileViewCounter mob={mob} />
+    <TrustBadge />
+    <TabNavigator activeTab="packages" setActiveTab={setActiveTab} mob={mob} />
   </motion.div>
 );
-PackagesTab.propTypes = { mob: PropTypes.bool, onSelect: PropTypes.func.isRequired };
+PackagesTab.propTypes = { mob: PropTypes.bool, onSelect: PropTypes.func.isRequired, setActiveTab: PropTypes.func.isRequired };
 
 // --- MAIN PAGE ---
 
@@ -1016,7 +1433,7 @@ export default function CreatorProfilePage() {
       
       <div style={{ position: 'sticky', top: 0, zIndex: 1000, background: 'rgba(252, 252, 252, 0.9)', backdropFilter: 'blur(30px)', borderBottom: '1px solid #f1f5f9', overflowX: mob ? 'auto' : 'hidden', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
          <div style={{ ...W(1100), padding: mob ? '0 16px' : '0 24px', display: 'flex', gap: mob ? '32px' : '48px', minWidth: mob ? 'fit-content' : 'auto' }}>
-            {[{ id: 'identity', label: 'Identity', icon: Activity }, { id: 'story', label: 'My Story', icon: Globe }, { id: 'gallery', label: 'Gallery', icon: ImageIcon }, { id: 'work', label: 'Pro Work', icon: Briefcase }, { id: 'reviews', label: 'Reviews', icon: Star }, { id: 'packages', label: 'Packages', icon: Zap }, { id: 'connect', label: 'Connect', icon: MessageSquare }].map(t => (
+            {[{ id: 'identity', label: 'Identity', icon: Activity }, { id: 'story', label: 'My Story', icon: Globe }, { id: 'gallery', label: 'Gallery', icon: ImageIcon }, { id: 'work', label: 'Pro Work', icon: Briefcase }, { id: 'local', label: 'Local Hub', icon: MapPin }, { id: 'reviews', label: 'Reviews', icon: Star }, { id: 'packages', label: 'Packages', icon: Zap }, { id: 'connect', label: 'Connect', icon: MessageSquare }].map(t => (
               <button key={t.id} onClick={() => setActiveTab(t.id)} style={{ padding: '20px 0', background: 'none', border: 'none', borderBottom: `3.5px solid ${activeTab === t.id ? '#0073b1' : 'transparent'}`, color: activeTab === t.id ? '#111827' : '#6b7280', fontSize: '14px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', whiteSpace: 'nowrap' }}>
                 <t.icon size={18} /> {t.label}
               </button>
@@ -1024,18 +1441,77 @@ export default function CreatorProfilePage() {
          </div>
       </div>
 
-      <div style={{ ...W(1100), padding: mob ? '40px 16px' : '60px 24px' }}>
+      <div id="profile-content-area" style={{ ...W(1100), padding: mob ? '0 16px 120px' : '60px 24px' }}>
+        {/* MODERN MOBILE SECTION NAVIGATOR (STORIES STYLE) */}
+        {mob && (
+          <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', scrollbarWidth: 'none', padding: '10px 0 32px', marginBottom: '12px' }}>
+            {[
+              { id: 'identity', l: 'Overview', i: UserPlus, c: '#0ea5e9' },
+              { id: 'story', l: 'History', i: ScrollText, c: '#8b5cf6' },
+              { id: 'gallery', l: 'Visuals', i: ImageIcon, c: '#ec4899' },
+              { id: 'work', l: 'Projects', i: Zap, c: '#f59e0b' },
+              { id: 'local', l: 'Region', i: MapPin, c: '#10b981' },
+              { id: 'reviews', l: 'Trust', i: Star, c: '#f97316' },
+              { id: 'packages', l: 'Deals', i: Briefcase, c: '#6366f1' }
+            ].map(s => (
+              <button 
+                 key={s.id} 
+                 onClick={() => { 
+                   setActiveTab(s.id); 
+                   const el = document.getElementById('profile-content-area');
+                   if (el) {
+                     const yOffset = -120; // Accounts for sticky header
+                     const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                     window.scrollTo({ top: y, behavior: 'smooth' });
+                   }
+                 }} 
+                 onKeyDown={(e) => {
+                   if (e.key === 'Enter' || e.key === ' ') {
+                     e.preventDefault();
+                     setActiveTab(s.id);
+                     const el = document.getElementById('profile-content-area');
+                     if (el) {
+                       const yOffset = -120;
+                       const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                       window.scrollTo({ top: y, behavior: 'smooth' });
+                     }
+                   }
+                 }}
+                 style={{ textAlign: 'center', flexShrink: 0, cursor: 'pointer', outline: 'none' }}
+               >
+                <div style={{ 
+                  width: '64px', 
+                  height: '64px', 
+                  borderRadius: '50%', 
+                  padding: '3px', 
+                  background: activeTab === s.id ? `linear-gradient(45deg, ${s.c}, #fff)` : '#e2e8f0',
+                  marginBottom: '8px',
+                  transition: 'all 0.3s ease'
+                }}>
+                  <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}>
+                    <s.i size={24} color={activeTab === s.id ? s.c : '#94a3b8'} fill={activeTab === s.id ? `${s.c}10` : 'none'} />
+                  </div>
+                </div>
+                <span style={{ fontSize: '11px', fontWeight: 800, color: activeTab === s.id ? '#0f172a' : '#94a3b8' }}>{s.l}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
          <AnimatePresence mode="wait">
-            {activeTab === 'identity' && <IdentityTab key="tab-identity" c={c} stats={stats} onRate={handleRateClick} mob={mob} />}
-            {activeTab === 'story' && <StoryTab key="tab-story" c={c} mob={mob} />}
-            {activeTab === 'gallery' && <GalleryTab key="tab-gallery" mob={mob} />}
-            {activeTab === 'work' && <WorkTab key="tab-work" mob={mob} />}
-            {activeTab === 'reviews' && <ReviewsTab key="tab-reviews" c={c} mob={mob} navigate={navigate} onWriteReview={handleRateClick} />}
-            {activeTab === 'packages' && <PackagesTab key="tab-packages" mob={mob} onSelect={handlePackageSelect} />}
+            {activeTab === 'identity' && <IdentityTab key="tab-identity" c={c} stats={stats} onRate={handleRateClick} mob={mob} setActiveTab={setActiveTab} />}
+            {activeTab === 'story' && <StoryTab key="tab-story" c={c} mob={mob} setActiveTab={setActiveTab} />}
+            {activeTab === 'gallery' && <GalleryTab key="tab-gallery" mob={mob} setActiveTab={setActiveTab} />}
+            {activeTab === 'work' && <WorkTab key="tab-work" mob={mob} setActiveTab={setActiveTab} />}
+            {activeTab === 'local' && <LocalCollabHub key="tab-local" c={c} mob={mob} setActiveTab={setActiveTab} />}
+            {activeTab === 'reviews' && <ReviewsTab key="tab-reviews" c={c} mob={mob} navigate={navigate} onWriteReview={handleRateClick} setActiveTab={setActiveTab} />}
+            {activeTab === 'packages' && <PackagesTab key="tab-packages" mob={mob} onSelect={handlePackageSelect} setActiveTab={setActiveTab} />}
             {activeTab === 'connect' && (
               <motion.div key="tab-connect" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
                  <QuickConnectHub c={c} mob={mob} dsp={dsp} onBrief={() => setBriefOpen(true)} />
-                 <TrustBadge />
+                 <ProfileViewCounter mob={mob} />
+<TrustBadge />
+                 <TabNavigator activeTab="connect" setActiveTab={setActiveTab} mob={mob} />
               </motion.div>
             )}
          </AnimatePresence>
@@ -1074,6 +1550,60 @@ export default function CreatorProfilePage() {
             </div>
          </div>
       </section>
+
+      {/* STICKY BOTTOM ACTION BAR FOR MOBILE */}
+      {mob && (
+        <div style={{ 
+          position: 'fixed', 
+          bottom: '24px', 
+          left: '16px', 
+          right: '16px', 
+          background: 'rgba(15, 23, 42, 0.95)', 
+          backdropFilter: 'blur(12px)', 
+          padding: '16px 24px', 
+          borderRadius: '100px', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between', 
+          boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+          zIndex: 1000,
+          border: '1px solid rgba(255,255,255,0.1)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #FF9431' }}>
+              <img src={c?.image || 'https://picsum.photos/100'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+            </div>
+            <div>
+               <div style={{ fontSize: '13px', fontWeight: 900, color: '#fff' }}>@{c?.slug || 'elite'}</div>
+               <div style={{ fontSize: '10px', color: '#10B981', fontWeight: 700 }}>Available Now</div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button onClick={() => { 
+                setActiveTab('connect'); 
+                const el = document.getElementById('profile-content-area');
+                if (el) {
+                  const yOffset = -120;
+                  const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                  window.scrollTo({ top: y, behavior: 'smooth' });
+                }
+            }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '44px', height: '44px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <MessageSquare size={20} />
+            </button>
+            <button onClick={() => { 
+                setActiveTab('packages'); 
+                const el = document.getElementById('profile-content-area');
+                if (el) {
+                  const yOffset = -120;
+                  const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                  window.scrollTo({ top: y, behavior: 'smooth' });
+                }
+            }} style={{ background: '#FF9431', border: 'none', color: '#fff', padding: '0 24px', height: '44px', borderRadius: '100px', fontSize: '13px', fontWeight: 950 }}>
+              Book
+            </button>
+          </div>
+        </div>
+      )}
 
       <RateCreatorModal open={rateOpen} name={c?.name || 'Creator'} dsp={dsp} onClose={() => setRateOpen(false)} />
       <CollabBriefModal open={briefOpen} pkg={selectedPkg} creatorName={c?.name || 'Creator'} dsp={dsp} onClose={() => setBriefOpen(false)} />
