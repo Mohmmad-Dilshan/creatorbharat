@@ -41,12 +41,37 @@ const ToastItem = ({ t, dsp }) => {
         {t.type === 'success' ? '✓' : '!'}
       </div>
       <span style={{ fontSize: 14, fontWeight: 700, flex: 1, color: '#f8fafc', lineHeight: 1.4 }}>{t.msg}</span>
+      
+      {t.action && (
+        <button 
+          onClick={() => {
+            t.action.onClick();
+            dsp({ t: 'RM_TOAST', id: t.id });
+          }}
+          style={{ 
+            background: '#FF9431', 
+            border: 'none', 
+            color: '#fff', 
+            padding: '6px 12px', 
+            borderRadius: '100px', 
+            fontSize: '11px', 
+            fontWeight: 900, 
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            boxShadow: '0 4px 12px rgba(255,148,49,0.2)'
+          }}
+        >
+          {t.action.label}
+        </button>
+      )}
+
       <button 
         onClick={() => dsp({ t: 'RM_TOAST', id: t.id })} 
         style={{ 
           background: 'rgba(255,255,255,0.05)', border: 'none', color: 'rgba(255,255,255,0.4)', 
           cursor: 'pointer', fontSize: 18, width: 28, height: 28, borderRadius: '50%',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s'
+          display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s',
+          marginLeft: t.action ? '8px' : '0'
         }}
         onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
         onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
