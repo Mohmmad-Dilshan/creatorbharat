@@ -6,6 +6,8 @@ import { ShieldCheck } from 'lucide-react';
 import { useApp } from '@/core/context';
 import { Logo } from '@/components/common';
 import ApplyForm from '../apply/ApplyForm.jsx';
+import { sanitize } from '@/utils/security';
+import { LS } from '@/utils/helpers';
 
 
 // Views
@@ -48,7 +50,7 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
   const [loading, setLoading] = useState(false);
 
   const onAuthSuccess = (user) => {
-    dsp({ t: 'SET_USER', d: user });
+    dsp({ t: 'LOGIN', u: user, role: user.role });
     const pendingApply = LS.get('cb_pending_apply');
     if (pendingApply) {
       LS.remove('cb_pending_apply', null); // clear it
@@ -60,8 +62,8 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    const email = e.target.email?.value;
-    const password = e.target.password?.value;
+    const email = sanitize(e.target.email?.value);
+    const password = e.target.password?.value; // Password shouldn't be HTML-sanitized usually, but kept safe by backend
 
     setLoading(true);
     

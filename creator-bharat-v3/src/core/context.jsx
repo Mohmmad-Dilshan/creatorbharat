@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { isValidRole } from '@/utils/security';
 
 const Ctx = createContext(null);
 export const useApp = () => useContext(Ctx);
@@ -27,7 +28,10 @@ export function reducer(s, a) {
         sel: a.sel ? { ...s.sel, ...a.sel } : s.sel, 
         ui: { ...s.ui, mobileMenu: false } 
       };
-    case 'LOGIN': return { ...s, user: a.u, role: a.role, ui: { ...s.ui, mobileMenu: false } };
+    case 'LOGIN': {
+      const role = isValidRole(a.role) ? a.role : 'guest';
+      return { ...s, user: a.u, role, ui: { ...s.ui, mobileMenu: false } };
+    }
     case 'LOGOUT': return { ...IS, page: 'home' };
     case 'SAVE': {
       const h = s.saved.includes(a.id);
@@ -54,7 +58,7 @@ export const AppProvider = ({ children }) => {
   const getInitialState = () => {
     const savedUser = localStorage.getItem('cb_user');
     const savedRole = localStorage.getItem('cb_role');
-    if (savedUser && savedRole) {
+    if (savedUser && savedRole && isValidRole(savedRole)) {
       return { ...IS, user: JSON.parse(savedUser), role: savedRole };
     }
     return IS;

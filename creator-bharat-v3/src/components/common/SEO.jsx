@@ -1,62 +1,51 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
+import { Helmet } from 'react-helmet-async';
 
-const SEO = ({ title, description, keywords, ogImage, canonicalUrl }) => {
-  useEffect(() => {
-    // 1. Update Title
-    const siteName = "CreatorBharat";
-    document.title = title ? `${title} | ${siteName}` : `${siteName} — India's Premier Creator Ecosystem`;
+/**
+ * SEO Component: Handles dynamic meta tags for every page.
+ * 
+ * @param {string} title - Page title
+ * @param {string} description - Meta description
+ * @param {string} image - Social share image URL
+ * @param {string} url - Canonical URL
+ */
+const SEO = ({ title, description, image, url }) => {
+  const siteTitle = 'CreatorBharat';
+  const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle;
+  const defaultDesc = "India's premier creator discovery ecosystem. Connecting brands with authentic Bharat talent.";
+  const defaultImage = '/og-image.jpg'; // Path to your default OG image
+  const canonicalUrl = url || window.location.href;
 
-    // 2. Update Meta Description
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute("content", description || "India's premier creator discovery ecosystem. Connect brands with authentic Bharat talent from Jaipur, Mumbai, Delhi & beyond.");
-    }
+  return (
+    <Helmet>
+      {/* Basic */}
+      <title>{fullTitle}</title>
+      <meta name="description" content={description || defaultDesc} />
+      <link rel="canonical" href={canonicalUrl} />
 
-    // 3. Update Meta Keywords
-    const metaKeywords = document.querySelector('meta[name="keywords"]');
-    if (metaKeywords) {
-      metaKeywords.setAttribute("content", keywords || "creator platform india, influencer marketing india, indian creators, brand collaboration");
-    }
+      {/* Open Graph / Facebook */}
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content={canonicalUrl} />
+      <meta property="og:title" content={fullTitle} />
+      <meta property="og:description" content={description || defaultDesc} />
+      <meta property="og:image" content={image || defaultImage} />
 
-    // 4. Update Open Graph Tags
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) ogTitle.setAttribute("content", title || siteName);
-
-    const ogDesc = document.querySelector('meta[property="og:description"]');
-    if (ogDesc) ogDesc.setAttribute("content", description || "Discover and collaborate with India's top content creators.");
-
-    if (ogImage) {
-      const ogImg = document.querySelector('meta[property="og:image"]');
-      if (ogImg) ogImg.setAttribute("content", ogImage);
-    }
-
-    // 5. Update Canonical URL
-    if (canonicalUrl) {
-      let link = document.querySelector('link[rel="canonical"]');
-      if (!link) {
-        link = document.createElement('link');
-        link.setAttribute('rel', 'canonical');
-        document.head.appendChild(link);
-      }
-      link.setAttribute('href', canonicalUrl);
-    }
-
-    // 6. Update Twitter Meta
-    const twTitle = document.querySelector('meta[name="twitter:title"]');
-    if (twTitle) twTitle.setAttribute("content", title || siteName);
-
-  }, [title, description, keywords, ogImage, canonicalUrl]);
-
-  return null; // This component doesn't render anything
+      {/* Twitter */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:url" content={canonicalUrl} />
+      <meta name="twitter:title" content={fullTitle} />
+      <meta name="twitter:description" content={description || defaultDesc} />
+      <meta name="twitter:image" content={image || defaultImage} />
+    </Helmet>
+  );
 };
 
 SEO.propTypes = {
   title: PropTypes.string,
   description: PropTypes.string,
-  keywords: PropTypes.string,
-  ogImage: PropTypes.string,
-  canonicalUrl: PropTypes.string
+  image: PropTypes.string,
+  url: PropTypes.string,
 };
 
 export default SEO;

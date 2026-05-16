@@ -17,6 +17,11 @@ yarn-error.log*
 **/node_modules/
 **/.env
 SAAS_FRONTEND_MASTER_PLAN.md
+CREATORBHARAT_SAAS_MASTER_AUDIT.md
+FINAL_SAAS_ELITE_CERTIFICATION.md
+frontend_master_report.md
+full_n8n_frontend_map.md
+HARDENING_PLAN.md
 
 # EVERYTHING IN BACKUPS IS HIDDEN
 backups/
