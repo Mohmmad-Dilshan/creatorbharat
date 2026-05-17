@@ -302,11 +302,13 @@ const MobileRankCard = ({ c, navigate }) => (
     </div>
     <div style={{ flex: 1 }}>
       <div style={{ fontWeight: 900, color: THEME.dark, fontSize: '17px' }}>{c.name}</div>
-      <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 600 }}>{c.niche} • {c.followers}</div>
+      <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 600 }}>{c.niche} • {c.followers} • ER: {c.er}</div>
     </div>
-    <div style={{ textAlign: 'right' }}>
-       <div style={{ fontSize: '16px', fontWeight: 950, color: THEME.dark }}>{c.score}</div>
-       <div style={{ fontSize: '10px', fontWeight: 900, color: THEME.green }}>SCORE</div>
+    <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+       <div style={{ fontSize: '18px', fontWeight: 950, color: THEME.dark, lineHeight: 1 }}>{c.score}</div>
+       <div style={{ fontSize: '9px', fontWeight: 900, color: c.trend === 'up' ? THEME.green : THEME.red, background: c.trend === 'up' ? THEME.green + '10' : THEME.red + '10', padding: '2px 6px', borderRadius: '100px', display: 'inline-block' }}>
+          {c.velocity}
+       </div>
     </div>
   </motion.div>
 );
@@ -318,7 +320,10 @@ MobileRankCard.propTypes = {
     name: PropTypes.string.isRequired,
     niche: PropTypes.string.isRequired,
     followers: PropTypes.string.isRequired,
-    score: PropTypes.number.isRequired
+    score: PropTypes.number.isRequired,
+    er: PropTypes.string.isRequired,
+    trend: PropTypes.string.isRequired,
+    velocity: PropTypes.string.isRequired
   }).isRequired,
   navigate: PropTypes.func.isRequired
 };
@@ -452,8 +457,15 @@ RankingsTable.propTypes = {
 export default function LeaderboardPage() {
   const [activeTab, setActiveTab] = useState('Overall');
   const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('Score'); // 'Score' | 'Followers' | 'Engagement'
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const navigate = useNavigate();
+
+  const labelMap = {
+    Score: 'Impact Score',
+    Followers: 'Total Followers',
+    Engagement: 'Engagement Rate'
+  };
 
   useEffect(() => {
     const handle = () => setMob(globalThis.innerWidth < 768);
@@ -461,12 +473,32 @@ export default function LeaderboardPage() {
     return () => globalThis.removeEventListener('resize', handle);
   }, []);
 
-  const filteredCreators = useMemo(() => {
-    return creatorsData.filter(c => 
+  const parseFollowers = (str) => {
+    if (str.endsWith('M')) return Number.parseFloat(str) * 1000000;
+    if (str.endsWith('K')) return Number.parseFloat(str) * 1000;
+    return Number.parseFloat(str) || 0;
+  };
+
+  const parseER = (str) => Number.parseFloat(str) || 0;
+
+  const sortedCreators = useMemo(() => {
+    let list = creatorsData.filter(c => 
       (activeTab === 'Overall' || c.niche === activeTab) &&
-      c.name.toLowerCase().includes(search.toLowerCase())
+      (c.name.toLowerCase().includes(search.toLowerCase()) || 
+       c.niche.toLowerCase().includes(search.toLowerCase()) || 
+       c.location.toLowerCase().includes(search.toLowerCase()))
     );
-  }, [activeTab, search]);
+
+    if (sortBy === 'Score') {
+      list.sort((a, b) => b.score - a.score);
+    } else if (sortBy === 'Followers') {
+      list.sort((a, b) => parseFollowers(b.followers) - parseFollowers(a.followers));
+    } else if (sortBy === 'Engagement') {
+      list.sort((a, b) => parseER(b.er) - parseER(a.er));
+    }
+
+    return list;
+  }, [activeTab, search, sortBy]);
 
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', overflowX: 'hidden' }}>
@@ -524,6 +556,51 @@ export default function LeaderboardPage() {
            ))}
         </div>
 
+        {/* Sorting Chips Bar */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          marginBottom: '32px',
+          flexWrap: 'wrap',
+          gap: '16px',
+          padding: '0 8px'
+        }}>
+           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>Sort Intelligence By:</span>
+           </div>
+           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {['Score', 'Followers', 'Engagement'].map(s => {
+                  const active = sortBy === s;
+                  return (
+                     <button
+                       key={s}
+                       onClick={() => setSortBy(s)}
+                       style={{
+                         padding: '10px 20px',
+                         borderRadius: '100px',
+                         border: `1.5px solid ${active ? THEME.primary : '#e2e8f0'}`,
+                         background: active ? THEME.primary + '10' : '#fff',
+                         color: active ? THEME.primary : '#64748b',
+                         fontWeight: 900,
+                         fontSize: '13px',
+                         cursor: 'pointer',
+                         transition: 'all 0.2s ease',
+                         display: 'flex',
+                         alignItems: 'center',
+                         gap: '6px'
+                       }}
+                     >
+                       {s === 'Score' && <Crown size={14} />}
+                       {s === 'Followers' && <Layers size={14} />}
+                       {s === 'Engagement' && <Activity size={14} />}
+                       {labelMap[s]}
+                     </button>
+                  );
+              })}
+           </div>
+        </div>
+
         {/* Podium (Top 3) */}
         {activeTab === 'Overall' && !search && (
           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '32px', marginBottom: '80px', alignItems: 'flex-end' }}>
@@ -533,7 +610,7 @@ export default function LeaderboardPage() {
           </div>
         )}
 
-        <RankingsTable creators={filteredCreators} mob={mob} navigate={navigate} />
+        <RankingsTable creators={sortedCreators} mob={mob} navigate={navigate} />
 
         {/* Methodology Section (Redesigned) */}
         <section style={{ marginTop: '140px', padding: mob ? '40px 20px' : '100px 80px', background: THEME.dark, borderRadius: '64px', position: 'relative', overflow: 'hidden' }}>

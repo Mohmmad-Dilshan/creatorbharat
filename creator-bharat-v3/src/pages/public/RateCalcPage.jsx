@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useApp } from '@/core/context';
 import { 
   Calculator, 
   Camera as Instagram, 
   ArrowRight,
   PieChart,
   Sparkles,
-  Flame
+  Flame,
+  Lock
 } from 'lucide-react';
 import { Btn, Bdg } from '@/components/common/Primitives';
 import { fmt } from '../../utils/helpers';
@@ -77,8 +79,126 @@ ContentCard.propTypes = {
   delay: PropTypes.number
 };
 
+const AuthLockOverlay = ({ mob, navigate }) => (
+  <div style={{
+    position: 'absolute',
+    inset: 0,
+    background: 'rgba(255, 255, 255, 0.45)',
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 100,
+    borderRadius: '48px',
+    padding: mob ? '32px 20px' : '80px 40px',
+    textAlign: 'center',
+    border: '1px solid rgba(255, 255, 255, 0.6)',
+    boxShadow: '0 40px 100px rgba(0, 0, 0, 0.05)'
+  }}>
+    <div style={{
+      width: '80px',
+      height: '80px',
+      background: 'linear-gradient(135deg, #FF9431, #FF5B1A)',
+      borderRadius: '28px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#fff',
+      boxShadow: '0 12px 32px rgba(255, 148, 49, 0.3)',
+      marginBottom: '28px',
+      animation: 'pulse 2s infinite ease-in-out'
+    }}>
+      <Lock size={36} style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))' }} />
+    </div>
+
+    <h2 style={{
+      fontSize: mob ? '28px' : '40px',
+      fontWeight: 950,
+      color: '#0f172a',
+      letterSpacing: '-0.03em',
+      marginBottom: '16px',
+      lineHeight: 1.1
+    }}>
+      Audited Pricing Intelligence is <span style={{ color: '#FF9431' }}>Locked</span>
+    </h2>
+
+    <p style={{
+      fontSize: mob ? '14px' : '17px',
+      color: '#64748b',
+      maxWidth: '480px',
+      lineHeight: 1.6,
+      fontWeight: 500,
+      marginBottom: '40px'
+    }}>
+      Sign up or log in to calculate accurate market rates, cinematic reel pricing, and story metrics powered by CreatorBharat Official Audit database.
+    </p>
+
+    <div style={{
+      display: 'flex',
+      flexDirection: mob ? 'column' : 'row',
+      gap: '16px',
+      width: '100%',
+      maxWidth: '420px',
+      justifyContent: 'center'
+    }}>
+      <button
+        onClick={() => navigate('/login', { state: { from: '/rate-calc' } })}
+        style={{
+          background: '#0f172a',
+          color: '#fff',
+          border: 'none',
+          padding: '18px 36px',
+          borderRadius: '100px',
+          fontWeight: 900,
+          fontSize: '15px',
+          cursor: 'pointer',
+          boxShadow: '0 8px 24px rgba(15,23,42,0.15)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
+          transition: 'all 0.3s ease',
+          flex: 1
+        }}
+      >
+        Sign In to Unlock <ArrowRight size={16} />
+      </button>
+
+      <button
+        onClick={() => navigate('/register')}
+        style={{
+          background: '#ffffff',
+          color: '#0f172a',
+          border: '2px solid #e2e8f0',
+          padding: '18px 36px',
+          borderRadius: '100px',
+          fontWeight: 900,
+          fontSize: '15px',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flex: 1
+        }}
+      >
+        Create Free Account
+      </button>
+    </div>
+  </div>
+);
+
+AuthLockOverlay.propTypes = {
+  mob: PropTypes.bool.isRequired,
+  navigate: PropTypes.func.isRequired
+};
+
 export default function RateCalcPage() {
   const navigate = useNavigate();
+  const { st } = useApp();
+  const isAuth = !!st?.user;
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [F, setF] = useState({ platform: 'Instagram', followers: 25000, niche: 'Lifestyle', er: 4.2 });
   const [result, setResult] = useState(null);
@@ -178,7 +298,11 @@ export default function RateCalcPage() {
 
       {/* Main App Container */}
       <main style={{ maxWidth: '1100px', margin: mob ? '-40px auto 120px' : '-80px auto 120px', padding: '0 20px', position: 'relative', zIndex: 10 }}>
-         <div style={{ background: '#fff', borderRadius: '48px', padding: mob ? '24px' : '60px', boxShadow: '0 40px 100px rgba(0,0,0,0.06)', border: '1px solid #f1f5f9' }}>
+         <div style={{ background: '#fff', borderRadius: '48px', padding: mob ? '24px' : '60px', boxShadow: '0 40px 100px rgba(0,0,0,0.06)', border: '1px solid #f1f5f9', position: 'relative', overflow: 'hidden' }}>
+            
+            {/* Glassmorphic AuthLock Overlay */}
+            {!isAuth && <AuthLockOverlay mob={mob} navigate={navigate} />}
+
             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.2fr 0.8fr', gap: mob ? '40px' : '80px' }}>
                
                {/* Left: Input Console */}
