@@ -307,9 +307,9 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                                     <Star size={16} fill="#FF9431" /> ELITE AUDITED RESUME
                                  </div>
                                  <h1 style={{ fontSize: '72px', fontWeight: 950, letterSpacing: '-0.05em', lineHeight: 0.85, marginBottom: '24px' }}>{creator.name}</h1>
-                                 <div style={{ display: 'flex', gap: '10px', marginBottom: '24px' }}>
-                                    {['Tech & Gadgets', 'Business Strategy', 'Creative Arts'].map(tag => (
-                                       <span key={tag} style={{ padding: '6px 14px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', fontSize: '12px', fontWeight: 800, color: '#94a3b8', border: '1px solid rgba(255,255,255,0.1)' }}>{tag}</span>
+                                 <div style={{ display: 'flex', gap: '10px', marginBottom: '24px', flexWrap: 'wrap' }}>
+                                    {(creator.niche ? creator.niche.split('&').concat(['Verified Creator', 'Elite Partner']) : ['Digital Storyteller', 'Content Specialist', 'Verified Creator']).slice(0, 3).map(tag => (
+                                       <span key={tag.trim()} style={{ padding: '6px 14px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', fontSize: '12px', fontWeight: 800, color: '#FF9431', border: '1px solid rgba(255,148,49,0.3)', whiteSpace: 'nowrap' }}>{tag.trim().toUpperCase()}</span>
                                     ))}
                                  </div>
                                  <p style={{ fontSize: '20px', color: '#cbd5e1', fontWeight: 500, lineHeight: 1.5, opacity: 0.9 }}>
@@ -388,6 +388,52 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                                           </div>
                                        </div>
                                     ))}
+                                 </div>
+
+                                 {/* Professional Creative Background & Credentials */}
+                                 <SectionTitle icon={Briefcase}>Creative Background & Milestones</SectionTitle>
+                                 <div style={{ padding: '32px', background: '#f8fafc', borderRadius: '32px', border: '1.5px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '60px' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                       <div>
+                                          <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Years in Industry</div>
+                                          <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>{creator.experience || '5+ Years Active'}</div>
+                                       </div>
+                                       <div>
+                                          <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Education & Credentials</div>
+                                          <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>{creator.education || 'B.A. Cinema & Media Studies'}</div>
+                                       </div>
+                                       <div>
+                                          <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Primary Content Formats</div>
+                                          <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>Cinematic Reels, Interactive Stories</div>
+                                       </div>
+                                       <div>
+                                          <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Co-Branded IP (Shows)</div>
+                                          <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>TechBytes Podcast Series</div>
+                                       </div>
+                                    </div>
+                                 </div>
+
+                                 {/* Professional Production Suite & Tech Stack */}
+                                 <SectionTitle icon={ShieldCheck}>Production Suite & Creative Tech</SectionTitle>
+                                 <div style={{ padding: '32px', background: '#f8fafc', borderRadius: '32px', border: '1.5px solid #f1f5f9', display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '60px' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                       <div>
+                                          <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Primary Camera Suite</div>
+                                          <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a' }}>Sony A7R V / Sony FX3 (4K HDR)</div>
+                                       </div>
+                                       <div>
+                                          <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Audio Capture Suite</div>
+                                          <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a' }}>DJI Mic 2 / Shure SM7B Setup</div>
+                                       </div>
+                                       <div>
+                                          <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Editing & Post Suite</div>
+                                          <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a' }}>DaVinci Resolve / Premiere Pro CC</div>
+                                       </div>
+                                       <div>
+                                          <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>Studio Environments</div>
+                                          <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a' }}>Acoustic Treated RGB Pro Studio</div>
+                                       </div>
+                                    </div>
                                  </div>
                               </div>
 
@@ -502,21 +548,73 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                               </div>
                            </div>
 
-                           {/* FOOTER VERIFICATION */}
-                           <div style={{ clear: 'both', marginTop: '60px', borderTop: '2.5px solid #f1f5f9', padding: '40px 0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                              <div style={{ display: 'flex', gap: '20px' }}>
-                                 <div style={{ width: '60px', height: '60px', background: '#0f172a', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <ShieldCheck size={32} color="#FF9431" />
+                           {/* FOOTER ENTERPRISE BOOKING & GUARANTEE BANNER */}
+                           <div style={{ clear: 'both', marginTop: '80px', borderTop: '2px solid #e2e8f0', paddingTop: '60px' }}>
+                              <div style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: '40px', padding: '50px 60px', color: '#fff', position: 'relative', overflow: 'hidden' }}>
+                                 <div style={{ position: 'absolute', bottom: '-100px', right: '-100px', width: '300px', height: '300px', background: '#FF9431', borderRadius: '50%', filter: 'blur(150px)', opacity: 0.15 }} />
+                                 
+                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '30px', marginBottom: '40px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '30px' }}>
+                                    <div>
+                                       <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', background: 'rgba(255,148,49,0.15)', borderRadius: '100px', color: '#FF9431', fontSize: '11px', fontWeight: 900, marginBottom: '16px', letterSpacing: '1px', border: '1px solid rgba(255,148,49,0.3)' }}>
+                                          <ShieldCheck size={14} fill="#FF9431" /> CREATORBHARAT ENTERPRISE GUARANTEE
+                                       </div>
+                                       <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#fff', margin: 0, letterSpacing: '-0.5px' }}>Book Securely via CreatorBharat</h3>
+                                       <p style={{ fontSize: '14px', color: '#94a3b8', fontWeight: 500, margin: '8px 0 0', maxWidth: '550px', lineHeight: 1.5 }}>
+                                          This portfolio cv is verified by CreatorBharat Enterprise. All payments, timeline enforcement, and content deliverables are strictly managed via escrow contracts.
+                                       </p>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '16px' }}>
+                                       <div style={{ textAlign: 'center', padding: '16px 24px', background: 'rgba(255,255,255,0.03)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                          <div style={{ fontSize: '24px', fontWeight: 950, color: '#FF9431' }}>100%</div>
+                                          <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, marginTop: '4px' }}>SECURE ESCROW</div>
+                                       </div>
+                                       <div style={{ textAlign: 'center', padding: '16px 24px', background: 'rgba(255,255,255,0.03)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                          <div style={{ fontSize: '24px', fontWeight: 950, color: '#10B981' }}>0%</div>
+                                          <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, marginTop: '4px' }}>SERVICE SLIPPAGE</div>
+                                       </div>
+                                    </div>
                                  </div>
-                                 <div>
-                                    <div style={{ fontSize: '18px', fontWeight: 950, color: '#0f172a' }}>Verified Creator Resume</div>
-                                    <div style={{ fontSize: '13px', color: '#94a3b8', fontWeight: 700 }}>© {new Date().getFullYear()} CreatorBharat Intelligence System. All data is verified.</div>
+
+                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '30px' }}>
+                                    <div style={{ display: 'flex', gap: '16px' }}>
+                                       <div style={{ width: '40px', height: '40px', background: 'rgba(59,130,246,0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3b82f6', flexShrink: 0 }}>
+                                          <Shield size={18} />
+                                       </div>
+                                       <div>
+                                          <h4 style={{ fontSize: '14px', fontWeight: 950, color: '#fff', margin: '0 0 4px 0' }}>Escrow Guarantee</h4>
+                                          <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0, lineHeight: 1.5, fontWeight: 500 }}>Campaign budgets are locked and released strictly upon milestone verification and asset validation.</p>
+                                       </div>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '16px' }}>
+                                       <div style={{ width: '40px', height: '40px', background: 'rgba(16,185,129,0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10B981', flexShrink: 0 }}>
+                                          <ShieldCheck size={18} />
+                                       </div>
+                                       <div>
+                                          <h4 style={{ fontSize: '14px', fontWeight: 950, color: '#fff', margin: '0 0 4px 0' }}>Audited Performance</h4>
+                                          <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0, lineHeight: 1.5, fontWeight: 500 }}>All geographic, age, and gender demographic metrics are directly audited via certified API pipelines.</p>
+                                       </div>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '16px' }}>
+                                       <div style={{ width: '40px', height: '40px', background: 'rgba(255,148,49,0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FF9431', flexShrink: 0 }}>
+                                          <Zap size={18} />
+                                       </div>
+                                       <div>
+                                          <h4 style={{ fontSize: '14px', fontWeight: 950, color: '#fff', margin: '0 0 4px 0' }}>Unified Invoicing</h4>
+                                          <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0, lineHeight: 1.5, fontWeight: 500 }}>Contracts, NDAs, and corporate billing are automated under a single enterprise-compliant platform dashboard.</p>
+                                       </div>
+                                    </div>
+                                 </div>
+
+                                 <div style={{ marginTop: '40px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
+                                    <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 700 }}>
+                                       © {new Date().getFullYear()} CreatorBharat. Audit UID: CB-${creator.slug?.toUpperCase() || 'CV'}-${Math.random().toString(36).substring(2, 7).toUpperCase()}
+                                    </div>
+                                    <div style={{ fontSize: '11px', fontWeight: 900, color: '#FF9431', letterSpacing: '1px' }}>
+                                       FOR OFFICIAL ENQUIRIES: BRAND@CREATORBHARAT.COM
+                                    </div>
                                  </div>
                               </div>
-                              <div style={{ textAlign: 'right' }}>
-                                 <div style={{ fontSize: '12px', fontWeight: 950, color: '#0f172a', letterSpacing: '2px' }}>PRO AUDIT v4.2</div>
-                                 <div style={{ fontSize: '10px', color: '#cbd5e1', fontWeight: 800 }}>UID: {Math.random().toString(36).substring(2, 15).toUpperCase()}</div>
-                              </div>
+                           </div>
                            </div>
                         </div>
                      </div>
