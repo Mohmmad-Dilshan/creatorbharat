@@ -497,17 +497,7 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
   };
 
   const handleMediaKit = () => {
-    setDlStatus('loading');
-    dsp({ t: 'TOAST', d: { type: 'info', msg: 'Scanning Social APIs...' } });
-    
-    setTimeout(() => {
-       setDlStatus('done');
-       dsp({ t: 'TOAST', d: { 
-         type: 'success', 
-         msg: 'Media Kit Ready! Click to view.',
-         action: { label: 'View Now', onClick: onMediaKit }
-       } });
-    }, 2500);
+    onMediaKit();
   };
   const handleShare = async () => {
     try {
