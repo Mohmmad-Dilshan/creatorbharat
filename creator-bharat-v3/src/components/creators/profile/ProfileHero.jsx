@@ -15,7 +15,8 @@ import {
   ArrowLeft,
   Share2,
   ShieldCheck,
-  Eye
+  Eye,
+  Heart
 } from 'lucide-react';
 import { W, fmt } from '@/utils/helpers';
 import { Bdg } from '@/components/common/Primitives';
@@ -44,7 +45,7 @@ const SocialIconsPanel = ({ mob }) => (
 );
 SocialIconsPanel.propTypes = { mob: PropTypes.bool };
 
-const HeroKeyAchievements = ({ mob, activeUsers, activeViews }) => {
+const HeroKeyAchievements = ({ mob, activeUsers, activeViews, likes, isLiked, onLike }) => {
   return (
     <div style={{ 
       display: 'flex', 
@@ -60,11 +61,11 @@ const HeroKeyAchievements = ({ mob, activeUsers, activeViews }) => {
       boxShadow: '0 8px 30px rgba(0,0,0,0.02)'
     }}>
        {[
-         { l: activeViews ? fmt.num(activeViews) : '13.8K', t: 'Profile Visits', i: Eye, c: '#FF9431' },
-         { l: 'Top 1%', t: 'Engagement', i: Zap, c: '#10B981' },
-         { l: `${activeUsers || 14}`, t: 'Active Now', i: Activity, c: '#ef4444', pulse: true }
+         { l: activeViews ? fmt.num(activeViews) : '13,842', t: 'Total Profile Visitor', i: Eye, c: '#FF9431' },
+         { l: likes ? fmt.num(likes) : '1,242', t: 'Likes', i: Heart, c: '#ef4444', fill: isLiked ? '#ef4444' : 'none', onClick: onLike },
+         { l: `${activeUsers || 14}`, t: 'Active Now', i: Activity, c: '#10B981', pulse: true }
        ].map(a => (
-          <div key={a.t} style={{ display: 'flex', alignItems: 'center', gap: mob ? '8px' : '12px' }}>
+          <div key={a.t} onClick={a.onClick} style={{ display: 'flex', alignItems: 'center', gap: mob ? '8px' : '12px', cursor: a.onClick ? 'pointer' : 'default', userSelect: 'none', transition: 'transform 0.2s' }} className={a.onClick ? 'hover-scale-stat' : ''}>
              <div style={{ 
                width: mob ? '28px' : '36px', 
                height: mob ? '28px' : '36px', 
@@ -76,7 +77,7 @@ const HeroKeyAchievements = ({ mob, activeUsers, activeViews }) => {
                boxShadow: '0 6px 16px rgba(0,0,0,0.04)',
                flexShrink: 0
              }}>
-                <a.i size={mob ? 14 : 18} color={a.c} style={{ animation: a.pulse ? 'pulse 2s infinite' : 'none' }} />
+                <a.i size={mob ? 14 : 18} color={a.c} fill={a.fill || 'none'} style={{ animation: a.pulse ? 'pulse 2s infinite' : 'none' }} />
              </div>
              <div>
                 <div style={{ fontSize: mob ? '14px' : '18px', fontWeight: 950, color: '#0f172a', lineHeight: 1.1 }}>{a.l}</div>
@@ -200,7 +201,7 @@ const RatingSection = ({ val, total, onRate }) => (
 );
 RatingSection.propTypes = { val: PropTypes.number.isRequired, total: PropTypes.number.isRequired, onRate: PropTypes.func.isRequired };
 
-const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDownload, activeUsers, activeViews }) => {
+const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDownload, activeUsers, activeViews, likes, isLiked, onLike }) => {
   let dlIcon;
   if (dlStatus === 'loading') {
     dlIcon = (
@@ -232,7 +233,7 @@ const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDo
           onRate={onRate} 
        />
        
-       <HeroKeyAchievements mob={mob} activeUsers={activeUsers} activeViews={activeViews} />
+       <HeroKeyAchievements mob={mob} activeUsers={activeUsers} activeViews={activeViews} likes={likes} isLiked={isLiked} onLike={onLike} />
 
        {mob && (
          <div style={{ marginTop: '24px' }}>
@@ -497,6 +498,8 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
 
   const [activeUsers, setActiveUsers] = useState(14);
   const [activeViews, setActiveViews] = useState(13842);
+  const [likes, setLikes] = useState(c.likes || Math.floor(1200 + Math.random() * 500));
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -505,6 +508,18 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+    setLikes(prev => isLiked ? prev - 1 : prev + 1);
+    dsp({ 
+      t: 'TOAST', 
+      d: { 
+        type: 'success', 
+        msg: isLiked ? 'Removed like from profile!' : 'Liked creator profile!' 
+      } 
+    });
+  };
 
   const handleAction = (a) => {
     if (!st?.user) { dsp({ t: 'TOAST', d: { type: 'warn', msg: 'Please login to ' + a } }); return; }
@@ -569,7 +584,7 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
                marginTop: mob ? '0' : '20px'
              }}>
                 <div style={{ flex: 1.6, width: '100%' }}>
-                   <IdentityDetails c={c} stats={stats} mob={mob} onRate={() => handleAction('rate')} onContact={onContact} dsp={dsp} dlStatus={dlStatus} onDownload={handleMediaKit} activeUsers={activeUsers} activeViews={activeViews} />
+                   <IdentityDetails c={c} stats={stats} mob={mob} onRate={() => handleAction('rate')} onContact={onContact} dsp={dsp} dlStatus={dlStatus} onDownload={handleMediaKit} activeUsers={activeUsers} activeViews={activeViews} likes={likes} isLiked={isLiked} onLike={handleLike} />
                    <div style={{ marginTop: '40px' }}>
                       <ActionButtons 
                 followed={followed} 
