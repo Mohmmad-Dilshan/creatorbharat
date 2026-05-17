@@ -607,14 +607,13 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
 
                                  <div style={{ marginTop: '40px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
                                     <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 700 }}>
-                                       © {new Date().getFullYear()} CreatorBharat. Audit UID: CB-${creator.slug?.toUpperCase() || 'CV'}-${Math.random().toString(36).substring(2, 7).toUpperCase()}
+                                       {`© ${new Date().getFullYear()} CreatorBharat. Audit UID: CB-${creator.slug?.toUpperCase() || 'CV'}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`}
                                     </div>
                                     <div style={{ fontSize: '11px', fontWeight: 900, color: '#FF9431', letterSpacing: '1px' }}>
                                        FOR OFFICIAL ENQUIRIES: BRAND@CREATORBHARAT.COM
                                     </div>
                                  </div>
                               </div>
-                           </div>
                            </div>
                         </div>
                      </div>
