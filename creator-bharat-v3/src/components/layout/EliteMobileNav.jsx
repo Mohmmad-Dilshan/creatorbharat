@@ -51,8 +51,8 @@ export default function EliteMobileNav({ role, user }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Use the freshest role from Global State for security
-  const activeRole = st.user ? st.role : 'public';
+  // Respect layout-specific context (public pages vs private dashboard)
+  const activeRole = role || (st.user ? st.role : 'public');
 
   // Haptic Feedback Helper
   const triggerHaptic = () => {

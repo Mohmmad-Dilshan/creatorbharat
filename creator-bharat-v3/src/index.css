@@ -1246,7 +1246,7 @@ h1, h2, h3, h4, .font-outfit {
 }
 
 .db-page-body {
-  padding: 40px;
+  padding: 0;
   flex: 1;
 }
 
@@ -1386,7 +1386,7 @@ h1, h2, h3, h4, .font-outfit {
 
 @media (max-width: 768px) {
   .db-header { padding: 0 20px; }
-  .db-page-body { padding: 24px 20px; }
+  .db-page-body { padding: 0; }
 }
 
 /* ==========================================================================

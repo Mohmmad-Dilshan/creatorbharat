@@ -48,8 +48,8 @@ const UserActions = ({ st, dsp, go, mob }) => {
           boxShadow: '0 4px 12px rgba(0,0,0,0.03)', transition: '0.2s'
         }}
       >
-        <img src={st.user.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name)}&background=FF9431&color=fff`} style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover' }} alt={st.user.name} />
-        {!mob && <span style={{ fontSize: 13, fontWeight: 900, color: '#111' }}>{st.user.name.split(' ')[0]}</span>}
+        <img src={st.user.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name || 'User')}&background=FF9431&color=fff`} style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover' }} alt={st.user.name || 'User'} />
+        {!mob && <span style={{ fontSize: 13, fontWeight: 900, color: '#111' }}>{(st.user.name || '').split(' ')[0] || 'User'}</span>}
       </button>
     );
   }
@@ -139,11 +139,12 @@ export default function Navbar() {
     dsp({ t: 'UI', v: { mobileMenu: false } });
   };
 
-  const links = (() => {
-    if (st.role === 'creator') return [['/dashboard', 'Dashboard'], ['/campaigns', 'Campaigns'], ['/blog', 'Hub'], ['/creator-guidelines', 'Rules']];
-    if (st.role === 'brand') return [['/creators', 'Discover'], ['/campaigns', 'Campaigns'], ['/blog', 'Hub'], ['/brand-guidelines', 'Rules']];
-    return [['/creators', 'Creators'], ['/campaigns', 'Campaigns'], ['/blog', 'Hub'], ['/about', 'About']];
-  })();
+  const links = [
+    ['/creators', 'Creators'],
+    ['/campaigns', 'Campaigns'],
+    ['/blog', 'Hub'],
+    ['/about', 'About']
+  ];
 
   const getPadding = () => {
     if (mob) return '12px 16px';
