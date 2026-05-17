@@ -107,24 +107,26 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
             }
 
             #media-kit-export-container { 
-              width: 210mm !important; 
+              width: 950px !important; 
+              zoom: 0.82 !important; /* Scale to fit A4 */
               height: auto !important;
-              margin: 0 !important; 
+              margin: 0 auto !important; 
               padding: 0 !important;
               box-shadow: none !important; 
               border: none !important;
+              border-radius: 0 !important;
               background: white !important;
               display: block !important;
               position: relative !important;
               overflow: visible !important;
             }
 
-            /* High-fidelity section guards */
+            /* Prevent elements from being cut in half across pages */
             .printable-section { 
               page-break-inside: avoid !important; 
               break-inside: avoid !important; 
               margin: 0 !important;
-              padding: 60px 80px !important;
+              padding: 40px 60px !important;
               width: 100% !important;
               display: block !important;
               background: white !important;
@@ -132,7 +134,7 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
 
             @page { 
               size: A4 portrait; 
-              margin: 0 !important; 
+              margin: 10mm !important; 
             }
 
             /* Premium Typography */
@@ -276,14 +278,14 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                 {step === 2 && (
                   <motion.div key="step-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '40px' }}>
                      {/* PDF RESUME CONTAINER */}
-                     <div id="media-kit-export-container" style={{ maxWidth: '950px', margin: '0 auto', background: '#fff', borderRadius: '40px', boxShadow: '0 50px 120px rgba(0,0,0,0.15)', border: '1.5px solid #f1f5f9', overflow: 'hidden' }}>
+                     <div id="media-kit-export-container" style={{ width: '100%', maxWidth: '950px', margin: '0 auto', background: '#fff', borderRadius: '40px', boxShadow: '0 50px 120px rgba(0,0,0,0.15)', border: '1.5px solid #f1f5f9', overflow: 'hidden' }}>
                         
                         {/* HERO HEADER */}
-                        <div style={{ background: '#0f172a', padding: '100px 80px', position: 'relative', color: '#fff', overflow: 'hidden' }}>
+                        <div style={{ background: '#0f172a', padding: '80px 60px', position: 'relative', color: '#fff', overflow: 'hidden' }}>
                            <div style={{ position: 'absolute', top: '-150px', left: '-50px', width: '500px', height: '500px', background: '#FF9431', borderRadius: '50%', filter: 'blur(180px)', opacity: 0.12 }} />
                            
                            <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <div style={{ maxWidth: '550px' }}>
+                              <div style={{ maxWidth: '500px' }}>
                                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', background: 'rgba(255,148,49,0.2)', borderRadius: '100px', color: '#FF9431', fontSize: '14px', fontWeight: 950, marginBottom: '32px', border: '1px solid rgba(255,148,49,0.4)', letterSpacing: '1px' }}>
                                     <Star size={16} fill="#FF9431" /> ELITE AUDITED RESUME
                                  </div>
@@ -310,8 +312,8 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                         </div>
 
                         {/* DATA ANALYTICS */}
-                        <div style={{ padding: '80px' }}>
-                           <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '80px' }}>
+                        <div style={{ padding: '60px' }}>
+                           <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '60px' }}>
                               
                               {/* CORE METRICS */}
                               <div className="printable-section">
