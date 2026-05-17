@@ -423,7 +423,7 @@ const EliteIntelligenceCard = ({ stats, mob }) => {
         overflow: 'hidden',
         border: '1px solid rgba(255,255,255,0.08)',
         width: '100%',
-        maxWidth: '400px'
+        maxWidth: mob ? '100%' : '400px'
       }}
     >
       <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '250px', height: '250px', background: '#FF9431', borderRadius: '50%', filter: 'blur(120px)', opacity: 0.15, pointerEvents: 'none' }} />
@@ -575,11 +575,9 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
                    </div>
                 </div>
 
-                {!mob && (
-                  <div style={{ flex: 1, position: 'sticky', top: '120px' }}>
-                     <EliteIntelligenceCard stats={stats} mob={mob} />
-                  </div>
-                )}
+                <div style={mob ? { width: '100%', marginTop: '-20px' } : { flex: 1, position: 'sticky', top: '120px' }}>
+                   <EliteIntelligenceCard stats={stats} mob={mob} />
+                </div>
              </div>
           </div>
        </div>
