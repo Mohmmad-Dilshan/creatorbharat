@@ -18,48 +18,68 @@ import { fmt } from '@/utils/helpers';
 
 // --- SUB-COMPONENTS FOR IDENTITY TAB ---
 
-const HumanStory = ({ mob }) => (
-  <Card style={{ padding: mob ? '32px 24px' : '48px', borderRadius: '40px', marginBottom: '40px', border: '1.5px solid #f1f5f9', background: mob ? 'linear-gradient(135deg, #fff 0%, #f8fafc 100%)' : '#fff', position: 'relative', overflow: 'hidden' }}>
-     <div style={{ position: 'absolute', top: '0', left: '0', width: '4px', height: '100%', background: '#FF9431' }} />
-     <h3 style={{ fontSize: mob ? '20px' : '24px', fontWeight: 950, marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <Mic2 size={mob ? 20 : 24} color="#FF9431" /> Human-Centric Narrative
-     </h3>
-     <p style={{ fontSize: mob ? '16px' : '20px', color: '#475569', lineHeight: 1.8, fontWeight: 500, maxWidth: '850px', fontStyle: mob ? 'italic' : 'normal' }}>
-        "Every creator has a soul, but only a few know how to show it. I believe in content that doesn't just scroll but stays. My journey began with a simple camera and a complex dream to show the real Bharat."
-     </p>
-  </Card>
-);
-HumanStory.propTypes = { mob: PropTypes.bool };
+const HumanStory = ({ c, mob }) => {
+  const isDummy = c.id === 'fallback';
+  if (!c.bio && !isDummy) return null;
+  const text = c.bio || "Every creator has a soul, but only a few know how to show it. I believe in content that doesn't just scroll but stays. My journey began with a simple camera and a complex dream to show the real Bharat.";
+  
+  return (
+    <Card style={{ padding: mob ? '32px 24px' : '48px', borderRadius: '40px', marginBottom: '40px', border: '1.5px solid #f1f5f9', background: mob ? 'linear-gradient(135deg, #fff 0%, #f8fafc 100%)' : '#fff', position: 'relative', overflow: 'hidden' }}>
+       <div style={{ position: 'absolute', top: '0', left: '0', width: '4px', height: '100%', background: '#FF9431' }} />
+       <h3 style={{ fontSize: mob ? '20px' : '24px', fontWeight: 950, marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Mic2 size={mob ? 20 : 24} color="#FF9431" /> Human-Centric Narrative
+       </h3>
+       <p style={{ fontSize: mob ? '16px' : '20px', color: '#475569', lineHeight: 1.8, fontWeight: 500, maxWidth: '850px', fontStyle: mob ? 'italic' : 'normal' }}>
+          "{text}"
+       </p>
+    </Card>
+  );
+};
+HumanStory.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
 
-const AIFitInsight = ({ c, mob }) => (
-  <Card style={{ padding: mob ? '28px' : '48px', borderRadius: '40px', background: '#0f172a', color: '#fff', marginBottom: '40px' }}>
-     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-        <Zap size={24} color="#FF9431" fill="#FF9431" />
-        <span style={{ fontSize: '11px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px' }}>AI Brand-Fit Intel</span>
-     </div>
-     <h3 style={{ fontSize: '24px', fontWeight: 950, marginBottom: '16px' }}>Why {c.name} fits your Brand?</h3>
-     <p style={{ fontSize: '16px', color: '#94a3b8', lineHeight: 1.7, fontWeight: 500, marginBottom: '32px' }}>
-        Our Elite Analysis engine confirms a <b>94% match</b> for brands seeking <b>Authenticity, Regional Authority, and High-Retention Storytelling.</b>
-     </p>
-     <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-        {[{ l: 'Safety', v: '99%' }, { l: 'Niche Auth', v: 'High' }, { l: 'ROI Potential', v: '4.2x' }].map(i => (
-          <div key={i.l}>
-             <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 900, textTransform: 'uppercase', marginBottom: '4px' }}>{i.l}</div>
-             <div style={{ fontSize: '20px', fontWeight: 950, color: '#fff' }}>{i.v}</div>
-          </div>
-        ))}
-     </div>
-  </Card>
-);
+const AIFitInsight = ({ c, mob }) => {
+  const isDummy = c.id === 'fallback';
+  if (!c.ai_intel && !isDummy) return null;
+  const match = c.ai_intel?.match || "94%";
+  const summary = c.ai_intel?.summary || "Authenticity, Regional Authority, and High-Retention Storytelling.";
+  const stats = c.ai_intel?.stats || [{ l: 'Safety', v: '99%' }, { l: 'Niche Auth', v: 'High' }, { l: 'ROI Potential', v: '4.2x' }];
+
+  return (
+    <Card style={{ padding: mob ? '28px' : '48px', borderRadius: '40px', background: '#0f172a', color: '#fff', marginBottom: '40px' }}>
+       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+          <Zap size={24} color="#FF9431" fill="#FF9431" />
+          <span style={{ fontSize: '11px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px' }}>AI Brand-Fit Intel</span>
+       </div>
+       <h3 style={{ fontSize: '24px', fontWeight: 950, marginBottom: '16px' }}>Why {c.name} fits your Brand?</h3>
+       <p style={{ fontSize: '16px', color: '#94a3b8', lineHeight: 1.7, fontWeight: 500, marginBottom: '32px' }}>
+          Our Elite Analysis engine confirms a <b>{match} match</b> for brands seeking <b>{summary}</b>
+       </p>
+       <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+          {stats.map(i => (
+            <div key={i.l}>
+               <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 900, textTransform: 'uppercase', marginBottom: '4px' }}>{i.l}</div>
+               <div style={{ fontSize: '20px', fontWeight: 950, color: '#fff' }}>{i.v}</div>
+            </div>
+          ))}
+       </div>
+    </Card>
+  );
+};
 AIFitInsight.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
 
-const ContentPhilosophy = ({ c, mob }) => (
-  <div style={{ padding: mob ? '24px' : '48px', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: '40px', color: '#fff', marginBottom: '40px', position: 'relative', overflow: 'hidden' }}>
-     <div style={{ position: 'absolute', top: '-10%', right: '-5%', opacity: 0.1 }}><Zap size={200} color="#FF9431" /></div>
-     <h3 style={{ fontSize: '24px', fontWeight: 950, marginBottom: '24px', color: '#FF9431' }}>Mera Content Philosophy (The 'Why')</h3>
-     <p style={{ fontSize: mob ? '16px' : '20px', fontWeight: 500, lineHeight: 1.7, maxWidth: '850px', marginBottom: '32px', color: 'rgba(255,255,255,0.9)' }}>"Main sirf videos nahi banata, main {c.city || 'Bharat'} ki mitti ki kahaniyan sunata hoon. Brands ko emotional connect chahiye, aur meri audience ko authenticity—main in dono ko milata hoon cinematic rawness ke saath."</p>
-  </div>
-);
+const ContentPhilosophy = ({ c, mob }) => {
+  const isDummy = c.id === 'fallback';
+  if (!c.philosophy && !isDummy) return null;
+  const text = c.philosophy || `"Main sirf videos nahi banata, main ${c.city || 'Bharat'} ki mitti ki kahaniyan sunata hoon. Brands ko emotional connect chahiye, aur meri audience ko authenticity—main in dono ko milata hoon cinematic rawness ke saath."`;
+
+  return (
+    <div style={{ padding: mob ? '24px' : '48px', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: '40px', color: '#fff', marginBottom: '40px', position: 'relative', overflow: 'hidden' }}>
+       <div style={{ position: 'absolute', top: '-10%', right: '-5%', opacity: 0.1 }}><Zap size={200} color="#FF9431" /></div>
+       <h3 style={{ fontSize: '24px', fontWeight: 950, marginBottom: '24px', color: '#FF9431' }}>Mera Content Philosophy (The 'Why')</h3>
+       <p style={{ fontSize: mob ? '16px' : '20px', fontWeight: 500, lineHeight: 1.7, maxWidth: '850px', marginBottom: '32px', color: 'rgba(255,255,255,0.9)' }}>{text}</p>
+    </div>
+  );
+};
 ContentPhilosophy.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
 
 const EliteSocialPulse = ({ stats, mob }) => (
@@ -111,69 +131,91 @@ const EliteIntelligenceHub = ({ stats, mob }) => (
 );
 EliteIntelligenceHub.propTypes = { stats: PropTypes.object.isRequired, mob: PropTypes.bool };
 
-const GeoIntelligence = ({ c, mob }) => (
-  <Card style={{ padding: mob ? '28px' : '48px', borderRadius: '40px', background: '#0f172a', color: '#fff', marginBottom: '40px', overflow: 'hidden', position: 'relative' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.2fr 1fr', gap: '40px' }}>
-         <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-               <Globe size={24} color="#FF9431" />
-               <span style={{ fontSize: '11px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px' }}>Geo-Cultural Intelligence</span>
-            </div>
-            <h3 style={{ fontSize: mob ? '24px' : '32px', fontWeight: 950, color: '#fff', marginBottom: '24px', lineHeight: 1.2 }}>Dominating the <span style={{ color: '#FF9431' }}>Digital Heartland</span> of {c.city || 'Bharat'}</h3>
-            <p style={{ fontSize: '16px', color: '#94a3b8', lineHeight: 1.7, fontWeight: 500, marginBottom: '32px' }}>
-               {c.name}'s influence is deeply rooted in regional culture, making them a high-impact choice for brands targeting Tier 2 & Tier 3 markets with premium aspirations.
-            </p>
-         </div>
-         <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '32px', padding: '32px', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <div style={{ fontSize: '12px', fontWeight: 950, color: '#fff', textTransform: 'uppercase', marginBottom: '24px', letterSpacing: '1px' }}>Audience Hubs</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-               {[{ l: 'Regional Bharat', d: '72% Majority', p: 72 }, { l: 'Metro Tier 1', d: '28% Reach', p: 28 }].map(h => (
-                 <div key={h.l}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                       <span style={{ fontSize: '13px', fontWeight: 800 }}>{h.l}</span>
-                       <span style={{ fontSize: '13px', fontWeight: 950, color: '#FF9431' }}>{h.d}</span>
-                    </div>
-                    <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '100px', overflow: 'hidden' }}>
-                       <div style={{ width: `${h.p}%`, height: '100%', background: '#FF9431' }} />
-                    </div>
-                 </div>
-               ))}
-            </div>
-         </div>
-      </div>
-  </Card>
-);
+const GeoIntelligence = ({ c, mob }) => {
+  const isDummy = c.id === 'fallback';
+  if (!c.audience_hubs && !isDummy) return null;
+  const text = c.audience_desc || `${c.name}'s influence is deeply rooted in regional culture, making them a high-impact choice for brands targeting Tier 2 & Tier 3 markets with premium aspirations.`;
+  const hubs = c.audience_hubs || [{ l: 'Regional Bharat', d: '72% Majority', p: 72 }, { l: 'Metro Tier 1', d: '28% Reach', p: 28 }];
+
+  return (
+    <Card style={{ padding: mob ? '28px' : '48px', borderRadius: '40px', background: '#0f172a', color: '#fff', marginBottom: '40px', overflow: 'hidden', position: 'relative' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.2fr 1fr', gap: '40px' }}>
+           <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                 <Globe size={24} color="#FF9431" />
+                 <span style={{ fontSize: '11px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px' }}>Geo-Cultural Intelligence</span>
+              </div>
+              <h3 style={{ fontSize: mob ? '24px' : '32px', fontWeight: 950, color: '#fff', marginBottom: '24px', lineHeight: 1.2 }}>Dominating the <span style={{ color: '#FF9431' }}>Digital Heartland</span> of {c.city || 'Bharat'}</h3>
+              <p style={{ fontSize: '16px', color: '#94a3b8', lineHeight: 1.7, fontWeight: 500, marginBottom: '32px' }}>
+                 {text}
+              </p>
+           </div>
+           <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '32px', padding: '32px', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <div style={{ fontSize: '12px', fontWeight: 950, color: '#fff', textTransform: 'uppercase', marginBottom: '24px', letterSpacing: '1px' }}>Audience Hubs</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                 {hubs.map(h => (
+                   <div key={h.l}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                         <span style={{ fontSize: '13px', fontWeight: 800 }}>{h.l}</span>
+                         <span style={{ fontSize: '13px', fontWeight: 950, color: '#FF9431' }}>{h.d}</span>
+                      </div>
+                      <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '100px', overflow: 'hidden' }}>
+                         <div style={{ width: `${h.p}%`, height: '100%', background: '#FF9431' }} />
+                      </div>
+                   </div>
+                 ))}
+              </div>
+           </div>
+        </div>
+    </Card>
+  );
+};
 GeoIntelligence.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
 
-const ExpertiseHub = ({ mob }) => (
-  <Card style={{ padding: mob ? '28px' : '48px', borderRadius: '40px', marginBottom: '40px', border: '1.5px solid #f1f5f9' }}>
-    <h3 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', marginBottom: '32px' }}>Technical & Creative Prowess</h3>
-    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '20px' }}>
-      {[
-        { t: 'Production', items: ['4K Rendering', 'Sound Design'], i: Play, c: '#FF9431' },
-        { t: 'Creative', items: ['Storytelling', 'Hinglish'], i: ImageIcon, c: '#0ea5e9' },
-        { t: 'Strategic', items: ['Viral Hooks', 'Analytics'], i: TrendingUp, c: '#10B981' }
-      ].map(g => (
-        <div key={g.t} style={{ padding: '24px', background: '#f8fafc', borderRadius: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-            <g.i size={16} color={g.c} />
-            <span style={{ fontSize: '10px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase' }}>{g.t}</span>
-          </div>
-          {g.items.map(s => <div key={s} style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '8px' }}>• {s}</div>)}
-        </div>
-      ))}
-    </div>
-  </Card>
-);
-ExpertiseHub.propTypes = { mob: PropTypes.bool };
+const ExpertiseHub = ({ c, mob }) => {
+  const isDummy = c.id === 'fallback';
+  if (!c.expertise && !isDummy) return null;
+  const groups = c.expertise || [
+    { t: 'Production', items: ['4K Rendering', 'Sound Design'], i: Play, c: '#FF9431' },
+    { t: 'Creative', items: ['Storytelling', 'Hinglish'], i: ImageIcon, c: '#0ea5e9' },
+    { t: 'Strategic', items: ['Viral Hooks', 'Analytics'], i: TrendingUp, c: '#10B981' }
+  ];
 
-const NationalToLocalBridge = ({ name, mob }) => (
-  <div style={{ padding: mob ? '32px 24px' : '60px', background: 'linear-gradient(135deg, #fff 0%, #f0f9ff 100%)', borderRadius: '40px', border: '1.5px solid #e0f2fe', marginBottom: '40px' }}>
-    <h2 style={{ fontSize: mob ? '28px' : '48px', fontWeight: 950, color: '#0f172a', marginBottom: '24px' }}>Bridging {name}'s National Impact</h2>
-    <p style={{ fontSize: '18px', color: '#64748b', fontWeight: 500 }}>"Authentic storytelling for the digital age."</p>
-  </div>
-);
-NationalToLocalBridge.propTypes = { name: PropTypes.string.isRequired, mob: PropTypes.bool };
+  return (
+    <Card style={{ padding: mob ? '28px' : '48px', borderRadius: '40px', marginBottom: '40px', border: '1.5px solid #f1f5f9' }}>
+      <h3 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', marginBottom: '32px' }}>Technical & Creative Prowess</h3>
+      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '20px' }}>
+        {groups.map(g => {
+          const Icon = g.i || Zap;
+          return (
+            <div key={g.t} style={{ padding: '24px', background: '#f8fafc', borderRadius: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                <Icon size={16} color={g.c} />
+                <span style={{ fontSize: '10px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase' }}>{g.t}</span>
+              </div>
+              {g.items.map(s => <div key={s} style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b', marginBottom: '8px' }}>• {s}</div>)}
+            </div>
+          );
+        })}
+      </div>
+    </Card>
+  );
+};
+ExpertiseHub.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
+
+const NationalToLocalBridge = ({ c, mob }) => {
+  const isDummy = c.id === 'fallback';
+  if (!c.tagline && !isDummy) return null;
+  const text = c.tagline || `"Authentic storytelling for the digital age."`;
+
+  return (
+    <div style={{ padding: mob ? '32px 24px' : '60px', background: 'linear-gradient(135deg, #fff 0%, #f0f9ff 100%)', borderRadius: '40px', border: '1.5px solid #e0f2fe', marginBottom: '40px' }}>
+      <h2 style={{ fontSize: mob ? '28px' : '48px', fontWeight: 950, color: '#0f172a', marginBottom: '24px' }}>Bridging {c.name}'s National Impact</h2>
+      <p style={{ fontSize: '18px', color: '#64748b', fontWeight: 500 }}>{text}</p>
+    </div>
+  );
+};
+NationalToLocalBridge.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
 
 const TrustBadge = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '24px', background: '#f8fafc', borderRadius: '24px', border: '1px solid #f1f5f9', marginBottom: '40px' }}>
@@ -204,35 +246,41 @@ const TheEliteEdge = ({ mob }) => (
 );
 TheEliteEdge.propTypes = { mob: PropTypes.bool };
 
-const LocationDominanceVoice = ({ c, mob }) => (
-  <Card style={{ padding: mob ? '32px 24px' : '48px', borderRadius: '40px', marginBottom: '40px', border: '1.5px solid #f1f5f9', background: '#fff', position: 'relative', overflow: 'hidden' }}>
-     <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.5fr 1fr', gap: mob ? '32px' : '60px' }}>
-        <div>
-           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-              <MapPin size={24} color="#FF9431" fill="rgba(255,148,49,0.1)" />
-              <h3 style={{ fontSize: mob ? '20px' : '28px', fontWeight: 950, color: '#0f172a' }}>Mera Regional Dominance</h3>
-           </div>
-           <p style={{ fontSize: mob ? '16px' : '20px', color: '#475569', fontWeight: 600, lineHeight: 1.6, marginBottom: '32px' }}>
-              "Main sabse zyada <b>{c.city || 'Rajasthan'}</b> mein popular hoon kyunki wahan ki language aur culture meri videos ki soul hai. Brands ko agar is heartland mein ghusna hai, toh mera content sabse tez rasta hai."
-           </p>
-           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-              {['Indore', 'Mumbai', 'Bhopal'].map(city => (
-                <div key={city} style={{ padding: '8px 20px', background: '#f1f5f9', borderRadius: '100px', fontSize: '12px', fontWeight: 800, color: '#64748b', border: '1px solid #e2e8f0' }}>
-                   {city} Hub
-                </div>
-              ))}
-           </div>
-        </div>
-        <div style={{ background: '#f8fafc', borderRadius: '32px', padding: '32px', border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative' }}>
-           <div style={{ position: 'absolute', top: '10px', right: '10px', opacity: 0.05 }}><Globe size={120} /></div>
-           <div style={{ fontSize: '11px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '1px' }}>Local Market Penetration</div>
-           <div style={{ fontSize: '48px', fontWeight: 950, color: '#FF9431', lineHeight: 1, marginBottom: '8px' }}>85%</div>
-           <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>Top Creator in {c.city || 'Madhya Pradesh'}</div>
-           <p style={{ fontSize: '12px', color: '#64748b', marginTop: '12px', fontWeight: 500 }}>Higher engagement than national average in regional circuits.</p>
-        </div>
-     </div>
-  </Card>
-);
+const LocationDominanceVoice = ({ c, mob }) => {
+  const isDummy = c.id === 'fallback';
+  if (!c.local_voice && !isDummy) return null;
+  const text = c.local_voice || `"Main sabse zyada <b>${c.city || 'Rajasthan'}</b> mein popular hoon kyunki wahan ki language aur culture meri videos ki soul hai. Brands ko agar is heartland mein ghusna hai, toh mera content sabse tez rasta hai."`;
+  const hubs = c.local_hubs || ['Indore', 'Mumbai', 'Bhopal'];
+  const pen = c.local_penetration || '85%';
+
+  return (
+    <Card style={{ padding: mob ? '32px 24px' : '48px', borderRadius: '40px', marginBottom: '40px', border: '1.5px solid #f1f5f9', background: '#fff', position: 'relative', overflow: 'hidden' }}>
+       <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.5fr 1fr', gap: mob ? '32px' : '60px' }}>
+          <div>
+             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                <MapPin size={24} color="#FF9431" fill="rgba(255,148,49,0.1)" />
+                <h3 style={{ fontSize: mob ? '20px' : '28px', fontWeight: 950, color: '#0f172a' }}>Mera Regional Dominance</h3>
+             </div>
+             <p style={{ fontSize: mob ? '16px' : '20px', color: '#475569', fontWeight: 600, lineHeight: 1.6, marginBottom: '32px' }} dangerouslySetInnerHTML={{__html: text}} />
+             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                {hubs.map(city => (
+                  <div key={city} style={{ padding: '8px 20px', background: '#f1f5f9', borderRadius: '100px', fontSize: '12px', fontWeight: 800, color: '#64748b', border: '1px solid #e2e8f0' }}>
+                     {city} Hub
+                  </div>
+                ))}
+             </div>
+          </div>
+          <div style={{ background: '#f8fafc', borderRadius: '32px', padding: '32px', border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative' }}>
+             <div style={{ position: 'absolute', top: '10px', right: '10px', opacity: 0.05 }}><Globe size={120} /></div>
+             <div style={{ fontSize: '11px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '1px' }}>Local Market Penetration</div>
+             <div style={{ fontSize: '48px', fontWeight: 950, color: '#FF9431', lineHeight: 1, marginBottom: '8px' }}>{pen}</div>
+             <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>Top Creator in {c.city || 'Madhya Pradesh'}</div>
+             <p style={{ fontSize: '12px', color: '#64748b', marginTop: '12px', fontWeight: 500 }}>Higher engagement than national average in regional circuits.</p>
+          </div>
+       </div>
+    </Card>
+  );
+};
 LocationDominanceVoice.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
 
 const TabNavigator = ({ activeTab, setActiveTab, mob }) => {
@@ -331,7 +379,7 @@ SocialLinkTree.propTypes = { links: PropTypes.object, mob: PropTypes.bool };
 
 export const IdentityTab = ({ c, stats, onRate, mob, setActiveTab }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-    <HumanStory mob={mob} />
+    <HumanStory c={c} mob={mob} />
     <AIFitInsight c={c} mob={mob} />
     <ContentPhilosophy c={c} mob={mob} />
     <EliteSocialPulse stats={stats} mob={mob} />
@@ -353,8 +401,8 @@ export const IdentityTab = ({ c, stats, onRate, mob, setActiveTab }) => (
     </div>
     
     <GeoIntelligence c={c} mob={mob} />
-    <ExpertiseHub mob={mob} />
-    <NationalToLocalBridge name={c.name} mob={mob} />
+    <ExpertiseHub c={c} mob={mob} />
+    <NationalToLocalBridge c={c} mob={mob} />
     
     <TrustBadge />
     <TheEliteEdge mob={mob} />
