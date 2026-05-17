@@ -884,6 +884,53 @@ const getFallbackCreator = (id) => {
   };
 };
 
+const ProfileTabContent = ({ 
+  activeTab, c, stats, mob, onRateClick, navigate, onPackageSelect, dsp, setBriefOpen, setMediaKitOpen, setActiveTab 
+}) => {
+  switch (activeTab) {
+    case 'identity':
+      return <IdentityTab key="tab-identity" c={c} stats={stats} onRate={onRateClick} mob={mob} setActiveTab={setActiveTab} />;
+    case 'story':
+      return <StoryTab key="tab-story" c={c} mob={mob} setActiveTab={setActiveTab} />;
+    case 'gallery':
+      return <GalleryTab key="tab-gallery" c={c} mob={mob} setActiveTab={setActiveTab} />;
+    case 'work':
+      return <WorkTab key="tab-work" c={c} mob={mob} setActiveTab={setActiveTab} />;
+    case 'local':
+      return <LocalCollabHub key="tab-local" c={c} mob={mob} setActiveTab={setActiveTab} />;
+    case 'reviews':
+      return <ReviewsTab key="tab-reviews" c={c} mob={mob} navigate={navigate} onWriteReview={onRateClick} setActiveTab={setActiveTab} />;
+    case 'packages':
+      return <PackagesTab key="tab-packages" c={c} mob={mob} onSelect={onPackageSelect} setActiveTab={setActiveTab} />;
+    case 'connect':
+      return (
+        <motion.div key="tab-connect" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+           <QuickConnectHub c={c} mob={mob} dsp={dsp} onBrief={() => setBriefOpen(true)} onMediaKit={() => setMediaKitOpen(true)} />
+           <div style={{ marginTop: '40px' }}>
+              <SocialLinkTree mob={mob} />
+           </div>
+           <TrustBadge />
+           <TabNavigator activeTab="connect" setActiveTab={setActiveTab} mob={mob} />
+        </motion.div>
+      );
+    default:
+      return null;
+  }
+};
+ProfileTabContent.propTypes = {
+  activeTab: PropTypes.string.isRequired,
+  c: PropTypes.object.isRequired,
+  stats: PropTypes.object.isRequired,
+  mob: PropTypes.bool,
+  onRateClick: PropTypes.func.isRequired,
+  navigate: PropTypes.func.isRequired,
+  onPackageSelect: PropTypes.func.isRequired,
+  dsp: PropTypes.func.isRequired,
+  setBriefOpen: PropTypes.func.isRequired,
+  setMediaKitOpen: PropTypes.func.isRequired,
+  setActiveTab: PropTypes.func.isRequired
+};
+
 export default function CreatorProfilePage() {
   const { id } = useParams();
   const { st, dsp } = useApp();
@@ -1064,23 +1111,19 @@ export default function CreatorProfilePage() {
 
       <div id="profile-content-area" style={{ ...W(1100), padding: mob ? '0 16px 120px' : '60px 24px' }}>
          <AnimatePresence mode="wait">
-            {activeTab === 'identity' && <IdentityTab key="tab-identity" c={c} stats={stats} onRate={handleRateClick} mob={mob} setActiveTab={setActiveTab} />}
-            {activeTab === 'story' && <StoryTab key="tab-story" c={c} mob={mob} setActiveTab={setActiveTab} />}
-            {activeTab === 'gallery' && <GalleryTab key="tab-gallery" c={c} mob={mob} setActiveTab={setActiveTab} />}
-            {activeTab === 'work' && <WorkTab key="tab-work" c={c} mob={mob} setActiveTab={setActiveTab} />}
-            {activeTab === 'local' && <LocalCollabHub key="tab-local" c={c} mob={mob} setActiveTab={setActiveTab} />}
-            {activeTab === 'reviews' && <ReviewsTab key="tab-reviews" c={c} mob={mob} navigate={navigate} onWriteReview={handleRateClick} setActiveTab={setActiveTab} />}
-            {activeTab === 'packages' && <PackagesTab key="tab-packages" c={c} mob={mob} onSelect={handlePackageSelect} setActiveTab={setActiveTab} />}
-            {activeTab === 'connect' && (
-              <motion.div key="tab-connect" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-                 <QuickConnectHub c={c} mob={mob} dsp={dsp} onBrief={() => setBriefOpen(true)} onMediaKit={() => setMediaKitOpen(true)} />
-                 <div style={{ marginTop: '40px' }}>
-                    <SocialLinkTree mob={mob} />
-                 </div>
-                 <TrustBadge />
-                 <TabNavigator activeTab="connect" setActiveTab={setActiveTab} mob={mob} />
-              </motion.div>
-            )}
+            <ProfileTabContent 
+               activeTab={activeTab}
+               c={c}
+               stats={stats}
+               mob={mob}
+               onRateClick={handleRateClick}
+               navigate={navigate}
+               onPackageSelect={handlePackageSelect}
+               dsp={dsp}
+               setBriefOpen={setBriefOpen}
+               setMediaKitOpen={setMediaKitOpen}
+               setActiveTab={setActiveTab}
+            />
          </AnimatePresence>
       </div>
 
