@@ -64,8 +64,9 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
 
     const printWindow = document.createElement('iframe');
     printWindow.style.position = 'absolute';
-    printWindow.style.top = '-1000px';
-    printWindow.style.left = '-1000px';
+    printWindow.style.top = '-10000px';
+    printWindow.style.left = '-10000px';
+    printWindow.style.width = '210mm';
     document.body.appendChild(printWindow);
 
     const doc = printWindow.contentWindow.document;
@@ -74,7 +75,6 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
       .map(s => s.outerHTML)
       .join('');
 
-    doc.open();
     const html = `
       <!DOCTYPE html>
       <html>
@@ -108,7 +108,6 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
 
             #media-kit-export-container { 
               width: 210mm !important; 
-              min-height: 297mm !important; 
               height: auto !important;
               margin: 0 !important; 
               padding: 0 !important;
@@ -168,29 +167,28 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
           <div id="media-kit-export-container">
             ${content.innerHTML}
           </div>
-          <script>
-            window.onload = () => {
-              // Final check to ensure all images are rendered
-              const images = document.getElementsByTagName('img');
-              const promises = Array.from(images).map(img => {
-                if (img.complete) return Promise.resolve();
-                return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
-              });
-
-              Promise.all(promises).then(() => {
-                setTimeout(() => {
-                  window.print();
-                  setTimeout(() => { window.frameElement.remove(); }, 500);
-                }, 1000);
-              });
-            };
-          </script>
         </body>
       </html>
     `;
+    
     doc.open();
-    doc.documentElement.innerHTML = html;
+    doc.write(html);
     doc.close();
+
+    // Trigger print safely from main thread after images load
+    setTimeout(() => {
+       try {
+         printWindow.contentWindow.focus();
+         printWindow.contentWindow.print();
+       } catch (e) {
+         console.error('Print failed', e);
+       }
+       setTimeout(() => {
+          if (document.body.contains(printWindow)) {
+             document.body.removeChild(printWindow);
+          }
+       }, 2000);
+    }, 1200);
   };
 
   return (
