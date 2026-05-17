@@ -10,6 +10,15 @@
   --cb-slate-400: #94a3b8;
   --cb-slate-500: #64748b;
   
+  /* Elite Accents & Glassmorphism */
+  --cb-primary: #FF9431;
+  --cb-accent-blue: #3b82f6;
+  --cb-accent-emerald: #10b981;
+  --cb-glass-bg: rgba(255, 255, 255, 0.03);
+  --cb-glass-border: rgba(255, 255, 255, 0.08);
+  --cb-glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --cb-glass-blur: blur(12px);
+  
   /* Semantic Colors */
   --cb-success: #10B981;
   --cb-white: #ffffff;
