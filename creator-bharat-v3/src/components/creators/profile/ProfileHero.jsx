@@ -14,7 +14,8 @@ import {
   Verified,
   ArrowLeft,
   Share2,
-  ShieldCheck
+  ShieldCheck,
+  Eye
 } from 'lucide-react';
 import { W, fmt } from '@/utils/helpers';
 import { Bdg } from '@/components/common/Primitives';
@@ -43,15 +44,7 @@ const SocialIconsPanel = ({ mob }) => (
 );
 SocialIconsPanel.propTypes = { mob: PropTypes.bool };
 
-const HeroKeyAchievements = ({ mob }) => {
-  const [active, setActive] = useState(14);
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActive(prev => Math.max(8, prev + (Math.random() > 0.5 ? 1 : -1)));
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
+const HeroKeyAchievements = ({ mob, activeUsers, activeViews }) => {
   return (
     <div style={{ 
       display: 'flex', 
@@ -67,9 +60,9 @@ const HeroKeyAchievements = ({ mob }) => {
       boxShadow: '0 8px 30px rgba(0,0,0,0.02)'
     }}>
        {[
-         { l: '10M+', t: 'Impressions', i: Activity, c: '#FF9431' },
+         { l: activeViews ? fmt.num(activeViews) : '13.8K', t: 'Profile Visits', i: Eye, c: '#FF9431' },
          { l: 'Top 1%', t: 'Engagement', i: Zap, c: '#10B981' },
-         { l: `${active}`, t: 'Active Now', i: Activity, c: '#ef4444', pulse: true }
+         { l: `${activeUsers || 14}`, t: 'Active Now', i: Activity, c: '#ef4444', pulse: true }
        ].map(a => (
           <div key={a.t} style={{ display: 'flex', alignItems: 'center', gap: mob ? '8px' : '12px' }}>
              <div style={{ 
@@ -207,7 +200,7 @@ const RatingSection = ({ val, total, onRate }) => (
 );
 RatingSection.propTypes = { val: PropTypes.number.isRequired, total: PropTypes.number.isRequired, onRate: PropTypes.func.isRequired };
 
-const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDownload }) => {
+const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDownload, activeUsers, activeViews }) => {
   let dlIcon;
   if (dlStatus === 'loading') {
     dlIcon = (
@@ -239,7 +232,7 @@ const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDo
           onRate={onRate} 
        />
        
-       <HeroKeyAchievements mob={mob} />
+       <HeroKeyAchievements mob={mob} activeUsers={activeUsers} activeViews={activeViews} />
 
        {mob && (
          <div style={{ marginTop: '24px' }}>
@@ -411,17 +404,7 @@ const ProfileImage = ({ src, mob }) => (
 );
 ProfileImage.propTypes = { src: PropTypes.string.isRequired, mob: PropTypes.bool };
 
-const EliteIntelligenceCard = ({ stats, mob }) => {
-  const [active, setActive] = useState(14);
-  const [views, setViews] = useState(13842);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActive(prev => Math.max(8, prev + (Math.random() > 0.5 ? 1 : -1)));
-      setViews(prev => prev + (Math.random() > 0.8 ? 1 : 0));
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+const EliteIntelligenceCard = ({ stats, mob, activeUsers, activeViews }) => {
 
   return (
     <motion.div 
@@ -467,7 +450,7 @@ const EliteIntelligenceCard = ({ stats, mob }) => {
           <div>
             <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '12px' }}>Live Engagement</div>
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: '12px' }}>
-               <div style={{ fontSize: '42px', fontWeight: 950, color: '#fff', lineHeight: 0.9 }}>{active}</div>
+               <div style={{ fontSize: '42px', fontWeight: 950, color: '#fff', lineHeight: 0.9 }}>{activeUsers}</div>
                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10B981', fontSize: '14px', fontWeight: 800, paddingBottom: '4px' }}>
                   <div style={{ width: '10px', height: '10px', background: '#10B981', borderRadius: '50%', boxShadow: '0 0 12px #10B981', animation: 'pulse 2s infinite' }} />
                   Viewing Now
@@ -479,7 +462,7 @@ const EliteIntelligenceCard = ({ stats, mob }) => {
 
           <div>
             <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '12px' }}>Global Visibility</div>
-            <div style={{ fontSize: '32px', fontWeight: 950, color: '#fff', marginBottom: '16px', lineHeight: 1 }}>{fmt.num(views)}+ <span style={{ fontSize: '14px', color: '#FF9431', fontWeight: 800, textTransform: 'uppercase' }}>Lifetime</span></div>
+            <div style={{ fontSize: '32px', fontWeight: 950, color: '#fff', marginBottom: '16px', lineHeight: 1 }}>{fmt.num(activeViews)}+ <span style={{ fontSize: '14px', color: '#FF9431', fontWeight: 800, textTransform: 'uppercase' }}>Lifetime</span></div>
             <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '100px', overflow: 'hidden' }}>
                <motion.div 
                  initial={{ width: 0 }}
@@ -511,6 +494,17 @@ EliteIntelligenceCard.propTypes = { stats: PropTypes.object.isRequired, mob: Pro
 export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContact, onMediaKit }) => {
   const [followed, setFollowed] = useState(false);
   const [dlStatus, setDlStatus] = useState('idle');
+
+  const [activeUsers, setActiveUsers] = useState(14);
+  const [activeViews, setActiveViews] = useState(13842);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveUsers(prev => Math.max(8, prev + (Math.random() > 0.5 ? 1 : -1)));
+      setActiveViews(prev => prev + (Math.random() > 0.8 ? 1 : 0));
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleAction = (a) => {
     if (!st?.user) { dsp({ t: 'TOAST', d: { type: 'warn', msg: 'Please login to ' + a } }); return; }
@@ -575,7 +569,7 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
                marginTop: mob ? '0' : '20px'
              }}>
                 <div style={{ flex: 1.6, width: '100%' }}>
-                   <IdentityDetails c={c} stats={stats} mob={mob} onRate={() => handleAction('rate')} onContact={onContact} dsp={dsp} dlStatus={dlStatus} onDownload={handleMediaKit} />
+                   <IdentityDetails c={c} stats={stats} mob={mob} onRate={() => handleAction('rate')} onContact={onContact} dsp={dsp} dlStatus={dlStatus} onDownload={handleMediaKit} activeUsers={activeUsers} activeViews={activeViews} />
                    <div style={{ marginTop: '40px' }}>
                       <ActionButtons 
                 followed={followed} 
@@ -589,7 +583,7 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
                 </div>
 
                 <div style={mob ? { display: 'none' } : { flex: 1, position: 'sticky', top: '120px' }}>
-                   <EliteIntelligenceCard stats={stats} mob={mob} />
+                   <EliteIntelligenceCard stats={stats} mob={mob} activeUsers={activeUsers} activeViews={activeViews} />
                 </div>
              </div>
           </div>
