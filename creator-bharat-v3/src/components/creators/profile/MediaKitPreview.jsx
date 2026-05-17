@@ -15,8 +15,7 @@ import {
   Briefcase,
   Mail,
   MapPin,
-  Shield,
-  Info
+  Shield
 } from 'lucide-react';
 import { fmt } from '@/utils/helpers';
 
@@ -75,7 +74,6 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
     printWindow.style.width = '210mm';
     document.body.appendChild(printWindow);
 
-    const doc = printWindow.contentWindow.document;
     
     const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
       .map(s => s.outerHTML)
@@ -194,9 +192,7 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
       </html>
     `;
     
-    doc.open();
-    doc.write(html);
-    doc.close();
+    printWindow.srcdoc = html;
 
     // Trigger print safely from main thread after images load
     setTimeout(() => {
@@ -208,7 +204,7 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
        }
        setTimeout(() => {
           if (document.body.contains(printWindow)) {
-             document.body.removeChild(printWindow);
+             printWindow.remove();
           }
        }, 2000);
     }, 1200);
@@ -361,7 +357,7 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                                        { title: 'Dedicated Integration', price: 'Custom', desc: 'Full-length dedicated brand integration with premium production.' },
                                        { title: 'Short-Form Video', price: 'Custom', desc: 'High retention reel/short with native storytelling.' }
                                     ]).slice(0, 2).map((pkg, i) => (
-                                       <div key={i} style={{ padding: '20px', background: '#f8fafc', borderRadius: '24px', border: '1.5px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                       <div key={pkg.title || i} style={{ padding: '20px', background: '#f8fafc', borderRadius: '24px', border: '1.5px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                           <div>
                                              <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a', marginBottom: '6px' }}>{pkg.title}</div>
                                              <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 600, maxWidth: '220px', lineHeight: 1.4 }}>{pkg.desc || 'Premium branded content.'}</div>
