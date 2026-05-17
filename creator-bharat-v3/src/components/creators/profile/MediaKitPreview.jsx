@@ -13,7 +13,10 @@ import {
   Zap,
   Star,
   Briefcase,
-  Mail
+  Mail,
+  MapPin,
+  Shield,
+  Info
 } from 'lucide-react';
 import { fmt } from '@/utils/helpers';
 
@@ -459,14 +462,44 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                                      </div>
                                   </div>
 
-                                  <SectionTitle icon={Mail}>Direct Contact</SectionTitle>
-                                  <div style={{ padding: '24px', background: '#fff', borderRadius: '24px', border: '1.5px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                     <div>
-                                        <div style={{ fontSize: '12px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>Creator Booking</div>
-                                        <div style={{ fontSize: '16px', fontWeight: 950, color: '#0f172a' }}>hello@creatorbharat.com</div>
+                                  <SectionTitle icon={Mail}>Direct Booking & Location</SectionTitle>
+                                  <div style={{ padding: '32px', background: '#fff', borderRadius: '40px', border: '1.5px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '60px' }}>
+                                     {/* Email Booking */}
+                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div>
+                                           <div style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>OFFICIAL BOOKING EMAIL</div>
+                                           <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>{creator.email || 'hello@creatorbharat.com'}</div>
+                                        </div>
+                                        <div style={{ width: '44px', height: '44px', background: '#3b82f615', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                           <Mail size={18} color="#3b82f6" />
+                                        </div>
                                      </div>
-                                     <div style={{ width: '48px', height: '48px', background: '#10B98115', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Mail size={20} color="#10B981" />
+
+                                     {/* Location / Base */}
+                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed #e2e8f0', paddingTop: '20px' }}>
+                                        <div>
+                                           <div style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>PRIMARY CREATOR BASE</div>
+                                           <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a' }}>{creator.city || 'Mumbai'}, India</div>
+                                        </div>
+                                        <div style={{ width: '44px', height: '44px', background: '#ef444415', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                           <MapPin size={18} color="#ef4444" />
+                                        </div>
+                                     </div>
+
+                                     {/* CreatorBharat Escrow Security Badge */}
+                                     <div style={{ display: 'flex', gap: '16px', borderTop: '1px dashed #e2e8f0', paddingTop: '20px', alignItems: 'flex-start' }}>
+                                        <div style={{ width: '40px', height: '40px', background: '#FF943110', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                           <Shield size={18} color="#FF9431" />
+                                        </div>
+                                        <div>
+                                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                              <span style={{ fontSize: '12px', fontWeight: 950, color: '#0f172a' }}>ESCROW SECURITY BADGE</span>
+                                              <span style={{ fontSize: '9px', fontWeight: 900, background: '#10B98115', color: '#10B981', padding: '2px 8px', borderRadius: '100px', letterSpacing: '0.5px' }}>VERIFIED</span>
+                                           </div>
+                                           <p style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, lineHeight: 1.5, margin: 0 }}>
+                                              Transactions & payouts for this creator are processed under the CreatorBharat Escrow Protocol for 100% brand-creator campaign fulfillment.
+                                           </p>
+                                        </div>
                                      </div>
                                   </div>
                                  </div>
