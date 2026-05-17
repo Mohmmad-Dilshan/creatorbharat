@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -10,7 +11,9 @@ import {
   Globe,
   Activity,
   Zap,
-  Star
+  Star,
+  Briefcase,
+  Mail
 } from 'lucide-react';
 import { fmt } from '@/utils/helpers';
 
@@ -208,8 +211,8 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
     }, 1200);
   };
 
-  return (
-    <div id="media-kit-modal-overlay" style={{ position: 'fixed', inset: 0, zIndex: 20000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+  return ReactDOM.createPortal(
+    <div id="media-kit-modal-overlay" style={{ position: 'fixed', inset: 0, zIndex: 999999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
        <motion.div 
          initial={{ opacity: 0 }} 
          animate={{ opacity: 1 }} 
@@ -349,6 +352,24 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                                     ))}
                                  </div>
 
+                                 <SectionTitle icon={Briefcase}>Signature Offerings</SectionTitle>
+                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '60px' }}>
+                                    {(creator.packages || [
+                                       { title: 'Dedicated Integration', price: 'Custom', desc: 'Full-length dedicated brand integration with premium production.' },
+                                       { title: 'Short-Form Video', price: 'Custom', desc: 'High retention reel/short with native storytelling.' }
+                                    ]).slice(0, 2).map((pkg, i) => (
+                                       <div key={i} style={{ padding: '20px', background: '#f8fafc', borderRadius: '24px', border: '1.5px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                          <div>
+                                             <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a', marginBottom: '6px' }}>{pkg.title}</div>
+                                             <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 600, maxWidth: '220px', lineHeight: 1.4 }}>{pkg.desc || 'Premium branded content.'}</div>
+                                          </div>
+                                          <div style={{ fontSize: '14px', fontWeight: 950, color: '#FF9431', background: '#FF943115', padding: '8px 16px', borderRadius: '100px', whiteSpace: 'nowrap' }}>
+                                             {pkg.price}
+                                          </div>
+                                       </div>
+                                    ))}
+                                 </div>
+
                                  <SectionTitle icon={Zap}>Digital Footprint</SectionTitle>
                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                                     {socialList.map(s => (
@@ -423,6 +444,31 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                                     </div>
                                     <div style={{ fontSize: '14px', fontWeight: 950, marginBottom: '8px' }}>SCAN FOR LIVE AUDIT</div>
                                     <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 600 }}>CreatorBharat.com/{creator.slug || 'verify'}</div>
+
+                                  <SectionTitle icon={ShieldCheck}>Trust & Authority</SectionTitle>
+                                  <div style={{ padding: '32px', background: '#f8fafc', borderRadius: '40px', border: '1.5px solid #f1f5f9', marginBottom: '60px' }}>
+                                     <div style={{ display: 'flex', gap: '4px', marginBottom: '16px' }}>
+                                        {[1,2,3,4,5].map(s => <Star key={s} size={18} fill="#FF9431" color="#FF9431" />)}
+                                        <span style={{ marginLeft: '12px', fontSize: '16px', fontWeight: 950, color: '#0f172a' }}>{creator.rating || 4.9}/5.0</span>
+                                     </div>
+                                     <p style={{ fontSize: '14px', color: '#475569', fontStyle: 'italic', lineHeight: 1.6, fontWeight: 500, marginBottom: '20px' }}>
+                                        "{creator.reviews?.[0]?.comment || 'Exceptional professional. Delivered 3x ROI on our recent campaign with perfect brand alignment and high-quality production.'}"
+                                     </p>
+                                     <div style={{ fontSize: '12px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                        — {creator.reviews?.[0]?.brand || 'Global Brand Partner'}
+                                     </div>
+                                  </div>
+
+                                  <SectionTitle icon={Mail}>Direct Contact</SectionTitle>
+                                  <div style={{ padding: '24px', background: '#fff', borderRadius: '24px', border: '1.5px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                     <div>
+                                        <div style={{ fontSize: '12px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>Creator Booking</div>
+                                        <div style={{ fontSize: '16px', fontWeight: 950, color: '#0f172a' }}>hello@creatorbharat.com</div>
+                                     </div>
+                                     <div style={{ width: '48px', height: '48px', background: '#10B98115', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Mail size={20} color="#10B981" />
+                                     </div>
+                                  </div>
                                  </div>
                               </div>
                            </div>
@@ -462,7 +508,8 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
              </div>
           )}
        </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
