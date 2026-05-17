@@ -108,13 +108,8 @@ TabEmptyState.propTypes = {
 };
 
 const StoryTab = ({ c, mob, setActiveTab }) => {
-  const isDummy = c.id === 'fallback';
-  const hasMilestones = c.milestones || isDummy;
-  const hasStory = c.full_story || isDummy;
-
-  if (!hasMilestones && !hasStory) return <TabEmptyState title="My Story" icon={Globe} mob={mob} setActiveTab={setActiveTab} tabId="story" />;
-
   const city = c?.city || 'Bharat';
+  const name = c?.name || 'Elite Creator';
   const milestones = c.milestones || [
     { y: '2021', t: 'The Foundation', d: 'Launched the first video series on regional heritage with zero budget.', i: Globe, c: '#FF9431' },
     { y: '2022', t: 'First Viral Wave', d: 'Crossed 100K hearts with authentic storytelling that resonated globally.', i: Zap, c: '#0073b1' },
@@ -125,67 +120,61 @@ const StoryTab = ({ c, mob, setActiveTab }) => {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
       <div style={{ maxWidth: '900px', margin: '0 auto', padding: mob ? '0 16px' : '0 40px' }}>
-         {hasMilestones && (
-           <>
-             <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-                <h2 style={{ fontSize: mob ? '36px' : '56px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: '24px' }}>The Journey of <span style={{ color: '#FF9431' }}>Authenticity</span></h2>
-                <p style={{ fontSize: '18px', color: '#64748b', fontWeight: 500, maxWidth: '650px', margin: '0 auto' }}>From a small-town vision in {city} to the digital screens of millions.</p>
+         <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+            <h2 style={{ fontSize: mob ? '36px' : '56px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: '24px' }}>The Journey of <span style={{ color: '#FF9431' }}>Authenticity</span></h2>
+            <p style={{ fontSize: '18px', color: '#64748b', fontWeight: 500, maxWidth: '650px', margin: '0 auto' }}>From a small-town vision in {city} to the digital screens of millions.</p>
+         </div>
+
+         <div style={{ display: mob ? 'flex' : 'grid', gridTemplateColumns: mob ? 'none' : 'repeat(3, 1fr)', gap: '24px', marginBottom: '80px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
+            {[{ t: 'Regional Pioneer', y: '2024', id: 'award-1' }, { t: 'Elite Hub Verified', y: '2023', id: 'award-2' }, { t: 'Cultural Impact', y: '2025', id: 'award-3' }].map(a => (
+               <Card key={a.id} style={{ padding: '32px', textAlign: 'center', borderRadius: '32px', border: '1px solid #f1f5f9', boxShadow: '0 8px 32px rgba(0,0,0,0.02)', flexShrink: 0, width: mob ? '200px' : 'auto' }}>
+                  <Trophy size={32} color="#FF9431" style={{ margin: '0 auto 20px' }} />
+                  <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a', marginBottom: '4px' }}>{a.t}</div>
+                  <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 800 }}>{a.y}</div>
+               </Card>
+            ))}
+         </div>
+
+         <div style={{ position: 'relative' }}>
+            <div style={{ position: 'absolute', left: mob ? '20px' : '50%', transform: mob ? 'none' : 'translateX(-50%)', top: 0, bottom: 0, width: '4px', background: 'linear-gradient(to bottom, #FF9431, #f1f5f9)', borderRadius: '100px' }} />
+
+            {milestones.map((m, idx) => {
+              const isEven = idx % 2 === 0;
+              const desktopAlign = isEven ? 'flex-start' : 'flex-end';
+              const align = mob ? 'flex-start' : desktopAlign;
+              return (
+                <div key={m.y} style={{ display: 'flex', justifyContent: align, alignItems: 'center', marginBottom: '80px', width: '100%', position: 'relative' }}>
+                   <div style={{ position: 'absolute', left: mob ? '20px' : '50%', transform: 'translateX(-50%)', width: '40px', height: '40px', background: '#fff', border: `4px solid ${m.c}`, borderRadius: '50%', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }}>
+                      <m.i size={18} color={m.c} />
+                   </div>
+
+                   <div style={{ width: mob ? 'calc(100% - 60px)' : '42%', marginLeft: mob ? '60px' : '0', padding: '32px', background: '#fff', borderRadius: '32px', border: '1px solid #f1f5f9', boxShadow: '0 12px 40px rgba(0,0,0,0.04)' }}>
+                      <div style={{ fontSize: '12px', fontWeight: 950, color: m.c, textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '8px' }}>{m.y} CHAPTER</div>
+                      <h4 style={{ fontSize: '20px', fontWeight: 950, color: '#0f172a', marginBottom: '12px' }}>{m.t}</h4>
+                      <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, fontWeight: 500 }}>{m.d}</p>
+                   </div>
+                </div>
+              );
+            })}
+         </div>
+
+         <div style={{ marginTop: '100px', padding: mob ? '32px 24px' : '60px', background: '#fcfcfc', borderRadius: '40px', border: '1.5px solid #f1f5f9', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: '24px', left: '24px', color: '#FF943110' }}><FileText size={80} /></div>
+            <div style={{ position: 'relative', zIndex: 1 }}>
+               <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', marginBottom: '32px' }}>Beyond the Milestones: <span style={{ color: '#FF9431' }}>My Full Story</span></h3>
+               <div style={{ fontSize: mob ? '16px' : '18px', color: '#475569', lineHeight: 1.8, fontWeight: 500 }}>
+                  <p style={{ marginBottom: '24px' }} dangerouslySetInnerHTML={{__html: c.full_story?.p1 || `Mera safar ${city} ki un galiyon se shuru hua jahan har mod par ek kahani hai. Shuruat mein mere paas sirf ek purana phone aur ek junoon tha. Log kehte the ki Bharat ke regional stories mein global appeal nahi hai, par maine hamesha mana ki "Authenticity is the only language that the world understands."`}} />
+                  <blockquote style={{ margin: '40px 0', padding: '24px 32px', borderLeft: '6px solid #FF9431', background: '#fff', borderRadius: '0 24px 24px 0', fontSize: '20px', fontWeight: 750, fontStyle: 'italic', color: '#111827', boxShadow: '0 8px 32px rgba(0,0,0,0.02)' }} dangerouslySetInnerHTML={{__html: c.full_story?.quote || `"Content sirf views ke liye nahi hona chahiye, wo ek connection hona chahiye jo screen ke uss paar baithe insaan ke dil tak jaye. Main, ${name}, hamesha isme vishwas rakhta hoon."`}} />
+                  <p style={{ marginBottom: '24px' }} dangerouslySetInnerHTML={{__html: c.full_story?.p2 || 'Aaj, jab main CreatorBharat ke verified creators ki list mein aata hoon, toh mujhe garv hota hai. Maine seekha hai ki elite banna sirf followers se nahi, balki consistency aur audience ke saath sacche rishte se hota hai. Mera agla chapter Bharat ki regional creativity ko ek global benchmark banana hai.'}} />
+                  <p dangerouslySetInnerHTML={{__html: c.full_story?.p3 || 'Ye toh bas shuruat hai. Abhi toh bohot saari aisi kahaniyan hain jo sunani baaki hain, aur bohot saari aisi jagah hain jahan Bharat ka jhanda gaadna hai.'}} />
+               </div>
+               <div style={{ marginTop: '40px' }}>
+                  <Btn lg onClick={() => navigate(`/blog/creator-story-${c?.id || 'elite'}`)} style={{ borderRadius: '100px', background: '#0f172a', color: '#fff', gap: '12px', padding: '16px 40px', width: mob ? '100%' : 'auto' }}>
+                     Read Full Detailed Biography on Blog <ArrowRight size={20} />
+                   </Btn>
+                </div>
              </div>
-
-             <div style={{ display: mob ? 'flex' : 'grid', gridTemplateColumns: mob ? 'none' : 'repeat(3, 1fr)', gap: '24px', marginBottom: '80px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
-                {[{ t: 'Regional Pioneer', y: '2024', id: 'award-1' }, { t: 'Elite Hub Verified', y: '2023', id: 'award-2' }, { t: 'Cultural Impact', y: '2025', id: 'award-3' }].map(a => (
-                   <Card key={a.id} style={{ padding: '32px', textAlign: 'center', borderRadius: '32px', border: '1px solid #f1f5f9', boxShadow: '0 8px 32px rgba(0,0,0,0.02)', flexShrink: 0, width: mob ? '200px' : 'auto' }}>
-                      <Trophy size={32} color="#FF9431" style={{ margin: '0 auto 20px' }} />
-                      <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a', marginBottom: '4px' }}>{a.t}</div>
-                      <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 800 }}>{a.y}</div>
-                   </Card>
-                ))}
-             </div>
-
-             <div style={{ position: 'relative' }}>
-                <div style={{ position: 'absolute', left: mob ? '20px' : '50%', transform: mob ? 'none' : 'translateX(-50%)', top: 0, bottom: 0, width: '4px', background: 'linear-gradient(to bottom, #FF9431, #f1f5f9)', borderRadius: '100px' }} />
-
-                {milestones.map((m, idx) => {
-                  const isEven = idx % 2 === 0;
-                  const desktopAlign = isEven ? 'flex-start' : 'flex-end';
-                  const align = mob ? 'flex-start' : desktopAlign;
-                  return (
-                    <div key={m.y} style={{ display: 'flex', justifyContent: align, alignItems: 'center', marginBottom: '80px', width: '100%', position: 'relative' }}>
-                       <div style={{ position: 'absolute', left: mob ? '20px' : '50%', transform: 'translateX(-50%)', width: '40px', height: '40px', background: '#fff', border: `4px solid ${m.c}`, borderRadius: '50%', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }}>
-                          <m.i size={18} color={m.c} />
-                       </div>
-
-                       <div style={{ width: mob ? 'calc(100% - 60px)' : '42%', marginLeft: mob ? '60px' : '0', padding: '32px', background: '#fff', borderRadius: '32px', border: '1px solid #f1f5f9', boxShadow: '0 12px 40px rgba(0,0,0,0.04)' }}>
-                          <div style={{ fontSize: '12px', fontWeight: 950, color: m.c, textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '8px' }}>{m.y} CHAPTER</div>
-                          <h4 style={{ fontSize: '20px', fontWeight: 950, color: '#0f172a', marginBottom: '12px' }}>{m.t}</h4>
-                          <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, fontWeight: 500 }}>{m.d}</p>
-                       </div>
-                    </div>
-                  );
-                })}
-             </div>
-           </>
-         )}
-
-         {hasStory && (
-           <div style={{ marginTop: hasMilestones ? '100px' : '0', padding: mob ? '32px 24px' : '60px', background: '#fcfcfc', borderRadius: '40px', border: '1.5px solid #f1f5f9', position: 'relative' }}>
-              <div style={{ position: 'absolute', top: '24px', left: '24px', color: '#FF943110' }}><FileText size={80} /></div>
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                 <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', marginBottom: '32px' }}>Beyond the Milestones: <span style={{ color: '#FF9431' }}>My Full Story</span></h3>
-                 <div style={{ fontSize: mob ? '16px' : '18px', color: '#475569', lineHeight: 1.8, fontWeight: 500 }}>
-                    <p style={{ marginBottom: '24px' }} dangerouslySetInnerHTML={{__html: c.full_story?.p1 || 'Mera safar Rajasthan ki un galiyon se shuru hua jahan har mod par ek kahani hai. Shuruat mein mere paas sirf ek purana phone aur ek junoon tha. Log kehte the ki Bharat ke regional stories mein global appeal nahi hai, par maine hamesha mana ki "Authenticity is the only language that the world understands."'}} />
-                    <blockquote style={{ margin: '40px 0', padding: '24px 32px', borderLeft: '6px solid #FF9431', background: '#fff', borderRadius: '0 24px 24px 0', fontSize: '20px', fontWeight: 750, fontStyle: 'italic', color: '#111827', boxShadow: '0 8px 32px rgba(0,0,0,0.02)' }} dangerouslySetInnerHTML={{__html: c.full_story?.quote || '"Content sirf views ke liye nahi hona chahiye, wo ek connection hona chahiye jo screen ke uss paar baithe insaan ke dil tak jaye."'}} />
-                    <p style={{ marginBottom: '24px' }} dangerouslySetInnerHTML={{__html: c.full_story?.p2 || 'Aaj, jab main CreatorBharat ke verified creators ki list mein aata hoon, toh mujhe garv hota hai. Maine seekha hai ki elite banna sirf followers se nahi, balki consistency aur audience ke saath sacche rishte se hota hai. Mera agla chapter Bharat ki regional creativity ko ek global benchmark banana hai.'}} />
-                    <p dangerouslySetInnerHTML={{__html: c.full_story?.p3 || 'Ye toh bas shuruat hai. Abhi toh bohot saari aisi kahaniyan hain jo sunani baaki hain, aur bohot saari aisi jagah hain jahan Bharat ka jhanda gaadna hai.'}} />
-                 </div>
-                 <div style={{ marginTop: '40px' }}>
-                    <Btn lg onClick={() => navigate(`/blog/creator-story-${c?.id || 'elite'}`)} style={{ borderRadius: '100px', background: '#0f172a', color: '#fff', gap: '12px', padding: '16px 40px', width: mob ? '100%' : 'auto' }}>
-                       Read Full Detailed Biography on Blog <ArrowRight size={20} />
-                    </Btn>
-                 </div>
-              </div>
-           </div>
-         )}
+          </div>
 
          <TrustBadge />
          <TabNavigator activeTab="story" setActiveTab={setActiveTab} mob={mob} />
@@ -196,8 +185,6 @@ const StoryTab = ({ c, mob, setActiveTab }) => {
 StoryTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, setActiveTab: PropTypes.func.isRequired };
 
 const ServiceCatalog = ({ c, mob }) => {
-  const isDummy = c.id === 'fallback';
-  if (!c.services && !isDummy) return <EmptyState title="Professional Service Catalog" />;
   const services = c.services || [
     { t: 'Cinematic Storytelling', d: '4K Cinematic Reels with professional grading and scripting.', i: Play, c: '#FF9431' },
     { t: 'Regional Strategy', d: 'Consultation on how to launch products in local markets.', i: Globe, c: '#0ea5e9' },
@@ -226,8 +213,6 @@ const ServiceCatalog = ({ c, mob }) => {
 ServiceCatalog.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
 
 const AchievementWall = ({ c, mob }) => {
-  const isDummy = c.id === 'fallback';
-  if (!c.achievements && !isDummy) return <EmptyState title="The Milestone Hall of Fame" />;
   const achieves = c.achievements || [
     { t: '10M+', d: 'Total Impressions', i: Activity, c: '#FF9431' },
     { t: 'Elite 100', d: 'Ranked in Top 100', i: Trophy, c: '#f97316' },
@@ -274,8 +259,6 @@ const CaseStudyCard = ({ title, brand, results }) => (
 CaseStudyCard.propTypes = { title: PropTypes.string.isRequired, brand: PropTypes.string.isRequired, results: PropTypes.array.isRequired };
 
 const InfluenceMedia = ({ c, mob }) => {
-  const isDummy = c.id === 'fallback';
-  if (!c.media_stats && !isDummy) return <EmptyState title="Content Velocity" />;
   const stats = c.media_stats || [
     { l: 'Avg View Time', v: '45s' },
     { l: 'Save Rate', v: '12%' },
@@ -311,13 +294,8 @@ const InfluenceMedia = ({ c, mob }) => {
 InfluenceMedia.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
 
 const WorkTab = ({ c, mob, setActiveTab }) => {
-  const isDummy = c.id === 'fallback';
-  const hasViral = c.viral_content || isDummy;
-  const hasCaseStudies = c.case_studies || isDummy;
-
-  if (!c.achievements && !c.services && !hasViral && !hasCaseStudies && !c.media_stats && !isDummy) {
-     return <TabEmptyState title="Pro Work" icon={Briefcase} mob={mob} setActiveTab={setActiveTab} tabId="work" />;
-  }
+  const hasViral = true;
+  const hasCaseStudies = true;
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
