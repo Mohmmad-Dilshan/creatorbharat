@@ -53,25 +53,48 @@ const HeroKeyAchievements = ({ mob }) => {
   }, []);
 
   return (
-    <div style={{ display: 'flex', gap: mob ? '10px' : '20px', flexWrap: 'wrap', marginTop: '24px', padding: mob ? '12px' : '20px', background: 'rgba(0,0,0,0.02)', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.03)', width: mob ? '100%' : 'fit-content' }}>
+    <div style={{ 
+      display: 'flex', 
+      gap: mob ? '12px' : '24px', 
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: '24px', 
+      padding: mob ? '16px 20px' : '20px 32px', 
+      background: 'linear-gradient(135deg, rgba(255,148,49,0.06) 0%, rgba(255,92,0,0.06) 100%)', 
+      borderRadius: '24px', 
+      border: '1.5px solid rgba(255,148,49,0.12)', 
+      width: '100%',
+      boxShadow: '0 8px 30px rgba(0,0,0,0.02)'
+    }}>
        {[
          { l: '10M+', t: 'Impressions', i: Activity, c: '#FF9431' },
          { l: 'Top 1%', t: 'Engagement', i: Zap, c: '#10B981' },
-         { l: mob ? `${active}` : '50+', t: mob ? 'Active Now' : 'Brands', i: mob ? Activity : Briefcase, c: mob ? '#ef4444' : '#3b82f6', pulse: mob }
+         { l: `${active}`, t: 'Active Now', i: Activity, c: '#ef4444', pulse: true }
        ].map(a => (
-         <div key={a.t} style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: mob ? '1 1 40%' : 'initial' }}>
-            <div style={{ width: '32px', height: '32px', background: '#fff', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
-               <a.i size={16} color={a.c} style={{ animation: a.pulse ? 'pulse 2s infinite' : 'none' }} />
-            </div>
-            <div>
-               <div style={{ fontSize: mob ? '12px' : '13px', fontWeight: 950, color: '#0f172a', lineHeight: 1 }}>{a.l}</div>
-               <div style={{ fontSize: '9px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{a.t}</div>
-            </div>
-         </div>
+          <div key={a.t} style={{ display: 'flex', alignItems: 'center', gap: mob ? '8px' : '12px' }}>
+             <div style={{ 
+               width: mob ? '28px' : '36px', 
+               height: mob ? '28px' : '36px', 
+               background: '#fff', 
+               borderRadius: '10px', 
+               display: 'flex', 
+               alignItems: 'center', 
+               justifyContent: 'center', 
+               boxShadow: '0 6px 16px rgba(0,0,0,0.04)',
+               flexShrink: 0
+             }}>
+                <a.i size={mob ? 14 : 18} color={a.c} style={{ animation: a.pulse ? 'pulse 2s infinite' : 'none' }} />
+             </div>
+             <div>
+                <div style={{ fontSize: mob ? '14px' : '18px', fontWeight: 950, color: '#0f172a', lineHeight: 1.1 }}>{a.l}</div>
+                <div style={{ fontSize: mob ? '8px' : '10px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{a.t}</div>
+             </div>
+          </div>
        ))}
     </div>
   );
 };
+
 HeroKeyAchievements.propTypes = { mob: PropTypes.bool };
 
 const ContactMetadata = ({ city, followers, mob, onContact }) => (
@@ -552,7 +575,7 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
                marginTop: mob ? '0' : '20px'
              }}>
                 <div style={{ flex: 1.6, width: '100%' }}>
-                   <IdentityDetails c={c} stats={stats} mob={mob} onRate={() => handleAction('rate')} onContact={onContact} dsp={dsp} />
+                   <IdentityDetails c={c} stats={stats} mob={mob} onRate={() => handleAction('rate')} onContact={onContact} dsp={dsp} dlStatus={dlStatus} onDownload={handleMediaKit} />
                    <div style={{ marginTop: '40px' }}>
                       <ActionButtons 
                 followed={followed} 
@@ -565,7 +588,7 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
                    </div>
                 </div>
 
-                <div style={mob ? { width: '100%', marginTop: '-20px' } : { flex: 1, position: 'sticky', top: '120px' }}>
+                <div style={mob ? { display: 'none' } : { flex: 1, position: 'sticky', top: '120px' }}>
                    <EliteIntelligenceCard stats={stats} mob={mob} />
                 </div>
              </div>
