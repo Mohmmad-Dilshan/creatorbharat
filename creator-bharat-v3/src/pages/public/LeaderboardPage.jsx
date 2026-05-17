@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
-  Trophy, Crown, TrendingUp, Search, ArrowUpRight, Zap, Globe, 
-  Users, MapPin, Layers, Calendar, Filter, Star, Info, ChevronRight,
-  TrendingDown, Activity, ShieldCheck, Plus, BarChart3
+  Crown, Search, ArrowUpRight, Globe, 
+  MapPin, Layers, Filter, Star,
+  Activity, ShieldCheck, Plus, BarChart3
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Btn, Card, Bdg } from '@/components/common/Primitives';
+import PropTypes from 'prop-types';
+import { Btn, Card } from '@/components/common/Primitives';
 import Seo from '@/components/common/SEO';
 
 // ----------------------------------------------------------------------
@@ -21,7 +22,8 @@ const THEME = {
   glassDark: 'rgba(15, 23, 42, 0.8)',
   border: '#f1f5f9',
   green: '#10b981',
-  red: '#f43f5e'
+  red: '#f43f5e',
+  textSec: '#64748b'
 };
 
 const categories = ['Overall', 'Tech', 'Finance', 'Lifestyle', 'Gaming', 'Travel', 'Beauty'];
@@ -56,6 +58,11 @@ const Sparkline = ({ color, points }) => (
   </svg>
 );
 
+Sparkline.propTypes = {
+  color: PropTypes.string.isRequired,
+  points: PropTypes.arrayOf(PropTypes.number).isRequired
+};
+
 const LeaderboardHero = ({ mob }) => (
   <section style={{ 
     background: THEME.dark, padding: mob ? '140px 20px 100px' : '180px 24px 120px', 
@@ -63,9 +70,9 @@ const LeaderboardHero = ({ mob }) => (
   }}>
     {/* Immersive Background Particles (Abstract) */}
     <div style={{ position: 'absolute', inset: 0, opacity: 0.4 }}>
-       {[...Array(6)].map((_, i) => (
+       {['p1', 'p2', 'p3', 'p4', 'p5', 'p6'].map((p, i) => (
          <motion.div
-           key={i}
+           key={p}
            animate={{ 
              y: [0, -20, 0], 
              opacity: [0.1, 0.3, 0.1],
@@ -76,13 +83,13 @@ const LeaderboardHero = ({ mob }) => (
              position: 'absolute', 
              width: '300px', height: '300px', 
              background: 'radial-gradient(circle, rgba(255, 148, 49, 0.15) 0%, transparent 70%)',
-             left: `${Math.random() * 100}%`,
-             top: `${Math.random() * 100}%`,
+             left: `${(i * 17) % 100}%`,
+             top: `${(i * 23) % 100}%`,
              borderRadius: '50%'
            }}
          />
        ))}
-    </div>
+     </div>
 
     <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '160px', background: 'linear-gradient(to top, #fcfcfc, transparent)' }} />
     
@@ -106,16 +113,95 @@ const LeaderboardHero = ({ mob }) => (
       </motion.h1>
       
       <p style={{ fontSize: mob ? '18px' : '22px', color: 'rgba(255, 255, 255, 0.4)', maxWidth: '700px', margin: '0 auto', lineHeight: 1.5, fontWeight: 500 }}>
-        The definitive real-time index of Bharat's most powerful digital economy drivers. 
-        <span style={{ color: '#fff' }}> Ranked by proprietary AI metrics.</span>
+        The definitive real-time index of Bharat's most powerful digital economy drivers.{' '}
+        <span style={{ color: '#fff' }}>Ranked by proprietary AI metrics.</span>
       </p>
     </div>
   </section>
 );
 
-const ElitePodiumCard = ({ c, i, mob, navigate }) => {
-  const isRank1 = i === 0;
-  
+LeaderboardHero.propTypes = {
+  mob: PropTypes.bool.isRequired
+};
+
+const Rank1PodiumCard = ({ c, mob, navigate }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      whileHover={{ y: -12, scale: 1.02 }}
+      onClick={() => navigate(`/creator/${c.id}`)}
+      style={{
+        background: 'linear-gradient(165deg, #0f172a 0%, #1e293b 100%)',
+        padding: mob ? '32px' : '56px 48px', borderRadius: '48px', 
+        border: '1px solid #334155',
+        textAlign: 'center', position: 'relative', overflow: 'hidden', 
+        boxShadow: '0 40px 100px rgba(0,0,0,0.15)', 
+        cursor: 'pointer',
+        order: mob ? 0 : 2
+      }}
+    >
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: `linear-gradient(90deg, transparent, ${THEME.primary}, transparent)` }} />
+      
+      <div style={{ position: 'relative', width: '120px', height: '120px', margin: '0 auto 32px' }}>
+         <div style={{ width: '100%', height: '100%', background: THEME.primary, borderRadius: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px', fontWeight: 950, color: '#fff', transform: 'rotate(-5deg)', border: '4px solid rgba(255,255,255,0.1)', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
+            {c.name.charAt(0)}
+         </div>
+         <div style={{ position: 'absolute', bottom: -10, right: -10, width: '48px', height: '48px', background: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}>
+            <Crown size={24} color={THEME.primary} />
+         </div>
+      </div>
+
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.08)', padding: '10px 20px', borderRadius: '100px', marginBottom: '24px', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <ShieldCheck size={14} color={THEME.primary} />
+        <span style={{ fontSize: '12px', fontWeight: 950, color: '#fff', textTransform: 'uppercase', letterSpacing: '2px' }}>
+          TOP VERIFIED
+        </span>
+      </div>
+
+      <h3 style={{ fontSize: '32px', fontWeight: 950, color: '#fff', marginBottom: '12px', letterSpacing: '-0.03em' }}>{c.name}</h3>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '40px' }}>
+         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'rgba(255,255,255,0.5)', fontSize: '14px', fontWeight: 600 }}>
+            <MapPin size={14} /> {c.location}
+         </div>
+         <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#94a3b8' }} />
+         <div style={{ color: THEME.primary, fontSize: '14px', fontWeight: 850 }}>{c.niche}</div>
+      </div>
+
+      <div style={{ background: 'rgba(255,255,255,0.04)', padding: '24px', borderRadius: '32px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ textAlign: 'left' }}>
+          <div style={{ fontSize: '10px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: '4px' }}>Impact Score</div>
+          <div style={{ fontSize: '24px', fontWeight: 950, color: '#fff' }}>{c.score}<span style={{ fontSize: '14px', color: THEME.green }}>.9</span></div>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+           <div style={{ fontSize: '10px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: '8px' }}>Growth</div>
+           <Sparkline color={THEME.primary} points={[15, 5, 10, 2, 8]} />
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+Rank1PodiumCard.propTypes = {
+  c: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    name: PropTypes.string.isRequired,
+    niche: PropTypes.string.isRequired,
+    location: PropTypes.string.isRequired,
+    score: PropTypes.number.isRequired
+  }).isRequired,
+  mob: PropTypes.bool,
+  navigate: PropTypes.func.isRequired
+};
+
+const StandardPodiumCard = ({ c, i, mob, navigate }) => {
+  let cardOrder;
+  if (mob) {
+    cardOrder = i;
+  } else {
+    cardOrder = i === 1 ? 1 : 3;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -124,56 +210,81 @@ const ElitePodiumCard = ({ c, i, mob, navigate }) => {
       whileHover={{ y: -12, scale: 1.02 }}
       onClick={() => navigate(`/creator/${c.id}`)}
       style={{
-        background: isRank1 ? 'linear-gradient(165deg, #0f172a 0%, #1e293b 100%)' : '#fff',
+        background: '#fff',
         padding: mob ? '32px' : '56px 48px', borderRadius: '48px', 
-        border: '1px solid ' + (isRank1 ? '#334155' : THEME.border),
+        border: '1px solid ' + THEME.border,
         textAlign: 'center', position: 'relative', overflow: 'hidden', 
-        boxShadow: isRank1 ? '0 40px 100px rgba(0,0,0,0.15)' : '0 25px 60px rgba(0,0,0,0.04)', 
+        boxShadow: '0 25px 60px rgba(0,0,0,0.04)', 
         cursor: 'pointer',
-        order: mob ? i : (i === 0 ? 2 : (i === 1 ? 1 : 3))
+        order: cardOrder
       }}
     >
-      {isRank1 && (
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: `linear-gradient(90deg, transparent, ${THEME.primary}, transparent)` }} />
-      )}
-      
       <div style={{ position: 'relative', width: '120px', height: '120px', margin: '0 auto 32px' }}>
-         <div style={{ width: '100%', height: '100%', background: isRank1 ? THEME.primary : '#f8fafc', borderRadius: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px', fontWeight: 950, color: isRank1 ? '#fff' : THEME.dark, transform: 'rotate(-5deg)', border: '4px solid ' + (isRank1 ? 'rgba(255,255,255,0.1)' : '#fff'), boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
+         <div style={{ width: '100%', height: '100%', background: '#f8fafc', borderRadius: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px', fontWeight: 950, color: THEME.dark, transform: 'rotate(-5deg)', border: '4px solid #fff', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
             {c.name.charAt(0)}
          </div>
-         <div style={{ position: 'absolute', bottom: -10, right: -10, width: '48px', height: '48px', background: isRank1 ? '#fff' : THEME.dark, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}>
-            {isRank1 ? <Crown size={24} color={THEME.primary} /> : <span style={{ color: '#fff', fontWeight: 950, fontSize: '18px' }}>#{c.rank}</span>}
+         <div style={{ position: 'absolute', bottom: -10, right: -10, width: '48px', height: '48px', background: THEME.dark, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}>
+            <span style={{ color: '#fff', fontWeight: 950, fontSize: '18px' }}>#{c.rank}</span>
          </div>
       </div>
 
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: isRank1 ? 'rgba(255,255,255,0.08)' : 'rgba(255, 148, 49, 0.08)', padding: '10px 20px', borderRadius: '100px', marginBottom: '24px', border: '1px solid ' + (isRank1 ? 'rgba(255,255,255,0.1)' : 'transparent') }}>
-        <ShieldCheck size={14} color={isRank1 ? THEME.primary : THEME.primary} />
-        <span style={{ fontSize: '12px', fontWeight: 950, color: isRank1 ? '#fff' : THEME.primary, textTransform: 'uppercase', letterSpacing: '2px' }}>
-          {isRank1 ? 'TOP VERIFIED' : `${c.tier} Tier`}
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 148, 49, 0.08)', padding: '10px 20px', borderRadius: '100px', marginBottom: '24px', border: '1px solid transparent' }}>
+        <ShieldCheck size={14} color={THEME.primary} />
+        <span style={{ fontSize: '12px', fontWeight: 950, color: THEME.primary, textTransform: 'uppercase', letterSpacing: '2px' }}>
+          {c.tier} Tier
         </span>
       </div>
 
-      <h3 style={{ fontSize: '32px', fontWeight: 950, color: isRank1 ? '#fff' : THEME.dark, marginBottom: '12px', letterSpacing: '-0.03em' }}>{c.name}</h3>
+      <h3 style={{ fontSize: '32px', fontWeight: 950, color: THEME.dark, marginBottom: '12px', letterSpacing: '-0.03em' }}>{c.name}</h3>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '40px' }}>
-         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: isRank1 ? 'rgba(255,255,255,0.5)' : '#94a3b8', fontSize: '14px', fontWeight: 600 }}>
+         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#94a3b8', fontSize: '14px', fontWeight: 600 }}>
             <MapPin size={14} /> {c.location}
          </div>
          <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#94a3b8' }} />
-         <div style={{ color: isRank1 ? THEME.primary : THEME.primary, fontSize: '14px', fontWeight: 850 }}>{c.niche}</div>
+         <div style={{ color: THEME.primary, fontSize: '14px', fontWeight: 850 }}>{c.niche}</div>
       </div>
 
-      <div style={{ background: isRank1 ? 'rgba(255,255,255,0.04)' : '#f8fafc', padding: '24px', borderRadius: '32px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', border: '1px solid ' + (isRank1 ? 'rgba(255,255,255,0.05)' : '#f1f5f9') }}>
+      <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '32px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', border: '1px solid #f1f5f9' }}>
         <div style={{ textAlign: 'left' }}>
-          <div style={{ fontSize: '10px', fontWeight: 900, color: isRank1 ? 'rgba(255,255,255,0.4)' : '#94a3b8', textTransform: 'uppercase', marginBottom: '4px' }}>Impact Score</div>
-          <div style={{ fontSize: '24px', fontWeight: 950, color: isRank1 ? '#fff' : THEME.dark }}>{c.score}<span style={{ fontSize: '14px', color: THEME.green }}>.9</span></div>
+          <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '4px' }}>Impact Score</div>
+          <div style={{ fontSize: '24px', fontWeight: 950, color: THEME.dark }}>{c.score}<span style={{ fontSize: '14px', color: THEME.green }}>.9</span></div>
         </div>
         <div style={{ textAlign: 'right' }}>
-           <div style={{ fontSize: '10px', fontWeight: 900, color: isRank1 ? 'rgba(255,255,255,0.4)' : '#94a3b8', textTransform: 'uppercase', marginBottom: '8px' }}>Growth</div>
-           <Sparkline color={isRank1 ? THEME.primary : THEME.green} points={[15, 5, 10, 2, 8]} />
+           <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px' }}>Growth</div>
+           <Sparkline color={THEME.green} points={[15, 5, 10, 2, 8]} />
         </div>
       </div>
     </motion.div>
   );
+};
+
+StandardPodiumCard.propTypes = {
+  c: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    name: PropTypes.string.isRequired,
+    rank: PropTypes.number.isRequired,
+    tier: PropTypes.string.isRequired,
+    location: PropTypes.string.isRequired,
+    niche: PropTypes.string.isRequired,
+    score: PropTypes.number.isRequired
+  }).isRequired,
+  i: PropTypes.number.isRequired,
+  mob: PropTypes.bool,
+  navigate: PropTypes.func.isRequired
+};
+
+const ElitePodiumCard = ({ c, i, mob, navigate }) => {
+  if (i === 0) {
+    return <Rank1PodiumCard c={c} mob={mob} navigate={navigate} />;
+  }
+  return <StandardPodiumCard c={c} i={i} mob={mob} navigate={navigate} />;
+};
+
+ElitePodiumCard.propTypes = {
+  c: PropTypes.object.isRequired,
+  i: PropTypes.number.isRequired,
+  mob: PropTypes.bool,
+  navigate: PropTypes.func.isRequired
 };
 
 const MobileRankCard = ({ c, navigate }) => (
@@ -199,6 +310,18 @@ const MobileRankCard = ({ c, navigate }) => (
     </div>
   </motion.div>
 );
+
+MobileRankCard.propTypes = {
+  c: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    rank: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    niche: PropTypes.string.isRequired,
+    followers: PropTypes.string.isRequired,
+    score: PropTypes.number.isRequired
+  }).isRequired,
+  navigate: PropTypes.func.isRequired
+};
 
 const RankingsTable = ({ creators, mob, navigate }) => {
   if (mob) {
@@ -316,6 +439,11 @@ const RankingsTable = ({ creators, mob, navigate }) => {
   );
 };
 
+RankingsTable.propTypes = {
+  creators: PropTypes.arrayOf(PropTypes.object).isRequired,
+  mob: PropTypes.bool,
+  navigate: PropTypes.func.isRequired
+};
 
 // ----------------------------------------------------------------------
 // 3. MAIN PAGE
@@ -385,8 +513,8 @@ export default function LeaderboardPage() {
              { label: 'Network Reach', val: '420M+', icon: <Globe />, color: THEME.secondary },
              { label: 'Verified Creators', val: '12,402', icon: <ShieldCheck />, color: THEME.green },
              { label: 'Avg ROI Delta', val: '+24.8%', icon: <Activity />, color: THEME.primary }
-           ].map((item, i) => (
-             <div key={i} style={{ background: '#fff', padding: '28px', borderRadius: '32px', border: '1px solid ' + THEME.border, display: 'flex', alignItems: 'center', gap: '20px' }}>
+           ].map((item) => (
+             <div key={item.label} style={{ background: '#fff', padding: '28px', borderRadius: '32px', border: '1px solid ' + THEME.border, display: 'flex', alignItems: 'center', gap: '20px' }}>
                 <div style={{ width: '56px', height: '56px', background: item.color + '10', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: item.color }}>{item.icon}</div>
                 <div>
                    <div style={{ fontSize: '11px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>{item.label}</div>
@@ -425,8 +553,8 @@ export default function LeaderboardPage() {
                       { title: 'Audience Purity', val: '99.4%', desc: 'Proprietary bot-detection filters.' },
                       { title: 'Sentiment Score', val: 'High', desc: 'Natural language processing on comments.' },
                       { title: 'Economic Value', val: '$2.4M', desc: 'Projected revenue impact per post.' }
-                    ].map((m, idx) => (
-                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '16px' }}>
+                    ].map((m) => (
+                      <div key={m.title} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '16px' }}>
                          <div>
                             <div style={{ fontSize: '18px', fontWeight: 950, color: '#fff' }}>{m.title}</div>
                             <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>{m.desc}</div>
@@ -464,4 +592,3 @@ export default function LeaderboardPage() {
     </div>
   );
 }
-

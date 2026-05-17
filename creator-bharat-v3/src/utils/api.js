@@ -1,5 +1,44 @@
 const API_BASE = import.meta.env.VITE_API_URL || 'https://creatorbharat.onrender.com/api';
 
+class HttpError extends Error {
+  constructor(res, data) {
+    super(data?.error || `Error ${res.status}: ${res.statusText}`);
+    this.name = 'HttpError';
+    this.isHttpError = true;
+    this.status = res.status;
+    this.statusText = res.statusText;
+    this.data = data;
+  }
+}
+
+async function parseResponse(res) {
+  const contentType = res.headers.get('content-type');
+  if (contentType?.includes('application/json')) {
+    const data = await res.json();
+    if (!res.ok) {
+      throw new HttpError(res, data);
+    }
+    return data;
+  }
+  
+  const text = await res.text();
+  if (!res.ok) {
+    throw new Error(text || `HTTP Error ${res.status}`);
+  }
+  return text;
+}
+
+function isAuthenticationError(err) {
+  const msg = err.message || '';
+  return msg.includes('401') || msg.includes('403');
+}
+
+function isRateLimitError(err) {
+  if (err.status === 429) return true;
+  const msg = (err.message || '').toLowerCase();
+  return msg.includes('429') || msg.includes('too many requests');
+}
+
 export async function apiCall(endpoint, options = {}, retries = 2) {
   const token = localStorage.getItem('cb_token');
   
@@ -14,34 +53,21 @@ export async function apiCall(endpoint, options = {}, retries = 2) {
         body: options.body ? JSON.stringify(options.body) : undefined,
       });
 
-      let data;
-      const contentType = res.headers.get('content-type');
-      if (contentType?.includes('application/json')) {
-        data = await res.json();
-      } else {
-        const text = await res.text();
-        if (!res.ok) throw new Error(text || `HTTP Error ${res.status}`);
-        return text;
-      }
-
-      if (!res.ok) {
-        // If rate limited, don't retry immediately
-        if (res.status === 429 && attempt < retries) {
-          await new Promise(r => setTimeout(r, 2000)); // Wait 2s
-          return execute(attempt + 1);
-        }
-        throw new Error(data.error || `Error ${res.status}: ${res.statusText}`);
-      }
-      return data;
+      return await parseResponse(res);
     } catch (err) {
-      // Retry on network errors
-      if (attempt < retries && !err.message?.includes('401') && !err.message?.includes('403')) {
-        console.warn(`Retrying API call [${endpoint}]... Attempt ${attempt + 1}`);
-        await new Promise(r => setTimeout(r, 1000 * (attempt + 1))); // Exponential backoff
+      if (err.isHttpError && err.status === 429 && attempt < retries) {
+        await new Promise(r => setTimeout(r, 2000));
         return execute(attempt + 1);
       }
       
-      if (!err.message?.includes('429') && !err.message?.toLowerCase().includes('too many requests')) {
+      const isAuthErr = isAuthenticationError(err);
+      if (attempt < retries && !isAuthErr) {
+        console.warn(`Retrying API call [${endpoint}]... Attempt ${attempt + 1}`);
+        await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+        return execute(attempt + 1);
+      }
+      
+      if (!isRateLimitError(err)) {
         console.error(`API Call failed [${endpoint}]:`, err);
       }
       throw err;

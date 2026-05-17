@@ -56,10 +56,16 @@ export function reducer(s, a) {
 export const AppProvider = ({ children }) => {
   // Load initial state from local storage if available
   const getInitialState = () => {
-    const savedUser = localStorage.getItem('cb_user');
-    const savedRole = localStorage.getItem('cb_role');
-    if (savedUser && savedRole && isValidRole(savedRole)) {
-      return { ...IS, user: JSON.parse(savedUser), role: savedRole };
+    try {
+      const savedUser = localStorage.getItem('cb_user');
+      const savedRole = localStorage.getItem('cb_role');
+      if (savedUser && savedRole && isValidRole(savedRole)) {
+        return { ...IS, user: JSON.parse(savedUser), role: savedRole };
+      }
+    } catch (e) {
+      console.warn('Failed to parse saved user from localStorage:', e);
+      localStorage.removeItem('cb_user');
+      localStorage.removeItem('cb_role');
     }
     return IS;
   };

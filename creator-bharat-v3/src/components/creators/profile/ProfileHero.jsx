@@ -8,7 +8,6 @@ import {
   UserCheck,
   Activity,
   Zap,
-  Briefcase,
   Star,
   MessageSquare,
   Verified,
@@ -46,6 +45,12 @@ const SocialIconsPanel = ({ mob }) => (
 SocialIconsPanel.propTypes = { mob: PropTypes.bool };
 
 const HeroKeyAchievements = ({ mob, activeUsers, activeViews, likes, isLiked, onLike }) => {
+  const items = [
+    { l: activeViews ? fmt.num(activeViews) : '13,842', t: 'Total Profile Visitor', i: Eye, c: '#FF9431' },
+    { l: likes ? fmt.num(likes) : '1,242', t: 'Likes', i: Heart, c: '#ef4444', fill: isLiked ? '#ef4444' : 'none', onClick: onLike },
+    { l: `${activeUsers || 14}`, t: 'Active Now', i: Activity, c: '#10B981', pulse: true }
+  ];
+
   return (
     <div style={{ 
       display: 'flex', 
@@ -60,12 +65,9 @@ const HeroKeyAchievements = ({ mob, activeUsers, activeViews, likes, isLiked, on
       width: '100%',
       boxShadow: '0 8px 30px rgba(0,0,0,0.02)'
     }}>
-       {[
-         { l: activeViews ? fmt.num(activeViews) : '13,842', t: 'Total Profile Visitor', i: Eye, c: '#FF9431' },
-         { l: likes ? fmt.num(likes) : '1,242', t: 'Likes', i: Heart, c: '#ef4444', fill: isLiked ? '#ef4444' : 'none', onClick: onLike },
-         { l: `${activeUsers || 14}`, t: 'Active Now', i: Activity, c: '#10B981', pulse: true }
-       ].map(a => (
-          <div key={a.t} onClick={a.onClick} style={{ display: 'flex', alignItems: 'center', gap: mob ? '8px' : '12px', cursor: a.onClick ? 'pointer' : 'default', userSelect: 'none', transition: 'transform 0.2s' }} className={a.onClick ? 'hover-scale-stat' : ''}>
+       {items.map(a => {
+         const content = (
+           <>
              <div style={{ 
                width: mob ? '28px' : '36px', 
                height: mob ? '28px' : '36px', 
@@ -83,13 +85,60 @@ const HeroKeyAchievements = ({ mob, activeUsers, activeViews, likes, isLiked, on
                 <div style={{ fontSize: mob ? '14px' : '18px', fontWeight: 950, color: '#0f172a', lineHeight: 1.1 }}>{a.l}</div>
                 <div style={{ fontSize: mob ? '8px' : '10px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{a.t}</div>
              </div>
-          </div>
-       ))}
+           </>
+         );
+
+         if (a.onClick) {
+           return (
+             <button 
+               key={a.t} 
+               onClick={a.onClick} 
+               style={{ 
+                 display: 'flex', 
+                 alignItems: 'center', 
+                 gap: mob ? '8px' : '12px', 
+                 cursor: 'pointer', 
+                 userSelect: 'none', 
+                 transition: 'transform 0.2s',
+                 background: 'none',
+                 border: 'none',
+                 padding: 0,
+                 textAlign: 'left'
+               }} 
+               className="hover-scale-stat"
+             >
+                {content}
+             </button>
+           );
+         }
+
+         return (
+           <div 
+             key={a.t} 
+             style={{ 
+               display: 'flex', 
+               alignItems: 'center', 
+               gap: mob ? '8px' : '12px', 
+               userSelect: 'none', 
+               transition: 'transform 0.2s' 
+             }}
+           >
+              {content}
+           </div>
+         );
+       })}
     </div>
   );
 };
 
-HeroKeyAchievements.propTypes = { mob: PropTypes.bool };
+HeroKeyAchievements.propTypes = {
+  mob: PropTypes.bool,
+  activeUsers: PropTypes.number,
+  activeViews: PropTypes.number,
+  likes: PropTypes.number,
+  isLiked: PropTypes.bool,
+  onLike: PropTypes.func
+};
 
 const ContactMetadata = ({ city, followers, mob, onContact }) => (
   <>
@@ -219,6 +268,10 @@ const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDo
   if (dlStatus === 'loading') dlText = 'Preparing Media Kit...';
   else if (dlStatus === 'done') dlText = 'Media Kit Ready';
 
+  const totalReviews = c.id === 'fallback' 
+    ? 24 
+    : (c.reviews ? c.reviews.length : (c.reviews_count || 0));
+
   return (
     <div style={{ flex: 1 }}>
        <IdentityHeader category={c.category || c.niche} name={c.name} mob={mob} />
@@ -229,7 +282,7 @@ const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDo
        <BadgeRow score={stats.score || 94} />
        <RatingSection 
           val={c.id === 'fallback' ? 4.9 : (c.rating || 0)} 
-          total={c.id === 'fallback' ? 24 : (c.reviews ? c.reviews.length : (c.reviews_count || 0))} 
+          total={totalReviews} 
           onRate={onRate} 
        />
        
@@ -240,7 +293,7 @@ const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDo
             <button 
               onClick={onDownload}
               disabled={dlStatus === 'loading'}
-              style={{ width: '100%', padding: '16px', borderRadius: '100px', background: dlStatus === 'done' ? '#10B981' : '#0f172a', color: '#fff', border: 'none', fontWeight: 900, fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 12px 24px rgba(15,23,42,0.2)', transition: 'all 0.3s' }}
+              style={{ width: '100%', padding: '16px', borderRadius: '100px', background: dlStatus === 'done' ? '#10B981' : '#0f172a', color: '#fff', border: 'none', fontWeight: 950, fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', boxShadow: '0 12px 24px rgba(15,23,42,0.2)', transition: 'all 0.3s' }}
             >
                {dlIcon} {dlText}
             </button>
@@ -249,7 +302,21 @@ const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDo
     </div>
   );
 };
-IdentityDetails.propTypes = { c: PropTypes.object.isRequired, stats: PropTypes.object.isRequired, mob: PropTypes.bool, onRate: PropTypes.func.isRequired, onContact: PropTypes.func.isRequired, dsp: PropTypes.func.isRequired, dlStatus: PropTypes.string, onDownload: PropTypes.func };
+IdentityDetails.propTypes = { 
+  c: PropTypes.object.isRequired, 
+  stats: PropTypes.object.isRequired, 
+  mob: PropTypes.bool, 
+  onRate: PropTypes.func.isRequired, 
+  onContact: PropTypes.func.isRequired, 
+  dsp: PropTypes.func.isRequired, 
+  dlStatus: PropTypes.string, 
+  onDownload: PropTypes.func,
+  activeUsers: PropTypes.number,
+  activeViews: PropTypes.number,
+  likes: PropTypes.number,
+  isLiked: PropTypes.bool,
+  onLike: PropTypes.func
+};
 
 const FollowBtn = ({ active, onClick, mob }) => (
   <button 
@@ -488,13 +555,18 @@ const EliteIntelligenceCard = ({ stats, mob, activeUsers, activeViews }) => {
     </motion.div>
   );
 };
-EliteIntelligenceCard.propTypes = { stats: PropTypes.object.isRequired, mob: PropTypes.bool };
+EliteIntelligenceCard.propTypes = { 
+  stats: PropTypes.object.isRequired, 
+  mob: PropTypes.bool,
+  activeUsers: PropTypes.number,
+  activeViews: PropTypes.number
+};
 
 // --- MAIN HERO ---
 
 export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContact, onMediaKit }) => {
   const [followed, setFollowed] = useState(false);
-  const [dlStatus, setDlStatus] = useState('idle');
+  const [dlStatus] = useState('idle');
 
   const [activeUsers, setActiveUsers] = useState(14);
   const [activeViews, setActiveViews] = useState(13842);

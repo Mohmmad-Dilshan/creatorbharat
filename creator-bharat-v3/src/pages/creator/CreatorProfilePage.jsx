@@ -8,6 +8,7 @@ import { ProfileHero } from '@/components/creators/profile/ProfileHero';
 import { IdentityTab, SocialLinkTree } from '@/components/creators/profile/IdentityTab';
 import { MediaKitPreview } from '@/components/creators/profile/MediaKitPreview';
 import { Btn, Empty, Modal, Fld, Card } from '@/components/common/Primitives';
+import Seo from '@/components/common/SEO';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShieldCheck, 
@@ -86,6 +87,7 @@ const EmptyState = ({ title }) => (
      <div style={{ fontSize: '13px', color: '#cbd5e1', fontWeight: 600 }}>Creator has not updated this section yet.</div>
   </Card>
 );
+EmptyState.propTypes = { title: PropTypes.string.isRequired };
 
 const TabEmptyState = ({ title, icon: Icon, mob, setActiveTab, tabId }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
@@ -97,6 +99,13 @@ const TabEmptyState = ({ title, icon: Icon, mob, setActiveTab, tabId }) => (
       <TabNavigator activeTab={tabId} setActiveTab={setActiveTab} mob={mob} />
   </motion.div>
 );
+TabEmptyState.propTypes = {
+  title: PropTypes.string.isRequired,
+  icon: PropTypes.elementType,
+  mob: PropTypes.bool,
+  setActiveTab: PropTypes.func.isRequired,
+  tabId: PropTypes.string.isRequired
+};
 
 const StoryTab = ({ c, mob, setActiveTab }) => {
   const isDummy = c.id === 'fallback';
@@ -319,9 +328,9 @@ const WorkTab = ({ c, mob, setActiveTab }) => {
         <div style={{ marginBottom: '60px' }}>
            <h3 style={{ fontSize: '24px', fontWeight: 950, marginBottom: '24px' }}>Viral Hall of Fame 🔥</h3>
            <div style={{ display: mob ? 'flex' : 'grid', gap: '16px', overflowX: mob ? 'auto' : 'hidden', scrollbarWidth: 'none', msOverflowStyle: 'none', paddingBottom: mob ? '12px' : '0', gridTemplateColumns: mob ? 'none' : 'repeat(3, 1fr)' }}>
-              {(c.viral_content || [1.2, 3.5, 5.8]).map((v, idx) => (
-                 <div key={`viral-${idx}`} style={{ borderRadius: '32px', overflow: 'hidden', aspectRatio: '9/16', background: '#000', position: 'relative', flexShrink: 0, width: mob ? '260px' : 'auto' }}>
-                    <img src={v.img || `https://picsum.photos/seed/viral${v}/600/1000`} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} alt="" />
+              {(c.viral_content || [1.2, 3.5, 5.8]).map((v) => (
+                 <div key={typeof v === 'object' ? (v.id || v.views) : v} style={{ borderRadius: '32px', overflow: 'hidden', aspectRatio: '9/16', background: '#000', position: 'relative', flexShrink: 0, width: mob ? '260px' : 'auto' }}>
+                    <img src={v.img || `https://picsum.photos/seed/viral${typeof v === 'object' ? (v.id || v.views) : v}/600/1000`} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} alt="" />
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)' }} />
                     <div style={{ position: 'absolute', bottom: '24px', left: '24px', color: '#fff' }}>
                        <div style={{ fontSize: '18px', fontWeight: 950 }}>{v.views || `${v}M`} Views</div>
@@ -341,8 +350,8 @@ const WorkTab = ({ c, mob, setActiveTab }) => {
                 { title: "Jaipur Heritage Launch", brand: "OYO Rooms", results: [{ l: 'Reach', v: '2.1M' }, { l: 'ROI', v: '4.2x' }] },
                 { title: "Summer Fashion Drop", brand: "Meesho", results: [{ l: 'Sales', v: '15K+' }, { l: 'Clicks', v: '85K' }] },
                 { title: "Tech Rural Growth", brand: "Amazon", results: [{ l: 'Views', v: '1.2M' }, { l: 'Shares', v: '10K' }] }
-             ]).map((cs, idx) => (
-                <div key={idx} style={{ flexShrink: 0, width: mob ? '300px' : 'auto' }}>
+             ]).map((cs) => (
+                <div key={cs.title} style={{ flexShrink: 0, width: mob ? '300px' : 'auto' }}>
                    <CaseStudyCard title={cs.title} brand={cs.brand} results={cs.results} />
                 </div>
              ))}
@@ -750,7 +759,7 @@ const GalleryTab = ({ c, mob, setActiveTab }) => {
           
           <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: mob ? '16px' : '24px' }}>
              {images.map((img, idx) => (
-               <GalleryItem key={idx} i={idx + 1} src={img} mob={mob} dsp={dsp} />
+               <GalleryItem key={img} i={idx + 1} src={img} mob={mob} dsp={dsp} />
              ))}
           </div>
           <div style={{ marginTop: '48px', textAlign: 'center' }}>
@@ -836,8 +845,8 @@ const PackagesTab = ({ c, mob, onSelect, setActiveTab }) => {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
       <div style={{ display: mob ? 'flex' : 'grid', gridTemplateColumns: mob ? 'none' : 'repeat(3, 1fr)', gap: '24px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: '20px' }}>
-         {packages.map((p, idx) => (
-           <PackageCard key={idx} onSelect={onSelect} p={p} />
+         {packages.map((p) => (
+           <PackageCard key={p.l} onSelect={onSelect} p={p} />
          ))}
       </div>
       <CollabFAQ mob={mob} />
@@ -870,7 +879,7 @@ export default function CreatorProfilePage() {
   }, []);
 
   useEffect(() => {
-    if (st?.sel?.creator && (String(st.sel.creator.id) === String(id) || st.sel.creator.slug === id)) {
+    if (st?.sel?.creator?.packages && (String(st?.sel?.creator?.id) === String(id) || st?.sel?.creator?.slug === id)) {
       setC(st.sel.creator);
       setLd(false);
       return;
@@ -956,6 +965,10 @@ export default function CreatorProfilePage() {
 
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', paddingBottom: '100px' }}>
+      <Seo 
+        title={`${c.name} | Verified Creator`}
+        description={c.bio || `${c.name} is an elite storyteller and verified digital content creator on CreatorBharat, Jaipur, India.`}
+      />
       <ProfileHero c={c} stats={stats} navigate={navigate} st={st} dsp={dsp} mob={mob} onRate={handleRateClick} onContact={() => setActiveTab('connect')} onMediaKit={() => setMediaKitOpen(true)} />
       
       <div style={{ position: 'sticky', top: 0, zIndex: 1000, background: 'rgba(252, 252, 252, 0.9)', backdropFilter: 'blur(30px)', borderBottom: '1px solid #f1f5f9', overflowX: mob ? 'auto' : 'hidden', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>

@@ -19,6 +19,64 @@ let _cache = { creators: null, campaigns: null, expiry: 0, lastFailure: 0 };
 const CACHE_DURATION = 60000; // 1 minute
 const FAILURE_COOLDOWN = 30000; // 30 seconds cooldown after a failure
 
+/**
+ * Robustly merges a live database/localStorage creator record with the rich seed profile data.
+ * Overwrites mock seed data with live values (e.g. state, followers, name) from the database,
+ * while falling back to rich seed data for fields missing or empty in the database (e.g. packages, case studies, reviews).
+ */
+function mergeCreator(seed, remote) {
+  if (!seed) return remote;
+  if (!remote) return seed;
+
+  const merged = { ...seed, ...remote };
+
+  // If a key array/object is empty or null in remote, fall back to seed details
+  const arrayFields = ['niche', 'platform', 'services', 'languages', 'portfolio', 'gallery', 'viral_content', 'case_studies', 'packages', 'reviews'];
+  arrayFields.forEach(field => {
+    if (!remote[field] || (Array.isArray(remote[field]) && remote[field].length === 0)) {
+      merged[field] = seed[field];
+    }
+  });
+
+  const objectFields = ['ai_intel', 'audience_hubs', 'expertise', 'full_story'];
+  objectFields.forEach(field => {
+    if (!remote[field] || (typeof remote[field] === 'object' && Object.keys(remote[field]).length === 0)) {
+      merged[field] = seed[field];
+    }
+  });
+
+  // Verify text fields as well
+  const textFields = ['bio', 'tagline', 'philosophy', 'audience_desc', 'local_voice', 'local_penetration'];
+  textFields.forEach(field => {
+    if (!remote[field]) {
+      merged[field] = seed[field];
+    }
+  });
+
+  return merged;
+}
+
+/**
+ * Finds a matching creator inside SEED_CREATORS using standard identifier fields.
+ */
+function findSeedCreator(id, handle, slug) {
+  return SEED_CREATORS.find(s => 
+    String(s.id) === String(id) || 
+    s.handle === handle || 
+    s.slug === slug || 
+    (handle && s.handle === handle)
+  );
+}
+
+/**
+ * Enrichment wrapper to find and merge seed metadata into a creator object.
+ */
+function getEnrichedCreator(creator) {
+  if (!creator) return creator;
+  const seed = findSeedCreator(creator.id, creator.handle, creator.slug);
+  return seed ? mergeCreator(seed, creator) : creator;
+}
+
 // ─── Creators ───────────────────────────────────────────────
 export async function fetchCreators({ limit = 250, force = false } = {}) {
   // Return cache if valid
@@ -43,10 +101,12 @@ export async function fetchCreators({ limit = 250, force = false } = {}) {
       const remote = res.creators || (Array.isArray(res) ? res : []);
 
       const local = LS.get('cb_creators', []);
-      const merged = [...remote];
+      const enrichedRemote = remote.map(c => getEnrichedCreator(c));
+
+      const merged = [...enrichedRemote];
       local.forEach(lc => {
         if (!merged.some(c => c.id === lc.id || c.email === lc.email)) {
-          merged.push(lc);
+          merged.push(getEnrichedCreator(lc));
         }
       });
 
@@ -72,18 +132,18 @@ export async function fetchCreatorById(id) {
   // 1. Check Cache
   if (_cache.creators) {
     const found = _cache.creators.find(x => String(x.id) === String(id) || x.handle === id || x.slug === id);
-    if (found) return found;
+    if (found) return getEnrichedCreator(found);
   }
 
   // 2. Check LocalStorage
   const local = LS.get('cb_creators', []);
   const localFound = local.find(x => String(x.id) === String(id) || x.handle === id || x.slug === id);
-  if (localFound) return localFound;
+  if (localFound) return getEnrichedCreator(localFound);
 
   // 3. API Call
   try {
     const res = await apiCall(`/creators/${id}`);
-    return res.creator || res;
+    return getEnrichedCreator(res.creator || res);
   } catch (err) {
     if (err.status !== 429) console.error('fetchCreatorById failed:', err.message);
     // 4. Seed Fallback

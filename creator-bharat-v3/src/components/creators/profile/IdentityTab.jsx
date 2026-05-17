@@ -340,7 +340,7 @@ export const SocialLinkTree = ({ links = {}, mob }) => {
   // Optional logic: Only show platforms the creator has filled out. 
   // If no links exist (dummy data phase), show a default set to keep UI intact.
   const activeLinks = Object.keys(links || {}).length > 0 
-    ? MASTER_PLATFORMS.filter(p => (links || {})[p.id]) 
+    ? MASTER_PLATFORMS.filter(p => links?.[p.id]) 
     : MASTER_PLATFORMS.slice(0, 5);
 
   if (activeLinks.length === 0) return <EmptyState title="Social Platforms" />;
@@ -353,7 +353,7 @@ export const SocialLinkTree = ({ links = {}, mob }) => {
        </div>
        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '600px', margin: '0 auto' }}>
           {activeLinks.map(link => {
-            const url = (links || {})[link.id] || '#';
+            const url = links?.[link.id] || '#';
             return (
               <button 
                 key={link.id}

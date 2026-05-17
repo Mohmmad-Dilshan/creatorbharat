@@ -56,6 +56,12 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
 
   if (!open) return null;
 
+  // Pre-process niche tags to avoid nested ternary operators in JSX render
+  const rawNiches = Array.isArray(creator.niche)
+    ? creator.niche
+    : (typeof creator.niche === 'string' ? creator.niche.split('&') : ['Digital Storyteller', 'Content Specialist']);
+  const nicheTags = [...rawNiches, 'Verified Creator', 'Elite Partner'].slice(0, 3);
+
   const socialList = [
     { type: 'Instagram', handle: `@${creator.slug || 'creator'}`, count: fmt.num(stats.followers), color: '#E4405F' },
     { type: 'YouTube', handle: creator.name, count: '120K', color: '#FF0000' },
@@ -308,7 +314,7 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                                  </div>
                                  <h1 style={{ fontSize: '72px', fontWeight: 950, letterSpacing: '-0.05em', lineHeight: 0.85, marginBottom: '24px' }}>{creator.name}</h1>
                                  <div style={{ display: 'flex', gap: '10px', marginBottom: '24px', flexWrap: 'wrap' }}>
-                                    {(Array.isArray(creator.niche) ? creator.niche : typeof creator.niche === 'string' ? creator.niche.split('&') : ['Digital Storyteller', 'Content Specialist']).concat(['Verified Creator', 'Elite Partner']).slice(0, 3).map(tag => (
+                                    {nicheTags.map(tag => (
                                        <span key={tag.trim()} style={{ padding: '6px 14px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', fontSize: '12px', fontWeight: 800, color: '#FF9431', border: '1px solid rgba(255,148,49,0.3)', whiteSpace: 'nowrap' }}>{tag.trim().toUpperCase()}</span>
                                     ))}
                                  </div>
