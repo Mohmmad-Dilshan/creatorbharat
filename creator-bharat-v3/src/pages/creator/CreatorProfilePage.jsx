@@ -80,12 +80,30 @@ TabNavigator.propTypes = { activeTab: PropTypes.string.isRequired, setActiveTab:
 
 // Identity-related sub-components moved to @/components/creators/profile/IdentityTab
 
+const EmptyState = ({ title }) => (
+  <Card style={{ padding: '32px', textAlign: 'center', background: '#f8fafc', borderRadius: '32px', border: '1.5px dashed #e2e8f0', marginBottom: '40px' }}>
+     <div style={{ fontSize: '16px', fontWeight: 900, color: '#94a3b8', marginBottom: '8px' }}>{title}</div>
+     <div style={{ fontSize: '13px', color: '#cbd5e1', fontWeight: 600 }}>Creator has not updated this section yet.</div>
+  </Card>
+);
+
+const TabEmptyState = ({ title, icon: Icon, mob, setActiveTab, tabId }) => (
+  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+      <div style={{ padding: mob ? '40px 20px' : '80px', textAlign: 'center', background: '#f8fafc', borderRadius: '40px', border: '1.5px dashed #cbd5e1', marginBottom: '40px', maxWidth: '800px', margin: '0 auto' }}>
+         {Icon && <div style={{ width: '80px', height: '80px', background: '#fff', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', boxShadow: '0 8px 32px rgba(0,0,0,0.03)' }}><Icon size={40} color="#cbd5e1" /></div>}
+         <div style={{ fontSize: '24px', fontWeight: 950, color: '#94a3b8', marginBottom: '16px' }}>{title}</div>
+         <div style={{ fontSize: '16px', color: '#cbd5e1', fontWeight: 600 }}>The creator hasn't updated this section yet.</div>
+      </div>
+      <TabNavigator activeTab={tabId} setActiveTab={setActiveTab} mob={mob} />
+  </motion.div>
+);
+
 const StoryTab = ({ c, mob, setActiveTab }) => {
   const isDummy = c.id === 'fallback';
   const hasMilestones = c.milestones || isDummy;
   const hasStory = c.full_story || isDummy;
 
-  if (!hasMilestones && !hasStory) return null;
+  if (!hasMilestones && !hasStory) return <TabEmptyState title="My Story" icon={Globe} mob={mob} setActiveTab={setActiveTab} tabId="story" />;
 
   const city = c?.city || 'Bharat';
   const milestones = c.milestones || [
@@ -170,7 +188,7 @@ StoryTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, setA
 
 const ServiceCatalog = ({ c, mob }) => {
   const isDummy = c.id === 'fallback';
-  if (!c.services && !isDummy) return null;
+  if (!c.services && !isDummy) return <EmptyState title="Professional Service Catalog" />;
   const services = c.services || [
     { t: 'Cinematic Storytelling', d: '4K Cinematic Reels with professional grading and scripting.', i: Play, c: '#FF9431' },
     { t: 'Regional Strategy', d: 'Consultation on how to launch products in local markets.', i: Globe, c: '#0ea5e9' },
@@ -200,7 +218,7 @@ ServiceCatalog.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool
 
 const AchievementWall = ({ c, mob }) => {
   const isDummy = c.id === 'fallback';
-  if (!c.achievements && !isDummy) return null;
+  if (!c.achievements && !isDummy) return <EmptyState title="The Milestone Hall of Fame" />;
   const achieves = c.achievements || [
     { t: '10M+', d: 'Total Impressions', i: Activity, c: '#FF9431' },
     { t: 'Elite 100', d: 'Ranked in Top 100', i: Trophy, c: '#f97316' },
@@ -248,7 +266,7 @@ CaseStudyCard.propTypes = { title: PropTypes.string.isRequired, brand: PropTypes
 
 const InfluenceMedia = ({ c, mob }) => {
   const isDummy = c.id === 'fallback';
-  if (!c.media_stats && !isDummy) return null;
+  if (!c.media_stats && !isDummy) return <EmptyState title="Content Velocity" />;
   const stats = c.media_stats || [
     { l: 'Avg View Time', v: '45s' },
     { l: 'Save Rate', v: '12%' },
@@ -287,6 +305,10 @@ const WorkTab = ({ c, mob, setActiveTab }) => {
   const isDummy = c.id === 'fallback';
   const hasViral = c.viral_content || isDummy;
   const hasCaseStudies = c.case_studies || isDummy;
+
+  if (!c.achievements && !c.services && !hasViral && !hasCaseStudies && !c.media_stats && !isDummy) {
+     return <TabEmptyState title="Pro Work" icon={Briefcase} mob={mob} setActiveTab={setActiveTab} tabId="work" />;
+  }
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
@@ -391,7 +413,11 @@ const RateCreatorModal = ({ open, onClose, name, dsp }) => {
 };
 RateCreatorModal.propTypes = { open: PropTypes.bool.isRequired, onClose: PropTypes.func.isRequired, name: PropTypes.string.isRequired, dsp: PropTypes.func.isRequired };
 
-const LocalCollabHub = ({ c, mob, setActiveTab }) => (
+const LocalCollabHub = ({ c, mob, setActiveTab }) => {
+  const isDummy = c.id === 'fallback';
+  if (!c.local_collab && !isDummy) return <TabEmptyState title="Local Collab Hub" icon={MapPin} mob={mob} setActiveTab={setActiveTab} tabId="local" />;
+
+  return (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
     <div style={{ padding: mob ? '32px 24px' : '60px', background: 'linear-gradient(135deg, #fff 0%, #fff7ed 100%)', borderRadius: '40px', border: '1.5px solid #ffedd5', marginBottom: '40px', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', top: '-30px', right: '-30px', opacity: 0.1 }}><MapPin size={200} color="#f97316" /></div>
@@ -450,6 +476,7 @@ const LocalCollabHub = ({ c, mob, setActiveTab }) => (
     <TabNavigator activeTab="local" setActiveTab={setActiveTab} mob={mob} />
   </motion.div>
 );
+};
 LocalCollabHub.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, setActiveTab: PropTypes.func.isRequired };
 
 // Duplicate logic removed
@@ -710,7 +737,7 @@ GalleryItem.propTypes = { i: PropTypes.number.isRequired, src: PropTypes.any, mo
 const GalleryTab = ({ c, mob, setActiveTab }) => {
   const { dsp } = useApp();
   const isDummy = c.id === 'fallback';
-  if (!c.gallery && !isDummy) return null;
+  if (!c.gallery && !isDummy) return <TabEmptyState title="Gallery" icon={ImageIcon} mob={mob} setActiveTab={setActiveTab} tabId="gallery" />;
   const images = c.gallery || [1,2,3,4,5,6,7,8,9];
 
   return (
@@ -741,7 +768,7 @@ GalleryTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, se
 
 const ReviewsTab = ({ c, mob, navigate, onWriteReview, setActiveTab }) => {
   const isDummy = c.id === 'fallback';
-  if (!c.reviews && !isDummy) return null;
+  if (!c.reviews && !isDummy) return <TabEmptyState title="Reviews" icon={Star} mob={mob} setActiveTab={setActiveTab} tabId="reviews" />;
   const reviews = c.reviews || [
      { b: 'OYO Rooms', r: 5, t: 'Absolute professional. The Jaipur heritage campaign delivered 4x the expected engagement.', u: 'Brand Manager', d: '2 weeks ago', type: 'brand', id: 'oyo' },
      { b: 'Rohan Sharma', r: 5, t: 'The cultural storytelling in the summer drop was raw and authentic. Highly recommended!', u: 'Travel Creator', d: '1 month ago', type: 'creator', id: 'rohan' },
@@ -799,7 +826,7 @@ ReviewsTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, na
 
 const PackagesTab = ({ c, mob, onSelect, setActiveTab }) => {
   const isDummy = c.id === 'fallback';
-  if (!c.packages && !isDummy) return null;
+  if (!c.packages && !isDummy) return <TabEmptyState title="Packages" icon={Zap} mob={mob} setActiveTab={setActiveTab} tabId="packages" />;
   const packages = c.packages || [
     { l: 'Starter Boost', v: '₹12,500', pop: false, items: ['1 Cinematic Reel', '2 Sequential Stories', 'Link in Bio (24hrs)', 'Standard Captioning'] },
     { l: 'Growth Engine', v: '₹35,000', pop: true, items: ['3 Premium Reels', '5 High-Impact Stories', 'Managed Briefing', 'Analytics Report', 'Scripting Included'] },
@@ -871,16 +898,20 @@ export default function CreatorProfilePage() {
       } catch (err) {
         console.error('Creator not found, loading Elite Demo profile:', err);
         // Fallback for Demo/Testing
-        setC({
-          id: 'fallback',
-          name: id.charAt(0).toUpperCase() + id.slice(1),
-          slug: id,
-          photo: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop',
-          city: 'Mumbai',
-          niche: 'Lifestyle & Tech',
-          bio: 'Elite storyteller and digital creator dedicated to high-impact content and cultural narratives across Bharat.',
-          isVerified: true
-        });
+        if (id === 'empty') {
+            setC({ id: 'empty', name: 'Empty Creator Profile', slug: 'empty', photo: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop', city: 'Delhi', niche: 'Demo', bio: '', isVerified: false });
+        } else {
+            setC({
+              id: 'fallback',
+              name: id.charAt(0).toUpperCase() + id.slice(1),
+              slug: id,
+              photo: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop',
+              city: 'Mumbai',
+              niche: 'Lifestyle & Tech',
+              bio: 'Elite storyteller and digital creator dedicated to high-impact content and cultural narratives across Bharat.',
+              isVerified: true
+            });
+        }
       } finally {
         setLd(false);
       }

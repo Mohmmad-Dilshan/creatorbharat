@@ -172,7 +172,13 @@ const RatingSection = ({ val, total, onRate }) => (
      <div style={{ display: 'flex', gap: '2px' }}>
         {[1,2,3,4,5].map(s => <Star key={s} size={16} fill={s <= Math.floor(val) ? '#FF9431' : 'none'} color={s <= Math.floor(val) ? '#FF9431' : '#cbd5e1'} />)}
      </div>
-     <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>{val} <span style={{ color: '#64748b', fontWeight: 600 }}>({total} Reviews)</span></div>
+     <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>
+        {total > 0 ? (
+           <>{val} <span style={{ color: '#64748b', fontWeight: 600 }}>({total} Reviews)</span></>
+        ) : (
+           <span style={{ color: '#64748b', fontWeight: 600 }}>0.0 (No Reviews Yet)</span>
+        )}
+     </div>
      <button onClick={onRate} style={{ background: 'none', border: 'none', color: '#0073b1', fontSize: '13px', fontWeight: 800, cursor: 'pointer', textDecoration: 'underline', padding: 0 }}>Rate This Creator</button>
   </div>
 );
@@ -204,7 +210,11 @@ const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDo
        </p>
        <ContactMetadata city={c.city} followers={stats.followers} mob={mob} onContact={onContact} />
        <BadgeRow score={stats.score || 94} />
-       <RatingSection val={4.9} total={24} onRate={onRate} />
+       <RatingSection 
+          val={c.id === 'fallback' ? 4.9 : (c.rating || 0)} 
+          total={c.id === 'fallback' ? 24 : (c.reviews ? c.reviews.length : (c.reviews_count || 0))} 
+          onRate={onRate} 
+       />
        
        <HeroKeyAchievements mob={mob} />
 

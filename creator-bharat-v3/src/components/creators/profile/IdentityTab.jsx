@@ -16,11 +16,19 @@ import {
 import { Card } from '@/components/common/Primitives';
 import { fmt } from '@/utils/helpers';
 
+const EmptyState = ({ title }) => (
+  <Card style={{ padding: '32px', textAlign: 'center', background: '#f8fafc', borderRadius: '32px', border: '1.5px dashed #e2e8f0', marginBottom: '40px' }}>
+     <div style={{ fontSize: '16px', fontWeight: 900, color: '#94a3b8', marginBottom: '8px' }}>{title}</div>
+     <div style={{ fontSize: '13px', color: '#cbd5e1', fontWeight: 600 }}>Creator has not updated this section yet.</div>
+  </Card>
+);
+EmptyState.propTypes = { title: PropTypes.string.isRequired };
+
 // --- SUB-COMPONENTS FOR IDENTITY TAB ---
 
 const HumanStory = ({ c, mob }) => {
   const isDummy = c.id === 'fallback';
-  if (!c.bio && !isDummy) return null;
+  if (!c.bio && !isDummy) return <EmptyState title="Human-Centric Narrative" />;
   const text = c.bio || "Every creator has a soul, but only a few know how to show it. I believe in content that doesn't just scroll but stays. My journey began with a simple camera and a complex dream to show the real Bharat.";
   
   return (
@@ -39,7 +47,7 @@ HumanStory.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
 
 const AIFitInsight = ({ c, mob }) => {
   const isDummy = c.id === 'fallback';
-  if (!c.ai_intel && !isDummy) return null;
+  if (!c.ai_intel && !isDummy) return <EmptyState title="AI Brand-Fit Intel" />;
   const match = c.ai_intel?.match || "94%";
   const summary = c.ai_intel?.summary || "Authenticity, Regional Authority, and High-Retention Storytelling.";
   const stats = c.ai_intel?.stats || [{ l: 'Safety', v: '99%' }, { l: 'Niche Auth', v: 'High' }, { l: 'ROI Potential', v: '4.2x' }];
@@ -69,7 +77,7 @@ AIFitInsight.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool }
 
 const ContentPhilosophy = ({ c, mob }) => {
   const isDummy = c.id === 'fallback';
-  if (!c.philosophy && !isDummy) return null;
+  if (!c.philosophy && !isDummy) return <EmptyState title="Content Philosophy" />;
   const text = c.philosophy || `"Main sirf videos nahi banata, main ${c.city || 'Bharat'} ki mitti ki kahaniyan sunata hoon. Brands ko emotional connect chahiye, aur meri audience ko authenticity—main in dono ko milata hoon cinematic rawness ke saath."`;
 
   return (
@@ -133,7 +141,7 @@ EliteIntelligenceHub.propTypes = { stats: PropTypes.object.isRequired, mob: Prop
 
 const GeoIntelligence = ({ c, mob }) => {
   const isDummy = c.id === 'fallback';
-  if (!c.audience_hubs && !isDummy) return null;
+  if (!c.audience_hubs && !isDummy) return <EmptyState title="Geo-Cultural Intelligence" />;
   const text = c.audience_desc || `${c.name}'s influence is deeply rooted in regional culture, making them a high-impact choice for brands targeting Tier 2 & Tier 3 markets with premium aspirations.`;
   const hubs = c.audience_hubs || [{ l: 'Regional Bharat', d: '72% Majority', p: 72 }, { l: 'Metro Tier 1', d: '28% Reach', p: 28 }];
 
@@ -174,7 +182,7 @@ GeoIntelligence.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.boo
 
 const ExpertiseHub = ({ c, mob }) => {
   const isDummy = c.id === 'fallback';
-  if (!c.expertise && !isDummy) return null;
+  if (!c.expertise && !isDummy) return <EmptyState title="Technical & Creative Prowess" />;
   const groups = c.expertise || [
     { t: 'Production', items: ['4K Rendering', 'Sound Design'], i: Play, c: '#FF9431' },
     { t: 'Creative', items: ['Storytelling', 'Hinglish'], i: ImageIcon, c: '#0ea5e9' },
@@ -205,7 +213,7 @@ ExpertiseHub.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool }
 
 const NationalToLocalBridge = ({ c, mob }) => {
   const isDummy = c.id === 'fallback';
-  if (!c.tagline && !isDummy) return null;
+  if (!c.tagline && !isDummy) return <EmptyState title="National to Local Bridge" />;
   const text = c.tagline || `"Authentic storytelling for the digital age."`;
 
   return (
@@ -248,7 +256,7 @@ TheEliteEdge.propTypes = { mob: PropTypes.bool };
 
 const LocationDominanceVoice = ({ c, mob }) => {
   const isDummy = c.id === 'fallback';
-  if (!c.local_voice && !isDummy) return null;
+  if (!c.local_voice && !isDummy) return <EmptyState title="Location Dominance" />;
   const text = c.local_voice || `"Main sabse zyada <b>${c.city || 'Rajasthan'}</b> mein popular hoon kyunki wahan ki language aur culture meri videos ki soul hai. Brands ko agar is heartland mein ghusna hai, toh mera content sabse tez rasta hai."`;
   const hubs = c.local_hubs || ['Indore', 'Mumbai', 'Bhopal'];
   const pen = c.local_penetration || '85%';
@@ -335,7 +343,7 @@ export const SocialLinkTree = ({ links = {}, mob }) => {
     ? MASTER_PLATFORMS.filter(p => (links || {})[p.id]) 
     : MASTER_PLATFORMS.slice(0, 5);
 
-  if (activeLinks.length === 0) return null;
+  if (activeLinks.length === 0) return <EmptyState title="Social Platforms" />;
 
   return (
     <Card style={{ padding: mob ? '32px 24px' : '48px', borderRadius: '40px', marginBottom: '40px', background: '#fff', border: '1.5px solid #f1f5f9' }}>
