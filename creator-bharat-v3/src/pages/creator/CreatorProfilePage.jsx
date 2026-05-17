@@ -859,6 +859,31 @@ PackagesTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, o
 
 // --- MAIN PAGE ---
 
+const getFallbackCreator = (id) => {
+  if (id === 'empty') {
+    return {
+      id: 'empty',
+      name: 'Empty Creator Profile',
+      slug: 'empty',
+      photo: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop',
+      city: 'Delhi',
+      niche: 'Demo',
+      bio: '',
+      isVerified: false
+    };
+  }
+  return {
+    id: 'fallback',
+    name: id.charAt(0).toUpperCase() + id.slice(1),
+    slug: id,
+    photo: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop',
+    city: 'Mumbai',
+    niche: 'Lifestyle & Tech',
+    bio: 'Elite storyteller and digital creator dedicated to high-impact content and cultural narratives across Bharat.',
+    isVerified: true
+  };
+};
+
 export default function CreatorProfilePage() {
   const { id } = useParams();
   const { st, dsp } = useApp();
@@ -889,38 +914,10 @@ export default function CreatorProfilePage() {
     const triggerFetch = async () => {
       try {
         const found = await fetchCreatorById(id);
-        if (found) {
-          setC(found);
-        } else {
-          // Fallback for Demo/Testing
-          setC({
-            id: 'fallback',
-            name: id.charAt(0).toUpperCase() + id.slice(1),
-            slug: id,
-            photo: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop',
-            city: 'Mumbai',
-            niche: 'Lifestyle & Tech',
-            bio: 'Elite storyteller and digital creator dedicated to high-impact content and cultural narratives across Bharat.',
-            isVerified: true
-          });
-        }
+        setC(found || getFallbackCreator(id));
       } catch (err) {
         console.error('Creator not found, loading Elite Demo profile:', err);
-        // Fallback for Demo/Testing
-        if (id === 'empty') {
-            setC({ id: 'empty', name: 'Empty Creator Profile', slug: 'empty', photo: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop', city: 'Delhi', niche: 'Demo', bio: '', isVerified: false });
-        } else {
-            setC({
-              id: 'fallback',
-              name: id.charAt(0).toUpperCase() + id.slice(1),
-              slug: id,
-              photo: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop',
-              city: 'Mumbai',
-              niche: 'Lifestyle & Tech',
-              bio: 'Elite storyteller and digital creator dedicated to high-impact content and cultural narratives across Bharat.',
-              isVerified: true
-            });
-        }
+        setC(getFallbackCreator(id));
       } finally {
         setLd(false);
       }
@@ -954,11 +951,95 @@ export default function CreatorProfilePage() {
   };
 
   if (ld) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fcfcfc' }}>
-       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
-          <ShieldCheck size={48} color="#FF9431" style={{ animation: 'pulse 1.5s infinite ease-in-out' }} />
-          <p style={{ fontSize: '12px', fontWeight: 900, color: '#94a3b8', letterSpacing: '2px', textTransform: 'uppercase' }}>Authenticating Profile...</p>
-       </div>
+    <div style={{ minHeight: '100vh', background: '#fcfcfc', color: '#0f172a', paddingBottom: '100px' }}>
+      {/* Injecting CSS Keyframes inline */}
+      <style>{`
+        @keyframes cbShimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        .shimmer-light {
+          background: linear-gradient(90deg, #f8fafc 25%, #e2e8f0 37%, #f8fafc 63%);
+          background-size: 200% 100%;
+          animation: cbShimmer 1.5s infinite ease-in-out;
+        }
+      `}</style>
+
+      {/* SKELETON HERO COVER (LIGHT WHITE) */}
+      <div style={{ background: '#ffffff', padding: mob ? '40px 16px 60px' : '80px 0 100px', borderBottom: '1px solid #f1f5f9', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: mob ? '0 16px' : '0 24px', display: 'flex', flexDirection: mob ? 'column' : 'row', gap: '32px', alignItems: 'center' }}>
+          
+          {/* Avatar Circle Shimmer */}
+          <div className="shimmer-light" style={{ width: mob ? '120px' : '180px', height: mob ? '120px' : '180px', borderRadius: '50%', flexShrink: 0, border: '4px solid #fff', boxShadow: '0 12px 32px rgba(0,0,0,0.05)' }} />
+          
+          {/* Details Shimmer */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start', gap: '16px', width: '100%' }}>
+            
+            {/* Saffron accent mini-pill */}
+            <div className="shimmer-light" style={{ width: '100px', height: '20px', borderRadius: '100px' }} />
+            
+            {/* Creator Name pulse */}
+            <div className="shimmer-light" style={{ width: mob ? '80%' : '320px', height: '40px', borderRadius: '12px' }} />
+            
+            {/* Bio paragraph pulses */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', alignItems: mob ? 'center' : 'flex-start' }}>
+              <div className="shimmer-light" style={{ width: mob ? '95%' : '480px', height: '16px', borderRadius: '8px' }} />
+              <div className="shimmer-light" style={{ width: mob ? '85%' : '400px', height: '16px', borderRadius: '8px' }} />
+            </div>
+
+            {/* Verification & Button Group */}
+            <div style={{ display: 'flex', gap: '12px', marginTop: '12px', width: '100%', justifyContent: mob ? 'center' : 'flex-start' }}>
+              <div className="shimmer-light" style={{ width: '120px', height: '36px', borderRadius: '100px' }} />
+              <div className="shimmer-light" style={{ width: '140px', height: '36px', borderRadius: '100px' }} />
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {/* STATS STRIP SHIMMER */}
+      <div style={{ background: '#f8fafc', borderBottom: '1px solid #f1f5f9', padding: '24px 0' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: mob ? '0 16px' : '0 24px', display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)', gap: '16px' }}>
+          {[1,2,3,4,5].slice(0, mob ? 4 : 5).map(idx => (
+            <div key={idx} className="shimmer-light" style={{ height: '70px', borderRadius: '16px', border: '1px solid #f1f5f9' }} />
+          ))}
+        </div>
+      </div>
+
+      {/* STICKY NAV TABS SHIMMER */}
+      <div style={{ background: '#fff', borderBottom: '1px solid #f1f5f9', padding: '16px 0' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: mob ? '0 16px' : '0 24px', display: 'flex', gap: '24px', overflowX: 'auto', scrollbarWidth: 'none' }}>
+          {[1,2,3,4,5,6].map(idx => (
+            <div key={idx} className="shimmer-light" style={{ width: '100px', height: '32px', borderRadius: '8px', flexShrink: 0 }} />
+          ))}
+        </div>
+      </div>
+
+      {/* BODY COMPONENT SHIMMER */}
+      <div style={{ maxWidth: '1100px', margin: '40px auto 0', padding: mob ? '0 16px' : '0 24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '2fr 1fr', gap: '40px' }}>
+          
+          {/* Main Content Pane */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+            <div className="shimmer-light" style={{ height: '350px', borderRadius: '32px' }} />
+            <div className="shimmer-light" style={{ height: '220px', borderRadius: '32px' }} />
+          </div>
+
+          {/* Sidebar Connect Pane */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div className="shimmer-light" style={{ height: '200px', borderRadius: '32px' }} />
+            <div className="shimmer-light" style={{ height: '140px', borderRadius: '32px' }} />
+          </div>
+
+        </div>
+      </div>
+
+      {/* Floating sweep loading tag */}
+      <div style={{ position: 'fixed', bottom: '24px', right: '24px', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)', padding: '12px 24px', borderRadius: '100px', color: '#0f172a', fontSize: '11px', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 12px 32px rgba(0,0,0,0.08)', border: '1px solid #e2e8f0' }}>
+        <ShieldCheck size={14} color="#FF9431" style={{ animation: 'spin 2s infinite linear' }} />
+        <span>Authenticating {id}..</span>
+      </div>
+
     </div>
   );
   if (!c) return <div style={{ ...W(), padding: '120px 20px', textAlign: 'center' }}><Empty title="Profile Not Found" onCta={() => navigate('/creators')} /></div>;
