@@ -121,15 +121,30 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
               overflow: visible !important;
             }
 
-            /* Prevent elements from being cut in half across pages */
+            /* High-fidelity section guards */
             .printable-section { 
-              page-break-inside: avoid !important; 
-              break-inside: avoid !important; 
+              /* Removed page-break-inside: avoid to allow natural flowing across pages */
               margin: 0 !important;
-              padding: 40px 60px !important;
-              width: 100% !important;
+              padding: 0 !important;
               display: block !important;
-              background: white !important;
+              background: transparent !important;
+            }
+
+            .print-layout {
+               display: block !important;
+            }
+            .print-layout::after {
+               content: "";
+               clear: both;
+               display: table;
+            }
+            .print-col-left {
+               float: left !important;
+               width: 58% !important;
+            }
+            .print-col-right {
+               float: right !important;
+               width: 36% !important;
             }
 
             @page { 
@@ -312,11 +327,11 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                         </div>
 
                         {/* DATA ANALYTICS */}
-                        <div style={{ padding: '60px' }}>
-                           <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '60px' }}>
+                        <div style={{ padding: '40px 60px' }}>
+                           <div className="print-layout" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '60px' }}>
                               
                               {/* CORE METRICS */}
-                              <div className="printable-section">
+                              <div className="printable-section print-col-left">
                                  <SectionTitle icon={TrendingUp}>Performance Audit</SectionTitle>
                                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '60px' }}>
                                     <StatBox label="Total Reach" value={fmt.num(stats.followers)} icon={Globe} color="#3b82f6" />
@@ -357,7 +372,7 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                               </div>
 
                               {/* AUDIENCE ARCHITECTURE */}
-                              <div className="printable-section">
+                              <div className="printable-section print-col-right">
                                  <SectionTitle icon={PieChart}>Audience Architecture</SectionTitle>
                                  <div style={{ background: '#f8fafc', padding: '40px', borderRadius: '40px', border: '1.5px solid #f1f5f9', marginBottom: '60px' }}>
                                     <div style={{ marginBottom: '40px' }}>
@@ -413,7 +428,7 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                            </div>
 
                            {/* FOOTER VERIFICATION */}
-                           <div style={{ marginTop: '100px', borderTop: '2.5px solid #f1f5f9', padding: '50px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                           <div style={{ clear: 'both', marginTop: '60px', borderTop: '2.5px solid #f1f5f9', padding: '40px 0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                               <div style={{ display: 'flex', gap: '20px' }}>
                                  <div style={{ width: '60px', height: '60px', background: '#0f172a', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     <ShieldCheck size={32} color="#FF9431" />
