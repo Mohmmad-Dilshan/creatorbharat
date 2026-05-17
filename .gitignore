@@ -27,6 +27,8 @@ full_n8n_frontend_map.md
 # EVERYTHING IN BACKUPS IS HIDDEN
 backups/
 v3-backup-stable/
+backups_archive/
+V3_REF_BACKUP_PRO/
 scratch/
 temp/
 *.bak
