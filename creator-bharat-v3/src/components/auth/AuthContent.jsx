@@ -51,12 +51,24 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
 
   const onAuthSuccess = (user) => {
     dsp({ t: 'LOGIN', u: user, role: user.role });
+    
+    // 1. Check for Pending Application
     const pendingApply = LS.get('cb_pending_apply');
     if (pendingApply) {
-      LS.remove('cb_pending_apply', null); // clear it
+      LS.remove('cb_pending_apply', null);
       navigate(`/campaigns?apply=${pendingApply}`);
-    } else {
+      return;
+    }
+
+    // 2. Role-Based Redirection
+    if (user.role === 'brand') {
+      navigate('/brand-dashboard');
+    } else if (user.role === 'creator') {
+      // In a real app, we would check if email is verified
+      // if (!user.isVerified) { navigate('/verify'); return; }
       navigate('/dashboard');
+    } else {
+      navigate('/');
     }
   };
 

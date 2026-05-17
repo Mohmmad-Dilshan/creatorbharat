@@ -49,6 +49,8 @@ const ApplyPage = lazy(() => import('./pages/auth/ApplyPage'));
 const BrandRegisterPage = lazy(() => import('./pages/auth/BrandRegisterPage'));
 const JoinPage = lazy(() => import('./pages/auth/JoinPage'));
 const ForgotPasswordPage = lazy(() => import('./pages/auth/ForgotPasswordPage'));
+const VerificationPage = lazy(() => import('./pages/auth/VerificationPage'));
+const ResetPasswordPage = lazy(() => import('./pages/auth/ResetPasswordPage'));
 
 // Blog
 const BlogPage = lazy(() => import('./pages/blog/BlogPage'));
@@ -125,6 +127,8 @@ export default function AppRoutes({ location }) {
         <Route path="/brand-register" element={<BrandRegisterPage />} />
         <Route path="/join" element={<JoinPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/verify" element={<VerificationPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         {/* Public Layout Group */}
         <Route element={<PublicLayout><Outlet /></PublicLayout>}>
