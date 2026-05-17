@@ -264,53 +264,68 @@ const TabNavigator = ({ activeTab, setActiveTab, mob }) => {
 };
 TabNavigator.propTypes = { activeTab: PropTypes.string.isRequired, setActiveTab: PropTypes.func.isRequired, mob: PropTypes.bool };
 
-export const SocialLinkTree = ({ mob }) => (
-  <Card style={{ padding: mob ? '32px 24px' : '48px', borderRadius: '40px', marginBottom: '40px', background: '#fff', border: '1.5px solid #f1f5f9' }}>
-     <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <h3 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', marginBottom: '12px' }}>The Digital Ecosystem</h3>
-        <p style={{ fontSize: '14px', color: '#64748b', fontWeight: 600 }}>Connect with me across all professional platforms.</p>
-     </div>
-     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '600px', margin: '0 auto' }}>
-        {[
-          { l: 'Official Instagram', s: '125K+ Community', i: ImageIcon, c: '#E4405F', url: 'https://instagram.com' },
-          { l: 'YouTube Channel', s: 'Daily Vlogs & Stories', i: Play, c: '#FF0000', url: 'https://youtube.com' },
-          { l: 'Professional LinkedIn', s: 'Brand Collaborations', i: Briefcase, c: '#0077B5', url: 'https://linkedin.com' },
-          { l: 'Twitter (X)', s: 'Real-time Thoughts', i: Globe, c: '#000', url: 'https://twitter.com' },
-          { l: 'Official Website', s: 'Portfolio & Media Kit', i: Globe, c: '#FF9431', url: '#' }
-        ].map(link => (
-          <button 
-            key={link.l}
-            onClick={() => window.open(link.url, '_blank')}
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'space-between', 
-              padding: '20px 24px', 
-              background: '#f8fafc', 
-              border: '1.5px solid #f1f5f9', 
-              borderRadius: '24px', 
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              width: '100%',
-              textAlign: 'left'
-            }}
-          >
-             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <div style={{ width: '44px', height: '44px', background: `${link.c}10`, borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                   <link.i size={20} color={link.c} />
-                </div>
-                <div>
-                   <div style={{ fontSize: '15px', fontWeight: 900, color: '#0f172a' }}>{link.l}</div>
-                   <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700 }}>{link.s}</div>
-                </div>
-             </div>
-             <ArrowRight size={18} color="#cbd5e1" />
-          </button>
-        ))}
-     </div>
-  </Card>
-);
-SocialLinkTree.propTypes = { mob: PropTypes.bool };
+export const SocialLinkTree = ({ links = {}, mob }) => {
+  // Master list of all possible platforms a creator can add
+  const MASTER_PLATFORMS = [
+    { id: 'instagram', l: 'Official Instagram', s: 'Visual Community', i: ImageIcon, c: '#E4405F' },
+    { id: 'youtube', l: 'YouTube Channel', s: 'Video Content & Vlogs', i: Play, c: '#FF0000' },
+    { id: 'linkedin', l: 'Professional LinkedIn', s: 'Brand Collaborations', i: Briefcase, c: '#0077B5' },
+    { id: 'twitter', l: 'Twitter (X)', s: 'Real-time Thoughts', i: Globe, c: '#000' },
+    { id: 'facebook', l: 'Facebook Page', s: 'Community & Groups', i: Globe, c: '#1877F2' },
+    { id: 'snapchat', l: 'Snapchat', s: 'Daily Stories & Filters', i: ImageIcon, c: '#FFFC00' },
+    { id: 'pinterest', l: 'Pinterest', s: 'Moodboards & Ideas', i: ImageIcon, c: '#E60023' },
+    { id: 'twitch', l: 'Twitch', s: 'Live Streaming', i: Play, c: '#9146FF' },
+    { id: 'spotify', l: 'Spotify / Podcasts', s: 'Podcasts & Audio', i: Mic2, c: '#1DB954' },
+    { id: 'discord', l: 'Discord Server', s: 'Exclusive Community', i: Globe, c: '#5865F2' },
+    { id: 'reddit', l: 'Reddit', s: 'Subreddit Discussions', i: Globe, c: '#FF4500' },
+    { id: 'website', l: 'Official Website', s: 'Portfolio & Media Kit', i: Globe, c: '#FF9431' }
+  ];
+
+  // Optional logic: Only show platforms the creator has filled out. 
+  // If no links exist (dummy data phase), show a default set to keep UI intact.
+  const activeLinks = Object.keys(links || {}).length > 0 
+    ? MASTER_PLATFORMS.filter(p => (links || {})[p.id]) 
+    : MASTER_PLATFORMS.slice(0, 5);
+
+  if (activeLinks.length === 0) return null;
+
+  return (
+    <Card style={{ padding: mob ? '32px 24px' : '48px', borderRadius: '40px', marginBottom: '40px', background: '#fff', border: '1.5px solid #f1f5f9' }}>
+       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <h3 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', marginBottom: '12px' }}>The Digital Ecosystem</h3>
+          <p style={{ fontSize: '14px', color: '#64748b', fontWeight: 600 }}>Connect with me across all professional platforms.</p>
+       </div>
+       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '600px', margin: '0 auto' }}>
+          {activeLinks.map(link => {
+            const url = (links || {})[link.id] || '#';
+            return (
+              <button 
+                key={link.id}
+                onClick={() => window.open(url, '_blank')}
+                style={{ 
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
+                  padding: '20px 24px', background: '#f8fafc', border: '1.5px solid #f1f5f9', 
+                  borderRadius: '24px', cursor: 'pointer', transition: 'all 0.2s', width: '100%', textAlign: 'left'
+                }}
+              >
+                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{ width: '44px', height: '44px', background: `${link.c}10`, borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                       <link.i size={20} color={link.c} />
+                    </div>
+                    <div>
+                       <div style={{ fontSize: '15px', fontWeight: 900, color: '#0f172a' }}>{link.l}</div>
+                       <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700 }}>{link.s}</div>
+                    </div>
+                 </div>
+                 <ArrowRight size={18} color="#cbd5e1" />
+              </button>
+            );
+          })}
+       </div>
+    </Card>
+  );
+};
+SocialLinkTree.propTypes = { links: PropTypes.object, mob: PropTypes.bool };
 
 // --- MAIN IDENTITY TAB COMPONENT ---
 
@@ -344,7 +359,7 @@ export const IdentityTab = ({ c, stats, onRate, mob, setActiveTab }) => (
     <TrustBadge />
     <TheEliteEdge mob={mob} />
     <LocationDominanceVoice c={c} mob={mob} />
-    <SocialLinkTree mob={mob} />
+    <SocialLinkTree links={c?.links} mob={mob} />
     <TabNavigator activeTab="identity" setActiveTab={setActiveTab} mob={mob} />
   </motion.div>
 );
