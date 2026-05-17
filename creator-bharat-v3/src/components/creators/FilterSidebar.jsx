@@ -181,7 +181,7 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches, plat
                         }}
                       >
                         <option value="">All Languages</option>
-                        {['Hindi', 'English', 'Punjabi', 'Tamil', 'Telugu', 'Bengali', 'Marathi', 'Gujarati'].map(l => (
+                        {['Hindi', 'English', 'Bengali', 'Marathi', 'Telugu', 'Tamil', 'Gujarati', 'Urdu', 'Kannada', 'Odia', 'Malayalam', 'Punjabi', 'Assamese', 'Maithili', 'Santali', 'Kashmiri', 'Nepali', 'Sindhi', 'Dogri', 'Konkani', 'Manipuri', 'Bodo', 'Sanskrit', 'Bhojpuri', 'Rajasthani', 'Haryanvi', 'Marwari', 'Chhattisgarhi', 'Magahi', 'Tulu', 'Awadhi', 'Garhwali', 'Kumaoni', 'Other'].map(l => (
                           <option key={l} value={l}>{l}</option>
                         ))}
                       </select>
