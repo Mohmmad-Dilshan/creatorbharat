@@ -103,12 +103,16 @@ export async function fetchCreators({ limit = 250, force = false } = {}) {
       const local = LS.get('cb_creators', []);
       const enrichedRemote = remote.map(c => getEnrichedCreator(c));
 
-      const merged = [...enrichedRemote];
+      let merged = [...enrichedRemote];
       local.forEach(lc => {
         if (!merged.some(c => c.id === lc.id || c.email === lc.email)) {
           merged.push(getEnrichedCreator(lc));
         }
       });
+
+      if (merged.length === 0) {
+        merged = SEED_CREATORS;
+      }
 
       _cache.creators = merged;
       _cache.expiry = Date.now() + CACHE_DURATION;
@@ -167,7 +171,10 @@ export async function fetchCampaigns({ limit = 100, force = false } = {}) {
   _campaignsPromise = (async () => {
     try {
       const res = await apiCall(`/campaigns?limit=${limit}`);
-      const list = res.campaigns || (Array.isArray(res) ? res : []);
+      let list = res.campaigns || (Array.isArray(res) ? res : []);
+      if (list.length === 0) {
+        list = SEED_CAMPAIGNS;
+      }
       _cache.campaigns = list;
       _cache.expiry = Date.now() + CACHE_DURATION;
       return list;

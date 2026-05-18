@@ -81,7 +81,7 @@ export default function TermsPage() {
                Terms of <span style={{ fontStyle: 'italic', color: '#FF9431' }}>Service.</span>
              </h1>
              <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.6)', fontWeight: 500, maxWidth: '600px', margin: '0 auto' }}>
-               The operating agreement for Bharat\'s most trusted creator-brand ecosystem.
+               The operating agreement for Bharat's most trusted creator-brand ecosystem.
              </p>
           </motion.div>
         </div>

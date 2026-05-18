@@ -89,7 +89,7 @@ export default function CreatorGuidelinesPage() {
                Creator <span style={{ fontStyle: 'italic', color: '#FF9431' }}>Guidelines.</span>
              </h1>
              <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.6)', fontWeight: 500, maxWidth: '600px', margin: '0 auto' }}>
-               Maintaining the "Elite" status of Bharat\'s largest talent ecosystem through discipline and excellence.
+               Maintaining the "Elite" status of Bharat's largest talent ecosystem through discipline and excellence.
              </p>
           </motion.div>
         </div>
@@ -186,7 +186,7 @@ export default function CreatorGuidelinesPage() {
           <div id="quality" style={{ marginBottom: '80px' }}>
             <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '36px', fontWeight: 900, color: '#0f172a', marginBottom: '24px' }}>4. Deliverable Standards</h2>
             <p>
-              Content must meet the "Elite Aesthetic" standard of the platform. This means high-resolution visuals, clear audio, and adherence to the brand\'s creative brief.
+              Content must meet the "Elite Aesthetic" standard of the platform. This means high-resolution visuals, clear audio, and adherence to the brand's creative brief.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '20px', marginTop: '24px' }}>
                <div style={{ padding: '24px', background: '#ecfdf5', borderRadius: '20px', border: '1px solid #d1fae5' }}>
@@ -204,7 +204,7 @@ export default function CreatorGuidelinesPage() {
                     <li>Blurry or shaky handheld footage</li>
                     <li>Background noise in audio</li>
                     <li>Overpowering filters that hide product</li>
-                    <li>Plagiarizing other creators\' concepts</li>
+                    <li>Plagiarizing other creators' concepts</li>
                   </ul>
                </div>
             </div>

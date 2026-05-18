@@ -83,7 +83,7 @@ export default function BrandGuidelinesPage() {
                Brand <span style={{ fontStyle: 'italic', color: '#FF9431' }}>Protocol.</span>
              </h1>
              <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.6)', fontWeight: 500, maxWidth: '600px', margin: '0 auto' }}>
-               Framework for high-impact collaborations and professional engagement on India\'s premier talent network.
+               Framework for high-impact collaborations and professional engagement on India's premier talent network.
              </p>
           </motion.div>
         </div>

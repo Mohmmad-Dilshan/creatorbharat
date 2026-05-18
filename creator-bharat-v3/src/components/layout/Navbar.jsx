@@ -4,16 +4,171 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '@/core/context';
 import { Logo, Btn } from '@/components/common/Primitives';
 import { T } from '@/core/theme';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const NavDropdown = ({ label, items, go, location }) => {
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const timeoutRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      setOpen(false);
+    }, 200); // 200ms grace period to bridge mouse movements
+  };
+
+  const handleTriggerClick = (e) => {
+    e.stopPropagation();
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  const anyActive = items.some(item => location.pathname === item.path);
+
+  return (
+    <div 
+      ref={dropdownRef} 
+      style={{ position: 'relative' }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <button
+        onClick={handleTriggerClick}
+        className="nav-link dropdown-trigger"
+        style={{
+          padding: '10px 18px', borderRadius: 100, border: 'none',
+          background: anyActive ? 'rgba(0,0,0,0.04)' : 'transparent',
+          color: anyActive ? '#111' : 'rgba(0,0,0,0.5)',
+          fontWeight: 800, fontSize: 13, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', gap: 4,
+          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+        }}
+      >
+        {label}
+        <ChevronDown size={14} style={{ 
+          transform: open ? 'rotate(180deg)' : 'none', 
+          transition: 'transform 0.2s ease',
+          opacity: 0.7
+        }} />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div 
+            initial={{ opacity: 0, y: 15, x: '-50%' }}
+            animate={{ opacity: 1, y: 8, x: '-50%' }}
+            exit={{ opacity: 0, y: 15, x: '-50%' }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: 'absolute',
+              top: '100%',
+              left: '50%',
+              background: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(0,0,0,0.06)',
+              borderRadius: 16,
+              padding: '8px',
+              minWidth: 160,
+              boxShadow: '0 10px 30px rgba(0,0,0,0.08)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+              zIndex: 999999
+            }}
+          >
+            {items.map(item => {
+              const active = location.pathname === item.path;
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => {
+                    setOpen(false);
+                    go(item.path);
+                  }}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: 8,
+                    border: 'none',
+                    background: active ? 'rgba(0,0,0,0.04)' : 'transparent',
+                    color: active ? '#FF9431' : 'rgba(0,0,0,0.7)',
+                    fontWeight: 700,
+                    fontSize: 12,
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={e => {
+                    e.target.style.background = 'rgba(0,0,0,0.03)';
+                    if (!active) e.target.style.color = '#111';
+                  }}
+                  onMouseLeave={e => {
+                    e.target.style.background = active ? 'rgba(0,0,0,0.04)' : 'transparent';
+                    e.target.style.color = active ? '#FF9431' : 'rgba(0,0,0,0.7)';
+                  }}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+NavDropdown.propTypes = {
+  label: PropTypes.string.isRequired,
+  items: PropTypes.arrayOf(PropTypes.shape({
+    path: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired
+  })).isRequired,
+  go: PropTypes.func.isRequired,
+  location: PropTypes.object.isRequired
+};
 
 const NavLinks = ({ links, location, go }) => (
   <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, justifyContent: 'center' }}>
-    {links.map(([path, label]) => {
-      const active = location.pathname === path;
+    {links.map((link) => {
+      if (link.items) {
+        return (
+          <NavDropdown 
+            key={link.label} 
+            label={link.label} 
+            items={link.items} 
+            go={go} 
+            location={location} 
+          />
+        );
+      }
+      
+      const active = location.pathname === link.path;
       return (
         <button
-          key={path}
-          onClick={() => go(path)}
+          key={link.path}
+          onClick={() => go(link.path)}
           className="nav-link"
           style={{
             padding: '10px 18px', borderRadius: 100, border: 'none',
@@ -23,7 +178,7 @@ const NavLinks = ({ links, location, go }) => (
             transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
           }}
         >
-          {label}
+          {link.label}
         </button>
       );
     })}
@@ -31,8 +186,8 @@ const NavLinks = ({ links, location, go }) => (
 );
 
 NavLinks.propTypes = {
-  links: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
-  location: PropTypes.shape({ pathname: PropTypes.string }).isRequired,
+  links: PropTypes.array.isRequired,
+  location: PropTypes.object.isRequired,
   go: PropTypes.func.isRequired
 };
 
@@ -140,10 +295,25 @@ export default function Navbar() {
   };
 
   const links = [
-    ['/creators', 'Creators'],
-    ['/campaigns', 'Campaigns'],
-    ['/blog', 'Hub'],
-    ['/about', 'About']
+    { path: '/creators', label: 'Creators' },
+    { path: '/campaigns', label: 'Campaigns' },
+    { 
+      label: 'Explore', 
+      items: [
+        { path: '/leaderboard', label: 'Leaderboard' },
+        { path: '/rate-calc', label: 'Rate Calculator' },
+        { path: '/pricing', label: 'Pricing Plans' }
+      ]
+    },
+    { 
+      label: 'Resources', 
+      items: [
+        { path: '/blog', label: 'Creator Hub' },
+        { path: '/faq', label: 'Help & FAQ' },
+        { path: '/contact', label: 'Contact Us' }
+      ]
+    },
+    { path: '/about', label: 'About' }
   ];
 
   const getPadding = () => {
@@ -163,18 +333,22 @@ export default function Navbar() {
     }}>
       <div style={{
         maxWidth: 1200, width: '100%', margin: '0 auto', position: 'relative',
-        borderRadius: 102, padding: '2px', overflow: 'hidden', pointerEvents: 'auto',
+        borderRadius: 102, padding: '2px', pointerEvents: 'auto',
         boxShadow: scroll ? '0 20px 50px rgba(0,0,0,0.1)' : '0 10px 30px rgba(0,0,0,0.05)',
         transition: 'all 0.5s ease',
         background: 'rgba(255, 255, 255, 0.1)'
       }}>
+        {/* Animated Border Container to clip the spinning flag gradient safely without clipping dropdowns */}
         <div style={{
-          position: 'absolute', top: '50%', left: '50%', width: '200%', height: '500%',
-          background: 'conic-gradient(rgb(19, 136, 8) 0%, rgb(255, 255, 255) 20%, rgb(255, 153, 51) 40%, rgb(255, 153, 51) 60%, rgb(255, 255, 255) 80%, rgb(19, 136, 8) 100%)',
-          animation: 'spinBorder 5s linear infinite',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 0
-        }} />
+          position: 'absolute', inset: 0, borderRadius: 102, overflow: 'hidden', zIndex: 0
+        }}>
+          <div style={{
+            position: 'absolute', top: '50%', left: '50%', width: '200%', height: '500%',
+            background: 'conic-gradient(rgb(19, 136, 8) 0%, rgb(255, 255, 255) 20%, rgb(255, 153, 51) 40%, rgb(255, 153, 51) 60%, rgb(255, 255, 255) 80%, rgb(19, 136, 8) 100%)',
+            animation: 'spinBorder 5s linear infinite',
+            transform: 'translate(-50%, -50%)'
+          }} />
+        </div>
 
         <style>{`
           @keyframes spinBorder {
