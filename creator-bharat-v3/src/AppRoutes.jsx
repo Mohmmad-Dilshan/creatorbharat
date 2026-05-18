@@ -18,6 +18,7 @@ const FAQPage = lazy(() => import('./pages/public/FAQPage'));
 const RateCalcPage = lazy(() => import('./pages/public/RateCalcPage'));
 const LeaderboardPage = lazy(() => import('./pages/public/LeaderboardPage'));
 const OfficialProfilePage = lazy(() => import('./pages/public/OfficialProfilePage'));
+const ServerErrorPage = lazy(() => import('./pages/public/ServerErrorPage'));
 
 // Brand/Marketplace Pages
 const CreatorsPage = lazy(() => import('./pages/brand/CreatorsPage'));
@@ -83,6 +84,7 @@ export default function AppRoutes({ location }) {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/verify" element={<VerificationPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/500" element={<ServerErrorPage />} />
 
         {/* Public Layout Group */}
         <Route element={<PublicLayout><Outlet /></PublicLayout>}>

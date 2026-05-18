@@ -43,6 +43,53 @@ RollingNumber.propTypes = {
   value: PropTypes.number.isRequired
 };
 
+const RatingGauge = ({ score }) => {
+  const radius = 45;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (score / 100) * circumference;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+      <div style={{ position: 'relative', width: '110px', height: '110px' }}>
+        <svg width="110" height="110" style={{ transform: 'rotate(-90deg)', overflow: 'visible' }}>
+          {/* Background circle */}
+          <circle
+            cx="55"
+            cy="55"
+            r={radius}
+            fill="transparent"
+            stroke="rgba(255,255,255,0.06)"
+            strokeWidth="8"
+          />
+          {/* Progress circle */}
+          <motion.circle
+            cx="55"
+            cy="55"
+            r={radius}
+            fill="transparent"
+            stroke="#FF9431"
+            strokeWidth="8"
+            strokeDasharray={circumference}
+            initial={{ strokeDashoffset: circumference }}
+            animate={{ strokeDashoffset }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            strokeLinecap="round"
+            style={{ filter: 'drop-shadow(0 0 8px rgba(255, 148, 49, 0.5))' }}
+          />
+        </svg>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontSize: '24px', fontWeight: 950, color: '#fff', lineHeight: 1 }}>{score}%</span>
+          <span style={{ fontSize: '8px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '2px' }}>Power</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+RatingGauge.propTypes = {
+  score: PropTypes.number.isRequired
+};
+
 const ContentCard = ({ title, amount, demand, icon: Icon, delay = 0 }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
@@ -195,6 +242,276 @@ AuthLockOverlay.propTypes = {
   navigate: PropTypes.func.isRequired
 };
 
+const RateCalcHeader = ({ mob }) => (
+  <section style={{ 
+    background: '#050505', 
+    padding: mob ? '120px 20px 60px' : '160px 24px 100px', 
+    textAlign: 'center',
+    position: 'relative',
+    overflow: 'hidden'
+  }}>
+    <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255, 148, 49, 0.12), transparent 70%)', opacity: 0.8 }} />
+    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #FF9431, #fff, #10B981)' }} />
+    
+    <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        style={{ 
+          display: 'inline-flex', 
+          alignItems: 'center', 
+          gap: '10px', 
+          background: 'rgba(255, 255, 255, 0.05)', 
+          padding: '10px 20px', 
+          borderRadius: '100px',
+          marginBottom: '32px',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(10px)'
+        }}
+      >
+        <Calculator size={16} color="#FF9431" />
+        <span style={{ fontSize: '13px', fontWeight: 900, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Creator Value Intelligence</span>
+      </motion.div>
+
+      <motion.h1 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        style={{ fontSize: 'clamp(48px, 8vw, 84px)', fontWeight: 950, color: '#fff', marginBottom: '24px', letterSpacing: '-0.05em', lineHeight: 0.95 }}
+      >
+        Quantify Your <br />
+        <span style={{ background: 'linear-gradient(90deg, #FF9431, #fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Social Equity.</span>
+      </motion.h1>
+      <motion.p 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        style={{ fontSize: mob ? '16px' : '20px', color: 'rgba(255, 255, 255, 0.6)', maxWidth: '650px', margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}
+      >
+        Use real-time algorithms powered by 25,000+ Bharat creators to calculate exactly what you should be charging brands.
+      </motion.p>
+    </div>
+  </section>
+);
+
+RateCalcHeader.propTypes = {
+  mob: PropTypes.bool.isRequired
+};
+
+const RateCalcFooter = () => (
+  <section style={{ padding: '0 24px 120px', textAlign: 'center' }}>
+     <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', flexWrap: 'wrap' }}>
+           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#94a3b8' }}>
+              <Sparkles size={20} />
+              <span style={{ fontSize: '14px', fontWeight: 700 }}>AI Price Discovery</span>
+           </div>
+           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#94a3b8' }}>
+              <Flame size={20} />
+              <span style={{ fontSize: '14px', fontWeight: 700 }}>Bharat Market Real-time</span>
+           </div>
+        </div>
+     </div>
+  </section>
+);
+
+const RateCalcInputConsole = ({ F, setF, mob }) => (
+  <div>
+     <h2 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+        Campaign Intel <Calculator size={20} color="#FF9431" />
+     </h2>
+     
+     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+        <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+           <legend style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px', display: 'block' }}>Primary Platform</legend>
+           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px' }}>
+              {['Instagram', 'YouTube', 'LinkedIn', 'Twitter'].map(p => {
+                  const active = F.platform === p;
+                  return (
+                     <button
+                       key={p}
+                       onClick={() => setF({...F, platform: p})}
+                       style={{
+                         padding: '16px',
+                         borderRadius: '20px',
+                         border: `2px solid ${active ? '#FF9431' : '#f1f5f9'}`,
+                         background: active ? '#FF943110' : 'transparent',
+                         color: active ? '#FF9431' : '#64748b',
+                         fontWeight: 900,
+                         fontSize: '14px',
+                         cursor: 'pointer',
+                         transition: 'all 0.3s ease'
+                       }}
+                     >
+                       {p}
+                     </button>
+                  );
+              })}
+           </div>
+        </fieldset>
+
+        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '40px' }}>
+           <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                 <label htmlFor="followers" style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Follower Count</label>
+                 <input 
+                   id="followers-val"
+                   type="number" 
+                   value={F.followers} 
+                   onChange={e => setF({...F, followers: Math.max(0, Number.parseInt(e.target.value, 10) || 0)})}
+                   style={{ width: '120px', padding: '6px 12px', borderRadius: '10px', border: '1.5px solid #e2e8f0', fontSize: '14px', fontWeight: 800, textAlign: 'right', outline: 'none' }}
+                 />
+              </div>
+              <input 
+                id="followers"
+                type="range" 
+                min="1000" 
+                max="2000000" 
+                step="5000"
+                value={F.followers} 
+                onChange={e => setF({...F, followers: Number.parseInt(e.target.value, 10) || 1000})}
+                style={{ width: '100%', height: '6px', borderRadius: '10px', background: '#e2e8f0', appearance: 'none', outline: 'none', cursor: 'pointer', accentColor: '#FF9431' }}
+              />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#94a3b8', fontWeight: 700, marginTop: '8px' }}>
+                 <span>1K</span>
+                 <span>500K</span>
+                 <span>1M</span>
+                 <span>2M</span>
+              </div>
+           </div>
+           <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                 <label htmlFor="er" style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Engagement Rate (%)</label>
+                 <input 
+                   id="er-val"
+                   type="number" 
+                   step="0.1"
+                   value={F.er} 
+                   onChange={e => setF({...F, er: Math.max(0, Number.parseFloat(e.target.value) || 0)})}
+                   style={{ width: '80px', padding: '6px 12px', borderRadius: '10px', border: '1.5px solid #e2e8f0', fontSize: '14px', fontWeight: 800, textAlign: 'right', outline: 'none' }}
+                 />
+              </div>
+              <input 
+                id="er"
+                type="range" 
+                min="0.1" 
+                max="20" 
+                step="0.1"
+                value={F.er} 
+                onChange={e => setF({...F, er: Number.parseFloat(e.target.value) || 0.1})}
+                style={{ width: '100%', height: '6px', borderRadius: '10px', background: '#e2e8f0', appearance: 'none', outline: 'none', cursor: 'pointer', accentColor: '#FF9431' }}
+              />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#94a3b8', fontWeight: 700, marginTop: '8px' }}>
+                 <span>0.1%</span>
+                 <span>5%</span>
+                 <span>10%</span>
+                 <span>20%</span>
+              </div>
+           </div>
+        </div>
+
+        <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+           <legend style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px', display: 'block' }}>Content Niche</legend>
+           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+              {['Lifestyle', 'Finance', 'Tech', 'Fashion', 'Travel', 'Gaming', 'Beauty'].map(n => {
+                  const active = F.niche === n;
+                  return (
+                     <button
+                       key={n}
+                       onClick={() => setF({...F, niche: n})}
+                       style={{
+                         padding: '10px 20px',
+                         borderRadius: '100px',
+                         border: `1.5px solid ${active ? '#0f172a' : '#f1f5f9'}`,
+                         background: active ? '#0f172a' : 'transparent',
+                         color: active ? '#fff' : '#64748b',
+                         fontWeight: 800,
+                         fontSize: '13px',
+                         cursor: 'pointer',
+                         transition: 'all 0.2s ease'
+                       }}
+                     >
+                       {n}
+                     </button>
+                  );
+              })}
+           </div>
+        </fieldset>
+     </div>
+  </div>
+);
+
+RateCalcInputConsole.propTypes = {
+  F: PropTypes.object.isRequired,
+  setF: PropTypes.func.isRequired,
+  mob: PropTypes.bool.isRequired
+};
+
+const RateCalcResultsConsole = ({ result, mob, navigate }) => (
+  <div>
+     {result ? (
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
+           <div style={{ background: 'linear-gradient(165deg, #090d16 0%, #030408 100%)', borderRadius: '40px', padding: mob ? '32px' : '48px', color: '#fff', position: 'relative', overflow: 'hidden', border: '1px solid rgba(255,148,49,0.15)', boxShadow: '0 30px 80px rgba(255,148,49,0.15)' }}>
+              <div style={{ position: 'absolute', top: 0, right: 0, width: '150px', height: '150px', background: 'radial-gradient(circle at 100% 0%, rgba(255, 148, 49, 0.2), transparent 70%)' }} />
+              
+              <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.2fr 0.8fr', gap: '24px', alignItems: 'center' }}>
+                <div>
+                   <div style={{ fontSize: '11px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '12px' }}>Estimated Base Rate</div>
+                   <div style={{ fontSize: mob ? '40px' : '54px', fontWeight: 950, letterSpacing: '-0.04em', marginBottom: '24px' }}>
+                      <RollingNumber value={result.post} />
+                   </div>
+                </div>
+                <div style={{ display: 'flex', justifyContent: mob ? 'flex-start' : 'flex-end' }}>
+                   <RatingGauge score={result.power} />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '24px' }}>
+                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '16px' }}>
+                    <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>Min. Expected</span>
+                    <span style={{ fontSize: '16px', fontWeight: 800 }}>₹{fmt.num(result.post * 0.85)}</span>
+                 </div>
+                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '16px' }}>
+                    <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>Max. Potential</span>
+                    <span style={{ fontSize: '16px', fontWeight: 800 }}>₹{fmt.num(result.post * 1.25)}</span>
+                 </div>
+              </div>
+
+              <Btn 
+                full lg 
+                onClick={() => navigate('/apply')}
+                style={{ marginTop: '40px', background: '#FF9431', color: '#fff', border: 'none', borderRadius: '100px', padding: '20px', fontWeight: 950, boxShadow: '0 10px 30px rgba(255,148,49,0.3)' }}
+              >
+                 Claim My Elite Profile <ArrowRight size={20} />
+              </Btn>
+           </div>
+
+           <div style={{ marginTop: '40px' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: 900, color: '#0f172a', marginBottom: '24px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Suggested Content Mix</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '16px' }}>
+                 <ContentCard title="Video Reel / Video integration" amount={Math.round(result.post * 1.5)} demand="High" icon={Instagram} delay={0.1} />
+                 <ContentCard title="Static Post / Series Post" amount={result.post} demand="Medium" icon={Instagram} delay={0.2} />
+              </div>
+           </div>
+        </motion.div>
+     ) : (
+        <div style={{ height: '100%', minHeight: '400px', background: '#f8fafc', borderRadius: '40px', border: '2px dashed #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px', textAlign: 'center' }}>
+           <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', boxShadow: '0 10px 20px rgba(0,0,0,0.05)' }}>
+              <PieChart size={32} color="#cbd5e1" />
+           </div>
+           <h3 style={{ fontSize: '20px', fontWeight: 900, color: '#0f172a', marginBottom: '12px' }}>Analysis Pending</h3>
+           <p style={{ fontSize: '15px', color: '#64748b', lineHeight: 1.6 }}>Fill in your metrics to generate an AI-driven market rate assessment.</p>
+        </div>
+     )}
+  </div>
+);
+
+RateCalcResultsConsole.propTypes = {
+  result: PropTypes.object,
+  mob: PropTypes.bool.isRequired,
+  navigate: PropTypes.func.isRequired
+};
+
 export default function RateCalcPage() {
   const navigate = useNavigate();
   const { st } = useApp();
@@ -246,55 +563,7 @@ export default function RateCalcPage() {
       />
       
       {/* Cinematic Header */}
-      <section style={{ 
-        background: '#050505', 
-        padding: mob ? '120px 20px 60px' : '160px 24px 100px', 
-        textAlign: 'center',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255, 148, 49, 0.12), transparent 70%)', opacity: 0.8 }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #FF9431, #fff, #10B981)' }} />
-        
-        <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              gap: '10px', 
-              background: 'rgba(255, 255, 255, 0.05)', 
-              padding: '10px 20px', 
-              borderRadius: '100px',
-              marginBottom: '32px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)'
-            }}
-          >
-            <Calculator size={16} color="#FF9431" />
-            <span style={{ fontSize: '13px', fontWeight: 900, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Creator Value Intelligence</span>
-          </motion.div>
-
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            style={{ fontSize: 'clamp(48px, 8vw, 84px)', fontWeight: 950, color: '#fff', marginBottom: '24px', letterSpacing: '-0.05em', lineHeight: 0.95 }}
-          >
-            Quantify Your <br />
-            <span style={{ background: 'linear-gradient(90deg, #FF9431, #fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Social Equity.</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            style={{ fontSize: mob ? '16px' : '20px', color: 'rgba(255, 255, 255, 0.6)', maxWidth: '650px', margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}
-          >
-            Use real-time algorithms powered by 25,000+ Bharat creators to calculate exactly what you should be charging brands.
-          </motion.p>
-        </div>
-      </section>
+      <RateCalcHeader mob={mob} />
 
       {/* Main App Container */}
       <main style={{ maxWidth: '1100px', margin: mob ? '-40px auto 120px' : '-80px auto 120px', padding: '0 20px', position: 'relative', zIndex: 10 }}>
@@ -306,162 +575,16 @@ export default function RateCalcPage() {
             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.2fr 0.8fr', gap: mob ? '40px' : '80px' }}>
                
                {/* Left: Input Console */}
-               <div>
-                  <h2 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                     Campaign Intel <Calculator size={20} color="#FF9431" />
-                  </h2>
-                  
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                     <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
-                        <legend style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px', display: 'block' }}>Primary Platform</legend>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px' }}>
-                           {['Instagram', 'YouTube', 'LinkedIn', 'Twitter'].map(p => {
-                               const active = F.platform === p;
-                               return (
-                                  <button
-                                    key={p}
-                                    onClick={() => setF({...F, platform: p})}
-                                    style={{
-                                      padding: '16px',
-                                      borderRadius: '20px',
-                                      border: `2px solid ${active ? '#FF9431' : '#f1f5f9'}`,
-                                      background: active ? '#FF943110' : 'transparent',
-                                      color: active ? '#FF9431' : '#64748b',
-                                      fontWeight: 900,
-                                      fontSize: '14px',
-                                      cursor: 'pointer',
-                                      transition: 'all 0.3s ease'
-                                    }}
-                                  >
-                                    {p}
-                                  </button>
-                               );
-                           })}
-                        </div>
-                     </fieldset>
-
-                     <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px' }}>
-                        <div>
-                           <label htmlFor="followers" style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px', display: 'block' }}>Follower Count</label>
-                           <input 
-                             id="followers"
-                             type="number" 
-                             value={F.followers} 
-                             onChange={e => setF({...F, followers: e.target.value})}
-                             style={{ width: '100%', padding: '18px 24px', borderRadius: '20px', border: '2px solid #f1f5f9', background: '#f8fafc', fontSize: '18px', fontWeight: 900, outline: 'none', color: '#0f172a' }}
-                           />
-                        </div>
-                        <div>
-                           <label htmlFor="er" style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px', display: 'block' }}>Engagement Rate (%)</label>
-                           <input 
-                             id="er"
-                             type="number" 
-                             value={F.er} 
-                             onChange={e => setF({...F, er: e.target.value})}
-                             style={{ width: '100%', padding: '18px 24px', borderRadius: '20px', border: '2px solid #f1f5f9', background: '#f8fafc', fontSize: '18px', fontWeight: 900, outline: 'none', color: '#0f172a' }}
-                           />
-                        </div>
-                     </div>
-
-                     <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
-                        <legend style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px', display: 'block' }}>Content Niche</legend>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                           {['Lifestyle', 'Finance', 'Tech', 'Fashion', 'Travel', 'Gaming', 'Beauty'].map(n => {
-                               const active = F.niche === n;
-                               return (
-                                  <button
-                                    key={n}
-                                    onClick={() => setF({...F, niche: n})}
-                                    style={{
-                                      padding: '10px 20px',
-                                      borderRadius: '100px',
-                                      border: `1.5px solid ${active ? '#0f172a' : '#f1f5f9'}`,
-                                      background: active ? '#0f172a' : 'transparent',
-                                      color: active ? '#fff' : '#64748b',
-                                      fontWeight: 800,
-                                      fontSize: '13px',
-                                      cursor: 'pointer',
-                                      transition: 'all 0.2s ease'
-                                    }}
-                                  >
-                                    {n}
-                                  </button>
-                               );
-                           })}
-                        </div>
-                     </fieldset>
-                  </div>
-               </div>
+               <RateCalcInputConsole F={F} setF={setF} mob={mob} />
 
                {/* Right: Results Display */}
-               <div>
-                  {result ? (
-                     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-                        <div style={{ background: '#0f172a', borderRadius: '40px', padding: mob ? '32px' : '48px', color: '#fff', position: 'relative', overflow: 'hidden' }}>
-                           <div style={{ position: 'absolute', top: 0, right: 0, width: '150px', height: '150px', background: 'radial-gradient(circle at 100% 0%, rgba(255, 148, 49, 0.2), transparent 70%)' }} />
-                           
-                           <div style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '12px' }}>Estimated Rate</div>
-                           <div style={{ fontSize: mob ? '48px' : '64px', fontWeight: 950, letterSpacing: '-0.04em', marginBottom: '32px' }}>
-                              <RollingNumber value={result.post} />
-                           </div>
-
-                           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '16px' }}>
-                                 <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>Min. Expected</span>
-                                 <span style={{ fontSize: '16px', fontWeight: 800 }}>₹{fmt.num(result.post * 0.8)}</span>
-                              </div>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '16px' }}>
-                                 <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>Max. Potential</span>
-                                 <span style={{ fontSize: '16px', fontWeight: 800 }}>₹{fmt.num(result.post * 1.3)}</span>
-                              </div>
-                           </div>
-
-                           <Btn 
-                             full lg 
-                             onClick={() => navigate('/apply')}
-                             style={{ marginTop: '40px', background: '#FF9431', color: '#fff', border: 'none', borderRadius: '100px', padding: '20px', fontWeight: 950 }}
-                           >
-                              Claim My Elite Profile <ArrowRight size={20} />
-                           </Btn>
-                        </div>
-
-                        <div style={{ marginTop: '40px' }}>
-                           <h3 style={{ fontSize: '16px', fontWeight: 900, color: '#0f172a', marginBottom: '24px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Suggested Content Mix</h3>
-                           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '16px' }}>
-                              <ContentCard title="Video Reel" amount={Math.round(result.post * 1.5)} demand="High" icon={Instagram} delay={0.1} />
-                              <ContentCard title="Series Post" amount={result.post} demand="Medium" icon={Instagram} delay={0.2} />
-                           </div>
-                        </div>
-                     </motion.div>
-                  ) : (
-                     <div style={{ height: '100%', minHeight: '400px', background: '#f8fafc', borderRadius: '40px', border: '2px dashed #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px', textAlign: 'center' }}>
-                        <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', boxShadow: '0 10px 20px rgba(0,0,0,0.05)' }}>
-                           <PieChart size={32} color="#cbd5e1" />
-                        </div>
-                        <h3 style={{ fontSize: '20px', fontWeight: 900, color: '#0f172a', marginBottom: '12px' }}>Analysis Pending</h3>
-                        <p style={{ fontSize: '15px', color: '#64748b', lineHeight: 1.6 }}>Fill in your metrics to generate an AI-driven market rate assessment.</p>
-                     </div>
-                  )}
-               </div>
+               <RateCalcResultsConsole result={result} mob={mob} navigate={navigate} />
             </div>
          </div>
       </main>
 
       {/* Trust Footer */}
-      <section style={{ padding: '0 24px 120px', textAlign: 'center' }}>
-         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', flexWrap: 'wrap' }}>
-               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#94a3b8' }}>
-                  <Sparkles size={20} />
-                  <span style={{ fontSize: '14px', fontWeight: 700 }}>AI Price Discovery</span>
-               </div>
-               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#94a3b8' }}>
-                  <Flame size={20} />
-                  <span style={{ fontSize: '14px', fontWeight: 700 }}>Bharat Market Real-time</span>
-               </div>
-            </div>
-         </div>
-      </section>
+      <RateCalcFooter />
     </div>
   );
 }

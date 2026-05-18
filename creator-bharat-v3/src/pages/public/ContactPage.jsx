@@ -126,7 +126,75 @@ const ContactHero = ({ mob }) => (
   </section>
 );
 
-const ContactFormUI = ({ role, setRole, mob, formState, setFormState, formData, setFormData, handleSubmit }) => (
+const RoleSelectTabs = ({ role, setRole, mob }) => (
+  <LayoutGroup>
+    <div style={{ display: 'flex', gap: '12px', marginBottom: '48px', background: '#f8fafc', padding: '8px', borderRadius: '100px', width: 'fit-content' }}>
+       {[
+         { id: 'creator', label: 'I am a Creator', icon: User },
+         { id: 'brand', label: 'I am a Brand', icon: Briefcase }
+       ].map((t) => (
+         <button key={t.id} onClick={() => setRole(t.id)} style={{ position: 'relative', padding: mob ? '12px 20px' : '14px 28px', borderRadius: '100px', border: 'none', background: 'transparent', color: role === t.id ? '#0f172a' : '#94a3b8', fontSize: '14px', fontWeight: 900, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 1 }}>
+           {role === t.id && <motion.div layoutId="activeRole" style={{ position: 'absolute', inset: 0, background: '#fff', borderRadius: '100px', zIndex: -1, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} />}
+           <t.icon size={16} color={role === t.id ? '#FF9431' : '#cbd5e1'} />
+           {t.label}
+         </button>
+       ))}
+    </div>
+  </LayoutGroup>
+);
+
+RoleSelectTabs.propTypes = {
+  role: PropTypes.string.isRequired,
+  setRole: PropTypes.func.isRequired,
+  mob: PropTypes.bool
+};
+
+const FormInputFields = ({ role, mob, formState, formData, setFormData, handleSubmit, shake }) => (
+  <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+     <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '20px' }}>
+       <div className="input-group">
+          <label htmlFor="full-name" style={{ display: 'block', fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px', marginLeft: '4px' }}>Full Name</label>
+          <input id="full-name" required type="text" placeholder="e.g. Rahul Sharma" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className={shake && !formData.name ? 'shake-field' : ''} style={{ width: '100%', padding: '18px 24px', borderRadius: '16px', border: '2px solid #f1f5f9', background: '#fcfcfc', fontSize: '16px', fontWeight: 600, outline: 'none', transition: 'all 0.3s ease' }} />
+       </div>
+       <div className="input-group">
+          <label htmlFor="email-address" style={{ display: 'block', fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px', marginLeft: '4px' }}>Email Address</label>
+          <input id="email-address" required type="email" placeholder="rahul@example.com" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className={shake && !formData.email ? 'shake-field' : ''} style={{ width: '100%', padding: '18px 24px', borderRadius: '16px', border: '2px solid #f1f5f9', background: '#fcfcfc', fontSize: '16px', fontWeight: 600, outline: 'none', transition: 'all 0.3s ease' }} />
+       </div>
+     </div>
+     <div className="input-group">
+        <label htmlFor="subject-select" style={{ display: 'block', fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px', marginLeft: '4px' }}>Subject</label>
+        <div style={{ position: 'relative' }}>
+           <select id="subject-select" style={{ width: '100%', padding: '18px 24px', borderRadius: '16px', border: '2px solid #f1f5f9', background: '#fcfcfc', fontSize: '16px', fontWeight: 600, appearance: 'none', outline: 'none' }} onChange={(e) => setFormData({...formData, subject: e.target.value})}>
+              {role === 'creator' ? (
+                <><option>Creator Verification Query</option><option>Payment Issue</option><option>Elite Score Feedback</option><option>General Support</option></>
+              ) : (
+                <><option>Brand Campaign Inquiry</option><option>Bulk Talent Acquisition</option><option>Enterprise Platform Demo</option><option>API & Integration</option></>
+              )}
+           </select>
+           <ChevronDown size={20} color="#cbd5e1" style={{ position: 'absolute', right: '24px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+        </div>
+     </div>
+     <div className="input-group">
+        <label htmlFor="message-area" style={{ display: 'block', fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px', marginLeft: '4px' }}>Your Message</label>
+        <textarea id="message-area" required rows={5} placeholder="Tell us how we can help you grow..." value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} className={shake && !formData.message ? 'shake-field' : ''} style={{ width: '100%', padding: '18px 24px', borderRadius: '16px', border: '2px solid #f1f5f9', background: '#fcfcfc', fontSize: '16px', fontWeight: 600, outline: 'none', resize: 'none', transition: 'all 0.3s ease' }} />
+     </div>
+     <Btn full lg type="submit" disabled={formState === 'loading'} style={{ padding: '24px', borderRadius: '100px', background: '#0f172a', color: '#fff', fontSize: '18px', fontWeight: 950, marginTop: '12px' }}>
+       {formState === 'loading' ? <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}><Zap size={24} /></motion.div> : <>{'Send Message'} <ArrowRight size={22} /></>}
+     </Btn>
+  </form>
+);
+
+FormInputFields.propTypes = {
+  role: PropTypes.string.isRequired,
+  mob: PropTypes.bool,
+  formState: PropTypes.string.isRequired,
+  formData: PropTypes.object.isRequired,
+  setFormData: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  shake: PropTypes.bool
+};
+
+const ContactFormUI = ({ role, setRole, mob, formState, setFormState, formData, setFormData, handleSubmit, shake }) => (
   <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} style={{ background: '#fff', borderRadius: mob ? '32px' : '48px', padding: mob ? '28px' : '56px', boxShadow: '0 40px 100px rgba(0,0,0,0.06)', border: '1px solid #f1f5f9' }}>
     <AnimatePresence mode="wait">
       {formState === 'success' ? (
@@ -137,57 +205,14 @@ const ContactFormUI = ({ role, setRole, mob, formState, setFormState, formData, 
               <Bdg color="orange" sm>STEP 1: SELECT YOUR ROLE</Bdg>
               <h2 style={{ fontSize: mob ? '24px' : '32px', fontWeight: 950, color: '#0f172a', marginTop: '12px', letterSpacing: '-0.02em' }}>Who are you?</h2>
            </div>
-           <LayoutGroup>
-             <div style={{ display: 'flex', gap: '12px', marginBottom: '48px', background: '#f8fafc', padding: '8px', borderRadius: '100px', width: 'fit-content' }}>
-                {[
-                  { id: 'creator', label: 'I am a Creator', icon: User },
-                  { id: 'brand', label: 'I am a Brand', icon: Briefcase }
-                ].map((t) => (
-                  <button key={t.id} onClick={() => setRole(t.id)} style={{ position: 'relative', padding: mob ? '12px 20px' : '14px 28px', borderRadius: '100px', border: 'none', background: 'transparent', color: role === t.id ? '#0f172a' : '#94a3b8', fontSize: '14px', fontWeight: 900, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', zIndex: 1 }}>
-                    {role === t.id && <motion.div layoutId="activeRole" style={{ position: 'absolute', inset: 0, background: '#fff', borderRadius: '100px', zIndex: -1, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} />}
-                    <t.icon size={16} color={role === t.id ? '#FF9431' : '#cbd5e1'} />
-                    {t.label}
-                  </button>
-                ))}
-             </div>
-           </LayoutGroup>
-           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '20px' }}>
-                <div className="input-group">
-                   <label htmlFor="full-name" style={{ display: 'block', fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px', marginLeft: '4px' }}>Full Name</label>
-                   <input id="full-name" required type="text" placeholder="e.g. Rahul Sharma" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} style={{ width: '100%', padding: '18px 24px', borderRadius: '16px', border: '2px solid #f1f5f9', background: '#fcfcfc', fontSize: '16px', fontWeight: 600, outline: 'none' }} />
-                </div>
-                <div className="input-group">
-                   <label htmlFor="email-address" style={{ display: 'block', fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px', marginLeft: '4px' }}>Email Address</label>
-                   <input id="email-address" required type="email" placeholder="rahul@example.com" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} style={{ width: '100%', padding: '18px 24px', borderRadius: '16px', border: '2px solid #f1f5f9', background: '#fcfcfc', fontSize: '16px', fontWeight: 600, outline: 'none' }} />
-                </div>
-              </div>
-              <div className="input-group">
-                 <label htmlFor="subject-select" style={{ display: 'block', fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px', marginLeft: '4px' }}>Subject</label>
-                 <div style={{ position: 'relative' }}>
-                    <select id="subject-select" style={{ width: '100%', padding: '18px 24px', borderRadius: '16px', border: '2px solid #f1f5f9', background: '#fcfcfc', fontSize: '16px', fontWeight: 600, appearance: 'none', outline: 'none' }} onChange={(e) => setFormData({...formData, subject: e.target.value})}>
-                       {role === 'creator' ? (
-                         <><option>Creator Verification Query</option><option>Payment Issue</option><option>Elite Score Feedback</option><option>General Support</option></>
-                       ) : (
-                         <><option>Brand Campaign Inquiry</option><option>Bulk Talent Acquisition</option><option>Enterprise Platform Demo</option><option>API & Integration</option></>
-                       )}
-                    </select>
-                    <ChevronDown size={20} color="#cbd5e1" style={{ position: 'absolute', right: '24px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
-                 </div>
-              </div>
-              <div className="input-group">
-                 <label htmlFor="message-area" style={{ display: 'block', fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px', marginLeft: '4px' }}>Your Message</label>
-                 <textarea id="message-area" required rows={5} placeholder="Tell us how we can help you grow..." value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} style={{ width: '100%', padding: '18px 24px', borderRadius: '16px', border: '2px solid #f1f5f9', background: '#fcfcfc', fontSize: '16px', fontWeight: 600, outline: 'none', resize: 'none' }} />
-              </div>
-              <Btn full lg type="submit" disabled={formState === 'loading'} style={{ padding: '24px', borderRadius: '100px', background: '#0f172a', color: '#fff', fontSize: '18px', fontWeight: 950, marginTop: '12px' }}>
-                {formState === 'loading' ? <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}><Zap size={24} /></motion.div> : <>{'Send Message'} <ArrowRight size={22} /></>}
-              </Btn>
-           </form>
+           <RoleSelectTabs role={role} setRole={setRole} mob={mob} />
+           <FormInputFields role={role} mob={mob} formState={formState} formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} shake={shake} />
         </div>
       )}
     </AnimatePresence>
   </motion.div>
 );
+
 
 // --- MAIN COMPONENT ---
 
@@ -199,6 +224,7 @@ export default function ContactPage() {
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [showDataModal, setShowDataModal] = useState(false);
   const [dataKitLoading, setDataKitLoading] = useState(false);
+  const [shake, setShake] = useState(false);
 
   useEffect(() => {
     const h = () => setMob(globalThis.innerWidth < 768);
@@ -208,6 +234,11 @@ export default function ContactPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!formData.name || !formData.email || !formData.message) {
+      setShake(true);
+      setTimeout(() => setShake(false), 600);
+      return;
+    }
     setFormState('loading');
     setTimeout(() => {
       setFormState('success');
@@ -229,12 +260,26 @@ export default function ContactPage() {
     <div style={{ background: '#fcfcfc', minHeight: '100vh', overflowX: 'hidden', paddingBottom: '120px' }}>
       <Seo title="Concierge Support | CreatorBharat" description="Connect with India's most advanced creator ecosystem support team." keywords="contact us, support, brand help, creator support" />
       
+      {/* Inline Shake Animation Style */}
+      <style>{`
+        @keyframes shakeInput {
+          0%, 100% { transform: translateX(0); }
+          20%, 60% { transform: translateX(-8px); }
+          40%, 80% { transform: translateX(8px); }
+        }
+        .shake-field {
+          animation: shakeInput 0.4s ease-in-out !important;
+          border-color: #f43f5e !important;
+          box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.15) !important;
+        }
+      `}</style>
+
       <ContactHero mob={mob} />
 
       <section style={{ padding: mob ? '0 16px' : '0 24px', marginTop: mob ? '-40px' : '-80px', position: 'relative', zIndex: 2 }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.5fr 1fr', gap: mob ? '32px' : '64px', alignItems: 'start' }}>
           
-          <ContactFormUI role={role} setRole={setRole} mob={mob} formState={formState} setFormState={setFormState} formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} />
+          <ContactFormUI role={role} setRole={setRole} mob={mob} formState={formState} setFormState={setFormState} formData={formData} setFormData={setFormData} handleSubmit={handleSubmit} shake={shake} />
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
              <div style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', letterSpacing: '2px', textTransform: 'uppercase', marginLeft: '8px' }}>Direct Communication</div>
@@ -323,5 +368,6 @@ ContactFormUI.propTypes = {
   role: PropTypes.string.isRequired, setRole: PropTypes.func.isRequired, mob: PropTypes.bool,
   formState: PropTypes.string.isRequired, setFormState: PropTypes.func.isRequired,
   formData: PropTypes.object.isRequired, setFormData: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func.isRequired
+  handleSubmit: PropTypes.func.isRequired,
+  shake: PropTypes.bool
 };
