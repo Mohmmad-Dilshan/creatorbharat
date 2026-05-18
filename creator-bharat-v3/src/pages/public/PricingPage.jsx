@@ -61,6 +61,26 @@ const PricingCard = ({ plan, delay = 0, navigate }) => {
       <div style={{ marginBottom: '32px' }}>
         <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', marginBottom: '12px', letterSpacing: '-0.02em' }}>{plan.name}</h3>
         <p style={{ fontSize: '15px', color: '#64748b', lineHeight: '1.6', margin: 0, fontWeight: 500 }}>{plan.desc}</p>
+        
+        {plan.promo && (
+          <div style={{
+            marginTop: '16px',
+            padding: '12px 16px',
+            background: 'linear-gradient(90deg, #10B98115, #05966915)',
+            border: '1.5px dashed #10B98140',
+            borderRadius: '16px',
+            color: '#059669',
+            fontSize: '13px',
+            fontWeight: 850,
+            lineHeight: 1.4,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <Sparkles size={14} color="#10B981" style={{ flexShrink: 0 }} />
+            <span>{plan.promo}</span>
+          </div>
+        )}
       </div>
 
       <div style={{ marginBottom: '40px' }}>
@@ -120,7 +140,8 @@ PricingCard.propTypes = {
     price: PropTypes.string.isRequired,
     period: PropTypes.string.isRequired,
     features: PropTypes.arrayOf(PropTypes.string).isRequired,
-    cta: PropTypes.string.isRequired
+    cta: PropTypes.string.isRequired,
+    promo: PropTypes.string
   }).isRequired,
   delay: PropTypes.number,
   navigate: PropTypes.func.isRequired
@@ -159,9 +180,86 @@ TabButton.propTypes = {
   onClick: PropTypes.func.isRequired
 };
 
+const PRICING_FAQS = [
+  { q: "Do you take any commission from brand deals?", a: "No, CreatorBharat is 100% commission-free. We do not take any cuts from your sponsorships, deals, or payouts. What you earn is entirely yours." },
+  { q: "Can I cancel my subscription anytime?", a: "Yes, absolutely! You can cancel, upgrade, or downgrade your brand subscription at any point directly from your Settings dashboard. No questions asked." },
+  { q: "What payment methods do you support?", a: "We support all major Indian credit/debit cards, UPI (GPay, PhonePe, Paytm), Net Banking, and corporate wallets through our highly secure payment gateway." },
+  { q: "Is the Creator Pro badge permanent?", a: "Yes! Creator Pro is a one-time purchase of ₹49 which gives you permanent pro status, top discovery spots, and the verified elite badge forever." }
+];
+
+const PricingFAQAccordion = ({ q, a, i }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: i * 0.05, duration: 0.5 }}
+      style={{
+        background: isOpen ? '#fff' : 'rgba(255, 255, 255, 0.6)',
+        borderRadius: '24px',
+        border: `1.5px solid ${isOpen ? '#FF9431' : '#f1f5f9'}`,
+        marginBottom: '12px',
+        overflow: 'hidden',
+        boxShadow: isOpen ? '0 20px 40px rgba(255, 148, 49, 0.06)' : 'none',
+        transition: 'all 0.3s ease',
+        textAlign: 'left'
+      }}
+    >
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        style={{ width: '100%', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+      >
+        <span style={{ fontSize: '16px', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.01em', paddingRight: '12px' }}>
+          {q}
+        </span>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0, color: isOpen ? '#FF9431' : '#cbd5e1' }}
+          style={{ flexShrink: 0, width: '28px', height: '28px', borderRadius: '50%', background: isOpen ? '#FF943110' : '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <span style={{ fontSize: '18px', fontWeight: 700 }}>{isOpen ? '−' : '+'}</span>
+        </motion.div>
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            style={{ padding: '0 32px 24px', color: '#64748b', fontSize: '14px', lineHeight: 1.6, fontWeight: 500 }}
+          >
+            <div style={{ padding: '20px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
+               {a}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+};
+
+PricingFAQAccordion.propTypes = {
+  q: PropTypes.string.isRequired,
+  a: PropTypes.string.isRequired,
+  i: PropTypes.number.isRequired
+};
+
 export default function PricingPage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState('creator');
+  const [duration, setDuration] = useState('1m'); // '1m', '6m', '1y'
+
+  const getCreatorPrice = () => {
+    if (duration === '1m') return { price: '₹49', period: 'month' };
+    if (duration === '6m') return { price: '₹299', period: '6 months' };
+    return { price: '₹499', period: 'year' };
+  };
+
+  const getBrandPrice = () => {
+    if (duration === '1m') return { price: '₹199', period: 'month' };
+    if (duration === '6m') return { price: '₹799', period: '6 months' };
+    return { price: '₹1299', period: 'year' };
+  };
 
   const creatorPlans = [
     { 
@@ -169,23 +267,25 @@ export default function PricingPage() {
       name: 'Starter', 
       price: 'Free', 
       period: 'lifetime', 
-      desc: 'Perfect for creators just beginning their influence journey.', 
-      features: ['Standard smart portfolio', 'Regional discovery grid', 'Apply to 3 missions/mo', 'Basic profile insights', 'Public handle URL'], 
+      desc: 'Create your elite profile, access basic tools & view your dashboard.', 
+      features: ['Basic Creator Dashboard', 'Smart Profile Builder', 'Standard Discovery Grid', 'View Campaigns Catalog', 'Public profile handle'], 
       cta: 'Start Free'
     },
     {
       id: 'pro', 
       name: 'Creator Pro', 
-      price: '₹49', 
-      period: 'one-time', 
-      desc: 'The gold standard for Bharat\'s high-impact creators.', 
+      price: getCreatorPrice().price, 
+      period: getCreatorPrice().period, 
+      desc: 'Unlock A4 resumes, verified badges, search prioritization, and brand pitching.', 
+      promo: 'SPECIAL PROMO: 100% Free for first 100 Elite Creators (1 Month Trial!)',
       features: [
-        'Premium elite portfolio', 
-        'Top-tier search priority', 
-        'Unlimited deal applications', 
-        'AI SEO-Optimized Article', 
-        'Elite Blue Verified Badge', 
-        'Direct Brand Access'
+        'Cinematic Elite Portfolio', 
+        'Dynamic A4 Media Kit PDF', 
+        'Verified Blue Elite Badge', 
+        'Top-Tier Search Priority (Top 1%)', 
+        'Unlimited Campaign Applications', 
+        'AI-Powered Profile SEO', 
+        'Direct Chat with Verified Brands'
       ], 
       cta: 'Claim Pro Access'
     }
@@ -196,24 +296,26 @@ export default function PricingPage() {
       id: 'brand_free', 
       name: 'Launchpad', 
       price: 'Free', 
-      period: 'forever', 
-      desc: 'Discover talent and explore the Bharat marketplace.', 
-      features: ['Search 10k+ Creators', 'Basic Campaign Listing', 'Up to 5 Applicants', 'Community Support', 'Bhilwara Local Reach'], 
+      period: 'lifetime', 
+      desc: 'Register your company and view standard creator catalog.', 
+      features: ['Register Company Profile', 'Explore Creator Catalog', 'Filter & Save Favorites', 'Access Community Forums', 'Standard Dashboard View'], 
       cta: 'Start Scouting'
     },
     {
       id: 'brand_pro', 
       name: 'Enterprise', 
-      price: '₹999', 
-      period: 'month', 
-      desc: 'Agency-grade tools for serious brand scaling.', 
+      price: getBrandPrice().price, 
+      period: getBrandPrice().period, 
+      desc: 'Launch unlimited active campaigns, outreach pitches & advanced smart indexing.', 
+      promo: 'SPECIAL PROMO: Early Bird rate for first 100 Brands only! (Price rises by 50% after!)',
       features: [
-        'Unlimited Active Missions', 
-        'Featured Campaign Spot', 
-        'AI Talent Recommendations', 
-        'Campaign Performance Data', 
-        'Verified Brand Badge', 
-        'Priority Talent Support'
+        'Launch Unlimited Campaigns', 
+        'Direct Outreach Pitch Console', 
+        'Full A4 Creator Resume Access', 
+        'Verified Gold Brand Badge', 
+        'AI Smart Talent Matches', 
+        'Advanced Analytics Dashboard', 
+        '24/7 Premium Priority Support'
       ], 
       cta: 'Scale Your Brand'
     }
@@ -314,6 +416,66 @@ export default function PricingPage() {
              <TabButton active={tab === 'creator'} label="For Creators" icon={Zap} onClick={() => setTab('creator')} />
              <TabButton active={tab === 'brand'} label="For Brands" icon={Target} onClick={() => setTab('brand')} />
           </motion.div>
+
+          {/* Duration Selector Switch */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{ 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              background: 'rgba(255, 255, 255, 0.05)', 
+              padding: '6px', 
+              borderRadius: '100px', 
+              marginTop: '32px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(20px)',
+              gap: '4px'
+            }}
+          >
+            {[
+              { id: '1m', label: '1 Month' },
+              { id: '6m', label: '6 Months', save: tab === 'creator' ? 'Save ~15%' : 'Save ~33%' },
+              { id: '1y', label: '1 Year', save: tab === 'creator' ? 'Save ~15%' : 'Save ~45%' }
+            ].map(d => {
+              const active = duration === d.id;
+              return (
+                <button
+                  key={d.id}
+                  onClick={() => setDuration(d.id)}
+                  style={{
+                    padding: '10px 20px',
+                    borderRadius: '100px',
+                    border: 'none',
+                    background: active ? '#FF9431' : 'transparent',
+                    color: active ? '#fff' : 'rgba(255, 255, 255, 0.6)',
+                    fontSize: '13px',
+                    fontWeight: 900,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                  }}
+                >
+                  {d.label}
+                  {d.save && (
+                    <span style={{ 
+                      fontSize: '9px', 
+                      background: active ? '#fff' : 'rgba(16, 185, 129, 0.2)', 
+                      color: active ? '#FF9431' : '#10B981', 
+                      padding: '2px 6px', 
+                      borderRadius: '100px',
+                      fontWeight: 950
+                    }}>
+                      {d.save}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </motion.div>
         </div>
       </section>
 
@@ -363,20 +525,28 @@ export default function PricingPage() {
               <thead>
                 <tr style={{ background: '#f8fafc' }}>
                   <th style={{ padding: '24px 32px', fontSize: '14px', fontWeight: 900, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Core Feature</th>
-                  <th style={{ padding: '24px 32px', fontSize: '14px', fontWeight: 900, color: '#64748b', textAlign: 'center' }}>Starter</th>
-                  <th style={{ padding: '24px 32px', fontSize: '14px', fontWeight: 900, color: '#FF9431', textAlign: 'center' }}>Elite Pro</th>
+                  <th style={{ padding: '24px 32px', fontSize: '14px', fontWeight: 900, color: '#64748b', textAlign: 'center' }}>{tab === 'creator' ? 'Starter' : 'Launchpad'}</th>
+                  <th style={{ padding: '24px 32px', fontSize: '14px', fontWeight: 900, color: '#FF9431', textAlign: 'center' }}>{tab === 'creator' ? 'Creator Pro' : 'Enterprise'}</th>
                 </tr>
               </thead>
               <tbody>
-                {[
+                {(tab === 'creator' ? [
                   { f: 'Smart Digital Portfolio', s: 'Basic', p: 'Cinematic' },
                   { f: 'Search Priority', s: 'Standard', p: 'Top 1% Spot' },
-                  { f: 'Deal Applications', s: '3 per month', p: 'Unlimited' },
-                  { f: 'Verified Badge', s: false, p: 'Elite Blue' },
+                  { f: 'Deal Applications', s: 'Basic Dashboard', p: 'Unlimited Applications' },
+                  { f: 'Verified Badge', s: false, p: 'Elite Blue Badge' },
                   { f: 'Brand Direct Chat', s: false, p: true },
-                  { f: 'AI SEO Optimizer', s: false, p: true },
-                  { f: 'Platform Support', s: 'Community', p: '24/7 Priority' }
-                ].map((row) => (
+                  { f: 'Dynamic A4 PDF Resume', s: false, p: true },
+                  { f: 'AI Profile SEO', s: false, p: true }
+                ] : [
+                  { f: 'Smart Brand Dashboard', s: 'Basic', p: 'Cinematic' },
+                  { f: 'Explore Creator Catalog', s: 'Standard', p: 'AI Smart Filters' },
+                  { f: 'Active Campaign Listings', s: 'Basic', p: 'Unlimited Campaigns' },
+                  { f: 'Verified Gold Badge', s: false, p: 'Enterprise Gold' },
+                  { f: 'Direct Creator Pitching', s: false, p: true },
+                  { f: 'Dynamic A4 Resumes Access', s: false, p: true },
+                  { f: 'Dedicated Support', s: false, p: '24/7 Priority' }
+                ]).map((row) => (
                   <tr key={row.f} style={{ borderTop: '1px solid #f1f5f9' }}>
                     <td style={{ padding: '20px 32px', fontSize: '15px', fontWeight: 600, color: '#475569' }}>{row.f}</td>
                     <td style={{ padding: '20px 32px', textAlign: 'center' }}>
@@ -415,6 +585,23 @@ export default function PricingPage() {
                     <h4 style={{ fontSize: '20px', fontWeight: 900, color: '#0f172a', marginBottom: '12px' }}>{item.title}</h4>
                     <p style={{ fontSize: '15px', color: '#64748b', lineHeight: 1.6, fontWeight: 500 }}>{item.desc}</p>
                  </div>
+               ))}
+            </div>
+         </div>
+      </section>
+
+      {/* Pricing Accordion FAQs */}
+      <section style={{ padding: '80px 24px', background: '#fcfcfc', borderTop: '1px solid #f1f5f9' }}>
+         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+               <Bdg color="orange" sm>FAQ</Bdg>
+               <h2 style={{ fontSize: '36px', fontWeight: 950, color: '#0f172a', marginTop: '16px', letterSpacing: '-0.02em' }}>Pricing Questions?</h2>
+               <p style={{ color: '#64748b', fontWeight: 500 }}>Everything you need to know about our subscriptions and billing cycles.</p>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+               {PRICING_FAQS.map((faq, i) => (
+                 <PricingFAQAccordion key={faq.q} q={faq.q} a={faq.a} i={i} />
                ))}
             </div>
          </div>
