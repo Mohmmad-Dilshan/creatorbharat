@@ -231,9 +231,10 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
 
   return (
     <div style={{ 
-      position: 'sticky', top: mob ? '60px' : '80px', zIndex: 100, background: 'rgba(255,255,255,0.8)', 
-      backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(0,0,0,0.05)', padding: '20px 0',
-      transition: 'all 0.3s ease', display: 'flex', justifyContent: 'center'
+      position: 'sticky', top: mob ? '58px' : '72px', zIndex: 1000, background: 'rgba(255,255,255,0.85)', 
+      backdropFilter: 'blur(24px)', borderBottom: '1px solid rgba(0,0,0,0.05)', padding: '20px 0',
+      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)', display: 'flex', justifyContent: 'center',
+      boxShadow: '0 10px 30px rgba(0,0,0,0.02)'
     }}>
       <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px', display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
         <div style={{ display: 'flex', gap: mob ? '8px' : '16px', alignItems: 'center' }}>

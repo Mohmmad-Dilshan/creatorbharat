@@ -515,6 +515,7 @@ const CARD_S = {
 const SpotlightCard = ({ creator, mob, onClick }) => {
   const v = mob ? CARD_S.mob : CARD_S.desk;
   const photo = creator.photo || creator.avatarUrl || creator.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(creator.name)}&background=FF9431&color=fff`;
+  const primaryNiche = Array.isArray(creator.niche) ? creator.niche[0] : (creator.niche || creator.category || 'Creator');
 
   return (
     <motion.div
@@ -526,17 +527,37 @@ const SpotlightCard = ({ creator, mob, onClick }) => {
         overflow: 'hidden',
         cursor: 'pointer',
         background: '#050505',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-        transition: 'box-shadow 0.3s',
+        boxShadow: '0 25px 50px -12px rgba(255, 148, 49, 0.15), 0 0 24px rgba(255, 148, 49, 0.05)',
+        border: '1.5px solid rgba(255, 148, 49, 0.12)',
+        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         ...v.card
       }}
     >
+      {/* Floating Niche Category Chip (Top Left) */}
+      <div style={{ position: 'absolute', top: mob ? '20px' : '28px', left: mob ? '20px' : '28px', zIndex: 10 }}>
+        <div style={{
+          background: 'rgba(0, 0, 0, 0.65)',
+          backdropFilter: 'blur(10px)',
+          padding: mob ? '6px 12px' : '8px 16px',
+          borderRadius: '100px',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+          color: '#FF9431',
+          fontSize: mob ? '9px' : '11px',
+          fontWeight: 900,
+          textTransform: 'uppercase',
+          letterSpacing: '1.5px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+        }}>
+          {primaryNiche}
+        </div>
+      </div>
+
       <motion.img 
         src={photo} 
         alt={creator.name}
-        whileHover={{ scale: 1.1 }}
+        whileHover={{ scale: 1.08 }}
         transition={{ duration: 0.6 }}
-        style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }}
+        style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
       />
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)' }} />
       
@@ -544,7 +565,7 @@ const SpotlightCard = ({ creator, mob, onClick }) => {
         <div style={{ 
           background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', 
           borderRadius: '100px', 
-          border: '1px solid rgba(255,255,255,0.1)', color: '#fff', 
+          border: '1px solid rgba(255,255,255,0.15)', color: '#fff', 
           fontWeight: 950, letterSpacing: '1px',
           boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
           ...v.badgeInner
@@ -574,17 +595,21 @@ SpotlightCard.propTypes = {
 const SpotlightHeader = ({ mob, onAction }) => (
   <div style={{ 
     display: 'flex', 
-    alignItems: mob ? 'center' : 'flex-start', 
+    alignItems: mob ? 'center' : 'flex-end', 
     flexDirection: mob ? 'column' : 'row', 
     textAlign: mob ? 'center' : 'left', 
     justifyContent: 'space-between', 
-    marginBottom: mob ? '24px' : '32px' 
+    marginBottom: mob ? '28px' : '36px',
+    gap: 16
   }}>
     <div>
-      <Bdg color="orange" sm>HANDPICKED TALENT</Bdg>
-      <h2 style={{ fontSize: mob ? '24px' : '32px', fontWeight: 950, color: '#0f172a', marginTop: '8px', letterSpacing: '-0.04em' }}>Elite Spotlight</h2>
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+        <Bdg color="orange" sm>HANDPICKED TALENT</Bdg>
+        <span className="live-pulse-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: '#EF4444', display: 'inline-block' }} />
+      </div>
+      <h2 style={{ fontSize: mob ? '26px' : '36px', fontWeight: 950, color: '#0f172a', marginTop: '8px', letterSpacing: '-0.04em', lineHeight: 1.1 }}>Elite Spotlight</h2>
     </div>
-    {!mob && <Btn outline sm onClick={onAction}>View All Verified</Btn>}
+    {!mob && <Btn outline sm onClick={onAction} style={{ borderRadius: '16px', padding: '12px 28px' }}>View All Verified</Btn>}
   </div>
 );
 
@@ -655,7 +680,12 @@ const EliteSpotlight = ({ mob, all, setSelectedCreator, dsp, loading }) => {
   const spotlightCreators = useMemo(() => all.filter(c => c.verified).slice(0, 5), [all]);
 
   return (
-    <section style={{ padding: mob ? '40px 0 20px' : '60px 0 40px', background: '#fcfcfc', borderBottom: '1px solid #f1f5f9', overflow: 'hidden' }}>
+    <section style={{ 
+      padding: mob ? '40px 0 20px' : '65px 0 45px', 
+      background: 'radial-gradient(circle at top right, rgba(255, 148, 49, 0.05) 0%, #fcfcfc 70%)', 
+      borderBottom: '1px solid #f1f5f9', 
+      overflow: 'hidden' 
+    }}>
       <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px' }}>
         <SpotlightHeader mob={mob} onAction={() => dsp({ t: 'CF', v: { verified: true } })} />
         <SpotlightList 
@@ -674,6 +704,14 @@ const EliteSpotlight = ({ mob, all, setSelectedCreator, dsp, loading }) => {
           0% { opacity: 1; }
           50% { opacity: 0.5; }
           100% { opacity: 1; }
+        }
+        .live-pulse-dot {
+          animation: livePulse 1.8s infinite;
+        }
+        @keyframes livePulse {
+          0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+          70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+          100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
       `}</style>
     </section>
@@ -759,7 +797,7 @@ export default function CreatorsPage() {
   }, [all]);
 
   return (
-    <div style={{ background: '#fff', minHeight: '100vh', width: '100%', overflowX: 'hidden' }}>
+    <div style={{ background: '#fff', minHeight: '100vh', width: '100%' }}>
       <Seo 
         title="Verified Creators Marketplace"
         description="Browse and connect with thousands of verified content creators across Bharat. Filter by niche, location, and impact scores."
@@ -768,7 +806,7 @@ export default function CreatorsPage() {
       <EliteHeader
         eyebrow="Marketplace Hub"
         title={<>Discover the <span style={{ color: '#FF9431' }}>Elite</span> Talent of Bharat</>}
-        sub={<>Access {fmt.num(all.length)}+ verified creators. Filter by location, niche, and impact scores to find your perfect brand match.</>}
+        sub={<>Unlock the power of authentic regional influence with India’s premier verified creator directory. Partner with {fmt.num(all.length)}+ leading digital stars across Tier-1, Tier-2, and Tier-3 cities to drive high-impact campaigns with complete price transparency and real-time metric scorecards.</>}
         gradient="saffron"
         light={true}
         compact={true}
