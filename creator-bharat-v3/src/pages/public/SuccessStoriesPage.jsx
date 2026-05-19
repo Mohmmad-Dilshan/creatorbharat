@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TrendingUp, Target, Users, DollarSign, Award, ChevronRight, Filter, ShieldCheck, Globe2, Zap, ArrowUpRight } from 'lucide-react';
+import { TrendingUp, Target, Users, DollarSign, Award, ShieldCheck, Globe2, Zap, ArrowUpRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Seo from '@/components/common/SEO';
 
