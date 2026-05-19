@@ -30,20 +30,21 @@ CategorySelect.propTypes = {
   dsp: PropTypes.func.isRequired
 };
 
-const ViewSwitcher = ({ view, setView }) => (
-  <div style={{ display: 'flex', gap: 4, background: '#f1f5f9', padding: 4, borderRadius: 100, height: 54, alignItems: 'center' }}>
-    <button aria-label="Grid view" onClick={() => setView('grid')} style={{ width: 44, height: 44, borderRadius: '50%', border: 'none', background: view === 'grid' ? '#fff' : 'transparent', color: view === 'grid' ? '#111' : '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', boxShadow: view === 'grid' ? '0 4px 12px rgba(0,0,0,0.08)' : 'none' }}>
-      <Grid size={18} />
+const ViewSwitcher = ({ view, setView, isSticky }) => (
+  <div style={{ display: 'flex', gap: 4, background: '#f1f5f9', padding: 4, borderRadius: 100, height: isSticky ? 48 : 54, alignItems: 'center' }}>
+    <button aria-label="Grid view" onClick={() => setView('grid')} style={{ width: isSticky ? 38 : 44, height: isSticky ? 38 : 44, borderRadius: '50%', border: 'none', background: view === 'grid' ? '#fff' : 'transparent', color: view === 'grid' ? '#111' : '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', boxShadow: view === 'grid' ? '0 4px 12px rgba(0,0,0,0.08)' : 'none' }}>
+      <Grid size={isSticky ? 16 : 18} />
     </button>
-    <button aria-label="List view" onClick={() => setView('list')} style={{ width: 44, height: 44, borderRadius: '50%', border: 'none', background: view === 'list' ? '#fff' : 'transparent', color: view === 'list' ? '#111' : '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', boxShadow: view === 'list' ? '0 4px 12px rgba(0,0,0,0.08)' : 'none' }}>
-      <List size={18} />
+    <button aria-label="List view" onClick={() => setView('list')} style={{ width: isSticky ? 38 : 44, height: isSticky ? 38 : 44, borderRadius: '50%', border: 'none', background: view === 'list' ? '#fff' : 'transparent', color: view === 'list' ? '#111' : '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', boxShadow: view === 'list' ? '0 4px 12px rgba(0,0,0,0.08)' : 'none' }}>
+      <List size={isSticky ? 16 : 18} />
     </button>
   </div>
 );
 
 ViewSwitcher.propTypes = {
   view: PropTypes.string.isRequired,
-  setView: PropTypes.func.isRequired
+  setView: PropTypes.func.isRequired,
+  isSticky: PropTypes.bool
 };
 
 const MobileQuickChips = ({ f, dsp, niches, clearFilters, hasFilters, setShowFilters }) => (
@@ -76,8 +77,8 @@ MobileQuickChips.propTypes = {
   setShowFilters: PropTypes.func.isRequired
 };
 
-const LocationSelect = ({ f, dsp }) => (
-  <div style={{ display: 'flex', gap: 8, alignItems: 'center', background: '#f8fafc', padding: '0 16px', borderRadius: 100, border: '1.5px solid rgba(0,0,0,0.04)', height: 54 }}>
+const LocationSelect = ({ f, dsp, isSticky }) => (
+  <div style={{ display: 'flex', gap: 8, alignItems: 'center', background: '#f8fafc', padding: '0 16px', borderRadius: 100, border: '1.5px solid rgba(0,0,0,0.04)', height: isSticky ? 48 : 54 }}>
     <MapPin size={16} color="#FF9431" />
     <select
       id="toolbar-location-select"
@@ -85,7 +86,7 @@ const LocationSelect = ({ f, dsp }) => (
       value={f.state}
       onChange={e => dsp({ t: 'CF', v: { state: e.target.value, district: '' } })}
       style={{
-        background: 'transparent', border: 'none', fontSize: 13, fontWeight: 700,
+        background: 'transparent', border: 'none', fontSize: isSticky ? 12 : 13, fontWeight: 700,
         color: f.state ? '#FF9431' : '#475569', outline: 'none', cursor: 'pointer'
       }}
     >
@@ -97,13 +98,14 @@ const LocationSelect = ({ f, dsp }) => (
 
 LocationSelect.propTypes = {
   f: PropTypes.object.isRequired,
-  dsp: PropTypes.func.isRequired
+  dsp: PropTypes.func.isRequired,
+  isSticky: PropTypes.bool
 };
 
-const SearchInput = ({ mob, f, dsp }) => (
+const SearchInput = ({ mob, f, dsp, isSticky }) => (
   <div style={{ 
     display: 'flex', flex: 1, minWidth: 0, background: '#fff', borderRadius: '24px', 
-    border: '1.5px solid rgba(0,0,0,0.06)', overflow: 'hidden', height: mob ? 54 : 64,
+    border: '1.5px solid rgba(0,0,0,0.06)', overflow: 'hidden', height: mob ? (isSticky ? 44 : 54) : (isSticky ? 48 : 64),
     alignItems: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
     transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
   }}
@@ -111,7 +113,7 @@ const SearchInput = ({ mob, f, dsp }) => (
   onBlurCapture={e => e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)'}
   >
     <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
-      <Search size={22} color="#FF9431" style={{ position: 'absolute', left: 24 }} />
+      <Search size={isSticky ? 18 : 22} color="#FF9431" style={{ position: 'absolute', left: isSticky ? 16 : 24 }} />
       <input
         id="toolbar-search-input"
         name="creator_search"
@@ -119,8 +121,8 @@ const SearchInput = ({ mob, f, dsp }) => (
         onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })}
         placeholder={mob ? "Search talent..." : "Search elite talent by niche, name or city..."}
         style={{ 
-          width: '100%', height: '100%', padding: '0 24px 0 64px', border: 'none', 
-          background: 'transparent', fontSize: '16px', fontWeight: 600, color: '#0f172a', outline: 'none' 
+          width: '100%', height: '100%', padding: isSticky ? '0 16px 0 46px' : '0 24px 0 64px', border: 'none', 
+          background: 'transparent', fontSize: isSticky ? '14px' : '16px', fontWeight: 600, color: '#0f172a', outline: 'none' 
         }}
       />
     </div>
@@ -130,19 +132,20 @@ const SearchInput = ({ mob, f, dsp }) => (
 SearchInput.propTypes = {
   mob: PropTypes.bool,
   f: PropTypes.object.isRequired,
-  dsp: PropTypes.func.isRequired
+  dsp: PropTypes.func.isRequired,
+  isSticky: PropTypes.bool
 };
 
-const ToolbarButtons = ({ mob, showMap, setShowMap, setShowFilters, hasFilters, filterCount }) => (
+const ToolbarButtons = ({ mob, showMap, setShowMap, setShowFilters, hasFilters, filterCount, isSticky }) => (
   <>
     <button
       onClick={() => setShowMap(!showMap)}
       style={{
-        height: mob ? 44 : 54, width: mob ? 44 : 'auto', padding: mob ? 0 : '0 20px', borderRadius: 100,
+        height: mob ? (isSticky ? 44 : 44) : (isSticky ? 48 : 54), width: mob ? 44 : 'auto', padding: mob ? 0 : '0 20px', borderRadius: 100,
         background: showMap ? '#111' : '#f8fafc',
         color: showMap ? '#fff' : '#475569',
         border: '1.5px solid ' + (showMap ? '#111' : 'rgba(0,0,0,0.04)'),
-        fontWeight: 800, fontSize: 13, cursor: 'pointer',
+        fontWeight: 800, fontSize: isSticky ? 12 : 13, cursor: 'pointer',
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: '0.2s'
       }}
     >
@@ -153,9 +156,9 @@ const ToolbarButtons = ({ mob, showMap, setShowMap, setShowFilters, hasFilters, 
     <button
       onClick={() => setShowFilters(true)}
       style={{
-        height: mob ? 44 : 54, padding: mob ? '0 16px' : '0 24px', borderRadius: 100,
+        height: mob ? (isSticky ? 44 : 44) : (isSticky ? 48 : 54), padding: mob ? '0 16px' : '0 24px', borderRadius: 100,
         background: hasFilters ? '#FF9431' : '#111', color: '#fff', border: 'none',
-        fontWeight: 900, fontSize: 13, cursor: 'pointer',
+        fontWeight: 900, fontSize: isSticky ? 12 : 13, cursor: 'pointer',
         display: 'flex', alignItems: 'center', gap: 10, transition: '0.2s',
         boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
       }}
@@ -180,13 +183,14 @@ ToolbarButtons.propTypes = {
   setShowMap: PropTypes.func.isRequired,
   setShowFilters: PropTypes.func.isRequired,
   hasFilters: PropTypes.bool.isRequired,
-  filterCount: PropTypes.number.isRequired
+  filterCount: PropTypes.number.isRequired,
+  isSticky: PropTypes.bool
 };
 
-const CategoryChips = ({ niches, f, dsp, mob }) => (
+const CategoryChips = ({ niches, f, dsp, mob, isSticky }) => (
   <div 
     style={{ 
-      display: 'flex', gap: 10, overflowX: 'auto', padding: '16px 0 4px', 
+      display: 'flex', gap: isSticky ? 8 : 10, overflowX: 'auto', padding: isSticky ? '4px 0 0' : '16px 0 4px', 
       scrollbarWidth: 'none', msOverflowStyle: 'none',
       maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)'
     }} 
@@ -199,11 +203,11 @@ const CategoryChips = ({ niches, f, dsp, mob }) => (
           key={n}
           onClick={() => dsp?.({ t: 'CF', v: { niche: isSel ? f.niche.filter(x => x !== n) : [...(f.niche || []), n] } })}
           style={{
-            flexShrink: 0, padding: mob ? '8px 16px' : '10px 20px', borderRadius: 100,
+            flexShrink: 0, padding: mob ? '8px 16px' : (isSticky ? '6px 14px' : '10px 20px'), borderRadius: 100,
             border: '1.5px solid ' + (isSel ? '#FF9431' : 'rgba(0,0,0,0.06)'),
             background: isSel ? '#FF9431' : '#fff',
             color: isSel ? '#fff' : '#475569',
-            fontSize: mob ? 12 : 13, fontWeight: 800, cursor: 'pointer',
+            fontSize: mob ? 12 : (isSticky ? 12 : 13), fontWeight: 800, cursor: 'pointer',
             transition: 'all 0.2s',
             boxShadow: isSel ? '0 8px 16px rgba(255,148,49,0.2)' : 'none'
           }}
@@ -272,7 +276,7 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
   }, [mob]);
 
   return (
-    <div ref={wrapperRef} style={{ minHeight: isSticky ? (mob ? '194px' : '158px') : 'auto', width: '100%' }}>
+    <div ref={wrapperRef} style={{ minHeight: isSticky ? (mob ? '72px' : '110px') : 'auto', width: '100%' }}>
       <div style={{ 
         position: isSticky ? 'fixed' : 'relative',
         top: isSticky ? '0px' : 'auto',
@@ -282,7 +286,7 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
         background: 'rgba(255, 255, 255, 0.88)', 
         backdropFilter: 'blur(24px)',
         borderBottom: '1px solid rgba(0,0,0,0.05)',
-        padding: '20px 0',
+        padding: isSticky ? '10px 0' : '20px 0',
         transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
         transform: (isSticky && hideForFooter) ? 'translateY(-120%)' : 'translateY(0)',
         opacity: (isSticky && hideForFooter) ? 0 : 1,
@@ -291,14 +295,14 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
         justifyContent: 'center',
         boxShadow: isSticky ? '0 10px 30px rgba(0,0,0,0.05)' : 'none'
       }}>
-        <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px', display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
+        <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px', display: 'flex', flexDirection: 'column', gap: isSticky ? '10px' : '20px', width: '100%' }}>
           <div style={{ display: 'flex', gap: mob ? '8px' : '16px', alignItems: 'center' }}>
-            <SearchInput mob={mob} f={f} dsp={dsp} />
+            <SearchInput mob={mob} f={f} dsp={dsp} isSticky={isSticky} />
 
             {!mob && (
               <>
-                <LocationSelect f={f} dsp={dsp} />
-                <ViewSwitcher view={view} setView={setView} />
+                <LocationSelect f={f} dsp={dsp} isSticky={isSticky} />
+                <ViewSwitcher view={view} setView={setView} isSticky={isSticky} />
               </>
             )}
 
@@ -310,11 +314,12 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
                 setShowFilters={setShowFilters} 
                 hasFilters={hasFilters} 
                 filterCount={filterCount} 
+                isSticky={isSticky}
               />
             </div>
           </div>
 
-          <CategoryChips niches={niches} f={f} dsp={dsp} mob={mob} />
+          {(!mob || !isSticky) && <CategoryChips niches={niches} f={f} dsp={dsp} mob={mob} isSticky={isSticky} />}
         </div>
       </div>
     </div>
