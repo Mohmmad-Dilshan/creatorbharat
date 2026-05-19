@@ -237,9 +237,9 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
       if (!wrapperRef.current) return;
       
       const rect = wrapperRef.current.getBoundingClientRect();
-      const triggerOffset = mob ? 58 : 72;
+      const triggerOffset = 0;
       
-      // If the top of the wrapper has scrolled past our threshold (72px or 58px)
+      // If the top of the wrapper has scrolled past our threshold (0px)
       if (rect.top <= triggerOffset) {
         setIsSticky(true);
       } else {
@@ -260,7 +260,7 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
     <div ref={wrapperRef} style={{ minHeight: isSticky ? (mob ? '194px' : '158px') : 'auto', width: '100%' }}>
       <div style={{ 
         position: isSticky ? 'fixed' : 'relative',
-        top: isSticky ? (mob ? '58px' : '72px') : 'auto',
+        top: isSticky ? '0px' : 'auto',
         left: 0,
         right: 0,
         zIndex: 1000,

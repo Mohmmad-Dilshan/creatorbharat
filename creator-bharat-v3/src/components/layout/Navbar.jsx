@@ -259,14 +259,10 @@ export default function Navbar() {
       setScroll(curY > 20);
       setMob(isMob);
       
-      if (isMob) {
-        const diff = curY - lastY.current;
-        if (curY < 50) setVisible(true);
-        else if (diff > 10) setVisible(false);
-        else if (diff < -10) setVisible(true);
-      } else {
-        setVisible(true);
-      }
+      const diff = curY - lastY.current;
+      if (curY < 50) setVisible(true);
+      else if (diff > 10) setVisible(false);
+      else if (diff < -10) setVisible(true);
       lastY.current = curY;
     };
 
@@ -323,7 +319,7 @@ export default function Navbar() {
     return scroll ? '16px 40px' : '24px 40px';
   };
 
-  const navTransform = ((mob && !visible) || st.ui.hideNav) ? 'translateY(-120%)' : 'none';
+  const navTransform = (!visible || st.ui.hideNav) ? 'translateY(-120%)' : 'none';
 
   return (
     <div style={{
