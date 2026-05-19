@@ -48,6 +48,8 @@ const NAV_COLS = [
       { label: 'Terms of Service', path: '/terms' },
       { label: 'Creator Guidelines', path: '/creator-guidelines' },
       { label: 'Brand Guidelines', path: '/brand-guidelines' },
+      { label: 'Cookie Policy', path: '/cookies' },
+      { label: 'Payout & Refund Policy', path: '/refunds' },
     ],
   },
 ];

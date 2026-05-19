@@ -51,6 +51,7 @@ const NavDropdown = ({ label, items, go, location }) => {
       style={{ position: 'relative' }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      role="none"
     >
       <button
         onClick={handleTriggerClick}

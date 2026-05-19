@@ -45,6 +45,8 @@ const PrivacyPage = lazy(() => import('./pages/legal/PrivacyPage'));
 const TermsPage = lazy(() => import('./pages/legal/TermsPage'));
 const CreatorGuidelinesPage = lazy(() => import('./pages/legal/CreatorGuidelinesPage'));
 const BrandGuidelinesPage = lazy(() => import('./pages/legal/BrandGuidelinesPage'));
+const CookiePolicyPage = lazy(() => import('./pages/legal/CookiePolicyPage'));
+const RefundPolicyPage = lazy(() => import('./pages/legal/RefundPolicyPage'));
 
 // Auth
 import ProtectedRoute from '@/core/ProtectedRoute';
@@ -109,6 +111,8 @@ export default function AppRoutes({ location }) {
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/creator-guidelines" element={<CreatorGuidelinesPage />} />
           <Route path="/brand-guidelines" element={<BrandGuidelinesPage />} />
+          <Route path="/cookies" element={<CookiePolicyPage />} />
+          <Route path="/refunds" element={<RefundPolicyPage />} />
           <Route path="/creator/:id" element={<CreatorProfilePage />} />
         </Route>
 

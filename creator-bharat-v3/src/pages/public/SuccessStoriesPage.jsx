@@ -195,51 +195,69 @@ export default function SuccessStoriesPage() {
         {/* Stories List Stack */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
           <AnimatePresence mode="popLayout">
-            {filteredStories.map((story, idx) => (
-              <motion.div
-                key={story.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.96 }}
-                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                style={{
-                  background: '#fff',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '32px',
-                  overflow: 'hidden',
-                  boxShadow: '0 20px 45px rgba(15,23,42,0.03)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  position: 'relative'
-                }}
-              >
-                {/* Banner Header Image with overlay */}
-                <div style={{ height: '260px', position: 'relative', overflow: 'hidden' }}>
-                  <img src={story.banner} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 30%, rgba(15,23,42,0.85) 100%)' }} />
-                  
-                  {/* Category Type Badge */}
-                  <div style={{
-                    position: 'absolute',
-                    top: '24px',
-                    left: '24px',
-                    background: story.type === 'brand' ? 'rgba(59,130,246,0.15)' : story.type === 'creator' ? 'rgba(16,185,129,0.15)' : 'rgba(255,148,49,0.15)',
-                    backdropFilter: 'blur(12px)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    padding: '8px 16px',
-                    borderRadius: '100px',
-                    fontSize: '11px',
-                    fontWeight: 950,
-                    color: '#fff',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.8px',
+            {filteredStories.map((story, idx) => {
+              let badgeBg = 'rgba(255,148,49,0.15)';
+              let dotBg = '#ff9431';
+              let badgeText = 'Platform Milestone';
+              let solutionColor = '#ff9431';
+
+              if (story.type === 'brand') {
+                badgeBg = 'rgba(59,130,246,0.15)';
+                dotBg = '#3b82f6';
+                badgeText = 'Brand ROI';
+                solutionColor = '#3b82f6';
+              } else if (story.type === 'creator') {
+                badgeBg = 'rgba(16,185,129,0.15)';
+                dotBg = '#10b981';
+                badgeText = 'Creator Career';
+                solutionColor = '#10b981';
+              }
+
+              return (
+                <motion.div
+                  key={story.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  style={{
+                    background: '#fff',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '32px',
+                    overflow: 'hidden',
+                    boxShadow: '0 20px 45px rgba(15,23,42,0.03)',
                     display: 'flex',
-                    alignItems: 'center',
-                    gap: 6
-                  }}>
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: story.type === 'brand' ? '#3b82f6' : story.type === 'creator' ? '#10b981' : '#ff9431' }} />
-                    {story.type === 'brand' ? 'Brand ROI' : story.type === 'creator' ? 'Creator Career' : 'Platform Milestone'}
-                  </div>
+                    flexDirection: 'column',
+                    position: 'relative'
+                  }}
+                >
+                  {/* Banner Header Image with overlay */}
+                  <div style={{ height: '260px', position: 'relative', overflow: 'hidden' }}>
+                    <img src={story.banner} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 30%, rgba(15,23,42,0.85) 100%)' }} />
+                    
+                    {/* Category Type Badge */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '24px',
+                      left: '24px',
+                      background: badgeBg,
+                      backdropFilter: 'blur(12px)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      padding: '8px 16px',
+                      borderRadius: '100px',
+                      fontSize: '11px',
+                      fontWeight: 950,
+                      color: '#fff',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6
+                    }}>
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: dotBg }} />
+                      {badgeText}
+                    </div>
 
                   {/* Niche & Location */}
                   <div style={{
@@ -325,7 +343,7 @@ export default function SuccessStoriesPage() {
                       </p>
                     </div>
                     <div>
-                      <h4 style={{ fontSize: '12px', fontWeight: 950, color: story.type === 'brand' ? '#3b82f6' : story.type === 'creator' ? '#10b981' : '#ff9431', textTransform: 'uppercase', margin: '0 0 8px 0', letterSpacing: '0.8px' }}>
+                      <h4 style={{ fontSize: '12px', fontWeight: 950, color: solutionColor, textTransform: 'uppercase', margin: '0 0 8px 0', letterSpacing: '0.8px' }}>
                         {story.type === 'platform' ? 'Our Implementation' : 'The Solution'}
                       </h4>
                       <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.5, margin: 0, fontWeight: 500 }}>
@@ -420,7 +438,8 @@ export default function SuccessStoriesPage() {
 
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </AnimatePresence>
         </div>
 
