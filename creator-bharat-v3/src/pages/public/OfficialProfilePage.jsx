@@ -301,6 +301,172 @@ const MastermindSection = ({ mob }) => (
 );
 MastermindSection.propTypes = { mob: PropTypes.bool.isRequired };
 
+const TESTIMONIALS_DATA = [
+  {
+    name: "Rohan Mehta",
+    role: "Brand Director, PepsiCo India",
+    quote: "CreatorBharat solved our Tier 2 influencer outreach problem. The verified metrics allowed us to hire 45 creators across Rajasthan in days with zero agency overhead.",
+    rating: 5,
+    tag: "Verified Brand Partner"
+  },
+  {
+    name: "Komalpreet Kaur",
+    role: "Travel Creator, Amritsar",
+    quote: "Having a dynamic verified QR profile changed my life. Brands pitch me directly now. I've secured three major campaigns this quarter alone, all via CB.",
+    rating: 5,
+    tag: "Verified Elite Creator"
+  },
+  {
+    name: "Ananya Sen",
+    role: "Influencer Marketing Lead, Nykaa",
+    quote: "The transparent escrow ledger is a game changer. We fund campaigns knowing our money is safe until deliverables are fully verified by the smart system.",
+    rating: 5,
+    tag: "Verified Brand Partner"
+  }
+];
+
+const ReviewSlider = ({ mob }) => {
+  const [currentIdx, setCurrentIdx] = useState(0);
+
+  const next = () => setCurrentIdx(prev => (prev + 1) % TESTIMONIALS_DATA.length);
+  const prev = () => setCurrentIdx(prev => (prev - 1 + TESTIMONIALS_DATA.length) % TESTIMONIALS_DATA.length);
+
+  const current = TESTIMONIALS_DATA[currentIdx];
+
+  return (
+    <div style={{ 
+      background: '#f8fafc', 
+      borderRadius: '32px', 
+      padding: mob ? '32px 24px' : '48px', 
+      border: '1px solid #e2e8f0',
+      marginTop: '40px',
+      position: 'relative',
+      overflow: 'hidden',
+      textAlign: 'left'
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Award size={20} color="#FF9431" />
+          <span style={{ fontSize: '13px', fontWeight: 900, color: '#0f172a', letterSpacing: '1.5px', textTransform: 'uppercase' }}>ECOSYSTEM TRUST REVIEWS</span>
+        </div>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button onClick={prev} style={{ width: '36px', height: '36px', borderRadius: '50%', border: '1px solid #cbd5e1', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}>‹</button>
+          <button onClick={next} style={{ width: '36px', height: '36px', borderRadius: '50%', border: '1px solid #cbd5e1', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}>›</button>
+        </div>
+      </div>
+
+      <AnimatePresence mode="wait">
+        <motion.div 
+          key={currentIdx}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.3 }}
+          style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+        >
+          {/* Star Rating */}
+          <div style={{ display: 'flex', gap: '4px' }}>
+            {['star1', 'star2', 'star3', 'star4', 'star5'].slice(0, current.rating).map(starKey => (
+              <span key={starKey} style={{ color: '#FF9431', fontSize: '18px' }}>★</span>
+            ))}
+          </div>
+
+          <p style={{ 
+            fontSize: mob ? '16px' : '18px', 
+            fontWeight: 600, 
+            color: '#334155', 
+            lineHeight: 1.6, 
+            fontStyle: 'italic', 
+            margin: 0 
+          }}>
+            "{current.quote}"
+          </p>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
+              <div style={{ fontSize: '16px', fontWeight: 900, color: '#0f172a' }}>{current.name}</div>
+              <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 500 }}>{current.role}</div>
+            </div>
+            <div style={{ 
+              background: '#FF943110', 
+              color: '#FF9431', 
+              padding: '6px 12px', 
+              borderRadius: '100px', 
+              fontSize: '11px', 
+              fontWeight: 900, 
+              textTransform: 'uppercase', 
+              letterSpacing: '1px' 
+            }}>
+              {current.tag}
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+};
+
+ReviewSlider.propTypes = {
+  mob: PropTypes.bool.isRequired
+};
+
+const HslBadge = ({ type }) => {
+  const styles = {
+    verified: {
+      bg: 'hsla(210, 100%, 50%, 0.1)',
+      border: '1px solid hsla(210, 100%, 50%, 0.25)',
+      color: 'hsl(210, 100%, 45%)',
+      shadow: '0 4px 12px hsla(210, 100%, 50%, 0.15)',
+      label: 'Verified'
+    },
+    elite: {
+      bg: 'hsla(35, 100%, 50%, 0.1)',
+      border: '1px solid hsla(35, 100%, 50%, 0.25)',
+      color: 'hsl(35, 100%, 40%)',
+      shadow: '0 4px 12px hsla(35, 100%, 50%, 0.15)',
+      label: 'Elite'
+    },
+    enterprise: {
+      bg: 'hsla(260, 100%, 60%, 0.1)',
+      border: '1px solid hsla(260, 100%, 60%, 0.25)',
+      color: 'hsl(260, 100%, 55%)',
+      shadow: '0 4px 12px hsla(260, 100%, 60%, 0.15)',
+      label: 'Enterprise'
+    }
+  };
+
+  const current = styles[type] || styles.verified;
+
+  return (
+    <div style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '4px',
+      background: current.bg,
+      border: current.border,
+      color: current.color,
+      boxShadow: current.shadow,
+      padding: '4px 10px',
+      borderRadius: '20px',
+      fontSize: '11px',
+      fontWeight: 900,
+      textTransform: 'uppercase',
+      letterSpacing: '0.8px',
+      fontFamily: "'Outfit', sans-serif",
+      userSelect: 'none'
+    }}>
+      {type === 'verified' && <CheckCircle2 size={12} style={{ fill: current.color, color: '#fff' }} />}
+      {type === 'elite' && <Award size={12} />}
+      {type === 'enterprise' && <Zap size={12} />}
+      <span>{current.label}</span>
+    </div>
+  );
+};
+
+HslBadge.propTypes = {
+  type: PropTypes.oneOf(['verified', 'elite', 'enterprise']).isRequired
+};
+
 const LiveTicker = () => (
   <div style={{ background: '#f8fafc', borderBottom: '1px solid #f1f5f9', padding: '10px 0', overflow: 'hidden', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
     <div style={{ background: '#0f172a', color: '#fff', fontSize: '10px', fontWeight: 900, padding: '4px 12px', borderRadius: '4px', margin: '0 20px', zIndex: 10, display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -408,6 +574,7 @@ const TabContent = ({ activeTab, mob }) => (
              <RoadmapTimeline />
              <div style={{ borderTop: '1px solid #f1f5f9', margin: '40px 0' }} />
              <MastermindSection mob={mob} />
+             <ReviewSlider mob={mob} />
           </div>
        )}
        {activeTab === 'insights' && <InsightsGrid mob={mob} />}
@@ -418,6 +585,75 @@ const TabContent = ({ activeTab, mob }) => (
 TabContent.propTypes = {
   activeTab: PropTypes.string.isRequired,
   mob: PropTypes.bool.isRequired
+};
+
+const ProfileHeader = ({ mob, content, lang, setLang, handleInteraction }) => (
+  <div style={{ 
+    display: 'flex', 
+    flexDirection: mob ? 'column' : 'row',
+    gap: mob ? '32px' : '100px', 
+    alignItems: 'center', 
+    textAlign: mob ? 'center' : 'left',
+    marginBottom: mob ? '40px' : '44px' 
+  }}>
+    <div style={{ flexShrink: 0 }}>
+       <div style={{ 
+         width: mob ? '120px' : '150px', 
+         height: mob ? '120px' : '150px', 
+         borderRadius: '50%', 
+         background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)', 
+         padding: '4px',
+         boxShadow: '0 12px 30px rgba(220, 39, 67, 0.25)'
+       }}>
+          <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#fff', padding: '4px' }}>
+             <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ShieldCheck size={mob ? 60 : 80} color="#fff" />
+             </div>
+          </div>
+       </div>
+    </div>
+    <div style={{ flex: 1, width: mob ? '100%' : 'auto' }}>
+       <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', alignItems: 'center', gap: '20px', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: mob ? 'center' : 'flex-start' }}>
+             <h1 style={{ fontSize: '24px', fontWeight: 600, letterSpacing: '-0.02em', margin: 0 }}>{content.username}</h1>
+             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+               <HslBadge type="verified" />
+               <HslBadge type="elite" />
+               <HslBadge type="enterprise" />
+             </div>
+          </div>
+          <div style={{ display: 'flex', gap: '8px', width: mob ? '100%' : 'auto' }}>
+             <button onClick={() => handleInteraction('/follow/creatorbharat')} style={{ flex: 1, padding: '9px 16px', background: '#0095f6', border: 'none', color: '#fff', borderRadius: '8px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', transition: 'opacity 0.2s' }}>Follow</button>
+             <button onClick={() => handleInteraction('/chat/creatorbharat')} style={{ flex: 1, padding: '9px 16px', background: '#efefef', border: 'none', color: '#262626', borderRadius: '8px', fontSize: '14px', fontWeight: 700, cursor: 'pointer' }}>Message</button>
+             <button onClick={() => setLang(lang === 'en' ? 'hi' : 'en')} style={{ padding: '9px 12px', background: '#efefef', border: 'none', color: '#262626', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}><Languages size={16} /> {lang.toUpperCase()}</button>
+          </div>
+          {mob ? null : <MoreHorizontal size={24} style={{ cursor: 'pointer' }} />}
+       </div>
+       {!mob && (
+         <div style={{ display: 'flex', gap: '40px', marginBottom: '20px' }}>
+            <span><strong>{OFFICIAL_DATA.baseStats.posts}</strong> posts</span>
+            <span><strong>{OFFICIAL_DATA.baseStats.followers}</strong> followers</span>
+            <span><strong>{OFFICIAL_DATA.baseStats.following}</strong> following</span>
+         </div>
+       )}
+       <div style={{ fontSize: '15px', lineHeight: 1.6 }}>
+          <div style={{ fontWeight: 700, fontSize: '16px', marginBottom: '4px' }}>{content.displayName}</div>
+          <div style={{ color: '#8e8e8e', fontWeight: 500, marginBottom: '8px' }}>{content.category}</div>
+          <div style={{ whiteSpace: 'pre-line', color: '#262626' }}>{content.bio}</div>
+          <div style={{ color: '#00376b', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: mob ? 'center' : 'flex-start', gap: '4px', marginTop: '8px' }}>
+            <ExternalLink size={14} /> {content.website}
+          </div>
+       </div>
+    </div>
+  </div>
+);
+
+ProfileHeader.propTypes = {
+  mob: PropTypes.bool.isRequired,
+  content: PropTypes.object.isRequired,
+  lang: PropTypes.string.isRequired,
+  setLang: PropTypes.func.isRequired,
+  handleInteraction: PropTypes.func.isRequired
 };
 
 // --- MAIN PAGE ---
@@ -460,61 +696,13 @@ export default function OfficialProfilePage() {
 
       <div style={{ maxWidth: '935px', margin: '0 auto', padding: mob ? '24px 16px' : '60px 20px 0' }}>
         
-        {/* Header Block - Cinematic Refinement */}
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: mob ? 'column' : 'row',
-          gap: mob ? '32px' : '100px', 
-          alignItems: 'center', 
-          textAlign: mob ? 'center' : 'left',
-          marginBottom: mob ? '40px' : '44px' 
-        }}>
-          <div style={{ flexShrink: 0 }}>
-             <div style={{ 
-               width: mob ? '120px' : '150px', 
-               height: mob ? '120px' : '150px', 
-               borderRadius: '50%', 
-               background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)', 
-               padding: '4px',
-               boxShadow: '0 12px 30px rgba(220, 39, 67, 0.25)'
-             }}>
-                <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#fff', padding: '4px' }}>
-                   <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <ShieldCheck size={mob ? 60 : 80} color="#fff" />
-                   </div>
-                </div>
-             </div>
-          </div>
-          <div style={{ flex: 1, width: mob ? '100%' : 'auto' }}>
-             <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', alignItems: 'center', gap: '20px', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <h1 style={{ fontSize: '24px', fontWeight: 600, letterSpacing: '-0.02em' }}>{content.username}</h1>
-                  <CheckCircle2 size={20} color="#3897f0" fill="#3897f0" />
-                </div>
-                <div style={{ display: 'flex', gap: '8px', width: mob ? '100%' : 'auto' }}>
-                   <button onClick={() => handleInteraction('/follow/creatorbharat')} style={{ flex: 1, padding: '9px 16px', background: '#0095f6', border: 'none', color: '#fff', borderRadius: '8px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', transition: 'opacity 0.2s' }}>Follow</button>
-                   <button onClick={() => handleInteraction('/chat/creatorbharat')} style={{ flex: 1, padding: '9px 16px', background: '#efefef', border: 'none', color: '#262626', borderRadius: '8px', fontSize: '14px', fontWeight: 700, cursor: 'pointer' }}>Message</button>
-                   <button onClick={() => setLang(lang === 'en' ? 'hi' : 'en')} style={{ padding: '9px 12px', background: '#efefef', border: 'none', color: '#262626', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}><Languages size={16} /> {lang.toUpperCase()}</button>
-                </div>
-                {mob ? null : <MoreHorizontal size={24} style={{ cursor: 'pointer' }} />}
-             </div>
-             {!mob && (
-               <div style={{ display: 'flex', gap: '40px', marginBottom: '20px' }}>
-                  <span><strong>{OFFICIAL_DATA.baseStats.posts}</strong> posts</span>
-                  <span><strong>{OFFICIAL_DATA.baseStats.followers}</strong> followers</span>
-                  <span><strong>{OFFICIAL_DATA.baseStats.following}</strong> following</span>
-               </div>
-             )}
-             <div style={{ fontSize: '15px', lineHeight: 1.6 }}>
-                <div style={{ fontWeight: 700, fontSize: '16px', marginBottom: '4px' }}>{content.displayName}</div>
-                <div style={{ color: '#8e8e8e', fontWeight: 500, marginBottom: '8px' }}>{content.category}</div>
-                <div style={{ whiteSpace: 'pre-line', color: '#262626' }}>{content.bio}</div>
-                <div style={{ color: '#00376b', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: mob ? 'center' : 'flex-start', gap: '4px', marginTop: '8px' }}>
-                  <ExternalLink size={14} /> {content.website}
-                </div>
-             </div>
-          </div>
-        </div>
+        <ProfileHeader 
+          mob={mob} 
+          content={content} 
+          lang={lang} 
+          setLang={setLang} 
+          handleInteraction={handleInteraction} 
+        />
 
         {/* Mobile Stats Row */}
         {mob && (

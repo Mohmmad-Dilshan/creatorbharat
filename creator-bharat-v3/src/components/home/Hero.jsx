@@ -240,26 +240,81 @@ const HeroHeader = memo(({ mob }) => (
 
 HeroHeader.propTypes = { mob: PropTypes.bool };
 
-const HeroCTA = memo(({ mob, go, dsp }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-    <div className="au d3" style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: mob ? 16 : 20, marginBottom: mob ? 32 : 80, justifyContent: 'center', width: 'auto', alignItems: 'center' }}>
-      <Btn lg full={false} onClick={() => go('/apply')} style={{ padding: mob ? '20px 40px' : '28px 64px', fontSize: mob ? 16 : 20, background: '#0f172a', color: '#fff', borderRadius: 100, fontWeight: 950, border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden' }}>
-        <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 12 }}>🚀 Claim Your Handle Free</span>
-        <div style={{ position: 'absolute', top: 0, left: '-100%', width: '50%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)', animation: 'shimmer 3s infinite', transform: 'skewX(-20deg)' }} />
-      </Btn>
-      <Btn lg variant="ghost" full={false} onClick={() => dsp({ t: 'UI', v: { demoModal: true } })} style={{ padding: mob ? '18px 40px' : '26px 56px', fontSize: mob ? 15 : 18, background: 'rgba(255,255,255,0.8)', color: '#0f172a', borderRadius: 100, fontWeight: 950, border: '1.5px solid #f1f5f9', backdropFilter: 'blur(20px)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
-        <span>👁️ Elite Demo</span>
-      </Btn>
-    </div>
-    
-    {mob && (
-      <div className="au d3" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', background: 'rgba(16,185,129,0.06)', borderRadius: 100, marginBottom: 80, border: '1px solid rgba(16,185,129,0.1)' }}>
-        <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px #10B981' }} />
-        <span style={{ fontSize: 11, fontWeight: 950, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1px' }}>Verified Bharat Ecosystem</span>
-      </div>
-    )}
+const TourBadge = memo(({ mob, onClick }) => (
+  <button 
+    type="button" 
+    onClick={onClick} 
+    style={{
+      background: 'rgba(255,148,49,0.08)',
+      color: '#FF9431',
+      border: '1px dashed rgba(255,148,49,0.3)',
+      borderRadius: 100,
+      padding: '8px 18px',
+      fontSize: 12,
+      fontWeight: 800,
+      cursor: 'pointer',
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 6,
+      marginBottom: mob ? 24 : 80,
+      transition: 'all 0.2s ease',
+    }}
+    className="interactive-tour-badge"
+  >
+    <span>👁️ Take 1-Minute Interactive Tour</span>
+  </button>
+));
+
+TourBadge.propTypes = {
+  mob: PropTypes.bool,
+  onClick: PropTypes.func.isRequired
+};
+
+const PrimaryButtons = memo(({ mob, go }) => (
+  <div className="au d3" style={{ display: 'flex', flexDirection: 'row', gap: mob ? 12 : 20, marginBottom: mob ? 40 : 24, justifyContent: 'center', width: mob ? '100%' : 'auto', maxWidth: mob ? 480 : 'none', padding: mob ? '0 16px' : 0, boxSizing: 'border-box', alignItems: 'center' }}>
+    <Btn lg full={false} onClick={() => go('/join')} style={{ flex: mob ? 1 : 'initial', padding: mob ? '18px 14px' : '28px 64px', fontSize: mob ? 15 : 20, minWidth: mob ? 0 : 'auto', background: '#0f172a', color: '#fff', borderRadius: 100, fontWeight: 950, border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+      <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: mob ? 6 : 12 }}>🚀 Join as Creator</span>
+      <div style={{ position: 'absolute', top: 0, left: '-100%', width: '50%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)', animation: 'shimmer 3s infinite', transform: 'skewX(-20deg)' }} />
+    </Btn>
+    <Btn lg variant="ghost" full={false} onClick={() => go('/creators')} style={{ flex: mob ? 1 : 'initial', padding: mob ? '18px 14px' : '26px 56px', fontSize: mob ? 15 : 18, minWidth: mob ? 0 : 'auto', background: 'rgba(255,255,255,0.8)', color: '#0f172a', borderRadius: 100, fontWeight: 950, border: '1.5px solid #f1f5f9', backdropFilter: 'blur(20px)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)', whiteSpace: 'nowrap' }}>
+      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: mob ? 6 : 12 }}>💼 Hire Talent</span>
+    </Btn>
   </div>
 ));
+
+PrimaryButtons.propTypes = {
+  mob: PropTypes.bool,
+  go: PropTypes.func.isRequired
+};
+
+const HeroCTA = memo(({ mob, go, dsp }) => {
+  const handleOpenDemo = useCallback(() => {
+    dsp({ t: 'UI', v: { demoModal: true } });
+  }, [dsp]);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+      {mob ? (
+        <>
+          <TourBadge mob={mob} onClick={handleOpenDemo} />
+          <PrimaryButtons mob={mob} go={go} />
+        </>
+      ) : (
+        <>
+          <PrimaryButtons mob={mob} go={go} />
+          <TourBadge mob={mob} onClick={handleOpenDemo} />
+        </>
+      )}
+      
+      {mob && (
+        <div className="au d3" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', background: 'rgba(16,185,129,0.06)', borderRadius: 100, marginBottom: 80, border: '1px solid rgba(16,185,129,0.1)' }}>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px #10B981' }} />
+          <span style={{ fontSize: 11, fontWeight: 950, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1px' }}>Verified Bharat Ecosystem</span>
+        </div>
+      )}
+    </div>
+  );
+});
 
 HeroCTA.propTypes = { mob: PropTypes.bool, go: PropTypes.func.isRequired, dsp: PropTypes.func.isRequired };
 
@@ -449,6 +504,7 @@ export default function Hero({ mob, st, dsp, go }) {
           .elite-support-card:hover .card-hover-bg { opacity: 1 !important; }
           .elite-support-card:hover .card-accent-line { width: 100% !important; }
           ${mob ? '' : '.elite-support-card:hover { transform: translateY(-12px) scale(1.02); box-shadow: 0 32px 80px rgba(0,0,0,0.12); }'}
+          .interactive-tour-badge:hover { background: rgba(255,148,49,0.15) !important; border-color: rgba(255,148,49,0.5) !important; transform: translateY(-1px) scale(1.02); }
           @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
         `}</style>
       </div>
