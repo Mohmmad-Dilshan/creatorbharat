@@ -28,13 +28,14 @@ const NAV_COLS = [
       { label: 'Leaderboard', path: '/leaderboard' },
       { label: 'Rate Calculator', path: '/rate-calc' },
       { label: 'Blog & Insights', path: '/blog' },
-      { label: 'Official Profile', path: '/official-profile' },
+      { label: 'Success Stories', path: '/stories' },
     ],
   },
   {
     heading: 'Company',
     links: [
       { label: 'About Us', path: '/about' },
+      { label: 'Official Profile', path: '/official-profile' },
       { label: 'Pricing', path: '/pricing' },
       { label: 'Help & FAQ', path: '/faq' },
       { label: 'Contact Us', path: '/contact' },

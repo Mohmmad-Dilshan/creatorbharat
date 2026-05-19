@@ -19,6 +19,8 @@ const RateCalcPage = lazy(() => import('./pages/public/RateCalcPage'));
 const LeaderboardPage = lazy(() => import('./pages/public/LeaderboardPage'));
 const OfficialProfilePage = lazy(() => import('./pages/public/OfficialProfilePage'));
 const ServerErrorPage = lazy(() => import('./pages/public/ServerErrorPage'));
+const NotificationsHub = lazy(() => import('./pages/public/NotificationsHub'));
+const SuccessStoriesPage = lazy(() => import('./pages/public/SuccessStoriesPage'));
 
 // Brand/Marketplace Pages
 const CreatorsPage = lazy(() => import('./pages/brand/CreatorsPage'));
@@ -96,6 +98,8 @@ export default function AppRoutes({ location }) {
           <Route path="/rate-calc" element={<AuthLock><RateCalcPage /></AuthLock>} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/official-profile" element={<OfficialProfilePage />} />
+          <Route path="/notifications" element={<NotificationsHub />} />
+          <Route path="/stories" element={<SuccessStoriesPage />} />
           <Route path="/creators" element={<CreatorsPage />} />
           <Route path="/campaigns" element={<CampaignsPage />} />
           <Route path="/compare" element={<ProtectedRoute allowedRole="brand"><ComparePage /></ProtectedRoute>} />

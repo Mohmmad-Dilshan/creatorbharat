@@ -308,6 +308,7 @@ export default function Navbar() {
     { 
       label: 'Resources', 
       items: [
+        { path: '/stories', label: 'Success Stories' },
         { path: '/blog', label: 'Creator Hub' },
         { path: '/faq', label: 'Help & FAQ' },
         { path: '/contact', label: 'Contact Us' }

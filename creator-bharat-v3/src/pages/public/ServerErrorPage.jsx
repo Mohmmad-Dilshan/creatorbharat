@@ -1,11 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { RefreshCw, ShieldAlert, LifeBuoy, AlertTriangle } from 'lucide-react';
 import Seo from '@/components/common/SEO';
 
 export default function ServerErrorPage() {
   const navigate = useNavigate();
+  const [countdown, setCountdown] = useState(10);
+  const [showDiagnostics, setShowDiagnostics] = useState(false);
+
+  useEffect(() => {
+    if (countdown <= 0) {
+      globalThis.location.reload();
+      return;
+    }
+    const timer = setTimeout(() => {
+      setCountdown(c => c - 1);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [countdown]);
 
   const handleReload = () => {
     globalThis.location.reload();
@@ -27,7 +40,7 @@ export default function ServerErrorPage() {
       {/* Dynamic SEO Meta */}
       <Seo 
         title="500 - System Pipeline Interrupted" 
-        description="A minor disruption occurred in the database gateway. CreatorBharat elite concierge is working to restore dynamic creator data immediately."
+        description="A minor disruption occurred in the database gateway. CreatorBharat elite engineering is working to restore dynamic creator data immediately."
       />
 
       {/* Orbiting Halo background mesh */}
@@ -48,12 +61,12 @@ export default function ServerErrorPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         style={{
-          maxWidth: '600px',
+          maxWidth: '520px',
           width: '100%',
           background: 'rgba(255, 255, 255, 0.02)',
           border: '1px solid rgba(255, 255, 255, 0.06)',
           borderRadius: '40px',
-          padding: '60px 40px',
+          padding: '48px 36px',
           textAlign: 'center',
           backdropFilter: 'blur(20px)',
           boxShadow: '0 40px 100px rgba(0,0,0,0.8)',
@@ -61,16 +74,17 @@ export default function ServerErrorPage() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 32
+          gap: 28,
+          boxSizing: 'border-box'
         }}
       >
         {/* Animated Badge & Icon */}
         <motion.div 
-          animate={{ scale: [1, 1.05, 1] }}
-          transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+          animate={{ scale: [1, 1.06, 1] }}
+          transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
           style={{
-            width: '80px',
-            height: '80px',
+            width: '74px',
+            height: '74px',
             borderRadius: '50%',
             background: 'rgba(239, 68, 68, 0.08)',
             border: '1px solid rgba(239, 68, 68, 0.2)',
@@ -80,13 +94,13 @@ export default function ServerErrorPage() {
             color: '#ef4444'
           }}
         >
-          <AlertTriangle size={40} className="pulse-slow" />
+          <AlertTriangle size={36} className="pulse-slow" />
         </motion.div>
 
         {/* Text Details */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <h1 style={{
-            fontSize: '120px',
+            fontSize: '96px',
             fontWeight: 950,
             margin: 0,
             lineHeight: 0.8,
@@ -98,7 +112,7 @@ export default function ServerErrorPage() {
             500
           </h1>
           <h2 style={{
-            fontSize: '28px',
+            fontSize: '24px',
             fontWeight: 900,
             margin: 0,
             letterSpacing: '-0.5px'
@@ -106,97 +120,149 @@ export default function ServerErrorPage() {
             Ecosystem Pipeline Offline
           </h2>
           <p style={{
-            fontSize: '15px',
+            fontSize: '14px',
             color: 'rgba(255, 255, 255, 0.5)',
-            lineHeight: 1.6,
-            maxWidth: '440px',
-            margin: '0 auto'
+            lineHeight: 1.5,
+            maxWidth: '380px',
+            margin: '0 auto',
+            fontWeight: 500
           }}>
             Our backend pipeline received an unexpected response code while fetching campaign analytics. The engineering operations team has been notified.
           </p>
         </div>
 
-        {/* Diagnostic Path Indicator */}
-        <div style={{
-          fontSize: '12px',
-          fontFamily: 'monospace',
-          color: 'rgba(255, 255, 255, 0.3)',
-          background: 'rgba(255,255,255,0.02)',
-          border: '1px solid rgba(255,255,255,0.04)',
-          padding: '12px 20px',
-          borderRadius: '16px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          gap: 6,
-          width: '100%',
-          textAlign: 'left'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#ef4444' }}>
-            <ShieldAlert size={14} />
-            <span style={{ fontWeight: 900 }}>SYSTEM DIAGNOSTIC LOG:</span>
+        {/* Auto-retry Progress Bar */}
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '11px', color: 'rgba(255,255,255,0.6)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            <span>🔄 Auto-reconnecting in</span>
+            <span style={{ color: '#ef4444', fontWeight: 950 }}>{countdown}s</span>
           </div>
-          <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>ERR_CONNECTION_REFUSED • Gateway Timeout (504/500)</span>
-          <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>Active Session ID: CBS-{Math.floor(100000 + Math.random() * 900000)}</span>
+          <div style={{ width: '100%', height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 10, position: 'relative', overflow: 'hidden' }}>
+            <motion.div 
+              initial={{ width: '100%' }} 
+              animate={{ width: `${(countdown / 10) * 100}%` }} 
+              transition={{ duration: 1, ease: 'linear' }}
+              style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, #ef4444, #EA580C)' }} 
+            />
+          </div>
+        </div>
+
+        {/* Toggle Diagnostic details */}
+        <div style={{ width: '100%' }}>
+          <button
+            onClick={() => setShowDiagnostics(!showDiagnostics)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'rgba(255,255,255,0.4)',
+              fontSize: '11px',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              marginBottom: 10,
+              textDecoration: 'underline',
+              padding: 0
+            }}
+          >
+            {showDiagnostics ? '🙈 Hide Diagnostics' : '🛠️ Show Diagnostics'}
+          </button>
+          
+          <AnimatePresence>
+            {showDiagnostics && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                style={{
+                  fontSize: '11px',
+                  fontFamily: 'monospace',
+                  color: 'rgba(255, 255, 255, 0.5)',
+                  background: 'rgba(0,0,0,0.3)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  padding: '16px',
+                  borderRadius: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  gap: 8,
+                  width: '100%',
+                  textAlign: 'left',
+                  boxSizing: 'border-box',
+                  overflow: 'hidden'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#ef4444' }}>
+                  <ShieldAlert size={14} />
+                  <span style={{ fontWeight: 900 }}>SYSTEM DIAGNOSTIC LOG:</span>
+                </div>
+                <div>Status: Gateway Failure (ERR_PIPELINE_BLOCKED)</div>
+                <div>Payload: {"{ api_route: '/creators/seed', latency: '15400ms', cluster_node: 'cb-ap-south-1' }"}</div>
+                <div>Trace: 0xCB9431_TIMEOUT_INTRIPT</div>
+                <div>Active Session ID: CBS-{Math.floor(100000 + Math.random() * 900000)}</div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Action Buttons */}
         <div style={{
           display: 'flex',
-          gap: 16,
+          gap: 12,
           width: '100%',
           flexWrap: 'wrap',
           justifyContent: 'center'
         }}>
           <motion.button 
-            whileHover={{ scale: 1.05, y: -2 }}
+            whileHover={{ scale: 1.03, y: -1 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleReload}
             style={{
               flex: 1,
-              minWidth: '180px',
-              padding: '16px 28px',
+              minWidth: '160px',
+              padding: '14px 20px',
               borderRadius: '100px',
               background: 'linear-gradient(135deg, #ef4444 0%, #EA580C 100%)',
               color: '#ffffff',
               border: 'none',
               fontWeight: 800,
-              fontSize: '14px',
+              fontSize: '13px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 10,
+              gap: 8,
               boxShadow: '0 15px 30px rgba(239, 68, 68, 0.2)'
             }}
           >
-            <RefreshCw size={18} />
+            <RefreshCw size={16} />
             <span>Reload Pipeline</span>
           </motion.button>
 
           <motion.button 
-            whileHover={{ scale: 1.05, y: -2, borderColor: 'rgba(255, 255, 255, 0.2)', backgroundColor: 'rgba(255,255,255,0.04)' }}
+            whileHover={{ scale: 1.03, y: -1, borderColor: 'rgba(255, 255, 255, 0.2)', backgroundColor: 'rgba(255,255,255,0.04)' }}
             whileTap={{ scale: 0.98 }}
             onClick={() => navigate('/contact')}
             style={{
               flex: 1,
-              minWidth: '180px',
-              padding: '16px 28px',
+              minWidth: '160px',
+              padding: '14px 20px',
               borderRadius: '100px',
               background: 'transparent',
               color: '#ffffff',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               fontWeight: 800,
-              fontSize: '14px',
+              fontSize: '13px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 10,
+              gap: 8,
               transition: 'all 0.2s ease'
             }}
           >
-            <LifeBuoy size={18} />
+            <LifeBuoy size={16} />
             <span>Get Concierge Help</span>
           </motion.button>
         </div>
