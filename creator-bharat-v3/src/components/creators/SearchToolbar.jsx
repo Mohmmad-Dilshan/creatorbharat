@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Search, MapPin, Grid, List, Map as MapIcon, Settings, RefreshCw } from 'lucide-react';
 import { W, ALL_STATES } from '../../utils/helpers';
@@ -229,37 +229,75 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
   
   const hasFilters = filterCount > 0;
 
+  const wrapperRef = useRef(null);
+  const [isSticky, setIsSticky] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!wrapperRef.current) return;
+      
+      const rect = wrapperRef.current.getBoundingClientRect();
+      const triggerOffset = mob ? 58 : 72;
+      
+      // If the top of the wrapper has scrolled past our threshold (72px or 58px)
+      if (rect.top <= triggerOffset) {
+        setIsSticky(true);
+      } else {
+        setIsSticky(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Run once on mount to check initial position
+    handleScroll();
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [mob]);
+
   return (
-    <div style={{ 
-      position: 'sticky', top: mob ? '58px' : '72px', zIndex: 1000, background: 'rgba(255,255,255,0.85)', 
-      backdropFilter: 'blur(24px)', borderBottom: '1px solid rgba(0,0,0,0.05)', padding: '20px 0',
-      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)', display: 'flex', justifyContent: 'center',
-      boxShadow: '0 10px 30px rgba(0,0,0,0.02)'
-    }}>
-      <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px', display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
-        <div style={{ display: 'flex', gap: mob ? '8px' : '16px', alignItems: 'center' }}>
-          <SearchInput mob={mob} f={f} dsp={dsp} />
+    <div ref={wrapperRef} style={{ minHeight: isSticky ? (mob ? '194px' : '158px') : 'auto', width: '100%' }}>
+      <div style={{ 
+        position: isSticky ? 'fixed' : 'relative',
+        top: isSticky ? (mob ? '58px' : '72px') : 'auto',
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        background: 'rgba(255, 255, 255, 0.88)', 
+        backdropFilter: 'blur(24px)',
+        borderBottom: '1px solid rgba(0,0,0,0.05)',
+        padding: '20px 0',
+        transition: 'box-shadow 0.3s ease, background 0.3s ease',
+        display: 'flex',
+        justifyContent: 'center',
+        boxShadow: isSticky ? '0 10px 30px rgba(0,0,0,0.05)' : 'none'
+      }}>
+        <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px', display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
+          <div style={{ display: 'flex', gap: mob ? '8px' : '16px', alignItems: 'center' }}>
+            <SearchInput mob={mob} f={f} dsp={dsp} />
 
-          {!mob && (
-            <>
-              <LocationSelect f={f} dsp={dsp} />
-              <ViewSwitcher view={view} setView={setView} />
-            </>
-          )}
+            {!mob && (
+              <>
+                <LocationSelect f={f} dsp={dsp} />
+                <ViewSwitcher view={view} setView={setView} />
+              </>
+            )}
 
-          <div style={{ display: 'flex', gap: mob ? '8px' : '12px', flexShrink: 0 }}>
-            <ToolbarButtons 
-              mob={mob} 
-              showMap={showMap} 
-              setShowMap={setShowMap} 
-              setShowFilters={setShowFilters} 
-              hasFilters={hasFilters} 
-              filterCount={filterCount} 
-            />
+            <div style={{ display: 'flex', gap: mob ? '8px' : '12px', flexShrink: 0 }}>
+              <ToolbarButtons 
+                mob={mob} 
+                showMap={showMap} 
+                setShowMap={setShowMap} 
+                setShowFilters={setShowFilters} 
+                hasFilters={hasFilters} 
+                filterCount={filterCount} 
+              />
+            </div>
           </div>
-        </div>
 
-        <CategoryChips niches={niches} f={f} dsp={dsp} mob={mob} />
+          <CategoryChips niches={niches} f={f} dsp={dsp} mob={mob} />
+        </div>
       </div>
     </div>
   );
