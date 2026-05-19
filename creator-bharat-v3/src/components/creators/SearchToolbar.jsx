@@ -231,6 +231,7 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
 
   const wrapperRef = useRef(null);
   const [isSticky, setIsSticky] = useState(false);
+  const [hideForFooter, setHideForFooter] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -244,6 +245,20 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
         setIsSticky(true);
       } else {
         setIsSticky(false);
+      }
+
+      // Check if footer is approaching (only if currently sticky)
+      const footer = document.querySelector('footer');
+      if (footer && rect.top <= triggerOffset) {
+        const footerRect = footer.getBoundingClientRect();
+        const toolbarHeight = mob ? 194 : 158;
+        if (footerRect.top <= toolbarHeight + 50) {
+          setHideForFooter(true);
+        } else {
+          setHideForFooter(false);
+        }
+      } else {
+        setHideForFooter(false);
       }
     };
 
@@ -268,7 +283,10 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
         backdropFilter: 'blur(24px)',
         borderBottom: '1px solid rgba(0,0,0,0.05)',
         padding: '20px 0',
-        transition: 'box-shadow 0.3s ease, background 0.3s ease',
+        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+        transform: (isSticky && hideForFooter) ? 'translateY(-120%)' : 'translateY(0)',
+        opacity: (isSticky && hideForFooter) ? 0 : 1,
+        pointerEvents: (isSticky && hideForFooter) ? 'none' : 'auto',
         display: 'flex',
         justifyContent: 'center',
         boxShadow: isSticky ? '0 10px 30px rgba(0,0,0,0.05)' : 'none'
