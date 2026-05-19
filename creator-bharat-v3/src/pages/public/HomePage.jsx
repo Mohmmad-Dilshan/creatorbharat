@@ -29,7 +29,33 @@ export default function HomePage() {
   useEffect(() => {
     const onResize = () => setMob(window.innerWidth < 768);
     window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+
+    // Setup high-performance intersection observer for smooth scroll reveals
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+          }
+        });
+      },
+      {
+        threshold: 0.05,
+        rootMargin: '0px 0px -60px 0px',
+      }
+    );
+
+    // Wait a brief tick for DOM rendering, then query and observe
+    const timer = setTimeout(() => {
+      const revealElements = document.querySelectorAll('.reveal-on-scroll');
+      revealElements.forEach((el) => observer.observe(el));
+    }, 100);
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      clearTimeout(timer);
+      observer.disconnect();
+    };
   }, []);
 
   const go = (path, sel) => {
@@ -74,7 +100,12 @@ export default function HomePage() {
         keywords="creator bharat, indian influencers, tier 2 creators, jaipur influencers, influencer marketing india"
       />
       {sections.map(s => (
-        <div key={s.id} id={s.id} style={{ position: 'relative' }}>
+        <div 
+          key={s.id} 
+          id={s.id} 
+          className={s.id === 'hero' ? '' : 'reveal-on-scroll'} 
+          style={{ position: 'relative' }}
+        >
           {s.comp}
         </div>
       ))}
