@@ -39,6 +39,22 @@ function isRateLimitError(err) {
   return msg.includes('429') || msg.includes('too many requests');
 }
 
+function logApiError(err, endpoint) {
+  if (isRateLimitError(err)) return;
+
+  const isNetworkError =
+    err.name === 'TypeError' ||
+    err.message?.includes('Failed to fetch') ||
+    err.message?.includes('fetch') ||
+    !navigator.onLine;
+
+  if (import.meta.env.DEV && isNetworkError) {
+    console.warn(`[Dev Mode] API host offline/sleeping. Using local/seed fallback for endpoint: ${endpoint}`);
+  } else {
+    console.error(`API Call failed [${endpoint}]:`, err);
+  }
+}
+
 export async function apiCall(endpoint, options = {}, retries = 2) {
   const token = localStorage.getItem('cb_token');
   
@@ -55,26 +71,19 @@ export async function apiCall(endpoint, options = {}, retries = 2) {
 
       return await parseResponse(res);
     } catch (err) {
-      if (err.isHttpError && err.status === 429 && attempt < retries) {
-        await new Promise(r => setTimeout(r, 2000));
-        return execute(attempt + 1);
-      }
-      
+      const isRateLimit = err.isHttpError && err.status === 429;
       const isAuthErr = isAuthenticationError(err);
-      if (attempt < retries && !isAuthErr) {
-        console.warn(`Retrying API call [${endpoint}]... Attempt ${attempt + 1}`);
-        await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+      
+      if (attempt < retries && (isRateLimit || !isAuthErr)) {
+        const delay = isRateLimit ? 2000 : 1000 * (attempt + 1);
+        if (!isRateLimit) {
+          console.warn(`Retrying API call [${endpoint}]... Attempt ${attempt + 1}`);
+        }
+        await new Promise(r => setTimeout(r, delay));
         return execute(attempt + 1);
       }
       
-      if (!isRateLimitError(err)) {
-        const isNetworkError = err.name === 'TypeError' || err.message?.includes('Failed to fetch') || err.message?.includes('fetch') || !navigator.onLine;
-        if (import.meta.env.DEV && isNetworkError) {
-          console.warn(`[Dev Mode] API host offline/sleeping. Using local/seed fallback for endpoint: ${endpoint}`);
-        } else {
-          console.error(`API Call failed [${endpoint}]:`, err);
-        }
-      }
+      logApiError(err, endpoint);
       throw err;
     }
   };

@@ -195,6 +195,126 @@ MilestoneRow.propTypes = {
   mob: PropTypes.bool
 };
 
+const AwardsSection = ({ awards, mob, awardsLayout, awardsTemplate, awardWidth }) => (
+  <>
+     <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+        <h3 style={{ fontSize: '14px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '24px' }}>Key Awards & Recognitions</h3>
+     </div>
+     <div style={{ display: awardsLayout, gridTemplateColumns: awardsTemplate, gap: '24px', marginBottom: '80px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
+        {awards.map((a) => (
+           <Card key={a.t} style={{ padding: '32px', textAlign: 'center', borderRadius: '32px', border: '1px solid #f1f5f9', boxShadow: '0 8px 32px rgba(0,0,0,0.02)', flexShrink: 0, width: awardWidth }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: '#FF943112', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                 <Trophy size={24} color="#FF9431" />
+              </div>
+              <h4 style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a', marginBottom: '6px', lineHeight: 1.3 }}>{a.t}</h4>
+              <div style={{ fontSize: '13px', color: '#64748b', fontWeight: 700, marginBottom: '10px' }}>{a.o}</div>
+              <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>{a.y}</div>
+           </Card>
+        ))}
+     </div>
+  </>
+);
+
+AwardsSection.propTypes = {
+  awards: PropTypes.array.isRequired,
+  mob: PropTypes.bool,
+  awardsLayout: PropTypes.string,
+  awardsTemplate: PropTypes.string,
+  awardWidth: PropTypes.string
+};
+
+const BiographySection = ({ c, city, name, storyBodyPadding, storyBodyTextSize, quoteFontSize, readBtnWidth, navigate }) => (
+  <div style={{ marginTop: '100px', padding: storyBodyPadding, background: '#fcfcfc', borderRadius: '40px', border: '1.5px solid #f1f5f9', position: 'relative' }}>
+     <div style={{ position: 'absolute', top: '24px', left: '24px', color: '#FF943110' }}><FileText size={80} /></div>
+     <div style={{ position: 'relative', zIndex: 1 }}>
+        <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', marginBottom: '32px' }}>Beyond the Milestones: <span style={{ color: '#FF9431' }}>My Full Story</span></h3>
+        <div style={{ fontSize: storyBodyTextSize, color: '#475569', lineHeight: 1.8, fontWeight: 500 }}>
+           <p style={{ marginBottom: '24px' }} dangerouslySetInnerHTML={{__html: c.full_story?.p1 || `Mera safar ${city} ki un galiyon se shuru hua jahan har mod par ek kahani hai. Shuruat mein mere paas sirf ek purana phone aur ek junoon tha. Log kehte the ki Bharat ke regional stories mein global appeal nahi hai, par maine hamesha mana ki "Authenticity is the only language that the world understands."`}} />
+           <blockquote style={{ margin: '40px 0', padding: '24px 32px', borderLeft: '6px solid #FF9431', background: '#fff', borderRadius: '0 24px 24px 0', fontSize: quoteFontSize, fontWeight: 750, fontStyle: 'italic', color: '#111827', boxShadow: '0 8px 32px rgba(0,0,0,0.02)' }} dangerouslySetInnerHTML={{__html: c.full_story?.quote || `"Content sirf views ke liye nahi hona chahiye, wo ek connection hona chahiye jo screen ke uss paar baithe insaan ke dil tak jaye. Main, ${name}, hamesha isme vishwas rakhta hoon."`}} />
+           <p style={{ marginBottom: '24px' }} dangerouslySetInnerHTML={{__html: c.full_story?.p2 || 'Aaj, jab main CreatorBharat ke verified creators ki list mein aata hoon, toh mujhe garv hota hai. Maine seekha hai ki elite banna sirf followers se nahi, balki consistency aur audience ke saath sacche rishte se hota hai. Mera agla chapter Bharat ki regional creativity ko ek global benchmark banana hai.'}} />
+           <p dangerouslySetInnerHTML={{__html: c.full_story?.p3 || 'Ye toh bas shuruat hai. Abhi toh bohot saari aisi kahaniyan hain jo sunani baaki hain, aur bohot saari aisi jagah hain jahan Bharat ka jhanda gaadna hai.'}} />
+        </div>
+        <div style={{ marginTop: '40px' }}>
+           <Btn lg onClick={() => navigate(`/blog/creator-story-${c?.id || 'elite'}`)} style={{ borderRadius: '100px', background: '#0f172a', color: '#fff', gap: '12px', padding: '16px 40px', width: readBtnWidth }}>
+              Read Full Detailed Biography on Blog <ArrowRight size={20} />
+            </Btn>
+         </div>
+      </div>
+   </div>
+);
+
+BiographySection.propTypes = {
+  c: PropTypes.object.isRequired,
+  city: PropTypes.string,
+  name: PropTypes.string,
+  storyBodyPadding: PropTypes.string,
+  storyBodyTextSize: PropTypes.string,
+  quoteFontSize: PropTypes.string,
+  readBtnWidth: PropTypes.string,
+  navigate: PropTypes.func.isRequired
+};
+
+const PartnershipsSection = ({ collabs, collabsPadding, collabsTitleAlign, awardsLayout, awardsTemplate, mob }) => {
+  if (collabs.length === 0) return null;
+  return (
+    <div style={{ marginTop: '60px', padding: collabsPadding, background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)', borderRadius: '40px', border: '1.5px solid #e2e8f0' }}>
+       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: collabsTitleAlign, marginBottom: '32px' }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#FF9431', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+             <Sparkles size={20} color="#fff" />
+          </div>
+          <h3 style={{ fontSize: '26px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.02em' }}>Elite & Public Partnerships</h3>
+       </div>
+       <div style={{ display: awardsLayout, gridTemplateColumns: awardsTemplate, gap: '24px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
+          {collabs.map((col) => (
+            <CollabCard key={col.p} col={col} mob={mob} />
+          ))}
+       </div>
+    </div>
+  );
+};
+
+PartnershipsSection.propTypes = {
+  collabs: PropTypes.array.isRequired,
+  collabsPadding: PropTypes.string,
+  collabsTitleAlign: PropTypes.string,
+  awardsLayout: PropTypes.string,
+  awardsTemplate: PropTypes.string,
+  mob: PropTypes.bool
+};
+
+const STORY_LAYOUT = {
+  mobile: {
+    storyPadding: '0 16px',
+    titleSize: '36px',
+    awardsLayout: 'flex',
+    awardsTemplate: 'none',
+    awardWidth: '220px',
+    timelineLeft: '20px',
+    timelineBg: 'none',
+    storyBodyPadding: '32px 24px',
+    storyBodyTextSize: '16px',
+    quoteFontSize: '16px',
+    readBtnWidth: '100%',
+    collabsPadding: '32px 24px',
+    collabsTitleAlign: 'flex-start'
+  },
+  desktop: {
+    storyPadding: '0 40px',
+    titleSize: '56px',
+    awardsLayout: 'grid',
+    awardsTemplate: 'repeat(3, 1fr)',
+    awardWidth: 'auto',
+    timelineLeft: '50%',
+    timelineBg: 'translateX(-50%)',
+    storyBodyPadding: '60px',
+    storyBodyTextSize: '18px',
+    quoteFontSize: '20px',
+    readBtnWidth: 'auto',
+    collabsPadding: '56px',
+    collabsTitleAlign: 'center'
+  }
+};
+
 const StoryTab = ({ c, mob, setActiveTab }) => {
   const city = c?.city || 'Bharat';
   const name = c?.name || 'Elite Creator';
@@ -203,89 +323,49 @@ const StoryTab = ({ c, mob, setActiveTab }) => {
   const collabs = (c.collabs && c.collabs.length > 0) ? c.collabs : DEFAULT_COLLABS;
   const navigate = useNavigate();
 
-  const storyPadding = mob ? '0 16px' : '0 40px';
-  const titleSize = mob ? '36px' : '56px';
-  const awardsLayout = mob ? 'flex' : 'grid';
-  const awardsTemplate = mob ? 'none' : 'repeat(3, 1fr)';
-  const awardWidth = mob ? '220px' : 'auto';
-  const timelineLeft = mob ? '20px' : '50%';
-  const timelineBg = mob ? 'none' : 'translateX(-50%)';
-  const storyBodyPadding = mob ? '32px 24px' : '60px';
-  const storyBodyTextSize = mob ? '16px' : '18px';
-  const quoteFontSize = mob ? '16px' : '20px';
-  const readBtnWidth = mob ? '100%' : 'auto';
-  
-  const collabsPadding = mob ? '32px 24px' : '56px';
-  const collabsTitleAlign = mob ? 'flex-start' : 'center';
+  const layout = STORY_LAYOUT[mob ? 'mobile' : 'desktop'];
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto', padding: storyPadding }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto', padding: layout.storyPadding }}>
          <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-            <h2 style={{ fontSize: titleSize, fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: '24px' }}>The Journey of <span style={{ color: '#FF9431' }}>Authenticity</span></h2>
+            <h2 style={{ fontSize: layout.titleSize, fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: '24px' }}>The Journey of <span style={{ color: '#FF9431' }}>Authenticity</span></h2>
             <p style={{ fontSize: '18px', color: '#64748b', fontWeight: 500, maxWidth: '650px', margin: '0 auto' }}>From a small-town vision in {city} to the digital screens of millions.</p>
          </div>
 
          {/* Achievements Section */}
-         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '24px' }}>Key Awards & Recognitions</h3>
-         </div>
-         <div style={{ display: awardsLayout, gridTemplateColumns: awardsTemplate, gap: '24px', marginBottom: '80px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
-            {awards.map((a) => (
-               <Card key={a.t} style={{ padding: '32px', textAlign: 'center', borderRadius: '32px', border: '1px solid #f1f5f9', boxShadow: '0 8px 32px rgba(0,0,0,0.02)', flexShrink: 0, width: awardWidth }}>
-                  <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: '#FF943112', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-                     <Trophy size={24} color="#FF9431" />
-                  </div>
-                  <h4 style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a', marginBottom: '6px', lineHeight: 1.3 }}>{a.t}</h4>
-                  <div style={{ fontSize: '13px', color: '#64748b', fontWeight: 700, marginBottom: '10px' }}>{a.o}</div>
-                  <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>{a.y}</div>
-               </Card>
-            ))}
-         </div>
+         <AwardsSection awards={awards} mob={mob} awardsLayout={layout.awardsLayout} awardsTemplate={layout.awardsTemplate} awardWidth={layout.awardWidth} />
 
          {/* Timeline */}
          <div style={{ position: 'relative' }}>
-            <div style={{ position: 'absolute', left: timelineLeft, transform: timelineBg, top: 0, bottom: 0, width: '4px', background: 'linear-gradient(to bottom, #FF9431, #f1f5f9)', borderRadius: '100px' }} />
+            <div style={{ position: 'absolute', left: layout.timelineLeft, transform: layout.timelineBg, top: 0, bottom: 0, width: '4px', background: 'linear-gradient(to bottom, #FF9431, #f1f5f9)', borderRadius: '100px' }} />
 
             {milestones.map((m, idx) => (
               <MilestoneRow key={`${m.y}-${m.t}`} m={m} idx={idx} mob={mob} />
             ))}
          </div>
 
-         <div style={{ marginTop: '100px', padding: storyBodyPadding, background: '#fcfcfc', borderRadius: '40px', border: '1.5px solid #f1f5f9', position: 'relative' }}>
-            <div style={{ position: 'absolute', top: '24px', left: '24px', color: '#FF943110' }}><FileText size={80} /></div>
-            <div style={{ position: 'relative', zIndex: 1 }}>
-               <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', marginBottom: '32px' }}>Beyond the Milestones: <span style={{ color: '#FF9431' }}>My Full Story</span></h3>
-               <div style={{ fontSize: storyBodyTextSize, color: '#475569', lineHeight: 1.8, fontWeight: 500 }}>
-                  <p style={{ marginBottom: '24px' }} dangerouslySetInnerHTML={{__html: c.full_story?.p1 || `Mera safar ${city} ki un galiyon se shuru hua jahan har mod par ek kahani hai. Shuruat mein mere paas sirf ek purana phone aur ek junoon tha. Log kehte the ki Bharat ke regional stories mein global appeal nahi hai, par maine hamesha mana ki "Authenticity is the only language that the world understands."`}} />
-                  <blockquote style={{ margin: '40px 0', padding: '24px 32px', borderLeft: '6px solid #FF9431', background: '#fff', borderRadius: '0 24px 24px 0', fontSize: quoteFontSize, fontWeight: 750, fontStyle: 'italic', color: '#111827', boxShadow: '0 8px 32px rgba(0,0,0,0.02)' }} dangerouslySetInnerHTML={{__html: c.full_story?.quote || `"Content sirf views ke liye nahi hona chahiye, wo ek connection hona chahiye jo screen ke uss paar baithe insaan ke dil tak jaye. Main, ${name}, hamesha isme vishwas rakhta hoon."`}} />
-                  <p style={{ marginBottom: '24px' }} dangerouslySetInnerHTML={{__html: c.full_story?.p2 || 'Aaj, jab main CreatorBharat ke verified creators ki list mein aata hoon, toh mujhe garv hota hai. Maine seekha hai ki elite banna sirf followers se nahi, balki consistency aur audience ke saath sacche rishte se hota hai. Mera agla chapter Bharat ki regional creativity ko ek global benchmark banana hai.'}} />
-                  <p dangerouslySetInnerHTML={{__html: c.full_story?.p3 || 'Ye toh bas shuruat hai. Abhi toh bohot saari aisi kahaniyan hain jo sunani baaki hain, aur bohot saari aisi jagah hain jahan Bharat ka jhanda gaadna hai.'}} />
-               </div>
-               <div style={{ marginTop: '40px' }}>
-                  <Btn lg onClick={() => navigate(`/blog/creator-story-${c?.id || 'elite'}`)} style={{ borderRadius: '100px', background: '#0f172a', color: '#fff', gap: '12px', padding: '16px 40px', width: readBtnWidth }}>
-                     Read Full Detailed Biography on Blog <ArrowRight size={20} />
-                   </Btn>
-                </div>
-             </div>
-          </div>
+         {/* Story Body */}
+         <BiographySection 
+           c={c}
+           city={city}
+           name={name}
+           storyBodyPadding={layout.storyBodyPadding}
+           storyBodyTextSize={layout.storyBodyTextSize}
+           quoteFontSize={layout.quoteFontSize}
+           readBtnWidth={layout.readBtnWidth}
+           navigate={navigate}
+         />
 
          {/* Elite Partnerships Section */}
-         {collabs.length > 0 && (
-           <div style={{ marginTop: '60px', padding: collabsPadding, background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)', borderRadius: '40px', border: '1.5px solid #e2e8f0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: collabsTitleAlign, marginBottom: '32px' }}>
-                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#FF9431', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Sparkles size={20} color="#fff" />
-                 </div>
-                 <h3 style={{ fontSize: '26px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.02em' }}>Elite & Public Partnerships</h3>
-              </div>
-              <div style={{ display: awardsLayout, gridTemplateColumns: awardsTemplate, gap: '24px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
-                 {collabs.map((col) => (
-                   <CollabCard key={col.p} col={col} mob={mob} />
-                 ))}
-              </div>
-           </div>
-         )}
+         <PartnershipsSection 
+           collabs={collabs}
+           collabsPadding={layout.collabsPadding}
+           collabsTitleAlign={layout.collabsTitleAlign}
+           awardsLayout={layout.awardsLayout}
+           awardsTemplate={layout.awardsTemplate}
+           mob={mob}
+         />
 
          <TrustBadge />
          <TabNavigator activeTab="story" setActiveTab={setActiveTab} mob={mob} />
@@ -1282,6 +1362,11 @@ export default function CreatorProfilePage() {
   if (ld) return <ProfileSkeleton id={id} mob={mob} />;
   if (!c) return <div style={{ ...W(), padding: '120px 20px', textAlign: 'center' }}><Empty title="Profile Not Found" onCta={() => navigate('/creators')} /></div>;
 
+  let stickyTop = '0px';
+  if (!mob) {
+    stickyTop = navVisible ? '72px' : '0px';
+  }
+
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', paddingBottom: '100px' }}>
       <Seo 
@@ -1290,7 +1375,7 @@ export default function CreatorProfilePage() {
       />
       <ProfileHero c={c} stats={stats} navigate={navigate} st={st} dsp={dsp} mob={mob} onRate={handleRateClick} onContact={() => setActiveTab('connect')} onMediaKit={() => setMediaKitOpen(true)} navVisible={navVisible} onBrief={(pkg) => { setSelectedPkg(pkg); setBriefOpen(true); }} />
       
-      <div style={{ position: 'sticky', top: mob ? 0 : (navVisible ? '72px' : '0px'), transition: 'top 0.4s cubic-bezier(0.16, 1, 0.3, 1)', zIndex: 1000, background: 'rgba(252, 252, 252, 0.9)', backdropFilter: 'blur(30px)', borderBottom: '1px solid #f1f5f9', overflowX: mob ? 'auto' : 'hidden', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      <div style={{ position: 'sticky', top: stickyTop, transition: 'top 0.4s cubic-bezier(0.16, 1, 0.3, 1)', zIndex: 1000, background: 'rgba(252, 252, 252, 0.9)', backdropFilter: 'blur(30px)', borderBottom: '1px solid #f1f5f9', overflowX: mob ? 'auto' : 'hidden', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
          <div style={{ ...W(1100), padding: mob ? '0 16px' : '0 24px', display: 'flex', gap: mob ? '32px' : '48px', minWidth: mob ? 'fit-content' : 'auto' }}>
             {[{ id: 'identity', label: 'Identity', icon: Activity }, { id: 'story', label: 'My Story', icon: Globe }, { id: 'gallery', label: 'Gallery', icon: ImageIcon }, { id: 'work', label: 'Pro Work', icon: Briefcase }, { id: 'local', label: 'Local Hub', icon: MapPin }, { id: 'reviews', label: 'Reviews', icon: Star }, { id: 'packages', label: 'Packages', icon: Zap }, { id: 'connect', label: 'Connect', icon: MessageSquare }].map(t => (
               <button key={t.id} onClick={() => setActiveTab(t.id)} style={{ padding: '20px 0', background: 'none', border: 'none', borderBottom: `3.5px solid ${activeTab === t.id ? '#0073b1' : 'transparent'}`, color: activeTab === t.id ? '#111827' : '#6b7280', fontSize: '14px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', whiteSpace: 'nowrap' }}>
