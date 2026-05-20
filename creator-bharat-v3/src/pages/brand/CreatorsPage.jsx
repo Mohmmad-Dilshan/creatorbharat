@@ -16,8 +16,11 @@ import {
   X, 
   CheckCircle, 
   ChevronRight,
-  Filter
+  Filter,
+  Video,
+  Camera
 } from 'lucide-react';
+import { InstagramIcon } from '../../components/icons/SocialIcons';
 import { Btn, Bdg } from '@/components/common/Primitives';
 import Seo from '@/components/common/SEO';
 
@@ -715,6 +718,11 @@ const EliteSpotlight = ({ mob, all, setSelectedCreator, dsp, loading }) => {
           70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
           100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
+        @media (max-width: 1200px) {
+          .creators-floating-icons-container {
+            display: none !important;
+          }
+        }
       `}</style>
     </section>
   );
@@ -726,6 +734,76 @@ EliteSpotlight.propTypes = {
   setSelectedCreator: PropTypes.func.isRequired,
   dsp: PropTypes.func.isRequired,
   loading: PropTypes.bool
+};
+
+const CREATORS_HEADER_ICONS = [
+  // Left Side
+  { Icon: Sparkles, size: 28, top: '20%', left: '1.5%', color: '#FF9431', delay: 0, rotate: -15 },
+  { Icon: Camera, size: 24, top: '55%', left: '4%', color: '#10B981', delay: 1.5, rotate: 12 },
+  { Icon: TrendingUp, size: 26, top: '75%', left: '2.5%', color: '#3B82F6', delay: 0.8, rotate: -8 },
+
+  // Right Side
+  { Icon: InstagramIcon, size: 28, top: '22%', right: '1.5%', color: '#E1306C', delay: 2.2, rotate: 20 },
+  { Icon: Video, size: 26, top: '50%', right: '4%', color: '#FF9431', delay: 1.2, rotate: 8 },
+  { Icon: ShieldCheck, size: 28, top: '72%', right: '2.5%', color: '#10B981', delay: 2.5, rotate: -18 }
+];
+
+const CreatorsFloatingIcons = ({ mob }) => {
+  if (mob) return null;
+
+  return (
+    <div className="creators-floating-icons-container" style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 11 }}>
+      {CREATORS_HEADER_ICONS.map((ico, index) => {
+        const { Icon, size, top, left, right, color, delay, rotate } = ico;
+        const style = {
+          position: 'absolute',
+          top,
+          left,
+          right,
+          pointerEvents: 'none'
+        };
+
+        return (
+          <motion.div
+            key={`creators-bg-icon-${index}`}
+            style={style}
+            initial={{ y: 0, rotate }}
+            animate={{
+              y: [0, -10, 0],
+              rotate: [rotate, rotate + 3, rotate],
+            }}
+            transition={{
+              duration: 5,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              delay,
+            }}
+          >
+            <div style={{
+              width: size + 20,
+              height: size + 20,
+              background: 'rgba(255, 255, 255, 0.8)',
+              border: '1px solid rgba(0, 0, 0, 0.05)',
+              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.04)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+            >
+              <Icon size={size} color={color} strokeWidth={1.8} />
+            </div>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+};
+
+CreatorsFloatingIcons.propTypes = {
+  mob: PropTypes.bool
 };
 
 export default function CreatorsPage() {
@@ -805,14 +883,17 @@ export default function CreatorsPage() {
         description="Browse and connect with thousands of verified content creators across Bharat. Filter by niche, location, and impact scores."
         keywords="creator marketplace, hire influencers india, verified creators, brand collaborations india"
       />
-      <EliteHeader
-        eyebrow="Marketplace Hub"
-        title={<>Discover the <span style={{ color: '#FF9431' }}>Elite</span> Talent of Bharat</>}
-        sub={<>Unlock the power of authentic regional influence with India’s premier verified creator directory. Partner with {fmt.num(all.length)}+ leading digital stars across Tier-1, Tier-2, and Tier-3 cities to drive high-impact campaigns with complete price transparency and real-time metric scorecards.</>}
-        gradient="saffron"
-        light={true}
-        compact={true}
-      />
+      <div style={{ position: 'relative', width: '100%' }}>
+        <EliteHeader
+          eyebrow="Marketplace Hub"
+          title={<>Discover the <span style={{ color: '#FF9431' }}>Elite</span> Talent of Bharat</>}
+          sub={<>Unlock the power of authentic regional influence with India’s premier verified creator directory. Partner with {fmt.num(all.length)}+ leading digital stars across Tier-1, Tier-2, and Tier-3 cities to drive high-impact campaigns with complete price transparency and real-time metric scorecards.</>}
+          gradient="saffron"
+          light={true}
+          compact={true}
+        />
+        <CreatorsFloatingIcons mob={mob} />
+      </div>
 
       <EliteSpotlight mob={mob} all={all} setSelectedCreator={setSelectedCreator} dsp={dsp} loading={loading} />
 

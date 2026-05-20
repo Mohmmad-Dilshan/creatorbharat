@@ -26,7 +26,6 @@ import Seo from '@/components/common/SEO';
 
 const PAGE_BG_ICONS = [
   // Left Side
-  { Icon: Video, size: 32, top: '400px', left: '2%', color: '#FF9431', delay: 0, rotate: -15 },
   { Icon: Mic, size: 28, top: '1200px', left: '1.5%', color: '#EA580C', delay: 1.5, rotate: 12 },
   { Icon: Play, size: 36, top: '2200px', left: '2.5%', color: '#FF9431', delay: 0.8, rotate: -8 },
   { Icon: Globe, size: 28, top: '3400px', left: '1%', color: '#3B82F6', delay: 2.2, rotate: 20 },
@@ -38,7 +37,6 @@ const PAGE_BG_ICONS = [
   { Icon: Radio, size: 26, top: '12000px', left: '1.8%', color: '#EA580C', delay: 0.5, rotate: -15 },
 
   // Right Side
-  { Icon: Camera, size: 30, top: '600px', right: '2%', color: '#10B981', delay: 0.5, rotate: 15 },
   { Icon: Headphones, size: 26, top: '1400px', right: '1.8%', color: '#3B82F6', delay: 1.8, rotate: -10 },
   { Icon: InstagramIcon, size: 28, top: '2600px', right: '2.5%', color: '#E1306C', delay: 2.5, rotate: -18 },
   { Icon: Music, size: 26, top: '3900px', right: '1.5%', color: '#FF9431', delay: 0.9, rotate: -8 },
@@ -54,7 +52,7 @@ const FloatingBackground = ({ mob }) => {
   if (mob) return null;
 
   return (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 1 }}>
+    <div className="home-floating-bg-icons" style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 1 }}>
       {PAGE_BG_ICONS.map((ico) => {
         const { Icon, size, top, left, right, color, delay, rotate } = ico;
         const style = {
@@ -62,8 +60,7 @@ const FloatingBackground = ({ mob }) => {
           top,
           left,
           right,
-          pointerEvents: 'auto',
-          cursor: 'pointer'
+          pointerEvents: 'none'
         };
 
         return (
@@ -80,10 +77,6 @@ const FloatingBackground = ({ mob }) => {
               repeat: Infinity,
               ease: 'easeInOut',
               delay,
-            }}
-            whileHover={{
-              scale: 1.12,
-              rotate: rotate * 1.3,
             }}
           >
             <div style={{
@@ -212,6 +205,11 @@ export default function HomePage() {
           background: #fff !important;
           border-color: rgba(0, 0, 0, 0.08) !important;
           box-shadow: 0 16px 36px rgba(0,0,0,0.06) !important;
+        }
+        @media (max-width: 1200px) {
+          .home-floating-bg-icons {
+            display: none !important;
+          }
         }
       `}</style>
     </div>

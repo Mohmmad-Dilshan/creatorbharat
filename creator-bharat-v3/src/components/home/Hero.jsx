@@ -218,29 +218,21 @@ TirangaGlow.propTypes = { mob: PropTypes.bool };
 
 const FLOATING_ICONS = [
   // Left Side
-  { Icon: Video, size: 36, top: '12%', left: '4%', color: '#FF9431', delay: 0, rotate: -15 },
-  { Icon: TwitterIcon, size: 32, top: '23%', left: '10%', color: '#1DA1F2', delay: 1.2, rotate: -5 },
-  { Icon: Mic, size: 30, top: '35%', left: '2%', color: '#EA580C', delay: 1.5, rotate: 12 },
-  { Icon: LinkedinIcon, size: 32, top: '48%', left: '8%', color: '#0077B5', delay: 0.3, rotate: 18 },
-  { Icon: Play, size: 40, top: '58%', left: '5%', color: '#FF9431', delay: 0.8, rotate: -8 },
-  { Icon: FacebookIcon, size: 32, top: '70%', left: '12%', color: '#1877F2', delay: 2.1, rotate: -12 },
-  { Icon: Clapperboard, size: 28, top: '78%', left: '1%', color: '#EA580C', delay: 2.2, rotate: 20 },
+  { Icon: Video, size: 30, top: '18%', left: '1.5%', color: '#FF9431', delay: 0, rotate: -15 },
+  { Icon: Mic, size: 26, top: '52%', left: '4%', color: '#EA580C', delay: 1.5, rotate: 12 },
+  { Icon: Play, size: 28, top: '78%', left: '2.5%', color: '#FF9431', delay: 0.8, rotate: -8 },
 
   // Right Side
-  { Icon: Camera, size: 34, top: '14%', right: '4%', color: '#10B981', delay: 0.5, rotate: 15 },
-  { Icon: InstagramIcon, size: 32, top: '24%', right: '10%', color: '#E1306C', delay: 0.9, rotate: -8 },
-  { Icon: Headphones, size: 30, top: '33%', right: '2%', color: '#3B82F6', delay: 1.8, rotate: -10 },
-  { Icon: YoutubeIcon, size: 38, top: '46%', right: '7%', color: '#EF4444', delay: 1.7, rotate: 12 },
-  { Icon: TwitchIcon, size: 32, top: '55%', right: '5%', color: '#9146FF', delay: 1.2, rotate: 8 },
-  { Icon: Sparkles, size: 28, top: '68%', right: '9%', color: '#10B981', delay: 2.8, rotate: -15 },
-  { Icon: GithubIcon, size: 32, top: '75%', right: '1%', color: '#24292F', delay: 2.5, rotate: -18 }
+  { Icon: Camera, size: 28, top: '20%', right: '1.5%', color: '#10B981', delay: 0.5, rotate: 15 },
+  { Icon: InstagramIcon, size: 28, top: '48%', right: '4%', color: '#E1306C', delay: 0.9, rotate: -8 },
+  { Icon: Sparkles, size: 26, top: '75%', right: '2.5%', color: '#FF9431', delay: 2.8, rotate: -15 }
 ];
 
 const FloatingCreatorIcons = memo(({ mob }) => {
   if (mob) return null;
 
   return (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 1 }}>
+    <div className="floating-creator-icons-container" style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 1 }}>
       {FLOATING_ICONS.map((ico) => {
         const { Icon, size, top, left, right, color, delay, rotate } = ico;
         const style = {
@@ -248,8 +240,7 @@ const FloatingCreatorIcons = memo(({ mob }) => {
           top,
           left,
           right,
-          pointerEvents: 'auto',
-          cursor: 'pointer',
+          pointerEvents: 'none',
         };
 
         return (
@@ -266,10 +257,6 @@ const FloatingCreatorIcons = memo(({ mob }) => {
               repeat: Infinity,
               ease: 'easeInOut',
               delay,
-            }}
-            whileHover={{
-              scale: 1.12,
-              rotate: rotate * 1.3,
             }}
           >
             <div style={{
@@ -571,10 +558,12 @@ export default function Hero({ mob, st, dsp, go }) {
   return (
     <section style={{ background: '#fff', minHeight: mob ? 'auto' : '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: mob ? 24 : 80, paddingBottom: 40, position: 'relative', overflow: 'visible', textAlign: 'center' }}>
       <TirangaGlow mob={mob} />
-      <FloatingCreatorIcons mob={mob} />
       <div style={{ ...W(), position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', boxSizing: 'border-box' }}>
-        <HeroHeader mob={mob} />
-        <HeroCTA mob={mob} go={go} dsp={dsp} />
+        <div style={{ position: 'relative', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <HeroHeader mob={mob} />
+          <HeroCTA mob={mob} go={go} dsp={dsp} />
+          <FloatingCreatorIcons mob={mob} />
+        </div>
         <HeroValueProps mob={mob} />
         <SearchBar mob={mob} st={st} dsp={dsp} go={go} sugs={sugs} onKeyDown={handleKeyDown} />
         <EcosystemHeader mob={mob} />
@@ -597,6 +586,11 @@ export default function Hero({ mob, st, dsp, go }) {
           .interactive-tour-badge:hover { background: rgba(255,148,49,0.15) !important; border-color: rgba(255,148,49,0.5) !important; transform: translateY(-1px) scale(1.02); }
           .floating-creator-btn:hover { background: #fff !important; border-color: rgba(0, 0, 0, 0.08) !important; box-shadow: 0 16px 36px rgba(0,0,0,0.06) !important; }
           @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+          @media (max-width: 1200px) {
+            .floating-creator-icons-container {
+              display: none !important;
+            }
+          }
         `}</style>
       </div>
     </section>

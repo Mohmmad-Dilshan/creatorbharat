@@ -2,17 +2,98 @@ import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
-import { 
-  Zap, Search, X, Heart, Bookmark, CheckCircle2, Globe, Users, MapPin, Layers, Calendar
+import {
+  Zap, Search, X, Heart, Bookmark, CheckCircle2, Globe, Users, MapPin, Layers, Calendar,
+  Target, Briefcase, TrendingUp, Award, Rocket, BarChart3, Lightbulb, CheckCircle, Star, Sparkles, Send, MessageSquare
 } from 'lucide-react';
-
-// Custom Social Icons
 
 import { useApp } from '@/core/context';
 import { fmt, LS } from '../../utils/helpers';
 import { fetchCampaigns } from '../../utils/platformService';
 import { Btn, SkeletonCard, Modal, Fld } from '@/components/common/Primitives';
 import EliteHeader from '../../components/layout/EliteHeader';
+
+// Floating icons for campaigns hero
+const CAMPAIGNS_BG_ICONS = [
+  // Left Side
+  { Icon: Target, size: 28, top: '5%', left: '2%', color: '#FF9431', delay: 0.5, rotate: -12 },
+  { Icon: Briefcase, size: 26, top: '35%', left: '3%', color: '#3B82F6', delay: 1.2, rotate: 8 },
+  { Icon: TrendingUp, size: 28, top: '65%', left: '2.5%', color: '#10B981', delay: 1.8, rotate: 15 },
+  { Icon: Rocket, size: 26, top: '78%', left: '1.5%', color: '#8B5CF6', delay: 0.3, rotate: -10 },
+
+  // Center-Left area
+  { Icon: BarChart3, size: 28, top: '15%', left: '12%', color: '#F59E0B', delay: 2.1, rotate: 18 },
+  { Icon: Lightbulb, size: 26, top: '55%', left: '15%', color: '#FF9431', delay: 0.8, rotate: -8 },
+
+  // Right Side
+  { Icon: Sparkles, size: 28, top: '10%', right: '2%', color: '#FF9431', delay: 1.5, rotate: 10 },
+  { Icon: CheckCircle, size: 26, top: '40%', right: '3%', color: '#10B981', delay: 0.6, rotate: -15 },
+  { Icon: Award, size: 28, top: '70%', right: '2.5%', color: '#3B82F6', delay: 2.3, rotate: 12 },
+  { Icon: Star, size: 26, top: '82%', right: '1.5%', color: '#F59E0B', delay: 1.0, rotate: 20 },
+
+  // Center-Right area
+  { Icon: Send, size: 28, top: '20%', right: '12%', color: '#8B5CF6', delay: 1.8, rotate: -18 },
+  { Icon: MessageSquare, size: 26, top: '60%', right: '14%', color: '#FF9431', delay: 0.4, rotate: 8 }
+];
+
+const CampaignsFloatingIcons = ({ mob }) => {
+  if (mob) return null;
+
+  return (
+    <div className="campaigns-floating-icons-container" style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 1 }}>
+      {CAMPAIGNS_BG_ICONS.map((ico, index) => {
+        const { Icon, size, top, left, right, color, delay, rotate } = ico;
+        const style = {
+          position: 'absolute',
+          top,
+          left,
+          right,
+          pointerEvents: 'none'
+        };
+
+        return (
+          <motion.div
+            key={`campaigns-bg-icon-${index}`}
+            style={style}
+            initial={{ y: 0, rotate }}
+            animate={{
+              y: [0, -12, 0],
+              rotate: [rotate, rotate + 4, rotate],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              delay,
+            }}
+          >
+            <div style={{
+              width: size + 24,
+              height: size + 24,
+              background: 'rgba(255, 255, 255, 0.75)',
+              border: '1.5px solid rgba(0, 0, 0, 0.04)',
+              boxShadow: '0 8px 30px rgba(0, 0, 0, 0.03)',
+              backdropFilter: 'blur(12px)',
+              borderRadius: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+            className="floating-campaign-btn"
+            >
+              <Icon size={size} color={color} strokeWidth={1.8} />
+            </div>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+};
+
+CampaignsFloatingIcons.propTypes = {
+  mob: PropTypes.bool
+};
 
 // ----------------------------------------------------------------------
 // 1. BRAND TOKENS
@@ -490,20 +571,23 @@ export default function CampaignsPage() {
 
   return (
     <div style={{ background: THEME.bg, minHeight: '100vh', width: '100%', overflowX: 'hidden', color: THEME.text }}>
-      <EliteHeader light compact={viewMode === 'swipe'} title={
-        <div style={{ textAlign: 'center', padding: mob ? '40px 0' : '60px 0 40px' }}>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '16px' }}>
-            <div style={{ width: '8px', height: '8px', background: '#10B981', borderRadius: '50%', boxShadow: '0 0 12px #10B981' }} />
-            <div style={{ fontSize: '11px', fontWeight: 950, color: THEME.primary, letterSpacing: '4px' }}>LIVE INTELLIGENCE HUB</div>
-          </motion.div>
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ fontSize: mob ? '48px' : '80px', fontWeight: 950, color: THEME.dark, letterSpacing: '-0.05em', lineHeight: 1 }}>
-            Campaign Marketplace
-          </motion.h1>
-          <p style={{ marginTop: '24px', color: THEME.textSec, fontSize: mob ? '16px' : '20px', fontWeight: 500, maxWidth: '700px', margin: '24px auto 0', lineHeight: 1.6 }}>
-            The definitive gateway to premium influencer commerce. Access high-ticket collaborations, <span style={{ color: THEME.dark, fontWeight: 800 }}>verified brand deals</span>, and data-driven advertising opportunities across India.
-          </p>
-        </div>
-      } />
+      <div style={{ position: 'relative', width: '100%' }}>
+        <EliteHeader light compact={viewMode === 'swipe'} title={
+          <div style={{ textAlign: 'center', padding: mob ? '40px 0' : '60px 0 40px' }}>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '16px' }}>
+              <div style={{ width: '8px', height: '8px', background: '#10B981', borderRadius: '50%', boxShadow: '0 0 12px #10B981' }} />
+              <div style={{ fontSize: '11px', fontWeight: 950, color: THEME.primary, letterSpacing: '4px' }}>LIVE INTELLIGENCE HUB</div>
+            </motion.div>
+            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ fontSize: mob ? '48px' : '80px', fontWeight: 950, color: THEME.dark, letterSpacing: '-0.05em', lineHeight: 1 }}>
+              Campaign Marketplace
+            </motion.h1>
+            <p style={{ marginTop: '24px', color: THEME.textSec, fontSize: mob ? '16px' : '20px', fontWeight: 500, maxWidth: '700px', margin: '24px auto 0', lineHeight: 1.6 }}>
+              The definitive gateway to premium influencer commerce. Access high-ticket collaborations, <span style={{ color: THEME.dark, fontWeight: 800 }}>verified brand deals</span>, and data-driven advertising opportunities across India.
+            </p>
+          </div>
+        } />
+        <CampaignsFloatingIcons mob={mob} />
+      </div>
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
         <MarketplaceStats isMob={mob} />
@@ -532,15 +616,27 @@ export default function CampaignsPage() {
         isGuest={isGuest} 
       />
 
-      <CampaignApplyModal 
-        open={!!applyModal} 
-        isDone={isDone} 
-        onClose={() => setApplyModal(null)} 
-        form={form} 
-        setForm={setForm} 
-        onSubmit={() => onSubmit(applyModal)} 
-        mob={mob} 
+      <CampaignApplyModal
+        open={!!applyModal}
+        isDone={isDone}
+        onClose={() => setApplyModal(null)}
+        form={form}
+        setForm={setForm}
+        onSubmit={() => onSubmit(applyModal)}
+        mob={mob}
       />
+      <style>{`
+        .floating-campaign-btn:hover {
+          background: #fff !important;
+          border-color: rgba(0, 0, 0, 0.08) !important;
+          box-shadow: 0 16px 36px rgba(0,0,0,0.06) !important;
+        }
+        @media (max-width: 1200px) {
+          .campaigns-floating-icons-container {
+            display: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
