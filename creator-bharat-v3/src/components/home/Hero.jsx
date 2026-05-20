@@ -4,7 +4,14 @@ import { motion } from 'framer-motion';
 import { W, LS } from '../../utils/helpers';
 import { apiCall } from '../../utils/api';
 import { Btn } from '@/components/common/Primitives';
-import { User, BookOpen, Radio, MapPin, CreditCard, Zap, ChevronRight, Globe } from 'lucide-react';
+import { 
+  User, BookOpen, Radio, MapPin, CreditCard, Zap, ChevronRight, Globe,
+  Video, Mic, Play, Clapperboard, Camera, Headphones, Sparkles
+} from 'lucide-react';
+import { 
+  InstagramIcon, YoutubeIcon, LinkedinIcon, TwitterIcon, FacebookIcon, 
+  GithubIcon, TwitchIcon 
+} from '../icons/SocialIcons';
 
 const HeroValueProps = memo(({ mob }) => (
   <div className="au d3" style={{ 
@@ -208,6 +215,88 @@ const TirangaGlow = memo(({ mob }) => {
 });
 
 TirangaGlow.propTypes = { mob: PropTypes.bool };
+
+const FLOATING_ICONS = [
+  // Left Side
+  { Icon: Video, size: 36, top: '12%', left: '4%', color: '#FF9431', delay: 0, rotate: -15 },
+  { Icon: TwitterIcon, size: 32, top: '23%', left: '10%', color: '#1DA1F2', delay: 1.2, rotate: -5 },
+  { Icon: Mic, size: 30, top: '35%', left: '2%', color: '#EA580C', delay: 1.5, rotate: 12 },
+  { Icon: LinkedinIcon, size: 32, top: '48%', left: '8%', color: '#0077B5', delay: 0.3, rotate: 18 },
+  { Icon: Play, size: 40, top: '58%', left: '5%', color: '#FF9431', delay: 0.8, rotate: -8 },
+  { Icon: FacebookIcon, size: 32, top: '70%', left: '12%', color: '#1877F2', delay: 2.1, rotate: -12 },
+  { Icon: Clapperboard, size: 28, top: '78%', left: '1%', color: '#EA580C', delay: 2.2, rotate: 20 },
+
+  // Right Side
+  { Icon: Camera, size: 34, top: '14%', right: '4%', color: '#10B981', delay: 0.5, rotate: 15 },
+  { Icon: InstagramIcon, size: 32, top: '24%', right: '10%', color: '#E1306C', delay: 0.9, rotate: -8 },
+  { Icon: Headphones, size: 30, top: '33%', right: '2%', color: '#3B82F6', delay: 1.8, rotate: -10 },
+  { Icon: YoutubeIcon, size: 38, top: '46%', right: '7%', color: '#EF4444', delay: 1.7, rotate: 12 },
+  { Icon: TwitchIcon, size: 32, top: '55%', right: '5%', color: '#9146FF', delay: 1.2, rotate: 8 },
+  { Icon: Sparkles, size: 28, top: '68%', right: '9%', color: '#10B981', delay: 2.8, rotate: -15 },
+  { Icon: GithubIcon, size: 32, top: '75%', right: '1%', color: '#24292F', delay: 2.5, rotate: -18 }
+];
+
+const FloatingCreatorIcons = memo(({ mob }) => {
+  if (mob) return null;
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 1 }}>
+      {FLOATING_ICONS.map((ico) => {
+        const { Icon, size, top, left, right, color, delay, rotate } = ico;
+        const style = {
+          position: 'absolute',
+          top,
+          left,
+          right,
+          pointerEvents: 'auto',
+          cursor: 'pointer',
+        };
+
+        return (
+          <motion.div
+            key={`float-icon-${color}-${top}-${left || right}`}
+            style={style}
+            initial={{ y: 0, rotate }}
+            animate={{
+              y: [0, -12, 0],
+              rotate: [rotate, rotate + 4, rotate],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              delay,
+            }}
+            whileHover={{
+              scale: 1.12,
+              rotate: rotate * 1.3,
+            }}
+          >
+            <div style={{
+              width: size + 24,
+              height: size + 24,
+              background: 'rgba(255, 255, 255, 0.75)',
+              border: '1.5px solid rgba(0, 0, 0, 0.04)',
+              boxShadow: '0 8px 30px rgba(0, 0, 0, 0.03)',
+              backdropFilter: 'blur(12px)',
+              borderRadius: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+            className="floating-creator-btn"
+            >
+              <Icon size={size} color={color} strokeWidth={1.8} />
+            </div>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+});
+
+FloatingCreatorIcons.propTypes = { mob: PropTypes.bool };
 
 const HeroHeader = memo(({ mob }) => (
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: 1100 }}>
@@ -482,6 +571,7 @@ export default function Hero({ mob, st, dsp, go }) {
   return (
     <section style={{ background: '#fff', minHeight: mob ? 'auto' : '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: mob ? 24 : 80, paddingBottom: 40, position: 'relative', overflow: 'visible', textAlign: 'center' }}>
       <TirangaGlow mob={mob} />
+      <FloatingCreatorIcons mob={mob} />
       <div style={{ ...W(), position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', boxSizing: 'border-box' }}>
         <HeroHeader mob={mob} />
         <HeroCTA mob={mob} go={go} dsp={dsp} />
@@ -505,6 +595,7 @@ export default function Hero({ mob, st, dsp, go }) {
           .elite-support-card:hover .card-accent-line { width: 100% !important; }
           ${mob ? '' : '.elite-support-card:hover { transform: translateY(-12px) scale(1.02); box-shadow: 0 32px 80px rgba(0,0,0,0.12); }'}
           .interactive-tour-badge:hover { background: rgba(255,148,49,0.15) !important; border-color: rgba(255,148,49,0.5) !important; transform: translateY(-1px) scale(1.02); }
+          .floating-creator-btn:hover { background: #fff !important; border-color: rgba(0, 0, 0, 0.08) !important; box-shadow: 0 16px 36px rgba(0,0,0,0.06) !important; }
           @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
         `}</style>
       </div>
