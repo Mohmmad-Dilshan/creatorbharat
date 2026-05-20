@@ -251,13 +251,16 @@ export default function Navbar() {
   const [visible, setVisible] = useState(true);
   const lastY = useRef(0);
   const [mob, setMob] = useState(window.innerWidth < 768);
+  const [compactNav, setCompactNav] = useState(window.innerWidth < 1180);
 
   useEffect(() => {
     const handleScroll = () => {
       const curY = window.scrollY;
       const isMob = window.innerWidth < 768;
+      const isCompact = window.innerWidth < 1180;
       setScroll(curY > 20);
       setMob(isMob);
+      setCompactNav(isCompact);
       
       const diff = curY - lastY.current;
       if (curY < 50) setVisible(true);
@@ -266,7 +269,12 @@ export default function Navbar() {
       lastY.current = curY;
     };
 
-    const handleResize = () => setMob(window.innerWidth < 768);
+    const handleResize = () => {
+      const isMob = window.innerWidth < 768;
+      const isCompact = window.innerWidth < 1180;
+      setMob(isMob);
+      setCompactNav(isCompact);
+    };
     window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', handleResize);
     
@@ -316,6 +324,7 @@ export default function Navbar() {
 
   const getPadding = () => {
     if (mob) return '12px 16px';
+    if (compactNav) return scroll ? '14px 24px' : '20px 24px';
     return scroll ? '16px 40px' : '24px 40px';
   };
 
@@ -367,13 +376,13 @@ export default function Navbar() {
           position: 'relative', zIndex: 1,
           background: scroll ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.9)',
           backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)',
-          borderRadius: 100, padding: mob ? '0 12px 0 20px' : '0 32px',
-          height: mob ? 54 : 72, display: 'flex', alignItems: 'center', gap: 24
+          borderRadius: 100, padding: mob ? '0 12px 0 20px' : compactNav ? '0 18px' : '0 32px',
+          height: mob ? 54 : compactNav ? 64 : 72, display: 'flex', alignItems: 'center', gap: compactNav ? 14 : 24
         }}>
-          <Logo onClick={() => go('/')} sm={mob} />
-          {!mob && <NavLinks links={links} location={location} go={go} />}
+          <Logo onClick={() => go('/')} sm={compactNav} />
+          {!compactNav && <NavLinks links={links} location={location} go={go} />}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginLeft: 'auto' }}>
-            <UserActions st={st} dsp={dsp} go={go} mob={mob} />
+            <UserActions st={st} dsp={dsp} go={go} mob={compactNav} />
           </div>
         </nav>
       </div>
