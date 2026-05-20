@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '@/core/context';
 import { fetchCreatorById } from '../../utils/platformService';
-import { W } from '../../utils/helpers';
+import { W, LS } from '../../utils/helpers';
 import { ProfileHero } from '@/components/creators/profile/ProfileHero';
 import { IdentityTab, SocialLinkTree } from '@/components/creators/profile/IdentityTab';
 import { MediaKitPreview } from '@/components/creators/profile/MediaKitPreview';
@@ -19,6 +19,7 @@ import {
   Share2,
   Verified,
   Star,
+  Sparkles,
   FileText,
   Mic2,
   Trophy,
@@ -107,74 +108,184 @@ TabEmptyState.propTypes = {
   tabId: PropTypes.string.isRequired
 };
 
+const DEFAULT_MILESTONES = [
+  { y: '2021', t: 'The Foundation', d: 'Launched the first video series on regional heritage with zero budget.', i: Globe, c: '#FF9431' },
+  { y: '2022', t: 'First Viral Wave', d: 'Crossed 100K hearts with authentic storytelling that resonated globally.', i: Zap, c: '#0073b1' },
+  { y: '2023', t: 'Elite Recognition', d: 'Officially audited and verified by CreatorBharat as a top regional voice.', i: ShieldCheck, c: '#10B981' },
+  { y: '2024', t: 'The National Pulse', d: 'Scaling impact by bridging the digital divide for Bharat.', i: Trophy, c: '#7c3aed' }
+];
+
+const DEFAULT_AWARDS = [
+  { t: 'Regional Pioneer', o: 'CreatorBharat Office', y: '2024' },
+  { t: 'Elite Hub Verified', o: 'Govt of Rajasthan', y: '2023' },
+  { t: 'Cultural Impact', o: 'Jaipur Literature Festival', y: '2025' }
+];
+
+const DEFAULT_COLLABS = [
+  { p: 'Rajasthan Tourism Govt', l: 'Government Partner', d: 'Official campaign promoting local heritage and rural homestays.' },
+  { p: 'MS Dhoni / Seven brand', l: 'Celebrity Linkup', d: 'Co-starred in the regional sportswear launch campaign.' },
+  { p: 'TEDx Jaipur', l: 'Keynote Feature', d: 'Delivered a talk on the power of regional dialects in storytelling.' }
+];
+
+const DEFAULT_ICONS = [Globe, Zap, ShieldCheck, Trophy];
+const DEFAULT_COLORS = ['#FF9431', '#0073b1', '#10B981', '#7c3aed'];
+
+function getMilestones(creatorMilestones) {
+  const raw = (creatorMilestones && creatorMilestones.length > 0) ? creatorMilestones : DEFAULT_MILESTONES;
+  return raw.map((m, idx) => ({
+    ...m,
+    i: m.i || DEFAULT_ICONS[idx % DEFAULT_ICONS.length] || Globe,
+    c: m.c || DEFAULT_COLORS[idx % DEFAULT_COLORS.length] || '#FF9431'
+  }));
+}
+
+const CollabCard = ({ col, mob }) => {
+  const isGov = col.l?.toLowerCase().includes('gov');
+  const badgeBg = isGov ? '#10b98112' : '#7c3aed12';
+  const badgeColor = isGov ? '#10b981' : '#7c3aed';
+  const cardWidth = mob ? '260px' : 'auto';
+
+  return (
+    <Card style={{ padding: '32px', background: '#fff', borderRadius: '32px', border: '1px solid #e2e8f0', boxShadow: '0 12px 24px rgba(15,23,42,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexShrink: 0, width: cardWidth }}>
+       <div>
+          <div style={{ display: 'inline-block', padding: '6px 12px', background: badgeBg, borderRadius: '100px', fontSize: '11px', fontWeight: 900, color: badgeColor, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px' }}>
+             {col.l}
+          </div>
+          <h4 style={{ fontSize: '18px', fontWeight: 950, color: '#0f172a', marginBottom: '8px' }}>{col.p}</h4>
+          <p style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.5, fontWeight: 500, margin: 0 }}>{col.d}</p>
+       </div>
+       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '20px', paddingTop: '16px', borderTop: '1px solid #f1f5f9' }}>
+          <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FF9431' }} />
+          <span style={{ fontSize: '12px', fontWeight: 800, color: '#FF9431', textTransform: 'uppercase' }}>Verified Connection</span>
+       </div>
+    </Card>
+  );
+};
+CollabCard.propTypes = {
+  col: PropTypes.object.isRequired,
+  mob: PropTypes.bool
+};
+
+const MilestoneRow = ({ m, idx, mob }) => {
+  const isEven = idx % 2 === 0;
+  const desktopAlign = isEven ? 'flex-start' : 'flex-end';
+  const align = mob ? 'flex-start' : desktopAlign;
+  const MilestoneIcon = m.i;
+  const leftPos = mob ? '20px' : '50%';
+  const marginLeftVal = mob ? '60px' : '0';
+  const widthVal = mob ? 'calc(100% - 60px)' : '42%';
+
+  return (
+    <div style={{ display: 'flex', justifyContent: align, alignItems: 'center', marginBottom: '80px', width: '100%', position: 'relative' }}>
+       <div style={{ position: 'absolute', left: leftPos, transform: 'translateX(-50%)', width: '40px', height: '40px', background: '#fff', border: `4px solid ${m.c}`, borderRadius: '50%', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }}>
+          <MilestoneIcon size={18} color={m.c} />
+       </div>
+
+       <div style={{ width: widthVal, marginLeft: marginLeftVal, padding: '32px', background: '#fff', borderRadius: '32px', border: '1px solid #f1f5f9', boxShadow: '0 12px 40px rgba(0,0,0,0.04)' }}>
+          <div style={{ fontSize: '12px', fontWeight: 950, color: m.c, textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '8px' }}>{m.y} CHAPTER</div>
+          <h4 style={{ fontSize: '20px', fontWeight: 950, color: '#0f172a', marginBottom: '12px' }}>{m.t}</h4>
+          <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, fontWeight: 500 }}>{m.d}</p>
+       </div>
+    </div>
+  );
+};
+MilestoneRow.propTypes = {
+  m: PropTypes.object.isRequired,
+  idx: PropTypes.number.isRequired,
+  mob: PropTypes.bool
+};
+
 const StoryTab = ({ c, mob, setActiveTab }) => {
   const city = c?.city || 'Bharat';
   const name = c?.name || 'Elite Creator';
-  const milestones = c.milestones || [
-    { y: '2021', t: 'The Foundation', d: 'Launched the first video series on regional heritage with zero budget.', i: Globe, c: '#FF9431' },
-    { y: '2022', t: 'First Viral Wave', d: 'Crossed 100K hearts with authentic storytelling that resonated globally.', i: Zap, c: '#0073b1' },
-    { y: '2023', t: 'Elite Recognition', d: 'Officially audited and verified by CreatorBharat as a top regional voice.', i: ShieldCheck, c: '#10B981' },
-    { y: '2024', t: 'The National Pulse', d: 'Scaling impact by bridging the digital divide for Bharat.', i: Trophy, c: '#7c3aed' }
-  ];
+  const milestones = getMilestones(c.milestones);
+  const awards = (c.awards && c.awards.length > 0) ? c.awards : DEFAULT_AWARDS;
+  const collabs = (c.collabs && c.collabs.length > 0) ? c.collabs : DEFAULT_COLLABS;
+  const navigate = useNavigate();
+
+  const storyPadding = mob ? '0 16px' : '0 40px';
+  const titleSize = mob ? '36px' : '56px';
+  const awardsLayout = mob ? 'flex' : 'grid';
+  const awardsTemplate = mob ? 'none' : 'repeat(3, 1fr)';
+  const awardWidth = mob ? '220px' : 'auto';
+  const timelineLeft = mob ? '20px' : '50%';
+  const timelineBg = mob ? 'none' : 'translateX(-50%)';
+  const storyBodyPadding = mob ? '32px 24px' : '60px';
+  const storyBodyTextSize = mob ? '16px' : '18px';
+  const quoteFontSize = mob ? '16px' : '20px';
+  const readBtnWidth = mob ? '100%' : 'auto';
+  
+  const collabsPadding = mob ? '32px 24px' : '56px';
+  const collabsTitleAlign = mob ? 'flex-start' : 'center';
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto', padding: mob ? '0 16px' : '0 40px' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto', padding: storyPadding }}>
          <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-            <h2 style={{ fontSize: mob ? '36px' : '56px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: '24px' }}>The Journey of <span style={{ color: '#FF9431' }}>Authenticity</span></h2>
+            <h2 style={{ fontSize: titleSize, fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: '24px' }}>The Journey of <span style={{ color: '#FF9431' }}>Authenticity</span></h2>
             <p style={{ fontSize: '18px', color: '#64748b', fontWeight: 500, maxWidth: '650px', margin: '0 auto' }}>From a small-town vision in {city} to the digital screens of millions.</p>
          </div>
 
-         <div style={{ display: mob ? 'flex' : 'grid', gridTemplateColumns: mob ? 'none' : 'repeat(3, 1fr)', gap: '24px', marginBottom: '80px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
-            {[{ t: 'Regional Pioneer', y: '2024', id: 'award-1' }, { t: 'Elite Hub Verified', y: '2023', id: 'award-2' }, { t: 'Cultural Impact', y: '2025', id: 'award-3' }].map(a => (
-               <Card key={a.id} style={{ padding: '32px', textAlign: 'center', borderRadius: '32px', border: '1px solid #f1f5f9', boxShadow: '0 8px 32px rgba(0,0,0,0.02)', flexShrink: 0, width: mob ? '200px' : 'auto' }}>
-                  <Trophy size={32} color="#FF9431" style={{ margin: '0 auto 20px' }} />
-                  <div style={{ fontSize: '14px', fontWeight: 950, color: '#0f172a', marginBottom: '4px' }}>{a.t}</div>
-                  <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 800 }}>{a.y}</div>
+         {/* Achievements Section */}
+         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+            <h3 style={{ fontSize: '14px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '24px' }}>Key Awards & Recognitions</h3>
+         </div>
+         <div style={{ display: awardsLayout, gridTemplateColumns: awardsTemplate, gap: '24px', marginBottom: '80px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
+            {awards.map((a) => (
+               <Card key={a.t} style={{ padding: '32px', textAlign: 'center', borderRadius: '32px', border: '1px solid #f1f5f9', boxShadow: '0 8px 32px rgba(0,0,0,0.02)', flexShrink: 0, width: awardWidth }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: '#FF943112', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                     <Trophy size={24} color="#FF9431" />
+                  </div>
+                  <h4 style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a', marginBottom: '6px', lineHeight: 1.3 }}>{a.t}</h4>
+                  <div style={{ fontSize: '13px', color: '#64748b', fontWeight: 700, marginBottom: '10px' }}>{a.o}</div>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>{a.y}</div>
                </Card>
             ))}
          </div>
 
+         {/* Timeline */}
          <div style={{ position: 'relative' }}>
-            <div style={{ position: 'absolute', left: mob ? '20px' : '50%', transform: mob ? 'none' : 'translateX(-50%)', top: 0, bottom: 0, width: '4px', background: 'linear-gradient(to bottom, #FF9431, #f1f5f9)', borderRadius: '100px' }} />
+            <div style={{ position: 'absolute', left: timelineLeft, transform: timelineBg, top: 0, bottom: 0, width: '4px', background: 'linear-gradient(to bottom, #FF9431, #f1f5f9)', borderRadius: '100px' }} />
 
-            {milestones.map((m, idx) => {
-              const isEven = idx % 2 === 0;
-              const desktopAlign = isEven ? 'flex-start' : 'flex-end';
-              const align = mob ? 'flex-start' : desktopAlign;
-              return (
-                <div key={m.y} style={{ display: 'flex', justifyContent: align, alignItems: 'center', marginBottom: '80px', width: '100%', position: 'relative' }}>
-                   <div style={{ position: 'absolute', left: mob ? '20px' : '50%', transform: 'translateX(-50%)', width: '40px', height: '40px', background: '#fff', border: `4px solid ${m.c}`, borderRadius: '50%', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(0,0,0,0.1)' }}>
-                      <m.i size={18} color={m.c} />
-                   </div>
-
-                   <div style={{ width: mob ? 'calc(100% - 60px)' : '42%', marginLeft: mob ? '60px' : '0', padding: '32px', background: '#fff', borderRadius: '32px', border: '1px solid #f1f5f9', boxShadow: '0 12px 40px rgba(0,0,0,0.04)' }}>
-                      <div style={{ fontSize: '12px', fontWeight: 950, color: m.c, textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '8px' }}>{m.y} CHAPTER</div>
-                      <h4 style={{ fontSize: '20px', fontWeight: 950, color: '#0f172a', marginBottom: '12px' }}>{m.t}</h4>
-                      <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, fontWeight: 500 }}>{m.d}</p>
-                   </div>
-                </div>
-              );
-            })}
+            {milestones.map((m, idx) => (
+              <MilestoneRow key={`${m.y}-${m.t}`} m={m} idx={idx} mob={mob} />
+            ))}
          </div>
 
-         <div style={{ marginTop: '100px', padding: mob ? '32px 24px' : '60px', background: '#fcfcfc', borderRadius: '40px', border: '1.5px solid #f1f5f9', position: 'relative' }}>
+         <div style={{ marginTop: '100px', padding: storyBodyPadding, background: '#fcfcfc', borderRadius: '40px', border: '1.5px solid #f1f5f9', position: 'relative' }}>
             <div style={{ position: 'absolute', top: '24px', left: '24px', color: '#FF943110' }}><FileText size={80} /></div>
             <div style={{ position: 'relative', zIndex: 1 }}>
                <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', marginBottom: '32px' }}>Beyond the Milestones: <span style={{ color: '#FF9431' }}>My Full Story</span></h3>
-               <div style={{ fontSize: mob ? '16px' : '18px', color: '#475569', lineHeight: 1.8, fontWeight: 500 }}>
+               <div style={{ fontSize: storyBodyTextSize, color: '#475569', lineHeight: 1.8, fontWeight: 500 }}>
                   <p style={{ marginBottom: '24px' }} dangerouslySetInnerHTML={{__html: c.full_story?.p1 || `Mera safar ${city} ki un galiyon se shuru hua jahan har mod par ek kahani hai. Shuruat mein mere paas sirf ek purana phone aur ek junoon tha. Log kehte the ki Bharat ke regional stories mein global appeal nahi hai, par maine hamesha mana ki "Authenticity is the only language that the world understands."`}} />
-                  <blockquote style={{ margin: '40px 0', padding: '24px 32px', borderLeft: '6px solid #FF9431', background: '#fff', borderRadius: '0 24px 24px 0', fontSize: '20px', fontWeight: 750, fontStyle: 'italic', color: '#111827', boxShadow: '0 8px 32px rgba(0,0,0,0.02)' }} dangerouslySetInnerHTML={{__html: c.full_story?.quote || `"Content sirf views ke liye nahi hona chahiye, wo ek connection hona chahiye jo screen ke uss paar baithe insaan ke dil tak jaye. Main, ${name}, hamesha isme vishwas rakhta hoon."`}} />
+                  <blockquote style={{ margin: '40px 0', padding: '24px 32px', borderLeft: '6px solid #FF9431', background: '#fff', borderRadius: '0 24px 24px 0', fontSize: quoteFontSize, fontWeight: 750, fontStyle: 'italic', color: '#111827', boxShadow: '0 8px 32px rgba(0,0,0,0.02)' }} dangerouslySetInnerHTML={{__html: c.full_story?.quote || `"Content sirf views ke liye nahi hona chahiye, wo ek connection hona chahiye jo screen ke uss paar baithe insaan ke dil tak jaye. Main, ${name}, hamesha isme vishwas rakhta hoon."`}} />
                   <p style={{ marginBottom: '24px' }} dangerouslySetInnerHTML={{__html: c.full_story?.p2 || 'Aaj, jab main CreatorBharat ke verified creators ki list mein aata hoon, toh mujhe garv hota hai. Maine seekha hai ki elite banna sirf followers se nahi, balki consistency aur audience ke saath sacche rishte se hota hai. Mera agla chapter Bharat ki regional creativity ko ek global benchmark banana hai.'}} />
                   <p dangerouslySetInnerHTML={{__html: c.full_story?.p3 || 'Ye toh bas shuruat hai. Abhi toh bohot saari aisi kahaniyan hain jo sunani baaki hain, aur bohot saari aisi jagah hain jahan Bharat ka jhanda gaadna hai.'}} />
                </div>
                <div style={{ marginTop: '40px' }}>
-                  <Btn lg onClick={() => navigate(`/blog/creator-story-${c?.id || 'elite'}`)} style={{ borderRadius: '100px', background: '#0f172a', color: '#fff', gap: '12px', padding: '16px 40px', width: mob ? '100%' : 'auto' }}>
+                  <Btn lg onClick={() => navigate(`/blog/creator-story-${c?.id || 'elite'}`)} style={{ borderRadius: '100px', background: '#0f172a', color: '#fff', gap: '12px', padding: '16px 40px', width: readBtnWidth }}>
                      Read Full Detailed Biography on Blog <ArrowRight size={20} />
                    </Btn>
                 </div>
              </div>
           </div>
+
+         {/* Elite Partnerships Section */}
+         {collabs.length > 0 && (
+           <div style={{ marginTop: '60px', padding: collabsPadding, background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)', borderRadius: '40px', border: '1.5px solid #e2e8f0' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: collabsTitleAlign, marginBottom: '32px' }}>
+                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#FF9431', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Sparkles size={20} color="#fff" />
+                 </div>
+                 <h3 style={{ fontSize: '26px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.02em' }}>Elite & Public Partnerships</h3>
+              </div>
+              <div style={{ display: awardsLayout, gridTemplateColumns: awardsTemplate, gap: '24px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
+                 {collabs.map((col) => (
+                   <CollabCard key={col.p} col={col} mob={mob} />
+                 ))}
+              </div>
+           </div>
+         )}
 
          <TrustBadge />
          <TabNavigator activeTab="story" setActiveTab={setActiveTab} mob={mob} />
@@ -185,7 +296,7 @@ const StoryTab = ({ c, mob, setActiveTab }) => {
 StoryTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, setActiveTab: PropTypes.func.isRequired };
 
 const ServiceCatalog = ({ c, mob }) => {
-  const services = c.services || [
+  const services = (c.services && c.services.length > 0) ? c.services : [
     { t: 'Cinematic Storytelling', d: '4K Cinematic Reels with professional grading and scripting.', i: Play, c: '#FF9431' },
     { t: 'Regional Strategy', d: 'Consultation on how to launch products in local markets.', i: Globe, c: '#0ea5e9' },
     { t: 'Product Integration', d: 'Seamless product placement in authentic life scenarios.', i: Briefcase, c: '#10b981' }
@@ -195,17 +306,27 @@ const ServiceCatalog = ({ c, mob }) => {
     <div style={{ marginBottom: '60px' }}>
        <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', marginBottom: '32px', textAlign: 'center' }}>Professional Service Catalog</h3>
        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '24px' }}>
-          {services.map(s => {
-            const Icon = s.i || Play;
+          {services.map((s, idx) => {
+            const defaultIcons = [Play, Globe, Briefcase];
+            const defaultColors = ['#FF9431', '#0ea5e9', '#10b981'];
+            const Icon = s.i || defaultIcons[idx % defaultIcons.length];
+            const color = s.c || defaultColors[idx % defaultColors.length];
+            
             return (
-            <Card key={s.t} style={{ padding: '40px', borderRadius: '32px', border: '1.5px solid #f1f5f9', textAlign: 'center' }}>
-               <div style={{ width: '60px', height: '60px', background: `${s.c}10`, borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-                  <Icon size={28} color={s.c} />
-               </div>
-               <h4 style={{ fontSize: '18px', fontWeight: 900, color: '#0f172a', marginBottom: '16px' }}>{s.t}</h4>
-               <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, fontWeight: 500 }}>{s.d}</p>
-            </Card>
-          )})}
+              <Card key={s.t} style={{ padding: '40px', borderRadius: '32px', border: '1.5px solid #f1f5f9', textAlign: 'center' }}>
+                 <div style={{ width: '60px', height: '60px', background: `${color}10`, borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+                    <Icon size={28} color={color} />
+                 </div>
+                 <h4 style={{ fontSize: '18px', fontWeight: 900, color: '#0f172a', marginBottom: '8px' }}>{s.t}</h4>
+                 {s.rate && (
+                   <div style={{ fontSize: '18px', fontWeight: 950, color: '#FF9431', marginBottom: '16px' }}>
+                     ₹{Number(s.rate).toLocaleString('en-IN')}
+                   </div>
+                 )}
+                 <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, fontWeight: 500 }}>{s.d}</p>
+              </Card>
+            );
+          })}
        </div>
     </div>
   );
@@ -347,9 +468,10 @@ WorkTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, setAc
 
 // --- MODALS ---
 
-const RateCreatorModal = ({ open, onClose, name, dsp }) => {
+const RateCreatorModal = ({ open, onClose, name, dsp, onSubmit, user }) => {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
+  const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = () => {
@@ -357,9 +479,20 @@ const RateCreatorModal = ({ open, onClose, name, dsp }) => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Review submitted! Our elite audit team will verify it shortly.' } });
+      if (onSubmit) {
+        onSubmit({
+          b: user?.name || 'Partner Brand',
+          r: rating,
+          t: text || 'Absolute professional. Highly recommended!',
+          u: user?.email ? 'Verified Brand' : 'Verified Partner',
+          d: 'Just now',
+          type: 'brand',
+          id: 'brand-' + Date.now()
+        });
+      }
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Review submitted and verified!' } });
       onClose();
-    }, 1500);
+    }, 1000);
   };
 
   return (
@@ -387,7 +520,7 @@ const RateCreatorModal = ({ open, onClose, name, dsp }) => {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-             <Fld label="Collaboration Feedback" type="textarea" placeholder="Tell the community about your professional experience with this creator..." />
+             <Fld label="Collaboration Feedback" type="textarea" value={text} onChange={e => setText(e.target.value)} placeholder="Tell the community about your professional experience with this creator..." />
              
              <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
                 <Btn full lg onClick={onClose} style={{ background: '#f1f5f9', color: '#64748b', borderRadius: '100px' }}>Cancel</Btn>
@@ -398,71 +531,91 @@ const RateCreatorModal = ({ open, onClose, name, dsp }) => {
     </Modal>
   );
 };
-RateCreatorModal.propTypes = { open: PropTypes.bool.isRequired, onClose: PropTypes.func.isRequired, name: PropTypes.string.isRequired, dsp: PropTypes.func.isRequired };
+RateCreatorModal.propTypes = { 
+  open: PropTypes.bool.isRequired, 
+  onClose: PropTypes.func.isRequired, 
+  name: PropTypes.string.isRequired, 
+  dsp: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func,
+  user: PropTypes.shape({
+    name: PropTypes.string,
+    email: PropTypes.string
+  })
+};
 
 const LocalCollabHub = ({ c, mob, setActiveTab }) => {
   const isDummy = c.id === 'fallback';
   if (!c.local_collab && !isDummy) return <TabEmptyState title="Local Collab Hub" icon={MapPin} mob={mob} setActiveTab={setActiveTab} tabId="local" />;
 
+  const voice = c.local_voice || `"Main local brands aur homegrown startups ko support karne ke liye hamesha ready hoon. Chota ho ya bada, har business ki ek kahani hoti hai jaisa Bharat tak pahunchani chahiye."`;
+  const dialects = c.regional_dialects || 'Bhojpuri, Marwari, aur Hinglish';
+  const hubs = c.local_impact_hubs || [
+    { l: 'Indore', v: '85%' },
+    { l: 'Bhopal', v: '72%' },
+    { l: 'Ujjain', v: '64%' }
+  ];
+
   return (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-    <div style={{ padding: mob ? '32px 24px' : '60px', background: 'linear-gradient(135deg, #fff 0%, #fff7ed 100%)', borderRadius: '40px', border: '1.5px solid #ffedd5', marginBottom: '40px', position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', top: '-30px', right: '-30px', opacity: 0.1 }}><MapPin size={200} color="#f97316" /></div>
+    <div style={{ padding: mob ? '32px 24px' : '48px', borderRadius: '40px', marginBottom: '40px', border: '1.5px solid #f1f5f9', background: '#fff', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '6px', height: '100%', background: '#FF9431' }} />
       <div style={{ position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-          <div style={{ width: '40px', height: '40px', background: '#f97316', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Globe size={20} color="#fff" />
+          <div style={{ width: '40px', height: '40px', background: 'rgba(255,148,49,0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Globe size={20} color="#FF9431" />
           </div>
-          <span style={{ fontSize: '14px', fontWeight: 950, color: '#f97316', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Vocal for Local Initiative</span>
+          <span style={{ fontSize: '14px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Vocal for Local Initiative</span>
         </div>
-        <h2 style={{ fontSize: mob ? '28px' : '48px', fontWeight: 950, color: '#7c2d12', marginBottom: '24px', letterSpacing: '-0.04em' }}>Apne <span style={{ color: '#f97316' }}>Local Business</span> ko Global Banayein</h2>
-        <p style={{ fontSize: '18px', color: '#9a3412', fontWeight: 500, lineHeight: 1.6, maxWidth: '800px' }}>
-          "Main local brands aur homegrown startups ko support karne ke liye hamesha ready hoon. Chota ho ya bada, har business ki ek kahani hoti hai jaisa Bharat tak pahunchani chahiye."
+        <h2 style={{ fontSize: mob ? '28px' : '44px', fontWeight: 950, color: '#0f172a', marginBottom: '24px', letterSpacing: '-0.04em' }}>Apne <span style={{ color: '#FF9431' }}>Local Business</span> ko Global Banayein</h2>
+        <p style={{ fontSize: '18px', color: '#475569', fontWeight: 600, lineHeight: 1.6, maxWidth: '800px', fontStyle: 'italic' }}>
+          {voice}
         </p>
       </div>
     </div>
 
     <div style={{ display: mob ? 'flex' : 'grid', gridTemplateColumns: mob ? 'none' : 'repeat(3, 1fr)', gap: '24px', marginBottom: '40px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
-      <Card style={{ padding: '32px', borderRadius: '32px', border: '1.5px solid #f1f5f9', flexShrink: 0, width: mob ? '260px' : 'auto' }}>
+      <Card style={{ padding: '32px', borderRadius: '32px', border: '1.5px solid #f1f5f9', background: '#fff', flexShrink: 0, width: mob ? '260px' : 'auto' }}>
         <div style={{ width: '48px', height: '48px', background: '#f0fdf4', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
           <MapPin size={24} color="#10b981" />
         </div>
-        <h4 style={{ fontSize: '18px', fontWeight: 900, marginBottom: '12px' }}>Store Visits & Events</h4>
-        <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6 }}>Offline store visits, shop openings, aur local product reviews ke liye available.</p>
+        <h4 style={{ fontSize: '18px', fontWeight: 900, color: '#0f172a', marginBottom: '12px' }}>Store Visits & Events</h4>
+        <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, fontWeight: 500 }}>Offline store visits, launch events, aur local product reviews ke liye available in my active regions.</p>
       </Card>
 
-      <Card style={{ padding: '32px', borderRadius: '32px', border: '1.5px solid #f1f5f9', flexShrink: 0, width: mob ? '260px' : 'auto' }}>
+      <Card style={{ padding: '32px', borderRadius: '32px', border: '1.5px solid #f1f5f9', background: '#fff', flexShrink: 0, width: mob ? '260px' : 'auto' }}>
         <div style={{ width: '48px', height: '48px', background: '#eff6ff', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
           <Mic2 size={24} color="#3b82f6" />
         </div>
-        <h4 style={{ fontSize: '18px', fontWeight: 900, marginBottom: '12px' }}>Regional Voice Expertise</h4>
-        <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6 }}>Bhojpuri, Marwari, aur Hinglish mein content expertise for authentic local connect.</p>
+        <h4 style={{ fontSize: '18px', fontWeight: 900, color: '#0f172a', marginBottom: '12px' }}>Regional Voice Expertise</h4>
+        <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, fontWeight: 500 }}>{dialects} mein content expertise for authentic regional connection and high local trust.</p>
       </Card>
 
-      <Card style={{ padding: '32px', borderRadius: '32px', border: '1.5px solid #f1f5f9', flexShrink: 0, width: mob ? '260px' : 'auto' }}>
+      <Card style={{ padding: '32px', borderRadius: '32px', border: '1.5px solid #f1f5f9', background: '#fff', flexShrink: 0, width: mob ? '260px' : 'auto' }}>
         <div style={{ width: '48px', height: '48px', background: '#fef2f2', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
           <Zap size={24} color="#ef4444" />
         </div>
-        <h4 style={{ fontSize: '18px', fontWeight: 900, marginBottom: '12px' }}>Local Support Packages</h4>
-        <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6 }}>Small budgets aur barter collaborations ke liye special terms available.</p>
+        <h4 style={{ fontSize: '18px', fontWeight: 900, color: '#0f172a', marginBottom: '12px' }}>Local Support Packages</h4>
+        <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, fontWeight: 500 }}>Homegrown startups, small budgets, aur barter collaborations ke liye special terms available.</p>
       </Card>
     </div>
 
-    <div style={{ background: '#f8fafc', padding: mob ? '32px' : '60px', borderRadius: '40px', border: '1.5px solid #f1f5f9', textAlign: 'center' }}>
-       <h3 style={{ fontSize: '24px', fontWeight: 950, marginBottom: '16px' }}>Mera Hyper-Local Impact Hub</h3>
-       <p style={{ color: '#64748b', fontWeight: 600, marginBottom: '40px' }}>In regions mein mera influence niche average se 2x zyada hai.</p>
-       <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: mob ? '32px' : '64px' }}>
-          {[{ l: 'Indore', v: '85%' }, { l: 'Bhopal', v: '72%' }, { l: 'Ujjain', v: '64%' }].map(x => (
-            <div key={x.l}>
-               <div style={{ fontSize: '48px', fontWeight: 950, color: '#f97316', lineHeight: 1 }}>{x.v}</div>
-               <div style={{ fontSize: '14px', fontWeight: 800, color: '#94a3b8', marginTop: '8px' }}>Reach in {x.l}</div>
+    <div style={{ background: '#fff', padding: mob ? '32px 24px' : '60px', borderRadius: '40px', border: '1.5px solid #f1f5f9', textAlign: 'center', position: 'relative', overflow: 'hidden', marginBottom: '40px' }}>
+       <div style={{ position: 'absolute', top: 0, left: 0, width: '6px', height: '100%', background: '#FF9431' }} />
+       <h3 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', marginBottom: '16px' }}>Mera Hyper-Local Impact Hub</h3>
+       <p style={{ color: '#64748b', fontWeight: 600, marginBottom: '40px', fontSize: '15px' }}>In regions mein mein active audience engagement average se 2x zyada hai.</p>
+       <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '24px', maxWidth: '900px', margin: '0 auto' }}>
+          {hubs.map(x => (
+            <div key={x.l} style={{ padding: '24px', background: '#f8fafc', borderRadius: '24px', border: '1px solid #f1f5f9', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+               <div style={{ fontSize: '48px', fontWeight: 950, color: '#FF9431', lineHeight: 1, marginBottom: '8px' }}>{x.v}</div>
+               <div style={{ fontSize: '16px', fontWeight: 900, color: '#0f172a', marginBottom: '4px' }}>Reach in {x.l}</div>
+               <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Verified Hub Point</div>
             </div>
           ))}
        </div>
     </div>
     <TabNavigator activeTab="local" setActiveTab={setActiveTab} mob={mob} />
   </motion.div>
-);
+  );
 };
 LocalCollabHub.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, setActiveTab: PropTypes.func.isRequired };
 
@@ -543,14 +696,6 @@ const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
 
           {/* Quick Actions Panel */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-             <button onClick={onBrief} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '24px', background: '#0f172a', border: 'none', borderRadius: '32px', cursor: 'pointer', width: '100%', textAlign: 'left', transition: 'transform 0.2s', boxShadow: '0 20px 40px rgba(15,23,42,0.1)' }}>
-                <div style={{ width: '48px', height: '48px', background: 'rgba(255,148,49,0.1)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Briefcase size={24} color="#FF9431" /></div>
-                <div>
-                   <div style={{ fontSize: '16px', fontWeight: 900, color: '#fff' }}>Start Official Brief</div>
-                   <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 600 }}>Send detailed campaign info</div>
-                </div>
-             </button>
-
              <Card style={{ padding: '24px', borderRadius: '32px', border: '1.5px solid #f1f5f9', background: '#fff' }}>
                 <div style={{ fontSize: '12px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '1px' }}>Quick Toolkit</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -662,7 +807,7 @@ const CollabBriefModal = ({ open, onClose, pkg, creatorName, dsp }) => {
        <div style={{ padding: '20px' }}>
           <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '16px', marginBottom: '24px', border: '1px solid #f1f5f9' }}>
              <div style={{ fontSize: '12px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase' }}>Selected Package</div>
-             <div style={{ fontSize: '16px', fontWeight: 950, color: '#0f172a' }}>{pkg?.l} ({pkg?.v})</div>
+             <div style={{ fontSize: '16px', fontWeight: 950, color: '#0f172a' }}>{pkg ? `${pkg.l} (${pkg.v})` : 'Custom Campaign Brief (Sponsorship)'}</div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -754,13 +899,16 @@ const GalleryTab = ({ c, mob, setActiveTab }) => {
 GalleryTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, setActiveTab: PropTypes.func.isRequired };
 
 const ReviewsTab = ({ c, mob, navigate, onWriteReview, setActiveTab }) => {
-  const isDummy = c.id === 'fallback';
-  if (!c.reviews && !isDummy) return <TabEmptyState title="Reviews" icon={Star} mob={mob} setActiveTab={setActiveTab} tabId="reviews" />;
   const reviews = c.reviews || [
      { b: 'OYO Rooms', r: 5, t: 'Absolute professional. The Jaipur heritage campaign delivered 4x the expected engagement.', u: 'Brand Manager', d: '2 weeks ago', type: 'brand', id: 'oyo' },
      { b: 'Rohan Sharma', r: 5, t: 'The cultural storytelling in the summer drop was raw and authentic. Highly recommended!', u: 'Travel Creator', d: '1 month ago', type: 'creator', id: 'rohan' },
      { b: 'Amazon Bharat', r: 4, t: 'Great content quality. Revision process was smooth and delivery was on time.', u: 'Marketing Lead', d: '3 months ago', type: 'brand', id: 'amazon' }
   ];
+
+  const totalReviews = reviews.length;
+  const averageRating = totalReviews > 0 
+    ? (reviews.reduce((sum, rev) => sum + rev.r, 0) / totalReviews).toFixed(1)
+    : '5.0';
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
@@ -768,14 +916,17 @@ const ReviewsTab = ({ c, mob, navigate, onWriteReview, setActiveTab }) => {
           <div>
              <Card style={{ padding: '40px', textAlign: 'center', borderRadius: '40px', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', color: '#fff', border: 'none', marginBottom: '24px' }}>
                 <div style={{ fontSize: '12px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '16px' }}>Aggregate Authority</div>
-                <div style={{ fontSize: '72px', fontWeight: 950, lineHeight: 1, marginBottom: '8px' }}>4.9</div>
+                <div style={{ fontSize: '72px', fontWeight: 950, lineHeight: 1, marginBottom: '8px' }}>{averageRating}</div>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', marginBottom: '16px' }}>
-                   {[1,2,3,4,5].map(s => <Star key={s} size={20} fill="#FF9431" color="#FF9431" />)}
+                   {[1,2,3,4,5].map(s => {
+                     const roundedRating = Math.round(Number(averageRating));
+                     return <Star key={s} size={20} fill={s <= roundedRating ? '#FF9431' : 'none'} color={s <= roundedRating ? '#FF9431' : '#cbd5e1'} />;
+                   })}
                 </div>
-                <div style={{ fontSize: '14px', fontWeight: 700, color: '#94a3b8' }}>Based on {c.reviews_count || reviews.length} Verified Collaborations</div>
+                <div style={{ fontSize: '14px', fontWeight: 700, color: '#94a3b8' }}>Based on {c.reviews_count || totalReviews} Verified Collaborations</div>
              </Card>
              <Btn full lg onClick={() => onWriteReview()} style={{ borderRadius: '100px', background: '#fff', color: '#0f172a', border: '2px solid #0f172a', gap: '10px' }}>
-                <Star size={18} /> Write a Review
+                 <Star size={18} /> Write a Review
              </Btn>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -813,12 +964,17 @@ ReviewsTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, na
 
 const PackagesTab = ({ c, mob, onSelect, setActiveTab }) => {
   const isDummy = c.id === 'fallback';
-  if (!c.packages && !isDummy) return <TabEmptyState title="Packages" icon={Zap} mob={mob} setActiveTab={setActiveTab} tabId="packages" />;
-  const packages = c.packages || [
+  if (!c.packages && (!c.services || c.services.length === 0) && !isDummy) return <TabEmptyState title="Packages" icon={Zap} mob={mob} setActiveTab={setActiveTab} tabId="packages" />;
+  const packages = c.packages || (c.services && c.services.length > 0 ? c.services.map((s, idx) => ({
+    l: s.t,
+    v: s.rate ? `₹${Number(s.rate).toLocaleString('en-IN')}` : 'Custom',
+    pop: idx === 1,
+    items: s.d ? s.d.split(',').map(item => item.trim()) : []
+  })) : [
     { l: 'Starter Boost', v: '₹12,500', pop: false, items: ['1 Cinematic Reel', '2 Sequential Stories', 'Link in Bio (24hrs)', 'Standard Captioning'] },
     { l: 'Growth Engine', v: '₹35,000', pop: true, items: ['3 Premium Reels', '5 High-Impact Stories', 'Managed Briefing', 'Analytics Report', 'Scripting Included'] },
     { l: 'Brand Partner', v: 'Custom', pop: false, items: ['Exclusive Partnership', '6 Reels per Month', 'Product Integration', 'Usage Rights (6mo)', 'Event Attendance'] }
-  ];
+  ]);
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
@@ -885,7 +1041,7 @@ const ProfileTabContent = ({
         <motion.div key="tab-connect" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
            <QuickConnectHub c={c} mob={mob} dsp={dsp} onBrief={() => setBriefOpen(true)} onMediaKit={() => setMediaKitOpen(true)} />
            <div style={{ marginTop: '40px' }}>
-              <SocialLinkTree mob={mob} />
+              <SocialLinkTree links={c?.links} mob={mob} />
            </div>
            <TrustBadge />
            <TabNavigator activeTab="connect" setActiveTab={setActiveTab} mob={mob} />
@@ -909,73 +1065,20 @@ ProfileTabContent.propTypes = {
   setActiveTab: PropTypes.func.isRequired
 };
 
-export default function CreatorProfilePage() {
-  const { id } = useParams();
-  const { st, dsp } = useApp();
-  const navigate = useNavigate();
-  const [c, setC] = useState(st?.sel?.creator || null);
-  const [ld, setLd] = useState(!c);
-  const [mob, setMob] = useState(globalThis.innerWidth < 768);
-  const [activeTab, setActiveTab] = useState('identity');
-  const [rateOpen, setRateOpen] = useState(false);
-  const [briefOpen, setBriefOpen] = useState(false);
-  const [mediaKitOpen, setMediaKitOpen] = useState(false);
-  const [selectedPkg, setSelectedPkg] = useState(null);
+const ProfileSkeleton = ({ id, mob }) => {
+  const heroPadding = mob ? '40px 16px 60px' : '80px 0 100px';
+  const containerPadding = mob ? '0 16px' : '0 24px';
+  const flexDir = mob ? 'column' : 'row';
+  const avatarSize = mob ? '120px' : '180px';
+  const alignStyle = mob ? 'center' : 'flex-start';
+  const nameWidth = mob ? '80%' : '320px';
+  const bioWidth1 = mob ? '95%' : '480px';
+  const bioWidth2 = mob ? '85%' : '400px';
+  const statsColumns = mob ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)';
+  const sliceCount = mob ? 4 : 5;
+  const bodyColumns = mob ? '1fr' : '2fr 1fr';
 
-  useEffect(() => {
-    const h = () => setMob(globalThis.innerWidth < 768);
-    globalThis.addEventListener('resize', h);
-    return () => globalThis.removeEventListener('resize', h);
-  }, []);
-
-  useEffect(() => {
-    if (st?.sel?.creator?.packages && (String(st?.sel?.creator?.id) === String(id) || st?.sel?.creator?.slug === id)) {
-      setC(st.sel.creator);
-      setLd(false);
-      return;
-    }
-    if (!id) return;
-    setLd(true);
-    const triggerFetch = async () => {
-      try {
-        const found = await fetchCreatorById(id);
-        setC(found || getFallbackCreator(id));
-      } catch (err) {
-        console.error('Creator not found, loading Elite Demo profile:', err);
-        setC(getFallbackCreator(id));
-      } finally {
-        setLd(false);
-      }
-    };
-    triggerFetch();
-  }, [id, st?.sel?.creator]);
-
-  const stats = useMemo(() => {
-    if (!c) return { followers: 0, er: 0, reach: 0, authenticity: 0, score: 0 };
-    return { 
-      followers: c.followers || 125000, 
-      er: c.er || 4.8, 
-      reach: Math.floor((c.followers || 125000) * 0.85), 
-      authenticity: 98.2, 
-      score: c.score || 94 
-    };
-  }, [c]);
-
-  const handleRateClick = () => {
-    if (!st?.user) { dsp({ t: 'TOAST', d: { type: 'warn', msg: 'Please login to rate this creator' } }); return; }
-    setRateOpen(true);
-  };
-
-  const handlePackageSelect = (pkg) => {
-    if (!st?.user) { 
-      dsp({ t: 'TOAST', d: { type: 'warn', msg: 'Please login as a Brand to book packages' } }); 
-      return; 
-    }
-    setSelectedPkg(pkg);
-    setBriefOpen(true);
-  };
-
-  if (ld) return (
+  return (
     <div style={{ minHeight: '100vh', background: '#fcfcfc', color: '#0f172a', paddingBottom: '100px' }}>
       {/* Injecting CSS Keyframes inline */}
       <style>{`
@@ -991,29 +1094,29 @@ export default function CreatorProfilePage() {
       `}</style>
 
       {/* SKELETON HERO COVER (LIGHT WHITE) */}
-      <div style={{ background: '#ffffff', padding: mob ? '40px 16px 60px' : '80px 0 100px', borderBottom: '1px solid #f1f5f9', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: mob ? '0 16px' : '0 24px', display: 'flex', flexDirection: mob ? 'column' : 'row', gap: '32px', alignItems: 'center' }}>
+      <div style={{ background: '#ffffff', padding: heroPadding, borderBottom: '1px solid #f1f5f9', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: containerPadding, display: 'flex', flexDirection: flexDir, gap: '32px', alignItems: 'center' }}>
           
           {/* Avatar Circle Shimmer */}
-          <div className="shimmer-light" style={{ width: mob ? '120px' : '180px', height: mob ? '120px' : '180px', borderRadius: '50%', flexShrink: 0, border: '4px solid #fff', boxShadow: '0 12px 32px rgba(0,0,0,0.05)' }} />
+          <div className="shimmer-light" style={{ width: avatarSize, height: avatarSize, borderRadius: '50%', flexShrink: 0, border: '4px solid #fff', boxShadow: '0 12px 32px rgba(0,0,0,0.05)' }} />
           
           {/* Details Shimmer */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start', gap: '16px', width: '100%' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: alignStyle, gap: '16px', width: '100%' }}>
             
             {/* Saffron accent mini-pill */}
             <div className="shimmer-light" style={{ width: '100px', height: '20px', borderRadius: '100px' }} />
             
             {/* Creator Name pulse */}
-            <div className="shimmer-light" style={{ width: mob ? '80%' : '320px', height: '40px', borderRadius: '12px' }} />
+            <div className="shimmer-light" style={{ width: nameWidth, height: '40px', borderRadius: '12px' }} />
             
             {/* Bio paragraph pulses */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', alignItems: mob ? 'center' : 'flex-start' }}>
-              <div className="shimmer-light" style={{ width: mob ? '95%' : '480px', height: '16px', borderRadius: '8px' }} />
-              <div className="shimmer-light" style={{ width: mob ? '85%' : '400px', height: '16px', borderRadius: '8px' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', alignItems: alignStyle }}>
+              <div className="shimmer-light" style={{ width: bioWidth1, height: '16px', borderRadius: '8px' }} />
+              <div className="shimmer-light" style={{ width: bioWidth2, height: '16px', borderRadius: '8px' }} />
             </div>
 
             {/* Verification & Button Group */}
-            <div style={{ display: 'flex', gap: '12px', marginTop: '12px', width: '100%', justifyContent: mob ? 'center' : 'flex-start' }}>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '12px', width: '100%', justifyContent: alignStyle }}>
               <div className="shimmer-light" style={{ width: '120px', height: '36px', borderRadius: '100px' }} />
               <div className="shimmer-light" style={{ width: '140px', height: '36px', borderRadius: '100px' }} />
             </div>
@@ -1024,8 +1127,8 @@ export default function CreatorProfilePage() {
 
       {/* STATS STRIP SHIMMER */}
       <div style={{ background: '#f8fafc', borderBottom: '1px solid #f1f5f9', padding: '24px 0' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: mob ? '0 16px' : '0 24px', display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)', gap: '16px' }}>
-          {[1,2,3,4,5].slice(0, mob ? 4 : 5).map(idx => (
+        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: containerPadding, display: 'grid', gridTemplateColumns: statsColumns, gap: '16px' }}>
+          {[1, 2, 3, 4, 5].slice(0, sliceCount).map(idx => (
             <div key={idx} className="shimmer-light" style={{ height: '70px', borderRadius: '16px', border: '1px solid #f1f5f9' }} />
           ))}
         </div>
@@ -1033,16 +1136,16 @@ export default function CreatorProfilePage() {
 
       {/* STICKY NAV TABS SHIMMER */}
       <div style={{ background: '#fff', borderBottom: '1px solid #f1f5f9', padding: '16px 0' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: mob ? '0 16px' : '0 24px', display: 'flex', gap: '24px', overflowX: 'auto', scrollbarWidth: 'none' }}>
-          {[1,2,3,4,5,6].map(idx => (
+        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: containerPadding, display: 'flex', gap: '24px', overflowX: 'auto', scrollbarWidth: 'none' }}>
+          {[1, 2, 3, 4, 5, 6].map(idx => (
             <div key={idx} className="shimmer-light" style={{ width: '100px', height: '32px', borderRadius: '8px', flexShrink: 0 }} />
           ))}
         </div>
       </div>
 
       {/* BODY COMPONENT SHIMMER */}
-      <div style={{ maxWidth: '1100px', margin: '40px auto 0', padding: mob ? '0 16px' : '0 24px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '2fr 1fr', gap: '40px' }}>
+      <div style={{ maxWidth: '1100px', margin: '40px auto 0', padding: containerPadding }}>
+        <div style={{ display: 'grid', gridTemplateColumns: bodyColumns, gap: '40px' }}>
           
           {/* Main Content Pane */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
@@ -1067,6 +1170,116 @@ export default function CreatorProfilePage() {
 
     </div>
   );
+};
+ProfileSkeleton.propTypes = {
+  id: PropTypes.string,
+  mob: PropTypes.bool
+};
+
+export default function CreatorProfilePage() {
+  const { id } = useParams();
+  const { st, dsp } = useApp();
+  const navigate = useNavigate();
+  const [c, setC] = useState(st?.sel?.creator || null);
+  const [ld, setLd] = useState(!c);
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
+  const [activeTab, setActiveTab] = useState('identity');
+  const [rateOpen, setRateOpen] = useState(false);
+  const [briefOpen, setBriefOpen] = useState(false);
+  const [mediaKitOpen, setMediaKitOpen] = useState(false);
+  const [selectedPkg, setSelectedPkg] = useState(null);
+  const [navVisible, setNavVisible] = useState(true);
+  const lastY = useRef(0);
+
+  useEffect(() => {
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const curY = globalThis.scrollY;
+      const diff = curY - lastY.current;
+      if (curY < 50) setNavVisible(true);
+      else if (diff > 10) setNavVisible(false);
+      else if (diff < -10) setNavVisible(true);
+      lastY.current = curY;
+    };
+    globalThis.addEventListener('scroll', handleScroll, { passive: true });
+    return () => globalThis.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (st?.sel?.creator?.packages && (String(st?.sel?.creator?.id) === String(id) || st?.sel?.creator?.slug === id)) {
+      setC(st.sel.creator);
+      setLd(false);
+      return;
+    }
+    if (!id) return;
+    setLd(true);
+    const triggerFetch = async () => {
+      try {
+        const found = await fetchCreatorById(id);
+        setC(found || getFallbackCreator(id));
+      } catch (err) {
+        if (import.meta.env.DEV && (err.name === 'TypeError' || err.message?.includes('Failed to fetch') || err.message?.includes('fetch'))) {
+          console.warn('Creator Profile fetch warning (API sleeping/offline, using seed fallback):', err.message);
+        } else {
+          console.error('Creator not found, loading Elite Demo profile:', err);
+        }
+        setC(getFallbackCreator(id));
+      } finally {
+        setLd(false);
+      }
+    };
+    triggerFetch();
+  }, [id, st?.sel?.creator]);
+
+  const stats = useMemo(() => {
+    if (!c) return { followers: 0, er: 0, reach: 0, authenticity: 0, score: 0 };
+    return { 
+      followers: c.followers || 125000, 
+      er: c.er || 4.8, 
+      reach: Math.floor((c.followers || 125000) * 0.85), 
+      authenticity: 98.2, 
+      score: c.score || 94 
+    };
+  }, [c]);
+
+  const handleRateClick = () => {
+    if (!st?.user) { dsp({ t: 'TOAST', d: { type: 'warn', msg: 'Please login to rate this creator' } }); return; }
+    setRateOpen(true);
+  };
+
+  const handleReviewSubmit = (newReview) => {
+    const updatedReviews = c.reviews ? [newReview, ...c.reviews] : [newReview];
+    const updatedCreator = {
+      ...c,
+      reviews: updatedReviews,
+      reviews_count: (c.reviews_count || (c.reviews ? c.reviews.length : 3)) + 1
+    };
+    setC(updatedCreator);
+
+    // Save to LocalStorage
+    const allC = LS.get('cb_creators', []);
+    const idx = allC.findIndex(cr => cr.id === c.id || cr.email === c.email || cr.slug === c.slug);
+    if (idx !== -1) {
+      allC[idx] = updatedCreator;
+      LS.set('cb_creators', allC);
+    }
+  };
+
+  const handlePackageSelect = (pkg) => {
+    if (!st?.user) { 
+      dsp({ t: 'TOAST', d: { type: 'warn', msg: 'Please login as a Brand to book packages' } }); 
+      return; 
+    }
+    setSelectedPkg(pkg);
+    setBriefOpen(true);
+  };
+
+  if (ld) return <ProfileSkeleton id={id} mob={mob} />;
   if (!c) return <div style={{ ...W(), padding: '120px 20px', textAlign: 'center' }}><Empty title="Profile Not Found" onCta={() => navigate('/creators')} /></div>;
 
   return (
@@ -1075,9 +1288,9 @@ export default function CreatorProfilePage() {
         title={`${c.name} | Verified Creator`}
         description={c.bio || `${c.name} is an elite storyteller and verified digital content creator on CreatorBharat, Jaipur, India.`}
       />
-      <ProfileHero c={c} stats={stats} navigate={navigate} st={st} dsp={dsp} mob={mob} onRate={handleRateClick} onContact={() => setActiveTab('connect')} onMediaKit={() => setMediaKitOpen(true)} />
+      <ProfileHero c={c} stats={stats} navigate={navigate} st={st} dsp={dsp} mob={mob} onRate={handleRateClick} onContact={() => setActiveTab('connect')} onMediaKit={() => setMediaKitOpen(true)} navVisible={navVisible} onBrief={(pkg) => { setSelectedPkg(pkg); setBriefOpen(true); }} />
       
-      <div style={{ position: 'sticky', top: 0, zIndex: 1000, background: 'rgba(252, 252, 252, 0.9)', backdropFilter: 'blur(30px)', borderBottom: '1px solid #f1f5f9', overflowX: mob ? 'auto' : 'hidden', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      <div style={{ position: 'sticky', top: mob ? 0 : (navVisible ? '72px' : '0px'), transition: 'top 0.4s cubic-bezier(0.16, 1, 0.3, 1)', zIndex: 1000, background: 'rgba(252, 252, 252, 0.9)', backdropFilter: 'blur(30px)', borderBottom: '1px solid #f1f5f9', overflowX: mob ? 'auto' : 'hidden', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
          <div style={{ ...W(1100), padding: mob ? '0 16px' : '0 24px', display: 'flex', gap: mob ? '32px' : '48px', minWidth: mob ? 'fit-content' : 'auto' }}>
             {[{ id: 'identity', label: 'Identity', icon: Activity }, { id: 'story', label: 'My Story', icon: Globe }, { id: 'gallery', label: 'Gallery', icon: ImageIcon }, { id: 'work', label: 'Pro Work', icon: Briefcase }, { id: 'local', label: 'Local Hub', icon: MapPin }, { id: 'reviews', label: 'Reviews', icon: Star }, { id: 'packages', label: 'Packages', icon: Zap }, { id: 'connect', label: 'Connect', icon: MessageSquare }].map(t => (
               <button key={t.id} onClick={() => setActiveTab(t.id)} style={{ padding: '20px 0', background: 'none', border: 'none', borderBottom: `3.5px solid ${activeTab === t.id ? '#0073b1' : 'transparent'}`, color: activeTab === t.id ? '#111827' : '#6b7280', fontSize: '14px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', whiteSpace: 'nowrap' }}>
@@ -1191,7 +1404,7 @@ export default function CreatorProfilePage() {
         </div>
       )}
 
-      <RateCreatorModal open={rateOpen} name={c?.name || 'Creator'} dsp={dsp} onClose={() => setRateOpen(false)} />
+      <RateCreatorModal open={rateOpen} name={c?.name || 'Creator'} dsp={dsp} onSubmit={handleReviewSubmit} user={st?.user} onClose={() => setRateOpen(false)} />
       <CollabBriefModal open={briefOpen} pkg={selectedPkg} creatorName={c?.name || 'Creator'} dsp={dsp} onClose={() => setBriefOpen(false)} />
       {c && stats && <MediaKitPreview open={mediaKitOpen} onClose={() => setMediaKitOpen(false)} creator={c} stats={stats} />}
     </div>

@@ -68,7 +68,12 @@ export async function apiCall(endpoint, options = {}, retries = 2) {
       }
       
       if (!isRateLimitError(err)) {
-        console.error(`API Call failed [${endpoint}]:`, err);
+        const isNetworkError = err.name === 'TypeError' || err.message?.includes('Failed to fetch') || err.message?.includes('fetch') || !navigator.onLine;
+        if (import.meta.env.DEV && isNetworkError) {
+          console.warn(`[Dev Mode] API host offline/sleeping. Using local/seed fallback for endpoint: ${endpoint}`);
+        } else {
+          console.error(`API Call failed [${endpoint}]:`, err);
+        }
       }
       throw err;
     }

@@ -268,9 +268,15 @@ const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDo
   if (dlStatus === 'loading') dlText = 'Preparing Media Kit...';
   else if (dlStatus === 'done') dlText = 'Media Kit Ready';
 
-  const totalReviews = c.id === 'fallback' 
-    ? 24 
-    : (c.reviews ? c.reviews.length : (c.reviews_count || 0));
+  const reviews = c.reviews || [
+     { b: 'OYO Rooms', r: 5, t: 'Absolute professional. The Jaipur heritage campaign delivered 4x the expected engagement.', u: 'Brand Manager', d: '2 weeks ago', type: 'brand', id: 'oyo' },
+     { b: 'Rohan Sharma', r: 5, t: 'The cultural storytelling in the summer drop was raw and authentic. Highly recommended!', u: 'Travel Creator', d: '1 month ago', type: 'creator', id: 'rohan' },
+     { b: 'Amazon Bharat', r: 4, t: 'Great content quality. Revision process was smooth and delivery was on time.', u: 'Marketing Lead', d: '3 months ago', type: 'brand', id: 'amazon' }
+  ];
+  const totalReviews = reviews.length;
+  const averageRating = totalReviews > 0 
+    ? (reviews.reduce((sum, rev) => sum + rev.r, 0) / totalReviews).toFixed(1)
+    : '5.0';
 
   return (
     <div style={{ flex: 1 }}>
@@ -281,7 +287,7 @@ const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDo
        <ContactMetadata city={c.city} followers={stats.followers} mob={mob} onContact={onContact} />
        <BadgeRow score={stats.score || 94} />
        <RatingSection 
-          val={c.id === 'fallback' ? 4.9 : (c.rating || 0)} 
+          val={Number(averageRating)} 
           total={totalReviews} 
           onRate={onRate} 
        />
@@ -472,99 +478,99 @@ const ProfileImage = ({ src, mob }) => (
 );
 ProfileImage.propTypes = { src: PropTypes.string.isRequired, mob: PropTypes.bool };
 
-const EliteIntelligenceCard = ({ stats, mob, activeUsers, activeViews }) => {
+const CreatorHonestReviewCard = ({ c, mob }) => {
+  const reviewerName = c?.name || 'Creator';
+  const reviewerSlug = c?.slug || 'creator';
+
+  const honestReviewText = c?.honest_review || c?.platform_review || c?.philosophy || (
+    reviewerName === 'Arjun Kapoor' 
+    ? "CreatorBharat V3 has completely transformed my brand collaboration pipeline. The media kit builder and live analytical proof allow me to close tier-1 automotive campaigns with absolute transparency and 3x faster response times."
+    : `CreatorBharat V3 is the ultimate growth layer for my career. It handles my media kit verification and escrow payments automatically, allowing me to build premium brand relationships with 100% trust.`
+  );
+
+  const dpImg = c?.photo || c?.avatarUrl || c?.profile_pic || c?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(reviewerName)}&background=FF9431&color=fff&size=200`;
 
   return (
     <motion.div 
-      initial={{ opacity: 0, x: 40 }}
-      animate={{ 
-        opacity: 1, 
-        x: 0,
-        y: [0, -10, 0] 
-      }}
-      transition={{
-        opacity: { duration: 0.5 },
-        x: { duration: 0.5 },
-        y: { duration: 6, repeat: Infinity, ease: "easeInOut" }
-      }}
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       style={{ 
-        background: 'linear-gradient(145deg, #0f172a 0%, #1e293b 100%)', 
-        borderRadius: '40px', 
-        padding: '40px', 
-        color: '#fff', 
-        boxShadow: '0 40px 80px rgba(15,23,42,0.3)',
+        background: '#ffffff', 
+        borderRadius: '36px', 
+        padding: '36px', 
+        color: '#0f172a', 
+        boxShadow: '0 20px 40px rgba(15,23,42,0.03)',
         position: 'relative',
-        overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,0.08)',
+        border: '1.5px solid #f1f5f9',
         width: '100%',
-        maxWidth: mob ? '100%' : '400px'
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+        boxSizing: 'border-box'
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.transform = 'translateY(-4px)';
+        e.currentTarget.style.boxShadow = '0 30px 60px rgba(255,148,49,0.12)';
+        e.currentTarget.style.borderColor = 'rgba(255, 148, 49, 0.3)';
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.transform = 'none';
+        e.currentTarget.style.boxShadow = '0 20px 40px rgba(15,23,42,0.03)';
+        e.currentTarget.style.borderColor = '#f1f5f9';
       }}
     >
-      <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '250px', height: '250px', background: '#FF9431', borderRadius: '50%', filter: 'blur(120px)', opacity: 0.15, pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', bottom: '-50px', left: '-50px', width: '200px', height: '200px', background: '#3b82f6', borderRadius: '50%', filter: 'blur(100px)', opacity: 0.1, pointerEvents: 'none' }} />
-      
-      <div style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
-           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '40px', height: '40px', background: 'rgba(255,148,49,0.15)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,148,49,0.2)' }}>
-                 <Activity size={20} color="#FF9431" />
-              </div>
-              <span style={{ fontSize: '12px', fontWeight: 950, textTransform: 'uppercase', letterSpacing: '2px', color: '#94a3b8' }}>Elite Intelligence</span>
-           </div>
-           <div style={{ background: 'rgba(16,185,129,0.1)', color: '#10B981', padding: '6px 12px', borderRadius: '100px', fontSize: '10px', fontWeight: 950, border: '1px solid rgba(16,185,129,0.2)' }}>LIVE</div>
+      {/* Top Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#FF9431', boxShadow: '0 0 10px #FF9431' }} />
+          <span style={{ fontSize: '11px', fontWeight: 950, color: '#475569', textTransform: 'uppercase', letterSpacing: '2px' }}>Honest Review</span>
         </div>
+        <div style={{ background: 'rgba(255, 148, 49, 0.08)', color: '#FF9431', padding: '6px 14px', borderRadius: '100px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px', border: '1px solid rgba(255, 148, 49, 0.15)' }}>
+          Verified review
+        </div>
+      </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-          <div>
-            <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '12px' }}>Live Engagement</div>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '12px' }}>
-               <div style={{ fontSize: '42px', fontWeight: 950, color: '#fff', lineHeight: 0.9 }}>{activeUsers}</div>
-               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10B981', fontSize: '14px', fontWeight: 800, paddingBottom: '4px' }}>
-                  <div style={{ width: '10px', height: '10px', background: '#10B981', borderRadius: '50%', boxShadow: '0 0 12px #10B981', animation: 'pulse 2s infinite' }} />
-                  Viewing Now
-               </div>
-            </div>
-          </div>
+      {/* Testimonial Quote */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', margin: '24px 0' }}>
+        <div style={{ fontSize: '72px', fontFamily: 'serif', color: 'rgba(255, 148, 49, 0.2)', lineHeight: 0.1, height: '36px', marginTop: '8px' }}>“</div>
+        <p style={{ 
+          fontSize: '16px', 
+          fontWeight: 600, 
+          color: '#334155', 
+          lineHeight: 1.7, 
+          fontStyle: 'italic',
+          fontFamily: "'Outfit', sans-serif",
+          margin: '0'
+        }}>
+          {honestReviewText}
+        </p>
+      </div>
 
-          <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)' }} />
-
-          <div>
-            <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '12px' }}>Global Visibility</div>
-            <div style={{ fontSize: '32px', fontWeight: 950, color: '#fff', marginBottom: '16px', lineHeight: 1 }}>{fmt.num(activeViews)}+ <span style={{ fontSize: '14px', color: '#FF9431', fontWeight: 800, textTransform: 'uppercase' }}>Lifetime</span></div>
-            <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '100px', overflow: 'hidden' }}>
-               <motion.div 
-                 initial={{ width: 0 }}
-                 animate={{ width: '78%' }}
-                 transition={{ duration: 1.5, ease: "easeOut" }}
-                 style={{ height: '100%', background: 'linear-gradient(90deg, #FF9431, #f97316)', boxShadow: '0 0 15px rgba(255,148,49,0.3)' }} 
-               />
-            </div>
-          </div>
-
-          <div style={{ padding: '24px', background: 'rgba(255,255,255,0.03)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
-             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                <ShieldCheck size={20} color="#FF9431" />
-                <div style={{ fontSize: '13px', fontWeight: 900, color: '#fff' }}>Verified Authority</div>
-             </div>
-             <p style={{ fontSize: '12px', color: '#94a3b8', lineHeight: 1.6, fontWeight: 500 }}>
-                This creator ranks in the <b>Top 1%</b> for regional engagement and brand safety across the CreatorBharat network.
-             </p>
-          </div>
+      {/* Reviewer signature */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderTop: '1.5px solid #f1f5f9', paddingTop: '20px' }}>
+        <div style={{ width: '44px', height: '44px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #FF9431', flexShrink: 0 }}>
+          <img src={dpImg} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+        </div>
+        <div>
+          <div style={{ fontSize: '14.5px', fontWeight: 950, color: '#0f172a' }}>{reviewerName}</div>
+          <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 700 }}>@{reviewerSlug} • Verified Creator</div>
         </div>
       </div>
     </motion.div>
   );
 };
-EliteIntelligenceCard.propTypes = { 
-  stats: PropTypes.object.isRequired, 
-  mob: PropTypes.bool,
-  activeUsers: PropTypes.number,
-  activeViews: PropTypes.number
+
+CreatorHonestReviewCard.propTypes = { 
+  c: PropTypes.object.isRequired,
+  mob: PropTypes.bool
 };
 
 // --- MAIN HERO ---
 
-export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContact, onMediaKit }) => {
+export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContact, onMediaKit, navVisible = true, onBrief }) => {
   const [followed, setFollowed] = useState(false);
   const [dlStatus] = useState('idle');
 
@@ -652,10 +658,10 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
                flexDirection: mob ? 'column' : 'row', 
                gap: '60px', 
                width: '100%', 
-               alignItems: 'flex-start',
+               alignItems: 'stretch',
                marginTop: mob ? '0' : '20px'
              }}>
-                <div style={{ flex: 1.6, width: '100%' }}>
+                <div style={{ flex: 1.6, width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                    <IdentityDetails c={c} stats={stats} mob={mob} onRate={() => handleAction('rate')} onContact={onContact} dsp={dsp} dlStatus={dlStatus} onDownload={handleMediaKit} activeUsers={activeUsers} activeViews={activeViews} likes={likes} isLiked={isLiked} onLike={handleLike} />
                    <div style={{ marginTop: '40px' }}>
                       <ActionButtons 
@@ -669,8 +675,8 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
                    </div>
                 </div>
 
-                <div style={mob ? { display: 'none' } : { flex: 1, position: 'sticky', top: '120px' }}>
-                   <EliteIntelligenceCard stats={stats} mob={mob} activeUsers={activeUsers} activeViews={activeViews} />
+                <div style={mob ? { display: 'none' } : { flex: 1, display: 'flex', flexDirection: 'column' }}>
+                   <CreatorHonestReviewCard c={c} mob={mob} />
                 </div>
              </div>
           </div>
@@ -688,5 +694,7 @@ ProfileHero.propTypes = {
   mob: PropTypes.bool, 
   onRate: PropTypes.func.isRequired, 
   onContact: PropTypes.func.isRequired,
-  onMediaKit: PropTypes.func.isRequired
+  onMediaKit: PropTypes.func.isRequired,
+  navVisible: PropTypes.bool,
+  onBrief: PropTypes.func.isRequired
 };

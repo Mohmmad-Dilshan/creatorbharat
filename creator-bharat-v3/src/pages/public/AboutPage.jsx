@@ -495,7 +495,13 @@ export default function AboutPage() {
         setCreators(creatorsList || []);
         setCampaigns(campaignsList || []);
       })
-      .catch(err => console.error("AboutPage fetch error:", err));
+      .catch(err => {
+        if (import.meta.env.DEV && (err.name === 'TypeError' || err.message?.includes('Failed to fetch') || err.message?.includes('fetch'))) {
+          console.warn("AboutPage fetch warning (API sleeping/offline, using seed fallback):", err.message);
+        } else {
+          console.error("AboutPage fetch error:", err);
+        }
+      });
     return () => { active = false; };
   }, []);
 

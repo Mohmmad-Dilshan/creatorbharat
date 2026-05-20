@@ -21,6 +21,7 @@ export const SEED_CREATORS = [
     likes: 14582,
     tagline: 'Bridging elite luxury automobiles, futuristic tech, and authentic Indian storytelling.',
     philosophy: "Content creation isn't just about demonstrating silicon specifications or horsepower; it's about building a desire and connecting with the heart of every tech and auto lover in Bharat.",
+    honest_review: "CreatorBharat V3 has completely transformed my brand collaboration pipeline. The media kit builder and live analytical proof allow me to close tier-1 automotive campaigns with absolute transparency and 3x faster response times.",
     ai_intel: {
       match: '98%',
       summary: 'Vibrant Cinematic Editing, Luxury Niche Authority, and High Conversion ROI Potential',
@@ -44,6 +45,12 @@ export const SEED_CREATORS = [
     local_voice: "Being based in Mumbai gives me direct access to India's premium creative heart. My local hub presence connects brands natively to India's most affluent urban and regional demographics.",
     local_hubs: ['Mumbai', 'Delhi NCR', 'Pune'],
     local_penetration: '94%',
+    regional_dialects: 'Hinglish, Hindi, Punjabi',
+    local_impact_hubs: [
+      { l: 'Mumbai Metro', v: '94%' },
+      { l: 'Delhi NCR', v: '82%' },
+      { l: 'Pune', v: '76%' }
+    ],
     local_collab: true,
     viral_content: [
       { views: '2.4M', img: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=400' },
@@ -120,6 +127,12 @@ export const SEED_CREATORS = [
     local_voice: 'Being based in Mumbai gives me direct access to major tech launches and corporate brand headquarters. Natively connecting urban professionals.',
     local_hubs: ['Mumbai', 'Pune', 'Bangalore'],
     local_penetration: '91%',
+    regional_dialects: 'Hinglish, Hindi, Marathi',
+    local_impact_hubs: [
+      { l: 'Mumbai Metro', v: '91%' },
+      { l: 'Pune Metro', v: '78%' },
+      { l: 'Bangalore Hub', v: '65%' }
+    ],
     local_collab: true,
     viral_content: [
       { views: '1.6M', img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=400' },

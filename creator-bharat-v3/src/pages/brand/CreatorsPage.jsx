@@ -380,6 +380,8 @@ const MarketplaceHeader = ({ mob, setShowFilters, clearFilters, count, sort, onS
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
         <span style={{ fontSize: 11, fontWeight: 900, color: '#94a3b8', letterSpacing: '0.1em' }}>SORT BY:</span>
         <select
+          id="marketplace-sort-select"
+          name="marketplace_sort"
           value={sort}
           onChange={e => onSortChange(e.target.value)}
           style={{

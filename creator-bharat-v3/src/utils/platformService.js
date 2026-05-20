@@ -118,7 +118,13 @@ export async function fetchCreators({ limit = 250, force = false } = {}) {
       _cache.expiry = Date.now() + CACHE_DURATION;
       return merged;
     } catch (err) {
-      if (err.status !== 429) console.error('fetchCreators failed:', err.message);
+      if (err.status !== 429) {
+        if (import.meta.env.DEV && (err.name === 'TypeError' || err.message?.includes('Failed to fetch') || err.message?.includes('fetch'))) {
+          console.warn('fetchCreators: API host offline/sleeping. Using local/seed creators.');
+        } else {
+          console.error('fetchCreators failed:', err.message);
+        }
+      }
       _cache.lastFailure = Date.now();
       const local = LS.get('cb_creators', []);
       return local.length > 0 ? local : SEED_CREATORS;
@@ -149,7 +155,13 @@ export async function fetchCreatorById(id) {
     const res = await apiCall(`/creators/${id}`);
     return getEnrichedCreator(res.creator || res);
   } catch (err) {
-    if (err.status !== 429) console.error('fetchCreatorById failed:', err.message);
+    if (err.status !== 429) {
+      if (import.meta.env.DEV && (err.name === 'TypeError' || err.message?.includes('Failed to fetch') || err.message?.includes('fetch'))) {
+        console.warn(`fetchCreatorById [${id}]: API host offline/sleeping. Using seed fallback.`);
+      } else {
+        console.error('fetchCreatorById failed:', err.message);
+      }
+    }
     // 4. Seed Fallback
     return SEED_CREATORS.find(x => String(x.id) === String(id) || x.handle === id || x.slug === id) || null;
   }
@@ -179,7 +191,13 @@ export async function fetchCampaigns({ limit = 100, force = false } = {}) {
       _cache.expiry = Date.now() + CACHE_DURATION;
       return list;
     } catch (err) {
-      if (err.status !== 429) console.error('fetchCampaigns failed:', err.message);
+      if (err.status !== 429) {
+        if (import.meta.env.DEV && (err.name === 'TypeError' || err.message?.includes('Failed to fetch') || err.message?.includes('fetch'))) {
+          console.warn('fetchCampaigns: API host offline/sleeping. Using local/seed campaigns.');
+        } else {
+          console.error('fetchCampaigns failed:', err.message);
+        }
+      }
       _cache.lastFailure = Date.now();
       const local = LS.get('cb_campaigns', []);
       return local.length > 0 ? local : SEED_CAMPAIGNS;
