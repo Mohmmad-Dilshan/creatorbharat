@@ -1054,7 +1054,26 @@ export default function CreatorsPage() {
           gradient="saffron"
           light={true}
           compact={true}
-        />
+        >
+          <Btn
+            lg
+            active
+            onClick={() => {
+              const grid = document.getElementById('creators-grid-anchor');
+              if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }}
+            style={{
+              borderRadius: 999,
+              padding: mob ? '0 24px' : '0 34px',
+              height: mob ? 54 : 62,
+              background: '#0f172a',
+              color: '#fff',
+              boxShadow: '0 18px 38px rgba(15, 23, 42, 0.18)'
+            }}
+          >
+            Explore Verified Creators <ChevronRight size={20} />
+          </Btn>
+        </EliteHeader>
         <CreatorsFloatingIcons mob={mob} />
       </div>
 
