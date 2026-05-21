@@ -779,19 +779,21 @@ const CreatorsFloatingIcons = ({ mob }) => {
               delay,
             }}
           >
-            <div style={{
-              width: size + 20,
-              height: size + 20,
-              background: 'rgba(255, 255, 255, 0.8)',
-              border: '1px solid rgba(0, 0, 0, 0.05)',
-              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.04)',
-              backdropFilter: 'blur(10px)',
-              borderRadius: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-            }}
+            <div 
+              style={{
+                width: size + 24,
+                height: size + 24,
+                background: 'rgba(255, 255, 255, 0.75)',
+                border: '1.5px solid rgba(0, 0, 0, 0.04)',
+                boxShadow: '0 8px 30px rgba(0, 0, 0, 0.03)',
+                backdropFilter: 'blur(12px)',
+                borderRadius: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+              }}
+              className="floating-creator-btn"
             >
               <Icon size={size} color={color} strokeWidth={1.8} />
             </div>
@@ -886,7 +888,31 @@ export default function CreatorsPage() {
       <div style={{ position: 'relative', width: '100%' }}>
         <EliteHeader
           eyebrow="Marketplace Hub"
-          title={<>Discover the <span style={{ color: '#FF9431' }}>Elite</span> Talent of Bharat</>}
+          title={
+            <>
+              Discover the{' '}
+              <span
+                style={{
+                  background: 'linear-gradient(90deg, #FF9431, #EA580C)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                Elite
+              </span>{' '}
+              Talent of{' '}
+              <span
+                style={{
+                  background: 'linear-gradient(90deg, #FF9431, #128807)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  paddingRight: mob ? 4 : 12,
+                }}
+              >
+                Bharat
+              </span>
+            </>
+          }
           sub={<>Unlock the power of authentic regional influence with India’s premier verified creator directory. Partner with {fmt.num(all.length)}+ leading digital stars across Tier-1, Tier-2, and Tier-3 cities to drive high-impact campaigns with complete price transparency and real-time metric scorecards.</>}
           gradient="saffron"
           light={true}

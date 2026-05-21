@@ -203,13 +203,13 @@ const EliteHeader = memo(({
           )}
 
           <div style={{ 
-            fontSize: mob ? '36px' : 'clamp(40px, 6vw, 72px)', 
-            fontWeight: 900, 
-            color: light ? '#111' : '#fff', 
+            fontSize: mob ? 'clamp(32px, 8vw, 44px)' : 'clamp(54px, 6.5vw, 88px)', 
+            fontWeight: 950, 
+            color: light ? '#0f172a' : '#fff', 
             fontFamily: "'Outfit', sans-serif",
-            lineHeight: 1.05,
+            lineHeight: 0.95,
             marginBottom: 24,
-            letterSpacing: '-0.02em',
+            letterSpacing: '-0.05em',
             textAlign: 'center'
           }}>
             {title}
@@ -218,11 +218,11 @@ const EliteHeader = memo(({
           {sub && (
             <div style={{ 
               fontSize: mob ? '15px' : 'clamp(17px, 1.3vw, 21px)', 
-              color: light ? '#64748b' : 'rgba(255,255,255,0.6)', 
+              color: light ? '#475569' : 'rgba(255,255,255,0.6)', 
               maxWidth: 700, 
               margin: mob ? '0 auto 32px' : '0 auto 48px',
               lineHeight: 1.6,
-              fontWeight: 500
+              fontWeight: light ? 600 : 500
             }}>
               {sub}
             </div>
