@@ -581,9 +581,17 @@ export default function CampaignsPage() {
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ fontSize: mob ? '48px' : '80px', fontWeight: 950, color: THEME.dark, letterSpacing: '-0.05em', lineHeight: 1 }}>
               Campaign Marketplace
             </motion.h1>
-            <p style={{ marginTop: '24px', color: THEME.textSec, fontSize: mob ? '16px' : '20px', fontWeight: 500, maxWidth: '700px', margin: '24px auto 0', lineHeight: 1.6 }}>
-              The definitive gateway to premium influencer commerce. Access high-ticket collaborations, <span style={{ color: THEME.dark, fontWeight: 800 }}>verified brand deals</span>, and data-driven advertising opportunities across India.
+            <p style={{ marginTop: '24px', color: THEME.textSec, fontSize: mob ? '16px' : '20px', fontWeight: 500, maxWidth: '760px', margin: '24px auto 0', lineHeight: 1.7, letterSpacing: '0.01em' }}>
+              The definitive gateway to premium influencer commerce. Access <span style={{ color: THEME.dark, fontWeight: 800 }}>high-ticket collaborations</span>, verified brand deals, and data-driven advertising opportunities across India.
             </p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexDirection: mob ? 'column' : 'row', marginTop: '28px' }}>
+              <Btn lg onClick={() => navigate('/brand-register')} style={{ background: THEME.primary, color: '#fff', padding: '16px 28px', borderRadius: '14px', fontWeight: 950, fontSize: '15px', width: mob ? '100%' : 'auto', boxShadow: '0 16px 32px rgba(255,148,49,0.18)' }}>
+                Create Campaign
+              </Btn>
+              <Btn lg onClick={() => navigate('/creators')} style={{ background: '#fff', color: THEME.dark, padding: '16px 28px', borderRadius: '14px', border: '1px solid #e2e8f0', fontWeight: 950, fontSize: '15px', width: mob ? '100%' : 'auto' }}>
+                Explore Creators
+              </Btn>
+            </div>
           </div>
         } />
         <CampaignsFloatingIcons mob={mob} />
