@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import * as Sentry from '@sentry/react';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -12,8 +13,10 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // Yahan hum Sentry ya kisi aur logging tool ko call kar sakte hain future me
     console.error("Critical UI Crash caught by Boundary:", error, errorInfo);
+    
+    // Sentry Error Tracking Tool ko critical crash bhejna
+    Sentry.captureException(error, { extra: errorInfo });
   }
 
   render() {

@@ -21,6 +21,9 @@ yarn-error.log*
 *_REPORT.md
 *_AUDIT.md
 *_CERTIFICATION.md
+
+# Ignore Frontend Plan Report
+FRONTEND_ANALYSIS_REPORT*.md
 frontend_master_report.md
 full_n8n_frontend_map.md
 planning_hub/
@@ -29,6 +32,12 @@ creatorbharat-plan-n8n.json
 *plan-n8n.json
 *plan-n8n.md
 *.n8n
+
+# Ignore History and Chat logs
+.history/
+*history*
+*.history
+*.chat
 
 # EVERYTHING IN BACKUPS IS HIDDEN
 backups/
