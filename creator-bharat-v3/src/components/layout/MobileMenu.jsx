@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '@/core/context';
 import { Btn, Logo } from '@/components/common/Primitives';
 import { scrollToTop } from '../../utils/helpers';
@@ -10,6 +10,7 @@ import { X, Users, Megaphone, BookOpen, Heart, LogOut, LayoutDashboard, Briefcas
 export default function MobileMenu({ open }) {
   const { st, dsp } = useApp();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const go = (path) => {
     const protectedPaths = ['/dashboard', '/brand-dashboard', '/campaign-builder', '/settings', '/wallet', '/applications', '/messages', '/saved'];

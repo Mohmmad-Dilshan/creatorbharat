@@ -4,6 +4,7 @@ import { fmt } from '../../utils/helpers';
 import { useApp } from '@/core/context';
 import { Card, Btn, Bdg, Bar } from '@/components/common/Primitives';
 import { motion, AnimatePresence } from 'framer-motion';
+import Seo from '@/components/common/SEO';
 import { 
   Wallet, 
   ArrowDownLeft, 
@@ -161,7 +162,7 @@ export default function WalletPage() {
 
   return (
     <div className="dashboard-page-container">
-      
+      <Seo title="Wallet & Earnings | CreatorBharat" description="Track your creator earnings and manage payouts securely." />
       {/* Header */}
       <div className="db-page-header">
         <div className="badge-saffron">
