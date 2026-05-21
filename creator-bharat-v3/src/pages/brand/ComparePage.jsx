@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '@/core/context';
+import { useApp } from '../../core/context';
 import { W, scrollToTop, LS, fmt } from '../../utils/helpers';
-import { Btn, Empty, Bdg } from '@/components/common/Primitives';
+import { Btn, Empty, Bdg } from '../../components/common/Primitives';
 import EliteHeader from '../../components/layout/EliteHeader';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Info, Trash2, X, Star, Activity, TrendingUp, DollarSign, Award, Target } from 'lucide-react';

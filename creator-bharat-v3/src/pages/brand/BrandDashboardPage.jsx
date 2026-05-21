@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '@/core/context';
+import { useApp } from '../../core/context';
 import { LS, fmt } from '../../utils/helpers';
-import { Card, Bdg, Empty, Bar } from '@/components/common/Primitives';
+import { Card, Bdg, Empty, Bar } from '../../components/common/Primitives';
 import { motion } from 'framer-motion';
 import { 
   Rocket, 
@@ -16,7 +16,7 @@ import {
   ArrowUpRight,
   Sparkles
 } from 'lucide-react';
-import AuthGatekeeper from '@/components/auth/AuthGatekeeper';
+import AuthGatekeeper from '../../components/auth/AuthGatekeeper';
 
 const StatCard = ({ label, value, color, icon: Icon, trend, delay = 0 }) => (
   <motion.div

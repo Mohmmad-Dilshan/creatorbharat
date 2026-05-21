@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "build": "cd creator-bharat-v3 && npm run build",
+    "dev": "cd creator-bharat-v3 && npm run dev",
+    "preview": "cd creator-bharat-v3 && npm run preview"
+  },
   "dependencies": {
     "@sentry/react": "^10.53.1"
   }

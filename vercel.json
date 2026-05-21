@@ -1,8 +1,12 @@
 {
+  "framework": "vite",
+  "installCommand": "cd creator-bharat-v3 && npm install",
+  "buildCommand": "cd creator-bharat-v3 && npm run build",
+  "outputDirectory": "creator-bharat-v3/dist",
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/creator-bharat-v3/index.html"
+      "destination": "/index.html"
     }
   ]
 }

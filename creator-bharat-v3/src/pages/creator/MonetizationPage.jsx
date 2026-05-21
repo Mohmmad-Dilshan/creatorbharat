@@ -14,9 +14,9 @@ import {
   Zap,
   IndianRupee
 } from 'lucide-react';
-import { useApp } from '@/core/context';
-import { Btn, Bdg } from '@/components/common/Primitives';
-import Seo from '@/components/common/SEO';
+import { useApp } from '../../core/context';
+import { Btn, Bdg } from '../../components/common/Primitives';
+import Seo from '../../components/common/SEO';
 
 export default function MonetizationPage() {
   const { st, dsp } = useApp();

@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useApp } from '@/core/context';
+import { useApp } from '../../core/context';
 import { fetchCreatorById } from '../../utils/platformService';
 import { W, LS } from '../../utils/helpers';
-import { ProfileHero } from '@/components/creators/profile/ProfileHero';
-import { IdentityTab, SocialLinkTree } from '@/components/creators/profile/IdentityTab';
-import { MediaKitPreview } from '@/components/creators/profile/MediaKitPreview';
-import { Btn, Empty, Modal, Fld, Card } from '@/components/common/Primitives';
-import Seo from '@/components/common/SEO';
+import { ProfileHero } from '../../components/creators/profile/ProfileHero';
+import { IdentityTab, SocialLinkTree } from '../../components/creators/profile/IdentityTab';
+import { MediaKitPreview } from '../../components/creators/profile/MediaKitPreview';
+import { Btn, Empty, Modal, Fld, Card } from '../../components/common/Primitives';
+import Seo from '../../components/common/SEO';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ShieldCheck, 
@@ -1566,58 +1566,6 @@ export default function CreatorProfilePage() {
          </div>
       </section>
 
-      {mob && (
-        <div style={{ 
-          position: 'fixed', 
-          bottom: '24px', 
-          left: '16px', 
-          right: '16px', 
-          background: 'rgba(15, 23, 42, 0.95)', 
-          backdropFilter: 'blur(12px)', 
-          padding: '16px 24px', 
-          borderRadius: '100px', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between', 
-          boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
-          zIndex: 1000,
-          border: '1px solid rgba(255,255,255,0.1)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #FF9431' }}>
-              <img src={c?.photo || c?.avatarUrl || c?.profile_pic || 'https://picsum.photos/100'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
-            </div>
-            <div>
-               <div style={{ fontSize: '13px', fontWeight: 900, color: '#fff' }}>@{c?.slug || 'elite'}</div>
-               <div style={{ fontSize: '10px', color: '#10B981', fontWeight: 700 }}>Available Now</div>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button onClick={() => { 
-                setActiveTab('connect'); 
-                const el = document.getElementById('profile-content-area');
-                if (el) {
-                  const yOffset = -120;
-                  const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                  window.scrollTo({ top: y, behavior: 'smooth' });
-                }
-            }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '44px', height: '44px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <MessageSquare size={20} />
-            </button>
-            <button onClick={() => { 
-                setActiveTab('packages'); 
-                const el = document.getElementById('profile-content-area');
-                if (el) {
-                  const yOffset = -120;
-                  const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                  window.scrollTo({ top: y, behavior: 'smooth' });
-                }
-            }} style={{ background: '#FF9431', border: 'none', color: '#fff', padding: '0 24px', height: '44px', borderRadius: '100px', fontSize: '13px', fontWeight: 950 }}>
-              Book
-            </button>
-          </div>
-        </div>
-      )}
 
       <RateCreatorModal open={rateOpen} name={c?.name || 'Creator'} dsp={dsp} onSubmit={handleReviewSubmit} user={st?.user} onClose={() => setRateOpen(false)} />
       <CollabBriefModal open={briefOpen} pkg={selectedPkg} creatorName={c?.name || 'Creator'} dsp={dsp} onClose={() => setBriefOpen(false)} />

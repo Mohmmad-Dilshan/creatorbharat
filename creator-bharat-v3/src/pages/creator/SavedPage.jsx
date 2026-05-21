@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '@/core/context';
+import { useApp } from '../../core/context';
 import { W, scrollToTop, LS } from '../../utils/helpers';
 import { apiCall } from '../../utils/api';
-import { Empty } from '@/components/common/Primitives';
-import { CreatorCard, CampCard } from '@/components/common/Cards';
+import { Empty } from '../../components/common/Primitives';
+import { CreatorCard, CampCard } from '../../components/common/Cards';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Heart } from 'lucide-react';
 

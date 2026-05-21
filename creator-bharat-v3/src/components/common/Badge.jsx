@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { T } from '@/core/theme';
+import { T } from '../../core/theme';
 
 export function Badge({ children, color = 'gray', sm, lg, dot, style: sx = {}, className, ...props }) {
   const m = {

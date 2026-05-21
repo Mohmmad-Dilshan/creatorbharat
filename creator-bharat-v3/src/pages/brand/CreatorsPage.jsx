@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '../../context';
+import { useApp } from '../../core/context';
 import { fetchCreators } from '../../utils/platformService';
 import { W, scrollToTop, fmt } from '../../utils/helpers';
 import EliteHeader from '../../components/layout/EliteHeader';
@@ -21,7 +21,7 @@ import {
   Camera
 } from 'lucide-react';
 import { InstagramIcon } from '../../components/icons/SocialIcons';
-import { Btn, Bdg } from '../../components/Primitives';
+import { Btn, Bdg } from '../../components/common/Primitives';
 import Seo from '../../components/common/SEO';
 import SearchToolbar from '../../components/creators/SearchToolbar';
 import FilterSidebar from '../../components/creators/FilterSidebar';

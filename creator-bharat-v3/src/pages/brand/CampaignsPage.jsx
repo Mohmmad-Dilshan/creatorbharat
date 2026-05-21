@@ -7,10 +7,10 @@ import {
   Target, Briefcase, TrendingUp, Award, Rocket, BarChart3, Lightbulb, CheckCircle, Star, Sparkles, Send, MessageSquare
 } from 'lucide-react';
 
-import { useApp } from '@/core/context';
+import { useApp } from '../../core/context';
 import { fmt, LS } from '../../utils/helpers';
 import { fetchCampaigns } from '../../utils/platformService';
-import { Btn, SkeletonCard, Modal, Fld } from '@/components/common/Primitives';
+import { Btn, SkeletonCard, Modal, Fld } from '../../components/common/Primitives';
 import EliteHeader from '../../components/layout/EliteHeader';
 
 // Floating icons for campaigns hero
