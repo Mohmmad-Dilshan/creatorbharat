@@ -30,7 +30,8 @@ import {
   Send,
   Image as ImageIcon,
   MessageSquare,
-  MapPin
+  MapPin,
+  Lock
 } from 'lucide-react';
 
 // --- CUSTOM ELITE SOCIAL ICONS (SVG) ---
@@ -43,6 +44,82 @@ const TrustBadge = () => (
     </span>
   </div>
 );
+
+const GatedOverlay = ({ title, description, ctaText = "Unlock as Brand", onCtaClick }) => (
+  <div style={{
+    position: 'absolute',
+    inset: 0,
+    background: 'rgba(255, 255, 255, 0.4)',
+    backdropFilter: 'blur(16px) saturate(120%)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '40px 24px',
+    zIndex: 10,
+    textAlign: 'center',
+    borderRadius: '32px'
+  }}>
+    <div style={{
+      background: '#fff',
+      padding: '40px 32px',
+      borderRadius: '32px',
+      maxWidth: '460px',
+      boxShadow: '0 20px 50px rgba(15, 23, 42, 0.1)',
+      border: '1px solid rgba(226, 232, 240, 0.8)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '20px'
+    }}>
+      <div style={{
+        width: '64px',
+        height: '64px',
+        borderRadius: '20px',
+        background: 'linear-gradient(135deg, rgba(255, 148, 49, 0.1) 0%, rgba(234, 88, 12, 0.1) 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#EA580C',
+        border: '1.5px solid rgba(234, 88, 12, 0.1)'
+      }}>
+        <Lock size={28} />
+      </div>
+      <div>
+        <h4 style={{ fontSize: '20px', fontWeight: 950, color: '#0f172a', marginBottom: '8px', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+          {title}
+        </h4>
+        <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, fontWeight: 550, margin: 0 }}>
+          {description}
+        </p>
+      </div>
+      <button 
+        onClick={onCtaClick}
+        style={{
+          background: 'linear-gradient(90deg, #FF9431, #EA580C)',
+          color: '#fff',
+          border: 'none',
+          padding: '14px 32px',
+          borderRadius: '100px',
+          fontSize: '14px',
+          fontWeight: 850,
+          cursor: 'pointer',
+          boxShadow: '0 12px 24px rgba(234, 88, 12, 0.25)',
+          transition: 'transform 0.2s',
+          width: '100%'
+        }}
+      >
+        {ctaText}
+      </button>
+    </div>
+  </div>
+);
+GatedOverlay.propTypes = {
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  ctaText: PropTypes.string,
+  onCtaClick: PropTypes.func.isRequired
+};
 
 const TabNavigator = ({ activeTab, setActiveTab, mob }) => {
   const TABS = [
@@ -703,6 +780,8 @@ LocalCollabHub.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool
 // ProfileHero moved to @/components/creators/profile/ProfileHero
 
 const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
+  const { st } = useApp();
+  const navigate = useNavigate();
   const [msg, setMsg] = useState('');
   const [dlStatus, setDlStatus] = useState('idle'); // idle, loading, done
 
@@ -730,9 +809,18 @@ const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
   if (dlStatus === 'loading') dlText = 'Preparing PDF...';
   else if (dlStatus === 'done') dlText = 'Media Kit Downloaded';
 
+  const hasUser = !!st?.user;
+
   return (
-    <div id="quick-connect" style={{ marginTop: mob ? '20px' : '0' }}>
-       <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.5fr 1fr', gap: '32px', marginBottom: '32px' }}>
+    <div id="quick-connect" style={{ marginTop: mob ? '20px' : '0', position: 'relative' }}>
+       <div style={{ 
+         display: 'grid', 
+         gridTemplateColumns: mob ? '1fr' : '1.5fr 1fr', 
+         gap: '32px', 
+         marginBottom: '32px',
+         filter: hasUser ? 'none' : 'blur(6px) grayscale(20%)',
+         pointerEvents: hasUser ? 'auto' : 'none'
+       }}>
           {/* Messaging Core */}
           <Card style={{ padding: mob ? '32px' : '48px', borderRadius: '40px', border: '1.5px solid #f1f5f9', background: '#fff', position: 'relative', overflow: 'hidden' }}>
              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
@@ -814,6 +902,13 @@ const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
              </div>
           </div>
        </div>
+       {!hasUser && (
+         <GatedOverlay 
+           title="Direct Communication Locked" 
+           description="Join the platform as a verified Brand to send direct proposals, negotiate terms, and download official creator media kits." 
+           onCtaClick={() => navigate('/login')}
+         />
+       )}
 
        {/* Professional Trust Bar */}
        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '20px', marginBottom: '40px' }}>
@@ -1043,6 +1138,8 @@ const ReviewsTab = ({ c, mob, navigate, onWriteReview, setActiveTab }) => {
 ReviewsTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, navigate: PropTypes.func.isRequired, onWriteReview: PropTypes.func.isRequired, setActiveTab: PropTypes.func.isRequired };
 
 const PackagesTab = ({ c, mob, onSelect, setActiveTab }) => {
+  const { st } = useApp();
+  const navigate = useNavigate();
   const isDummy = c.id === 'fallback';
   if (!c.packages && (!c.services || c.services.length === 0) && !isDummy) return <TabEmptyState title="Packages" icon={Zap} mob={mob} setActiveTab={setActiveTab} tabId="packages" />;
   const packages = c.packages || (c.services && c.services.length > 0 ? c.services.map((s, idx) => ({
@@ -1056,13 +1153,31 @@ const PackagesTab = ({ c, mob, onSelect, setActiveTab }) => {
     { l: 'Brand Partner', v: 'Custom', pop: false, items: ['Exclusive Partnership', '6 Reels per Month', 'Product Integration', 'Usage Rights (6mo)', 'Event Attendance'] }
   ]);
 
+  const hasUser = !!st?.user;
+
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-      <div style={{ display: mob ? 'flex' : 'grid', gridTemplateColumns: mob ? 'none' : 'repeat(3, 1fr)', gap: '24px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: '20px' }}>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ position: 'relative' }}>
+      <div style={{ 
+        display: mob ? 'flex' : 'grid', 
+        gridTemplateColumns: mob ? 'none' : 'repeat(3, 1fr)', 
+        gap: '24px', 
+        overflowX: mob ? 'auto' : 'visible', 
+        scrollbarWidth: 'none', 
+        paddingBottom: '20px',
+        filter: hasUser ? 'none' : 'blur(6px) grayscale(20%)',
+        pointerEvents: hasUser ? 'auto' : 'none'
+      }}>
          {packages.map((p) => (
            <PackageCard key={p.l} onSelect={onSelect} p={p} />
          ))}
       </div>
+      {!hasUser && (
+        <GatedOverlay 
+          title="Collaboration Rates Gated" 
+          description="Register as a verified Brand to unlock custom pricing sheets, specific campaign deliverables, and direct secure escrow bookings." 
+          onCtaClick={() => navigate('/login')}
+        />
+      )}
       <CollabFAQ mob={mob} />
       <TrustBadge />
       <TabNavigator activeTab="packages" setActiveTab={setActiveTab} mob={mob} />
@@ -1299,6 +1414,11 @@ export default function CreatorProfilePage() {
     if (!id) return;
     setLd(true);
     const triggerFetch = async () => {
+      if (id === 'fallback') {
+        setC(getFallbackCreator(id));
+        setLd(false);
+        return;
+      }
       try {
         const found = await fetchCreatorById(id);
         setC(found || getFallbackCreator(id));
@@ -1353,10 +1473,20 @@ export default function CreatorProfilePage() {
   const handlePackageSelect = (pkg) => {
     if (!st?.user) { 
       dsp({ t: 'TOAST', d: { type: 'warn', msg: 'Please login as a Brand to book packages' } }); 
+      navigate('/login');
       return; 
     }
     setSelectedPkg(pkg);
     setBriefOpen(true);
+  };
+
+  const handleMediaKitOpen = () => {
+    if (!st?.user) {
+      dsp({ t: 'TOAST', d: { type: 'warn', msg: 'Please login as a Brand to download the official Media Kit' } });
+      navigate('/login');
+      return;
+    }
+    setMediaKitOpen(true);
   };
 
   if (ld) return <ProfileSkeleton id={id} mob={mob} />;
@@ -1373,14 +1503,14 @@ export default function CreatorProfilePage() {
         title={`${c.name} | Verified Creator`}
         description={c.bio || `${c.name} is an elite storyteller and verified digital content creator on CreatorBharat, Jaipur, India.`}
       />
-      <ProfileHero c={c} stats={stats} navigate={navigate} st={st} dsp={dsp} mob={mob} onRate={handleRateClick} onContact={() => setActiveTab('connect')} onMediaKit={() => setMediaKitOpen(true)} navVisible={navVisible} onBrief={(pkg) => { setSelectedPkg(pkg); setBriefOpen(true); }} />
+      <ProfileHero c={c} stats={stats} navigate={navigate} st={st} dsp={dsp} mob={mob} onRate={handleRateClick} onContact={() => setActiveTab('connect')} onMediaKit={handleMediaKitOpen} navVisible={navVisible} onBrief={handlePackageSelect} />
       
       <div style={{ position: 'sticky', top: stickyTop, transition: 'top 0.4s cubic-bezier(0.16, 1, 0.3, 1)', zIndex: 1000, background: 'rgba(252, 252, 252, 0.9)', backdropFilter: 'blur(30px)', borderBottom: '1px solid #f1f5f9', overflowX: mob ? 'auto' : 'hidden', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
          <div style={{ ...W(1100), padding: mob ? '0 16px' : '0 24px', display: 'flex', gap: mob ? '32px' : '48px', minWidth: mob ? 'fit-content' : 'auto' }}>
             {[{ id: 'identity', label: 'Identity', icon: Activity }, { id: 'story', label: 'My Story', icon: Globe }, { id: 'gallery', label: 'Gallery', icon: ImageIcon }, { id: 'work', label: 'Pro Work', icon: Briefcase }, { id: 'local', label: 'Local Hub', icon: MapPin }, { id: 'reviews', label: 'Reviews', icon: Star }, { id: 'packages', label: 'Packages', icon: Zap }, { id: 'connect', label: 'Connect', icon: MessageSquare }].map(t => (
-              <button key={t.id} onClick={() => setActiveTab(t.id)} style={{ padding: '20px 0', background: 'none', border: 'none', borderBottom: `3.5px solid ${activeTab === t.id ? '#0073b1' : 'transparent'}`, color: activeTab === t.id ? '#111827' : '#6b7280', fontSize: '14px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', whiteSpace: 'nowrap' }}>
-                <t.icon size={18} /> {t.label}
-              </button>
+               <button key={t.id} onClick={() => setActiveTab(t.id)} style={{ padding: '20px 0', background: 'none', border: 'none', borderBottom: `3.5px solid ${activeTab === t.id ? '#0073b1' : 'transparent'}`, color: activeTab === t.id ? '#111827' : '#6b7280', fontSize: '14px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', whiteSpace: 'nowrap' }}>
+                 <t.icon size={18} /> {t.label}
+               </button>
             ))}
          </div>
       </div>
@@ -1397,7 +1527,7 @@ export default function CreatorProfilePage() {
                onPackageSelect={handlePackageSelect}
                dsp={dsp}
                setBriefOpen={setBriefOpen}
-               setMediaKitOpen={setMediaKitOpen}
+               setMediaKitOpen={handleMediaKitOpen}
                setActiveTab={setActiveTab}
             />
          </AnimatePresence>

@@ -808,6 +808,103 @@ CreatorsFloatingIcons.propTypes = {
   mob: PropTypes.bool
 };
 
+const SearchLimitModal = ({ isOpen, onClose, onUnlock }) => {
+  if (!isOpen) return null;
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      style={{
+        position: 'fixed', inset: 0, background: 'rgba(5, 5, 5, 0.85)',
+        backdropFilter: 'blur(20px)', zIndex: 1000000,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px'
+      }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: 50, opacity: 0, scale: 0.95 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        exit={{ y: 50, opacity: 0, scale: 0.95 }}
+        onClick={e => e.stopPropagation()}
+        style={{
+          width: '100%', maxWidth: '480px',
+          background: '#fff', borderRadius: '32px', padding: '40px 32px',
+          boxShadow: '0 50px 100px rgba(0,0,0,0.5)', textAlign: 'center',
+          position: 'relative', border: '1px solid rgba(0, 0, 0, 0.05)'
+        }}
+      >
+        <button 
+          onClick={onClose} 
+          style={{ 
+            position: 'absolute', top: '20px', right: '20px', 
+            background: 'none', border: 'none', cursor: 'pointer',
+            color: '#64748b', fontSize: '20px', fontWeight: 'bold'
+          }}
+        >
+          ✕
+        </button>
+
+        <div style={{
+          width: '64px',
+          height: '64px',
+          borderRadius: '20px',
+          background: 'linear-gradient(135deg, rgba(255, 148, 49, 0.1) 0%, rgba(234, 88, 12, 0.1) 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#EA580C',
+          margin: '0 auto 24px',
+          border: '1.5px solid rgba(234, 88, 12, 0.1)'
+        }}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            <line x1="8" y1="11" x2="14" y2="11" strokeWidth="3" />
+          </svg>
+        </div>
+
+        <h3 style={{ fontSize: '22px', fontWeight: 950, color: '#0f172a', marginBottom: '12px', letterSpacing: '-0.02em' }}>
+          Search Limit Reached
+        </h3>
+        <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, fontWeight: 550, marginBottom: '32px' }}>
+          You have reached the limit of 5 free searches as a guest. Sign in as a verified Brand to unlock unlimited searches, advanced filters, and direct creator access.
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <button 
+            onClick={onUnlock}
+            style={{
+              background: 'linear-gradient(90deg, #FF9431, #EA580C)',
+              color: '#fff', border: 'none', padding: '14px 28px',
+              borderRadius: '100px', fontSize: '14px', fontWeight: 850,
+              cursor: 'pointer', boxShadow: '0 12px 24px rgba(234, 88, 12, 0.25)',
+              width: '100%'
+            }}
+          >
+            Unlock as Brand
+          </button>
+          <button 
+            onClick={onClose}
+            style={{
+              background: 'none', border: 'none', color: '#64748b',
+              fontSize: '13px', fontWeight: 750, cursor: 'pointer', padding: '8px'
+            }}
+          >
+            Close & Reset Filters
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+SearchLimitModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onUnlock: PropTypes.func.isRequired
+};
+
 export default function CreatorsPage() {
   const { st, dsp } = useApp();
   const navigate = useNavigate();
@@ -821,6 +918,47 @@ export default function CreatorsPage() {
   const [loading, setLoading] = useState(true);
   const [limit, setLimit] = useState(12);
   const [selectedCreator, setSelectedCreator] = useState(null);
+  const [searchCount, setSearchCount] = useState(() => {
+    return Number(sessionStorage.getItem('cb_guest_search_count') || 0);
+  });
+  const [searchLimitModalOpen, setSearchLimitModalOpen] = useState(false);
+
+  const safeDsp = (action) => {
+    if (action.t === 'CF') {
+      if (!st.user) {
+        const isClear = action.v && (
+          action.v.q === '' && 
+          (action.v.niche === '' || (Array.isArray(action.v.niche) && action.v.niche.length === 0)) &&
+          (action.v.platform === '' || (Array.isArray(action.v.platform) && action.v.platform.length === 0)) &&
+          action.v.state === '' &&
+          action.v.district === '' &&
+          (action.v.minFollowers === 0 || action.v.minFollowers === '')
+        );
+        
+        if (!isClear && searchCount >= 5) {
+          setSearchLimitModalOpen(true);
+          return;
+        }
+        
+        if (!isClear) {
+          const filterKeys = ['q', 'niche', 'platform', 'state', 'district', 'minFollowers', 'minER'];
+          const hasFilterKeys = Object.keys(action.v).some(key => filterKeys.includes(key));
+          
+          if (hasFilterKeys) {
+            const nextCount = searchCount + 1;
+            setSearchCount(nextCount);
+            sessionStorage.setItem('cb_guest_search_count', nextCount.toString());
+            
+            if (nextCount > 5) {
+              setSearchLimitModalOpen(true);
+              return;
+            }
+          }
+        }
+      }
+    }
+    dsp(action);
+  };
 
   useEffect(() => {
     const h = () => setMob(globalThis.innerWidth < 768);
@@ -830,7 +968,7 @@ export default function CreatorsPage() {
     const params = new URLSearchParams(globalThis.location.search);
     const q = params.get('q');
     if (q) {
-      dsp({ t: 'CF', v: { q } });
+      safeDsp({ t: 'CF', v: { q } });
     }
 
     setLoading(true);
@@ -869,7 +1007,7 @@ export default function CreatorsPage() {
     return (b.score || fmt.score(b)) - (a.score || fmt.score(a));
   });
 
-  const visible = filtered.slice(0, limit);
+  const visible = !st.user ? filtered.slice(0, Math.min(limit, 6)) : filtered.slice(0, limit);
   const stateCounts = useMemo(() => {
     return all.filter(Boolean).reduce((acc, c) => {
       const s = c?.state || 'Bharat';
@@ -921,10 +1059,10 @@ export default function CreatorsPage() {
         <CreatorsFloatingIcons mob={mob} />
       </div>
 
-      <EliteSpotlight mob={mob} all={all} setSelectedCreator={setSelectedCreator} dsp={dsp} loading={loading} />
+      <EliteSpotlight mob={mob} all={all} setSelectedCreator={setSelectedCreator} dsp={safeDsp} loading={loading} />
 
       <SearchToolbar 
-        mob={mob} f={f} dsp={dsp} setView={setView} view={view} 
+        mob={mob} f={f} dsp={safeDsp} setView={setView} view={view} 
         setShowMap={setShowMap} showMap={showMap} setShowFilters={setShowFilters} 
         niches={NICHES} 
       />
@@ -938,7 +1076,7 @@ export default function CreatorsPage() {
                 mob={mob} 
                 stateCounts={stateCounts}
                 onSelectState={s => {
-                  dsp({ t: 'CF', v: { state: s, district: '' } });
+                  safeDsp({ t: 'CF', v: { state: s, district: '' } });
                   const grid = document.getElementById('creators-grid-anchor');
                   if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }}
@@ -955,7 +1093,7 @@ export default function CreatorsPage() {
             clearFilters={clearFilters} 
             count={filtered.length}
             sort={f.sort}
-            onSortChange={val => dsp({ t: 'CF', v: { sort: val } })}
+            onSortChange={val => safeDsp({ t: 'CF', v: { sort: val } })}
             hasFilters={hasFilters}
           />
 
@@ -967,13 +1105,15 @@ export default function CreatorsPage() {
             view={view} mob={mob} limit={limit} setLimit={setLimit} 
             clearFilters={clearFilters}
             onCardView={c => setSelectedCreator(c)}
+            isGated={!st.user}
+            onUnlock={() => navigate('/login')}
           />
         </div>
       </div>
 
       <FilterSidebar 
         show={showFilters} onClose={() => setShowFilters(false)} 
-        f={f} dsp={dsp} mob={mob} niches={NICHES} platforms={PLATFORMS} 
+        f={f} dsp={safeDsp} mob={mob} niches={NICHES} platforms={PLATFORMS} 
       />
 
       <EliteConversion mob={mob} navigate={navigate} />
@@ -988,6 +1128,16 @@ export default function CreatorsPage() {
               scrollToTop(); 
               setSelectedCreator(null);
             }} 
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {searchLimitModalOpen && (
+          <SearchLimitModal 
+            isOpen={searchLimitModalOpen} 
+            onClose={() => { setSearchLimitModalOpen(false); clearFilters(); }} 
+            onUnlock={() => { setSearchLimitModalOpen(false); navigate('/login'); }} 
           />
         )}
       </AnimatePresence>

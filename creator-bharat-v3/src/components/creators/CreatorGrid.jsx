@@ -88,7 +88,110 @@ CreatorListItem.propTypes = {
   onCardView: PropTypes.func.isRequired
 };
 
-export default function CreatorGrid({ loading, filtered, visible, view, mob, onCardView, limit, setLimit, clearFilters }) {
+const GatedGridFooter = ({ title, description, onUnlock }) => (
+  <div style={{
+    marginTop: '40px',
+    padding: '60px 40px',
+    background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.95) 100%)',
+    backdropFilter: 'blur(16px)',
+    borderRadius: '32px',
+    border: '1.5px solid rgba(255, 148, 49, 0.2)',
+    textAlign: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+    boxShadow: '0 20px 40px rgba(255, 148, 49, 0.05)'
+  }}>
+    <div style={{
+      position: 'absolute',
+      top: '-50%',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: '120%',
+      height: '150%',
+      background: 'radial-gradient(ellipse at top, rgba(255, 148, 49, 0.1) 0%, transparent 60%)',
+      pointerEvents: 'none'
+    }} />
+    
+    <div style={{
+      position: 'relative',
+      zIndex: 2,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '24px',
+      maxWidth: '600px',
+      margin: '0 auto'
+    }}>
+      <div style={{
+        width: '64px',
+        height: '64px',
+        borderRadius: '20px',
+        background: '#fff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#FF9431',
+        boxShadow: '0 10px 25px rgba(255, 148, 49, 0.15)',
+        border: '1.5px solid rgba(255, 148, 49, 0.1)'
+      }}>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+      </div>
+
+      <div>
+        <h3 style={{ 
+          fontSize: '28px', 
+          fontWeight: 950, 
+          background: 'linear-gradient(90deg, #FF9431, #EA580C)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          marginBottom: '12px', 
+          letterSpacing: '-0.03em' 
+        }}>
+          {title}
+        </h3>
+        <p style={{ fontSize: '15px', color: '#475569', lineHeight: 1.6, fontWeight: 600, margin: 0 }}>
+          {description}
+        </p>
+      </div>
+
+      <button
+        onClick={onUnlock}
+        style={{
+          background: '#0f172a',
+          color: '#fff',
+          border: 'none',
+          padding: '16px 40px',
+          borderRadius: '100px',
+          fontSize: '15px',
+          fontWeight: 850,
+          cursor: 'pointer',
+          boxShadow: '0 12px 28px rgba(15, 23, 42, 0.15)',
+          transition: 'transform 0.2s',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginTop: '8px'
+        }}
+      >
+        Unlock Full Talent Pool
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+    </div>
+  </div>
+);
+
+GatedGridFooter.propTypes = {
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  onUnlock: PropTypes.func.isRequired
+};
+
+export default function CreatorGrid({ loading, filtered, visible, view, mob, onCardView, limit, setLimit, clearFilters, isGated = false, onUnlock }) {
   if (loading) {
     let gridCols = '1fr';
     if (mob) gridCols = 'repeat(2, 1fr)';
@@ -154,7 +257,13 @@ export default function CreatorGrid({ loading, filtered, visible, view, mob, onC
         </div>
       )}
 
-      {visible.length < filtered.length && (
+      {isGated ? (
+        <GatedGridFooter 
+          title={`Unlock ${filtered.length} Verified Creators`}
+          description="Sign in as a verified Brand to search, filter, and view our complete database of elite digital creators across India."
+          onUnlock={onUnlock}
+        />
+      ) : visible.length < filtered.length && (
         <div style={{ marginTop: 40, textAlign: 'center' }}>
           <button
             onClick={() => setLimit(prev => prev + 12)}
@@ -184,5 +293,7 @@ CreatorGrid.propTypes = {
   onCardView: PropTypes.func.isRequired,
   limit: PropTypes.number.isRequired,
   setLimit: PropTypes.func.isRequired,
-  clearFilters: PropTypes.func.isRequired
+  clearFilters: PropTypes.func.isRequired,
+  isGated: PropTypes.bool,
+  onUnlock: PropTypes.func
 };
