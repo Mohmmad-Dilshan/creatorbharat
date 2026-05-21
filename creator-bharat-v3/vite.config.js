@@ -22,6 +22,7 @@ export default defineConfig({
         short_name: 'CreatorBharat',
         description: 'Elite Creator Ecosystem of Bharat',
         theme_color: '#FF9431',
+        background_color: '#0f172a',
         icons: [
           {
             src: 'android-chrome-192x192.png',

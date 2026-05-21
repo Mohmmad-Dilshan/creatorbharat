@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="cb-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF9431" />
+      <stop offset="100%" stop-color="#DC2626" />
+    </linearGradient>
+  </defs>
+  <!-- Rounded rectangle background -->
+  <rect width="512" height="512" rx="112" fill="url(#cb-grad)"/>
+  <!-- Modern Bold Text -->
+  <text x="50%" y="50%" font-family="'Inter', 'Outfit', sans-serif" font-weight="900" font-size="220" fill="#ffffff" text-anchor="middle" dominant-baseline="central" letter-spacing="-5">CB</text>
+</svg>
