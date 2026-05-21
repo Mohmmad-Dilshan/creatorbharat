@@ -19,7 +19,7 @@ export default defineConfig({
       includeAssets: ['favicon.svg', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
         name: 'CreatorBharat',
-        short_name: 'CB',
+        short_name: 'CreatorBharat',
         description: 'Elite Creator Ecosystem of Bharat',
         theme_color: '#FF9431',
         icons: [
