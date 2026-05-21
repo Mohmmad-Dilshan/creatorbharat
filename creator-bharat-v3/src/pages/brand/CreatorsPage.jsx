@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import { useApp } from '@/core/context';
+import { useApp } from '../../context';
 import { fetchCreators } from '../../utils/platformService';
 import { W, scrollToTop, fmt } from '../../utils/helpers';
 import EliteHeader from '../../components/layout/EliteHeader';
@@ -21,8 +21,11 @@ import {
   Camera
 } from 'lucide-react';
 import { InstagramIcon } from '../../components/icons/SocialIcons';
-import { Btn, Bdg } from '@/components/common/Primitives';
-import Seo from '@/components/common/SEO';
+import { Btn, Bdg } from '../../components/Primitives';
+import Seo from '../../components/common/SEO';
+import SearchToolbar from '../../components/creators/SearchToolbar';
+import FilterSidebar from '../../components/creators/FilterSidebar';
+import CreatorGrid from '../../components/creators/CreatorGrid';
 
 const checkSearchQuery = (c, q) => {
   if (!q) return true;
@@ -63,10 +66,6 @@ const checkMetrics = (c, f) => {
   if (f.minER && (c.er || 0) < Number(f.minER)) return false;
   return true;
 };
-
-import SearchToolbar from '../../components/creators/SearchToolbar';
-import FilterSidebar from '../../components/creators/FilterSidebar';
-import CreatorGrid from '../../components/creators/CreatorGrid';
 
 // Filter logic
 const filterCreators = (all, f) => {

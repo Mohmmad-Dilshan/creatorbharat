@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useApp } from '@/core/context';
+import { useApp } from '../../context';
 import { LS, fmt } from '../../utils/helpers';
-import { Btn, Card, Fld, Bdg, Ring, Bar } from '@/components/common/Primitives';
+import { Btn, Card, Fld, Bdg, Ring, Bar } from '../../components/Primitives';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, 
@@ -17,7 +17,7 @@ import {
   Layers,
   MapPin
 } from 'lucide-react';
-import AuthGatekeeper from '@/components/auth/AuthGatekeeper';
+import AuthGatekeeper from '../../components/auth/AuthGatekeeper';
 
 const StepNavItem = ({ id, label, icon: Icon, active, completed, onClick }) => (
   <button
