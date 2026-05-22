@@ -308,8 +308,10 @@ const HeroHeader = memo(({ mob }) => (
       Your Digital <Typewriter /> <br />
       Built for <span style={{ background: 'linear-gradient(90deg, #FF9431, #128807)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: mob ? 5 : 15 }}>Bharat.</span>
     </h1>
-    <p className="au d2" style={{ fontSize: mob ? 16 : 24, color: '#475569', lineHeight: 1.6, marginTop: 0, marginRight: 'auto', marginBottom: mob ? 40 : 64, marginLeft: 'auto', fontWeight: 600, maxWidth: 800 }}>
-      The definitive all-in-one platform providing Tier 2 & 3 talent with professional identity, regional missions, and national growth.
+    <p className="au d2" style={{ fontSize: mob ? 16 : 24, color: '#475569', lineHeight: 1.6, marginTop: 0, marginRight: 'auto', marginBottom: mob ? 24 : 48, marginLeft: 'auto', fontWeight: 600, maxWidth: 800 }}>
+      India&apos;s all-in-one platform helping Tier 2 & 3 creators build a professional identity, access regional missions, and grow nationally.
+      <br />
+      <span style={{ color: '#64748b', fontWeight: 500 }}>Verified creator profiles, paid brand campaigns, and real visibility for talent beyond the metros.</span>
     </p>
   </div>
 ));
@@ -332,7 +334,7 @@ const TourBadge = memo(({ mob, onClick }) => (
       display: 'inline-flex',
       alignItems: 'center',
       gap: 6,
-      marginBottom: mob ? 24 : 80,
+      marginBottom: mob ? 12 : 40,
       transition: 'all 0.2s ease',
     }}
     className="interactive-tour-badge"
@@ -347,7 +349,7 @@ TourBadge.propTypes = {
 };
 
 const PrimaryButtons = memo(({ mob, go }) => (
-  <div className="au d3" style={{ display: 'flex', flexDirection: 'row', gap: mob ? 12 : 20, marginBottom: mob ? 40 : 24, justifyContent: 'center', width: mob ? '100%' : 'auto', maxWidth: mob ? 480 : 'none', padding: mob ? '0 16px' : 0, boxSizing: 'border-box', alignItems: 'center' }}>
+  <div className="au d3" style={{ display: 'flex', flexDirection: 'row', gap: mob ? 12 : 20, marginBottom: mob ? 16 : 20, justifyContent: 'center', width: mob ? '100%' : 'auto', maxWidth: mob ? 480 : 'none', padding: mob ? '0 16px' : 0, boxSizing: 'border-box', alignItems: 'center' }}>
     <Btn lg full={false} onClick={() => go('/join')} style={{ flex: mob ? 1 : 'initial', padding: mob ? '18px 14px' : '28px 64px', fontSize: mob ? 15 : 20, minWidth: mob ? 0 : 'auto', background: '#0f172a', color: '#fff', borderRadius: 100, fontWeight: 950, border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden', whiteSpace: 'nowrap' }}>
       <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: mob ? 6 : 12 }}>🚀 Join as Creator</span>
       <div style={{ position: 'absolute', top: 0, left: '-100%', width: '50%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)', animation: 'shimmer 3s infinite', transform: 'skewX(-20deg)' }} />
@@ -383,7 +385,7 @@ const HeroCTA = memo(({ mob, go, dsp }) => {
       )}
       
       {mob && (
-        <div className="au d3" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', background: 'rgba(16,185,129,0.06)', borderRadius: 100, marginBottom: 80, border: '1px solid rgba(16,185,129,0.1)' }}>
+        <div className="au d3" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', background: 'rgba(16,185,129,0.06)', borderRadius: 100, marginBottom: 44, border: '1px solid rgba(16,185,129,0.1)' }}>
           <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px #10B981' }} />
           <span style={{ fontSize: 11, fontWeight: 950, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1px' }}>Verified Bharat Ecosystem</span>
         </div>
