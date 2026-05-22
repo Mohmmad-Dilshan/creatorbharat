@@ -312,6 +312,8 @@ const HeroHeader = memo(({ mob }) => (
       India&apos;s all-in-one platform helping Tier 2 & 3 creators build a professional identity, access regional missions, and grow nationally.
       <br />
       <span style={{ color: '#64748b', fontWeight: 500 }}>Verified creator profiles, paid brand campaigns, and real visibility for talent beyond the metros.</span>
+      <br />
+      <span style={{ display: 'block', width: 'fit-content', margin: '10px auto 0', fontSize: mob ? 13 : 15, fontWeight: 950, textTransform: 'uppercase', letterSpacing: '1.8px', background: 'linear-gradient(90deg, #FF9431 0%, #1A3A8A 48%, #138808 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Built in Bharat. Ready for India.</span>
     </p>
   </div>
 ));
