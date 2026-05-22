@@ -369,7 +369,7 @@ const HeroCTA = memo(({ mob, go, dsp }) => {
   }, [dsp]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', marginTop: mob ? 18 : 0 }}>
       {mob ? (
         <>
           <TourBadge mob={mob} onClick={handleOpenDemo} />
