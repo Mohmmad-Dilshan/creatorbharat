@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useLocation } from 'react-router-dom';
 import Lenis from '@studio-freight/lenis';
 import { useApp } from '@/core/context';
 import Footer from '../home/Footer';
@@ -16,9 +17,12 @@ import EliteMobileNav from './EliteMobileNav';
  */
 export default function PublicLayout({ children }) {
   const { st } = useApp();
+  const location = useLocation();
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
 
   const isModalOpen = st.ui.demoModal || st.ui.mobileMenu;
+  const isBlogRoute = location.pathname.startsWith('/blog');
+  const showFooter = !mob || location.pathname === '/' || isBlogRoute;
 
   useEffect(() => {
     const isMobile = globalThis.innerWidth < 768;
@@ -73,7 +77,7 @@ export default function PublicLayout({ children }) {
         <main style={{ flex: 1, position: 'relative', paddingTop: mob ? 60 : 80 }}>
           {children}
         </main>
-        <Footer mob={mob} />
+        {showFooter && <Footer mob={mob} />}
       </div>
 
       {/* ELITE MOBILE NAV - GLOBAL EXPERIENCE */}
