@@ -1,15 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, X } from 'lucide-react';
+import { Download, Share } from 'lucide-react';
 
 export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPrompt, setShowPrompt] = useState(false);
+  const [isIosPrompt, setIsIosPrompt] = useState(false);
 
   useEffect(() => {
     // Check if the app is already installed to prevent showing it if we are already in standalone mode
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
     if (isStandalone) {
+      return;
+    }
+
+    // Detect iOS devices
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIos = /iphone|ipad|ipod/.test(userAgent);
+    
+    // If it's an iOS device, we can't use the standard install prompt.
+    // Show a custom instruction banner instead.
+    if (isIos) {
+      setTimeout(() => {
+        setIsIosPrompt(true);
+        setShowPrompt(true);
+      }, 3000);
       return;
     }
 
@@ -86,50 +101,87 @@ export default function PWAInstallPrompt() {
             <Download color="#ffffff" size={24} />
           </div>
           
-          <div style={{ flex: 1 }}>
-            <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '600', color: '#111', fontFamily: 'inherit' }}>
-              Install CreatorBharat
-            </h4>
-            <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#666', lineHeight: 1.4, fontFamily: 'inherit' }}>
-              Add to your home screen for faster access & better experience.
-            </p>
-          </div>
+          {isIosPrompt ? (
+            <>
+              <div style={{ flex: 1 }}>
+                <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '600', color: '#111', fontFamily: 'inherit' }}>
+                  Install CreatorBharat
+                </h4>
+                <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#666', lineHeight: 1.4, fontFamily: 'inherit' }}>
+                  Tap <Share size={14} style={{ display: 'inline', verticalAlign: 'middle', margin: '0 2px' }} /> below and select <strong>Add to Home Screen</strong>.
+                </p>
+              </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <button 
-              onClick={handleInstallClick}
-              style={{
-                backgroundColor: '#FF9431',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '8px 16px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                fontSize: '13px',
-                fontFamily: 'inherit',
-                transition: 'background-color 0.2s ease'
-              }}
-              onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#e88229'}
-              onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#FF9431'}
-            >
-              Install
-            </button>
-            <button 
-              onClick={handleClose}
-              style={{
-                backgroundColor: 'transparent',
-                color: '#999',
-                border: 'none',
-                padding: '4px',
-                cursor: 'pointer',
-                fontSize: '12px',
-                fontFamily: 'inherit'
-              }}
-            >
-              Later
-            </button>
-          </div>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <button 
+                  onClick={handleClose}
+                  style={{
+                    backgroundColor: '#f5f5f5',
+                    color: '#333',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '8px 16px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    fontFamily: 'inherit',
+                    transition: 'background-color 0.2s ease'
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#e0e0e0'}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#f5f5f5'}
+                >
+                  Got it
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div style={{ flex: 1 }}>
+                <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '600', color: '#111', fontFamily: 'inherit' }}>
+                  Install CreatorBharat
+                </h4>
+                <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#666', lineHeight: 1.4, fontFamily: 'inherit' }}>
+                  Add to your home screen for faster access & better experience.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <button 
+                  onClick={handleInstallClick}
+                  style={{
+                    backgroundColor: '#FF9431',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '8px 16px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                    fontFamily: 'inherit',
+                    transition: 'background-color 0.2s ease'
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#e88229'}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#FF9431'}
+                >
+                  Install
+                </button>
+                <button 
+                  onClick={handleClose}
+                  style={{
+                    backgroundColor: 'transparent',
+                    color: '#999',
+                    border: 'none',
+                    padding: '4px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    fontFamily: 'inherit'
+                  }}
+                >
+                  Later
+                </button>
+              </div>
+            </>
+          )}
         </motion.div>
       )}
     </AnimatePresence>
