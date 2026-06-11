@@ -1,13 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   User, Globe, Image, BriefcaseBusiness, MapPin, ShieldCheck,
-  CheckCircle2, ArrowRight, Circle
+  CheckCircle2, ArrowRight, Circle, Lock, Sparkles, Check, ChevronDown
 } from 'lucide-react';
-import { Btn, Card, Bdg } from '@/components/common/Primitives';
 import { useApp } from '@/core/context';
 import { LS, fmt } from '@/utils/helpers';
+
+// ─── Design Tokens ─────────────────────────────────────────────────────────────
+const T = {
+  saffron: '#FF9431',
+  saffronDark: '#EA580C',
+  emerald: '#10B981',
+  violet: '#7C3AED',
+  blue: '#3B82F6',
+  navy: '#0F172A',
+  slate: '#64748b',
+  slateLight: '#94a3b8',
+  bg: '#F8FAFC',
+  card: '#FFFFFF',
+  border: '#F1F5F9',
+  borderMid: '#E2E8F0',
+};
+
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 15 },
+  animate: { opacity: 1, y: 0 },
+  transition: { delay, duration: 0.45, ease: [0.22, 1, 0.36, 1] }
+});
 
 const STEPS = [
   {
@@ -76,6 +97,7 @@ export default function OnboardingPage() {
   const navigate = useNavigate();
   const { st } = useApp();
   const [expanded, setExpanded] = useState(null);
+  const [mob, setMob] = useState(() => globalThis.innerWidth < 768);
 
   const allC = LS.get('cb_creators', []);
   const c = st.user?.creatorProfile || allC.find(cr => cr.email === st.user?.email) || {};
@@ -83,6 +105,12 @@ export default function OnboardingPage() {
 
   const completedCount = STEPS.filter(s => s.check(c)).length;
   const requiredDone = STEPS.filter(s => s.required).every(s => s.check(c));
+
+  useEffect(() => {
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
+  }, []);
 
   const handleStepClick = (step) => {
     if (step.tab) {
@@ -92,151 +120,334 @@ export default function OnboardingPage() {
     }
   };
 
+  // Radial progress calculations
+  const radius = 54;
+  const strokeWidth = 8;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (comp.pct / 100) * circumference;
+
   return (
-    <div className="dashboard-page-container">
-      {/* Header */}
-      <div className="db-page-header">
-        <div className="badge-saffron">
-          <ShieldCheck size={14} fill="#FF9431" /> CREATOR SETUP
-        </div>
-        <h1 className="page-title">Complete Your Workspace</h1>
-        <p className="db-sub-text">Fill all required sections to unlock verification and brand deals.</p>
-      </div>
+    <div style={{ background: 'var(--db-bg, #F0F2F7)', minHeight: '100%', padding: mob ? '16px' : '32px', paddingBottom: '80px' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        
+        {/* Header */}
+        <motion.div {...fadeUp(0)} style={{ marginBottom: 32 }}>
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            padding: '3px 10px',
+            borderRadius: 100,
+            fontSize: 10,
+            fontWeight: 900,
+            letterSpacing: '0.05em',
+            color: T.saffron,
+            background: 'rgba(255,148,49,0.08)',
+            border: `1px solid rgba(255,148,49,0.2)`
+          }}>
+            <ShieldCheck size={10} fill={T.saffron} color="#F0F2F7" /> CREATOR SETUP
+          </span>
+          <h1 style={{ fontSize: mob ? '26px' : '32px', fontWeight: 950, color: T.navy, margin: '8px 0 2px', letterSpacing: '-0.03em', fontFamily: 'Outfit, sans-serif' }}>
+            Complete Your Workspace
+          </h1>
+          <p style={{ fontSize: 13, color: T.slate, fontWeight: 600, margin: 0 }}>
+            Fill all required sections to unlock verified credentials, search marketplace listings, and earn brand deals.
+          </p>
+        </motion.div>
 
-      {/* Progress Summary */}
-      <Card style={{ padding: 28, marginBottom: 28, background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', color: '#fff' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 6 }}>
-              Overall Completion
-            </div>
-            <div style={{ fontSize: 32, fontWeight: 950, color: '#FF9431' }}>
-              {comp.pct}% <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', fontWeight: 600 }}>complete</span>
-            </div>
-          </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 13, fontWeight: 800, color: 'rgba(255,255,255,0.5)', marginBottom: 6 }}>{completedCount}/{STEPS.length} steps done</div>
-            {requiredDone ? (
-              <Bdg color="green" sm>✓ Ready to Submit</Bdg>
-            ) : (
-              <Bdg color="saffron" sm>Required steps pending</Bdg>
-            )}
-          </div>
-        </div>
-        <div style={{ height: 8, background: 'rgba(255,255,255,0.1)', borderRadius: 100, overflow: 'hidden' }}>
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${comp.pct}%` }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-            style={{ height: '100%', background: 'linear-gradient(90deg, #FF9431, #10B981)', borderRadius: 100 }}
-          />
-        </div>
-      </Card>
+        {/* 2-Column Responsive Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1.6fr', gap: 28, alignItems: 'start' }}>
+          
+          {/* COLUMN 1: Progress Summary Widget */}
+          <motion.div {...fadeUp(0.05)}>
+            <div style={{
+              background: 'linear-gradient(135deg, #090d16 0%, #111827 100%)',
+              borderRadius: 24,
+              padding: '28px 24px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 25px 50px -12px rgba(15,23,42,0.45), inset 0 1px 1px rgba(255,255,255,0.1)',
+              color: '#fff',
+              position: 'sticky',
+              top: 24,
+              textAlign: 'center'
+            }}>
+              {/* Glow effects */}
+              <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255, 148, 49, 0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
+              
+              <p style={{ fontSize: 11, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 20px' }}>
+                Overall Completion
+              </p>
 
-      {/* Steps */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        {STEPS.map((step, i) => {
-          const done = step.check(c);
-          const isExpanded = expanded === step.id;
-          const Icon = step.icon;
-
-          return (
-            <motion.div
-              key={step.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-            >
-              <Card style={{
-                padding: 24,
-                border: done ? '1.5px solid #10B98130' : step.required ? '1.5px solid #FF943120' : '1px solid #f1f5f9',
-                background: done ? '#f0fdf4' : '#fff',
-                cursor: 'pointer'
-              }}
-                onClick={() => setExpanded(isExpanded ? null : step.id)}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                  {/* Status icon */}
-                  <div style={{
-                    width: 44, height: 44, borderRadius: 14, flexShrink: 0,
-                    background: done ? '#10B98112' : step.color + '12',
-                    color: done ? '#10B981' : step.color,
-                    display: 'grid', placeItems: 'center'
-                  }}>
-                    {done ? <CheckCircle2 size={22} /> : <Icon size={22} />}
-                  </div>
-
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontSize: 16, fontWeight: 900, color: '#0f172a' }}>{step.title}</span>
-                      {step.required && !done && (
-                        <span style={{ fontSize: 10, fontWeight: 900, color: '#FF9431', background: '#FF943112', padding: '2px 8px', borderRadius: 100 }}>REQUIRED</span>
-                      )}
-                      {done && <Bdg sm color="green">Done ✓</Bdg>}
-                    </div>
-                    <p style={{ fontSize: 13, color: '#64748b', fontWeight: 500, margin: 0, lineHeight: 1.5 }}>
-                      {step.description}
-                    </p>
-                  </div>
-
-                  <div style={{ color: '#94a3b8', fontSize: 20, transform: isExpanded ? 'rotate(90deg)' : 'none', transition: '0.2s' }}>›</div>
+              {/* Radial Progress Ring */}
+              <div style={{ position: 'relative', width: 140, height: 140, margin: '0 auto 24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width={140} height={140} style={{ transform: 'rotate(-90deg)' }}>
+                  <circle cx={70} cy={70} r={radius} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={strokeWidth} />
+                  <motion.circle
+                    cx={70}
+                    cy={70}
+                    r={radius}
+                    fill="none"
+                    stroke={comp.pct === 100 ? T.emerald : T.saffron}
+                    strokeWidth={strokeWidth}
+                    strokeLinecap="round"
+                    strokeDasharray={circumference}
+                    initial={{ strokeDashoffset: circumference }}
+                    animate={{ strokeDashoffset }}
+                    transition={{ duration: 1, ease: 'easeOut' }}
+                  />
+                </svg>
+                <div style={{ position: 'absolute', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: 28, fontWeight: 950, color: '#fff', letterSpacing: '-0.02em', fontFamily: 'Outfit, sans-serif' }}>
+                    {comp.pct}%
+                  </span>
+                  <span style={{ fontSize: 9, color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.02em', marginTop: -2 }}>
+                    Finished
+                  </span>
                 </div>
+              </div>
 
-                {/* Expanded CTA */}
-                {isExpanded && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #f1f5f9' }}
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <Btn
-                      lg
-                      onClick={() => handleStepClick(step)}
+              {/* Status Details */}
+              <div style={{ marginBottom: 24 }}>
+                <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', margin: '0 0 6px', fontFamily: 'Outfit, sans-serif' }}>
+                  {completedCount} of {STEPS.length} Completed
+                </h3>
+                <p style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600, margin: '0 0 16px', lineHeight: 1.5 }}>
+                  {requiredDone ? 'Excellent work! All required sections are complete.' : 'Complete all mandatory sections to submit for admin review.'}
+                </p>
+                
+                <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {requiredDone ? (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 12px', borderRadius: 100, fontSize: 11, fontWeight: 900, background: 'rgba(16,185,129,0.15)', color: T.emerald, border: `1px solid rgba(16,185,129,0.3)` }}>
+                      ✓ READY TO SUBMIT
+                    </span>
+                  ) : (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 12px', borderRadius: 100, fontSize: 11, fontWeight: 900, background: 'rgba(255,148,49,0.15)', color: T.saffron, border: `1px solid rgba(255,148,49,0.3)` }}>
+                      ⏳ REQUIRED PENDING
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Button */}
+              {requiredDone ? (
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => navigate('/creator/dashboard')}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    borderRadius: 14,
+                    background: 'linear-gradient(135deg, #10B981, #059669)',
+                    border: 'none',
+                    color: '#fff',
+                    fontSize: 13,
+                    fontWeight: 900,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                    boxShadow: '0 8px 20px rgba(16,185,129,0.25)'
+                  }}
+                >
+                  Submit for Approval <ArrowRight size={14} />
+                </motion.button>
+              ) : (
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => {
+                    const firstPending = STEPS.find(s => !s.check(c) && s.required);
+                    if (firstPending) {
+                      setExpanded(firstPending.id);
+                      if (firstPending.tab) {
+                        navigate(`/creator/profile?tab=${firstPending.tab}`);
+                      }
+                    } else {
+                      navigate('/creator/profile');
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    borderRadius: 14,
+                    background: 'linear-gradient(135deg, #FF9431, #EA580C)',
+                    border: 'none',
+                    color: '#fff',
+                    fontSize: 13,
+                    fontWeight: 900,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                    boxShadow: '0 8px 20px rgba(255,148,49,0.25)'
+                  }}
+                >
+                  Complete Next Step <ArrowRight size={14} />
+                </motion.button>
+              )}
+            </div>
+          </motion.div>
+
+          {/* COLUMN 2: Timeline Steps */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, position: 'relative' }}>
+            
+            {/* Connecting line */}
+            {!mob && (
+              <div style={{
+                position: 'absolute',
+                left: 32,
+                top: 24,
+                bottom: 24,
+                width: 2,
+                background: 'linear-gradient(180deg, #10B981 0%, #10B981 60%, #E2E8F0 100%)',
+                zIndex: 1,
+                opacity: 0.6
+              }} />
+            )}
+
+            {STEPS.map((step, i) => {
+              const done = step.check(c);
+              const isExpanded = expanded === step.id;
+              const Icon = step.icon;
+
+              return (
+                <motion.div
+                  key={step.id}
+                  {...fadeUp(0.08 + i * 0.05)}
+                  style={{
+                    display: 'flex',
+                    gap: mob ? 12 : 24,
+                    paddingBottom: i < STEPS.length - 1 ? 24 : 0,
+                    position: 'relative',
+                    zIndex: 2
+                  }}
+                >
+                  {/* Timeline Circle */}
+                  {!mob && (
+                    <div style={{
+                      width: 66,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}>
+                      <div style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: '50%',
+                        background: done ? T.emerald : step.required ? T.saffron : T.slateLight,
+                        border: '4px solid #F0F2F7',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#fff',
+                        boxShadow: done ? '0 0 10px rgba(16,185,129,0.3)' : step.required ? '0 0 10px rgba(255,148,49,0.3)' : 'none'
+                      }}>
+                        {done ? <Check size={14} strokeWidth={3} /> : <span style={{ fontSize: 11, fontWeight: 900 }}>{i + 1}</span>}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step Glass Card */}
+                  <div style={{ flex: 1 }}>
+                    <div
+                      onClick={() => setExpanded(isExpanded ? null : step.id)}
                       style={{
-                        background: done ? '#f8fafc' : step.color,
-                        color: done ? '#64748b' : '#fff',
-                        borderRadius: 14,
-                        border: done ? '1px solid #f1f5f9' : 'none'
+                        background: 'rgba(255, 255, 255, 0.82)',
+                        backdropFilter: 'blur(24px) saturate(120%)',
+                        borderRadius: 20,
+                        border: done ? `1px solid rgba(16, 185, 129, 0.25)` : isExpanded ? `1px solid ${step.color}45` : '1px solid rgba(255, 255, 255, 0.45)',
+                        boxShadow: done 
+                          ? '0 6px 20px -8px rgba(16,185,129,0.1), inset 0 1px 1px rgba(255,255,255,0.8)'
+                          : '0 8px 24px -10px rgba(15,23,42,0.05), inset 0 1px 1.5px rgba(255,255,255,0.85)',
+                        padding: '20px 22px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                       }}
                     >
-                      {done ? `Edit ${step.title}` : `Complete ${step.title}`} <ArrowRight size={16} />
-                    </Btn>
-                  </motion.div>
-                )}
-              </Card>
-            </motion.div>
-          );
-        })}
-      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                        <div style={{
+                          width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+                          background: done ? 'rgba(16,185,129,0.08)' : step.color + '12',
+                          color: done ? T.emerald : step.color,
+                          display: 'grid', placeItems: 'center',
+                          border: done ? `1px solid rgba(16,185,129,0.15)` : `1px solid ${step.color}15`
+                        }}>
+                          <Icon size={20} />
+                        </div>
 
-      {/* Final CTA */}
-      <div style={{ marginTop: 32, padding: 32, background: '#f8fafc', borderRadius: 28, border: '1px solid #f1f5f9', textAlign: 'center' }}>
-        {requiredDone ? (
-          <>
-            <div style={{ fontSize: 20, fontWeight: 950, color: '#0f172a', marginBottom: 10 }}>
-              🎉 All required steps complete!
-            </div>
-            <p style={{ fontSize: 14, color: '#64748b', marginBottom: 24, fontWeight: 500 }}>
-              Your profile is ready for admin review. Head to your dashboard to submit for verification.
-            </p>
-            <Btn lg onClick={() => navigate('/creator/dashboard')} style={{ background: '#10B981', color: '#fff', borderRadius: 100 }}>
-              Go to Dashboard <ArrowRight size={18} />
-            </Btn>
-          </>
-        ) : (
-          <>
-            <div style={{ fontSize: 16, fontWeight: 800, color: '#0f172a', marginBottom: 8 }}>
-              Complete {STEPS.filter(s => s.required && !s.check(c)).length} more required step{STEPS.filter(s => s.required && !s.check(c)).length > 1 ? 's' : ''} to unlock verification
-            </div>
-            <p style={{ fontSize: 13, color: '#64748b', fontWeight: 500, marginBottom: 20 }}>
-              Verified creators get 3x more brand deals and access to all campaigns.
-            </p>
-            <Btn lg onClick={() => navigate('/creator/profile')} style={{ background: '#0f172a', color: '#fff', borderRadius: 100 }}>
-              Open Profile Builder <ArrowRight size={18} />
-            </Btn>
-          </>
-        )}
+                        <div style={{ flex: 1, overflow: 'hidden' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginBottom: 2 }}>
+                            <span style={{ fontSize: 15, fontWeight: 900, color: T.navy, fontFamily: 'Outfit, sans-serif' }}>{step.title}</span>
+                            {step.required && !done && (
+                              <span style={{ fontSize: 9, fontWeight: 900, color: T.saffron, background: 'rgba(255,148,49,0.08)', padding: '2px 8px', borderRadius: 100, border: `1px solid rgba(255,148,49,0.15)` }}>REQUIRED</span>
+                            )}
+                            {done && (
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '2px 8px', borderRadius: 100, fontSize: 9, fontWeight: 900, background: 'rgba(16,185,129,0.08)', color: T.emerald, border: `1px solid rgba(16,185,129,0.15)` }}>
+                                DONE ✓
+                              </span>
+                            )}
+                          </div>
+                          <p style={{ fontSize: 12.5, color: T.slate, fontWeight: 500, margin: 0, lineHeight: 1.5 }}>
+                            {step.description}
+                          </p>
+                        </div>
+
+                        <div style={{ color: T.slateLight, display: 'flex', alignItems: 'center', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.25s' }}>
+                          <ChevronDown size={18} />
+                        </div>
+                      </div>
+
+                      {/* Expandable Inner Action */}
+                      <AnimatePresence>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.25, ease: 'easeInOut' }}
+                            style={{ overflow: 'hidden' }}
+                            onClick={e => e.stopPropagation()}
+                          >
+                            <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid rgba(15,23,42,0.04)', display: 'flex', justifyContent: 'flex-end' }}>
+                              <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => handleStepClick(step)}
+                                style={{
+                                  padding: '10px 18px',
+                                  borderRadius: 10,
+                                  background: done ? 'rgba(15,23,42,0.03)' : step.color,
+                                  border: done ? '1px solid rgba(15,23,42,0.08)' : 'none',
+                                  color: done ? T.slate : '#fff',
+                                  fontSize: 12.5,
+                                  fontWeight: 800,
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 6,
+                                  boxShadow: done ? 'none' : `0 6px 15px ${step.color}25`
+                                }}
+                              >
+                                {done ? `Edit Details` : `Complete Section`} <ArrowRight size={14} />
+                              </motion.button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+
+                </motion.div>
+              );
+            })}
+
+          </div>
+
+        </div>
+
       </div>
     </div>
   );

@@ -39,16 +39,16 @@ const fadeUp = (delay = 0) => ({
 
 const GlassCard = ({ children, style = {}, className = '', hover = false, onClick }) => (
   <motion.div
-    whileHover={hover ? { y: -4, boxShadow: '0 25px 50px -12px rgba(15,23,42,0.08)' } : {}}
+    whileHover={hover ? { y: -5, boxShadow: '0 25px 50px -12px rgba(15,23,42,0.1), inset 0 0 0px 1px rgba(255,255,255,0.5)' } : {}}
     onClick={onClick}
     style={{
-      background: 'rgba(255, 255, 255, 0.85)',
-      backdropFilter: 'blur(20px)',
+      background: 'rgba(255, 255, 255, 0.82)',
+      backdropFilter: 'blur(24px) saturate(120%)',
       borderRadius: 24,
-      border: '1.5px solid rgba(255, 255, 255, 0.7)',
-      boxShadow: '0 10px 30px -10px rgba(15,23,42,0.04), 0 1px 3px rgba(15,23,42,0.02)',
+      border: '1px solid rgba(255, 255, 255, 0.45)',
+      boxShadow: '0 10px 40px -10px rgba(15,23,42,0.06), inset 0 1px 1.5px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(15,23,42,0.02)',
       overflow: 'hidden',
-      transition: 'border-color 0.2s, box-shadow 0.2s',
+      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
       ...style
     }}
     className={className}
@@ -76,46 +76,56 @@ const Divider = ({ style = {} }) => (
 // ─── StatCard ───────────────────────────────────────────────────────────────────
 const StatCard = ({ label, value, sub, icon: Icon, color, delay = 0, locked = false }) => {
   const tints = {
-    [T.emerald]: 'linear-gradient(135deg, rgba(16,185,129,0.06) 0%, rgba(255,255,255,0.9) 100%)',
-    [T.violet]: 'linear-gradient(135deg, rgba(124,116,240,0.06) 0%, rgba(255,255,255,0.9) 100%)',
-    [T.saffron]: 'linear-gradient(135deg, rgba(255,148,49,0.06) 0%, rgba(255,255,255,0.9) 100%)',
-    [T.blue]: 'linear-gradient(135deg, rgba(59,130,246,0.06) 0%, rgba(255,255,255,0.9) 100%)',
+    [T.emerald]: 'linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(255,255,255,0.92) 100%)',
+    [T.violet]: 'linear-gradient(135deg, rgba(124,116,240,0.08) 0%, rgba(255,255,255,0.92) 100%)',
+    [T.saffron]: 'linear-gradient(135deg, rgba(255,148,49,0.08) 0%, rgba(255,255,255,0.92) 100%)',
+    [T.blue]: 'linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(255,255,255,0.92) 100%)',
+  };
+  
+  const glows = {
+    [T.emerald]: '0 12px 30px -8px rgba(16,185,129,0.18), 0 4px 6px -2px rgba(16,185,129,0.04)',
+    [T.violet]: '0 12px 30px -8px rgba(124,116,240,0.18), 0 4px 6px -2px rgba(124,116,240,0.04)',
+    [T.saffron]: '0 12px 30px -8px rgba(255,148,49,0.22), 0 4px 6px -2px rgba(255,148,49,0.06)',
+    [T.blue]: '0 12px 30px -8px rgba(59,130,246,0.18), 0 4px 6px -2px rgba(59,130,246,0.04)',
   };
   
   const tint = locked ? 'rgba(255,255,255,0.85)' : (tints[color] || 'rgba(255,255,255,0.85)');
+  const glowShadow = locked ? '0 10px 30px -10px rgba(15,23,42,0.04)' : (glows[color] || '0 10px 30px -10px rgba(15,23,42,0.04)');
 
   return (
     <motion.div {...fadeUp(delay)}>
       <GlassCard
         hover
         style={{
-          padding: '20px 22px',
+          padding: '22px 24px',
           background: tint,
-          border: locked ? '1.5px solid rgba(15,23,42,0.04)' : `1.5px solid ${color}20`
+          border: locked ? '1px solid rgba(15,23,42,0.04)' : `1px solid ${color}35`,
+          boxShadow: glowShadow
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <p style={{ fontSize: 11, fontWeight: 800, color: T.slateLight, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 8px' }}>
+            <p style={{ fontSize: 11, fontWeight: 800, color: T.slateLight, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
               {label}
             </p>
-            <p style={{ fontSize: 26, fontWeight: 950, color: locked ? T.slateLight : T.navy, margin: 0, letterSpacing: '-0.02em', lineHeight: 1, fontFamily: 'Outfit, sans-serif' }}>
+            <p style={{ fontSize: 28, fontWeight: 950, color: locked ? T.slateLight : T.navy, margin: 0, letterSpacing: '-0.02em', lineHeight: 1.1, fontFamily: 'Outfit, sans-serif' }}>
               {locked ? '—' : value}
             </p>
             {sub && !locked && (
-              <p style={{ fontSize: 11, fontWeight: 800, color: color, margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 3 }}>
-                <TrendingUp size={11} /> {sub}
+              <p style={{ fontSize: 11, fontWeight: 800, color: color, margin: '8px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <TrendingUp size={12} /> {sub}
               </p>
             )}
           </div>
           <div style={{
-            width: 44, height: 44, borderRadius: 12,
-            background: locked ? '#f1f5f9' : color + '12',
+            width: 48, height: 48, borderRadius: 14,
+            background: locked ? '#f1f5f9' : color + '15',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             flexShrink: 0,
-            border: locked ? '1px solid #e2e8f0' : `1px solid ${color}25`
+            border: locked ? '1px solid #e2e8f0' : `1px solid ${color}30`,
+            boxShadow: locked ? 'none' : `inset 0 1px 2px ${color}10`
           }}>
-            <Icon size={18} color={locked ? T.slateLight : color} />
+            <Icon size={20} color={locked ? T.slateLight : color} />
           </div>
         </div>
       </GlassCard>
@@ -123,7 +133,6 @@ const StatCard = ({ label, value, sub, icon: Icon, color, delay = 0, locked = fa
   );
 };
 
-// ─── Instagram-Style Profile Card ──────────────────────────────────────────────
 const ProfileHeroCard = ({ creator, verificationStatus, score, navigate, mob, dsp }) => {
   const name = creator?.name || 'Creator';
   const handle = creator?.handle || '@' + (creator?.name?.toLowerCase()?.replace(/\s+/g, '_') || 'elite_creator');
@@ -135,17 +144,17 @@ const ProfileHeroCard = ({ creator, verificationStatus, score, navigate, mob, ds
   return (
     <motion.div {...fadeUp(0.05)}>
       <div style={{
-        background: 'linear-gradient(135deg, #0b0f19 0%, #111827 100%)',
+        background: 'linear-gradient(135deg, #090d16 0%, #111827 100%)',
         borderRadius: 24,
-        padding: '24px',
-        border: '1.5px solid rgba(255, 255, 255, 0.05)',
-        boxShadow: '0 20px 40px -15px rgba(0,0,0,0.3)',
+        padding: '26px 24px',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 25px 50px -12px rgba(15,23,42,0.45), inset 0 1px 1px rgba(255,255,255,0.1)',
         position: 'relative',
         overflow: 'hidden'
       }}>
         {/* Glow Effects */}
-        <div style={{ position: 'absolute', top: -50, right: -50, width: 150, height: 150, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255, 148, 49, 0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: -50, left: -50, width: 150, height: 150, borderRadius: '50%', background: 'radial-gradient(circle, rgba(124, 116, 240, 0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: -50, right: -50, width: 150, height: 150, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255, 148, 49, 0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: -50, left: -50, width: 150, height: 150, borderRadius: '50%', background: 'radial-gradient(circle, rgba(124, 116, 240, 0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
         
         {/* Tri-color Accent Bar */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #FF9431 33%, #FFFFFF 33%, #FFFFFF 66%, #10B981 66%)' }} />
@@ -186,7 +195,7 @@ const ProfileHeroCard = ({ creator, verificationStatus, score, navigate, mob, ds
           {/* Title & Hub info */}
           <div style={{ flex: 1, textAlign: mob ? 'center' : 'left' }}>
             <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', alignItems: 'center', gap: 8 }}>
-              <h2 style={{ fontSize: 22, fontWeight: 900, color: '#fff', margin: 0, fontFamily: 'Outfit, sans-serif' }}>
+              <h2 style={{ fontSize: 24, fontWeight: 900, color: '#fff', margin: 0, fontFamily: 'Outfit, sans-serif', letterSpacing: '-0.02em' }}>
                 {name}
               </h2>
               {isVerified ? (
@@ -212,8 +221,8 @@ const ProfileHeroCard = ({ creator, verificationStatus, score, navigate, mob, ds
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
-          background: 'rgba(255,255,255,0.02)',
-          border: '1px solid rgba(255,255,255,0.04)',
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid rgba(255,255,255,0.06)',
           borderRadius: 16,
           padding: '12px 10px',
           margin: '20px 0',
@@ -234,7 +243,9 @@ const ProfileHeroCard = ({ creator, verificationStatus, score, navigate, mob, ds
 
         {/* Action Buttons */}
         <div style={{ display: 'flex', gap: 10 }}>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => {
               const allC = JSON.parse(localStorage.getItem('cb_creators') || '[]');
               const activeC = creator || allC.find(cr => cr.email === st.user?.email) || {};
@@ -254,13 +265,15 @@ const ProfileHeroCard = ({ creator, verificationStatus, score, navigate, mob, ds
               alignItems: 'center',
               justifyContent: 'center',
               gap: 6,
-              boxShadow: '0 8px 16px rgba(255,148,49,0.2)'
+              boxShadow: '0 8px 20px rgba(255,148,49,0.25)'
             }}
           >
             <Eye size={14} /> View My Profile
-          </button>
+          </motion.button>
           
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02, background: 'rgba(255,255,255,0.08)' }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => navigate('/creator/profile')}
             style={{
               flex: 1,
@@ -275,13 +288,16 @@ const ProfileHeroCard = ({ creator, verificationStatus, score, navigate, mob, ds
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 6
+              gap: 6,
+              transition: 'background-color 0.2s'
             }}
           >
             <Settings size={14} /> Edit Profile Hub
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05, background: 'rgba(255,255,255,0.08)' }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => {
               const activeId = creator?.id || 'elite';
               navigator.clipboard.writeText(`https://creatorbharat.com/c/${activeId}`);
@@ -296,12 +312,13 @@ const ProfileHeroCard = ({ creator, verificationStatus, score, navigate, mob, ds
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              transition: 'background-color 0.2s'
             }}
             title="Copy Share Link"
           >
             <Copy size={14} />
-          </button>
+          </motion.button>
         </div>
 
       </div>
@@ -830,14 +847,15 @@ const CampaignCard = ({ title, brand, budget, isLocked, delay }) => (
     initial={{ opacity: 0, y: 12 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay }}
-    whileHover={isLocked ? {} : { y: -3 }}
+    whileHover={isLocked ? {} : { y: -5, boxShadow: '0 20px 40px -10px rgba(15,23,42,0.08), inset 0 0 0 1px rgba(255,255,255,0.6)' }}
     style={{
-      background: '#fff', borderRadius: 20, padding: '18px 20px',
-      border: '1.5px solid rgba(241, 245, 249, 0.8)',
-      boxShadow: '0 8px 20px rgba(15,23,42,0.03)',
+      background: 'rgba(255, 255, 255, 0.85)', borderRadius: 20, padding: '20px',
+      border: '1px solid rgba(15, 23, 42, 0.06)',
+      boxShadow: '0 8px 24px rgba(15,23,42,0.03)',
       position: 'relative', overflow: 'hidden', cursor: isLocked ? 'not-allowed' : 'pointer',
       filter: isLocked ? 'blur(2.5px)' : 'none',
       flexShrink: 0, width: 260,
+      transition: 'border-color 0.2s, box-shadow 0.2s'
     }}
   >
     {isLocked && (
@@ -848,20 +866,20 @@ const CampaignCard = ({ title, brand, budget, isLocked, delay }) => (
     )}
     
     <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
-      <div style={{ width: 36, height: 36, borderRadius: 12, background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)', color: '#fff', display: 'grid', placeItems: 'center', fontSize: 13, fontWeight: 900, flexShrink: 0 }}>
+      <div style={{ width: 38, height: 38, borderRadius: 12, background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)', color: '#fff', display: 'grid', placeItems: 'center', fontSize: 14, fontWeight: 900, flexShrink: 0, boxShadow: '0 4px 10px rgba(234,88,12,0.2)' }}>
         {brand[0].toUpperCase()}
       </div>
-      <div>
-        <p style={{ fontSize: 13, fontWeight: 800, color: T.navy, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 170 }}>{brand}</p>
+      <div style={{ overflow: 'hidden' }}>
+        <p style={{ fontSize: 13, fontWeight: 800, color: T.navy, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{brand}</p>
         <Tag color={T.saffron} bg="rgba(255,148,49,0.06)">Niche Match</Tag>
       </div>
     </div>
 
     <p style={{ fontSize: 14, fontWeight: 900, color: T.navy, margin: '0 0 12px', minHeight: 40, lineHeight: 1.4 }}>{title}</p>
-    <Divider />
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
+    <Divider style={{ margin: '12px 0' }} />
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <p style={{ fontSize: 15, fontWeight: 950, color: T.emerald, margin: 0 }}>₹{budget}</p>
-      <Tag color={T.blue}>Apply Now</Tag>
+      <span style={{ fontSize: 11, fontWeight: 800, color: T.blue, background: T.blue + '08', padding: '4px 10px', borderRadius: 8, border: `1px solid ${T.blue}15` }}>Apply Now</span>
     </div>
   </motion.div>
 );
@@ -878,26 +896,28 @@ const QuickActions = ({ navigate, isLocked }) => {
   ];
   return (
     <GlassCard style={{ padding: 20 }}>
-      <h3 style={{ fontSize: 13, fontWeight: 900, color: T.navy, margin: '0 0 14px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Quick Access</h3>
+      <h3 style={{ fontSize: 11, fontWeight: 900, color: T.slate, margin: '0 0 14px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Quick Access</h3>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
         {actions.map(a => (
           <motion.button
             key={a.label}
-            whileHover={{ scale: 1.04, y: -2 }}
-            whileTap={{ scale: 0.97 }}
+            whileHover={a.locked ? {} : { scale: 1.04, y: -2, boxShadow: '0 8px 16px rgba(15,23,42,0.05)' }}
+            whileTap={a.locked ? {} : { scale: 0.97 }}
             onClick={() => !a.locked && navigate(a.path)}
             style={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
               padding: '14px 8px', borderRadius: 16,
-              background: a.locked ? T.bg : a.color + '08',
-              border: `1.5px solid ${a.locked ? T.border : a.color + '20'}`,
+              background: a.locked ? 'rgba(15, 23, 42, 0.02)' : a.color + '05',
+              border: `1px solid ${a.locked ? 'rgba(15,23,42,0.04)' : a.color + '18'}`,
               cursor: a.locked ? 'not-allowed' : 'pointer',
-              opacity: a.locked ? 0.5 : 1, position: 'relative'
+              opacity: a.locked ? 0.5 : 1, position: 'relative',
+              outline: 'none',
+              transition: 'background-color 0.2s, border-color 0.2s'
             }}
           >
             {a.locked && <Lock size={10} color={T.slateLight} style={{ position: 'absolute', top: 8, right: 8 }} />}
-            <div style={{ width: 36, height: 36, borderRadius: 12, background: a.locked ? T.borderMid : a.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <a.icon size={17} color={a.locked ? T.slateLight : a.color} />
+            <div style={{ width: 38, height: 38, borderRadius: 12, background: a.locked ? '#e2e8f0' : a.color + '12', display: 'flex', alignItems: 'center', justifyContent: 'center', border: a.locked ? 'none' : `1px solid ${a.color}10` }}>
+              <a.icon size={18} color={a.locked ? T.slateLight : a.color} />
             </div>
             <span style={{ fontSize: 11, fontWeight: 800, color: a.locked ? T.slateLight : T.navy, textAlign: 'center', lineHeight: 1.2 }}>{a.label}</span>
           </motion.button>
@@ -916,28 +936,28 @@ const GeographyPanel = ({ isLocked }) => {
     { city: 'Lucknow, UP', pct: 12, flag: '🕌' },
   ];
   if (isLocked) return (
-    <GlassCard style={{ padding: 24, minHeight: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', background: T.bg }}>
-      <div style={{ width: 52, height: 52, borderRadius: 16, background: T.card, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14, boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
-        <Lock size={24} color={T.saffron} />
+    <GlassCard style={{ padding: 24, minHeight: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', background: 'rgba(255,255,255,0.5)' }}>
+      <div style={{ width: 52, height: 52, borderRadius: 16, background: '#fff', border: '1px solid rgba(15,23,42,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14, boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
+        <Lock size={22} color={T.saffron} />
       </div>
-      <h4 style={{ fontSize: 15, fontWeight: 900, color: T.navy, margin: '0 0 6px' }}>Analytics Locked</h4>
+      <h4 style={{ fontSize: 14, fontWeight: 900, color: T.navy, margin: '0 0 6px' }}>Analytics Locked</h4>
       <p style={{ fontSize: 12, color: T.slateLight, margin: 0, maxWidth: 220, lineHeight: 1.5 }}>Geography & reach data activates after admin approval</p>
     </GlassCard>
   );
   return (
     <GlassCard style={{ padding: 24 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
         <h3 style={{ fontSize: 16, fontWeight: 900, color: T.navy, margin: 0 }}>Top Geographies</h3>
         <MapPin size={16} color={T.saffron} />
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {geos.map((g, i) => (
-          <div key={g.city} style={{ padding: '10px 14px', borderRadius: 12, background: i === 0 ? T.saffron + '06' : T.bg, border: `1px solid ${i === 0 ? T.saffron + '20' : T.border}` }}>
+          <div key={g.city} style={{ padding: '10px 14px', borderRadius: 12, background: i === 0 ? T.saffron + '06' : 'rgba(15, 23, 42, 0.02)', border: `1px solid ${i === 0 ? T.saffron + '20' : 'rgba(15, 23, 42, 0.04)'}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
               <span style={{ fontSize: 13, fontWeight: 800, color: T.navy }}>{g.flag} {g.city}</span>
               <span style={{ fontSize: 13, fontWeight: 900, color: i === 0 ? T.saffron : T.navy }}>{g.pct}%</span>
             </div>
-            <div style={{ height: 4, borderRadius: 100, background: T.borderMid, overflow: 'hidden' }}>
+            <div style={{ height: 4, borderRadius: 100, background: 'rgba(15, 23, 42, 0.05)', overflow: 'hidden' }}>
               <motion.div initial={{ width: 0 }} animate={{ width: `${g.pct}%` }} transition={{ delay: 0.4 + i * 0.1, duration: 0.7 }} style={{ height: '100%', borderRadius: 100, background: i === 0 ? T.saffron : '#94A3B8' }} />
             </div>
           </div>
@@ -974,8 +994,8 @@ const ApplicationPulse = ({ myApps, isLocked, navigate }) => {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {myApps.slice(0, 4).map(a => (
-            <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 12, background: T.bg }}>
-              <div style={{ width: 36, height: 36, borderRadius: 12, background: T.saffron + '10', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px', borderRadius: 14, background: 'rgba(15, 23, 42, 0.02)', border: '1px solid rgba(15,23,42,0.03)' }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: T.saffron + '10', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Briefcase size={16} color={T.saffron} />
               </div>
               <div style={{ flex: 1, overflow: 'hidden' }}>
@@ -996,13 +1016,13 @@ const ApplicationPulse = ({ myApps, isLocked, navigate }) => {
 // ─── Media Kit Card ─────────────────────────────────────────────────────────────
 const MediaKitCard = ({ creator, isLocked, navigate, toast }) => (
   <div style={{
-    background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
-    borderRadius: 20, padding: 24, border: '1px solid rgba(255,255,255,0.06)',
+    background: 'linear-gradient(135deg, #0b0f19 0%, #1e293b 100%)',
+    borderRadius: 24, padding: 24, border: '1px solid rgba(255,255,255,0.08)',
     position: 'relative', overflow: 'hidden',
-    boxShadow: '0 10px 30px rgba(15,23,42,0.05)'
+    boxShadow: '0 20px 45px -12px rgba(15,23,42,0.3), inset 0 1px 1px rgba(255,255,255,0.1)'
   }}>
     {isLocked && (
-      <div style={{ position: 'absolute', inset: 0, background: 'rgba(15,23,42,0.7)', backdropFilter: 'blur(4px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, zIndex: 2, borderRadius: 18 }}>
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(15,23,42,0.7)', backdropFilter: 'blur(4px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, zIndex: 2, borderRadius: 24 }}>
         <Lock size={28} color={T.saffron} />
         <p style={{ fontSize: 13, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textAlign: 'center', maxWidth: 180 }}>Get verified to unlock your media kit</p>
       </div>
@@ -1010,7 +1030,7 @@ const MediaKitCard = ({ creator, isLocked, navigate, toast }) => (
     <div style={{ position: 'absolute', top: '-30px', right: '-30px', width: 120, height: 120, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,148,49,0.12), transparent 70%)', pointerEvents: 'none' }} />
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
       <Star size={18} fill={T.saffron} color={T.saffron} />
-      <h3 style={{ fontSize: 16, fontWeight: 900, color: '#fff', margin: 0 }}>Elite Media Kit</h3>
+      <h3 style={{ fontSize: 16, fontWeight: 900, color: '#fff', margin: 0, fontFamily: 'Outfit, sans-serif' }}>Elite Media Kit</h3>
     </div>
     <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', fontWeight: 600, margin: '0 0 16px', lineHeight: 1.6 }}>
       Share your cinematic profile link with brands to showcase your full worth
