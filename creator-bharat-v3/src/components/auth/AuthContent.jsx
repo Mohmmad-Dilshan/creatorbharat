@@ -19,6 +19,8 @@ import ForgotView from './views/ForgotView.jsx';
 
 import { useNavigate } from 'react-router-dom';
 
+import { apiCall } from '../../utils/api';
+
 const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
   const { st, dsp } = useApp();
   const navigate = useNavigate();
@@ -48,8 +50,6 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
       if (v === 'brand-register') { navigate('/brand-register'); return; }
       if (v === 'login') { navigate('/login'); return; }
       if (v === 'gateway') { 
-        // If we are already on a register/login page, back goes to Gateway (/join)
-        // If we are on Gateway (/join), back goes to Home (/)
         if (initialView === 'gateway') navigate('/');
         else navigate('/join');
         return; 
@@ -61,10 +61,47 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
   const [role, setRole] = useState('creator');
   const [loading, setLoading] = useState(false);
 
-  const onAuthSuccess = (user) => {
-    dsp({ t: 'LOGIN', u: user, role: user.role });
+  const onAuthSuccess = (backendUser, token) => {
+    if (token) {
+      localStorage.setItem('cb_token', token);
+    }
+    const role = (backendUser.role || 'CREATOR').toLowerCase();
     
-    // 1. Check for Pending Application
+    const normalizedUser = {
+      ...backendUser,
+      role: role,
+      creatorProfile: backendUser.creator || backendUser.creatorProfile
+    };
+
+    if (role === 'creator') {
+      const allCreators = LS.get('cb_creators', []);
+      const profile = normalizedUser.creatorProfile || {};
+      if (!allCreators.some(cr => cr.email === normalizedUser.email)) {
+        allCreators.push({
+          id: profile.id || normalizedUser.id || 'c-' + Date.now(),
+          name: profile.name || normalizedUser.name || normalizedUser.email.split('@')[0],
+          handle: profile.handle || normalizedUser.email.split('@')[0],
+          email: normalizedUser.email,
+          city: profile.city || 'Jaipur Hub',
+          state: profile.state || 'Rajasthan',
+          phone: profile.phone || '',
+          followers: profile.followers || 0,
+          score: profile.score || 85,
+          niche: profile.niche || ['Digital Creator'],
+          bio: profile.bio || '',
+          gallery: profile.gallery || [],
+          full_story: profile.fullStory || { p1: '', quote: '', p2: '', p3: '' },
+          milestones: profile.milestones || [],
+          services: profile.services || [],
+          awards: profile.awards || [],
+          collabs: profile.collabs || []
+        });
+        LS.set('cb_creators', allCreators);
+      }
+    }
+
+    dsp({ t: 'LOGIN', u: normalizedUser, role: role });
+    
     const pendingApply = LS.get('cb_pending_apply');
     if (pendingApply) {
       LS.remove('cb_pending_apply', null);
@@ -72,12 +109,9 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
       return;
     }
 
-    // 2. Role-Based Redirection
-    if (user.role === 'brand') {
+    if (role === 'brand') {
       navigate('/brand-dashboard');
-    } else if (user.role === 'creator') {
-      // In a real app, we would check if email is verified
-      // if (!user.isVerified) { navigate('/verify'); return; }
+    } else if (role === 'creator') {
       setShowSplash(true);
       setTimeout(() => {
         setShowSplash(false);
@@ -86,34 +120,30 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
         } else {
           navigate('/creator/dashboard');
         }
-      }, 2500); // Wait for splash to finish
+      }, 2500);
     } else {
       navigate('/');
     }
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     const email = sanitize(e.target.email?.value);
-    const password = e.target.password?.value; // Password shouldn't be HTML-sanitized usually, but kept safe by backend
+    const password = e.target.password?.value;
 
     setLoading(true);
-    
-    setTimeout(() => {
+    try {
+      const res = await apiCall('/auth/login', {
+        method: 'POST',
+        body: { email, password }
+      });
+      onAuthSuccess(res.user, res.token);
+      dsp({ t: 'TOAST', d: { type: 'success', msg: `Welcome back!` } });
+    } catch (err) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Incorrect credentials' } });
+    } finally {
       setLoading(false);
-      // Simulation logic
-      if (email === 'error@test.com') {
-        dsp({ t: 'TOAST', d: { type: 'error', msg: 'User does not exist. Please sign up first.' } });
-        return;
-      }
-      if (password === 'wrong') {
-        dsp({ t: 'TOAST', d: { type: 'error', msg: 'Incorrect password. Please try again.' } });
-        return;
-      }
-
-      onAuthSuccess({ email: email || 'user@example.com', role, id: 'u-' + Date.now() });
-      dsp({ t: 'TOAST', d: { type: 'success', msg: `Welcome back, ${role === 'brand' ? 'Partner' : 'Creator'}!` } });
-    }, 1200);
+    }
   };
 
   const isBrand = view === 'brand-register' || (view === 'login' && role === 'brand');

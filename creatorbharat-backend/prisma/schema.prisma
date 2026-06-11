@@ -50,6 +50,19 @@ model Creator {
   photo          String?
   coverPhoto     String?
   portfolio      String[]
+  fullStory      Json?
+  awards         Json?
+  collabs        Json?
+  milestones     Json?
+  viralContent   Json?
+  caseStudies    Json?
+  sponsoredPosts Json?
+  socialLinks    Json?
+  upiId          String?
+  bankName       String?
+  accountHolder  String?
+  accountNo      String?
+  ifscCode       String?
   verified       Boolean       @default(false)
   featured       Boolean       @default(false)
   trending       Boolean       @default(false)

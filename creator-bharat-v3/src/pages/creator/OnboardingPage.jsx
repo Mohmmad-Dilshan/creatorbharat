@@ -100,7 +100,14 @@ export default function OnboardingPage() {
   const [mob, setMob] = useState(() => globalThis.innerWidth < 768);
 
   const allC = LS.get('cb_creators', []);
-  const c = st.user?.creatorProfile || allC.find(cr => cr.email === st.user?.email) || {};
+  const c = st.user?.creatorProfile || allC.find(cr => cr.email === st.user?.email) || {
+    name: st.user?.name || '',
+    handle: st.user?.handle || '',
+    email: st.user?.email || '',
+    city: st.user?.city || '',
+    state: st.user?.state || '',
+    phone: st.user?.phone || ''
+  };
   const comp = fmt.completeness(c);
 
   const completedCount = STEPS.filter(s => s.check(c)).length;

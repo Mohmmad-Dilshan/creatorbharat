@@ -446,9 +446,11 @@ const UserActions = ({ st, dsp, go, mob }) => {
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <LangButton />
-      <Btn lg onClick={() => go('/login')} style={{ fontWeight: 900, borderRadius: 100, padding: mob ? '10px 20px' : '12px 32px', fontSize: 13, background: T.gd, color: '#fff', border: 'none', boxShadow: `0 8px 24px rgba(255,148,49,0.2)` }}>
-        {mob ? 'Sign In' : 'Sign In Account'}
-      </Btn>
+      <div className="nav-signin-btn-wrap">
+        <Btn lg onClick={() => go('/login')} style={{ fontWeight: 900, borderRadius: 100, padding: mob ? '10px 20px' : '12px 32px', fontSize: 13, background: T.gd, color: '#fff', border: 'none', boxShadow: `0 8px 24px rgba(255,148,49,0.2)` }}>
+          {mob ? 'Sign In' : 'Sign In Account'}
+        </Btn>
+      </div>
       {mob && (
         <button
           onClick={() => dsp({ t: 'UI', v: { mobileMenu: !st.ui.mobileMenu } })}
@@ -720,6 +722,11 @@ export default function Navbar() {
           .profile-menu-item:hover {
             background: #f8fafc;
             color: #0f172a;
+          }
+          @media (max-width: 520px) {
+            .nav-signin-btn-wrap {
+              display: none !important;
+            }
           }
         `}</style>
 

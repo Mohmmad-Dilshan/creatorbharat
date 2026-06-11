@@ -239,23 +239,23 @@ export default function WalletPage() {
                <Zap size={16} fill="#7C3AED" /> Elite Tier Performance
             </div>
             <div style={{ marginTop: '32px', display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
-               <div style={{ flex: 1, height: '40px', background: '#f8fafc', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 800, color: '#475569' }}>Q1</div>
-               <div style={{ flex: 1, height: '60px', background: '#f8fafc', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 800, color: '#475569' }}>Q2</div>
+               <div style={{ flex: 1, height: '40px', background: 'var(--db-header-border, #f8fafc)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 800, color: 'var(--db-text-secondary, #475569)' }}>Q1</div>
+               <div style={{ flex: 1, height: '60px', background: 'var(--db-header-border, #f8fafc)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 800, color: 'var(--db-text-secondary, #475569)' }}>Q2</div>
                <div style={{ flex: 1, height: '80px', background: '#FF9431', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 900, color: '#fff' }}>Q3</div>
             </div>
          </Card>
       </div>
 
       {/* Sub-Tab Switcher */}
-      <div style={{ display: 'flex', background: '#f1f5f9', padding: 4, borderRadius: 16, width: 'fit-content', marginBottom: 28, gap: 4 }}>
+      <div style={{ display: 'flex', background: 'var(--db-header-border, rgba(15, 23, 42, 0.05))', padding: 4, borderRadius: 16, width: 'fit-content', marginBottom: 28, gap: 4 }}>
         <button
           onClick={() => setSubTab('transactions')}
           style={{
             padding: '10px 20px', borderRadius: 12, border: 'none', cursor: 'pointer',
-            background: subTab === 'transactions' ? '#fff' : 'transparent',
-            color: subTab === 'transactions' ? '#0f172a' : '#64748b',
+            background: subTab === 'transactions' ? 'var(--db-card-bg, #fff)' : 'transparent',
+            color: subTab === 'transactions' ? 'var(--db-text-primary, #0f172a)' : 'var(--db-text-secondary, #64748b)',
             fontSize: 14, fontWeight: 800,
-            boxShadow: subTab === 'transactions' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none'
+            boxShadow: subTab === 'transactions' ? '0 2px 8px rgba(0,0,0,0.04)' : 'none'
           }}
         >
           💰 Transaction History
@@ -264,10 +264,10 @@ export default function WalletPage() {
           onClick={() => setSubTab('referrals')}
           style={{
             padding: '10px 20px', borderRadius: 12, border: 'none', cursor: 'pointer',
-            background: subTab === 'referrals' ? '#fff' : 'transparent',
-            color: subTab === 'referrals' ? '#0f172a' : '#64748b',
+            background: subTab === 'referrals' ? 'var(--db-card-bg, #fff)' : 'transparent',
+            color: subTab === 'referrals' ? 'var(--db-text-primary, #0f172a)' : 'var(--db-text-secondary, #64748b)',
             fontSize: 14, fontWeight: 800,
-            boxShadow: subTab === 'referrals' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+            boxShadow: subTab === 'referrals' ? '0 2px 8px rgba(0,0,0,0.04)' : 'none',
             display: 'flex',
             alignItems: 'center',
             gap: 6

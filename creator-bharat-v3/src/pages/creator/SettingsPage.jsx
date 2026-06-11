@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../core/context';
 import { LS } from '../../utils/helpers';
 import { Btn, Card, Fld, Bdg } from '../../components/common/Primitives';
+import { updateCreatorProfile } from '../../utils/platformService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Shield, 
@@ -17,9 +18,24 @@ import {
   CheckCircle2,
   Globe,
   MapPin,
-  ChevronRight
+  ChevronRight,
+  CreditCard,
+  Bell,
+  Sparkles,
+  Check
 } from 'lucide-react';
 import AuthGatekeeper from '../../components/auth/AuthGatekeeper';
+
+const T = {
+  saffron: '#FF9431',
+  emerald: '#10B981',
+  violet: '#7C3AED',
+  blue: '#3B82F6',
+  navy: 'var(--db-text-primary, #0F172A)',
+  slate: 'var(--db-text-secondary, #64748B)',
+  bg: 'transparent',
+  border: 'var(--db-card-border, #F1F5F9)'
+};
 
 const StepNavItem = ({ id, label, icon: Icon, active, onClick }) => (
   <button
@@ -52,7 +68,7 @@ const SecurityTabContent = ({ st }) => {
        
        <div style={{ marginBottom: '40px' }}>
           <p className="db-sidebar-label" style={{ marginBottom: 12 }}>Verified Credentials</p>
-          <div className="activity-item" style={{ padding: '20px 24px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="activity-item" style={{ padding: '20px 24px', background: 'rgba(15, 23, 42, 0.02)', borderRadius: '16px', border: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
              <div>
                 <div style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a' }}>{st.user?.email || 'verified@user.com'}</div>
                 <div style={{ fontSize: '12px', color: '#10B981', fontWeight: 800, marginTop: '4px' }}>Primary Verification Email</div>
@@ -122,13 +138,15 @@ const SPONSOR_TYPES_DEF = [
 
 const SponsorSettingsTab = ({ c, st, mob }) => {
   const navigate = useNavigate();
+  const { dsp } = useApp();
   const isPro = st.isPro || false;
   const FREE_LIMIT = 1;
-  const STORAGE_KEY = `cb_sponsor_posts_${c?.id || c?.slug || c?.email || 'default'}`;
 
-  const [posts, setPosts] = useState(() => {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch (_) { return []; }
-  });
+  const [posts, setPosts] = useState(() => c?.sponsoredPosts || c?.sponsored_posts || []);
+
+  useEffect(() => {
+    setPosts(c?.sponsoredPosts || c?.sponsored_posts || []);
+  }, [c]);
 
   const [showForm, setShowForm] = useState(false);
   const [type, setType] = useState('link');
@@ -141,31 +159,50 @@ const SponsorSettingsTab = ({ c, st, mob }) => {
 
   const isLocked = !isPro && posts.length >= FREE_LIMIT;
 
-  const savePost = (e) => {
+  const savePost = async (e) => {
     e.preventDefault();
     if (!title.trim()) return;
     setSaving(true);
-    setTimeout(() => {
-      const newPost = {
-        id: 'sp-' + Date.now(),
-        type, title: title.trim(), description: description.trim(),
-        link: link.trim(), ctaText: ctaText.trim() || 'Visit Now',
-        imageUrl: imageUrl.trim(),
-        date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-      };
-      const updated = [newPost, ...posts];
+    
+    const newPost = {
+      id: 'sp-' + Date.now(),
+      type, title: title.trim(), description: description.trim(),
+      link: link.trim(), ctaText: ctaText.trim() || 'Visit Now',
+      imageUrl: imageUrl.trim(),
+      date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+    };
+    
+    const updated = [newPost, ...posts];
+    try {
+      const enriched = await updateCreatorProfile({
+        ...c,
+        sponsoredPosts: updated
+      });
       setPosts(updated);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      dsp({ t: 'LOGIN', u: { ...st.user, creatorProfile: enriched }, role: 'creator' });
       setTitle(''); setDescription(''); setLink(''); setCtaText(''); setImageUrl('');
       setShowForm(false);
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Sponsor post published! 🎉' } });
+    } catch (err) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: 'Failed to publish: ' + err.message } });
+    } finally {
       setSaving(false);
-    }, 600);
+    }
   };
 
-  const deletePost = (id) => {
+  const deletePost = async (id) => {
     const updated = posts.filter(p => p.id !== id);
-    setPosts(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    try {
+      const enriched = await updateCreatorProfile({
+        ...c,
+        sponsoredPosts: updated
+      });
+      setPosts(updated);
+      dsp({ t: 'LOGIN', u: { ...st.user, creatorProfile: enriched }, role: 'creator' });
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Sponsor post deleted!' } });
+    } catch (err) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: 'Failed to delete: ' + err.message } });
+    }
   };
 
   return (
@@ -203,7 +240,7 @@ const SponsorSettingsTab = ({ c, st, mob }) => {
           </div>
         </div>
         {!isPro && (
-          <button onClick={() => navigate('/creator/pricing')} style={{ background: '#0f172a', color: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11, fontWeight: 900, border: 'none', cursor: 'pointer' }}>
+          <button onClick={() => navigate('/creator/pricing')} style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', padding: '8px 14px', borderRadius: 10, fontSize: 11, fontWeight: 900, border: 'none', cursor: 'pointer' }}>
             Upgrade →
           </button>
         )}
@@ -231,7 +268,7 @@ const SponsorSettingsTab = ({ c, st, mob }) => {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          style={{ background: '#f8fafc', borderRadius: 20, padding: mob ? 20 : 28, border: '1.5px solid #e2e8f0', marginBottom: 24 }}
+          style={{ background: 'rgba(15, 23, 42, 0.02)', borderRadius: 20, padding: mob ? 20 : 28, border: '1.5px solid #e2e8f0', marginBottom: 24 }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <h4 style={{ fontSize: 16, fontWeight: 900, color: '#0f172a', margin: 0 }}>New Sponsor Post</h4>
@@ -291,7 +328,7 @@ const SponsorSettingsTab = ({ c, st, mob }) => {
 
             <div style={{ display: 'flex', gap: 10 }}>
               <button type="submit" disabled={saving || !title.trim()} style={{
-                flex: 1, padding: '13px', background: saving ? '#94a3b8' : '#0f172a',
+                flex: 1, padding: '13px', background: saving ? '#cbd5e1' : 'linear-gradient(90deg, #FF9431, #EA580C)',
                 color: '#fff', border: 'none', borderRadius: 12, fontWeight: 900, fontSize: 14, cursor: 'pointer'
               }}>
                 {saving ? 'Publishing...' : 'Publish Post'}
@@ -306,7 +343,7 @@ const SponsorSettingsTab = ({ c, st, mob }) => {
       )}
 
       {posts.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '48px 20px', background: '#f8fafc', borderRadius: 20, border: '1.5px dashed #e2e8f0' }}>
+        <div style={{ textAlign: 'center', padding: '48px 20px', background: 'rgba(15, 23, 42, 0.02)', borderRadius: 20, border: '1.5px dashed #e2e8f0' }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>📢</div>
           <div style={{ fontSize: 15, fontWeight: 800, color: '#475569', marginBottom: 6 }}>No sponsor posts yet</div>
           <div style={{ fontSize: 13, color: '#94a3b8', fontWeight: 500 }}>Upar wale button se apna pehla promoted post add karo.</div>
@@ -345,7 +382,7 @@ const SponsorSettingsTab = ({ c, st, mob }) => {
         </div>
       )}
 
-      <div style={{ marginTop: 24, padding: '14px 18px', background: '#f8fafc', borderRadius: 14, border: '1px solid #f1f5f9' }}>
+      <div style={{ marginTop: 24, padding: '14px 18px', background: 'rgba(15, 23, 42, 0.02)', borderRadius: 14, border: '1px solid #f1f5f9' }}>
         <p style={{ fontSize: 12, color: '#64748b', fontWeight: 500, margin: 0 }}>
           💡 Ye posts aapke public profile page ke <strong>Sponsor tab</strong> mein visitors ko dikhte hain. Links real products, affiliate URLs ya brand pages pe jaate hain.
         </p>
@@ -359,13 +396,397 @@ SponsorSettingsTab.propTypes = {
   mob: PropTypes.bool
 };
 
+// ─── NEW: CREATOR PAYOUT SETTINGS TAB ─────────────────────────────────────────
+const PayoutSettingsTab = ({ c, st }) => {
+  const { dsp } = useApp();
+  const [loading, setLoading] = useState(false);
+  const [P, setP] = useState({
+    upiId: c?.upiId || '',
+    bankName: c?.bankName || '',
+    accountHolder: c?.accountHolder || '',
+    accountNo: c?.accountNo || '',
+    ifscCode: c?.ifscCode || ''
+  });
+
+  useEffect(() => {
+    if (c) {
+      setP({
+        upiId: c.upiId || '',
+        bankName: c.bankName || '',
+        accountHolder: c.accountHolder || '',
+        accountNo: c.accountNo || '',
+        ifscCode: c.ifscCode || ''
+      });
+    }
+  }, [c]);
+
+  const save = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const enriched = await updateCreatorProfile({
+        ...c,
+        ...P
+      });
+      dsp({ t: 'LOGIN', u: { ...st.user, creatorProfile: enriched }, role: 'creator' });
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Payout settings saved successfully! 💳' } });
+    } catch (err) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: 'Failed to save payout settings: ' + err.message } });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const upP = (key, val) => setP(prev => ({ ...prev, [key]: val }));
+
+  return (
+    <Card className="settings-form-card card-3d-effect">
+      <h3 className="db-section-title">Payout & Bank Settings</h3>
+      <p className="db-sub-text" style={{ marginBottom: 28 }}>
+        Define your preferred payout destinations. Funds will be released here when escrow milestones are cleared.
+      </p>
+
+      <form onSubmit={save} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <Fld label="UPI ID (GPay / PhonePe / Paytm)" value={P.upiId} onChange={e => upP('upiId', e.target.value)} placeholder="aman@okaxis" />
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '10px 0' }}>
+          <div style={{ height: 1, flex: 1, background: '#e2e8f0' }} />
+          <span style={{ fontSize: 11, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>OR Bank Account details</span>
+          <div style={{ height: 1, flex: 1, background: '#e2e8f0' }} />
+        </div>
+
+        <Fld label="Account Holder Name" value={P.accountHolder} onChange={e => upP('accountHolder', e.target.value)} placeholder="Aman Deep Singh" />
+        <Fld label="Bank Name" value={P.bankName} onChange={e => upP('bankName', e.target.value)} placeholder="State Bank of India" />
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 16 }}>
+          <Fld label="Account Number" value={P.accountNo} onChange={e => upP('accountNo', e.target.value)} placeholder="30293847583" />
+          <Fld label="IFSC Code" value={P.ifscCode} onChange={e => upP('ifscCode', e.target.value)} placeholder="SBIN0001234" />
+        </div>
+
+        <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end' }}>
+          <Btn lg type="submit" loading={loading} style={{ height: 'auto', padding: '16px 48px', background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', border: 'none' }}>
+            Save Payout Details
+          </Btn>
+        </div>
+      </form>
+    </Card>
+  );
+};
+
+// ─── NEW: CREATOR NOTIFICATIONS TAB ───────────────────────────────────────────
+const NotificationsSettingsTab = () => {
+  const { dsp } = useApp();
+  const [prefs, setPrefs] = useState(() => {
+    try {
+      const saved = localStorage.getItem('cb_notification_preferences');
+      return saved ? JSON.parse(saved) : { email: true, whatsapp: true, sms: false, push: true };
+    } catch (_) {
+      return { email: true, whatsapp: true, sms: false, push: true };
+    }
+  });
+
+  const toggle = (key) => {
+    const updated = { ...prefs, [key]: !prefs[key] };
+    setPrefs(updated);
+    localStorage.setItem('cb_notification_preferences', JSON.stringify(updated));
+    dsp({ t: 'TOAST', d: { type: 'success', msg: `Notification preference updated!` } });
+  };
+
+  const Switch = ({ active, onToggle }) => (
+    <div 
+      onClick={onToggle}
+      style={{
+        width: 44,
+        height: 24,
+        borderRadius: 100,
+        background: active ? '#10B981' : '#cbd5e1',
+        position: 'relative',
+        cursor: 'pointer',
+        transition: 'background-color 0.25s'
+      }}
+    >
+      <motion.div 
+        layout
+        transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+        style={{
+          width: 18,
+          height: 18,
+          borderRadius: '50%',
+          background: '#fff',
+          position: 'absolute',
+          top: 3,
+          left: active ? 23 : 3,
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}
+      />
+    </div>
+  );
+
+  return (
+    <Card className="settings-form-card card-3d-effect">
+      <h3 className="db-section-title">Notification Settings</h3>
+      <p className="db-sub-text" style={{ marginBottom: 28 }}>
+        Choose how you want to be alerted about campaign updates, brand pitches, and payment milestones.
+      </p>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {[
+          { key: 'email', label: 'Email Notifications', desc: 'Receive daily updates about campaign invites and new payouts.', icon: '📧' },
+          { key: 'whatsapp', label: 'WhatsApp Alerts', desc: 'Get instant notifications on your WhatsApp for direct brand pitches.', icon: '💬' },
+          { key: 'push', label: 'Browser Push Notifications', desc: 'Real-time alert inside the browser when a brand reviews your application.', icon: '🔔' },
+          { key: 'sms', label: 'SMS Alerts', desc: 'Receive offline SMS alerts for escrow releases.', icon: '📱' },
+        ].map(item => (
+          <div key={item.key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, padding: '16px 20px', background: 'rgba(15, 23, 42, 0.02)', borderRadius: 16, border: '1px solid #F1F5F9' }}>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+              <span style={{ fontSize: 20 }}>{item.icon}</span>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 900, color: '#0f172a' }}>{item.label}</div>
+                <div style={{ fontSize: 12, color: '#64748b', fontWeight: 650, marginTop: 2 }}>{item.desc}</div>
+              </div>
+            </div>
+            <Switch active={prefs[item.key]} onToggle={() => toggle(item.key)} />
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+};
+
+// ─── NEW: BILLING SETTINGS TAB ───────────────────────────────────────────────
+const BillingSettingsTab = ({ isPro, handleUpgradeClick }) => {
+  return (
+    <Card className="settings-form-card card-3d-effect">
+      <h3 className="db-section-title">Subscription & Billing</h3>
+      <p className="db-sub-text" style={{ marginBottom: 28 }}>Manage your CreatorBharat membership and billing history.</p>
+
+      {/* Subscription Card */}
+      <div 
+        style={{
+          background: isPro ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.02))' : 'linear-gradient(135deg, rgba(255, 148, 49, 0.06), rgba(255, 148, 49, 0.02))',
+          borderRadius: 24,
+          padding: 28,
+          color: 'var(--db-text-primary, #0f172a)',
+          border: `1.5px solid ${isPro ? '#10B981' : '#FF9431'}`,
+          position: 'relative',
+          overflow: 'hidden',
+          boxShadow: 'var(--db-card-shadow)'
+        }}
+      >
+        <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: isPro ? 'radial-gradient(circle, rgba(16,185,129,0.1), transparent 70%)' : 'radial-gradient(circle, rgba(255,148,49,0.1), transparent 70%)', pointerEvents: 'none' }} />
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
+          <div>
+            <span style={{ fontSize: 10, fontWeight: 900, background: isPro ? '#10B981' : 'rgba(255,148,49,0.1)', color: isPro ? '#fff' : '#FF9431', padding: '4px 10px', borderRadius: 100, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+              {isPro ? 'PRO ACTIVE' : 'FREE TIER'}
+            </span>
+            <h4 style={{ fontSize: 24, fontWeight: 950, margin: '8px 0 2px', fontFamily: 'Outfit', color: 'var(--db-text-primary, #0f172a)' }}>
+              {isPro ? 'Creator Pro Plan' : 'Free Basic Listing'}
+            </h4>
+            <p style={{ fontSize: 12, color: 'var(--db-text-secondary, #475569)', margin: 0, fontWeight: 600 }}>
+              {isPro ? 'Valid until June 2027 · Renewal: ₹0' : 'Upgrade to unlock verified discovery & analytics'}
+            </p>
+          </div>
+          <div style={{ fontSize: 28, fontWeight: 950, fontFamily: 'Outfit', color: 'var(--db-text-primary, #0f172a)' }}>
+            {isPro ? '₹0' : '₹199'}<span style={{ fontSize: 13, fontWeight: 700, color: 'var(--db-text-secondary, #475569)' }}> / lifetime</span>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24 }}>
+          {[
+            { label: 'Marketplace Search Indexing', free: true, pro: true },
+            { label: 'Campaign Proposals', free: '1/month', pro: 'Unlimited' },
+            { label: 'Interactive 3D Analytics & Charts', free: false, pro: true },
+            { label: 'Verification Badge (Elite Blue Tick)', free: false, pro: true },
+            { label: 'Priority Search Discovery Rank', free: false, pro: true },
+            { label: 'Withdraw Payouts Instantly', free: true, pro: true },
+          ].map((feat, idx) => (
+            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--db-text-secondary, #475569)', fontWeight: 600 }}>
+              <div style={{ width: 16, height: 16, borderRadius: '50%', background: (typeof feat.free === 'string' || feat.free) ? '#10B981' : '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span style={{ fontSize: 10, color: '#fff' }}>✓</span>
+              </div>
+              <span style={{ flex: 1 }}>{feat.label}</span>
+              <span style={{ fontSize: 11, fontWeight: 900, color: '#FF9431' }}>
+                {isPro ? (feat.pro === true ? 'Yes' : feat.pro) : (feat.free === true ? 'Yes' : feat.free === false ? 'No' : feat.free)}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {!isPro && (
+          <button 
+            onClick={handleUpgradeClick}
+            style={{
+              width: '100%',
+              padding: '14px',
+              borderRadius: 14,
+              background: 'linear-gradient(135deg, #FF9431, #EA580C)',
+              color: '#fff',
+              fontWeight: 950,
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: 13,
+              boxShadow: '0 8px 20px rgba(255,148,49,0.35)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8
+            }}
+          >
+            <Sparkles size={16} fill="#fff" /> Upgrade to Pro Elite
+          </button>
+        )}
+      </div>
+    </Card>
+  );
+};
+BillingSettingsTab.propTypes = {
+  isPro: PropTypes.bool.isRequired,
+  handleUpgradeClick: PropTypes.func.isRequired
+};
+
+// ─── NEW: CHECKOUT MODAL ──────────────────────────────────────────────────────
+const UpgradeModal = ({ isOpen, onClose, onPaymentSuccess }) => {
+  const [step, setStep] = useState('summary'); // summary -> processing -> success
+  const [method, setMethod] = useState('upi');
+
+  if (!isOpen) return null;
+
+  const handlePay = () => {
+    setStep('processing');
+    setTimeout(() => {
+      setStep('success');
+      setTimeout(() => {
+        onPaymentSuccess();
+        onClose();
+        setStep('summary');
+      }, 1800);
+    }, 2000);
+  };
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, background: 'rgba(15,23,42,0.7)', backdropFilter: 'blur(8px)' }}>
+      <motion.div
+        initial={{ scale: 0.93, opacity: 0, y: 15 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.93, opacity: 0 }}
+        style={{
+          background: '#fff',
+          borderRadius: 28,
+          padding: 32,
+          maxWidth: 400,
+          width: '100%',
+          boxShadow: '0 30px 60px rgba(0,0,0,0.25)',
+          color: '#0f172a',
+          position: 'relative'
+        }}
+      >
+        {step !== 'processing' && (
+          <button onClick={onClose} style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', color: '#94a3b8', fontSize: 18, cursor: 'pointer' }}>✕</button>
+        )}
+
+        {step === 'summary' && (
+          <div>
+            <div style={{ width: 56, height: 56, borderRadius: 16, background: 'rgba(255,148,49,0.1)', color: '#FF9431', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+              <Sparkles size={24} fill="currentColor" />
+            </div>
+            <h3 style={{ fontSize: 20, fontWeight: 950, textAlign: 'center', margin: '0 0 4px', fontFamily: 'Outfit' }}>Razorpay Secure Payment</h3>
+            <p style={{ fontSize: 13, color: '#64748b', textAlign: 'center', margin: '0 0 24px', fontWeight: 600 }}>Upgrade to Creator Pro Lifetime Plan</p>
+
+            <div style={{ background: '#f8fafc', padding: 18, borderRadius: 16, border: '1px solid #e2e8f0', marginBottom: 24 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 800, color: '#64748b', marginBottom: 8 }}>
+                <span>Order ID</span>
+                <span style={{ color: '#0f172a' }}>CB-PRO-{Date.now().toString().slice(-6)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 800, color: '#64748b', marginBottom: 12 }}>
+                <span>Package Plan</span>
+                <span style={{ color: '#0f172a' }}>Pro Elite Lifetime</span>
+              </div>
+              <div style={{ height: 1, background: '#e2e8f0', marginBottom: 12 }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 16, fontWeight: 950, color: '#0f172a' }}>
+                <span>Total Amount</span>
+                <span style={{ color: '#10B981' }}>₹199.00</span>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 24 }}>
+              <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 8 }}>Select Payment Method</label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {[
+                  { id: 'upi', label: 'UPI (Google Pay / PhonePe)', sub: 'Fast & Secure instant checkout', icon: '⚡' },
+                  { id: 'card', label: 'Credit / Debit Card', sub: 'Visa, Mastercard, RuPay', icon: '💳' },
+                ].map(m => (
+                  <div 
+                    key={m.id} 
+                    onClick={() => setMethod(m.id)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderRadius: 14,
+                      border: `1.5px solid ${method === m.id ? '#FF9431' : '#e2e8f0'}`,
+                      background: method === m.id ? 'rgba(255,148,49,0.04)' : '#fff',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <span style={{ fontSize: 20 }}>{m.icon}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 13, fontWeight: 900, color: '#0f172a' }}>{m.label}</div>
+                      <div style={{ fontSize: 11, color: '#64748b', fontWeight: 650 }}>{m.sub}</div>
+                    </div>
+                    <div style={{ width: 16, height: 16, borderRadius: '50%', border: `1.5px solid ${method === m.id ? '#FF9431' : '#cbd5e1'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {method === m.id && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#FF9431' }} />}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button 
+              onClick={handlePay}
+              style={{
+                width: '100%', padding: '16px', borderRadius: 14, background: 'linear-gradient(90deg, #FF9431, #EA580C)',
+                color: '#fff', fontSize: 14, fontWeight: 950, border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                boxShadow: '0 8px 24px rgba(255,148,49,0.2)'
+              }}
+            >
+              Secure Checkout — Pay ₹199
+            </button>
+          </div>
+        )}
+
+        {step === 'processing' && (
+          <div style={{ textAlign: 'center', padding: '24px 0' }}>
+            <div style={{ display: 'inline-block', width: 48, height: 48, borderRadius: '50%', border: '4px solid rgba(255,148,49,0.1)', borderTopColor: '#FF9431', animation: 'spin 1s linear infinite' }} />
+            <h4 style={{ fontSize: 16, fontWeight: 950, marginTop: 24, marginBlockEnd: 4, fontFamily: 'Outfit' }}>Processing Transaction...</h4>
+            <p style={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>Please do not close or reload this page.</p>
+          </div>
+        )}
+
+        {step === 'success' && (
+          <div style={{ textAlign: 'center', padding: '16px 0' }}>
+            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(16,185,129,0.1)', color: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 28 }}>✓</div>
+            <h4 style={{ fontSize: 18, fontWeight: 950, marginBlockEnd: 4, fontFamily: 'Outfit', color: '#10B981' }}>Payment Successful!</h4>
+            <p style={{ fontSize: 13, color: '#64748b', fontWeight: 600, marginBlockEnd: 0 }}>Welcome to Creator Pro Elite. Your dashboard has been unlocked.</p>
+          </div>
+        )}
+      </motion.div>
+    </div>
+  );
+};
+UpgradeModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onPaymentSuccess: PropTypes.func.isRequired
+};
+
+// ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
 export default function SettingsPage() {
   const { st, dsp } = useApp();
   const navigate = useNavigate();
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [saving, setSaving] = useState(false);
+  const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
 
   const role = st.user?.role || 'creator';
+  const isPro = st.isPro || localStorage.getItem('cb_is_pro') === 'true';
 
   // State for tabs
   const [tab, setTab] = useState(role === 'brand' ? 'brandProfile' : 'sponsor');
@@ -396,7 +817,7 @@ export default function SettingsPage() {
         bio: st.user.bio || ''
       });
     }
-  }, [st.user]);
+  }, [st.user, role]);
 
   useEffect(() => {
     const h = () => setMob(globalThis.innerWidth < 768);
@@ -428,6 +849,13 @@ export default function SettingsPage() {
     setSaving(false);
   };
 
+  const handlePaymentSuccess = () => {
+    dsp({ t: 'SET_PRO' });
+    localStorage.setItem('cb_portfolio_active', 'true');
+    localStorage.setItem('cb_verification_status', 'APPROVED');
+    dsp({ t: 'TOAST', d: { type: 'success', msg: 'Subscribed to Creator Pro successfully! 🎉' } });
+  };
+
   if (!st.user) {
     return <AuthGatekeeper mob={mob} />;
   }
@@ -438,6 +866,9 @@ export default function SettingsPage() {
     { id: 'security', label: 'Account Security', icon: Lock }
   ] : [
     { id: 'sponsor', label: 'Sponsored Posts', icon: Megaphone },
+    { id: 'payout', label: 'Payout Settings', icon: CreditCard },
+    { id: 'notifications', label: 'Notification Prefs', icon: Bell },
+    { id: 'billing', label: 'Billing & Sub', icon: Sparkles },
     { id: 'security', label: 'Account Security', icon: Lock }
   ];
 
@@ -514,6 +945,24 @@ export default function SettingsPage() {
                   </motion.div>
                )}
 
+               {tab === 'payout' && role === 'creator' && (
+                  <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="payout">
+                     <PayoutSettingsTab c={creatorProfile} st={st} />
+                  </motion.div>
+               )}
+
+               {tab === 'notifications' && role === 'creator' && (
+                  <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="notifications">
+                     <NotificationsSettingsTab />
+                  </motion.div>
+               )}
+
+               {tab === 'billing' && role === 'creator' && (
+                  <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="billing">
+                     <BillingSettingsTab isPro={isPro} handleUpgradeClick={() => setIsUpgradeOpen(true)} />
+                  </motion.div>
+               )}
+
                {tab === 'security' && (
                   <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="security">
                      <SecurityTabContent st={st} />
@@ -523,6 +972,16 @@ export default function SettingsPage() {
          </div>
 
       </div>
+
+      <AnimatePresence>
+        {isUpgradeOpen && (
+          <UpgradeModal 
+            isOpen={isUpgradeOpen} 
+            onClose={() => setIsUpgradeOpen(false)} 
+            onPaymentSuccess={handlePaymentSuccess} 
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

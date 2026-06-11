@@ -273,3 +273,66 @@ export function derivePlatformAnalytics(creators = [], campaigns = []) {
     topCities,
   };
 }
+
+export async function updateCreatorProfile(profileData) {
+  try {
+    const body = {
+      name: profileData.name,
+      bio: profileData.bio,
+      city: profileData.city,
+      state: profileData.state,
+      district: profileData.district,
+      niche: profileData.niche,
+      platform: profileData.platform,
+      followers: parseInt(profileData.followers) || 0,
+      engagementRate: parseFloat(profileData.engagementRate) || 0,
+      instagram: profileData.instagram,
+      youtube: profileData.youtube,
+      twitter: profileData.twitter,
+      rateMin: parseInt(profileData.rateMin) || 0,
+      rateMax: parseInt(profileData.rateMax) || 0,
+      services: profileData.services,
+      languages: profileData.languages,
+      responseTime: profileData.responseTime,
+      photo: profileData.photo,
+      coverPhoto: profileData.coverPhoto,
+      portfolio: profileData.portfolio,
+      fullStory: profileData.fullStory || profileData.full_story,
+      awards: profileData.awards,
+      collabs: profileData.collabs,
+      milestones: profileData.milestones,
+      viralContent: profileData.viralContent || profileData.viral_content,
+      caseStudies: profileData.caseStudies || profileData.case_studies,
+      sponsoredPosts: profileData.sponsoredPosts || profileData.sponsored_posts,
+      socialLinks: profileData.socialLinks || profileData.social_links
+    };
+
+    const res = await apiCall('/creators/me', {
+      method: 'PUT',
+      body
+    });
+
+    if (_cache.creators) {
+      const idx = _cache.creators.findIndex(x => x.email === res.email || x.id === res.id);
+      if (idx !== -1) {
+        _cache.creators[idx] = getEnrichedCreator(res);
+      } else {
+        _cache.creators.push(getEnrichedCreator(res));
+      }
+    }
+    const local = LS.get('cb_creators', []);
+    const lIdx = local.findIndex(x => x.email === res.email || x.id === res.id);
+    if (lIdx !== -1) {
+      local[lIdx] = res;
+    } else {
+      local.push(res);
+    }
+    LS.set('cb_creators', local);
+
+    return getEnrichedCreator(res);
+  } catch (err) {
+    console.error('updateCreatorProfile failed:', err.message);
+    throw err;
+  }
+}
+

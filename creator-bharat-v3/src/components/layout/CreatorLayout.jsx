@@ -28,6 +28,7 @@ import {
   Trophy,
   Search,
   PanelLeft,
+  Plus,
   Sparkles,
   MessageSquare
 } from 'lucide-react';
@@ -103,8 +104,8 @@ const DropdownItem = ({ icon: Icon, label, onClick, danger }) => {
         padding: '9px 12px',
         borderRadius: 10,
         border: 'none',
-        background: hover ? (danger ? 'rgba(239,68,68,0.08)' : '#F8FAFC') : 'transparent',
-        color: danger ? '#EF4444' : '#475569',
+        background: hover ? (danger ? 'rgba(239,68,68,0.08)' : 'var(--db-bg, #F8FAFC)') : 'transparent',
+        color: danger ? '#EF4444' : 'var(--db-text-secondary, #475569)',
         fontSize: '13px',
         fontWeight: 700,
         cursor: 'pointer',
@@ -113,7 +114,7 @@ const DropdownItem = ({ icon: Icon, label, onClick, danger }) => {
         fontFamily: 'inherit'
       }}
     >
-      <Icon size={15} color={danger ? '#EF4444' : '#94A3B8'} />
+      <Icon size={15} color={danger ? '#EF4444' : 'var(--db-text-muted, #94A3B8)'} />
       {label}
     </button>
   );
@@ -149,6 +150,28 @@ const PAGE_LABELS = {
   '/creator/help': 'Help & Support',
 };
 
+const PAGE_HINTS = {
+  '/creator/dashboard': 'Your deals, portfolio health, payouts, and growth signals in one workspace.',
+  '/creator/profile': 'Shape the media kit brands see before they shortlist you.',
+  '/creator/public-preview': 'Preview the public proof layer that builds trust with partners.',
+  '/creator/verification': 'Complete checks that unlock higher intent brand workflows.',
+  '/creator/opportunities': 'Discover campaign briefs, monthly missions, and creator rewards.',
+  '/creator/applications': 'Track every pitch from applied to selected to payout.',
+  '/creator/brand-requests': 'Review inbound brand interest and respond with confidence.',
+  '/creator/achievements': 'Follow your milestones, badges, and growth unlocks.',
+  '/creator/calendar': 'Plan shoots, deadlines, launches, and payout dates.',
+  '/creator/events': 'Stay close to summits, meetups, and creator community moments.',
+  '/creator/community': 'Connect with creators, updates, and platform conversations.',
+  '/creator/messages': 'Manage brand conversations without losing context.',
+  '/creator/saved': 'Keep promising campaigns ready for later.',
+  '/creator/wallet': 'Monitor escrow, payouts, fees, and commercial momentum.',
+  '/creator/monetization': 'Tune your packages, rate cards, and revenue channels.',
+  '/creator/analytics': 'Understand reach, audience quality, and conversion signals.',
+  '/creator/score': 'Improve the signals that make your profile more discoverable.',
+  '/creator/settings': 'Control account, billing, notifications, and security.',
+  '/creator/help': 'Find answers and support for creator workflows.',
+};
+
 // ─── Main Layout ─────────────────────────────────────────────────────────────
 export default function CreatorLayout({ children }) {
   const { st, dsp } = useApp();
@@ -161,6 +184,7 @@ export default function CreatorLayout({ children }) {
   const profileRef = useRef(null);
 
   const pageLabel = PAGE_LABELS[location.pathname] || 'Creator Hub';
+  const pageHint = PAGE_HINTS[location.pathname] || 'Run your CreatorBharat workspace with sharper focus.';
   const isVerified = localStorage.getItem('cb_verification_status') === 'APPROVED';
 
   useEffect(() => {
@@ -277,7 +301,7 @@ export default function CreatorLayout({ children }) {
                   fontSize: 15,
                   fontWeight: 900,
                   letterSpacing: '-0.02em',
-                  color: '#FFFFFF',
+                  color: 'var(--db-text-primary, #101828)',
                   whiteSpace: 'nowrap',
                   lineHeight: 1,
                 }}>
@@ -319,22 +343,13 @@ export default function CreatorLayout({ children }) {
           {/* Footer */}
           <div className="db-sidebar-footer">
             {!collapsed && (
-              <div style={{
-                margin: '0 0 10px',
-                padding: '12px 14px',
-                background: 'linear-gradient(135deg, rgba(255,148,49,0.12), rgba(255,148,49,0.04))',
-                borderRadius: 12,
-                border: '1px solid rgba(255,148,49,0.18)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10
-              }}>
-                <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(255,148,49,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Sparkles size={15} color="#FF9431" />
+              <div className="creator-sidebar-pro-card">
+                <div className="creator-sidebar-pro-icon">
+                  <Sparkles size={15} />
                 </div>
                 <div>
-                  <div style={{ fontSize: 11, fontWeight: 800, color: '#FFFFFF', lineHeight: 1.2 }}>Go Pro Creator</div>
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>Unlock all features</div>
+                  <div className="creator-sidebar-pro-title">Creator Pro</div>
+                  <div className="creator-sidebar-pro-copy">Insights, media kit, priority briefs</div>
                 </div>
               </div>
             )}
@@ -386,6 +401,7 @@ export default function CreatorLayout({ children }) {
                   <ChevronRight size={13} />
                   <span className="db-header-breadcrumb-current">{pageLabel}</span>
                 </div>
+                <div className="db-header-page-hint">{pageHint}</div>
               </>
             )}
 
@@ -395,7 +411,7 @@ export default function CreatorLayout({ children }) {
                 <Search size={14} className="db-header-search-icon" />
                 <input
                   className="db-header-search-input"
-                  placeholder="Search anything..."
+                  placeholder="Search campaigns, messages, payouts..."
                   value={searchVal}
                   onChange={e => setSearchVal(e.target.value)}
                 />
@@ -405,6 +421,16 @@ export default function CreatorLayout({ children }) {
 
           {/* Right Actions */}
           <div className="db-header-right">
+            {!mob && (
+              <button
+                className="creator-quick-create"
+                onClick={() => navigate('/creator/opportunities')}
+              >
+                <Plus size={15} />
+                Create Pitch
+              </button>
+            )}
+
             <NotificationDropdown />
 
             <div style={{ width: 1, height: 24, background: '#E2E8F0', flexShrink: 0 }} />
@@ -420,7 +446,7 @@ export default function CreatorLayout({ children }) {
                   <div style={{ textAlign: 'left' }}>
                     <p className="db-user-name">{userName.split(' ')[0]}</p>
                     <p className="db-user-role">
-                      {isVerified ? '✓ Verified' : 'Creator'}
+                      {isVerified ? 'Verified' : 'Creator'}
                     </p>
                   </div>
                 )}
@@ -463,7 +489,7 @@ export default function CreatorLayout({ children }) {
                             {userName}
                           </p>
                           <p style={{ fontSize: 10, fontWeight: 700, color: isVerified ? '#10B981' : '#FF9431', margin: '2px 0 0', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                            {isVerified ? '✓ Verified Creator' : 'Creator'}
+                            {isVerified ? 'Verified Creator' : 'Creator'}
                           </p>
                         </div>
                       </div>

@@ -113,17 +113,17 @@ export default function VerificationPage() {
 
           {/* Action Button */}
           {verificationStatus === 'DRAFT' && !profileCompleted && (
-            <Btn full lg onClick={() => navigate('/creator/profile')} style={{ background: '#0f172a', color: '#fff', borderRadius: 16, marginTop: 16 }}>
+            <Btn full lg onClick={() => navigate('/creator/profile')} style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', border: 'none', borderRadius: 16, marginTop: 16 }}>
               Complete Profile Builder <ArrowRight size={18} />
             </Btn>
           )}
           {verificationStatus === 'DRAFT' && profileCompleted && (
-            <Btn full lg onClick={() => navigate('/creator/dashboard')} style={{ background: '#FF9431', color: '#fff', borderRadius: 16, marginTop: 16 }}>
+            <Btn full lg onClick={() => navigate('/creator/dashboard')} style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', border: 'none', borderRadius: 16, marginTop: 16 }}>
               Submit for Verification <ArrowRight size={18} />
             </Btn>
           )}
           {verificationStatus === 'APPROVED' && (
-            <Btn full lg onClick={() => navigate(`/creator/${c.handle || c.id || 'elite'}`)} style={{ background: '#10B981', color: '#fff', borderRadius: 16, marginTop: 16 }}>
+            <Btn full lg onClick={() => navigate(`/creator/${c.handle || c.id || 'elite'}`)} style={{ background: 'linear-gradient(90deg, #10B981, #059669)', color: '#fff', border: 'none', borderRadius: 16, marginTop: 16 }}>
               View Live Public Profile <ArrowRight size={18} />
             </Btn>
           )}
@@ -155,10 +155,10 @@ export default function VerificationPage() {
           </Card>
 
           {/* Benefits Card */}
-          <Card style={{ padding: 28, background: '#0f172a', color: '#fff', borderRadius: 28 }}>
+          <Card className="card-3d-effect" style={{ padding: 28, background: 'linear-gradient(135deg, rgba(255, 148, 49, 0.06), rgba(16, 185, 129, 0.03))', border: '1px solid rgba(255,148,49,0.15)', borderRadius: 28 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
               <Zap size={18} color="#FF9431" fill="#FF9431" />
-              <span style={{ fontSize: 14, fontWeight: 900 }}>Verified Badge Benefits</span>
+              <span style={{ fontSize: 14, fontWeight: 900, color: 'var(--db-text-primary, #0f172a)' }}>Verified Badge Benefits</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {[
@@ -171,7 +171,7 @@ export default function VerificationPage() {
               ].map(b => (
                 <div key={b} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <CheckCircle2 size={14} color="#10B981" />
-                  <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>{b}</span>
+                  <span style={{ fontSize: 13, color: 'var(--db-text-secondary, #475569)', fontWeight: 600 }}>{b}</span>
                 </div>
               ))}
             </div>

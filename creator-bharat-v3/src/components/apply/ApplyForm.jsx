@@ -15,6 +15,8 @@ import { Btn, Fld } from '@/components/common/Primitives';
 
 import { INDIAN_STATES, MAJOR_CITIES, STATE_CITY_MAP } from '../../utils/geo';
 
+import { apiCall } from '../../utils/api';
+
 // Simplified 1-step registration flow
 export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
   const [loading, setLoading] = useState(false);
@@ -108,20 +110,29 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
     }, 800);
   };
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const cleanHandle = F.handle || F.name.toLowerCase().replace(/\s+/g, '');
+      const res = await apiCall('/auth/register/creator', {
+        method: 'POST',
+        body: {
+          email: F.email,
+          password: F.password,
+          name: F.name,
+          handle: cleanHandle,
+          city: F.city,
+          state: F.state
+        }
+      });
+      onSuccess(res.user, res.token);
+    } catch (err) {
+      setErrors(prev => ({ ...prev, email: err.message || 'Email already registered or handle taken' }));
+    } finally {
       setLoading(false);
-      // Simulation: Already registered check
-      if (F.email === 'exist@test.com') {
-        alert('This email is already registered. Please login instead.');
-        return;
-      }
-
-      onSuccess({ ...F, id: 'u-' + Date.now(), role: 'creator', handle: F.handle || F.name.toLowerCase().replaceAll(' ', '') });
-    }, 1100);
+    }
   };
 
   const isInactive = otpSent || timer > 0;

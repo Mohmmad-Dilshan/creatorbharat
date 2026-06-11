@@ -18,10 +18,10 @@ const T = {
   violet: '#7C3AED',
   blue: '#3B82F6',
   pink: '#EC4899',
-  navy: '#0F172A',
-  slate: '#64748B',
-  bg: '#F8FAFC',
-  border: '#F1F5F9'
+  navy: 'var(--db-text-primary, #0F172A)',
+  slate: 'var(--db-text-secondary, #64748B)',
+  bg: 'transparent',
+  border: 'var(--db-card-border, #F1F5F9)'
 };
 
 // ─── StatCard ───
@@ -30,15 +30,15 @@ const StatCard = ({ label, value, trend, trendUp, icon: Icon, color, delay }) =>
     initial={{ opacity: 0, y: 16 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay, duration: 0.4 }}
-    whileHover={{ y: -4, boxShadow: '0 20px 35px -10px rgba(15,23,42,0.06)' }}
+    whileHover={{ y: -4, borderColor: 'rgba(255, 148, 49, 0.22)', boxShadow: 'var(--db-card-shadow-hover)' }}
     style={{
-      background: '#ffffff',
+      background: 'var(--db-card-bg, #ffffff)',
       borderRadius: 24,
       padding: 24,
-      border: '1.5px solid #F1F5F9',
-      boxShadow: '0 8px 30px rgba(15,23,42,0.02)',
+      border: '1.5px solid var(--db-card-border, #F1F5F9)',
+      boxShadow: 'var(--db-card-shadow, 0 8px 30px rgba(15,23,42,0.02))',
       cursor: 'pointer',
-      transition: 'box-shadow 0.3s ease, border-color 0.3s ease'
+      transition: 'box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease'
     }}
   >
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
@@ -259,6 +259,57 @@ const PlatformDonut = ({ platforms }) => {
     </Card>
   );
 };
+
+// ─── SVG Interactive Demographics (Age) ───
+const AudienceAge = ({ segments }) => (
+  <Card style={{ padding: 28, background: '#ffffff', borderRadius: 24, border: '1px solid #F1F5F9', boxShadow: '0 8px 30px rgba(15,23,42,0.02)' }}>
+    <h3 style={{ fontSize: 16, fontWeight: 900, color: T.navy, marginBottom: 20, fontFamily: 'Outfit' }}>Age Demographics</h3>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+      {segments.map((seg, idx) => (
+        <div key={seg.label} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700, color: T.navy }}>
+            <span>{seg.label}</span>
+            <span style={{ fontWeight: 900, color: seg.color }}>{seg.pct}%</span>
+          </div>
+          <div style={{ height: 6, background: '#F1F5F9', borderRadius: 100, overflow: 'hidden' }}>
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: `${seg.pct}%` }}
+              transition={{ duration: 0.8, delay: idx * 0.1 }}
+              style={{ height: '100%', background: seg.color, borderRadius: 100 }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  </Card>
+);
+
+// ─── Top Performing Content List ───
+const TopContent = ({ items }) => (
+  <Card style={{ padding: 28, background: '#ffffff', borderRadius: 24, border: '1px solid #F1F5F9', boxShadow: '0 8px 30px rgba(15,23,42,0.02)' }}>
+    <h3 style={{ fontSize: 16, fontWeight: 900, color: T.navy, marginBottom: 20, fontFamily: 'Outfit' }}>Top Performing Content</h3>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {items.map((item, idx) => (
+        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', background: '#F8FAFC', borderRadius: 16, border: '1px solid #F1F5F9' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(255,148,49,0.1)', color: T.saffron, display: 'grid', placeItems: 'center' }}>
+              <Play size={18} fill="currentColor" />
+            </div>
+            <div>
+              <h4 style={{ fontSize: 14, fontWeight: 900, color: T.navy, margin: 0 }}>{item.title}</h4>
+              <p style={{ fontSize: 11, color: T.slate, margin: '2px 0 0', fontWeight: 650 }}>{item.platform} • {item.date}</p>
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <span style={{ fontSize: 14, fontWeight: 950, color: T.navy, fontFamily: 'Outfit, sans-serif' }}>{item.views}</span>
+            <p style={{ fontSize: 10, color: T.emerald, margin: 0, fontWeight: 800 }}>{item.er}% ER</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </Card>
+);
 
 export default function AnalyticsPage() {
   const { st, dsp } = useApp();

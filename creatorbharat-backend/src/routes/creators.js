@@ -69,7 +69,10 @@ router.put('/me', auth, async (req, res) => {
       name, bio, city, state, district, niche, platform,
       followers, engagementRate, instagram, youtube, twitter,
       rateMin, rateMax, services, languages, responseTime,
-      photo, coverPhoto, portfolio
+      photo, coverPhoto, portfolio,
+      fullStory, awards, collabs, milestones, viralContent,
+      caseStudies, sponsoredPosts, socialLinks,
+      upiId, bankName, accountHolder, accountNo, ifscCode
     } = req.body;
 
     const updated = await prisma.creator.update({
@@ -82,7 +85,10 @@ router.put('/me', auth, async (req, res) => {
         rateMin: parseInt(rateMin)||0,
         rateMax: parseInt(rateMax)||0,
         services, languages, responseTime,
-        photo, coverPhoto, portfolio
+        photo, coverPhoto, portfolio,
+        fullStory, awards, collabs, milestones, viralContent,
+        caseStudies, sponsoredPosts, socialLinks,
+        upiId, bankName, accountHolder, accountNo, ifscCode
       }
     });
 

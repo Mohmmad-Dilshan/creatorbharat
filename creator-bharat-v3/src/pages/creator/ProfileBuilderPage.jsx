@@ -12,6 +12,7 @@ import {
   AtSign, Video, MessageSquare
 } from 'lucide-react';
 import AuthGatekeeper from '../../components/auth/AuthGatekeeper';
+import { updateCreatorProfile } from '../../utils/platformService';
 
 // ─── Step Nav Item ──────────────────────────────────────────────────────────
 const StepNavItem = ({ id, label, icon: Icon, active, completed, onClick }) => (
@@ -715,9 +716,9 @@ MobileTabSelector.propTypes = {
 // ─── Helper Functions ──────────────────────────────────────────────────────────
 const getDefaultCreator = (st, allC) => 
   st.user?.creatorProfile || st.creatorProfile || allC.find(cr => cr.email === st.user?.email) || {
-    name: st.user?.name || '', email: st.user?.email || '', bio: '', city: '', state: '',
+    name: st.user?.name || '', email: st.user?.email || '', bio: '', city: st.user?.city || '', state: st.user?.state || '',
     instagram: '', youtube: '', rateMin: '', rateMax: '', portfolio: '',
-    followers: 125000, score: 85, gallery: [], full_story: { p1: '', quote: '', p2: '', p3: '' },
+    followers: 0, score: 85, gallery: [], full_story: { p1: '', quote: '', p2: '', p3: '' },
     milestones: [], services: [], awards: [], collabs: []
   };
 
@@ -842,11 +843,7 @@ export default function ProfileBuilderPage() {
 
   const saveProfile = async () => {
     setSaving(true);
-    await new Promise(r => setTimeout(r, 700));
-    if (st.role === 'creator') {
-      const allCreators = LS.get('cb_creators', []);
-      const existingIdx = allCreators.findIndex(cr => cr.email === st.user?.email);
-      
+    try {
       const filteredGallery = F.gallery.filter(Boolean);
       const filteredMilestones = F.milestones.filter(m => m.y && m.t);
       const filteredServices = F.services.filter(s => s.t && s.rate);
@@ -869,43 +866,40 @@ export default function ProfileBuilderPage() {
         instagram: F.instagram, youtube: F.youtube, rateMin: F.rateMin, rateMax: F.rateMax,
         portfolio: F.portfolio, gallery: filteredGallery,
         photo: F.photo || c.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(F.name || st.user.name)}`,
-        full_story: { p1: F.storyP1, quote: F.storyQuote, p2: F.storyP2, p3: F.storyP3 },
+        fullStory: { p1: F.storyP1, quote: F.storyQuote, p2: F.storyP2, p3: F.storyP3 },
         awards: filteredAwards, collabs: filteredCollabs, milestones: filteredMilestones,
-        services: filteredServices, viral_content: filteredViral, case_studies: filteredCaseStudies,
+        services: filteredServices, viralContent: filteredViral, caseStudies: filteredCaseStudies,
         philosophy: F.philosophy,
-        ai_intel: F.aiMatch && F.aiSummary ? {
-          match: F.aiMatch, summary: F.aiSummary,
-          stats: [
-            { l: 'Brand Safety', v: F.aiSafety || '99% Secure' },
-            { l: 'Retention Score', v: F.aiRetention || 'Excellent' },
-            { l: 'ROI Potential', v: F.aiRoi || '5.2x' }
-          ]
-        } : null,
-        local_voice: F.localVoice, local_penetration: F.localPenetration,
-        regional_dialects: F.regionalDialects, local_impact_hubs: filteredLocalHubs,
-        local_collab: !!(F.localVoice || filteredLocalHubs.length > 0),
-        sponsored_posts: filteredSponsoredPosts,
-        social_links: filteredSocialLinks,
-        contact_phone: F.contactPhone, contact_method: F.contactMethod,
+        aiMatch: F.aiMatch,
+        aiSummary: F.aiSummary,
+        aiSafety: F.aiSafety,
+        aiRetention: F.aiRetention,
+        aiRoi: F.aiRoi,
+        localVoice: F.localVoice,
+        localPenetration: F.localPenetration,
+        regionalDialects: F.regionalDialects,
+        localHubs: filteredLocalHubs,
+        sponsoredPosts: filteredSponsoredPosts,
+        socialLinks: filteredSocialLinks,
+        contactPhone: F.contactPhone,
+        contactMethod: F.contactMethod,
         email: st.user?.email
       };
-      
-      if (existingIdx === -1) {
-        allCreators.push({ ...updatedProfile, id: 'c-' + Date.now() });
-      } else {
-        allCreators[existingIdx] = updatedProfile;
-      }
-      LS.set('cb_creators', allCreators);
-      
+
+      const enrichedProfile = await updateCreatorProfile(updatedProfile);
+
       const isProfileDone = !!(
         F.name && F.bio && (F.instagram || F.youtube) && F.rateMin &&
         F.storyP1 && filteredMilestones.length > 0 && filteredServices.length > 0
       );
       localStorage.setItem('cb_profile_completed', isProfileDone ? 'true' : 'false');
-      dsp({ t: 'LOGIN', u: { ...st.user, creatorProfile: updatedProfile }, role: 'creator' });
-      toast('Creator profile synced successfully! 🎉', 'success');
+      dsp({ t: 'LOGIN', u: { ...st.user, creatorProfile: enrichedProfile }, role: 'creator' });
+      toast('Creator profile synced to database! 🎉', 'success');
+    } catch (err) {
+      toast('Failed to save profile: ' + err.message, 'error');
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   };
 
   const comp = c ? fmt.completeness(c) : { pct: 0, missing: [] };

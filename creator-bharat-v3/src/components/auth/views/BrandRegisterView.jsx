@@ -6,6 +6,7 @@ import { Btn, Fld } from '@/components/common/Primitives';
 import { useApp } from '@/core/context';
 import { LS } from '../../../utils/helpers.js';
 import { INDIAN_STATES, STATE_CITY_MAP, MAJOR_CITIES } from '../../../utils/geo.js';
+import { apiCall } from '../../../utils/api.js';
 
 const PhoneVerifySection = ({ form, up, blur, errors, mob, otpSent, verified, loading, sendOTP, verifyOTP, timer }) => {
   const isInactive = otpSent || timer > 0;
@@ -232,7 +233,7 @@ const BrandRegisterView = ({ mob, setView, onSuccess }) => {
     }, 800);
   };
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     const errs = {};
     if (!form.website?.includes('.')) errs.website = 'Valid website required';
@@ -242,19 +243,24 @@ const BrandRegisterView = ({ mob, setView, onSuccess }) => {
     if (Object.keys(errs).length) return;
 
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const res = await apiCall('/auth/register/brand', {
+        method: 'POST',
+        body: {
+          email: form.email,
+          password: form.password,
+          companyName: form.companyName,
+          contactName: form.contactName,
+          industry: form.industry
+        }
+      });
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Brand registered successfully!' } });
+      onSuccess(res.user, res.token);
+    } catch (err) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Registration failed' } });
+    } finally {
       setLoading(false);
-      // Simulation: Already exists check
-      if (form.email === 'exist@test.com') {
-        dsp({ t: 'TOAST', d: { type: 'error', msg: 'Email already registered. Please login instead.' } });
-        return;
-      }
-
-      const user = { ...form, id: 'b-' + Date.now(), role: 'brand' };
-      LS.set('cb_brands', [...LS.get('cb_brands', []), user]);
-      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Brand verification initiated' } });
-      onSuccess(user);
-    }, 1100);
+    }
   };
 
   return (

@@ -43,8 +43,13 @@ export function reducer(s, a) {
       return { ...IS, page: 'home' };
     }
     case 'SET_PRO': {
-      localStorage.setItem('cb_is_pro', 'true');
-      return { ...s, isPro: true };
+      const isProVal = a.isPro !== undefined ? a.isPro : true;
+      if (isProVal) {
+        localStorage.setItem('cb_is_pro', 'true');
+      } else {
+        localStorage.removeItem('cb_is_pro');
+      }
+      return { ...s, isPro: isProVal };
     }
     case 'FOLLOW': {
       // Toggle follow — any logged-in user can follow anyone, unlimited

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../core/context';
 import { LS, fmt } from '../../utils/helpers';
@@ -8,1267 +8,1351 @@ import {
   ShieldCheck, ExternalLink, TrendingUp, Users, Zap, Briefcase,
   ChevronRight, Wallet, CheckCircle, Clock, Sparkles, Lock,
   ArrowRight, Award, Globe, Settings, Check, MapPin, Download,
-  Trophy, X, QrCode, Star, BarChart3, Bell, Copy, Play,
-  Target, Activity, IndianRupee, Heart, Eye,
-  Terminal, RotateCcw, FileText, UserX
+  Trophy, X, Copy, Play, Target, Activity, IndianRupee, Heart, Eye,
+  RefreshCw, Plus, Flame, Star, Send, ArrowUpRight, Crown
 } from 'lucide-react';
 
-// ─── Design Tokens ─────────────────────────────────────────────────────────────
-const T = {
-  saffron: '#FF9431',
-  saffronDark: '#EA580C',
-  emerald: '#10B981',
-  violet: '#7C3AED',
-  blue: '#3B82F6',
-  navy: '#0F172A',
-  slate: '#64748b',
-  slateLight: '#94a3b8',
-  bg: '#F8FAFC',
-  card: '#FFFFFF',
-  border: '#F1F5F9',
-  borderMid: '#E2E8F0',
+// ─── Design Tokens (2026 Minimalist SaaS Theme) ──────────────────────────────────
+const C = {
+  saffron: '#FF7A00', // Crisp modern saffron accent
+  green: '#10B981',   // Clean emerald green for positive metrics
+  navy: 'var(--db-text-primary, #0F172A)',    // Deep charcoal for primary text
+  slate: 'var(--db-text-secondary, #475569)',   // Slate for subtext
+  slateLight: 'var(--db-text-muted, #94A3B8)',
+  bg: 'transparent',      // Clean off-white background
+  card: 'var(--db-card-bg, #FFFFFF)',    // Crisp white cards
+  border: 'var(--db-card-border, #E2E8F0)',  // Hairline borders
+  borderLight: 'var(--db-header-border, rgba(15, 23, 42, 0.05))',
+  glass: 'var(--db-card-bg, rgba(255, 255, 255, 0.85))',
 };
 
 const fadeUp = (delay = 0) => ({
-  initial: { opacity: 0, y: 18 },
+  initial: { opacity: 0, y: 10 },
   animate: { opacity: 1, y: 0 },
-  transition: { delay, duration: 0.45, ease: [0.22, 1, 0.36, 1] }
+  transition: { delay, duration: 0.4, ease: [0.16, 1, 0.3, 1] }
 });
 
-// ─── Micro Components ───────────────────────────────────────────────────────────
-
-const GlassCard = ({ children, style = {}, className = '', hover = false, onClick }) => (
-  <motion.div
-    whileHover={hover ? { y: -5, boxShadow: '0 25px 50px -12px rgba(15,23,42,0.1), inset 0 0 0px 1px rgba(255,255,255,0.5)' } : {}}
-    onClick={onClick}
-    style={{
-      background: 'rgba(255, 255, 255, 0.82)',
-      backdropFilter: 'blur(24px) saturate(120%)',
-      borderRadius: 24,
-      border: '1px solid rgba(255, 255, 255, 0.45)',
-      boxShadow: '0 10px 40px -10px rgba(15,23,42,0.06), inset 0 1px 1.5px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(15,23,42,0.02)',
-      overflow: 'hidden',
-      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-      ...style
-    }}
-    className={className}
-  >
-    {children}
-  </motion.div>
+// ─── Mono Font Counter ──────────────────────────────────────────────────────────
+const MonoValue = ({ val, prefix = '', suffix = '' }) => (
+  <span style={{ fontFamily: 'JetBrains Mono, Space Mono, Consolas, monospace', fontWeight: 700 }}>
+    {prefix}{val}{suffix}
+  </span>
 );
 
-const Tag = ({ children, color = T.saffron, bg }) => (
+// ─── Monochromatic Dot Background ──────────────────────────────────────────────
+const AmbientDotGrid = () => (
+  <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
+    <div style={{
+      position: 'absolute', inset: 0,
+      backgroundImage: 'radial-gradient(rgba(15,23,42,0.02) 1.2px, transparent 1.2px)',
+      backgroundSize: '20px 20px',
+    }} />
+  </div>
+);
+
+// ─── Minimalist Bento Card ────────────────────────────────────────────────────────
+const BentoCard = ({ children, style = {}, hover = true, onClick, delay = 0, className = "" }) => {
+  return (
+    <motion.div
+      {...fadeUp(delay)}
+      onClick={onClick}
+      className={`cb-bento-tile ${className}`}
+      style={{
+        background: C.card,
+        borderRadius: 16,
+        border: `1px solid ${C.border}`,
+        padding: '20px',
+        overflow: 'hidden',
+        position: 'relative',
+        transition: 'all 0.25s cubic-bezier(0.16,1,0.3,1)',
+        cursor: onClick ? 'pointer' : 'default',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.01)',
+        ...style
+      }}
+      whileHover={hover ? {
+        borderColor: C.saffron + '40',
+        boxShadow: '0 4px 12px rgba(15,23,42,0.02)'
+      } : {}}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+// ─── Micro Tag Badge ─────────────────────────────────────────────────────────────
+const MiniBadge = ({ children, color = C.saffron, bg }) => (
   <span style={{
     display: 'inline-flex', alignItems: 'center', gap: 4,
-    padding: '3px 10px', borderRadius: 100,
-    fontSize: 10, fontWeight: 900, letterSpacing: '0.05em',
-    color, background: bg || color + '12',
-    border: `1px solid ${color}22`
+    padding: '3px 8px', borderRadius: 6,
+    fontSize: 9, fontWeight: 800, letterSpacing: '0.05em',
+    color, background: bg || color + '08',
+    border: `1px solid ${color}15`,
+    textTransform: 'uppercase'
   }}>
     {children}
   </span>
 );
 
-const Divider = ({ style = {} }) => (
-  <div style={{ height: 1, background: 'rgba(15, 23, 42, 0.05)', margin: '0', ...style }} />
-);
-
-// ─── StatCard ───────────────────────────────────────────────────────────────────
-const StatCard = ({ label, value, sub, icon: Icon, color, delay = 0, locked = false }) => {
-  const tints = {
-    [T.emerald]: 'linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(255,255,255,0.92) 100%)',
-    [T.violet]: 'linear-gradient(135deg, rgba(124,116,240,0.08) 0%, rgba(255,255,255,0.92) 100%)',
-    [T.saffron]: 'linear-gradient(135deg, rgba(255,148,49,0.08) 0%, rgba(255,255,255,0.92) 100%)',
-    [T.blue]: 'linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(255,255,255,0.92) 100%)',
-  };
-  
-  const glows = {
-    [T.emerald]: '0 12px 30px -8px rgba(16,185,129,0.18), 0 4px 6px -2px rgba(16,185,129,0.04)',
-    [T.violet]: '0 12px 30px -8px rgba(124,116,240,0.18), 0 4px 6px -2px rgba(124,116,240,0.04)',
-    [T.saffron]: '0 12px 30px -8px rgba(255,148,49,0.22), 0 4px 6px -2px rgba(255,148,49,0.06)',
-    [T.blue]: '0 12px 30px -8px rgba(59,130,246,0.18), 0 4px 6px -2px rgba(59,130,246,0.04)',
-  };
-  
-  const tint = locked ? 'rgba(255,255,255,0.85)' : (tints[color] || 'rgba(255,255,255,0.85)');
-  const glowShadow = locked ? '0 10px 30px -10px rgba(15,23,42,0.04)' : (glows[color] || '0 10px 30px -10px rgba(15,23,42,0.04)');
-
-  return (
-    <motion.div {...fadeUp(delay)}>
-      <GlassCard
-        hover
-        style={{
-          padding: '22px 24px',
-          background: tint,
-          border: locked ? '1px solid rgba(15,23,42,0.04)' : `1px solid ${color}35`,
-          boxShadow: glowShadow
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <p style={{ fontSize: 11, fontWeight: 800, color: T.slateLight, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
-              {label}
-            </p>
-            <p style={{ fontSize: 28, fontWeight: 950, color: locked ? T.slateLight : T.navy, margin: 0, letterSpacing: '-0.02em', lineHeight: 1.1, fontFamily: 'Outfit, sans-serif' }}>
-              {locked ? '—' : value}
-            </p>
-            {sub && !locked && (
-              <p style={{ fontSize: 11, fontWeight: 800, color: color, margin: '8px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}>
-                <TrendingUp size={12} /> {sub}
-              </p>
-            )}
-          </div>
-          <div style={{
-            width: 48, height: 48, borderRadius: 14,
-            background: locked ? '#f1f5f9' : color + '15',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            flexShrink: 0,
-            border: locked ? '1px solid #e2e8f0' : `1px solid ${color}30`,
-            boxShadow: locked ? 'none' : `inset 0 1px 2px ${color}10`
-          }}>
-            <Icon size={20} color={locked ? T.slateLight : color} />
-          </div>
-        </div>
-      </GlassCard>
-    </motion.div>
-  );
-};
-
-const ProfileHeroCard = ({ creator, verificationStatus, score, navigate, mob, dsp }) => {
+// ─── Minimalist Bento Hero Widget (spans 12 columns) ─────────────────────────────
+const BentoHero = ({ creator, verificationStatus, score, navigate, isPro, dsp }) => {
   const name = creator?.name || 'Creator';
   const handle = creator?.handle || '@' + (creator?.name?.toLowerCase()?.replace(/\s+/g, '_') || 'elite_creator');
   const isVerified = verificationStatus === 'APPROVED';
-  const followers = creator?.followers || 0;
-  const following = Math.floor(followers * 0.1);
-  const postsCount = creator?.gallery?.filter(Boolean)?.length || 0;
+  const followers = creator?.followers || 152000;
+  const nicheList = Array.isArray(creator?.niche) ? creator.niche : [creator?.niche || 'Digital Creator'];
 
   return (
-    <motion.div {...fadeUp(0.05)}>
-      <div style={{
-        background: 'linear-gradient(135deg, #090d16 0%, #111827 100%)',
-        borderRadius: 24,
-        padding: '26px 24px',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        boxShadow: '0 25px 50px -12px rgba(15,23,42,0.45), inset 0 1px 1px rgba(255,255,255,0.1)',
-        position: 'relative',
-        overflow: 'hidden'
+    <BentoCard hover={false} style={{ gridColumn: 'span 12', padding: '24px', background: C.card }}>
+      <div className="hero-flex" style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        flexWrap: 'wrap', gap: 24
       }}>
-        {/* Glow Effects */}
-        <div style={{ position: 'absolute', top: -50, right: -50, width: 150, height: 150, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255, 148, 49, 0.2) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: -50, left: -50, width: 150, height: 150, borderRadius: '50%', background: 'radial-gradient(circle, rgba(124, 116, 240, 0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        
-        {/* Tri-color Accent Bar */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg, #FF9431 33%, #FFFFFF 33%, #FFFFFF 66%, #10B981 66%)' }} />
-
-        {/* Profile Info Header */}
-        <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', alignItems: 'center', gap: 20 }}>
-          {/* Avatar with dynamic ring */}
-          <div style={{ position: 'relative', flexShrink: 0 }}>
+        {/* Profile Details Block */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          <div style={{ position: 'relative' }}>
             <div style={{
-              width: 96,
-              height: 96,
-              borderRadius: '50%',
-              padding: 3,
-              background: 'linear-gradient(135deg, #FF9431, #EA580C, #8B5CF6)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
+              width: 80, height: 80, borderRadius: '50%',
+              overflow: 'hidden', border: `1px solid ${C.border}`,
+              padding: 2, background: '#fff'
             }}>
               <img
-                src={creator?.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=FF9431&color=fff&size=90&bold=true`}
+                src={creator?.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=FF7A00&color=fff&size=80&bold=true`}
+                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
                 alt={name}
-                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '3px solid #111827' }}
               />
             </div>
             {isVerified && (
               <div style={{
-                position: 'absolute', bottom: 4, right: 4,
-                width: 24, height: 24, borderRadius: '50%',
-                background: '#10B981', border: '2px solid #111827',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 4px 8px rgba(16,185,129,0.4)'
+                position: 'absolute', bottom: 0, right: 0, width: 22, height: 22,
+                borderRadius: '50%', background: C.saffron, border: '2.5px solid #fff',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
               }}>
-                <Check size={12} color="#fff" strokeWidth={3.5} />
+                <Check size={10} color="#fff" strokeWidth={4} />
               </div>
             )}
           </div>
 
-          {/* Title & Hub info */}
-          <div style={{ flex: 1, textAlign: mob ? 'center' : 'left' }}>
-            <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', alignItems: 'center', gap: 8 }}>
-              <h2 style={{ fontSize: 24, fontWeight: 900, color: '#fff', margin: 0, fontFamily: 'Outfit, sans-serif', letterSpacing: '-0.02em' }}>
-                {name}
-              </h2>
-              {isVerified ? (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 100, fontSize: 10, fontWeight: 800, background: 'rgba(16,185,129,0.15)', color: '#10B981', border: '1px solid rgba(16,185,129,0.2)' }}>
-                  <ShieldCheck size={10} fill="#10B981" color="#111827" /> Verified Partner
-                </span>
-              ) : (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 100, fontSize: 10, fontWeight: 800, background: 'rgba(255,148,49,0.15)', color: '#FF9431', border: '1px solid rgba(255,148,49,0.2)' }}>
-                  Elite Candidate
-                </span>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <h2 style={{ fontSize: 22, fontWeight: 800, color: C.navy, margin: 0, fontFamily: 'Outfit' }}>{name}</h2>
+              {isPro && (
+                <span style={{
+                  padding: '2px 6px', borderRadius: 4, fontSize: 8, fontWeight: 900,
+                  background: C.navy, color: '#fff', letterSpacing: '0.05em'
+                }}>PRO ELITE</span>
               )}
             </div>
-            <p style={{ fontSize: 13, color: '#94a3b8', margin: '4px 0 0', fontWeight: 600 }}>
-              {handle}
-            </p>
-            <p style={{ fontSize: 12, color: '#64748b', margin: '4px 0 0', fontWeight: 500 }}>
-              📍 {creator?.city || 'Jaipur Hub'}, {creator?.state || 'Rajasthan'} · <span style={{ color: '#FF9431' }}>{Array.isArray(creator?.niche) ? creator.niche.join(', ') : creator?.niche || 'Digital Creator'}</span>
+            <p style={{ fontSize: 13, color: C.slate, margin: '2px 0 4px', fontWeight: 600 }}>{handle}</p>
+            <p style={{ fontSize: 11, color: C.slateLight, margin: 0, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span>📍 {creator?.city || 'Jaipur Hub'}</span>
+              <span>•</span>
+              <span style={{ color: C.saffron }}>{nicheList.join(' · ')}</span>
             </p>
           </div>
         </div>
 
-        {/* Stats Grid - Instagram style */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.06)',
-          borderRadius: 16,
-          padding: '12px 10px',
-          margin: '20px 0',
-          textAlign: 'center'
-        }}>
+        {/* Dashboard Stats */}
+        <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
           {[
-            { label: 'Followers', value: fmt.num(followers) },
-            { label: 'Following', value: fmt.num(following) },
-            { label: 'Posts', value: postsCount },
-            { label: 'CB Score', value: score },
-          ].map((s, idx) => (
-            <div key={s.label} style={{ borderRight: idx < 3 ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
-              <p style={{ fontSize: 18, fontWeight: 900, color: '#fff', margin: 0, fontFamily: 'Outfit, sans-serif' }}>{s.value}</p>
-              <p style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em', margin: '2px 0 0' }}>{s.label}</p>
+            { label: 'Followers', val: fmt.num(followers) },
+            { label: 'CB Score', val: score },
+            { label: 'Active Deals', val: '3 Selected' },
+            { label: 'Eng. Rate', val: '4.8%' }
+          ].map(st => (
+            <div key={st.label}>
+              <span style={{ fontSize: 9, fontWeight: 800, color: C.slateLight, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{st.label}</span>
+              <p style={{ fontSize: 20, color: C.navy, fontWeight: 700, margin: '2px 0 0', fontFamily: 'Outfit' }}>{st.val}</p>
             </div>
           ))}
         </div>
 
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', gap: 10 }}>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => {
-              const allC = JSON.parse(localStorage.getItem('cb_creators') || '[]');
-              const activeC = creator || allC.find(cr => cr.email === st.user?.email) || {};
-              navigate(`/creator/c/${activeC.id || 'elite'}`);
-            }}
+        {/* Console Action Pills */}
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={() => navigate(`/creator/c/${creator?.id || 'elite'}`)}
             style={{
-              flex: 1,
-              padding: '12px',
-              borderRadius: 12,
-              background: 'linear-gradient(135deg, #FF9431, #EA580C)',
-              border: 'none',
-              color: '#fff',
-              fontSize: 13,
-              fontWeight: 800,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 6,
-              boxShadow: '0 8px 20px rgba(255,148,49,0.25)'
+              padding: '8px 14px', borderRadius: 8, background: C.navy,
+              border: 'none', color: '#fff', fontSize: 12, fontWeight: 800, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 5
             }}
           >
-            <Eye size={14} /> View My Profile
-          </motion.button>
-          
-          <motion.button
-            whileHover={{ scale: 1.02, background: 'rgba(255,255,255,0.08)' }}
-            whileTap={{ scale: 0.98 }}
+            <Eye size={13} /> Profile
+          </button>
+          <button
             onClick={() => navigate('/creator/profile')}
             style={{
-              flex: 1,
-              padding: '12px',
-              borderRadius: 12,
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              color: '#d1d5db',
-              fontSize: 13,
-              fontWeight: 700,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 6,
-              transition: 'background-color 0.2s'
+              padding: '8px 14px', borderRadius: 8, background: '#fff',
+              border: `1px solid ${C.border}`, color: C.navy, fontSize: 12, fontWeight: 700,
+              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5
             }}
           >
-            <Settings size={14} /> Edit Profile Hub
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.05, background: 'rgba(255,255,255,0.08)' }}
-            whileTap={{ scale: 0.95 }}
+            <Settings size={13} /> Edit
+          </button>
+          <button
             onClick={() => {
-              const activeId = creator?.id || 'elite';
-              navigator.clipboard.writeText(`https://creatorbharat.com/c/${activeId}`);
-              dsp({ t: 'TOAST', d: { type: 'success', msg: 'Profile link copied to clipboard! 📋' } });
+              navigator.clipboard.writeText(`https://creatorbharat.com/c/${creator?.id || 'elite'}`);
+              dsp({ t: 'TOAST', d: { type: 'success', msg: 'Copied Link!' } });
             }}
             style={{
-              width: 42,
-              borderRadius: 12,
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              color: '#9ca3af',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'background-color 0.2s'
+              width: 32, height: 32, borderRadius: 8, background: '#fff',
+              border: `1px solid ${C.border}`, color: C.slate, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center'
             }}
-            title="Copy Share Link"
           >
-            <Copy size={14} />
-          </motion.button>
+            <Copy size={13} />
+          </button>
         </div>
-
       </div>
-    </motion.div>
+    </BentoCard>
   );
 };
 
-// ─── Trial / Portfolio Status Banner ───────────────────────────────────────────
-const PortfolioBanner = ({ verificationStatus, portfolioActive, navigate }) => {
-  if (portfolioActive) {
-    const expiryTimestamp = parseInt(localStorage.getItem('cb_portfolio_expiry') || '0');
-    const expiryDate = expiryTimestamp 
-      ? new Date(expiryTimestamp).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
-      : new Date(Date.now() + 63072000000).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }); // fallback 2 years
-      
-    return (
-      <motion.div {...fadeUp(0.08)}>
-        <div style={{
-          background: 'linear-gradient(135deg, #ECFDF5, #D1FAE5)', 
-          borderRadius: 18, padding: '16px 20px', marginBottom: 16,
-          border: '1.5px solid #6EE7B7',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: 22 }}>⚡</span>
+// ─── Analytics Lock Overlay ──────────────────────────────────────────────────────
+const AnalyticsLockOverlay = ({ onUpgradeClick }) => (
+  <div style={{
+    position: 'absolute', inset: 0, background: 'rgba(255, 255, 255, 0.82)',
+    backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
+    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+    padding: 20, textAlign: 'center', zIndex: 10, borderRadius: 'inherit'
+  }}>
+    <div style={{
+      width: 40, height: 40, borderRadius: 10, background: '#fff',
+      border: `1px solid ${C.border}`, display: 'flex',
+      alignItems: 'center', justifyContent: 'center', marginBottom: 10
+    }}>
+      <Lock size={15} color={C.saffron} />
+    </div>
+    <h4 style={{ fontSize: 13, fontWeight: 800, color: C.navy, margin: '0 0 2px', fontFamily: 'Outfit' }}>Analytics Console Gated</h4>
+    <p style={{ fontSize: 11, color: C.slate, fontWeight: 500, margin: '0 0 12px', maxWidth: 160, lineHeight: 1.4 }}>
+      Detailed view metrics and analytics require Pro Elite activation
+    </p>
+    <button
+      onClick={(e) => { e.stopPropagation(); onUpgradeClick(); }}
+      style={{
+        padding: '6px 12px', borderRadius: 6, background: C.navy,
+        border: 'none', color: '#fff', fontSize: 10, fontWeight: 800, cursor: 'pointer'
+      }}
+    >
+      Unlock with Pro Elite
+    </button>
+  </div>
+);
+
+// ─── Minimalist SVG Sparkline Views (spans 8 columns) ────────────────────────────
+const PerformancePulse = ({ views, isAnalyticsLocked, onUpgradeClick }) => {
+  const points = [
+    { x: 10, y: 95, val: 840 },
+    { x: 50, y: 80, val: 960 },
+    { x: 90, y: 50, val: 1120 },
+    { x: 130, y: 70, val: 1040 },
+    { x: 170, y: 35, val: 1350 },
+    { x: 210, y: 40, val: 1280 },
+    { x: 250, y: 10, val: 1680 }
+  ];
+  const pathData = `M 10 95 Q 30 90, 50 80 T 90 50 T 130 70 T 170 35 T 210 40 T 250 10`;
+
+  return (
+    <BentoCard
+      hover={!isAnalyticsLocked}
+      style={{
+        gridColumn: 'span 8', padding: '20px', minHeight: 300,
+        position: 'relative'
+      }}
+    >
+      {isAnalyticsLocked && <AnalyticsLockOverlay onUpgradeClick={onUpgradeClick} />}
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div>
+          <span style={{ fontSize: 9, fontWeight: 800, color: C.slateLight, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Performance Sparkline</span>
+          <h2 style={{ fontSize: 30, fontWeight: 800, color: C.navy, margin: '4px 0 0', fontFamily: 'Outfit', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <MonoValue val={views.toLocaleString()} />
+            <span style={{ fontSize: 12, fontWeight: 700, color: C.green }}>+18%</span>
+          </h2>
+        </div>
+        <div style={{ display: 'flex', gap: 4 }}>
+          {['7D', '30D', '6M'].map(t => (
+            <button key={t} style={{
+              padding: '4px 8px', borderRadius: 6, background: t === '7D' ? C.borderLight : 'transparent',
+              border: 'none', color: t === '7D' ? C.navy : C.slateLight,
+              fontSize: 10, fontWeight: 700, cursor: 'pointer'
+            }}>{t}</button>
+          ))}
+        </div>
+      </div>
+
+      {/* SVG Sparkline Graph */}
+      <div style={{ height: 160, position: 'relative' }}>
+        <svg viewBox="0 0 260 110" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
+          {/* Flat Grid guides */}
+          <line x1="10" y1="10" x2="250" y2="10" stroke={C.borderLight} strokeWidth="1" />
+          <line x1="10" y1="55" x2="250" y2="55" stroke={C.borderLight} strokeWidth="1" />
+          <line x1="10" y1="100" x2="250" y2="100" stroke={C.borderLight} strokeWidth="1" />
+
+          {/* Simple Clean Area Fill */}
+          <path d={`${pathData} L 250 100 L 10 100 Z`} fill="rgba(255, 122, 0, 0.02)" />
+
+          {/* Path Line */}
+          <motion.path
+            d={pathData}
+            fill="none"
+            stroke={C.saffron}
+            strokeWidth="2"
+            strokeLinecap="round"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.2, ease: 'easeOut' }}
+          />
+
+          {/* Anchor circles */}
+          {points.map((pt, i) => (
+            <circle
+              key={i}
+              cx={pt.x}
+              cy={pt.y}
+              r="3.5"
+              fill="#fff"
+              stroke={C.saffron}
+              strokeWidth="1.5"
+            />
+          ))}
+        </svg>
+      </div>
+    </BentoCard>
+  );
+};
+
+// ─── Command Console / Quick Actions (spans 4 columns) ──────────────────────────
+const CommandCenter = ({ navigate, isLocked }) => {
+  const items = [
+    { label: 'Opportunities', desc: 'Find brief briefs', icon: Zap, color: C.saffron, path: '/creator/opportunities', locked: isLocked },
+    { label: 'Analytics Console', desc: 'Detailed statistics', icon: Globe, color: '#6366F1', path: '/creator/analytics', locked: isLocked },
+    { label: 'SaaS Wallet', desc: 'Escrow records', icon: Wallet, color: C.green, path: '/creator/wallet', locked: false },
+    { label: 'Achievements', desc: 'Unlock milestones', icon: Trophy, color: '#F59E0B', path: '/creator/opportunities', locked: false },
+    { label: 'Messages', desc: 'Direct corporate chats', icon: Send, color: C.blue, path: '/creator/messages', locked: false },
+    { label: 'Pro Privilege', desc: 'Scale monetization', icon: Sparkles, color: '#EC4899', path: '/creator/monetization', locked: false },
+  ];
+
+  return (
+    <BentoCard style={{ gridColumn: 'span 4', padding: '20px', minHeight: 300 }}>
+      <h3 style={{ fontSize: 9, fontWeight: 800, color: C.slateLight, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 12px' }}>Console Commands</h3>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', height: 'calc(100% - 24px)' }}>
+        {items.map(a => (
+          <div
+            key={a.label}
+            onClick={() => !a.locked && navigate(a.path)}
+            style={{
+              padding: '10px', borderRadius: 10,
+              background: a.locked ? C.bg : 'transparent',
+              border: `1px solid ${a.locked ? C.borderLight : C.border}`,
+              display: 'flex', flexDirection: 'column', gap: 5,
+              cursor: a.locked ? 'not-allowed' : 'pointer',
+              opacity: a.locked ? 0.5 : 1, position: 'relative',
+              transition: 'border-color 0.2s'
+            }}
+            className="command-button"
+          >
+            {a.locked && <Lock size={9} color={C.slateLight} style={{ position: 'absolute', top: 8, right: 8 }} />}
+            <a.icon size={14} color={a.locked ? C.slateLight : a.color} />
             <div>
-              <p style={{ fontSize: 14, fontWeight: 900, color: '#065F46', margin: '0 0 2px' }}>
-                Creator Portfolio Hub Live & Active
-              </p>
-              <p style={{ fontSize: 12, fontWeight: 600, color: '#047857', margin: 0 }}>
-                Your elite listing is visible to premium brands · Visible until {expiryDate}
-              </p>
+              <p style={{ fontSize: 11, fontWeight: 700, color: C.navy, margin: 0, lineHeight: 1.1 }}>{a.label}</p>
+              <p style={{ fontSize: 9, color: C.slateLight, margin: '2px 0 0', fontWeight: 500 }}>{a.desc}</p>
             </div>
           </div>
-          <div style={{
-            padding: '7px 14px', borderRadius: 12, background: '#059669', color: '#fff', fontSize: 11, fontWeight: 900, letterSpacing: '0.05em'
-          }}>
-            LISTING LIVE
+        ))}
+      </div>
+    </BentoCard>
+  );
+};
+
+// ─── Escrow Ledger (spans 4 columns) ─────────────────────────────────────────────
+const WalletBento = ({ isLocked, navigate }) => {
+  const transactions = [
+    { title: 'Boat Promotion', date: 'Release Pending', amt: 8500, state: 'pending' },
+    { title: 'CB Pioneer Wave', date: 'June 11, 2026', amt: -199, state: 'waived' },
+    { title: 'Sponsorship Setup', date: 'June 09, 2026', amt: 4000, state: 'completed' },
+  ];
+
+  return (
+    <BentoCard style={{ gridColumn: 'span 4', padding: '20px', minHeight: 320, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      {isLocked && (
+        <div style={{
+          position: 'absolute', inset: 0, background: 'rgba(255, 255, 255, 0.82)',
+          backdropFilter: 'blur(4px)', display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', gap: 8, zIndex: 10, borderRadius: 'inherit'
+        }}>
+          <Lock size={16} color={C.saffron} />
+          <p style={{ fontSize: 11, fontWeight: 700, color: C.slate, textAlign: 'center', maxWidth: 160 }}>Unlock Escrow Ledger after verification</p>
+        </div>
+      )}
+
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <span style={{ fontSize: 9, fontWeight: 800, color: C.slateLight, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Escrow Ledger</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: C.green }}>₹12,450.00</span>
+        </div>
+
+        {/* Tabular Ledger Ledger */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
+          {transactions.map((tx, idx) => (
+            <div key={idx} style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              paddingBottom: 8, borderBottom: idx < transactions.length - 1 ? `1px solid ${C.borderLight}` : 'none'
+            }}>
+              <div>
+                <p style={{ fontSize: 11, fontWeight: 700, color: C.navy, margin: 0 }}>{tx.title}</p>
+                <span style={{ fontSize: 9, color: C.slateLight, fontWeight: 500 }}>{tx.date}</span>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: tx.amt > 0 ? C.navy : '#EF4444' }}>
+                  {tx.amt > 0 ? '+' : ''}₹{Math.abs(tx.amt)}
+                </span>
+                <span style={{
+                  display: 'block', fontSize: 8, fontWeight: 800,
+                  color: tx.state === 'completed' ? C.green : tx.state === 'pending' ? C.saffron : C.slateLight
+                }}>{tx.state.toUpperCase()}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <button
+        onClick={() => navigate('/creator/wallet')}
+        style={{
+          width: '100%', padding: '10px', borderRadius: 8,
+          background: C.navy, border: 'none', color: '#fff',
+          fontSize: 12, fontWeight: 800, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+        }}
+      >
+        <Wallet size={12} /> Open Escrow Console
+      </button>
+    </BentoCard>
+  );
+};
+
+// ─── Geography Demographics (spans 4 columns) ────────────────────────────────────
+const GeographyBento = ({ isLocked, isAnalyticsLocked, onUpgradeClick }) => {
+  const geos = [
+    { city: 'Delhi NCR', pct: 42 },
+    { city: 'Mumbai Metro', pct: 28 },
+    { city: 'Jaipur, Rajasthan', pct: 18 },
+    { city: 'Lucknow, UP', pct: 12 },
+  ];
+
+  return (
+    <BentoCard
+      hover={!isAnalyticsLocked}
+      style={{
+        gridColumn: 'span 4', padding: '20px', minHeight: 320,
+        position: 'relative'
+      }}
+    >
+      {isLocked && (
+        <div style={{
+          position: 'absolute', inset: 0, background: 'rgba(255, 255, 255, 0.82)',
+          backdropFilter: 'blur(4px)', display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', gap: 8, zIndex: 10, borderRadius: 'inherit'
+        }}>
+          <Lock size={16} color={C.saffron} />
+          <p style={{ fontSize: 11, fontWeight: 700, color: C.slate, textAlign: 'center', maxWidth: 160 }}>Unlock Geography after verification</p>
+        </div>
+      )}
+      {isAnalyticsLocked && !isLocked && <AnalyticsLockOverlay onUpgradeClick={onUpgradeClick} />}
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <span style={{ fontSize: 9, fontWeight: 800, color: C.slateLight, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Top Geographies</span>
+        <MapPin size={13} color={C.slateLight} />
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {geos.map((g, i) => (
+          <div key={g.city}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700, color: C.navy, marginBottom: 4 }}>
+              <span>{g.city}</span>
+              <span style={{ fontFamily: 'monospace' }}>{g.pct}%</span>
+            </div>
+            <div style={{ height: 3, borderRadius: 2, background: C.borderLight, overflow: 'hidden' }}>
+              <div style={{ height: '100%', background: i === 0 ? C.saffron : C.slate, width: `${g.pct}%` }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </BentoCard>
+  );
+};
+
+// ─── Milestone Tracker (spans 4 columns) ─────────────────────────────────────────
+const MilestoneBento = ({ followers, navigate }) => {
+  const MS = [
+    { label: 'Rising Creator', required: 10000, emoji: '🌱', color: C.green },
+    { label: 'Bharat Creator', required: 50000, emoji: '🏆', color: C.saffron },
+    { label: 'India Creator', required: 100000, emoji: '🇮🇳', color: '#6366F1' },
+  ];
+  const cur = followers || 152000;
+  const next = MS.find(m => cur < m.required) || MS[MS.length - 1];
+  const achieved = MS.filter(m => cur >= m.required);
+  const pct = Math.min(100, Math.round((cur / next.required) * 100));
+
+  return (
+    <BentoCard style={{ gridColumn: 'span 4', padding: '20px', minHeight: 320, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <span style={{ fontSize: 9, fontWeight: 800, color: C.slateLight, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Milestones</span>
+          <span style={{ fontSize: 9, fontWeight: 800, color: next.color }}>{pct}% TARGET</span>
+        </div>
+
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', margin: '8px 0 14px' }}>
+          <span style={{ fontSize: 22 }}>{next.emoji}</span>
+          <div>
+            <p style={{ fontSize: 12, fontWeight: 800, color: C.navy, margin: 0 }}>{next.label}</p>
+            <p style={{ fontSize: 10, color: C.slateLight, margin: 0, fontWeight: 500 }}>
+              <MonoValue val={fmt.num(cur)} /> / <MonoValue val={fmt.num(next.required)} />
+            </p>
           </div>
         </div>
-      </motion.div>
+
+        <div style={{ height: 4, borderRadius: 2, background: C.borderLight, overflow: 'hidden', marginBottom: 14 }}>
+          <div style={{ height: '100%', background: next.color, width: `${pct}%` }} />
+        </div>
+
+        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+          {achieved.map(m => (
+            <span key={m.label} style={{
+              display: 'inline-flex', alignItems: 'center', gap: 3,
+              padding: '2px 6px', borderRadius: 4, background: C.borderLight,
+              fontSize: 9, color: C.slate, fontWeight: 700
+            }}>
+              ✓ {m.emoji} {m.label.split(' ')[0]}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <button
+        onClick={() => navigate('/creator/opportunities')}
+        style={{
+          width: '100%', padding: '10px', borderRadius: 8,
+          background: '#fff', border: `1px solid ${C.border}`,
+          color: C.navy, fontSize: 12, fontWeight: 800, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+        }}
+      >
+        <Trophy size={12} color={C.saffron} /> Unlocked Rewards Hub
+      </button>
+    </BentoCard>
+  );
+};
+
+// ─── Campaigns briefings (spans 8 columns) ──────────────────────────────────────
+const CampaignsBento = ({ campaigns, isLocked, navigate }) => {
+  const images = [
+    'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=400&q=80',
+    'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=400&q=80',
+    'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=400&q=80',
+    'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=400&q=80'
+  ];
+
+  return (
+    <BentoCard style={{ gridColumn: 'span 8', padding: '20px', minHeight: 320 }}>
+      {isLocked && (
+        <div style={{
+          position: 'absolute', inset: 0, background: 'rgba(255, 255, 255, 0.82)',
+          backdropFilter: 'blur(4px)', display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', gap: 6, zIndex: 10, borderRadius: 'inherit'
+        }}>
+          <Lock size={18} color={C.saffron} />
+          <h4 style={{ fontSize: 13, fontWeight: 800, color: C.navy, margin: 0, fontFamily: 'Outfit' }}>Campaign Hub Gated</h4>
+          <p style={{ fontSize: 11, color: C.slate, fontWeight: 500, textAlign: 'center', maxWidth: 220, lineHeight: 1.4 }}>
+            Verify credentials to unlock matching corporate campaigns briefs
+          </p>
+        </div>
+      )}
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <div>
+          <span style={{ fontSize: 9, fontWeight: 800, color: C.slateLight, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Matching Campaigns</span>
+          <p style={{ fontSize: 11, color: C.slateLight, margin: '2px 0 0', fontWeight: 600 }}>Active briefings matched to your categories</p>
+        </div>
+        <button onClick={() => navigate('/creator/opportunities')} style={{
+          background: 'none', border: 'none', color: C.saffron,
+          fontSize: 11, fontWeight: 800, cursor: 'pointer'
+        }}>See all →</button>
+      </div>
+
+      {/* Clean Flat Horizontal briefings list */}
+      <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: 6 }}>
+        {campaigns.map((camp, idx) => (
+          <div
+            key={camp.id || idx}
+            onClick={() => navigate('/creator/opportunities')}
+            style={{
+              flexShrink: 0, width: 220, height: 200, borderRadius: 12,
+              border: `1px solid ${C.border}`, overflow: 'hidden', cursor: 'pointer',
+              display: 'flex', flexDirection: 'column', background: '#fff'
+            }}
+            className="campaign-mini-tile"
+          >
+            {/* Visual Cover image */}
+            <div style={{ height: 100, position: 'relative' }}>
+              <img src={images[idx % images.length]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.5))' }} />
+              <span style={{
+                position: 'absolute', top: 10, left: 10,
+                background: C.navy, color: '#fff', fontSize: 8,
+                fontWeight: 800, padding: '2px 6px', borderRadius: 4
+              }}>{camp.niche || 'Niche'}</span>
+            </div>
+            <div style={{ padding: 10, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1 }}>
+              <h4 style={{ fontSize: 12, fontWeight: 700, color: C.navy, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.2 }}>
+                {camp.title}
+              </h4>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
+                <span style={{ fontSize: 11, fontWeight: 800, color: C.green }}>₹{fmt.num(camp.budget || camp.budgetMin || 15000)}</span>
+                <span style={{ fontSize: 9, fontWeight: 700, color: C.slateLight }}>Apply Now</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </BentoCard>
+  );
+};
+
+// ─── Application Tracker (spans 4 columns) ────────────────────────────────────────
+const ApplicationPulse = ({ myApps, isLocked, navigate }) => {
+  const statusColor = s => s === 'selected' ? C.green : s === 'shortlisted' ? '#6366F1' : C.saffron;
+
+  return (
+    <BentoCard style={{ gridColumn: 'span 4', padding: '20px', minHeight: 320, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      {isLocked && (
+        <div style={{
+          position: 'absolute', inset: 0, background: 'rgba(255, 255, 255, 0.82)',
+          backdropFilter: 'blur(4px)', display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', gap: 8, zIndex: 10, borderRadius: 'inherit'
+        }}>
+          <Lock size={16} color={C.saffron} />
+          <p style={{ fontSize: 11, fontWeight: 700, color: C.slate, textAlign: 'center', maxWidth: 160 }}>Unlock Applications after verification</p>
+        </div>
+      )}
+
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <span style={{ fontSize: 9, fontWeight: 800, color: C.slateLight, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Application Tracker</span>
+          <span style={{ fontSize: 9, fontWeight: 800, color: C.navy, background: C.borderLight, padding: '2px 6px', borderRadius: 4 }}>{myApps.length}</span>
+        </div>
+
+        {myApps.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '24px 0' }}>
+            <p style={{ fontSize: 24, margin: 0 }}>📊</p>
+            <p style={{ fontSize: 11, fontWeight: 700, color: C.navy, margin: '8px 0 0' }}>No active applications</p>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 170, overflowY: 'auto' }}>
+            {myApps.slice(0, 3).map(a => (
+              <div key={a.id} style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                padding: '6px 8px', borderRadius: 8, border: `1px solid ${C.borderLight}`
+              }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <h4 style={{ fontSize: 11, fontWeight: 700, color: C.navy, margin: 0, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{a.campaignTitle}</h4>
+                </div>
+                <span style={{
+                  fontSize: 8, fontWeight: 800, color: statusColor(a.status),
+                  background: statusColor(a.status) + '08', padding: '2px 6px',
+                  borderRadius: 4, textTransform: 'uppercase', flexShrink: 0
+                }}>{a.status || 'SENT'}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <button
+        onClick={() => navigate('/creator/applications')}
+        style={{
+          width: '100%', padding: '10px', borderRadius: 8,
+          background: C.navy, border: 'none', color: '#fff',
+          fontSize: 12, fontWeight: 800, cursor: 'pointer'
+        }}
+      >
+        Open Applications Console
+      </button>
+    </BentoCard>
+  );
+};
+
+// ─── Verification Progress / Onboarding Checklist (spans 6 columns) ──────────────
+const OnboardingPanel = ({ hasIdentity, hasSocials, hasStory, hasServices, allChecksComplete, verificationStatus, handleFreeSubmit, navigate }) => {
+  const checklist = [
+    { done: hasIdentity, label: 'Identity credentials configuration' },
+    { done: hasSocials, label: 'Linked social API handlers' },
+    { done: hasStory, label: 'Narrative history and milestones' },
+    { done: hasServices, label: 'Monetized rate packets configuration' },
+  ];
+  const count = checklist.filter(s => s.done).length;
+  const pct = Math.round((count / checklist.length) * 100);
+
+  if (verificationStatus === 'APPROVED') {
+    return (
+      <BentoCard style={{ gridColumn: 'span 6', padding: '20px', minHeight: 280, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <span style={{ fontSize: 9, fontWeight: 800, color: C.slateLight, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Audience Demographics</span>
+            <span style={{ fontSize: 9, fontWeight: 800, color: C.green }}>LIVE CONNECTED</span>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {[{ label: 'Age 18-24 (Gen Z Focus)', val: 65, color: C.saffron }, { label: 'Age 25-34 (Millennials)', val: 25, color: C.navy }, { label: 'Age 35+ (Mature)', val: 10, color: C.slateLight }].map(d => (
+              <div key={d.label}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700, color: C.navy, marginBottom: 4 }}>
+                  <span>{d.label}</span>
+                  <span>{d.val}%</span>
+                </div>
+                <div style={{ height: 3, borderRadius: 2, background: C.borderLight, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', background: d.color, width: `${d.val}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: 12, background: C.bg, padding: 10, borderRadius: 10, border: `1px solid ${C.borderLight}`, marginTop: 10 }}>
+          <div style={{ flex: 1, textAlign: 'center' }}>
+            <span style={{ fontSize: 16, fontWeight: 800, color: C.saffron, fontFamily: 'monospace' }}>4.8%</span>
+            <p style={{ fontSize: 8, color: C.slateLight, fontWeight: 700, margin: 0, textTransform: 'uppercase' }}>Engagement</p>
+          </div>
+          <div style={{ flex: 1, textAlign: 'center' }}>
+            <span style={{ fontSize: 16, fontWeight: 800, color: C.green, fontFamily: 'monospace' }}>92%</span>
+            <p style={{ fontSize: 8, color: C.slateLight, fontWeight: 700, margin: 0, textTransform: 'uppercase' }}>Sentiment</p>
+          </div>
+        </div>
+      </BentoCard>
     );
   }
 
-  if (verificationStatus !== 'APPROVED') return null;
-  
-  const trialStart = parseInt(localStorage.getItem('cb_trial_start') || '0');
-  const daysUsed = trialStart ? Math.floor((Date.now() - trialStart) / 86400000) : 0;
-  const daysLeft = Math.max(0, 30 - daysUsed);
-  const isExpired = verificationStatus === 'APPROVED' && daysLeft === 0;
-  const isTrialActive = verificationStatus === 'APPROVED' && daysLeft > 0;
+  if (verificationStatus === 'PENDING_APPROVAL') {
+    const queue = [
+      { active: false, done: true, label: 'Identity configuration checking' },
+      { active: false, done: true, label: 'Early pioneer waiver activation' },
+      { active: true, done: false, label: 'Compliance board validation' },
+      { active: false, done: false, label: 'Marketplace public listing activation' }
+    ];
 
-  if (!isExpired && !isTrialActive) return null;
+    return (
+      <BentoCard style={{ gridColumn: 'span 6', padding: '20px', minHeight: 280 }}>
+        <span style={{ fontSize: 9, fontWeight: 800, color: C.slateLight, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Verification Timeline</span>
+        <p style={{ fontSize: 11, color: C.slateLight, fontWeight: 500, margin: '2px 0 16px' }}>Evaluating active credentials under queue</p>
 
-  const config = isExpired
-    ? { emoji: '⚠️', bg: 'linear-gradient(135deg, #FEF2F2, #FEE2E2)', border: '#FCA5A5', textColor: '#DC2626', subColor: '#EF4444', msg: 'Trial Expired — Portfolio Hidden', sub: 'Pay ₹199 once to stay live for 2 years', btn: 'Activate — ₹199', btnBg: '#DC2626' }
-    : daysLeft < 7
-    ? { emoji: '⏳', bg: 'linear-gradient(135deg, #FFFBEB, #FEF3C7)', border: '#FCD34D', textColor: '#D97706', subColor: '#B45309', msg: `Trial ending — ${daysLeft} days left`, sub: 'Pay ₹199 now to keep your listing live', btn: 'Pay ₹199 →', btnBg: T.saffron }
-    : { emoji: '🎉', bg: 'linear-gradient(135deg, #F0FDF4, #DCFCE7)', border: '#86EFAC', textColor: '#065F46', subColor: '#047857', msg: `30-Day Trial Active · ${daysLeft} days remaining`, sub: 'After trial, pay ₹199 once to stay visible for 2 years', btn: 'Learn More', btnBg: T.emerald };
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {queue.map((s, idx) => (
+            <div key={idx} style={{ display: 'flex', gap: 10, paddingBottom: idx < queue.length - 1 ? 12 : 0 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{
+                  width: 16, height: 16, borderRadius: '50%',
+                  background: s.done ? C.green : s.active ? C.navy : C.border,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                }}>
+                  {s.done ? <Check size={8} color="#fff" strokeWidth={4} /> : <div style={{ width: 4, height: 4, borderRadius: '50%', background: s.active ? '#fff' : C.slateLight }} />}
+                </div>
+                {idx < queue.length - 1 && <div style={{ width: 1.5, flex: 1, background: s.done ? C.green : C.border, marginTop: 2 }} />}
+              </div>
+              <div style={{ paddingTop: 1 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: s.active ? C.navy : s.done ? C.navy : C.slateLight }}>{s.label}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </BentoCard>
+    );
+  }
 
   return (
-    <motion.div {...fadeUp(0.08)}>
-      <div style={{
-        background: config.bg, borderRadius: 18, padding: '16px 20px', marginBottom: 16,
-        border: `1.5px solid ${config.border}`,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontSize: 22 }}>{config.emoji}</span>
+    <BentoCard style={{ gridColumn: 'span 6', padding: '20px', minHeight: 280, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <div>
-            <p style={{ fontSize: 14, fontWeight: 900, color: config.textColor, margin: '0 0 2px' }}>{config.msg}</p>
-            <p style={{ fontSize: 12, fontWeight: 600, color: config.subColor, margin: 0 }}>{config.sub}</p>
+            <span style={{ fontSize: 9, fontWeight: 800, color: C.slateLight, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Creator Checklist</span>
+            <p style={{ fontSize: 11, color: C.slateLight, margin: '2px 0 0', fontWeight: 600 }}>Sync details to activate marketplace</p>
           </div>
+          <span style={{ fontSize: 12, fontWeight: 800, color: pct === 100 ? C.green : C.saffron }}>{pct}%</span>
         </div>
-        <button
-          onClick={() => navigate('/creator/monetization')}
-          style={{ padding: '9px 18px', borderRadius: 12, background: config.btnBg, border: 'none', color: '#fff', fontSize: 13, fontWeight: 800, cursor: 'pointer', flexShrink: 0 }}
-        >
-          {config.btn}
-        </button>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+          {checklist.map((s, idx) => (
+            <div key={idx} style={{
+              display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px',
+              borderRadius: 8, background: s.done ? C.bg : 'transparent',
+              border: `1px solid ${s.done ? C.borderLight : C.border}`,
+              minWidth: 0
+            }}>
+              <div style={{
+                width: 14, height: 14, borderRadius: '50%',
+                background: s.done ? C.green : C.borderLight,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+              }}>
+                {s.done && <Check size={8} color="#fff" strokeWidth={4} />}
+              </div>
+              <span style={{ fontSize: 10, fontWeight: 700, color: s.done ? C.navy : C.slateLight, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                {s.label.split(' ')[0]} synced
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
-    </motion.div>
+
+      <button
+        onClick={allChecksComplete ? handleFreeSubmit : () => navigate('/creator/profile')}
+        style={{
+          width: '100%', padding: '10px', borderRadius: 8,
+          background: allChecksComplete ? C.green : C.navy,
+          border: 'none', color: '#fff', fontSize: 12, fontWeight: 800, cursor: 'pointer',
+          marginTop: 10
+        }}
+      >
+        {allChecksComplete ? 'Submit Credentials to Compliance Queue' : 'Complete Setup Credentials →'}
+      </button>
+    </BentoCard>
   );
 };
 
-// ─── Status Alert Banner ─────────────────────────────────────────────────────
-const StatusBanner = ({ profileCompleted, verificationStatus, totalSystemUsers, loadingPayment, handleFreeSubmit, handleMockPayment, navigate }) => {
-  if (!profileCompleted) return (
-    <motion.div {...fadeUp(0.06)}>
-      <div style={{ background: 'linear-gradient(135deg, #FFFBEB, #FEF3C7)', borderRadius: 18, padding: '16px 20px', marginBottom: 16, border: '1.5px solid #FCD34D', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontSize: 22 }}>⚡</span>
+// ─── CB Page & Media Kit Download (spans 6 columns) ─────────────────────────────
+const CBAndMediaKitBento = ({ creator, followingCB, onToggleFollow, isLocked, navigate, dsp }) => {
+  return (
+    <BentoCard style={{ gridColumn: 'span 6', padding: '20px', minHeight: 280, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingBottom: 10, borderBottom: `1px solid ${C.borderLight}` }}>
+          <div style={{
+            width: 32, height: 32, borderRadius: 8,
+            background: C.navy, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0
+          }}>
+            <span style={{ fontSize: 16 }}>🇮🇳</span>
+          </div>
           <div>
-            <p style={{ fontSize: 14, fontWeight: 900, color: '#D97706', margin: '0 0 2px' }}>Complete your Digital Portfolio Hub</p>
-            <p style={{ fontSize: 12, fontWeight: 600, color: '#B45309', margin: 0 }}>Fill all 6 profile tabs to unlock admin verification & marketplace listing</p>
+            <h4 style={{ fontSize: 12, fontWeight: 800, color: C.navy, margin: 0 }}>@CreatorBharat Official</h4>
+            <p style={{ fontSize: 10, color: C.slateLight, margin: 0, fontWeight: 500 }}>India's elite brand gateway updates</p>
           </div>
         </div>
-        <button onClick={() => navigate('/creator/profile')} style={{ padding: '9px 18px', borderRadius: 12, background: T.saffron, border: 'none', color: '#fff', fontSize: 13, fontWeight: 800, cursor: 'pointer', flexShrink: 0 }}>
-          Setup Profile →
+
+        {/* Media Kit Section */}
+        <div style={{ marginTop: 12, position: 'relative' }}>
+          {isLocked && (
+            <div style={{
+              position: 'absolute', inset: -4, background: 'rgba(255, 255, 255, 0.85)',
+              backdropFilter: 'blur(3px)', display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center', zIndex: 10, borderRadius: 8
+            }}>
+              <Lock size={14} color={C.saffron} />
+              <span style={{ fontSize: 10, fontWeight: 800, color: C.slate }}>Verified media kit locked</span>
+            </div>
+          )}
+          <span style={{ fontSize: 9, fontWeight: 800, color: C.slateLight, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Public Media Kit Link</span>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px',
+            background: C.bg, borderRadius: 8, border: `1px solid ${C.borderLight}`,
+            margin: '4px 0 0'
+          }}>
+            <span style={{ fontSize: 10, color: C.slate, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 600 }}>
+              creatorbharat.com/c/{creator?.id || 'elite'}
+            </span>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(`https://creatorbharat.com/c/${creator?.id || 'elite'}`);
+                dsp({ t: 'TOAST', d: { type: 'success', msg: 'Copied profile link!' } });
+              }}
+              style={{
+                width: 22, height: 22, borderRadius: 6, background: '#fff',
+                border: `1px solid ${C.border}`, color: C.slate, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}
+            >
+              <Copy size={10} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 12 }}>
+        <button
+          onClick={onToggleFollow}
+          style={{
+            flex: 1, padding: '10px', borderRadius: 8,
+            background: followingCB ? '#fff' : C.navy,
+            border: `1px solid ${C.border}`,
+            color: followingCB ? C.navy : '#fff',
+            fontSize: 11, fontWeight: 800, cursor: 'pointer'
+          }}
+        >
+          {followingCB ? '✓ Following Page' : '+ Follow Page'}
+        </button>
+        <button
+          onClick={() => !isLocked && navigate('/creator/analytics')}
+          disabled={isLocked}
+          style={{
+            flex: 1, padding: '10px', borderRadius: 8,
+            background: isLocked ? C.bg : '#fff',
+            border: `1px solid ${C.border}`,
+            color: isLocked ? C.slateLight : C.navy,
+            fontSize: 11, fontWeight: 800, cursor: isLocked ? 'not-allowed' : 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4
+          }}
+        >
+          <Download size={12} /> Download PDF
         </button>
       </div>
+    </BentoCard>
+  );
+};
+
+// ─── Status banner alerts ────────────────────────────────────────────────────────
+const StatusBanner = ({ profileCompleted, verificationStatus, totalSystemUsers, loadingPayment, handleFreeSubmit, handleMockPayment, navigate }) => {
+  if (!profileCompleted) return (
+    <motion.div {...fadeUp(0.02)} style={{
+      background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(16px)', borderRadius: 12,
+      padding: '14px 18px', marginBottom: 18, border: '1px solid rgba(245, 158, 11, 0.25)', borderLeft: '6px solid #F59E0B',
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap',
+      boxShadow: '0 4px 20px rgba(0,0,0,0.01)'
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <span style={{ fontSize: 16 }}>⚡</span>
+        <div>
+          <p style={{ fontSize: 12, fontWeight: 800, color: '#D97706', margin: 0, fontFamily: 'Outfit' }}>Setup Credentials & Sync Profile Hub</p>
+          <p style={{ fontSize: 10, fontWeight: 500, color: '#B45309', margin: '2px 0 0' }}>Populate the checklist categories to request admin compliance review</p>
+        </div>
+      </div>
+      <button onClick={() => navigate('/creator/profile')} style={{
+        padding: '6px 12px', borderRadius: 6, background: C.saffron,
+        border: 'none', color: '#fff', fontSize: 11, fontWeight: 800, cursor: 'pointer'
+      }}>Setup Profile →</button>
     </motion.div>
   );
 
   if (verificationStatus === 'DRAFT') {
     if (totalSystemUsers < 100) return (
-      <motion.div {...fadeUp(0.06)}>
-        <div style={{ background: 'linear-gradient(135deg, #F0FDF4, #DCFCE7)', borderRadius: 18, padding: '16px 20px', marginBottom: 16, border: '1.5px solid #86EFAC', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: 22 }}>👑</span>
-            <div>
-              <p style={{ fontSize: 14, fontWeight: 900, color: '#065F46', margin: '0 0 2px' }}>Early Launch Offer — ₹199 Fee Waived!</p>
-              <p style={{ fontSize: 12, fontWeight: 600, color: '#047857', margin: 0 }}>All checks complete. Submit your profile to admin for free!</p>
-            </div>
+      <motion.div {...fadeUp(0.02)} style={{
+        background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(16px)', borderRadius: 12,
+        padding: '14px 18px', marginBottom: 18, border: '1px solid rgba(16, 185, 129, 0.25)', borderLeft: '6px solid #10B981',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.01)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: 16 }}>👑</span>
+          <div>
+            <p style={{ fontSize: 12, fontWeight: 800, color: '#065F46', margin: 0, fontFamily: 'Outfit' }}>Pioneer Launch Offer — ₹199 Verification fee waived!</p>
+            <p style={{ fontSize: 10, fontWeight: 500, color: '#047857', margin: '2px 0 0' }}>Send profile to compliance vetting directly for free</p>
           </div>
-          <button onClick={handleFreeSubmit} style={{ padding: '9px 18px', borderRadius: 12, background: T.emerald, border: 'none', color: '#fff', fontSize: 13, fontWeight: 800, cursor: 'pointer', flexShrink: 0 }}>Submit Free →</button>
         </div>
+        <button onClick={handleFreeSubmit} style={{
+          padding: '6px 12px', borderRadius: 6, background: C.green,
+          border: 'none', color: '#fff', fontSize: 11, fontWeight: 800, cursor: 'pointer'
+        }}>Submit Profile Free</button>
       </motion.div>
     );
+
     return (
-      <motion.div {...fadeUp(0.06)}>
-        <div style={{ background: 'linear-gradient(135deg, #FFFBEB, #FEF3C7)', borderRadius: 18, padding: '16px 20px', marginBottom: 16, border: '1.5px solid #FCD34D', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: 22 }}>🔒</span>
-            <div>
-              <p style={{ fontSize: 14, fontWeight: 900, color: '#D97706', margin: '0 0 2px' }}>Pay ₹199 · Unlock Verified Identity + Campaigns</p>
-              <p style={{ fontSize: 12, fontWeight: 600, color: '#B45309', margin: 0 }}>One-time vetting fee to submit for admin verification and go live</p>
-            </div>
+      <motion.div {...fadeUp(0.02)} style={{
+        background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(16px)', borderRadius: 12,
+        padding: '14px 18px', marginBottom: 18, border: '1px solid rgba(245, 158, 11, 0.25)', borderLeft: '6px solid #F59E0B',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.01)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: 16 }}>🔒</span>
+          <div>
+            <p style={{ fontSize: 12, fontWeight: 800, color: '#D97706', margin: 0, fontFamily: 'Outfit' }}>Activate Verified Identity & Ledger System</p>
+            <p style={{ fontSize: 10, fontWeight: 500, color: '#B45309', margin: '2px 0 0' }}>One-time editorial vetting fee of ₹199 to activate campaigns matching and escrow ledger</p>
           </div>
-          <button onClick={handleMockPayment} disabled={loadingPayment} style={{ padding: '9px 18px', borderRadius: 12, background: T.saffron, border: 'none', color: '#fff', fontSize: 13, fontWeight: 800, cursor: loadingPayment ? 'not-allowed' : 'pointer', flexShrink: 0, opacity: loadingPayment ? 0.7 : 1 }}>
-            {loadingPayment ? '⏳ Processing…' : 'Pay ₹199 & Submit →'}
-          </button>
         </div>
+        <button onClick={handleMockPayment} disabled={loadingPayment} style={{
+          padding: '6px 12px', borderRadius: 6, background: C.saffron,
+          border: 'none', color: '#fff', fontSize: 11, fontWeight: 800, cursor: loadingPayment ? 'not-allowed' : 'pointer',
+          opacity: loadingPayment ? 0.75 : 1
+        }}>{loadingPayment ? 'Processing…' : 'Submit Credentials & Pay ₹199'}</button>
       </motion.div>
     );
   }
+
   if (verificationStatus === 'PENDING_APPROVAL') return (
-    <motion.div {...fadeUp(0.06)}>
-      <div style={{ background: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)', borderRadius: 18, padding: '16px 20px', marginBottom: 16, border: '1.5px solid #93C5FD', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <motion.span animate={{ rotate: [0, 360] }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }} style={{ fontSize: 22, display: 'block' }}>⚙️</motion.span>
-          <div>
-            <p style={{ fontSize: 14, fontWeight: 900, color: '#1E40AF', margin: '0 0 2px' }}>Profile Under Admin Review</p>
-            <p style={{ fontSize: 12, fontWeight: 600, color: '#3B82F6', margin: 0 }}>Our editorial board is validating your metrics · Est. 2 hours</p>
-          </div>
+    <motion.div {...fadeUp(0.02)} style={{
+      background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(16px)', borderRadius: 12,
+      padding: '14px 18px', marginBottom: 18, border: '1px solid rgba(59, 130, 246, 0.25)', borderLeft: '6px solid #3B82F6',
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap',
+      boxShadow: '0 4px 20px rgba(0,0,0,0.01)'
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <motion.span animate={{ rotate: 360 }} transition={{ duration: 3, repeat: Infinity, ease: 'linear' }} style={{ fontSize: 16, display: 'block' }}>⚙️</motion.span>
+        <div>
+          <p style={{ fontSize: 12, fontWeight: 800, color: '#1E40AF', margin: 0, fontFamily: 'Outfit' }}>Credentials Evaluation Under Vetting</p>
+          <p style={{ fontSize: 10, fontWeight: 500, color: '#3B82F6', margin: '2px 0 0' }}>Board verifying active social endpoints. Queue estimate: 2 hours</p>
         </div>
-        <div style={{ padding: '7px 14px', borderRadius: 12, background: '#1E40AF', color: '#fff', fontSize: 11, fontWeight: 900, letterSpacing: '0.05em' }}>UNDER REVIEW</div>
       </div>
+      <div style={{ padding: '4px 10px', borderRadius: 6, background: '#3B82F6', color: '#fff', fontSize: 9, fontWeight: 800 }}>PENDING AUDIT</div>
     </motion.div>
   );
+
   return null;
 };
 
-// ─── Compliance / Profile Checklist ────────────────────────────────────────────
-const ProfileChecklist = ({ hasIdentity, hasSocials, hasStory, hasServices, allChecksComplete, verificationStatus, handleFreeSubmit, navigate }) => {
-  const items = [
-    { done: hasIdentity, label: 'Identity & Bio', desc: 'Name, bio, city filled in' },
-    { done: hasSocials, label: 'Social Handles', desc: 'Instagram or YouTube linked' },
-    { done: hasStory, label: 'Story & Milestones', desc: 'Brand story chapters added' },
-    { done: hasServices, label: 'Rate Packages', desc: '1+ commercial deliverable set' },
-  ];
-  const count = items.filter(i => i.done).length;
-  const pct = Math.round((count / items.length) * 100);
-
-  if (verificationStatus === 'APPROVED') {
+// ─── Trial Active / Portfolio Banner ─────────────────────────────────────────────
+const PortfolioBanner = ({ verificationStatus, portfolioActive, navigate }) => {
+  if (portfolioActive) {
+    const exp = parseInt(localStorage.getItem('cb_portfolio_expiry') || '0');
+    const date = exp ? new Date(exp).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : '2028';
     return (
-      <GlassCard style={{ padding: 24 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 900, color: T.navy, margin: 0 }}>Audience Demographics</h3>
-          <Tag color={T.emerald}>LIVE</Tag>
-        </div>
-        {[
-          { label: 'Age 18–24', pct: 65, color: T.saffron },
-          { label: 'Age 25–34', pct: 25, color: T.violet },
-          { label: 'Age 35+', pct: 10, color: T.blue },
-        ].map(d => (
-          <div key={d.label} style={{ marginBottom: 14 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 800, color: T.slate, marginBottom: 6 }}>
-              <span>{d.label}</span><span style={{ color: d.color }}>{d.pct}%</span>
-            </div>
-            <div style={{ height: 8, borderRadius: 100, background: '#F1F5F9', overflow: 'hidden' }}>
-              <motion.div initial={{ width: 0 }} animate={{ width: `${d.pct}%` }} transition={{ delay: 0.3, duration: 0.8 }} style={{ height: '100%', borderRadius: 100, background: d.color }} />
-            </div>
-          </div>
-        ))}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 4, padding: 16, background: T.bg, borderRadius: 14 }}>
-          <div style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: 22, fontWeight: 950, color: T.saffron, margin: 0 }}>4.8%</p>
-            <p style={{ fontSize: 10, fontWeight: 800, color: T.slateLight, margin: '3px 0 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Engagement</p>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: 22, fontWeight: 950, color: T.emerald, margin: 0 }}>92%</p>
-            <p style={{ fontSize: 10, fontWeight: 800, color: T.slateLight, margin: '3px 0 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Sentiment</p>
+      <motion.div {...fadeUp(0.03)} style={{
+        background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(16px)', borderRadius: 12,
+        padding: '14px 18px', marginBottom: 18, border: '1px solid rgba(16, 185, 129, 0.25)', borderLeft: '6px solid #10B981',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.01)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: 16 }}>⚡</span>
+          <div>
+            <p style={{ fontSize: 12, fontWeight: 800, color: '#065F46', margin: 0, fontFamily: 'Outfit' }}>Verified Listing & Portfolio Live</p>
+            <p style={{ fontSize: 10, fontWeight: 500, color: '#047857', margin: '2px 0 0' }}>Active listing visible to corporate marketing managers · Valid until {date}</p>
           </div>
         </div>
-      </GlassCard>
+        <div style={{ padding: '4px 10px', borderRadius: 6, background: '#10B981', color: '#fff', fontSize: 9, fontWeight: 800 }}>LISTING LIVE</div>
+      </motion.div>
     );
   }
 
-  if (verificationStatus === 'PENDING_APPROVAL') {
-    const steps = [
-      { done: true, active: false, label: 'Portfolio Hydration', desc: 'Story, milestones & brand deliverables connected' },
-      { done: true, active: false, label: 'Fee Processed', desc: 'Early pioneer wave — ₹199 fee waived successfully' },
-      { done: false, active: true, label: 'Manual Compliance Audit', desc: 'Editorial board validating social stats · ~2 hours' },
-      { done: false, active: false, label: 'Elite Badge Activated', desc: 'Profile certified on Bharat Marketplace catalog' },
-    ];
-    return (
-      <GlassCard style={{ padding: 24 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 900, color: T.navy, margin: '0 0 6px' }}>Verification Progress</h3>
-        <p style={{ fontSize: 12, color: T.slate, fontWeight: 600, margin: '0 0 20px' }}>Your application is moving through editorial queue</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-          {steps.map((s, i) => (
-            <div key={i} style={{ display: 'flex', gap: 14, paddingBottom: i < steps.length - 1 ? 20 : 0 }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50%', background: s.done ? T.emerald : s.active ? T.blue : T.borderMid, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: s.active ? `0 0 0 4px ${T.blue}20` : 'none' }}>
-                  {s.done ? <Check size={11} color="#fff" strokeWidth={3} /> : <div style={{ width: 6, height: 6, borderRadius: '50%', background: s.active ? '#fff' : T.slateLight }} />}
-                </div>
-                {i < steps.length - 1 && <div style={{ width: 2, flex: 1, background: s.done ? T.emerald + '40' : T.border, marginTop: 4 }} />}
-              </div>
-              <div style={{ paddingTop: 1 }}>
-                <p style={{ fontSize: 13, fontWeight: 800, color: s.active ? T.blue : s.done ? T.navy : T.slateLight, margin: '0 0 2px' }}>{s.label}</p>
-                <p style={{ fontSize: 11, color: T.slateLight, fontWeight: 600, margin: 0 }}>{s.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </GlassCard>
-    );
-  }
+  if (verificationStatus !== 'APPROVED') return null;
+  const trialStart = parseInt(localStorage.getItem('cb_trial_start') || '0');
+  const daysUsed = trialStart ? Math.floor((Date.now() - trialStart) / 86400000) : 0;
+  const daysLeft = Math.max(0, 30 - daysUsed);
 
-  // DRAFT state
-  return (
-    <GlassCard style={{ padding: 24 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div>
-          <h3 style={{ fontSize: 16, fontWeight: 900, color: T.navy, margin: '0 0 2px' }}>Portfolio Checklist</h3>
-          <p style={{ fontSize: 12, color: T.slate, fontWeight: 600, margin: 0 }}>{count}/{items.length} sections complete</p>
-        </div>
-        <div style={{ width: 44, height: 44, borderRadius: '50%', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg width={44} height={44} style={{ position: 'absolute' }}>
-            <circle cx={22} cy={22} r={18} fill="none" stroke={T.border} strokeWidth={4} />
-            <motion.circle cx={22} cy={22} r={18} fill="none" stroke={pct === 100 ? T.emerald : T.saffron} strokeWidth={4} strokeLinecap="round"
-              strokeDasharray={`${2 * Math.PI * 18}`}
-              initial={{ strokeDashoffset: 2 * Math.PI * 18 }}
-              animate={{ strokeDashoffset: 2 * Math.PI * 18 * (1 - pct / 100) }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              style={{ transformOrigin: 'center', transform: 'rotate(-90deg)', transformBox: 'fill-box' }}
-            />
-          </svg>
-          <span style={{ fontSize: 11, fontWeight: 900, color: pct === 100 ? T.emerald : T.saffron, position: 'relative', zIndex: 1 }}>{pct}%</span>
-        </div>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {items.map(item => (
-          <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 12, background: item.done ? T.emerald + '08' : T.bg, border: `1px solid ${item.done ? T.emerald + '20' : T.border}` }}>
-            <div style={{ width: 22, height: 22, borderRadius: '50%', background: item.done ? T.emerald + '15' : T.border, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              {item.done ? <Check size={12} color={T.emerald} strokeWidth={3} /> : <div style={{ width: 5, height: 5, borderRadius: '50%', background: T.slateLight }} />}
-            </div>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontSize: 13, fontWeight: 800, color: item.done ? T.navy : T.slate, margin: 0 }}>{item.label}</p>
-              <p style={{ fontSize: 11, color: T.slateLight, margin: 0 }}>{item.desc}</p>
-            </div>
-            {item.done && <CheckCircle size={14} color={T.emerald} />}
-          </div>
-        ))}
-      </div>
-      <button
-        onClick={allChecksComplete ? handleFreeSubmit : () => navigate('/creator/profile')}
-        style={{
-          marginTop: 16, width: '100%', padding: '13px 20px', borderRadius: 14,
-          background: allChecksComplete ? `linear-gradient(135deg, ${T.emerald}, #059669)` : `linear-gradient(135deg, ${T.navy}, #1E293B)`,
-          border: 'none', color: '#fff', fontSize: 14, fontWeight: 900, cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
-        }}
-      >
-        {allChecksComplete ? '🚀 Submit for Admin Audit' : 'Complete Missing Sections →'}
-      </button>
-    </GlassCard>
-  );
-};
+  if (!daysLeft && !trialStart) return null;
 
-// ─── Profile Views Counter Card ────────────────────────────────────────────────
-const ProfileViewsCard = ({ views, mob }) => {
-  // Sparkline coordinates for a beautiful wave
-  const sparklineData = "M 10 40 Q 30 20, 50 35 T 90 15 T 130 38 T 170 10 T 210 25 T 250 8";
-  
-  return (
-    <GlassCard style={{ padding: 24, position: 'relative', overflow: 'hidden' }}>
-      {/* Glow */}
-      <div style={{ position: 'absolute', top: -30, left: -30, width: 90, height: 90, borderRadius: '50%', background: 'radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
-      
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-        <div>
-          <h3 style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 4px' }}>
-            Profile Views
-          </h3>
-          <p style={{ fontSize: 32, fontWeight: 950, color: T.navy, margin: 0, fontFamily: 'Outfit, sans-serif', letterSpacing: '-0.02em' }}>
-            {views.toLocaleString()}
-          </p>
-        </div>
-        
-        <div style={{
-          width: 40, height: 40, borderRadius: 12,
-          background: 'rgba(59, 130, 246, 0.08)',
-          border: '1px solid rgba(59, 130, 246, 0.15)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center'
-        }}>
-          <Eye size={18} color="#3B82F6" />
-        </div>
-      </div>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 18 }}>
-        <span style={{ fontSize: 10, fontWeight: 800, color: '#10B981', background: 'rgba(16,185,129,0.1)', padding: '2px 8px', borderRadius: 100, display: 'inline-flex', alignItems: 'center', gap: 2 }}>
-          <TrendingUp size={10} /> +38 today
-        </span>
-        <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>
-          ↑ 18% this week
-        </span>
-      </div>
-
-      {/* Sparkline Graph */}
-      <div style={{ height: 50, width: '100%', marginTop: 8 }}>
-        <svg viewBox="0 0 260 50" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
-          <defs>
-            <linearGradient id="sparklineGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.0" />
-            </linearGradient>
-          </defs>
-          
-          {/* Shaded Area */}
-          <path
-            d={`${sparklineData} L 250 50 L 10 50 Z`}
-            fill="url(#sparklineGrad)"
-          />
-          
-          {/* Animated Line */}
-          <motion.path
-            d={sparklineData}
-            fill="none"
-            stroke="#3B82F6"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 1.5, ease: 'easeOut' }}
-          />
-          
-          {/* Glowing dot on last coordinate */}
-          <motion.circle
-            cx="250"
-            cy="8"
-            r="4"
-            fill="#3B82F6"
-            stroke="#fff"
-            strokeWidth="1.5"
-            initial={{ scale: 0 }}
-            animate={{ scale: [1, 1.5, 1] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-          />
-        </svg>
-      </div>
-    </GlassCard>
-  );
-};
-
-// ─── Milestone Progress ─────────────────────────────────────────────────────────
-const MilestoneCard = ({ followers, deals, navigate }) => {
-  const MILESTONES = [
-    { label: 'Rising Creator', required: 10000, emoji: '🌱', color: T.emerald, reward: 'Starter Swag Kit (Stickers & Diary)' },
-    { label: 'Bharat Creator', required: 50000, emoji: '🏆', color: T.saffron, reward: 'Rising Swag Kit (T-Shirt & Trophy)' },
-    { label: 'India Creator', required: 100000, emoji: '🇮🇳', color: T.violet, reward: 'Elite Swag Kit (India Flag Trophy)' },
-  ];
-  const current = followers || 0;
-  const next = MILESTONES.find(m => current < m.required) || MILESTONES[MILESTONES.length - 1];
-  const achieved = MILESTONES.filter(m => current >= m.required);
-  const pct = Math.min(100, Math.round((current / next.required) * 100));
+  const conf = daysLeft === 0
+    ? { emoji: '⚠️', border: '#EF4444', tc: '#DC2626', sc: '#EF4444', msg: 'Trial Period Expired', sub: 'Activate lifetime listing to restore dashboard analytics', btn: 'Activate Lifetime', btnBg: '#DC2626' }
+    : daysLeft < 7
+    ? { emoji: '⏳', border: '#FCD34D', tc: '#D97706', sc: '#B45309', msg: `Trial period expires in ${daysLeft} days`, sub: 'Setup lifetime listing for ₹199', btn: 'Verify Now', btnBg: C.saffron }
+    : { emoji: '🎉', border: '#86EFAC', tc: '#065F46', sc: '#047857', msg: `Trial Period Active · ${daysLeft} days remaining`, sub: 'Enjoy full discovery privileges. Upgrade to Pro Elite at ₹199', btn: 'Go Lifetime Pro', btnBg: C.green };
 
   return (
-    <GlassCard style={{ padding: 24 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div>
-          <h3 style={{ fontSize: 16, fontWeight: 900, color: T.navy, margin: '0 0 2px', fontFamily: 'Outfit, sans-serif' }}>Milestone Tracker</h3>
-          <p style={{ fontSize: 12, color: T.slate, fontWeight: 600, margin: 0 }}>Next Goal: {next.emoji} {next.label}</p>
-        </div>
-        <Tag color={next.color}>{pct}% complete</Tag>
-      </div>
-      
-      <div style={{ height: 8, borderRadius: 100, background: T.border, overflow: 'hidden', marginBottom: 10 }}>
-        <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ delay: 0.3, duration: 1 }} style={{ height: '100%', borderRadius: 100, background: `linear-gradient(90deg, ${next.color}, ${next.color}aa)` }} />
-      </div>
-      
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700, color: T.slateLight, marginBottom: 14 }}>
-        <span>{fmt.num(current)} followers</span>
-        <span>{fmt.num(Math.max(0, next.required - current))} to go</span>
-      </div>
-
-      <div style={{ background: T.bg, padding: 12, borderRadius: 14, border: `1.5px dashed ${next.color}25`, marginBottom: 16 }}>
-        <p style={{ fontSize: 10, fontWeight: 800, color: T.slate, textTransform: 'uppercase', letterSpacing: '0.04em', margin: '0 0 4px' }}>
-          🎁 Target Reward
-        </p>
-        <p style={{ fontSize: 12, fontWeight: 800, color: T.navy, margin: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
-          <Award size={14} color={next.color} /> {next.reward}
-        </p>
-      </div>
-
-      {achieved.length > 0 && (
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
-          {achieved.map(m => (
-            <div key={m.label} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 10px', background: m.color + '10', borderRadius: 100, fontSize: 11, fontWeight: 800, color: m.color, border: `1px solid ${m.color}20` }}>
-              <CheckCircle size={10} /> {m.emoji} {m.label}
-            </div>
-          ))}
-        </div>
-      )}
-
-      <button
-        onClick={() => navigate('/creator/opportunities')}
-        style={{
-          width: '100%',
-          padding: '11px',
-          borderRadius: 12,
-          background: 'rgba(255,255,255,0.05)',
-          border: '1px solid rgba(15,23,42,0.08)',
-          color: T.navy,
-          fontSize: 12,
-          fontWeight: 800,
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 6,
-          transition: '0.2s'
-        }}
-      >
-        <Trophy size={14} color={T.saffron} /> View Achievements Hub →
-      </button>
-    </GlassCard>
-  );
-};
-
-// ─── CB Official Follow Card ────────────────────────────────────────────────────
-const CBOfficialCard = ({ followingCB, onToggleFollow, navigate, mob }) => (
-  <motion.div {...fadeUp(0.25)}>
-    <div style={{
-      background: 'linear-gradient(135deg, #0b0f19 0%, #1e1b4b 100%)',
-      borderRadius: 20,
-      padding: '20px',
-      border: '1.5px solid rgba(139, 92, 246, 0.15)',
-      boxShadow: '0 15px 35px rgba(0,0,0,0.2)',
-      position: 'relative',
-      overflow: 'hidden'
+    <motion.div {...fadeUp(0.03)} style={{
+      background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(16px)', borderRadius: 12,
+      padding: '14px 18px', marginBottom: 18, border: `1px solid ${conf.border}40`, borderLeft: `6px solid ${conf.border}`,
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap',
+      boxShadow: '0 4px 20px rgba(0,0,0,0.01)'
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
-        <div style={{
-          width: 48,
-          height: 48,
-          borderRadius: 14,
-          background: 'linear-gradient(135deg, #FF9431, #EA580C)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-          boxShadow: '0 8px 16px rgba(255,148,49,0.3)'
-        }}>
-          <span style={{ fontSize: 22 }}>🇮🇳</span>
-        </div>
-        <div style={{ flex: 1 }}>
-          <p style={{ fontSize: 15, fontWeight: 900, color: '#fff', margin: 0, fontFamily: 'Outfit, sans-serif' }}>@CreatorBharat Official</p>
-          <p style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8', margin: '2px 0 0' }}>Join India's premium creator network, platform updates & exclusive campaigns</p>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <span style={{ fontSize: 16 }}>{conf.emoji}</span>
+        <div>
+          <p style={{ fontSize: 12, fontWeight: 800, color: conf.tc, margin: 0, fontFamily: 'Outfit' }}>{conf.msg}</p>
+          <p style={{ fontSize: 10, fontWeight: 500, color: conf.sc, margin: '2px 0 0' }}>{conf.sub}</p>
         </div>
       </div>
-      
-      <div style={{ display: 'flex', gap: 10 }}>
-        <button
-          onClick={onToggleFollow}
-          style={{
-            flex: 1.2,
-            padding: '10px 14px',
-            borderRadius: 12,
-            background: followingCB ? 'rgba(255,255,255,0.06)' : 'linear-gradient(135deg, #FF9431, #EA580C)',
-            border: followingCB ? '1px solid rgba(255,255,255,0.1)' : 'none',
-            color: '#fff',
-            fontSize: 12,
-            fontWeight: 800,
-            cursor: 'pointer',
-            transition: '0.2s',
-            whiteSpace: 'nowrap'
-          }}
-        >
-          {followingCB ? '✓ Following Page' : '+ Follow Page'}
-        </button>
+      <button onClick={() => navigate('/creator/monetization')} style={{
+        padding: '6px 12px', borderRadius: 6, background: conf.btnBg,
+        border: 'none', color: '#fff', fontSize: 11, fontWeight: 800, cursor: 'pointer'
+      }}>{conf.btn}</button>
+    </motion.div>
+  );
+};
 
-        <a
-          href="https://wa.me/918000000000"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            flex: 1.5,
-            padding: '10px 14px',
-            borderRadius: 12,
-            background: 'linear-gradient(135deg, #10B981, #059669)',
-            border: 'none',
-            color: '#fff',
-            fontSize: 12,
-            fontWeight: 800,
-            cursor: 'pointer',
-            textDecoration: 'none',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6,
-            boxShadow: '0 8px 16px rgba(16,185,129,0.2)'
-          }}
-        >
-          💬 Join WhatsApp Group
-        </a>
-      </div>
-    </div>
-  </motion.div>
-);
-
-// ─── Campaigns Section ──────────────────────────────────────────────────────────
-const CampaignCard = ({ title, brand, budget, isLocked, delay }) => (
+// ─── Upgrade Pro Gated Console Banner ───────────────────────────────────────────
+const UpgradeProBanner = ({ onUpgradeClick }) => (
   <motion.div
-    initial={{ opacity: 0, y: 12 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay }}
-    whileHover={isLocked ? {} : { y: -5, boxShadow: '0 20px 40px -10px rgba(15,23,42,0.08), inset 0 0 0 1px rgba(255,255,255,0.6)' }}
+    {...fadeUp(0.04)}
+    whileHover={{ y: -2 }}
     style={{
-      background: 'rgba(255, 255, 255, 0.85)', borderRadius: 20, padding: '20px',
-      border: '1px solid rgba(15, 23, 42, 0.06)',
-      boxShadow: '0 8px 24px rgba(15,23,42,0.03)',
-      position: 'relative', overflow: 'hidden', cursor: isLocked ? 'not-allowed' : 'pointer',
-      filter: isLocked ? 'blur(2.5px)' : 'none',
-      flexShrink: 0, width: 260,
-      transition: 'border-color 0.2s, box-shadow 0.2s'
+      background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(16px)',
+      borderRadius: 16, padding: '16px 20px', marginBottom: 20, border: `1.5px solid ${C.saffron}25`,
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16,
+      cursor: 'pointer', boxShadow: '0 4px 24px rgba(15,23,42,0.015)'
     }}
+    onClick={onUpgradeClick}
   >
-    {isLocked && (
-      <div style={{ position: 'absolute', inset: 0, background: 'rgba(248,250,252,0.6)', backdropFilter: 'blur(2px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, zIndex: 2 }}>
-        <Lock size={18} color={T.saffron} />
-        <span style={{ fontSize: 11, fontWeight: 800, color: T.slate }}>Locked</span>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{
+        width: 36, height: 36, borderRadius: 8,
+        background: 'rgba(255, 148, 49, 0.1)', color: '#FF7A00',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        flexShrink: 0
+      }}>
+        <Sparkles size={16} fill="currentColor" />
       </div>
-    )}
-    
-    <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
-      <div style={{ width: 38, height: 38, borderRadius: 12, background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)', color: '#fff', display: 'grid', placeItems: 'center', fontSize: 14, fontWeight: 900, flexShrink: 0, boxShadow: '0 4px 10px rgba(234,88,12,0.2)' }}>
-        {brand[0].toUpperCase()}
-      </div>
-      <div style={{ overflow: 'hidden' }}>
-        <p style={{ fontSize: 13, fontWeight: 800, color: T.navy, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{brand}</p>
-        <Tag color={T.saffron} bg="rgba(255,148,49,0.06)">Niche Match</Tag>
+      <div>
+        <h4 style={{ fontSize: 13, fontWeight: 800, color: C.navy, margin: 0, fontFamily: 'Outfit' }}>Go Pro Elite for Lifetime Console Access</h4>
+        <p style={{ fontSize: 10, color: C.slate, fontWeight: 500, margin: '2px 0 0' }}>Unlock verified blue checkmark, real-time views sparklines, advanced demographics, and priority search ranking</p>
       </div>
     </div>
-
-    <p style={{ fontSize: 14, fontWeight: 900, color: T.navy, margin: '0 0 12px', minHeight: 40, lineHeight: 1.4 }}>{title}</p>
-    <Divider style={{ margin: '12px 0' }} />
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <p style={{ fontSize: 15, fontWeight: 950, color: T.emerald, margin: 0 }}>₹{budget}</p>
-      <span style={{ fontSize: 11, fontWeight: 800, color: T.blue, background: T.blue + '08', padding: '4px 10px', borderRadius: 8, border: `1px solid ${T.blue}15` }}>Apply Now</span>
-    </div>
+    <button style={{
+      padding: '8px 14px', borderRadius: 8, background: C.navy,
+      color: '#fff', fontSize: 11, fontWeight: 800, border: 'none', cursor: 'pointer'
+    }}>Upgrade for ₹199</button>
   </motion.div>
 );
 
-// ─── Quick Actions Grid ─────────────────────────────────────────────────────────
-const QuickActions = ({ navigate, isLocked }) => {
-  const actions = [
-    { label: 'Opportunities', icon: Zap, color: T.saffron, path: '/creator/opportunities', locked: isLocked },
-    { label: 'Analytics', icon: BarChart3, color: T.violet, path: '/creator/analytics', locked: isLocked },
-    { label: 'Wallet', icon: IndianRupee, color: T.emerald, path: '/creator/wallet', locked: false },
-    { label: 'Achievements', icon: Trophy, color: '#F59E0B', path: '/creator/achievements', locked: false },
-    { label: 'Messages', icon: Bell, color: T.blue, path: '/creator/messages', locked: false },
-    { label: 'Monetization', icon: Activity, color: '#EC4899', path: '/creator/monetization', locked: false },
-  ];
-  return (
-    <GlassCard style={{ padding: 20 }}>
-      <h3 style={{ fontSize: 11, fontWeight: 900, color: T.slate, margin: '0 0 14px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Quick Access</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
-        {actions.map(a => (
-          <motion.button
-            key={a.label}
-            whileHover={a.locked ? {} : { scale: 1.04, y: -2, boxShadow: '0 8px 16px rgba(15,23,42,0.05)' }}
-            whileTap={a.locked ? {} : { scale: 0.97 }}
-            onClick={() => !a.locked && navigate(a.path)}
-            style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
-              padding: '14px 8px', borderRadius: 16,
-              background: a.locked ? 'rgba(15, 23, 42, 0.02)' : a.color + '05',
-              border: `1px solid ${a.locked ? 'rgba(15,23,42,0.04)' : a.color + '18'}`,
-              cursor: a.locked ? 'not-allowed' : 'pointer',
-              opacity: a.locked ? 0.5 : 1, position: 'relative',
-              outline: 'none',
-              transition: 'background-color 0.2s, border-color 0.2s'
-            }}
-          >
-            {a.locked && <Lock size={10} color={T.slateLight} style={{ position: 'absolute', top: 8, right: 8 }} />}
-            <div style={{ width: 38, height: 38, borderRadius: 12, background: a.locked ? '#e2e8f0' : a.color + '12', display: 'flex', alignItems: 'center', justifyContent: 'center', border: a.locked ? 'none' : `1px solid ${a.color}10` }}>
-              <a.icon size={18} color={a.locked ? T.slateLight : a.color} />
-            </div>
-            <span style={{ fontSize: 11, fontWeight: 800, color: a.locked ? T.slateLight : T.navy, textAlign: 'center', lineHeight: 1.2 }}>{a.label}</span>
-          </motion.button>
-        ))}
-      </div>
-    </GlassCard>
-  );
-};
+// ─── Razorpay Simulation Modal ──────────────────────────────────────────────────
+const UpgradeModal = ({ isOpen, onClose, onPaymentSuccess }) => {
+  const [step, setStep] = useState('summary');
+  const [method, setMethod] = useState('upi');
 
-// ─── Geography Panel ────────────────────────────────────────────────────────────
-const GeographyPanel = ({ isLocked }) => {
-  const geos = [
-    { city: 'Delhi NCR', pct: 42, flag: '🏙️' },
-    { city: 'Mumbai Hub', pct: 28, flag: '🌆' },
-    { city: 'Jaipur, Rajasthan', pct: 18, flag: '🏯' },
-    { city: 'Lucknow, UP', pct: 12, flag: '🕌' },
-  ];
-  if (isLocked) return (
-    <GlassCard style={{ padding: 24, minHeight: 200, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', background: 'rgba(255,255,255,0.5)' }}>
-      <div style={{ width: 52, height: 52, borderRadius: 16, background: '#fff', border: '1px solid rgba(15,23,42,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14, boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
-        <Lock size={22} color={T.saffron} />
-      </div>
-      <h4 style={{ fontSize: 14, fontWeight: 900, color: T.navy, margin: '0 0 6px' }}>Analytics Locked</h4>
-      <p style={{ fontSize: 12, color: T.slateLight, margin: 0, maxWidth: 220, lineHeight: 1.5 }}>Geography & reach data activates after admin approval</p>
-    </GlassCard>
-  );
+  if (!isOpen) return null;
+
+  const handlePay = () => {
+    setStep('processing');
+    setTimeout(() => {
+      setStep('success');
+      setTimeout(() => {
+        onPaymentSuccess();
+        onClose();
+        setStep('summary');
+      }, 1500);
+    }, 1500);
+  };
+
   return (
-    <GlassCard style={{ padding: 24 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 900, color: T.navy, margin: 0 }}>Top Geographies</h3>
-        <MapPin size={16} color={T.saffron} />
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {geos.map((g, i) => (
-          <div key={g.city} style={{ padding: '10px 14px', borderRadius: 12, background: i === 0 ? T.saffron + '06' : 'rgba(15, 23, 42, 0.02)', border: `1px solid ${i === 0 ? T.saffron + '20' : 'rgba(15, 23, 42, 0.04)'}` }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <span style={{ fontSize: 13, fontWeight: 800, color: T.navy }}>{g.flag} {g.city}</span>
-              <span style={{ fontSize: 13, fontWeight: 900, color: i === 0 ? T.saffron : T.navy }}>{g.pct}%</span>
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 100000, display: 'flex',
+      alignItems: 'center', justifyContent: 'center', padding: 20,
+      background: 'rgba(15,23,42,0.35)', backdropFilter: 'blur(4px)'
+    }}>
+      <motion.div
+        initial={{ scale: 0.96, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.96, opacity: 0 }}
+        style={{
+          background: '#fff', borderRadius: 16, padding: '24px',
+          maxWidth: 360, width: '100%', boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+          position: 'relative'
+        }}
+      >
+        {step !== 'processing' && <button onClick={onClose} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', color: C.slateLight, fontSize: 14, cursor: 'pointer' }}>✕</button>}
+
+        {step === 'summary' && (
+          <div>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: C.saffronLight, color: C.saffron, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+              <Sparkles size={18} fill="currentColor" />
             </div>
-            <div style={{ height: 4, borderRadius: 100, background: 'rgba(15, 23, 42, 0.05)', overflow: 'hidden' }}>
-              <motion.div initial={{ width: 0 }} animate={{ width: `${g.pct}%` }} transition={{ delay: 0.4 + i * 0.1, duration: 0.7 }} style={{ height: '100%', borderRadius: 100, background: i === 0 ? T.saffron : '#94A3B8' }} />
+            <h3 style={{ fontSize: 16, fontWeight: 800, textAlign: 'center', margin: 0, fontFamily: 'Outfit' }}>Razorpay Secure Checkout</h3>
+            <p style={{ fontSize: 11, color: C.slate, textAlign: 'center', margin: '2px 0 16px', fontWeight: 500 }}>Upgrade to Creator Pro Lifetime Console</p>
+
+            <div style={{ background: C.bg, padding: 12, borderRadius: 10, border: `1px solid ${C.borderLight}`, marginBottom: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700, color: C.slate, marginBottom: 5 }}>
+                <span>Order ID</span><span style={{ color: C.navy, fontFamily: 'monospace' }}>CB-PRO-{Date.now().toString().slice(-6)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700, color: C.slate, marginBottom: 8 }}>
+                <span>Package</span><span style={{ color: C.navy }}>Pro Elite Lifetime</span>
+              </div>
+              <div style={{ height: 1, background: C.borderLight, marginBottom: 8 }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 800, color: C.navy }}>
+                <span>Amount Due</span><span style={{ color: C.green }}>₹199.00</span>
+              </div>
             </div>
+
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ fontSize: 9, fontWeight: 800, color: C.slate, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: 6 }}>Payment Option</label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {[{ id: 'upi', label: 'UPI (GPay, PhonePe, Paytm)', desc: 'Instant activation via QR code', icon: '⚡' }, { id: 'card', label: 'Credit / Debit Card', desc: 'Secure payment gateway', icon: '💳' }].map(m => (
+                  <div key={m.id} onClick={() => setMethod(m.id)} style={{
+                    display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px',
+                    borderRadius: 8, border: `1px solid ${method === m.id ? C.saffron : C.border}`,
+                    background: method === m.id ? C.saffronLight : '#fff', cursor: 'pointer'
+                  }}>
+                    <span style={{ fontSize: 14 }}>{m.icon}</span>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: C.navy, margin: 0 }}>{m.label}</p>
+                      <p style={{ fontSize: 9, color: C.slate, margin: 0, fontWeight: 500 }}>{m.desc}</p>
+                    </div>
+                    <div style={{
+                      width: 12, height: 12, borderRadius: '50%',
+                      border: `1px solid ${method === m.id ? C.saffron : C.border}`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}>
+                      {method === m.id && <div style={{ width: 6, height: 6, borderRadius: '50%', background: C.saffron }} />}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button onClick={handlePay} style={{
+              width: '100%', padding: '12px', borderRadius: 8,
+              background: C.navy, color: '#fff', fontSize: 12, fontWeight: 800,
+              border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+              justifyContent: 'center', gap: 6
+            }}>
+              Pay ₹199 & Activate Instant
+            </button>
           </div>
-        ))}
-      </div>
-    </GlassCard>
+        )}
+
+        {step === 'processing' && (
+          <div style={{ textAlign: 'center', padding: '16px 0' }}>
+            <div style={{ display: 'inline-block', width: 32, height: 32, borderRadius: '50%', border: `3px solid ${C.saffronLight}`, borderTopColor: C.saffron, animation: 'spin 1s linear infinite' }} />
+            <h4 style={{ fontSize: 14, fontWeight: 800, marginTop: 14, marginBottom: 4, fontFamily: 'Outfit' }}>Processing Sandbox Checkout...</h4>
+            <p style={{ fontSize: 10, color: C.slate, fontWeight: 500 }}>Authenticating secure Razorpay parameters</p>
+          </div>
+        )}
+
+        {step === 'success' && (
+          <div style={{ textAlign: 'center', padding: '10px 0' }}>
+            <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#F0FDF4', color: C.green, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: 20 }}>✓</div>
+            <h4 style={{ fontSize: 14, fontWeight: 800, marginBottom: 4, fontFamily: 'Outfit', color: C.green }}>Credentials Verified!</h4>
+            <p style={{ fontSize: 11, color: C.slate, fontWeight: 500 }}>Upgrade complete. Analytics console initialized</p>
+          </div>
+        )}
+      </motion.div>
+    </div>
   );
 };
 
-// ─── Application Pulse ──────────────────────────────────────────────────────────
-const ApplicationPulse = ({ myApps, isLocked, navigate }) => {
-  const statusColor = s => s === 'selected' ? T.emerald : s === 'shortlisted' ? T.violet : T.blue;
-  return (
-    <GlassCard style={{ padding: 24, position: 'relative', overflow: 'hidden' }}>
-      {isLocked && (
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(248,250,252,0.85)', backdropFilter: 'blur(6px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, zIndex: 2, borderRadius: 18 }}>
-          <Lock size={28} color={T.saffron} />
-          <p style={{ fontSize: 13, fontWeight: 800, color: T.slate, textAlign: 'center', maxWidth: 200 }}>Get verified to track your applications</p>
-        </div>
-      )}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 900, color: T.navy, margin: 0 }}>Application Pulse</h3>
-        <button onClick={() => navigate('/creator/applications')} style={{ background: 'none', border: 'none', color: T.saffron, fontSize: 13, fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
-          View all <ChevronRight size={14} />
-        </button>
-      </div>
-      {myApps.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '30px 0' }}>
-          <p style={{ fontSize: 36, margin: '0 0 10px' }}>📊</p>
-          <p style={{ fontSize: 14, fontWeight: 800, color: T.navy, margin: '0 0 4px' }}>No Applications Yet</p>
-          <p style={{ fontSize: 12, color: T.slateLight, margin: '0 0 16px' }}>Apply to campaigns to track them here</p>
-          <button onClick={() => navigate('/creator/opportunities')} style={{ padding: '9px 18px', borderRadius: 12, background: T.saffron, border: 'none', color: '#fff', fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>Find Campaigns</button>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {myApps.slice(0, 4).map(a => (
-            <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px', borderRadius: 14, background: 'rgba(15, 23, 42, 0.02)', border: '1px solid rgba(15,23,42,0.03)' }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, background: T.saffron + '10', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Briefcase size={16} color={T.saffron} />
-              </div>
-              <div style={{ flex: 1, overflow: 'hidden' }}>
-                <p style={{ fontSize: 13, fontWeight: 800, color: T.navy, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.campaignTitle}</p>
-                <p style={{ fontSize: 11, color: T.slateLight, margin: 0 }}>{typeof a.brand === 'object' ? a.brand.companyName : a.brand}</p>
-              </div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', padding: '3px 10px', borderRadius: 100, fontSize: 10, fontWeight: 900, color: statusColor(a.status), background: statusColor(a.status) + '12', border: `1px solid ${statusColor(a.status)}20`, flexShrink: 0 }}>
-                {a.status?.toUpperCase() || 'SENT'}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </GlassCard>
-  );
-};
-
-// ─── Media Kit Card ─────────────────────────────────────────────────────────────
-const MediaKitCard = ({ creator, isLocked, navigate, toast }) => (
-  <div style={{
-    background: 'linear-gradient(135deg, #0b0f19 0%, #1e293b 100%)',
-    borderRadius: 24, padding: 24, border: '1px solid rgba(255,255,255,0.08)',
-    position: 'relative', overflow: 'hidden',
-    boxShadow: '0 20px 45px -12px rgba(15,23,42,0.3), inset 0 1px 1px rgba(255,255,255,0.1)'
-  }}>
-    {isLocked && (
-      <div style={{ position: 'absolute', inset: 0, background: 'rgba(15,23,42,0.7)', backdropFilter: 'blur(4px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, zIndex: 2, borderRadius: 24 }}>
-        <Lock size={28} color={T.saffron} />
-        <p style={{ fontSize: 13, fontWeight: 800, color: 'rgba(255,255,255,0.7)', textAlign: 'center', maxWidth: 180 }}>Get verified to unlock your media kit</p>
-      </div>
-    )}
-    <div style={{ position: 'absolute', top: '-30px', right: '-30px', width: 120, height: 120, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,148,49,0.12), transparent 70%)', pointerEvents: 'none' }} />
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-      <Star size={18} fill={T.saffron} color={T.saffron} />
-      <h3 style={{ fontSize: 16, fontWeight: 900, color: '#fff', margin: 0, fontFamily: 'Outfit, sans-serif' }}>Elite Media Kit</h3>
-    </div>
-    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', fontWeight: 600, margin: '0 0 16px', lineHeight: 1.6 }}>
-      Share your cinematic profile link with brands to showcase your full worth
-    </p>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)', marginBottom: 12 }}>
-      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', margin: 0, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>creatorbharat.com/c/{creator?.id || 'elite'}</p>
-      <button onClick={() => { navigator.clipboard.writeText(`https://creatorbharat.com/c/${creator?.id || 'elite'}`); toast('Link copied!', 'success'); }} style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}>
-        <Copy size={12} />
-      </button>
-    </div>
-    <button onClick={() => !isLocked && navigate('/creator/analytics')} disabled={isLocked} style={{ width: '100%', padding: '11px 16px', borderRadius: 12, background: isLocked ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, #FF9431, #EA580C)', border: 'none', color: '#fff', fontSize: 13, fontWeight: 800, cursor: isLocked ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-      <Download size={14} /> Download Media Kit
-    </button>
-  </div>
-);
-
-// ─── Dev Controller ─────────────────────────────────────────────────────────────
-const DevBar = ({ profileCompleted, verificationStatus, updateProfileComplete, updateVerification, handleResetAll }) => {
+// ─── Developer Console Simulator ───────────────────────────────────────────────
+const DevBar = ({ profileCompleted, verificationStatus, updateProfileComplete, updateVerification, handleResetAll, isPro, dsp, toast }) => {
   const [isOpen, setIsOpen] = useState(false);
-
-  // Determine active simulation states
   const isNoProfile = !profileCompleted && verificationStatus === 'DRAFT';
   const isDraft = profileCompleted && verificationStatus === 'DRAFT';
   const isPending = profileCompleted && verificationStatus === 'PENDING_APPROVAL';
   const isApproved = profileCompleted && verificationStatus === 'APPROVED';
 
   return (
-    <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 99999, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+    <div style={{ position: 'fixed', bottom: 20, right: 20, zIndex: 99999, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
       <AnimatePresence>
         {!isOpen ? (
           <motion.button
-            initial={{ scale: 0.8, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.8, opacity: 0, y: 20 }}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
             onClick={() => setIsOpen(true)}
             style={{
-              width: 52,
-              height: 52,
-              borderRadius: 16,
-              background: '#0F172A',
-              border: '1.5px solid rgba(255, 148, 49, 0.4)',
-              color: '#FF9431',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              boxShadow: '0 8px 30px rgba(255, 148, 49, 0.2)',
-              position: 'relative'
+              width: 40, height: 40, borderRadius: 10, background: C.navy,
+              border: `1px solid ${C.saffron}30`, color: C.saffron,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
             }}
-            whileHover={{ scale: 1.05, borderColor: '#FF9431', boxShadow: '0 8px 35px rgba(255, 148, 49, 0.35)' }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Settings size={22} className="spin-slow" />
-            <span style={{ position: 'absolute', top: -3, right: -3, display: 'flex', height: 10, width: 10 }}>
-              <span style={{ animate: 'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite', position: 'absolute', inlineSize: '100%', blockSize: '100%', borderRadius: '9999px', backgroundColor: '#EF4444', opacity: 0.75 }} />
-              <span style={{ position: 'relative', display: 'inline-flex', borderRadius: '9999px', height: 10, width: 10, backgroundColor: '#EF4444' }} />
+            <Settings size={16} className="spin-slow" />
+            <span style={{ position: 'absolute', top: -2, right: -2, display: 'flex', height: 6, width: 6 }}>
+              <span style={{ position: 'relative', display: 'inline-flex', borderRadius: '50%', height: 6, width: 6, backgroundColor: '#EF4444' }} />
             </span>
           </motion.button>
         ) : (
           <motion.div
-            initial={{ opacity: 0, y: 30, scale: 0.93 }}
+            initial={{ opacity: 0, y: 10, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 30, scale: 0.93 }}
-            transition={{ type: 'spring', damping: 20, stiffness: 220 }}
+            exit={{ opacity: 0, y: 10, scale: 0.96 }}
             style={{
-              width: 320,
-              background: 'rgba(15, 23, 42, 0.95)',
-              backdropFilter: 'blur(16px)',
-              border: '1.5px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: 24,
-              padding: 20,
-              boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255, 148, 49, 0.05)',
-              color: '#fff',
-              fontFamily: 'system-ui, -apple-system, sans-serif'
+              width: 280, background: 'rgba(15, 23, 42, 0.96)', backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: 12,
+              padding: 14, boxShadow: '0 15px 30px rgba(0,0,0,0.3)', color: '#fff'
             }}
           >
-            {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 10, background: 'rgba(255, 148, 49, 0.15)', color: '#FF9431' }}>
-                  <Settings size={16} className="spin-slow" />
-                </div>
-                <div>
-                  <h4 style={{ margin: 0, fontSize: 13, fontWeight: 900, color: '#fff', letterSpacing: '0.01em' }}>CB Developer Tools</h4>
-                  <p style={{ margin: 0, fontSize: 10, color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>Simulate creator dashboard states</p>
-                </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <Settings size={12} color={C.saffron} />
+                <span style={{ fontSize: 11, fontWeight: 800, color: '#fff' }}>Developer Tools</span>
               </div>
-              <button 
-                onClick={() => setIsOpen(false)} 
-                style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 8, color: 'rgba(255,255,255,0.5)', cursor: 'pointer', width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = '#fff'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; }}
-              >
-                <X size={14} />
-              </button>
+              <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}>✕</button>
             </div>
 
-            {/* Presets List */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 10 }}>
               {[
-                { 
-                  label: '1. No Profile', 
-                  desc: 'Simulate new signup. Shows Profile Checklist.',
-                  icon: Lock,
-                  color: '#94A3B8',
-                  active: isNoProfile,
-                  action: () => { updateProfileComplete(false); updateVerification('DRAFT'); } 
-                },
-                { 
-                  label: '2. Draft State', 
-                  desc: 'Profile completed. Ready to submit details.',
-                  icon: Sparkles,
-                  color: '#A78BFA',
-                  active: isDraft,
-                  action: () => { updateProfileComplete(true); updateVerification('DRAFT'); } 
-                },
-                { 
-                  label: '3. Pending Approval', 
-                  desc: 'Submitted. Simulates review state (locked kit).',
-                  icon: Clock,
-                  color: '#FBBF24',
-                  active: isPending,
-                  action: () => { updateProfileComplete(true); updateVerification('PENDING_APPROVAL'); } 
-                },
-                { 
-                  label: '4. Approved Creator', 
-                  desc: 'Verified SaaS profile. Full features active.',
-                  icon: CheckCircle,
-                  color: '#34D399',
-                  active: isApproved,
-                  action: () => { updateProfileComplete(true); updateVerification('APPROVED'); } 
-                },
-              ].map(b => {
-                const IconComponent = b.icon;
-                return (
-                  <button
-                    key={b.label}
-                    onClick={b.action}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: '10px 14px',
-                      borderRadius: 14,
-                      background: b.active ? 'rgba(255, 148, 49, 0.12)' : 'rgba(255,255,255,0.03)',
-                      border: b.active ? '1.5px solid rgba(255, 148, 49, 0.4)' : '1.5px solid rgba(255,255,255,0.05)',
-                      color: b.active ? '#FF9431' : 'rgba(255,255,255,0.8)',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      transition: 'all 0.2s',
-                      width: '100%',
-                      boxShadow: b.active ? '0 4px 15px rgba(255, 148, 49, 0.1)' : 'none'
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!b.active) {
-                        e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
-                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
-                        e.currentTarget.style.color = '#fff';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!b.active) {
-                        e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
-                        e.currentTarget.style.color = 'rgba(255,255,255,0.8)';
-                      }
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 8, background: b.active ? 'rgba(255, 148, 49, 0.15)' : 'rgba(255,255,255,0.05)', color: b.active ? '#FF9431' : b.color }}>
-                      <IconComponent size={14} />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
-                      <span style={{ fontSize: 11, fontWeight: 800 }}>{b.label}</span>
-                      <span style={{ fontSize: 9, color: b.active ? 'rgba(255, 148, 49, 0.75)' : 'rgba(255,255,255,0.4)', fontWeight: 600 }}>{b.desc}</span>
-                    </div>
-                    {b.active && (
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF9431', boxShadow: '0 0 8px #FF9431' }} />
-                    )}
-                  </button>
-                );
-              })}
+                { label: '1. No Credentials', desc: 'Simulate new signup', active: isNoProfile, act: () => { updateProfileComplete(false); updateVerification('DRAFT'); } },
+                { label: '2. Setup Complete', desc: 'Checklist completed (Draft)', active: isDraft, act: () => { updateProfileComplete(true); updateVerification('DRAFT'); } },
+                { label: '3. Compliance Vetting', desc: 'Pending admin review', active: isPending, act: () => { updateProfileComplete(true); updateVerification('PENDING_APPROVAL'); } },
+                { label: '4. Active Partner', desc: 'Verified public dashboard', active: isApproved, act: () => { updateProfileComplete(true); updateVerification('APPROVED'); } }
+              ].map(st => (
+                <button
+                  key={st.label}
+                  onClick={st.act}
+                  style={{
+                    display: 'flex', alignItems: 'center',
+                    padding: '6px 8px', borderRadius: 6,
+                    background: st.active ? 'rgba(255,148,49,0.12)' : 'rgba(255,255,255,0.03)',
+                    border: `1px solid ${st.active ? C.saffron : 'rgba(255,255,255,0.05)'}`,
+                    color: st.active ? C.saffron : 'rgba(255,255,255,0.8)',
+                    cursor: 'pointer', textAlign: 'left', width: '100%'
+                  }}
+                >
+                  <div style={{ flex: 1 }}>
+                    <span style={{ fontSize: 9, fontWeight: 800, display: 'block' }}>{st.label}</span>
+                    <span style={{ fontSize: 7, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>{st.desc}</span>
+                  </div>
+                  {st.active && <div style={{ width: 4, height: 4, borderRadius: '50%', background: C.saffron }} />}
+                </button>
+              ))}
             </div>
 
-            {/* Footer actions */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 12, gap: 10 }}>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>System Reset</span>
-                <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.45)', fontWeight: 600 }}>Clears local storage</span>
+            {/* Pro Upgrade Toggle */}
+            <div style={{
+              padding: '8px', borderRadius: 6, background: isPro ? 'rgba(16,185,129,0.1)' : 'rgba(255,255,255,0.03)',
+              border: `1px solid ${isPro ? C.green : 'rgba(255,255,255,0.05)'}`, marginBottom: 10,
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+            }}>
+              <div>
+                <span style={{ fontSize: 9, fontWeight: 800, color: isPro ? C.green : '#fff' }}>Pro Elite Lifetime</span>
+                <span style={{ fontSize: 7, display: 'block', color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>Toggle views/sparklines gate</span>
               </div>
-              <button 
-                onClick={handleResetAll} 
-                style={{ 
-                  padding: '6px 12px', 
-                  borderRadius: 8, 
-                  background: 'rgba(239,68,68,0.15)', 
-                  border: '1px solid rgba(239,68,68,0.3)', 
-                  color: '#FCA5A5', 
-                  fontSize: 10, 
-                  fontWeight: 800, 
-                  cursor: 'pointer',
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(239,68,68,0.25)';
-                  e.currentTarget.style.borderColor = 'rgba(239,68,68,0.5)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(239,68,68,0.15)';
-                  e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)';
+              <button
+                onClick={() => { dsp({ t: 'SET_PRO' }); toast(isPro ? 'Revoked Pro' : 'Granted Pro Elite!', isPro ? 'info' : 'success'); }}
+                style={{
+                  padding: '3px 6px', borderRadius: 4, background: isPro ? C.green : 'rgba(255,255,255,0.1)',
+                  border: 'none', color: '#fff', fontSize: 8, fontWeight: 800, cursor: 'pointer'
                 }}
               >
-                Reset All
+                {isPro ? 'Revoke' : 'Grant'}
               </button>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 8 }}>
+              <span style={{ fontSize: 7, color: 'rgba(255,255,255,0.3)', fontWeight: 800, textTransform: 'uppercase' }}>Database sandbox</span>
+              <button onClick={handleResetAll} style={{
+                padding: '3px 6px', borderRadius: 4, background: 'rgba(239,68,68,0.15)',
+                border: 'none', color: '#FCA5A5', fontSize: 8, fontWeight: 800, cursor: 'pointer'
+              }}>Reset</button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
       <style>{`
-        @keyframes spinSlow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        .spin-slow {
-          animation: spinSlow 12s linear infinite;
-        }
+        @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .spin-slow { animation: spinSlow 18s linear infinite; }
       `}</style>
     </div>
   );
 };
 
+// ─── Welcome Onboarding Slides ──────────────────────────────────────────────────
+const SLIDES = [
+  { index: 0, title: 'Namaste, Creator! 🇮🇳', description: "Welcome to CreatorBharat V3 — India's elite brand cooperation gateway. Let's sync your creator credentials.", icon: Sparkles, color: C.saffron },
+  { index: 1, title: 'Live Interactive Portfolio 📸', description: "Configure your digital profile hub connected directly to verified social APIs. Brands search you directly.", icon: Globe, color: '#6366F1' },
+  { index: 2, title: 'Escrow Protected Deals 🔒', description: "Accept briefs and get paid via secure escrow verification before you upload a single content asset.", icon: ShieldCheck, color: C.green },
+];
 
-// ─── Helpers ────────────────────────────────────────────────────────────────────
+// ─── Internal Helpers ────────────────────────────────────────────────────────────
 const getCreatorProfile = st => {
+  if (!st.user) return null;
   const allC = LS.get('cb_creators', []);
-  return st.user?.creatorProfile || st.creatorProfile || allC.find(cr => cr.email === st.user?.email);
+  const found = st.user?.creatorProfile || st.creatorProfile || allC.find(cr => cr.email === st.user?.email);
+  if (found) return found;
+  return {
+    name: st.user?.name || 'Creator',
+    handle: st.user?.handle || '@creator',
+    email: st.user?.email || '',
+    city: st.user?.city || '',
+    state: st.user?.state || '',
+    followers: 120000,
+    score: 88,
+    niche: 'Digital Creator',
+    bio: '',
+    gallery: [],
+    full_story: { p1: '', quote: '', p2: '', p3: '' },
+    milestones: [],
+    services: [],
+    awards: [],
+    collabs: []
+  };
 };
+
 const getMyApps = st => LS.get('cb_applications', []).filter(a => a.applicantEmail === st.user?.email);
+
 const checkFlags = c => {
   const hasIdentity = !!(c?.name && c?.bio);
   const hasSocials = !!(c?.instagram || c?.youtube);
@@ -1277,12 +1361,7 @@ const checkFlags = c => {
   return { hasIdentity, hasSocials, hasStory, hasServices, allChecksComplete: hasIdentity && hasSocials && hasStory && hasServices };
 };
 
-const SLIDES = [
-  { index: 0, title: 'Namaste, Creator! 🇮🇳', description: "Welcome to CreatorBharat V3 — India's elite creator economy platform. Let's build your digital legacy.", icon: Sparkles, color: T.saffron },
-  { index: 1, title: 'Live Interactive Portfolio 📸', description: "Build a cinematic portfolio synced with your YouTube & Instagram counters. Brands discover you.", icon: Globe, color: T.violet },
-  { index: 2, title: 'Escrow-Backed Deals 🔒', description: "Apply to verified brand briefs. Get paid via secure escrow — before uploading a single asset.", icon: ShieldCheck, color: T.emerald },
-];
-
+// ─── Main Component ──────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const { st, dsp } = useApp();
   const navigate = useNavigate();
@@ -1295,52 +1374,46 @@ export default function DashboardPage() {
   const [totalSystemUsers, setTotalSystemUsers] = useState(0);
   const [matchingCampaigns, setMatchingCampaigns] = useState([]);
   const [portfolioActive, setPortfolioActive] = useState(() => localStorage.getItem('cb_portfolio_active') === 'true');
-  const [mob, setMob] = useState(() => globalThis.innerWidth < 768);
+  const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
   const [profileViews, setProfileViews] = useState(() => {
     const v = localStorage.getItem('cb_profile_views');
     if (!v) {
-      localStorage.setItem('cb_profile_views', '1248');
-      return 1248;
+      localStorage.setItem('cb_profile_views', '1424');
+      return 1424;
     }
     return parseInt(v);
   });
 
   const followingCB = st.follows?.includes('creatorbharat-official') || false;
-
   const toast = useCallback((msg, type) => dsp({ t: 'TOAST', d: { type, msg } }), [dsp]);
-  
-  const updateVerification = v => { 
-    setVerificationStatus(v); 
-    localStorage.setItem('cb_verification_status', v); 
+
+  const updateVerification = v => {
+    setVerificationStatus(v);
+    localStorage.setItem('cb_verification_status', v);
     if (v === 'APPROVED') {
-      if (!localStorage.getItem('cb_trial_start')) {
-        localStorage.setItem('cb_trial_start', String(Date.now()));
-      }
+      if (!localStorage.getItem('cb_trial_start')) localStorage.setItem('cb_trial_start', String(Date.now()));
     } else {
       localStorage.removeItem('cb_trial_start');
     }
   };
-  
-  const updateProfileComplete = v => { setProfileCompleted(v); localStorage.setItem('cb_profile_completed', v ? 'true' : 'false'); };
+
+  const updateProfileComplete = v => {
+    setProfileCompleted(v);
+    localStorage.setItem('cb_profile_completed', v ? 'true' : 'false');
+  };
 
   const c = getCreatorProfile(st);
   const myApps = getMyApps(st);
-  const score = c ? (c.score || fmt.score(c)) : 0;
+  const score = c ? (c.score || fmt.score(c)) : 88;
   const { hasIdentity, hasSocials, hasStory, hasServices, allChecksComplete } = checkFlags(c);
   const isLocked = verificationStatus !== 'APPROVED';
-
-  // Increment profile views on visit
-  useEffect(() => {
-    const v = parseInt(localStorage.getItem('cb_profile_views') || '1248');
-    const newViews = v + 1;
-    localStorage.setItem('cb_profile_views', String(newViews));
-    setProfileViews(newViews);
-  }, []);
+  const isAnalyticsLocked = !st.isPro;
 
   useEffect(() => {
-    const h = () => setMob(globalThis.innerWidth < 768);
-    globalThis.addEventListener('resize', h);
-    return () => globalThis.removeEventListener('resize', h);
+    const v = parseInt(localStorage.getItem('cb_profile_views') || '1424');
+    const nv = v + 1;
+    localStorage.setItem('cb_profile_views', String(nv));
+    setProfileViews(nv);
   }, []);
 
   useEffect(() => {
@@ -1348,97 +1421,139 @@ export default function DashboardPage() {
   }, [allChecksComplete]);
 
   useEffect(() => {
-    let cancelled = false;
-    fetchCreators({ limit: 200 }).then(l => { if (!cancelled) setTotalSystemUsers(l.length); }).catch(() => {});
+    let active = true;
+    fetchCreators({ limit: 100 }).then(l => {
+      if (active) setTotalSystemUsers(l.length);
+    }).catch(() => {});
+
     fetchCampaigns().then(list => {
-      if (cancelled) return;
+      if (!active) return;
       const niche = Array.isArray(c?.niche) ? c.niche : [c?.niche].filter(Boolean);
       let matched = list;
-      if (niche.length) matched = list.filter(camp => niche.some(n => (camp.niche || camp.title || '').toLowerCase().includes(n.toLowerCase())));
+      if (niche.length) {
+        matched = list.filter(camp => niche.some(n => (camp.niche || camp.title || '').toLowerCase().includes(n.toLowerCase())));
+      }
       setMatchingCampaigns((matched.length ? matched : list).slice(0, 4));
     }).catch(() => {});
-    return () => { cancelled = true; };
+
+    return () => { active = false; };
   }, []);
 
   const handleNextSlide = () => {
-    if (activeSlide < SLIDES.length - 1) { setActiveSlide(activeSlide + 1); }
-    else { localStorage.setItem('cb_welcome_seen', 'true'); setWelcomeSeen(true); toast('Welcome! Let\'s build your legacy.', 'success'); }
+    if (activeSlide < SLIDES.length - 1) {
+      setActiveSlide(activeSlide + 1);
+    } else {
+      localStorage.setItem('cb_welcome_seen', 'true');
+      setWelcomeSeen(true);
+      toast("Welcome! Let's setup your console dashboard.", 'success');
+    }
   };
+
   const handleMockPayment = () => {
     setLoadingPayment(true);
-    setTimeout(() => { 
-      setLoadingPayment(false); 
-      updateVerification('APPROVED'); 
+    setTimeout(() => {
+      setLoadingPayment(false);
+      updateVerification('APPROVED');
       setPortfolioActive(true);
       localStorage.setItem('cb_portfolio_active', 'true');
-      localStorage.setItem('cb_portfolio_expiry', String(Date.now() + 63072000000)); // 2 years
-      toast('₹199 paid! Your creator listing is now active! 🎉', 'success'); 
+      localStorage.setItem('cb_portfolio_expiry', String(Date.now() + 63072000000));
+      toast('Verification complete. Lifetime active! 🎉', 'success');
     }, 1500);
   };
-  const handleFreeSubmit = () => { updateVerification('PENDING_APPROVAL'); toast('Profile submitted for review!', 'success'); };
-  
+
+  const handleFreeSubmit = () => {
+    updateVerification('PENDING_APPROVAL');
+    toast('Profile submitted for review!', 'success');
+  };
+
   const handleResetAll = () => {
-    localStorage.removeItem('cb_welcome_seen'); 
-    localStorage.removeItem('cb_profile_completed'); 
-    localStorage.removeItem('cb_verification_status');
-    localStorage.removeItem('cb_trial_start');
-    localStorage.removeItem('cb_portfolio_active');
-    localStorage.removeItem('cb_portfolio_expiry');
-    setWelcomeSeen(false); 
-    setProfileCompleted(false); 
-    setVerificationStatus('DRAFT'); 
+    ['cb_welcome_seen', 'cb_profile_completed', 'cb_verification_status', 'cb_trial_start', 'cb_portfolio_active', 'cb_portfolio_expiry'].forEach(k => localStorage.removeItem(k));
+    dsp({ t: 'SET_PRO', isPro: false });
+    setWelcomeSeen(false);
+    setProfileCompleted(false);
+    setVerificationStatus('DRAFT');
     setPortfolioActive(false);
     setActiveSlide(0);
-    toast('State reset!', 'info');
+    toast('Dashboard state reset successfully!', 'info');
   };
-  
+
   const handleToggleCB = () => {
     dsp({ t: 'FOLLOW', id: 'creatorbharat-official' });
-    toast(!followingCB ? '🎉 Now following @CreatorBharat!' : 'Unfollowed @CreatorBharat', !followingCB ? 'success' : 'info');
+    toast(!followingCB ? '🎉 Now following @CreatorBharat!' : 'Unfollowed Page', !followingCB ? 'success' : 'info');
+  };
+
+  const handleUpgradeSuccess = () => {
+    dsp({ t: 'SET_PRO' });
+    updateVerification('APPROVED');
+    setPortfolioActive(true);
+    localStorage.setItem('cb_portfolio_active', 'true');
+    localStorage.setItem('cb_portfolio_expiry', String(Date.now() + 63072000000));
+    toast('Upgrade to Pro Elite successful! views chart unlocked. 🎉', 'success');
   };
 
   return (
-    <div style={{ background: 'var(--db-bg, #F0F2F7)', minHeight: '100%', paddingBottom: mob ? '100px' : '40px' }}>
+    <div style={{ background: C.bg, minHeight: '100%', paddingBottom: '60px', position: 'relative' }}>
+      {/* Monochromatic background texture */}
+      <AmbientDotGrid />
 
-      {/* ── Welcome Onboarding Overlay ── */}
+      {/* Onboarding Dialog */}
       <AnimatePresence>
         {!welcomeSeen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.75)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+            style={{
+              position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.3)',
+              backdropFilter: 'blur(6px)', zIndex: 99999, display: 'flex',
+              alignItems: 'center', justifyContent: 'center', padding: 20
+            }}
           >
             <motion.div
-              initial={{ scale: 0.92, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.92, opacity: 0 }}
-              transition={{ type: 'spring', damping: 22, stiffness: 200 }}
-              style={{ background: '#fff', borderRadius: 28, padding: 36, maxWidth: 440, width: '100%', boxShadow: '0 40px 80px rgba(0,0,0,0.4)' }}
+              initial={{ scale: 0.97, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.97, opacity: 0 }}
+              style={{ background: '#fff', borderRadius: 16, padding: '32px', maxWidth: 400, width: '100%', border: `1px solid ${C.border}` }}
             >
-              {/* Stepper */}
-              <div style={{ display: 'flex', gap: 8, marginBottom: 32, justifyContent: 'center' }}>
-                {SLIDES.map((s, i) => (
-                  <div key={s.index} style={{ height: 4, borderRadius: 100, background: i <= activeSlide ? T.saffron : T.border, width: i === activeSlide ? 28 : 10, transition: 'all 0.3s' }} />
+              <div style={{ display: 'flex', gap: 6, marginBottom: 24, justifyContent: 'center' }}>
+                {SLIDES.map((s, idx) => (
+                  <div key={s.index} style={{
+                    height: 3, borderRadius: 2,
+                    background: idx <= activeSlide ? C.navy : C.border,
+                    width: idx === activeSlide ? 20 : 6, transition: 'all 0.2s'
+                  }} />
                 ))}
               </div>
 
               <AnimatePresence mode="wait">
-                <motion.div key={activeSlide} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} style={{ textAlign: 'center' }}>
-                  <div style={{ width: 80, height: 80, borderRadius: 24, background: SLIDES[activeSlide].color + '12', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-                    {React.createElement(SLIDES[activeSlide].icon, { size: 36, color: SLIDES[activeSlide].color })}
-                  </div>
-                  <h2 style={{ fontSize: 22, fontWeight: 950, color: T.navy, margin: '0 0 10px', letterSpacing: '-0.02em' }}>{SLIDES[activeSlide].title}</h2>
-                  <p style={{ fontSize: 14, color: T.slate, fontWeight: 600, lineHeight: 1.6, margin: '0 0 28px' }}>{SLIDES[activeSlide].description}</p>
+                <motion.div
+                  key={activeSlide}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  style={{ textAlign: 'center' }}
+                >
+                  <h2 style={{ fontSize: 18, fontWeight: 800, color: C.navy, margin: '0 0 8px', fontFamily: 'Outfit' }}>{SLIDES[activeSlide].title}</h2>
+                  <p style={{ fontSize: 13, color: C.slate, fontWeight: 500, lineHeight: 1.5, margin: '0 0 20px' }}>{SLIDES[activeSlide].description}</p>
                 </motion.div>
               </AnimatePresence>
 
-              <div style={{ display: 'flex', gap: 10 }}>
+              <div style={{ display: 'flex', gap: 8 }}>
                 {activeSlide > 0 && (
-                  <button onClick={() => setActiveSlide(activeSlide - 1)} style={{ flex: 1, padding: '13px', borderRadius: 14, background: T.bg, border: `1.5px solid ${T.borderMid}`, color: T.slate, fontSize: 14, fontWeight: 800, cursor: 'pointer' }}>Back</button>
+                  <button onClick={() => setActiveSlide(activeSlide - 1)} style={{
+                    flex: 1, padding: '10px', borderRadius: 8,
+                    background: '#fff', border: `1px solid ${C.border}`,
+                    color: C.slate, fontSize: 12, fontWeight: 700, cursor: 'pointer'
+                  }}>Back</button>
                 )}
-                <button onClick={handleNextSlide} style={{ flex: 2, padding: '13px', borderRadius: 14, background: T.navy, border: 'none', color: '#fff', fontSize: 14, fontWeight: 900, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                  {activeSlide === SLIDES.length - 1 ? 'Get Started 🚀' : 'Next'} {activeSlide < SLIDES.length - 1 && <ArrowRight size={16} />}
+                <button onClick={handleNextSlide} style={{
+                  flex: 2, padding: '10px', borderRadius: 8,
+                  background: C.navy, border: 'none', color: '#fff',
+                  fontSize: 12, fontWeight: 800, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4
+                }}>
+                  {activeSlide === SLIDES.length - 1 ? 'Get Started 🚀' : 'Continue'}
+                  {activeSlide < SLIDES.length - 1 && <ArrowRight size={12} />}
                 </button>
               </div>
             </motion.div>
@@ -1446,39 +1561,35 @@ export default function DashboardPage() {
         )}
       </AnimatePresence>
 
-      {/* ── Page Content ── */}
-      <div style={{ maxWidth: 1240, margin: '0 auto', padding: mob ? '16px' : '32px' }}>
+      {/* Main Grid View */}
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '24px 20px', position: 'relative', zIndex: 1 }}>
 
-        {/* Page Header */}
-        <motion.div {...fadeUp(0)} style={{ marginBottom: 24 }}>
+        {/* Minimal Page Header */}
+        <motion.div {...fadeUp(0)} style={{ marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <Tag color={T.saffron} bg="rgba(255,148,49,0.08)"><Zap size={10} fill={T.saffron} /> CREATOR CONSOLE</Tag>
-              <h1 style={{ fontSize: mob ? 24 : 32, fontWeight: 950, color: T.navy, margin: '8px 0 2px', letterSpacing: '-0.03em', display: 'flex', alignItems: 'center', gap: 10 }}>
-                Namaste, {(c?.name || st.user?.name || 'Creator').split(' ')[0]}!
-                {verificationStatus === 'APPROVED' && <ShieldCheck size={26} fill={T.saffron} color="#fff" style={{ filter: 'drop-shadow(0 4px 8px rgba(255,148,49,0.2))' }} />}
+              <MiniBadge color={C.navy} bg={C.borderLight}>CREATOR CONSOLE</MiniBadge>
+              <h1 style={{ fontSize: 26, fontWeight: 800, color: C.navy, margin: '6px 0 2px', letterSpacing: '-0.02em', fontFamily: 'Outfit, sans-serif' }}>
+                Namaste, {(c?.name || st.user?.name || 'Creator').split(' ')[0]}
               </h1>
-              <p style={{ fontSize: 13, color: T.slate, fontWeight: 600, margin: 0 }}>
+              <span style={{ fontSize: 12, color: C.slateLight, fontWeight: 500 }}>
                 {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-              </p>
+              </span>
             </div>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button 
-                onClick={() => navigate('/creator/settings')} 
-                style={{ 
-                  width: 44, height: 44, borderRadius: 14, background: T.card, 
-                  border: `1.5px solid ${T.border}`, display: 'flex', alignItems: 'center', 
-                  justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(15,23,42,0.03)',
-                  transition: '0.2s'
-                }}
-              >
-                <Settings size={18} color={T.slate} />
-              </button>
-            </div>
+            <button
+              onClick={() => navigate('/creator/settings')}
+              style={{
+                width: 36, height: 36, borderRadius: 8, background: '#fff',
+                border: `1px solid ${C.border}`, display: 'flex',
+                alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+              }}
+            >
+              <Settings size={14} color={C.slate} />
+            </button>
           </div>
         </motion.div>
 
-        {/* Status + Trial Banners */}
+        {/* Banners */}
         <StatusBanner
           profileCompleted={profileCompleted}
           verificationStatus={verificationStatus}
@@ -1488,114 +1599,68 @@ export default function DashboardPage() {
           handleMockPayment={handleMockPayment}
           navigate={navigate}
         />
-        <PortfolioBanner verificationStatus={verificationStatus} portfolioActive={portfolioActive} navigate={navigate} />
+        <PortfolioBanner
+          verificationStatus={verificationStatus}
+          portfolioActive={portfolioActive}
+          navigate={navigate}
+        />
+        {isAnalyticsLocked && <UpgradeProBanner onUpgradeClick={() => setIsUpgradeOpen(true)} />}
 
-        {/* ── Main 2-Column Responsive Grid ── */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: mob ? '1fr' : '1.85fr 1fr', 
-          gap: 24,
-          alignItems: 'start'
-        }}>
-          
-          {/* COLUMN 1: Main Feeds & Stats */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-            
-            {/* Profile Hero Panel */}
-            <ProfileHeroCard creator={c} verificationStatus={verificationStatus} score={score} navigate={navigate} mob={mob} dsp={dsp} />
+        {/* Bento Grid */}
+        <div className="cb-bento-grid">
+          {/* Row 1: Hero */}
+          <BentoHero
+            creator={c}
+            verificationStatus={verificationStatus}
+            score={score}
+            navigate={navigate}
+            isPro={st.isPro}
+            dsp={dsp}
+          />
 
-            {/* Stat Cards - responsive 2x2 on mobile, 1x4 on desktop */}
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(4, 1fr)', 
-              gap: 16 
-            }}>
-              <StatCard label="Active Deals" value={myApps.filter(a => a.status === 'selected').length} sub="+2 this week" icon={Briefcase} color={T.emerald} delay={0.1} locked={isLocked} />
-              <StatCard label="Followers" value={fmt.num(c?.followers || 0)} sub="+4.2% growth" icon={Users} color={T.violet} delay={0.15} locked={isLocked} />
-              <StatCard label="CB Score" value={score} sub="Elite tier" icon={ShieldCheck} color={T.saffron} delay={0.2} locked={isLocked} />
-              <StatCard label="Wallet" value="₹12,450" sub="+₹2,450 today" icon={IndianRupee} color={T.blue} delay={0.25} locked={isLocked} />
-            </div>
+          {/* Row 2: Performance pulse chart & commands */}
+          <PerformancePulse
+            views={profileViews}
+            isAnalyticsLocked={isAnalyticsLocked}
+            onUpgradeClick={() => setIsUpgradeOpen(true)}
+          />
+          <CommandCenter navigate={navigate} isLocked={isLocked} />
 
-            {/* Matching Campaigns */}
-            <motion.div {...fadeUp(0.28)}>
-              <GlassCard style={{ padding: 24 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                  <div>
-                    <h3 style={{ fontSize: 16, fontWeight: 900, color: T.navy, margin: '0 0 2px' }}>Matching Campaigns</h3>
-                    <p style={{ fontSize: 12, color: T.slate, fontWeight: 600, margin: 0 }}>Based on your niche & hub location</p>
-                  </div>
-                  <button onClick={() => navigate('/creator/opportunities')} style={{ background: 'none', border: 'none', color: T.saffron, fontSize: 13, fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
-                    See all <ChevronRight size={14} />
-                  </button>
-                </div>
-                <div style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 8, scrollbarWidth: 'thin' }}>
-                  {matchingCampaigns.length > 0 ? matchingCampaigns.map((camp, i) => (
-                    <CampaignCard key={camp.id || i} title={camp.title || 'Campaign'} brand={camp.brand || 'Brand'} budget={fmt.inr(camp.budget || camp.budgetMin || 10000).replace('₹', '')} isLocked={isLocked} delay={0.3 + i * 0.08} />
-                  )) : [1, 2, 3].map(i => (
-                    <CampaignCard key={i} title="New Campaign Available" brand="Brand Partner" budget="20,000" isLocked={true} delay={0.3 + i * 0.08} />
-                  ))}
-                </div>
-              </GlassCard>
-            </motion.div>
+          {/* Row 3: Wallet escrow ledger, geography details & milestone checks */}
+          <WalletBento isLocked={isLocked} navigate={navigate} />
+          <GeographyBento isLocked={isLocked} isAnalyticsLocked={isAnalyticsLocked} onUpgradeClick={() => setIsUpgradeOpen(true)} />
+          <MilestoneBento followers={c?.followers || 0} navigate={navigate} />
 
-            {/* Geography & Application Pulse side-by-side or stacked on mobile */}
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: mob ? '1fr' : '1fr 1.2fr', 
-              gap: 24 
-            }}>
-              <motion.div {...fadeUp(0.3)}>
-                <GeographyPanel isLocked={isLocked} />
-              </motion.div>
-              <motion.div {...fadeUp(0.32)}>
-                <ApplicationPulse myApps={myApps} isLocked={isLocked} navigate={navigate} />
-              </motion.div>
-            </div>
+          {/* Row 4: Brief campaigns match & applications tracking */}
+          <CampaignsBento campaigns={matchingCampaigns} isLocked={isLocked} navigate={navigate} />
+          <ApplicationPulse myApps={myApps} isLocked={isLocked} navigate={navigate} />
 
-          </div>
-
-          {/* COLUMN 2: Sidebar Widgets */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-            
-            {/* Quick Access Grid */}
-            <motion.div {...fadeUp(0.2)}>
-              <QuickActions navigate={navigate} isLocked={isLocked} />
-            </motion.div>
-
-            {/* Profile Views Sparkline Widget */}
-            <motion.div {...fadeUp(0.21)}>
-              <ProfileViewsCard views={profileViews} mob={mob} />
-            </motion.div>
-
-            {/* Checklist Progress Panel */}
-            <motion.div {...fadeUp(0.22)}>
-              <ProfileChecklist
-                hasIdentity={hasIdentity} hasSocials={hasSocials} hasStory={hasStory} hasServices={hasServices}
-                allChecksComplete={allChecksComplete} verificationStatus={verificationStatus}
-                handleFreeSubmit={handleFreeSubmit} navigate={navigate}
-              />
-            </motion.div>
-
-            {/* Milestone Tracker Card */}
-            <motion.div {...fadeUp(0.26)}>
-              <MilestoneCard followers={c?.followers || 0} deals={myApps.filter(a => a.status === 'selected').length} navigate={navigate} />
-            </motion.div>
-
-            {/* CB Official Follow Card */}
-            <CBOfficialCard followingCB={followingCB} onToggleFollow={handleToggleCB} navigate={navigate} mob={mob} />
-
-            {/* Media Kit Card */}
-            <motion.div {...fadeUp(0.35)}>
-              <MediaKitCard creator={c} isLocked={isLocked} navigate={navigate} toast={toast} />
-            </motion.div>
-
-          </div>
-
+          {/* Row 5: Checklist panel & Media Kit PDF generator */}
+          <OnboardingPanel
+            hasIdentity={hasIdentity}
+            hasSocials={hasSocials}
+            hasStory={hasStory}
+            hasServices={hasServices}
+            allChecksComplete={allChecksComplete}
+            verificationStatus={verificationStatus}
+            handleFreeSubmit={handleFreeSubmit}
+            navigate={navigate}
+          />
+          <CBAndMediaKitBento
+            creator={c}
+            followingCB={followingCB}
+            onToggleFollow={handleToggleCB}
+            isLocked={isLocked}
+            navigate={navigate}
+            dsp={dsp}
+          />
         </div>
-
       </div>
 
-      {/* Dev Bar */}
+      {/* Upgrade sandbox Sim modal */}
+      <UpgradeModal isOpen={isUpgradeOpen} onClose={() => setIsUpgradeOpen(false)} onPaymentSuccess={handleUpgradeSuccess} />
+
+      {/* Floating State DevBar */}
       {import.meta.env.DEV && (
         <DevBar
           profileCompleted={profileCompleted}
@@ -1603,18 +1668,43 @@ export default function DashboardPage() {
           updateProfileComplete={updateProfileComplete}
           updateVerification={updateVerification}
           handleResetAll={handleResetAll}
+          isPro={st.isPro}
+          dsp={dsp}
+          toast={toast}
         />
       )}
 
+      {/* Responsive Bento Layout Styles */}
       <style>{`
-        .db-layout { isolation: isolate; }
         * { box-sizing: border-box; }
+        .cb-bento-grid {
+          display: grid;
+          grid-template-columns: repeat(12, 1fr);
+          gap: 20px;
+        }
+        @media (max-width: 1024px) {
+          .cb-bento-grid {
+            grid-template-columns: repeat(6, 1fr);
+          }
+          .cb-bento-tile {
+            grid-column: span 6 !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .cb-bento-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+          }
+          .hero-flex {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 20px !important;
+          }
+        }
         ::-webkit-scrollbar { height: 4px; width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 100px; }
-        @media (max-width: 480px) {
-          h1 { font-size: 22px !important; }
-        }
       `}</style>
     </div>
   );
