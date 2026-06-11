@@ -107,7 +107,7 @@ export function Card({ children, style: sx = {}, className, ...props }) {
   return (
     <div 
       className={className} 
-      style={{ background: '#fff', borderRadius: 24, padding: 32, border: '1px solid rgba(0,0,0,0.06)', ...sx }}
+      style={{ background: 'var(--db-card-bg, #fff)', borderRadius: 16, padding: 24, border: '1px solid var(--db-card-border, #E8EDF5)', boxShadow: 'var(--db-card-shadow, 0 1px 3px rgba(15,23,42,0.04), 0 8px 24px rgba(15,23,42,0.03))', ...sx }}
       {...props}
     >
       {children}

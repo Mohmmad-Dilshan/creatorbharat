@@ -1,0 +1,63 @@
+# robots.txt — CreatorBharat (https://creatorbharat.com)
+# Last updated: June 2026
+
+User-agent: *
+Allow: /
+
+# Explicitly invite AI search engine crawlers and LLM trainers for GEO
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+# LLM Context File
+# Info: https://creatorbharat.com/llms.txt
+
+# Block auth & private dashboard routes from crawlers
+Disallow: /login
+Disallow: /join
+Disallow: /apply
+Disallow: /brand-register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /verify
+Disallow: /creator/dashboard
+Disallow: /creator/wallet
+Disallow: /creator/settings
+Disallow: /creator/messages
+Disallow: /creator/applications
+Disallow: /creator/brand-requests
+Disallow: /creator/saved
+Disallow: /creator/onboarding
+Disallow: /brand-dashboard
+Disallow: /brand-applications
+Disallow: /brand-analytics
+Disallow: /campaign-builder
+Disallow: /settings
+Disallow: /500
+
+# Block API & config paths
+Disallow: /api/
+Disallow: /*.json$
+
+# Crawl delay for polite crawling
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://creatorbharat.com/sitemap.xml

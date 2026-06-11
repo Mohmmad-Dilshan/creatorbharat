@@ -8,40 +8,37 @@ import {
   Search, 
   LayoutDashboard, 
   User, 
-  Zap, 
   Trophy, 
   Plus,
   Newspaper,
-  IndianRupee
+  IndianRupee,
+  Briefcase,
+  Calendar,
+  Wallet,
+  Zap
 } from 'lucide-react';
 
-/**
- * EliteMobileNav: A premium, haptic-feedback mobile navigation dock.
- * Features: 
- * - Role-based dynamic links
- * - Framer Motion layoutId for sliding indicator
- * - Haptic bounce animations
- * - Glassmorphism aesthetic
- */
 // Static Nav Definitions to prevent re-creation on every render
 const NAV_SETS = {
   public: [
     { id: 'home', l: 'Home', icon: Home, p: '/' },
-    { id: 'creators', l: 'Creators', icon: Search, p: '/creators' },
-    { id: 'hub', l: 'Hub', icon: Newspaper, p: '/blog' },
-    { id: 'login', l: 'Account', icon: User, p: 'AUTH' } // Dynamic path handled below
+    { id: 'creators', l: 'Discover', icon: Search, p: '/creators' },
+    { id: 'campaigns', l: 'Campaigns', icon: Briefcase, p: '/campaigns' },
+    { id: 'hub', l: 'Blog', icon: Newspaper, p: '/blog' },
+    { id: 'login', l: 'Account', icon: User, p: 'AUTH' }
   ],
   creator: [
-    { id: 'dash', l: 'Overview', icon: LayoutDashboard, p: '/dashboard' },
-    { id: 'deals', l: 'Deals', icon: Zap, p: '/applications' },
-    { id: 'monetize', l: 'Earn', icon: IndianRupee, p: '/monetize' },
-    { id: 'score', l: 'Score', icon: Trophy, p: '/creator-score' },
-    { id: 'profile', l: 'Identity', icon: User, p: '/settings' }
+    { id: 'dash', l: 'Home', icon: LayoutDashboard, p: '/creator/dashboard' },
+    { id: 'deals', l: 'Deals', icon: Zap, p: '/creator/opportunities' },
+    { id: 'wallet', l: 'Wallet', icon: Wallet, p: '/creator/wallet' },
+    { id: 'score', l: 'Score', icon: Trophy, p: '/creator/score' },
+    { id: 'profile', l: 'Profile', icon: User, p: '/creator/profile' }
   ],
   brand: [
-    { id: 'control', l: 'Control', icon: LayoutDashboard, p: '/brand-dashboard' },
+    { id: 'control', l: 'Command', icon: LayoutDashboard, p: '/brand-dashboard' },
     { id: 'scout', l: 'Scout', icon: Search, p: '/creators' },
-    { id: 'camps', l: 'Missions', icon: Zap, p: '/campaigns' },
+    { id: 'apps', l: 'Applicants', icon: Briefcase, p: '/brand-applications' },
+    { id: 'camps', l: 'Campaigns', icon: Zap, p: '/campaigns' },
     { id: 'profile', l: 'Settings', icon: User, p: '/settings' }
   ]
 };
@@ -68,7 +65,7 @@ export default function EliteMobileNav({ role, user }) {
   // Dynamic Path Resolver for Account
   const accountPath = React.useMemo(() => {
     if (!st.user) return '/login';
-    return st.role === 'brand' ? '/brand-dashboard' : '/dashboard';
+    return st.role === 'brand' ? '/brand-dashboard' : '/creator/dashboard';
   }, [st.user, st.role]);
 
   // Memoized Nav Set Selection
@@ -125,7 +122,7 @@ export default function EliteMobileNav({ role, user }) {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9, rotate: 15 }}
             className="elite-center-action"
-            onClick={() => handlePress(st.role === 'brand' ? '/campaign-builder' : '/monetize')}
+            onClick={() => handlePress(st.role === 'brand' ? '/campaign-builder' : '/creator/public-preview')}
           >
             <Plus size={24} color="#FFF" strokeWidth={3} />
           </motion.button>

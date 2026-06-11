@@ -170,7 +170,7 @@ export default function BrandDashboardPage() {
                ) : (
                  <div className="transaction-list">
                     {myCamps.map((c, i) => (
-                      <CampaignRow key={c.id} camp={c} delay={i * 0.1} onAction={() => { dsp({ t: 'GO', p: 'applications' }); navigate('/applications'); }} />
+                      <CampaignRow key={c.id} camp={c} delay={i * 0.1} onAction={() => { navigate('/brand-applications'); }} />
                     ))}
                  </div>
                )}

@@ -6,6 +6,15 @@ import { useApp } from '@/core/context';
 import { 
   LayoutDashboard, 
   User, 
+  Briefcase,
+  Eye,
+  Inbox,
+  Bookmark,
+  Wallet,
+  CalendarDays,
+  BadgeCheck,
+  LifeBuoy,
+  IndianRupee,
   Megaphone, 
   BarChart3, 
   Settings, 
@@ -20,6 +29,8 @@ import {
   ShieldCheck as Shield
 } from 'lucide-react';
 import { Logo } from '@/components/common';
+import EliteMobileNav from './EliteMobileNav';
+import NotificationDropdown from './NotificationDropdown';
 
 const SidebarItem = ({ icon: Icon, label, path, active, collapsed, onClick }) => (
   <button
@@ -59,7 +70,33 @@ SidebarItem.propTypes = {
   onClick: PropTypes.func.isRequired
 };
 
-import EliteMobileNav from './EliteMobileNav';
+const SidebarGroup = ({ title, links, collapsed, location, onClick }) => (
+  <div style={{ marginBottom: collapsed ? 10 : 18 }}>
+    {!collapsed && (
+      <p className="db-sidebar-label" style={{ paddingLeft: 12, marginBottom: 8 }}>
+        {title}
+      </p>
+    )}
+    {links.map(link => (
+      <SidebarItem
+        key={link.path}
+        {...link}
+        active={location.pathname === link.path || location.pathname.startsWith(`${link.path}/`)}
+        collapsed={collapsed}
+        onClick={onClick}
+      />
+    ))}
+  </div>
+);
+
+SidebarGroup.propTypes = {
+  title: PropTypes.string.isRequired,
+  links: PropTypes.arrayOf(PropTypes.object).isRequired,
+  collapsed: PropTypes.bool,
+  location: PropTypes.object.isRequired,
+  onClick: PropTypes.func.isRequired
+};
+
 
 export default function DashboardLayout({ children }) {
   const { st, dsp } = useApp();
@@ -79,29 +116,17 @@ export default function DashboardLayout({ children }) {
     return () => globalThis.removeEventListener('resize', h);
   }, []);
 
-  const role = st.role || 'creator';
-  const isBrand = role === 'brand';
+  const role = st.role || 'brand';
   
-  const creatorLinks = [
-    { label: 'Overview', icon: LayoutDashboard, path: '/dashboard' },
-    { label: 'Identity', icon: User, path: '/settings' },
-    { label: 'Deals', icon: Zap, path: '/applications' },
-    { label: 'Leaderboard', icon: Trophy, path: '/leaderboard' },
-    { label: 'Score', icon: Activity, path: '/creator-score' },
-    { label: 'Ecosystem', icon: Megaphone, path: '/creators' },
-    { label: 'Guidelines', icon: BookOpen, path: '/creator-guidelines' }
-  ];
-
-  const brandLinks = [
+  const links = [
     { label: 'Command', icon: LayoutDashboard, path: '/brand-dashboard' },
+    { label: 'Applications', icon: Briefcase, path: '/brand-applications' },
     { label: 'Missions', icon: Megaphone, path: '/campaigns' },
     { label: 'Discovery', icon: Search, path: '/creators' },
-    { label: 'Trends', icon: BarChart3, path: '/brand-dashboard' },
+    { label: 'Trends', icon: BarChart3, path: '/brand-analytics' },
     { label: 'Guidelines', icon: Shield, path: '/brand-guidelines' },
     { label: 'Settings', icon: Settings, path: '/settings' }
   ];
-
-  const links = isBrand ? brandLinks : creatorLinks;
 
   const handleNav = (path) => {
     navigate(path);
@@ -122,12 +147,12 @@ export default function DashboardLayout({ children }) {
           className="db-sidebar"
         >
           <div className="db-sidebar-brand" style={{ marginBottom: 48, paddingLeft: collapsed ? 14 : 8 }}>
-             <Logo sm={collapsed} onClick={() => navigate('/')} />
+             <Logo sm={collapsed} onClick={() => navigate('/brand-dashboard')} />
           </div>
 
-          <nav style={{ flex: 1 }}>
+          <nav style={{ flex: 1, overflowY: 'auto', paddingRight: collapsed ? 0 : 4 }}>
             <div style={{ paddingLeft: 12, marginBottom: 12 }}>
-               {!collapsed && <p className="db-sidebar-label">Main System</p>}
+              {!collapsed && <p className="db-sidebar-label">Brand System</p>}
             </div>
             {links.map(link => (
               <SidebarItem 
@@ -158,7 +183,7 @@ export default function DashboardLayout({ children }) {
           <div className="db-header-left">
             {mob ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                 <Logo sm onClick={() => navigate('/')} />
+                 <Logo sm onClick={() => navigate('/brand-dashboard')} />
                  <div className="header-v-divider" style={{ height: 20, width: 1, background: '#f1f5f9' }} />
                  <div style={{ 
                    background: 'rgba(255,148,49,0.1)', 
@@ -179,10 +204,7 @@ export default function DashboardLayout({ children }) {
           </div>
 
           <div className="db-header-right">
-            <button className="db-icon-btn">
-              <Bell size={20} />
-              <div className="db-notif-dot" style={{ position: 'absolute', top: 12, right: 12, width: 8, height: 8, background: '#FF9431', borderRadius: '50%', border: '2px solid #fff' }} />
-            </button>
+            <NotificationDropdown />
             <div className="db-v-divider" style={{ width: 1, height: 28, background: '#f1f5f9', margin: '0 4px' }} />
             <button className="db-user-profile" onClick={() => navigate('/settings')}>
               {!mob && (

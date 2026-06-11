@@ -22,6 +22,9 @@ import Manifesto from '../../components/home/Manifesto';
 import Testimonials from '../../components/home/Testimonials';
 import Faq from '../../components/home/Faq';
 import Cta from '../../components/home/Cta';
+import PlayButtonsShowcase from '../../components/home/PlayButtonsShowcase';
+import CreatorUnionAlert from '../../components/home/CreatorUnionAlert';
+import CoCreationBundles from '../../components/home/CoCreationBundles';
 import Seo from '@/components/common/SEO';
 
 const PAGE_BG_ICONS = [
@@ -172,9 +175,12 @@ export default function HomePage() {
   const sections = [
     { id: 'hero',      comp: <Hero mob={mob} st={st} dsp={dsp} go={go} /> },
     { id: 'creators',  comp: <FeaturedCreators mob={mob} creators={creators} go={go} loading={loading} /> },
+    { id: 'trophies',  comp: <PlayButtonsShowcase mob={mob} /> },
     { id: 'impact',    comp: <ImpactStats mob={mob} /> },
     { id: 'map',       comp: <IndiaMap3D mob={mob} stateCounts={stateCounts} onSelectState={s => { dsp({ t: 'CF', v: { state: s, district: '' } }); go('creators'); }} /> },
     { id: 'roadmap',   comp: <CommunityPulse mob={mob} go={go} /> },
+    { id: 'union',     comp: <CreatorUnionAlert mob={mob} /> },
+    { id: 'bundles',   comp: <CoCreationBundles mob={mob} /> },
     { id: 'showcase',  comp: <PlatformShowcase mob={mob} /> },
     { id: 'manifesto', comp: <Manifesto mob={mob} /> },
     { id: 'blueprint', comp: <Testimonials mob={mob} /> },
@@ -186,8 +192,54 @@ export default function HomePage() {
     <div style={{ background: '#fff', position: 'relative' }}>
       <Seo 
         title="India's Premier Creator Ecosystem"
-        description="Discover and collaborate with Bharat's top content creators. 2,400+ verified creators from Jaipur, Mumbai, Delhi & beyond."
-        keywords="creator bharat, indian influencers, tier 2 creators, jaipur influencers, influencer marketing india"
+        description="Discover and collaborate with Bharat's top content creators. 2,400+ verified creators from Jaipur, Mumbai, Delhi & beyond. Connect your brand with authentic Indian talent."
+        keywords="creator bharat, indian influencers, tier 2 creators, jaipur influencers, influencer marketing india, brand collaboration india, content creators india"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://creatorbharat.com/#organization",
+              "name": "CreatorBharat",
+              "url": "https://creatorbharat.com",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://creatorbharat.com/android-chrome-512x512.png",
+                "width": 512,
+                "height": 512
+              },
+              "description": "India's premier creator discovery ecosystem empowering regional creators from Tier 2 & 3 cities.",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Bhilwara",
+                "addressRegion": "Rajasthan",
+                "postalCode": "311001",
+                "addressCountry": "IN"
+              },
+              "sameAs": [
+                "https://twitter.com/CreatorBharat",
+                "https://instagram.com/creatorbharat",
+                "https://linkedin.com/company/creatorbharat"
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://creatorbharat.com/#website",
+              "url": "https://creatorbharat.com",
+              "name": "CreatorBharat",
+              "description": "India's premier creator discovery ecosystem",
+              "publisher": { "@id": "https://creatorbharat.com/#organization" },
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": {
+                  "@type": "EntryPoint",
+                  "urlTemplate": "https://creatorbharat.com/creators?q={search_term_string}"
+                },
+                "query-input": "required name=search_term_string"
+              }
+            }
+          ]
+        }}
       />
       <FloatingBackground mob={mob} />
       {sections.map(s => (

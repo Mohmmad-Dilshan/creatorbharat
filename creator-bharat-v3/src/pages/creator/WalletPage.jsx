@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { fmt } from '../../utils/helpers';
+import { useNavigate } from 'react-router-dom';
+import { fmt, LS } from '../../utils/helpers';
 import { useApp } from '@/core/context';
 import { Card, Btn, Bdg, Bar } from '@/components/common/Primitives';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -70,11 +71,18 @@ TransactionItem.propTypes = {
 
 export default function WalletPage() {
   const { st, dsp } = useApp();
+  const navigate = useNavigate();
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [filter, setFilter] = useState('ALL'); // ALL, PAID, PENDING
   const [modalOpen, setModalOpen] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [withdrawing, setWithdrawing] = useState(false);
+  const [subTab, setSubTab] = useState('transactions'); // 'transactions' | 'referrals'
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  const isPro = st.isPro || localStorage.getItem('cb_is_pro') === 'true';
+  const myCreators = LS.get('cb_creators', []);
+  const c = st.user?.creatorProfile || myCreators.find(cr => cr.email === st.user?.email) || {};
 
   // Stateful ledger with local storage syncing
   const [ledger, setLedger] = useState(() => {
@@ -185,7 +193,13 @@ export default function WalletPage() {
                   <TrendingUp size={16} /> Instant bank settlements enabled
                </div>
                <button 
-                 onClick={() => setModalOpen(true)}
+                 onClick={() => {
+                   if (!isPro) {
+                     setShowUpgradeModal(true);
+                     return;
+                   }
+                   setModalOpen(true);
+                 }}
                  className="btn-primary-pill" 
                  disabled={totalPaid <= 0}
                  style={{ 
@@ -232,7 +246,40 @@ export default function WalletPage() {
          </Card>
       </div>
 
+      {/* Sub-Tab Switcher */}
+      <div style={{ display: 'flex', background: '#f1f5f9', padding: 4, borderRadius: 16, width: 'fit-content', marginBottom: 28, gap: 4 }}>
+        <button
+          onClick={() => setSubTab('transactions')}
+          style={{
+            padding: '10px 20px', borderRadius: 12, border: 'none', cursor: 'pointer',
+            background: subTab === 'transactions' ? '#fff' : 'transparent',
+            color: subTab === 'transactions' ? '#0f172a' : '#64748b',
+            fontSize: 14, fontWeight: 800,
+            boxShadow: subTab === 'transactions' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none'
+          }}
+        >
+          💰 Transaction History
+        </button>
+        <button
+          onClick={() => setSubTab('referrals')}
+          style={{
+            padding: '10px 20px', borderRadius: 12, border: 'none', cursor: 'pointer',
+            background: subTab === 'referrals' ? '#fff' : 'transparent',
+            color: subTab === 'referrals' ? '#0f172a' : '#64748b',
+            fontSize: 14, fontWeight: 800,
+            boxShadow: subTab === 'referrals' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6
+          }}
+        >
+          🤝 Referral Rewards
+          <Bdg color="green" sm>₹199/ref</Bdg>
+        </button>
+      </div>
+
       {/* Transaction Stream & Settings */}
+      {subTab === 'transactions' && (
       <div className="db-main-grid">
          
          {/* Transaction History */}
@@ -298,6 +345,87 @@ export default function WalletPage() {
             </Card>
          </div>
       </div>
+      )}
+
+      {/* Referrals Sub-Tab Content */}
+      {subTab === 'referrals' && (
+        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '2.2fr 1fr', gap: 32, marginTop: 16 }}>
+          {/* Left Column */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            <Card style={{ padding: 32, borderRadius: 28, background: '#fff', border: '1px solid #f1f5f9' }}>
+              <h3 style={{ fontSize: 18, fontWeight: 950, color: '#0f172a', marginBottom: 12 }}>Invite Creators & Earn Cashback</h3>
+              <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.6, fontWeight: 500, marginBottom: 24 }}>
+                Aapke referral link se join karne wale har creator par aapko ₹199 cashback milega, jab wo apna profile verify karwa lenge. Ye cashback seedhe aapke wallet balance mein add ho jayega!
+              </p>
+
+              <div>
+                <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.8px', display: 'block', marginBottom: 8 }}>Mera Personal Referral Link</label>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                  <input 
+                    type="text" 
+                    readOnly 
+                    value={`https://creatorbharat.com/join?ref=${c?.slug || 'elite-creator'}`}
+                    style={{ flex: 1, padding: '14px 20px', border: '1px solid #e2e8f0', borderRadius: 16, background: '#f8fafc', fontSize: 14, fontWeight: 700, color: '#475569', outline: 'none' }}
+                  />
+                  <Btn onClick={() => { navigator.clipboard.writeText(`https://creatorbharat.com/join?ref=${c?.slug || 'elite-creator'}`); toast('Referral link copied to clipboard!', 'success'); }} style={{ background: '#0f172a', color: '#fff', borderRadius: 16, padding: '14px 24px', fontWeight: 800 }}>Copy</Btn>
+                </div>
+              </div>
+            </Card>
+
+            <Card style={{ padding: 32, borderRadius: 28, background: '#fff', border: '1px solid #f1f5f9' }}>
+              <h3 style={{ fontSize: 18, fontWeight: 950, color: '#0f172a', marginBottom: 24 }}>Referral Network Status</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {[
+                  { name: 'Rahul Verma', niche: 'Tech Creator', city: 'Jaipur', status: 'verified', amount: '₹199' },
+                  { name: 'Priya Singh', niche: 'Fashion Creator', city: 'Indore', status: 'verified', amount: '₹199' },
+                  { name: 'Devendra Yadav', niche: 'Food Vlogger', city: 'Udaipur', status: 'pending', amount: 'Pending Verification' }
+                ].map((ref, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 16, background: '#f8fafc', borderRadius: 20, border: '1px solid #f1f5f9' }}>
+                    <div>
+                      <h4 style={{ fontSize: 14, fontWeight: 850, color: '#0f172a', margin: '0 0 4px' }}>{ref.name}</h4>
+                      <p style={{ fontSize: 12, color: '#64748b', fontWeight: 650, margin: 0 }}>{ref.niche} · {ref.city}</p>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ display: 'block', fontSize: 14, fontWeight: 900, color: ref.status === 'verified' ? '#10B981' : '#FF9431' }}>{ref.amount}</span>
+                      <Bdg color={ref.status === 'verified' ? 'green' : 'orange'} sm style={{ marginTop: 4 }}>{ref.status === 'verified' ? 'VERIFIED ✓' : 'PENDING PROFILE ⏳'}</Bdg>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+
+          {/* Right Column */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            <Card style={{ padding: 24, borderRadius: 24, background: '#fff', border: '1px solid #f1f5f9' }}>
+              <h4 style={{ fontSize: 15, fontWeight: 900, color: '#0f172a', marginBottom: 16 }}>Invite via Email</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <input 
+                  type="email" 
+                  placeholder="friend@example.com" 
+                  style={{ width: '100%', padding: '12px 16px', border: '1px solid #cbd5e1', borderRadius: 12, fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                />
+                <Btn full style={{ background: '#FF9431', color: '#fff', borderRadius: 16, padding: '12px', fontWeight: 850 }} onClick={() => toast('Referral invitation sent successfully!', 'success')}>
+                  Send Invitation
+                </Btn>
+              </div>
+            </Card>
+
+            <Card style={{ padding: 24, borderRadius: 24, background: '#0f172a', color: '#fff', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: -10, right: -10, opacity: 0.15 }}><Zap size={100} color="#FF9431" /></div>
+              <h4 style={{ fontSize: 15, fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', marginBottom: 12 }}>Referral Milestone</h4>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, fontWeight: 500, marginBottom: 16 }}>
+                Refer 5 creators and complete your master checklist to unlock the <strong>Community Star Badge</strong>!
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: 11, fontWeight: 800, color: '#FF9431' }}>
+                <span>Milestone Progress</span>
+                <span>2/5 Referred</span>
+              </div>
+              <Bar value={40} color="#FF9431" height={4} />
+            </Card>
+          </div>
+        </div>
+      )}
 
       {/* 4. PREMIUM BANK WITHDRAWAL SLIDE-OUT PANEL */}
       <AnimatePresence>
@@ -396,6 +524,46 @@ export default function WalletPage() {
               </form>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* Pro Upgrade Modal */}
+      <AnimatePresence>
+        {showUpgradeModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+            onClick={() => setShowUpgradeModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              style={{ background: '#fff', borderRadius: 32, padding: 40, maxWidth: 400, width: '100%', textAlign: 'center', boxShadow: '0 40px 80px rgba(0,0,0,0.2)' }}
+            >
+              <div style={{ width: 64, height: 64, borderRadius: 20, background: '#FF943112', display: 'grid', placeItems: 'center', margin: '0 auto 20px', color: '#FF9431' }}>
+                <Zap size={28} fill="#FF9431" />
+              </div>
+              <h3 style={{ fontSize: 22, fontWeight: 950, color: '#0f172a', marginBottom: 10 }}>Pro Settlement Required</h3>
+              <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.6, marginBottom: 8 }}>
+                Free plan creators can receive escrow payments but instant payouts are locked.
+              </p>
+              <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.6, marginBottom: 28 }}>
+                Upgrade to <strong>Creator Pro</strong> to enable instant bank withdrawals, automated GST invoicing, and zero transaction fees.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <Btn full lg onClick={() => navigate('/creator/monetization')} style={{ background: '#FF9431', color: '#fff', borderRadius: 100, fontWeight: 950 }}>
+                  Upgrade to Pro (₹49/mo)
+                </Btn>
+                <button onClick={() => setShowUpgradeModal(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 

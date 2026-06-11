@@ -1,9 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { RefreshCw, X } from 'lucide-react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 export default function PWAUpdatePrompt() {
+  const [isStandalone, setIsStandalone] = useState(false);
+
+  useEffect(() => {
+    const checkStandalone = () => {
+      const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+      setIsStandalone(!!isStandaloneMode);
+    };
+
+    checkStandalone();
+
+    const mediaQuery = window.matchMedia('(display-mode: standalone)');
+    const listener = (e) => setIsStandalone(e.matches);
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', listener);
+      return () => mediaQuery.removeEventListener('change', listener);
+    } else {
+      mediaQuery.addListener(listener);
+      return () => mediaQuery.removeListener(listener);
+    }
+  }, []);
+
   const {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
@@ -28,6 +50,10 @@ export default function PWAUpdatePrompt() {
   const handleUpdate = () => {
     updateServiceWorker(true);
   };
+
+  if (!isStandalone) {
+    return null;
+  }
 
   return (
     <AnimatePresence>

@@ -356,6 +356,7 @@ const RateCalcInputConsole = ({ F, setF, mob }) => (
                  <label htmlFor="followers" style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Follower Count</label>
                  <input 
                    id="followers-val"
+                   name="followers_val"
                    type="number" 
                    value={F.followers} 
                    onChange={e => setF({...F, followers: Math.max(0, Number.parseInt(e.target.value, 10) || 0)})}
@@ -364,6 +365,7 @@ const RateCalcInputConsole = ({ F, setF, mob }) => (
               </div>
               <input 
                 id="followers"
+                name="followers"
                 type="range" 
                 min="1000" 
                 max="2000000" 
@@ -384,6 +386,7 @@ const RateCalcInputConsole = ({ F, setF, mob }) => (
                  <label htmlFor="er" style={{ fontSize: '13px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Engagement Rate (%)</label>
                  <input 
                    id="er-val"
+                   name="er_val"
                    type="number" 
                    step="0.1"
                    value={F.er} 
@@ -393,6 +396,7 @@ const RateCalcInputConsole = ({ F, setF, mob }) => (
               </div>
               <input 
                 id="er"
+                name="er"
                 type="range" 
                 min="0.1" 
                 max="20" 

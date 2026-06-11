@@ -1,229 +1,131 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  FileText, 
-  Scale, 
-  ShieldAlert, 
-  Gavel, 
-  CheckCircle, 
-  XCircle,
-  ChevronRight,
-  BookOpen
-} from 'lucide-react';
-import { Bdg, Btn } from '@/components/common/Primitives';
+import { ShieldAlert, CheckCircle2, AlertCircle } from 'lucide-react';
 import Seo from '@/components/common/SEO';
 
 const SECTIONS = [
-  { id: 'role', title: 'Platform Role', icon: Scale },
-  { id: 'accounts', title: 'User Accounts', icon: CheckCircle },
-  { id: 'verification', title: 'Elite Verification', icon: Gavel },
-  { id: 'payouts', title: 'Deals & Escrow', icon: ShieldAlert },
-  { id: 'commission', title: 'Fee Structure', icon: FileText },
+  { id: 'acceptance', title: '1. Acceptance of Terms' },
+  { id: 'escrow', title: '2. The Escrow Contract' },
+  { id: 'fees', title: '3. Fees & Zero Commission' },
+  { id: 'off-platform', title: '4. Off-Platform Bans' },
+  { id: 'liability', title: '5. Limitation of Liability' },
+  { id: 'disputes', title: '6. Dispute Resolution' },
 ];
 
 export default function TermsPage() {
-  const [activeSection, setActiveSection] = useState('role');
-  const [mob, setMob] = useState(globalThis.innerWidth < 1024);
+  const mob = window.innerWidth < 768;
 
   useEffect(() => {
-    const h = () => setMob(globalThis.innerWidth < 1024);
-    globalThis.addEventListener('resize', h);
-    return () => globalThis.removeEventListener('resize', h);
+    window.scrollTo(0, 0);
   }, []);
 
   const scrollTo = (id) => {
-    setActiveSection(id);
     const el = document.getElementById(id);
     if (el) {
-      const offset = 100;
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = el.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
-      const offsetPosition = elementPosition - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
+      window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
     }
   };
 
   return (
-    <div style={{ background: '#fff', minHeight: '100vh', color: '#0f172a' }}>
-      <Seo 
-        title="Terms of Service | The Bharat Protocol"
-        description="Read the terms and conditions for using the CreatorBharat platform. Rules for creators, brands, and agencies."
-        keywords="terms of service, user agreement, creator bharat policies"
-      />
-
-      {/* Cinematic Hero */}
-      <section style={{ 
-        background: '#050505', 
-        padding: mob ? '120px 20px 60px' : '160px 20px 100px', 
-        textAlign: 'center', 
-        position: 'relative', 
-        overflow: 'hidden' 
-      }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255,148,49,0.05), transparent 70%)' }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #FF9431, #fff, #10B981)' }} />
-        
-        <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-             <Bdg color="orange" sm style={{ marginBottom: '24px', letterSpacing: '2px' }}>LEGAL FRAMEWORK</Bdg>
-             <h1 style={{ 
-               fontFamily: '"Playfair Display", serif', 
-               fontSize: 'clamp(40px, 8vw, 72px)', 
-               fontWeight: 900, 
-               color: '#fff', 
-               lineHeight: 1,
-               marginBottom: '24px'
-             }}>
-               Terms of <span style={{ fontStyle: 'italic', color: '#FF9431' }}>Service.</span>
-             </h1>
-             <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.6)', fontWeight: 500, maxWidth: '600px', margin: '0 auto' }}>
-               The operating agreement for Bharat's most trusted creator-brand ecosystem.
-             </p>
-          </motion.div>
+    <div style={{ minHeight: '100vh', background: '#f8fafc', paddingBottom: 100 }}>
+      <Seo title="Terms of Service | CreatorBharat" description="CreatorBharat Terms of Service and Escrow Marketplace Rules." />
+      
+      {/* HEADER */}
+      <div style={{ background: '#0f172a', paddingTop: mob ? 100 : 140, paddingBottom: mob ? 60 : 80, paddingLeft: 20, paddingRight: 20 }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: 100, marginBottom: 24, border: '1px solid rgba(59,130,246,0.2)' }}>
+            <ShieldAlert size={16} color="#3B82F6" />
+            <span style={{ fontSize: 13, fontWeight: 800, color: '#3B82F6', textTransform: 'uppercase', letterSpacing: 1.5 }}>Legal Framework</span>
+          </div>
+          <h1 style={{ fontSize: mob ? 36 : 56, fontWeight: 950, color: '#fff', lineHeight: 1.1, letterSpacing: '-0.03em', margin: '0 0 20px 0' }}>
+            Terms of Service
+          </h1>
+          <p style={{ fontSize: 18, color: '#94a3b8', margin: 0 }}>Last Updated: June 1, 2026</p>
         </div>
-      </section>
+      </div>
 
-      <div style={{ maxWidth: '1300px', margin: '0 auto', padding: mob ? '40px 20px' : '80px 24px', display: 'grid', gridTemplateColumns: mob ? '1fr' : '300px 1fr', gap: '80px', alignItems: 'start' }}>
+      {/* CONTENT LAYOUT */}
+      <div style={{ maxWidth: 1000, margin: '0 auto', padding: '40px 20px', display: 'flex', gap: 60, flexDirection: mob ? 'column' : 'row' }}>
         
-        {/* Sticky Sidebar */}
+        {/* SIDEBAR */}
         {!mob && (
-          <aside style={{ position: 'sticky', top: '120px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '24px' }}>AGREEMENT INDEX</div>
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {SECTIONS.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => scrollTo(s.id)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '12px 16px',
-                    borderRadius: '12px',
-                    background: activeSection === s.id ? '#FF943110' : 'transparent',
-                    border: 'none',
-                    color: activeSection === s.id ? '#FF9431' : '#64748b',
-                    fontSize: '14px',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    transition: '0.2s'
-                  }}
-                >
-                  <s.icon size={18} />
-                  {s.title}
-                  {activeSection === s.id && <motion.div layoutId="terms-indicator" style={{ marginLeft: 'auto' }}><ChevronRight size={14} /></motion.div>}
-                </button>
-              ))}
-            </nav>
-
-            <div style={{ marginTop: '48px', padding: '24px', background: '#f8fafc', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
-               <BookOpen size={24} color="#FF9431" style={{ marginBottom: '16px' }} />
-               <h4 style={{ fontSize: '15px', fontWeight: 900, marginBottom: '8px' }}>Legal Support?</h4>
-               <p style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.5, marginBottom: '16px' }}>For specific deal disputes, use the Deal Desk resolution center.</p>
-               <Btn full sm style={{ background: '#0f172a', color: '#fff' }}>Open Ticket</Btn>
+          <div style={{ width: 260, flexShrink: 0 }}>
+            <div style={{ position: 'sticky', top: 120 }}>
+              <h4 style={{ fontSize: 12, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }}>Contents</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {SECTIONS.map(s => (
+                  <button 
+                    key={s.id}
+                    onClick={() => scrollTo(s.id)}
+                    style={{ background: 'none', border: 'none', textAlign: 'left', padding: 0, fontSize: 15, fontWeight: 600, color: '#475569', cursor: 'pointer', transition: 'color 0.2s' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#0f172a'}
+                    onMouseLeave={e => e.currentTarget.style.color = '#475569'}
+                  >
+                    {s.title}
+                  </button>
+                ))}
+              </div>
             </div>
-          </aside>
+          </div>
         )}
 
-        {/* Content Area */}
-        <main style={{ fontSize: '18px', lineHeight: 1.8, color: '#334155' }}>
+        {/* MAIN TEXT */}
+        <div style={{ flex: 1, fontSize: 16, color: '#334155', lineHeight: 1.8 }}>
           
-          <div id="role" style={{ marginBottom: '80px' }}>
-            <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '36px', fontWeight: 900, color: '#0f172a', marginBottom: '24px' }}>1. Platform Role</h2>
-            <p>
-              CreatorBharat is a decentralized talent discovery platform. We act as a **facilitator** between Creators and Brands. We do not act as an employer, agent, or representative for either party.
-            </p>
-            <p style={{ marginTop: '20px' }}>
-              All contracts formed through our "Deal Desk" are legally binding agreements directly between the Creator and the Brand.
-            </p>
-          </div>
-
-          <div id="accounts" style={{ marginBottom: '80px' }}>
-            <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '36px', fontWeight: 900, color: '#0f172a', marginBottom: '24px' }}>2. User Accounts</h2>
-            <p>
-              To access the elite marketplace, you must maintain a verified account. You are responsible for all activity occurring under your unique profile node.
-            </p>
-            <div style={{ background: '#f8fafc', padding: '32px', borderRadius: '24px', border: '1px solid #f1f5f9', marginTop: '24px' }}>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '16px' }}>
-                <li style={{ display: 'flex', gap: '12px', fontSize: '16px' }}><CheckCircle size={18} color="#10B981" style={{ flexShrink: 0, marginTop: '4px' }} /> One account per creator/brand identity.</li>
-                <li style={{ display: 'flex', gap: '12px', fontSize: '16px' }}><CheckCircle size={18} color="#10B981" style={{ flexShrink: 0, marginTop: '4px' }} /> Minimum age requirement of 13+ (or as per regional law).</li>
-                <li style={{ display: 'flex', gap: '12px', fontSize: '16px' }}><XCircle size={18} color="#ef4444" style={{ flexShrink: 0, marginTop: '4px' }} /> Prohibition of bot-driven or automated profile management.</li>
-              </ul>
-            </div>
-          </div>
-
-          <div id="verification" style={{ marginBottom: '80px' }}>
-            <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '36px', fontWeight: 900, color: '#0f172a', marginBottom: '24px' }}>3. Elite Verification</h2>
-            <p>
-              The **Elite Score** and **Verified Badge** are merit-based status markers. We reserve the right to revoke verification if a user is found providing fraudulent data or violating the professional guidelines.
-            </p>
-            <p style={{ marginTop: '20px' }}>
-              Verification involves a multi-node audit of social media metrics, audience quality, and previous commercial performance.
+          <div style={{ background: 'rgba(255, 148, 49, 0.1)', borderLeft: '4px solid #FF9431', padding: 24, borderRadius: '0 16px 16px 0', marginBottom: 40 }}>
+            <h4 style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 800, color: '#9A3412', margin: '0 0 8px 0' }}>
+              <AlertCircle size={20} /> Important Notice
+            </h4>
+            <p style={{ margin: 0, color: '#9A3412', fontSize: 15 }}>
+              CreatorBharat is an <strong>Escrow-backed Marketplace</strong>. By using our platform, you agree to our strict zero-tolerance policy against off-platform payments and fake engagement metrics.
             </p>
           </div>
 
-          <div id="payouts" style={{ marginBottom: '80px' }}>
-            <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '36px', fontWeight: 900, color: '#0f172a', marginBottom: '24px' }}>4. Deals & Escrow</h2>
-            <p>
-              All payments for brand deals are managed through our secure **Deal Desk Escrow**. Funds are released to creators only after the brand confirms the receipt and approval of the agreed-upon deliverables.
-            </p>
-            <div style={{ marginTop: '24px', padding: '24px', background: '#fff7ed', borderRadius: '20px', border: '1px solid #ffedd5' }}>
-               <h4 style={{ fontSize: '14px', fontWeight: 900, color: '#9a3412', textTransform: 'uppercase', marginBottom: '12px' }}>Payout Schedule</h4>
-               <p style={{ fontSize: '14px', color: '#9a3412', lineHeight: 1.6 }}>
-                 Standard release cycle is **T+3 days** after deliverable approval. Any disputes must be raised within 48 hours of work submission.
-               </p>
-            </div>
-          </div>
+          <section id="acceptance" style={{ marginBottom: 48 }}>
+            <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', marginBottom: 16 }}>1. Acceptance of Terms</h2>
+            <p>By accessing or using CreatorBharat (the "Platform"), you agree to be bound by these Terms of Service. If you do not agree to all the terms and conditions, you must not access the Platform. The Platform connects verified Brands with verified Creators for influencer marketing campaigns.</p>
+          </section>
 
-          <div id="commission" style={{ marginBottom: '80px' }}>
-            <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '36px', fontWeight: 900, color: '#0f172a', marginBottom: '24px' }}>5. Fee Structure</h2>
-            <p>
-              CreatorBharat operates on a **Zero Commission** philosophy for deals. 
-            </p>
-            <ul style={{ marginTop: '20px', display: 'grid', gap: '12px' }}>
-               <li style={{ display: 'flex', gap: '10px', fontSize: '16px' }}><ChevronRight size={18} color="#FF9431" style={{ flexShrink: 0 }} /> We do not take a percentage cut from creator earnings.</li>
-               <li style={{ display: 'flex', gap: '10px', fontSize: '16px' }}><ChevronRight size={18} color="#FF9431" style={{ flexShrink: 0 }} /> Revenue is generated via SaaS subscription tiers.</li>
-               <li style={{ display: 'flex', gap: '10px', fontSize: '16px' }}><ChevronRight size={18} color="#FF9431" style={{ flexShrink: 0 }} /> Users are responsible for their own tax liabilities (GST/TDS).</li>
+          <section id="escrow" style={{ marginBottom: 48 }}>
+            <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', marginBottom: 16 }}>2. The Escrow Contract</h2>
+            <p>To protect both parties, all campaign payments are processed via our secure Escrow system powered by Razorpay.</p>
+            <ul style={{ paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <li><strong>Brand Deposit:</strong> A brand must deposit 100% of the campaign funds into Escrow before a Creator begins work.</li>
+              <li><strong>Creator Guarantee:</strong> Once funds are in Escrow, the Creator is guaranteed payment upon successful delivery of the agreed-upon content.</li>
+              <li><strong>72-Hour Auto-Approval:</strong> If a Creator submits their deliverable and the Brand does not request a revision or approve it within 72 hours, the Escrow will automatically release funds to the Creator.</li>
             </ul>
-          </div>
+          </section>
 
-          {/* Bottom Summary */}
-          <section style={{ 
-            marginTop: '100px', 
-            padding: '60px 40px', 
-            background: '#0f172a', 
-            borderRadius: '40px', 
-            textAlign: 'center',
-            color: '#fff',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            <div style={{ position: 'absolute', top: '-40px', right: '-40px', opacity: 0.1 }}><Scale size={200} color="#FF9431" /></div>
-            <div style={{ position: 'relative', zIndex: 1 }}>
-               <Gavel size={48} color="#FF9431" style={{ marginBottom: '24px' }} />
-               <h3 style={{ fontFamily: '"Playfair Display", serif', fontSize: '32px', fontWeight: 900, marginBottom: '16px' }}>Legal Governance</h3>
-               <p style={{ fontSize: '16px', color: 'rgba(255,255,255,0.6)', marginBottom: '32px', maxWidth: '500px', margin: '0 auto 32px' }}>
-                 By using this platform, you agree to these terms under the jurisdiction of Bhilwara, Rajasthan, India.
-               </p>
+          <section id="fees" style={{ marginBottom: 48 }}>
+            <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', marginBottom: 16 }}>3. Fees & Zero Commission</h2>
+            <p>CreatorBharat takes pride in a <strong>0% Commission Policy</strong> for Creators.</p>
+            <p>Brands pay a nominal platform fee per transaction to cover Escrow gateway charges, GST, and trust & safety overheads. Creators receive 100% of their negotiated payout directly to their verified bank accounts.</p>
+          </section>
+
+          <section id="off-platform" style={{ marginBottom: 48 }}>
+            <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', marginBottom: 16 }}>4. Off-Platform Bans</h2>
+            <p>To maintain a safe ecosystem, attempting to bypass the CreatorBharat Escrow system is strictly prohibited.</p>
+            <div style={{ display: 'flex', gap: 12, background: '#fff', padding: 20, borderRadius: 12, border: '1px solid #e2e8f0', marginTop: 16 }}>
+              <div style={{ flexShrink: 0 }}><AlertCircle color="#EF4444" /></div>
+              <div>
+                <strong style={{ color: '#0f172a', display: 'block', marginBottom: 4 }}>Immediate Termination</strong>
+                <span style={{ fontSize: 14 }}>If a Brand or Creator is caught soliciting direct payments outside of CreatorBharat after discovering each other on the Platform, both accounts will be permanently banned, and the Creator's CB Score will be reduced to 0.</span>
+              </div>
             </div>
           </section>
 
-        </main>
-      </div>
+          <section id="liability" style={{ marginBottom: 48 }}>
+            <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', marginBottom: 16 }}>5. Limitation of Liability</h2>
+            <p>CreatorBharat acts as a technology intermediary. We do not endorse any specific Brand or Creator. While we enforce strict verification, we are not liable for the content produced, product claims, or any reputational damage resulting from a campaign.</p>
+          </section>
 
-      {/* Footer Meta */}
-      <footer style={{ padding: '40px 20px', borderTop: '1px solid #f1f5f9', textAlign: 'center' }}>
-         <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', opacity: 0.4, fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>
-            <span>Last Updated: May 2026</span>
-            <span>•</span>
-            <span>© 2026 CreatorBharat Elite</span>
-         </div>
-      </footer>
+          <section id="disputes" style={{ marginBottom: 48 }}>
+            <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', marginBottom: 16 }}>6. Dispute Resolution</h2>
+            <p>If a dispute arises (e.g., Creator fails to deliver, or Brand rejects valid work), either party can trigger a dispute. Our internal Trust & Safety team will review the original campaign brief, the chat logs, and the submitted content. The team's decision on Escrow fund distribution will be final and binding within 24 hours of the dispute being raised.</p>
+          </section>
+
+        </div>
+      </div>
     </div>
   );
 }

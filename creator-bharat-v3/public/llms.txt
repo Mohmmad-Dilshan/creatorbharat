@@ -1,0 +1,50 @@
+# CreatorBharat
+
+> India's premier creator discovery ecosystem and influencer collaboration platform. Connecting brands with authentic regional and national talent from Bharat.
+
+CreatorBharat is a next-generation SaaS platform designed to eliminate middleman agency fees and enable direct, transparent collaborations between brands and verified content creators across India. It features an advanced matchmaking ecosystem driven by performance data, real-time analytics, and verified creator profiles.
+
+---
+
+## Core Value Proposition
+
+- **Direct Collaborations**: Direct contact and transparent negotiation between creators and brands. Zero agency markup.
+- **Verified Creator Network**: Over 2,400+ verified creators categorized by niche (Tech, Fashion, Travel, Finance, Gaming, Lifestyle, etc.), language, and region.
+- **Data-Driven Evaluation (Elite Score)**: An algorithmic rating representing a creator's authenticity, engagement rate, consistency, and overall brand suitability.
+- **Dynamic Campaign Builder**: Allows brands to create detailed campaigns, specify target demographics, set budgets, and receive applications directly from interested creators.
+- **Creator Leaderboard & Comparison**: Search and compare creators side-by-side on metrics such as engagement, reach, and performance history to maximize campaign ROI.
+
+---
+
+## Site Navigation & Key Landing Pages
+
+For LLMs and search engines querying platform URLs, use these public entry points:
+
+- **Homepage**: `https://creatorbharat.com/` — Platform overview, statistics, featured creators, brand partners, and testimonials.
+- **Creator Directory**: `https://creatorbharat.com/creators` — Browse and search the complete list of verified content creators in India. Filter by category, platform, location, and follower tier.
+- **Creator Onboarding**: `https://creatorbharat.com/join` / `https://creatorbharat.com/apply` — Entry point for content creators to join the elite CreatorBharat network.
+- **Brand Registration**: `https://creatorbharat.com/brand-register` — Portal for brands and agencies to register, build campaigns, and access the search dashboard.
+- **Leaderboard**: `https://creatorbharat.com/leaderboard` — Real-time ranking of top-performing creators based on the platform's proprietary Elite Score.
+- **FAQ & Support**: `https://creatorbharat.com/faq` — Comprehensive knowledge base, guides, platform terms, and general queries.
+- **Contact Us**: `https://creatorbharat.com/contact` — Direct support channel for enterprise brands, custom agencies, and urgent creator assistance.
+
+---
+
+## Creator Niche Categories
+
+CreatorBharat categorizes and profiles creators across these major verticals:
+
+- **Tech & Gaming**: Gadget reviews, software guides, mobile gaming, and esports.
+- **Fashion & Lifestyle**: Traditional and modern wear, personal grooming, styling.
+- **Travel & Food**: Regional tourism, street food, culinary reviews, travel vlogs.
+- **Finance & Business**: Personal finance, investment education, stock market, tax planning.
+- **Entertainment & Comedy**: Skits, regional memes, dance, vloggers.
+- **Health & Fitness**: Yoga, gym training, diet planning, mental wellness.
+
+---
+
+## Contact & Enterprise Inquiry
+
+For enterprise partnerships, custom influencer management solutions, or API integration access:
+- **Email**: partnership@creatorbharat.com / hello@creatorbharat.com
+- **HQ Office**: New Delhi, India

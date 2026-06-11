@@ -41,7 +41,7 @@ StatusTimeline.propTypes = {
   status: PropTypes.string
 };
 
-const ApplicationCard = ({ app: a, mob, onAction, delay = 0 }) => {
+const ApplicationCard = ({ app: a, mob, onAction, onChat, delay = 0 }) => {
   const brandImg = `https://ui-avatars.com/api/?name=${encodeURIComponent(typeof a.brand === 'object' ? a.brand.companyName : a.brand)}&background=f8fafc&color=111&size=100`;
   
   return (
@@ -91,7 +91,11 @@ const ApplicationCard = ({ app: a, mob, onAction, delay = 0 }) => {
          </div>
 
          <div className="header-actions" style={{ justifyContent: 'flex-end', marginTop: 24 }}>
-            <button className="btn-text-slate" style={{ fontSize: 13, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer' }}>
+            <button
+              className="btn-text-slate"
+              style={{ fontSize: 13, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer' }}
+              onClick={() => onChat()}
+            >
                <MessageSquare size={16} /> Chat with Brand
             </button>
             <button onClick={() => onAction(a)} className="btn-primary-pill" style={{ padding: '10px 20px', fontSize: 13 }}>
@@ -115,6 +119,7 @@ ApplicationCard.propTypes = {
   }).isRequired,
   mob: PropTypes.bool,
   onAction: PropTypes.func.isRequired,
+  onChat: PropTypes.func.isRequired,
   delay: PropTypes.number
 };
 
@@ -157,15 +162,15 @@ export default function ApplicationsPage() {
               onClick={() => setFilter('')} 
               className={`filter-pill ${filter === '' ? 'active' : ''}`}
             >
-              All Pulsing Deals
+              All Applications
             </button>
-            {['shortlisted', 'selected', 'rejected'].map(s => (
+            {['applied', 'shortlisted', 'selected', 'rejected'].map(s => (
                <button 
                  key={s} 
                  onClick={() => setFilter(s)} 
                  className={`filter-pill ${filter === s ? 'active' : ''}`}
                >
-                 {s.toUpperCase()}
+                 {s.charAt(0).toUpperCase() + s.slice(1)}
                </button>
             ))}
          </div>
@@ -177,13 +182,16 @@ export default function ApplicationsPage() {
                 title="No Active Pulses" 
                 sub="Your applications matching this status will appear here. Keep applying to scale!" 
                 ctaLabel="Find New Opportunities" 
-                onCta={() => { dsp({ t: 'GO', p: 'campaigns' }); navigate('/campaigns'); scrollToTop(); }} 
+                onCta={() => { dsp({ t: 'GO', p: 'creator/opportunities' }); navigate('/creator/opportunities'); scrollToTop(); }} 
               />
            </div>
          ) : (
            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               {filtered.map((a, i) => (
-                <ApplicationCard key={a.id} app={a} mob={mob} delay={i * 0.1} onAction={(app) => { dsp({ t: 'GO', p: 'campaigns', sel: app }); navigate('/campaigns'); scrollToTop(); }} />
+                <ApplicationCard key={a.id} app={a} mob={mob} delay={i * 0.1}
+                  onAction={(app) => { dsp({ t: 'GO', p: 'creator/opportunities', sel: app }); navigate('/creator/opportunities'); scrollToTop(); }}
+                  onChat={() => navigate('/creator/messages')}
+                />
               ))}
            </div>
          )}

@@ -23,7 +23,7 @@ const LANGUAGES = [
 ];
 
 export default function FilterSidebar({ show, onClose, f, dsp, mob, niches, platforms }) {
-  const clearFilters = () => dsp({ t: 'CF', v: { q: '', niche: [], state: '', district: '', platform: [], verified: false, minFollowers: '', sort: 'score', gender: '', language: '', minER: '' } });
+  const clearFilters = () => dsp({ t: 'CF', v: { q: '', niche: [], state: '', district: '', platform: [], verified: false, minFollowers: '', sort: 'score', gender: '', language: '', minER: '', minScore: '' } });
 
   return (
     <AnimatePresence>
@@ -206,6 +206,7 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches, plat
                     <div style={{ position: 'relative' }}>
                       <input
                         id="filter-min-followers"
+                        name="minFollowers"
                         type="number"
                         placeholder="e.g. 50000"
                         value={f.minFollowers}
@@ -237,6 +238,34 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches, plat
                       </select>
                       <Zap size={18} color="#10B981" style={{ position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
                     </div>
+                  </div>
+                </div>
+
+                {/* CB Score Filter */}
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 12 }}>CB Score (Min)</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8 }}>
+                    {[
+                      { label: 'Any', value: '' },
+                      { label: '60+', value: '60' },
+                      { label: '80+', value: '80' },
+                      { label: '90+', value: '90' },
+                    ].map(opt => (
+                      <button
+                        key={opt.label}
+                        onClick={() => dsp({ t: 'CF', v: { minScore: opt.value } })}
+                        style={{
+                          padding: '12px 8px', borderRadius: 14, border: 'none', cursor: 'pointer',
+                          background: (f.minScore || '') === opt.value ? '#FF9431' : '#f8fafc',
+                          color: (f.minScore || '') === opt.value ? '#fff' : '#64748b',
+                          fontSize: 13, fontWeight: 900,
+                          outline: (f.minScore || '') === opt.value ? 'none' : '1.5px solid #f1f5f9',
+                          transition: '0.2s'
+                        }}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
 

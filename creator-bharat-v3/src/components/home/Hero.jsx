@@ -104,7 +104,7 @@ export const Typewriter = memo(function Typewriter({ words = TYPEWRITER_WORDS, i
   }, [sub, del, idx, words, mob, interval]);
 
   return (
-    <span style={{ 
+    <span className="notranslate" style={{ 
       position: 'relative', 
       display: 'inline-block', 
       textAlign: 'left',
@@ -424,7 +424,7 @@ SearchSugs.propTypes = { sugs: PropTypes.array.isRequired, go: PropTypes.func.is
 const SearchInput = memo(({ mob, q, dsp, onKeyDown, sugs, go }) => (
   <div style={{ flex: 1.2, position: 'relative', padding: mob ? '16px 24px' : '0 48px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderRight: mob ? 'none' : '1.5px solid #f1f5f9', borderBottom: mob ? '1.5px solid #f1f5f9' : 'none' }}>
     <label htmlFor="hero-search-input" style={{ fontSize: 10, fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 6 }}>Who are you looking for?</label>
-    <input id="hero-search-input" value={q || ''} onKeyDown={onKeyDown} onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} placeholder="Name, niche or city..." style={{ width: '100%', border: 'none', background: 'none', fontSize: mob ? 17 : 20, outline: 'none', fontWeight: 900, color: '#0f172a' }} />
+    <input id="hero-search-input" name="search" value={q || ''} onKeyDown={onKeyDown} onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} placeholder="Name, niche or city..." style={{ width: '100%', border: 'none', background: 'none', fontSize: mob ? 17 : 20, outline: 'none', fontWeight: 900, color: '#0f172a' }} />
     {sugs.length > 0 && <SearchSugs sugs={sugs} go={go} />}
   </div>
 ));
@@ -497,6 +497,331 @@ const mergeResults = (api, local) => {
   });
   return merged.slice(0, 6);
 };
+
+const TrustBadges = memo(({ mob }) => (
+  <div className="au d4" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: mob ? 16 : 40, flexWrap: 'wrap', marginTop: mob ? 40 : 64, opacity: 0.5, filter: 'grayscale(100%)', cursor: 'default' }}>
+    <div style={{ fontSize: 12, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px', marginRight: mob ? 0 : 20, color: '#64748b', width: mob ? '100%' : 'auto', textAlign: 'center', marginBottom: mob ? 8 : 0 }}>Trusted By Teams At</div>
+    {['Nykaa', 'Mamaearth', 'Unacademy', 'Dream11', 'Lenskart'].map(brand => (
+      <span key={brand} style={{ fontSize: mob ? 18 : 24, fontWeight: 950, color: '#0f172a', fontFamily: "'Outfit', sans-serif" }}>{brand}</span>
+    ))}
+  </div>
+));
+
+TrustBadges.propTypes = { mob: PropTypes.bool };
+
+const SummitBanner = memo(({ mob, go, st }) => {
+  const [hovered, setHovered] = React.useState(false);
+
+  const handleEventClick = () => {
+    if (st?.user && st?.role === 'creator') {
+      go('/creator/events');
+    } else {
+      go('/join');
+    }
+  };
+
+  const isCreator = st?.user && st?.role === 'creator';
+
+  // Inline SVG cartoon creator character — female creator with phone & mic
+  const CreatorCharacter = () => (
+    <svg viewBox="0 0 220 340" fill="none" xmlns="http://www.w3.org/2000/svg"
+      style={{ width: mob ? 120 : 190, height: 'auto', flexShrink: 0, filter: 'drop-shadow(0 20px 40px rgba(255,148,49,0.3))' }}
+    >
+      {/* Body shadow */}
+      <ellipse cx="110" cy="330" rx="55" ry="10" fill="rgba(255,148,49,0.15)" />
+
+      {/* Legs */}
+      <rect x="88" y="245" width="18" height="65" rx="9" fill="#1e293b"/>
+      <rect x="114" y="245" width="18" height="65" rx="9" fill="#1e293b"/>
+      {/* Shoes */}
+      <ellipse cx="97" cy="311" rx="16" ry="7" fill="#FF9431"/>
+      <ellipse cx="123" cy="311" rx="16" ry="7" fill="#FF9431"/>
+
+      {/* Body */}
+      <rect x="72" y="155" width="76" height="100" rx="28" fill="#FF9431"/>
+      {/* Body detail - dupatta / scarf */}
+      <path d="M72 175 Q110 165 148 175 L148 195 Q110 185 72 195 Z" fill="rgba(255,255,255,0.18)"/>
+      {/* Tricolor badge on body */}
+      <rect x="96" y="185" width="28" height="8" rx="4" fill="#fff" opacity="0.9"/>
+      <rect x="96" y="185" width="9" height="8" rx="0" fill="#FF9431" opacity="0.9"/>
+      <rect x="105" y="185" width="10" height="8" fill="#fff" opacity="0.9"/>
+      <rect x="115" y="185" width="9" height="8" rx="0" fill="#138808" opacity="0.9"/>
+
+      {/* Right arm — holding phone */}
+      <rect x="148" y="165" width="16" height="55" rx="8" fill="#f4a261"/>
+      {/* Phone */}
+      <rect x="156" y="145" width="28" height="48" rx="6" fill="#0f172a"/>
+      <rect x="159" y="149" width="22" height="38" rx="4" fill="#1e3a5f"/>
+      {/* Phone screen glow */}
+      <rect x="159" y="149" width="22" height="38" rx="4" fill="url(#phoneGlow)" opacity="0.8"/>
+      {/* Camera icon on phone */}
+      <circle cx="170" cy="168" r="7" stroke="#FF9431" strokeWidth="2" fill="none"/>
+      <circle cx="170" cy="168" r="3" fill="#FF9431"/>
+      {/* Record button */}
+      <circle cx="170" cy="179" r="3" fill="#ef4444"/>
+
+      {/* Left arm — mic raised up */}
+      <rect x="56" y="155" width="16" height="55" rx="8" fill="#f4a261"/>
+      {/* Mic stick */}
+      <rect x="42" y="105" width="7" height="50" rx="3.5" fill="#94a3b8"/>
+      {/* Mic head */}
+      <ellipse cx="45" cy="100" rx="12" ry="16" fill="#1e293b"/>
+      <ellipse cx="45" cy="100" rx="8" ry="11" fill="#334155"/>
+      {/* Mic grill lines */}
+      <line x1="38" y1="96" x2="52" y2="96" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
+      <line x1="37" y1="100" x2="53" y2="100" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
+      <line x1="38" y1="104" x2="52" y2="104" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
+
+      {/* Neck */}
+      <rect x="100" y="130" width="20" height="28" rx="10" fill="#f4a261"/>
+
+      {/* Head */}
+      <ellipse cx="110" cy="115" rx="38" ry="40" fill="#f4a261"/>
+      {/* Ears */}
+      <ellipse cx="72" cy="115" rx="8" ry="10" fill="#f4a261"/>
+      <ellipse cx="148" cy="115" rx="8" ry="10" fill="#f4a261"/>
+
+      {/* Hair — long, Indian style */}
+      <path d="M75 95 Q72 60 110 55 Q148 60 145 95 Q148 120 148 135 L155 160 Q135 155 110 158 Q85 155 65 160 L72 135 Q72 120 75 95 Z" fill="#1e293b"/>
+      {/* Hair highlight */}
+      <path d="M85 65 Q110 58 130 68" stroke="#334155" strokeWidth="4" strokeLinecap="round"/>
+      {/* Hair side braid */}
+      <path d="M145 115 Q155 130 150 160 Q148 170 143 165" stroke="#1e293b" strokeWidth="8" strokeLinecap="round" fill="none"/>
+
+      {/* Face details */}
+      {/* Eyes */}
+      <ellipse cx="97" cy="112" rx="6" ry="7" fill="#fff"/>
+      <ellipse cx="123" cy="112" rx="6" ry="7" fill="#fff"/>
+      <ellipse cx="98" cy="113" rx="4" ry="5" fill="#1e293b"/>
+      <ellipse cx="124" cy="113" rx="4" ry="5" fill="#1e293b"/>
+      {/* Eye shine */}
+      <circle cx="100" cy="111" r="1.5" fill="#fff"/>
+      <circle cx="126" cy="111" r="1.5" fill="#fff"/>
+      {/* Eyebrows */}
+      <path d="M91 104 Q97 100 103 104" stroke="#1e293b" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+      <path d="M117 104 Q123 100 129 104" stroke="#1e293b" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+      {/* Nose */}
+      <path d="M107 120 Q110 124 113 120" stroke="#e8916a" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+      {/* Smile */}
+      <path d="M100 128 Q110 135 120 128" stroke="#e8916a" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+      {/* Dimples */}
+      <circle cx="98" cy="128" r="2" fill="rgba(200,100,60,0.3)"/>
+      <circle cx="122" cy="128" r="2" fill="rgba(200,100,60,0.3)"/>
+
+      {/* Bindi */}
+      <circle cx="110" cy="100" r="2.5" fill="#FF9431"/>
+
+      {/* Earrings */}
+      <circle cx="72" cy="120" r="4" fill="#FF9431"/>
+      <circle cx="72" cy="126" r="2.5" fill="#FFB347"/>
+
+      {/* Speech bubble */}
+      <rect x="152" y="68" width="62" height="32" rx="12" fill="#fff" opacity="0.95"/>
+      <path d="M160 100 L155 112 L168 100" fill="#fff" opacity="0.95"/>
+      <text x="164" y="82" fontSize="8" fontWeight="900" fill="#FF9431" fontFamily="sans-serif">LIVE 🔴</text>
+      <text x="158" y="94" fontSize="7" fontWeight="700" fill="#0f172a" fontFamily="sans-serif">Summit 2027</text>
+
+      {/* Stars / sparkles around */}
+      <text x="15" y="85" fontSize="16">✨</text>
+      <text x="185" y="130" fontSize="12">⭐</text>
+      <text x="8" y="140" fontSize="10">🌟</text>
+
+      <defs>
+        <linearGradient id="phoneGlow" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.6"/>
+          <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0.3"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+
+  return (
+    <motion.div
+      className="au d5"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        width: '100%',
+        maxWidth: 1100,
+        marginTop: mob ? 32 : 72,
+        marginBottom: mob ? 32 : 56,
+        borderRadius: mob ? 28 : 48,
+        overflow: 'hidden',
+        position: 'relative',
+        cursor: 'pointer',
+        boxShadow: hovered
+          ? '0 40px 100px rgba(255,148,49,0.22), 0 0 0 1px rgba(255,148,49,0.25)'
+          : '0 24px 64px rgba(0,0,0,0.35)',
+        transition: 'box-shadow 0.4s ease',
+      }}
+      onClick={handleEventClick}
+    >
+      {/* Dark background */}
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #08080f 0%, #0f172a 50%, #130800 100%)' }} />
+
+      {/* Glow blob orange */}
+      <motion.div
+        animate={{ opacity: hovered ? 0.3 : 0.15, scale: hovered ? 1.2 : 1 }}
+        transition={{ duration: 0.7 }}
+        style={{ position: 'absolute', top: '-20%', right: '-5%', width: '55%', height: '180%', background: 'radial-gradient(circle, #FF9431 0%, transparent 65%)', filter: 'blur(70px)', pointerEvents: 'none' }}
+      />
+      {/* Glow blob green */}
+      <motion.div
+        animate={{ opacity: hovered ? 0.12 : 0.06 }}
+        transition={{ duration: 0.7 }}
+        style={{ position: 'absolute', bottom: '-20%', left: '-5%', width: '35%', height: '150%', background: 'radial-gradient(circle, #138808 0%, transparent 65%)', filter: 'blur(60px)', pointerEvents: 'none' }}
+      />
+
+      {/* Tricolor top bar */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #FF9431 33.3%, #fff 33.3%, #fff 66.6%, #138808 66.6%)' }} />
+
+      {/* MAIN CONTENT */}
+      <div style={{
+        position: 'relative', zIndex: 2,
+        padding: mob ? '28px 22px 22px' : '44px 56px 32px',
+      }}>
+
+        {/* Top: Badge row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: mob ? 20 : 28, flexWrap: 'wrap', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <motion.div
+              animate={{ opacity: [1, 0.3, 1], boxShadow: ['0 0 6px #10B981', '0 0 12px #10B981', '0 0 6px #10B981'] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', flexShrink: 0 }}
+            />
+            <span style={{ fontSize: mob ? 10 : 11, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '2.5px' }}>
+              Registrations Open · 2027
+            </span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 14px', background: 'rgba(255,148,49,0.1)', border: '1px solid rgba(255,148,49,0.2)', borderRadius: 100 }}>
+            <span style={{ fontSize: 16 }}>🏆</span>
+            <span style={{ fontSize: mob ? 11 : 12, fontWeight: 900, color: '#FF9431', letterSpacing: '0.5px' }}>National Summit 2027</span>
+          </div>
+        </div>
+
+        {/* Middle: 3-col layout — Title | Character | Stats+CTA */}
+        <div style={{
+          display: 'flex',
+          flexDirection: mob ? 'column' : 'row',
+          alignItems: mob ? 'flex-start' : 'flex-end',
+          justifyContent: 'space-between',
+          gap: mob ? 24 : 32
+        }}>
+
+          {/* LEFT: Title + meta */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h3 style={{ fontSize: mob ? 26 : 40, fontWeight: 950, color: '#fff', letterSpacing: '-0.04em', lineHeight: 1.05, margin: '0 0 16px' }}>
+              CreatorBharat{' '}
+              <span style={{ background: 'linear-gradient(90deg, #FF9431 0%, #FFB347 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                National Summit
+              </span>
+            </h3>
+
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {[
+                { icon: '📍', text: 'Jaipur, Rajasthan' },
+                { icon: '📅', text: 'March 15–16, 2027' },
+                { icon: '👥', text: '500 Creators' },
+              ].map(item => (
+                <div key={item.text} style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  padding: '5px 11px',
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: 100,
+                  fontSize: mob ? 10 : 11, color: 'rgba(255,255,255,0.65)', fontWeight: 600
+                }}>
+                  {item.icon} {item.text}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* CENTER: Cartoon character — hidden on mobile */}
+          {!mob && (
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ flexShrink: 0, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: -32 }}
+            >
+              <CreatorCharacter />
+            </motion.div>
+          )}
+
+          {/* RIGHT: Stats + CTA */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'stretch' : 'flex-end', gap: 14, flexShrink: 0, minWidth: mob ? '100%' : 240 }}>
+
+            <div style={{
+              display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 1,
+              background: 'rgba(255,255,255,0.06)',
+              borderRadius: 16,
+              overflow: 'hidden',
+              border: '1px solid rgba(255,255,255,0.08)'
+            }}>
+              {[
+                { v: '347', l: 'Seats Left' },
+                { v: '60+', l: 'CB Score' },
+                { v: 'FREE', l: 'Travel Top 50' },
+              ].map((s, i) => (
+                <div key={s.l} style={{
+                  padding: mob ? '12px 8px' : '13px 10px', textAlign: 'center',
+                  background: i === 0 ? 'rgba(255,148,49,0.08)' : 'transparent',
+                  borderRight: i < 2 ? '1px solid rgba(255,255,255,0.06)' : 'none'
+                }}>
+                  <div style={{ fontSize: mob ? 16 : 18, fontWeight: 950, color: i === 0 ? '#FF9431' : '#fff', lineHeight: 1 }}>{s.v}</div>
+                  <div style={{ fontSize: 9, fontWeight: 800, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 4 }}>{s.l}</div>
+                </div>
+              ))}
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={(e) => { e.stopPropagation(); handleEventClick(); }}
+              style={{
+                width: '100%',
+                padding: mob ? '14px 20px' : '15px 24px',
+                borderRadius: 14,
+                background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)',
+                color: '#fff', fontSize: mob ? 14 : 14, fontWeight: 900,
+                border: 'none', cursor: 'pointer',
+                boxShadow: '0 10px 28px rgba(255,148,49,0.35)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                letterSpacing: '-0.01em'
+              }}
+            >
+              {isCreator ? '🎟 Book My Seat' : '✦ Join as Creator First'}
+              <motion.span animate={{ x: hovered ? 4 : 0 }} transition={{ duration: 0.2 }}>→</motion.span>
+            </motion.button>
+
+            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)', fontWeight: 600, textAlign: mob ? 'center' : 'right', margin: 0 }}>
+              {isCreator ? 'CB Score 60+ required · Free for verified creators' : 'Creator account required · Sign up free'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom agenda strip */}
+      <div style={{
+        position: 'relative', zIndex: 2,
+        padding: mob ? '12px 22px' : '12px 56px',
+        background: 'rgba(0,0,0,0.25)',
+        borderTop: '1px solid rgba(255,255,255,0.05)',
+        display: 'flex', gap: mob ? 12 : 28, flexWrap: 'wrap', alignItems: 'center'
+      }}>
+        {['🤝 Brand Speed-Networking', '🏆 Play Button Ceremony', '🎓 Creator Masterclasses'].map((item, i) => (
+          <span key={item} style={{ display: 'flex', alignItems: 'center', gap: i > 0 ? 8 : 0, fontSize: mob ? 10 : 11, color: 'rgba(255,255,255,0.38)', fontWeight: 700 }}>
+            {i > 0 && <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'inline-block' }} />}
+            {item}
+          </span>
+        ))}
+      </div>
+    </motion.div>
+  );
+});
+
+SummitBanner.propTypes = { mob: PropTypes.bool, go: PropTypes.func, st: PropTypes.object };
 
 export default function Hero({ mob, st, dsp, go }) {
   const [sugs, setSugs] = useState([]);

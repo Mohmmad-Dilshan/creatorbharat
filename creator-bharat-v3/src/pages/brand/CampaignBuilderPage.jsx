@@ -112,6 +112,18 @@ export default function CampaignBuilderPage() {
     return () => globalThis.removeEventListener('resize', h);
   }, []);
 
+  // Warn user if they try to leave with unsaved form data
+  useEffect(() => {
+    const hasData = F.title || F.desc || F.niche || F.budgetMin;
+    if (!hasData || done) return;
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [F.title, F.desc, F.niche, F.budgetMin, done]);
+
   const upF = (k, v) => setF(p => ({ ...p, [k]: v }));
   const toast = (msg, type) => dsp({ t: 'TOAST', d: { type, msg } });
   const go = (p) => { dsp({ t: 'GO', p }); navigate(`/${p}`); scrollToTop(); };
@@ -220,12 +232,20 @@ export default function CampaignBuilderPage() {
                        <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '32px' }}>Step 1: Mission Profile</h3>
                        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                           <Fld label="Campaign Title" value={F.title} onChange={e => upF('title', e.target.value)} placeholder="Summer Essentials 2026" />
-                          <Fld 
-                            label="Target Niche" 
-                            value={F.niche} 
-                            onChange={e => upF('niche', e.target.value)} 
-                            options={['', 'Lifestyle', 'Fashion', 'Tech', 'Food', 'Beauty', 'Travel', 'Education', 'Entertainment']} 
-                          />
+                          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px' }}>
+                             <Fld 
+                               label="Target Niche" 
+                               value={F.niche} 
+                               onChange={e => upF('niche', e.target.value)} 
+                               options={['', 'Lifestyle', 'Fashion', 'Tech', 'Food', 'Beauty', 'Travel', 'Education', 'Entertainment']} 
+                             />
+                             <Fld 
+                               label="Campaign Type" 
+                               value={F.type || 'Standard Collab'} 
+                               onChange={e => upF('type', e.target.value)} 
+                               options={['Standard Collab', 'Sponsored Task']} 
+                             />
+                          </div>
                           <Fld label="Creative Brief" value={F.desc} onChange={e => upF('desc', e.target.value)} rows={5} placeholder="What are the key deliverables and message for this campaign?" />
                        </div>
                     </motion.div>

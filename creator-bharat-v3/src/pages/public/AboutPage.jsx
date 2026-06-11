@@ -535,8 +535,8 @@ export default function AboutPage() {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "CreatorBharat",
-    "url": "https://creatorbharat.in",
-    "logo": "https://creatorbharat.in/logo.png",
+    "url": "https://creatorbharat.com",
+    "logo": "https://creatorbharat.com/logo.png",
     "description": "The infrastructure of trust for India's regional creator economy.",
     "address": {
       "@type": "PostalAddress",
@@ -552,6 +552,7 @@ export default function AboutPage() {
         title="Our Mission & DNA"
         description="We are building the trust layer for Bharat's regional creator economy. Discover the story of CreatorBharat."
         keywords="about us, bharat creator economy, bhilwara startup, regional creators"
+        jsonLd={jsonLd}
       />
 
       <style>{`
@@ -592,9 +593,7 @@ export default function AboutPage() {
         }
       `}</style>
 
-      <script type="application/ld+json">
-        {JSON.stringify(jsonLd)}
-      </script>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       
       {/* CINEMATIC HERO SECTION */}
       <section style={{ 

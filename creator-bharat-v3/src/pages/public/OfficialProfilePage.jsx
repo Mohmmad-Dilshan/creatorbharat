@@ -1,5 +1,5 @@
 // V3 Production Ready - Build Trigger 2026-05-10
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { scrollToTop } from '../../utils/helpers';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -35,6 +35,7 @@ import {
 import PropTypes from 'prop-types';
 import { LinkedinIcon } from '../../components/icons/SocialIcons';
 import Seo from '@/components/common/SEO';
+import { useApp } from '@/core/context';
 
 // Importing Founder Photo
 // import DilshanImg from '../../assets/dilshan.png';
@@ -587,7 +588,7 @@ TabContent.propTypes = {
   mob: PropTypes.bool.isRequired
 };
 
-const ProfileHeader = ({ mob, content, lang, setLang, handleInteraction }) => (
+const ProfileHeader = ({ mob, content, lang, setLang, isFollowing, onFollow, onMessage }) => (
   <div style={{ 
     display: 'flex', 
     flexDirection: mob ? 'column' : 'row',
@@ -617,31 +618,62 @@ const ProfileHeader = ({ mob, content, lang, setLang, handleInteraction }) => (
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: mob ? 'center' : 'flex-start' }}>
              <h1 style={{ fontSize: '24px', fontWeight: 600, letterSpacing: '-0.02em', margin: 0 }}>{content.username}</h1>
              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-               <HslBadge type="verified" />
-               <HslBadge type="elite" />
-               <HslBadge type="enterprise" />
+                <HslBadge type="verified" />
+                <HslBadge type="elite" />
+                <HslBadge type="enterprise" />
              </div>
           </div>
           <div style={{ display: 'flex', gap: '8px', width: mob ? '100%' : 'auto' }}>
-             <button onClick={() => handleInteraction('/follow/creatorbharat')} style={{ flex: 1, padding: '9px 16px', background: '#0095f6', border: 'none', color: '#fff', borderRadius: '8px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', transition: 'opacity 0.2s' }}>Follow</button>
-             <button onClick={() => handleInteraction('/chat/creatorbharat')} style={{ flex: 1, padding: '9px 16px', background: '#efefef', border: 'none', color: '#262626', borderRadius: '8px', fontSize: '14px', fontWeight: 700, cursor: 'pointer' }}>Message</button>
+             <button 
+               onClick={onFollow} 
+               style={{ 
+                 flex: 1, 
+                 padding: '9px 16px', 
+                 background: isFollowing ? '#efefef' : '#0095f6', 
+                 border: 'none', 
+                 color: isFollowing ? '#262626' : '#fff', 
+                 borderRadius: '8px', 
+                 fontSize: '14px', 
+                 fontWeight: 700, 
+                 cursor: 'pointer', 
+                 transition: 'opacity 0.2s' 
+               }}
+             >
+               {isFollowing ? 'Following' : 'Follow'}
+             </button>
+             <button 
+               onClick={onMessage} 
+               style={{ 
+                 flex: 1, 
+                 padding: '9px 16px', 
+                 background: '#efefef', 
+                 border: 'none', 
+                 color: '#262626', 
+                 borderRadius: '8px', 
+                 fontSize: '14px', 
+                 fontWeight: 700, 
+                 cursor: 'pointer' 
+               }}
+             >
+               Message
+             </button>
              <button onClick={() => setLang(lang === 'en' ? 'hi' : 'en')} style={{ padding: '9px 12px', background: '#efefef', border: 'none', color: '#262626', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}><Languages size={16} /> {lang.toUpperCase()}</button>
           </div>
           {mob ? null : <MoreHorizontal size={24} style={{ cursor: 'pointer' }} />}
        </div>
        {!mob && (
-         <div style={{ display: 'flex', gap: '40px', marginBottom: '20px' }}>
-            <span><strong>{OFFICIAL_DATA.baseStats.posts}</strong> posts</span>
-            <span><strong>{OFFICIAL_DATA.baseStats.followers}</strong> followers</span>
-            <span><strong>{OFFICIAL_DATA.baseStats.following}</strong> following</span>
-         </div>
+          <div style={{ display: 'flex', gap: '40px', marginBottom: '20px' }}>
+             <span><strong>{OFFICIAL_DATA.baseStats.posts}</strong> posts</span>
+             <span><strong>{OFFICIAL_DATA.baseStats.followers}</strong> followers</span>
+             <span><strong>{OFFICIAL_DATA.baseStats.following}</strong> following</span>
+          </div>
        )}
        <div style={{ fontSize: '15px', lineHeight: 1.6 }}>
           <div style={{ fontWeight: 700, fontSize: '16px', marginBottom: '4px' }}>{content.displayName}</div>
           <div style={{ color: '#8e8e8e', fontWeight: 500, marginBottom: '8px' }}>{content.category}</div>
           <div style={{ whiteSpace: 'pre-line', color: '#262626' }}>{content.bio}</div>
           <div style={{ color: '#00376b', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: mob ? 'center' : 'flex-start', gap: '4px', marginTop: '8px' }}>
-            <ExternalLink size={14} /> {content.website}
+             <ExternalLink size={14} /> {content.website}
           </div>
        </div>
     </div>
@@ -653,23 +685,55 @@ ProfileHeader.propTypes = {
   content: PropTypes.object.isRequired,
   lang: PropTypes.string.isRequired,
   setLang: PropTypes.func.isRequired,
-  handleInteraction: PropTypes.func.isRequired
+  isFollowing: PropTypes.bool.isRequired,
+  onFollow: PropTypes.func.isRequired,
+  onMessage: PropTypes.func.isRequired
 };
 
 // --- MAIN PAGE ---
 
 export default function OfficialProfilePage() {
   const navigate = useNavigate();
+  const { st, dsp } = useApp();
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [activeTab, setActiveTab] = useState('posts');
   const [activeStory, setActiveStory] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [lang, setLang] = useState('en');
 
-  const handleInteraction = (target) => {
-    const isLoggedIn = false; // Replace with real auth state
-    if (isLoggedIn) {
-      navigate(target);
+  const isFollowing = st?.follows?.includes('creatorbharat-official');
+
+  const handleFollow = () => {
+    if (st?.user) {
+      const currentlyFollowing = st?.follows?.includes('creatorbharat-official');
+      dsp({ t: 'FOLLOW', id: 'creatorbharat-official' });
+      dsp({ 
+        t: 'TOAST', 
+        d: { 
+          type: currentlyFollowing ? 'info' : 'success', 
+          msg: currentlyFollowing 
+            ? 'Unfollowed @CreatorBharat Official' 
+            : '🎉 Following @CreatorBharat Official!' 
+        } 
+      });
+    } else {
+      setShowAuthModal(true);
+    }
+  };
+
+  const handleMessage = () => {
+    if (st?.user) {
+      if (st.role === 'creator') {
+        navigate('/creator/messages');
+      } else {
+        dsp({
+          t: 'TOAST',
+          d: {
+            type: 'success',
+            msg: '📩 Message session initialized with HQ. Our team will contact you!'
+          }
+        });
+      }
     } else {
       setShowAuthModal(true);
     }
@@ -684,12 +748,38 @@ export default function OfficialProfilePage() {
 
   const content = OFFICIAL_DATA[lang];
 
+  const profileJsonLd = useMemo(() => ({
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "mainEntity": {
+      "@type": "Organization",
+      "name": "CreatorBharat",
+      "alternateName": "क्रिएटरभारत ऑफिशियल",
+      "url": "https://creatorbharat.com",
+      "logo": "https://creatorbharat.com/logo.png",
+      "description": "India's premier creator discovery ecosystem. Connecting brands with authentic Bharat talent.",
+      "sameAs": [
+        "https://www.linkedin.com/company/creatorbharat"
+      ],
+      "founder": {
+        "@type": "Person",
+        "name": "Mohmmad Dilshan",
+        "jobTitle": "Founder & Chief Architect",
+        "worksFor": {
+          "@type": "Organization",
+          "name": "CreatorBharat"
+        }
+      }
+    }
+  }), []);
+
   return (
     <div style={{ background: '#fff', minHeight: '100vh', color: '#262626', paddingBottom: '100px', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
       <Seo 
         title="Official Identity"
         description="Claim your verified digital handle on CreatorBharat. The infrastructure of trust for India's premier creator ecosystem."
         keywords="official creator handle, verified profile india, creator identity protocol"
+        jsonLd={profileJsonLd}
       />
       
       <LiveTicker />
@@ -701,7 +791,9 @@ export default function OfficialProfilePage() {
           content={content} 
           lang={lang} 
           setLang={setLang} 
-          handleInteraction={handleInteraction} 
+          isFollowing={isFollowing}
+          onFollow={handleFollow}
+          onMessage={handleMessage}
         />
 
         {/* Mobile Stats Row */}

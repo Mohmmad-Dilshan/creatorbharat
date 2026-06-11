@@ -272,7 +272,7 @@ const QuickViewModal = ({ creator, onClose, onFullView }) => {
   const compared = st.compared.includes(creator.id);
 
   const requireBrand = () => {
-    if (!st.user || st.user?.role !== 'brand') {
+    if (!st.user || st.role !== 'brand') {
       dsp?.({ t: 'TOAST', d: { type: 'error', msg: 'Only Brands can perform this action. Please login as a Brand.' } });
       navigate?.('/login');
       return false;
@@ -917,43 +917,25 @@ export default function CreatorsPage() {
   const [loading, setLoading] = useState(true);
   const [limit, setLimit] = useState(12);
   const [selectedCreator, setSelectedCreator] = useState(null);
-  const [searchCount, setSearchCount] = useState(() => {
-    return Number(sessionStorage.getItem('cb_guest_search_count') || 0);
-  });
   const [searchLimitModalOpen, setSearchLimitModalOpen] = useState(false);
 
+  // Guest users: free to browse first 6 cards, filter/search triggers login prompt
   const safeDsp = (action) => {
-    if (action.t === 'CF') {
-      if (!st.user) {
-        const isClear = action.v && (
-          action.v.q === '' && 
-          (action.v.niche === '' || (Array.isArray(action.v.niche) && action.v.niche.length === 0)) &&
-          (action.v.platform === '' || (Array.isArray(action.v.platform) && action.v.platform.length === 0)) &&
-          action.v.state === '' &&
-          action.v.district === '' &&
-          (action.v.minFollowers === 0 || action.v.minFollowers === '')
-        );
-        
-        if (!isClear && searchCount >= 5) {
-          setSearchLimitModalOpen(true);
-          return;
-        }
-        
-        if (!isClear) {
-          const filterKeys = ['q', 'niche', 'platform', 'state', 'district', 'minFollowers', 'minER'];
-          const hasFilterKeys = Object.keys(action.v).some(key => filterKeys.includes(key));
-          
-          if (hasFilterKeys) {
-            const nextCount = searchCount + 1;
-            setSearchCount(nextCount);
-            sessionStorage.setItem('cb_guest_search_count', nextCount.toString());
-            
-            if (nextCount > 5) {
-              setSearchLimitModalOpen(true);
-              return;
-            }
-          }
-        }
+    if (action.t === 'CF' && !st.user) {
+      // Check if this is a real filter action (not a clear)
+      const isClear = action.v && (
+        action.v.q === '' &&
+        (action.v.niche === '' || (Array.isArray(action.v.niche) && action.v.niche.length === 0)) &&
+        (action.v.platform === '' || (Array.isArray(action.v.platform) && action.v.platform.length === 0)) &&
+        action.v.state === '' &&
+        action.v.district === '' &&
+        (action.v.minFollowers === 0 || action.v.minFollowers === '')
+      );
+
+      if (!isClear) {
+        // Guest trying to filter — show login prompt
+        setSearchLimitModalOpen(true);
+        return;
       }
     }
     dsp(action);

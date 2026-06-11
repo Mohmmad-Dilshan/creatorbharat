@@ -145,6 +145,32 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
       </button>
 
       <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {/* Step Indicator */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+            {[
+              { n: 1, label: 'Identity', done: !!(F.name && F.email) },
+              { n: 2, label: 'Phone', done: verified },
+              { n: 3, label: 'Password', done: !!(F.password && F.confirm && F.password === F.confirm) },
+              { n: 4, label: 'Location', done: !!(F.state && F.city) },
+            ].map((step) => {
+              const isDone = step.done;
+              const isActive = !isDone;
+              return (
+                <div key={step.n} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6, padding: '8px 10px', borderRadius: 14, background: isDone ? 'rgba(16,185,129,0.07)' : 'rgba(255,148,49,0.07)', border: `1px solid ${isDone ? 'rgba(16,185,129,0.2)' : 'rgba(255,148,49,0.2)'}` }}>
+                  <div style={{ width: 22, height: 22, borderRadius: '50%', background: isDone ? '#10B981' : '#FF9431', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+                    {isDone ? <CheckCircle2 size={13} color="#fff" /> : <span style={{ fontSize: 10, fontWeight: 900, color: '#fff' }}>{step.n}</span>}
+                  </div>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: isDone ? '#10B981' : '#FF9431', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{step.label}</span>
+                </div>
+              );
+            })}
+          </div>
+          {/* Progress bar */}
+          <div style={{ height: 4, background: '#f1f5f9', borderRadius: 100, overflow: 'hidden' }}>
+            <div style={{ height: '100%', background: 'linear-gradient(90deg, #FF9431, #10B981)', borderRadius: 100, width: `${([!!(F.name && F.email), verified, !!(F.password && F.confirm && F.password === F.confirm), !!(F.state && F.city)].filter(Boolean).length / 4) * 100}%`, transition: 'width 0.4s ease' }} />
+          </div>
+        </div>
         <div className="apply-section-title" style={{ marginBottom: 28 }}>
           <div style={{ width: 44, height: 44, borderRadius: 14, background: 'rgba(255,148,49,0.12)', color: '#FF9431', display: 'grid', placeItems: 'center', marginBottom: 16 }}>
             <Sparkles size={22} fill="currentColor" fillOpacity={0.2} />

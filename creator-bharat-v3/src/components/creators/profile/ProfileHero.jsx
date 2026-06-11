@@ -571,7 +571,8 @@ CreatorHonestReviewCard.propTypes = {
 // --- MAIN HERO ---
 
 export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContact, onMediaKit, navVisible = true, onBrief }) => {
-  const [followed, setFollowed] = useState(false);
+  // Follow state from context (persists across pages)
+  const followed = st?.follows?.includes(c?.id) || false;
   const [dlStatus] = useState('idle');
 
   const [activeUsers, setActiveUsers] = useState(14);
@@ -601,7 +602,11 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
 
   const handleAction = (a) => {
     if (!st?.user) { dsp({ t: 'TOAST', d: { type: 'warn', msg: 'Please login to ' + a } }); return; }
-    if (a === 'follow') setFollowed(!followed);
+    if (a === 'follow') {
+      // Use context FOLLOW action — persists to localStorage
+      dsp({ t: 'FOLLOW', id: c?.id });
+      dsp({ t: 'TOAST', d: { type: 'success', msg: followed ? `Unfollowed ${c?.name}` : `Following ${c?.name}!` } });
+    }
     if (a === 'message') dsp({ t: 'TOAST', d: { type: 'success', msg: 'Opening chat...' } });
     if (a === 'rate') onRate();
   };
@@ -610,10 +615,22 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
     onMediaKit();
   };
   const handleShare = async () => {
+    const profileUrl = globalThis.location.href;
+    const shareText = `Check out ${c.name}'s creator profile on CreatorBharat! ${profileUrl}`;
     try {
-      if (navigator.share) await navigator.share({ title: c.name, url: globalThis.location.href });
-      else { await navigator.clipboard.writeText(globalThis.location.href); dsp({ t: 'TOAST', d: { type: 'success', msg: 'Copied!' } }); }
-    } catch (e) { console.error(e); }
+      if (navigator.share) {
+        await navigator.share({ title: c.name, text: shareText, url: profileUrl });
+      } else {
+        // Fallback: copy link + offer WhatsApp
+        await navigator.clipboard.writeText(profileUrl);
+        dsp({ t: 'TOAST', d: { type: 'success', msg: 'Profile link copied! Share on WhatsApp: wa.me/?text=' + encodeURIComponent(shareText) } });
+        // Open WhatsApp share
+        window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
+      }
+    } catch (e) {
+      // Silent fallback
+      try { await navigator.clipboard.writeText(profileUrl); dsp({ t: 'TOAST', d: { type: 'success', msg: 'Link copied!' } }); } catch {}
+    }
   };
   const dpImg = c?.photo || c?.avatarUrl || c?.profile_pic || c?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(c?.name || 'C')}&background=FF9431&color=fff&size=200`;
   const bannerImg = c?.cover_image || c?.banner_image || `https://picsum.photos/seed/${c?.id}/1600/500`;

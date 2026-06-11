@@ -12,11 +12,15 @@ import {
   Sparkles,
   BarChart3,
   Globe,
-  Wallet
+  Wallet,
+  X,
+  CreditCard,
+  Lock
 } from 'lucide-react';
 import { Btn, Bdg } from '@/components/common/Primitives';
+import { useApp } from '@/core/context';
 
-const PricingCard = ({ plan, delay = 0, navigate }) => {
+const PricingCard = ({ plan, delay = 0, navigate, onProActivate }) => {
   const isPro = plan.id === 'pro' || plan.id === 'brand_pro';
 
   return (
@@ -114,7 +118,7 @@ const PricingCard = ({ plan, delay = 0, navigate }) => {
       <Btn 
         full 
         lg={isPro}
-        onClick={() => navigate('/join')}
+        onClick={() => isPro && onProActivate ? onProActivate() : navigate('/join')}
         style={{
           padding: '20px',
           borderRadius: '100px',
@@ -144,7 +148,8 @@ PricingCard.propTypes = {
     promo: PropTypes.string
   }).isRequired,
   delay: PropTypes.number,
-  navigate: PropTypes.func.isRequired
+  navigate: PropTypes.func.isRequired,
+  onProActivate: PropTypes.func
 };
 
 const TabButton = ({ active, label, icon: Icon, onClick }) => (
@@ -184,7 +189,7 @@ const PRICING_FAQS = [
   { q: "Do you take any commission from brand deals?", a: "No, CreatorBharat is 100% commission-free. We do not take any cuts from your sponsorships, deals, or payouts. What you earn is entirely yours." },
   { q: "Can I cancel my subscription anytime?", a: "Yes, absolutely! You can cancel, upgrade, or downgrade your brand subscription at any point directly from your Settings dashboard. No questions asked." },
   { q: "What payment methods do you support?", a: "We support all major Indian credit/debit cards, UPI (GPay, PhonePe, Paytm), Net Banking, and corporate wallets through our highly secure payment gateway." },
-  { q: "Is the Creator Pro badge permanent?", a: "Yes! Creator Pro is a one-time purchase of ₹49 which gives you permanent pro status, top discovery spots, and the verified elite badge forever." }
+  { q: "Is the Creator Pro badge permanent?", a: "Yes! Creator Pro unlocks your premium status immediately, giving you top discovery spots and the verified elite badge to boost your personal branding." }
 ];
 
 const PricingFAQAccordion = ({ q, a, i }) => {
@@ -246,19 +251,33 @@ PricingFAQAccordion.propTypes = {
 
 export default function PricingPage() {
   const navigate = useNavigate();
+  const { st, dsp } = useApp();
   const [tab, setTab] = useState('creator');
   const [duration, setDuration] = useState('1m'); // '1m', '6m', '1y'
+  const [showModal, setShowModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleProPayment = () => {
+    setIsProcessing(true);
+    setTimeout(() => {
+      setIsProcessing(false);
+      setShowModal(false);
+      dsp({ t: 'SET_PRO' });
+      dsp({ t: 'TOAST', d: { type: 'success', msg: '🎉 Payment Successful! Pro Access Activated.' } });
+      navigate(st.role === 'brand' ? '/brand-dashboard' : '/creator/dashboard');
+    }, 2000);
+  };
 
   const getCreatorPrice = () => {
-    if (duration === '1m') return { price: '₹49', period: 'month' };
-    if (duration === '6m') return { price: '₹299', period: '6 months' };
-    return { price: '₹499', period: 'year' };
+    if (duration === '1m') return { price: '₹499', period: 'month' };
+    if (duration === '6m') return { price: '₹2,499', period: '6 months' };
+    return { price: '₹4,499', period: 'year' };
   };
 
   const getBrandPrice = () => {
-    if (duration === '1m') return { price: '₹199', period: 'month' };
-    if (duration === '6m') return { price: '₹799', period: '6 months' };
-    return { price: '₹1299', period: 'year' };
+    if (duration === '1m') return { price: '₹4,999', period: 'month' };
+    if (duration === '6m') return { price: '₹24,999', period: '6 months' };
+    return { price: '₹44,999', period: 'year' };
   };
 
   const creatorPlans = [
@@ -338,12 +357,61 @@ export default function PricingPage() {
 
   const activePlans = tab === 'creator' ? creatorPlans : brandPlans;
 
+  const pricingJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "CreatorBharat Premium Subscriptions",
+    "description": "Choose the perfect plan for your brand or creator journey on CreatorBharat.",
+    "brand": {
+      "@type": "Brand",
+      "name": "CreatorBharat"
+    },
+    "offers": {
+      "@type": "AggregateOffer",
+      "priceCurrency": "INR",
+      "lowPrice": "499",
+      "highPrice": "44999",
+      "offerCount": "4",
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Creator Pro (Monthly)",
+          "price": "499",
+          "priceCurrency": "INR",
+          "category": "Creator Subscription"
+        },
+        {
+          "@type": "Offer",
+          "name": "Creator Pro (Annual)",
+          "price": "4499",
+          "priceCurrency": "INR",
+          "category": "Creator Subscription"
+        },
+        {
+          "@type": "Offer",
+          "name": "Enterprise Brand (Monthly)",
+          "price": "4999",
+          "priceCurrency": "INR",
+          "category": "Brand Subscription"
+        },
+        {
+          "@type": "Offer",
+          "name": "Enterprise Brand (Annual)",
+          "price": "44999",
+          "priceCurrency": "INR",
+          "category": "Brand Subscription"
+        }
+      ]
+    }
+  };
+
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', overflowX: 'hidden' }}>
       <Seo 
         title="Pricing & Plans"
         description="Choose the perfect plan for your brand or creator journey. Elite tools for elite growth."
         keywords="pricing, brand plans, creator monetization"
+        jsonLd={pricingJsonLd}
       />
       
       {/* Cinematic Hero */}
@@ -498,9 +566,83 @@ export default function PricingPage() {
               }}
             >
                {activePlans.map((plan, i) => (
-                 <PricingCard key={plan.id} plan={plan} delay={0.1 * i} navigate={navigate} />
+                 <PricingCard 
+                   key={plan.id} 
+                   plan={plan} 
+                   delay={0.1 * i} 
+                   navigate={navigate}
+                   onProActivate={() => {
+                     if (st.user) {
+                       setShowModal(true);
+                     } else {
+                       navigate('/join');
+                     }
+                   }}
+                 />
                ))}
             </motion.div>
+          </AnimatePresence>
+
+          {/* Payment Modal Overlay */}
+          <AnimatePresence>
+            {showModal && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                style={{
+                  position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                  background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(10px)',
+                  zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
+                }}
+              >
+                <motion.div 
+                  initial={{ scale: 0.9, y: 20 }}
+                  animate={{ scale: 1, y: 0 }}
+                  exit={{ scale: 0.9, y: 20 }}
+                  style={{
+                    background: '#fff', borderRadius: '32px', padding: '40px',
+                    width: '100%', maxWidth: '440px', position: 'relative',
+                    boxShadow: '0 40px 80px rgba(0,0,0,0.2)'
+                  }}
+                >
+                  <button 
+                    onClick={() => setShowModal(false)}
+                    style={{ position: 'absolute', top: '24px', right: '24px', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}
+                  >
+                    <X size={24} />
+                  </button>
+                  
+                  <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                    <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#FF943115', color: '#FF9431', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                      <CreditCard size={32} />
+                    </div>
+                    <h2 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', marginBottom: '8px' }}>Complete Payment</h2>
+                    <p style={{ color: '#64748b', fontWeight: 500 }}>You are upgrading to Elite Access.</p>
+                  </div>
+
+                  <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '16px', marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 700, color: '#475569' }}>Total Amount</span>
+                    <span style={{ fontSize: '24px', fontWeight: 950, color: '#FF9431' }}>
+                      {tab === 'creator' ? getCreatorPrice().price : getBrandPrice().price}
+                    </span>
+                  </div>
+
+                  <Btn 
+                    full lg 
+                    disabled={isProcessing}
+                    onClick={handleProPayment}
+                    style={{ background: '#FF9431', color: '#fff', borderRadius: '100px', fontSize: '16px' }}
+                  >
+                    {isProcessing ? 'Processing Securely...' : `Pay ${tab === 'creator' ? getCreatorPrice().price : getBrandPrice().price}`}
+                  </Btn>
+                  
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '24px', color: '#94a3b8', fontSize: '13px', fontWeight: 600 }}>
+                    <Lock size={14} /> Secured by Escrow Vault
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
       </section>

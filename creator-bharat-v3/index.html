@@ -2,31 +2,96 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:* http://127.0.0.1:*; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://creatorbharat.onrender.com ws: wss: http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:*;">
+    <!-- Favicons -->
+    <link rel="icon"              type="image/svg+xml"  href="/favicon.svg" />
+    <link rel="shortcut icon"                           href="/favicon.ico" />
+    <link rel="apple-touch-icon"  sizes="180x180"       href="/apple-touch-icon.png" />
+    <link rel="icon"              type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon"              type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest"                                href="/site.webmanifest" />
+
+    <!-- Viewport & Theme -->
+    <meta name="viewport"         content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color"      content="#FF9431" />
+    <meta name="color-scheme"     content="light" />
+
+    <!-- Primary SEO -->
+    <title>CreatorBharat — India Ka Creator Platform</title>
+    <meta name="description"  content="India's premier creator discovery ecosystem. Find top Indian creators from Jaipur, Mumbai, Delhi &amp; beyond. Connect brands with authentic content creators." />
+    <meta name="keywords"     content="creator platform india, influencer marketing india, brand collaboration, indian creators, jaipur creators, tier 2 creators, bharat influencers" />
+    <meta name="robots"       content="index, follow" />
+    <meta name="author"       content="CreatorBharat" />
+    <!-- Replace with real code after Search Console verification -->
+    <!-- <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE" /> -->
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:site_name"    content="CreatorBharat" />
+    <meta property="og:type"         content="website" />
+    <meta property="og:url"          content="https://creatorbharat.com/" />
+    <meta property="og:title"        content="CreatorBharat — India Ka Creator Platform" />
+    <meta property="og:description"  content="Discover and collaborate with India's top content creators. 2,400+ verified creators. 340+ brand campaigns." />
+    <meta property="og:image"        content="https://creatorbharat.com/og-image.jpg" />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt"    content="CreatorBharat — India Ka Creator Platform" />
+    <meta property="og:locale"       content="en_IN" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:site"        content="@CreatorBharat" />
+    <meta name="twitter:creator"     content="@CreatorBharat" />
+    <meta name="twitter:title"       content="CreatorBharat — India Ka Creator Platform" />
+    <meta name="twitter:description" content="India's premier creator discovery ecosystem. Connecting brands with authentic Bharat talent." />
+    <meta name="twitter:image"       content="https://creatorbharat.com/og-image.jpg" />
+
+    <!-- Fonts preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-    <title>CreatorBharat — India Ka Creator Platform</title>
-    <meta name="description" content="India's premier creator discovery ecosystem. Find top Indian creators from Jaipur, Mumbai, Delhi & beyond. Connect brands with authentic content creators." />
-    <meta name="keywords" content="creator platform india, influencer marketing india, brand collaboration, indian creators, jaipur creators" />
-    <meta property="og:title" content="CreatorBharat — India Ka Creator Platform" />
-    <meta property="og:description" content="Discover and collaborate with India's top content creators. 2,400+ verified creators. 340+ brand campaigns." />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="CreatorBharat — India Ka Creator Platform" />
-    <meta name="twitter:description" content="India's premier creator discovery ecosystem. Connecting brands with authentic Bharat talent." />
-    <meta name="theme-color" content="#FF9431" />
+
     <style>
       body { background-color: #fcfcfc; margin: 0; padding: 0; }
       #root { background-color: #fcfcfc; min-height: 100vh; }
+      
+      /* Hide the default Google Translate widget */
+      .skiptranslate { display: none !important; }
+      body { top: 0px !important; }
     </style>
   </head>
   <body>
+    <div id="google_translate_element" style="opacity:0; position:absolute; z-index:-1; pointer-events:none;"></div>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({pageLanguage: 'en', autoDisplay: false}, 'google_translate_element');
+      }
+
+      (function() {
+        function ensureAttributes() {
+          var select = document.querySelector('.goog-te-combo');
+          if (select) {
+            if (select.id !== 'goog-te-combo-select') {
+              select.setAttribute('id', 'goog-te-combo-select');
+            }
+            if (select.name !== 'goog-te-combo-select') {
+              select.setAttribute('name', 'goog-te-combo-select');
+            }
+          }
+        }
+        
+        // Continuous polling as fallback
+        setInterval(ensureAttributes, 150);
+
+        // Mutation observer to apply attributes as soon as elements change
+        var observer = new MutationObserver(function() {
+          ensureAttributes();
+        });
+        observer.observe(document.documentElement, {
+          childList: true,
+          subtree: true
+        });
+      })();
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

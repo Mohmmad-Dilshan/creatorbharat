@@ -21,6 +21,8 @@ yarn-error.log*
 *_REPORT.md
 *_AUDIT.md
 *_CERTIFICATION.md
+*_PROJECT_CONTEXT.md
+*_CONTEXT.md
 
 # Ignore Frontend Plan Report
 FRONTEND_ANALYSIS_REPORT*.md
@@ -33,11 +35,21 @@ creatorbharat-plan-n8n.json
 *plan-n8n.md
 *.n8n
 
+
 # Ignore History and Chat logs
 .history/
 *history*
 *.history
 *.chat
+*.log
+*.kilocode 
+
+*.sixth
+*.sixth
+*.sixth.*
+*.sixth.*
+
+
 
 # EVERYTHING IN BACKUPS IS HIDDEN
 backups/
@@ -49,6 +61,12 @@ temp/
 *.bak
 *.tmp
 
+*.PROJECT_CONTEX.md
+PROJECT_CONTEX.md
+PROJECT_CONTEX
+
 # Hide other projects if only pushing frontend
 # creatorbharat-admin/
 # creatorbharat-backend/
+
+ 

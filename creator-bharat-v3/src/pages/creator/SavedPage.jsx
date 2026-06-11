@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../core/context';
 import { W, scrollToTop, LS } from '../../utils/helpers';
-import { apiCall } from '../../utils/api';
+import { fetchCreators, fetchCampaigns } from '../../utils/platformService';
 import { Empty } from '../../components/common/Primitives';
 import { CreatorCard, CampCard } from '../../components/common/Cards';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,7 +19,7 @@ function SavedCreatorsGrid({ savedCreators, selectedIds, toggleSelect, go, mob }
           title="No saved creators" 
           sub="Explore Bharat's talent and heart-save your favorites to find them later." 
           ctaLabel="Discover Creators" 
-          onCta={() => go('creators')} 
+          onCta={() => go('creator/community')} 
         />
       </div>
     );
@@ -83,7 +83,7 @@ function SavedCampaignsGrid({ savedCamps, selectedIds, toggleSelect, go, mob }) 
           title="No saved campaigns" 
           sub="Save interesting deals to apply when you have the perfect pitch ready." 
           ctaLabel="Browse Campaigns" 
-          onCta={() => go('campaigns')} 
+          onCta={() => go('creator/opportunities')} 
         />
       </div>
     );
@@ -120,7 +120,7 @@ function SavedCampaignsGrid({ savedCamps, selectedIds, toggleSelect, go, mob }) 
             </button>
 
             <div style={{ opacity: isSelected ? 0.85 : 1, transition: 'opacity 0.2s' }}>
-              <CampCard campaign={c} onApply={() => go('campaigns')} />
+              <CampCard campaign={c} onApply={() => go('creator/opportunities')} />
             </div>
           </div>
         );
@@ -151,9 +151,9 @@ export default function SavedPage() {
     const h = () => setMob(window.innerWidth < 768);
     window.addEventListener('resize', h);
     
-    // Fetch data with fallbacks
-    apiCall('/creators?limit=100').then(d => setAllC(d.creators || d || [])).catch(() => setAllC(LS.get('cb_creators', [])));
-    apiCall('/campaigns?limit=100').then(d => setAllCp(d.campaigns || d || [])).catch(() => setAllCp(LS.get('cb_campaigns', [])));
+    // Fetch data with localStorage + seed fallback (no auth needed)
+    fetchCreators({ limit: 100 }).then(list => setAllC(list || [])).catch(() => setAllC(LS.get('cb_creators', [])));
+    fetchCampaigns({ limit: 100 }).then(list => setAllCp(list || [])).catch(() => setAllCp(LS.get('cb_campaigns', [])));
     
     return () => window.removeEventListener('resize', h);
   }, []);
@@ -167,7 +167,7 @@ export default function SavedPage() {
     if (sel) dsp({ t: 'GO', p, sel });
     if (p === 'creator-profile') {
       const creator = sel?.creator || sel;
-      navigate(`/creator/${creator?.handle || creator?.id || ''}`);
+      navigate(`/creator/community/${creator?.handle || creator?.id || ''}`);
     } else {
       navigate(`/${p}`);
     }

@@ -5,7 +5,7 @@ import { useApp } from '@/core/context';
 import { Btn, Logo } from '@/components/common/Primitives';
 import { scrollToTop } from '../../utils/helpers';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Users, Megaphone, BookOpen, Heart, LogOut, LayoutDashboard, Briefcase, Bookmark, Settings, ChevronRight, User, LifeBuoy, MessageSquare, Sparkles, Search, Calculator, Trophy, ShieldCheck, Home, IndianRupee, Bell, Award } from 'lucide-react';
+import { X, Users, Megaphone, BookOpen, Heart, LogOut, LayoutDashboard, Briefcase, Bookmark, Settings, ChevronRight, User, LifeBuoy, MessageSquare, Sparkles, Search, Calculator, Trophy, ShieldCheck, Home, IndianRupee, Bell, Award, Zap, Wallet, BarChart3 } from 'lucide-react';
 
 export default function MobileMenu({ open }) {
   const { st, dsp } = useApp();
@@ -33,29 +33,70 @@ export default function MobileMenu({ open }) {
     { id: 3, name: 'Raj Kumar', handle: 'raj.tech', photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80' }
   ];
 
-  const links = [
+  const linksPublic = [
     { path: '/', l: 'Home', i: Home },
     { path: '/creators', l: 'Creators', i: Users },
     { path: '/campaigns', l: 'Brand Deals', i: Megaphone },
     { path: '/leaderboard', l: 'Leaderboard', i: Trophy },
     { path: '/rate-calc', l: 'Rate Calculator', i: Calculator },
-    { path: '/stories', l: 'Success Stories', i: Award },
-    { path: '/notifications', l: 'Notifications', i: Bell },
-    { path: '/blog', l: 'Hub', i: BookOpen },
-    { path: '/monetize', l: 'Monetization', i: IndianRupee },
-    { path: '/official-profile', l: 'Official Identity', i: ShieldCheck },
-    { path: '/about', l: 'Our Story', i: Heart },
-    { path: '/pricing', l: 'Pricing', i: Sparkles }
+    { path: '/pricing', l: 'Pricing Plans', i: Sparkles },
+    { path: '/verify-guide', l: 'Verification Guide', i: ShieldCheck },
+    { path: '/ai-knowledge', l: 'AI Knowledge', i: BookOpen },
+    { path: '/about', l: 'Our Story', i: Heart }
   ];
 
-  const supportLinks = [
+  const linksCreator = [
+    { path: '/creator/dashboard', l: 'Dashboard', i: LayoutDashboard },
+    { path: '/creator/opportunities', l: 'Opportunities', i: Zap },
+    { path: '/creator/applications', l: 'Applications', i: Briefcase },
+    { path: '/creator/wallet', l: 'My Wallet', i: Wallet },
+    { path: '/creator/monetization', l: 'Monetization', i: IndianRupee },
+    { path: '/creator/score', l: 'Creator Score', i: Trophy },
+    { path: '/creator/community', l: 'Community', i: Megaphone },
+    { path: '/creator/events', l: 'Events', i: Award },
+    { path: '/creator/messages', l: 'Messages & Alerts', i: Bell },
+    { path: '/creator/settings', l: 'Settings', i: Settings }
+  ];
+
+  const linksBrand = [
+    { path: '/brand-dashboard', l: 'Dashboard', i: LayoutDashboard },
+    { path: '/campaign-builder', l: 'Post Campaign', i: Megaphone },
+    { path: '/creators', l: 'Scout Creators', i: Search },
+    { path: '/brand-applications', l: 'Applicants', i: Briefcase },
+    { path: '/compare', l: 'Compare Tool', i: Users },
+    { path: '/brand-analytics', l: 'Analytics', i: BarChart3 },
+    { path: '/settings', l: 'Settings', i: Settings }
+  ];
+
+  const supportLinksPublic = [
     { path: '/faq', l: 'Help Center', i: LifeBuoy },
     { path: '/contact', l: 'Contact Support', i: MessageSquare },
-    { path: '/creator-guidelines', l: 'Creator Rules', i: BookOpen },
-    { path: '/brand-guidelines', l: 'Brand Rules', i: ShieldCheck },
-    { path: '/privacy', l: 'Privacy Policy', i: ShieldCheck },
-    { path: '/terms', l: 'Terms of Service', i: ShieldCheck }
+    { path: '/stories', l: 'Success Stories', i: Award },
+    { path: '/blog', l: 'Creator Hub', i: BookOpen }
   ];
+
+  const supportLinksCreator = [
+    { path: '/creator/help', l: 'Help & FAQ', i: LifeBuoy },
+    { path: '/creator/stories', l: 'Success Stories', i: Award },
+    { path: '/creator/blog', l: 'Platform Blog', i: BookOpen },
+    { path: '/creator/privacy', l: 'Privacy Policy', i: ShieldCheck }
+  ];
+
+  const supportLinksBrand = [
+    { path: '/faq', l: 'Help Center', i: LifeBuoy },
+    { path: '/brand-guidelines', l: 'Brand Rules', i: ShieldCheck },
+    { path: '/stories', l: 'Success Stories', i: Award },
+    { path: '/privacy', l: 'Privacy Policy', i: ShieldCheck }
+  ];
+
+  const getMenuLinks = () => {
+    if (!st.user) return { links: linksPublic, support: supportLinksPublic };
+    if (st.role === 'creator') return { links: linksCreator, support: supportLinksCreator };
+    if (st.role === 'brand') return { links: linksBrand, support: supportLinksBrand };
+    return { links: linksPublic, support: supportLinksPublic };
+  };
+
+  const { links: activeLinks, support: activeSupportLinks } = getMenuLinks();
 
   // Live Search Logic
   React.useEffect(() => {
@@ -67,7 +108,7 @@ export default function MobileMenu({ open }) {
     const q = search.toLowerCase();
     
     // Filter Pages
-    const filteredPages = [...links, ...supportLinks].filter(p => 
+    const filteredPages = [...activeLinks, ...activeSupportLinks].filter(p => 
       p.l.toLowerCase().includes(q)
     ).slice(0, 4);
 
@@ -130,7 +171,10 @@ export default function MobileMenu({ open }) {
               display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
               padding: '24px 28px', borderBottom: '1px solid rgba(0,0,0,0.05)'
             }}>
-               <Logo onClick={() => go('/')} sm />
+               <Logo onClick={() => {
+                 const logoPath = st.user ? (st.role === 'brand' ? '/brand-dashboard' : '/creator/dashboard') : '/';
+                 go(logoPath);
+               }} sm />
                <button 
                   onClick={() => dsp({ t: 'UI', v: { mobileMenu: false } })}
                   style={{ 
@@ -165,6 +209,8 @@ export default function MobileMenu({ open }) {
                   </button>
                   <input 
                     type="text"
+                    id="mobile-search-input"
+                    name="mobile_search"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search creators or pages..."
@@ -239,10 +285,10 @@ export default function MobileMenu({ open }) {
               {/* MAIN NAVIGATION */}
               <div>
                 <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 16 }}>
-                  Explore Platform
+                  {!st.user ? 'Explore Platform' : st.role === 'creator' ? 'Creator Workspace' : 'Brand Workspace'}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {links.map((n, i) => {
+                  {activeLinks.map((n, i) => {
                     const Icon = n.i;
                     const isActive = location.pathname === n.path;
                     return (
@@ -275,54 +321,13 @@ export default function MobileMenu({ open }) {
                 </div>
               </div>
 
-              {/* LOGGED IN USER DASHBOARD SECTION */}
-              {st.user && (
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 16 }}>
-                    Your Workspace
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    {[
-                      isCreator && { l: 'Dashboard', p: '/dashboard', i: LayoutDashboard },
-                      isCreator && { l: 'Applications', p: '/applications', i: Briefcase },
-                      isBrand && { l: 'Brand Dashboard', p: '/brand-dashboard', i: LayoutDashboard },
-                      isBrand && { l: 'Post Campaign', p: '/campaign-builder', i: Megaphone },
-                      { l: 'Saved Items', p: '/saved', i: Bookmark },
-                      { l: 'Settings', p: '/settings', i: Settings }
-                    ].filter(Boolean).map((n) => {
-                      const Icon = n.i;
-                      const isActive = location.pathname === n.p;
-                      return (
-                        <button 
-                          key={n.p} 
-                          onClick={() => go(n.p)} 
-                          onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; }}
-                          onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
-                          style={{ 
-                            display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '14px 16px', 
-                            background: isActive ? 'rgba(0,0,0,0.05)' : 'transparent',
-                            border: 'none', textAlign: 'left', fontSize: 15, 
-                            color: isActive ? '#111' : 'rgba(0,0,0,0.7)', 
-                            cursor: 'pointer', fontWeight: isActive ? 700 : 500, 
-                            borderRadius: 12, transition: 'all 0.2s'
-                          }}
-                        >
-                          <Icon size={18} color={isActive ? '#111' : 'rgba(0,0,0,0.5)'} />
-                          {n.l}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
               {/* SUPPORT & RESOURCES */}
               <div>
                 <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 16 }}>
-                  Resources
+                  {!st.user ? 'Resources' : 'Support & Rules'}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {supportLinks.map((n) => {
+                  {activeSupportLinks.map((n) => {
                     const Icon = n.i;
                     return (
                       <button 
@@ -363,7 +368,7 @@ export default function MobileMenu({ open }) {
                 <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8, lineHeight: 1.3 }}>Unlock premium tools & analytics</h4>
                 <p style={{ fontSize: 13, color: 'rgba(0,0,0,0.6)', marginBottom: 16, lineHeight: 1.4 }}>Get verified, access elite campaigns, and grow faster.</p>
                 <button 
-                  onClick={() => go('/pricing')}
+                  onClick={() => go(st.user && st.role === 'creator' ? '/creator/pricing' : '/pricing')}
                   style={{ 
                     padding: '10px 16px', background: '#FF9431', color: '#fff', 
                     border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, 

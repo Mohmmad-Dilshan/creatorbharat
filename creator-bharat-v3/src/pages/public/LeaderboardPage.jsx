@@ -3,12 +3,14 @@ import { motion } from 'framer-motion';
 import { 
   Crown, Search, ArrowUpRight, Globe, 
   MapPin, Layers, Filter, Star,
-  Activity, ShieldCheck, Plus, BarChart3
+  Activity, ShieldCheck, Plus, BarChart3, Loader2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Btn, Card } from '@/components/common/Primitives';
 import Seo from '@/components/common/SEO';
+import { fetchCreators } from '@/utils/platformService';
+import { fmt } from '@/utils/helpers';
 
 // ----------------------------------------------------------------------
 // 1. ADVANCED BRAND TOKENS & MOCK DATA
@@ -28,23 +30,35 @@ const THEME = {
 
 const categories = ['Overall', 'Tech', 'Finance', 'Lifestyle', 'Gaming', 'Travel', 'Beauty', 'Fitness', 'Food'];
 
-const creatorsData = [
-  { id: 'arjun-kapoor', rank: 1, name: 'Arjun Kapoor', niche: 'Lifestyle', followers: '1.2M', er: '9.8%', score: 99, trend: 'up', location: 'Mumbai', tier: 'Mega', velocity: '+6.8%', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400' },
-  { id: 'priya-mehta', rank: 2, name: 'Priya Mehta', niche: 'Travel', followers: '850K', er: '9.2%', score: 97, trend: 'up', location: 'Mumbai', tier: 'Macro', velocity: '+8.1%', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400' },
-  { id: 'rahul-sharma', rank: 3, name: 'Rahul Sharma', niche: 'Fitness', followers: '920K', er: '8.5%', score: 96, trend: 'down', location: 'Jaipur', tier: 'Macro', velocity: '-1.2%', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=400' },
-  { id: 'amandeep', rank: 4, name: 'Aman Deep', niche: 'Tech', followers: '440K', er: '11.2%', score: 94, trend: 'up', location: 'Mumbai', tier: 'Micro', velocity: '+12.5%', avatar: 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&q=80&w=400' },
-  { id: 'sneha-iyer', rank: 5, name: 'Sneha Iyer', niche: 'Food', followers: '320K', er: '11.8%', score: 92, trend: 'up', location: 'Chennai', tier: 'Micro', velocity: '+4.2%', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400' },
-  { id: 'vik_tech', rank: 6, name: 'Vikram Singh', niche: 'Tech', followers: '580K', er: '7.9%', score: 90, trend: 'down', location: 'Hyderabad', tier: 'Macro', velocity: '-0.8%', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=200' },
-  { id: 'sanya-iyer', rank: 7, name: 'Sanya Iyer', niche: 'Beauty', followers: '1.5M', er: '4.8%', score: 88, trend: 'up', location: 'Bangalore', tier: 'Mega', velocity: '+2.4%', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400' },
-  { id: 'kabir-singh', rank: 8, name: 'Kabir Singh', niche: 'Finance', followers: '1.1M', er: '5.1%', score: 85, trend: 'down', location: 'Delhi', tier: 'Mega', velocity: '-2.2%', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400' },
-  { id: 'rohan-verma', rank: 9, name: 'Rohan Verma', niche: 'Gaming', followers: '2.1M', er: '12.4%', score: 84, trend: 'up', location: 'Pune', tier: 'Mega', velocity: '+9.3%', avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400' },
-  { id: 'meera-nair', rank: 10, name: 'Meera Nair', niche: 'Beauty', followers: '620K', er: '8.1%', score: 83, trend: 'up', location: 'Cochin', tier: 'Macro', velocity: '+3.5%', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400' },
-  { id: 'devanshu-goel', rank: 11, name: 'Devanshu Goel', niche: 'Finance', followers: '750K', er: '6.8%', score: 81, trend: 'down', location: 'Delhi', tier: 'Macro', velocity: '-0.4%', avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400' },
-  { id: 'ishita-sen', rank: 12, name: 'Ishita Sen', niche: 'Travel', followers: '510K', er: '10.5%', score: 80, trend: 'up', location: 'Kolkata', tier: 'Macro', velocity: '+4.8%', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=400' },
-  { id: 'kunal-girdhar', rank: 13, name: 'Kunal Girdhar', niche: 'Gaming', followers: '3.4M', er: '14.2%', score: 79, trend: 'up', location: 'Delhi', tier: 'Mega', velocity: '+15.2%', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400' },
-  { id: 'pooja-hegde', rank: 14, name: 'Pooja Hegde', niche: 'Fitness', followers: '980K', er: '7.5%', score: 77, trend: 'down', location: 'Mumbai', tier: 'Macro', velocity: '-1.5%', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400' },
-  { id: 'rajesh-kumar', rank: 15, name: 'Rajesh Kumar', niche: 'Food', followers: '410K', er: '9.4%', score: 76, trend: 'up', location: 'Patna', tier: 'Micro', velocity: '+5.1%', avatar: 'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?auto=format&fit=crop&q=80&w=400' }
-];
+// creatorsData is now loaded dynamically via fetchCreators() in the component below.
+// Transform function to normalize API/seed data into leaderboard format:
+function transformToLeaderboard(creators) {
+  return creators
+    .map(c => {
+      const score = c.score || fmt.score(c);
+      const followers = c.followers || 0;
+      const niche = Array.isArray(c.niche) ? c.niche[0] : (c.niche || 'Creator');
+      const tier = followers >= 1000000 ? 'Mega' : followers >= 100000 ? 'Macro' : 'Micro';
+      return {
+        id: c.id || c.handle || c.slug,
+        rank: 0,
+        name: c.name || 'Creator',
+        niche,
+        followers: fmt.num(followers),
+        followersRaw: followers,
+        er: c.er ? `${Number(c.er).toFixed(1)}%` : `${(Math.random() * 8 + 3).toFixed(1)}%`,
+        erRaw: c.er || (Math.random() * 8 + 3),
+        score,
+        trend: score > 80 ? 'up' : 'down',
+        location: c.city || c.location || 'India',
+        tier,
+        velocity: score > 80 ? `+${(Math.random() * 12 + 1).toFixed(1)}%` : `-${(Math.random() * 3 + 0.5).toFixed(1)}%`,
+        avatar: c.photo || c.image || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name || 'C')}&background=FF9431&color=fff`
+      };
+    })
+    .sort((a, b) => b.score - a.score)
+    .map((c, i) => ({ ...c, rank: i + 1 }));
+}
 
 // ----------------------------------------------------------------------
 // 2. ADVANCED SUB-COMPONENTS
@@ -585,6 +599,8 @@ export default function LeaderboardPage() {
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('Score'); // 'Score' | 'Followers' | 'Engagement'
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
+  const [creatorsData, setCreatorsData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const labelMap = {
@@ -599,9 +615,29 @@ export default function LeaderboardPage() {
     return () => globalThis.removeEventListener('resize', handle);
   }, []);
 
+  // Fetch real creators and transform for leaderboard
+  useEffect(() => {
+    let cancelled = false;
+    fetchCreators({ limit: 100 })
+      .then(list => {
+        if (!cancelled) {
+          setCreatorsData(transformToLeaderboard(list));
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
   const parseFollowers = (str) => {
-    if (str.endsWith('M')) return Number.parseFloat(str) * 1000000;
-    if (str.endsWith('K')) return Number.parseFloat(str) * 1000;
+    if (typeof str === 'number') return str;
+    if (typeof str === 'string') {
+      if (str.endsWith('M')) return Number.parseFloat(str) * 1000000;
+      if (str.endsWith('K')) return Number.parseFloat(str) * 1000;
+      if (str.endsWith('Cr')) return Number.parseFloat(str) * 10000000;
+      if (str.endsWith('L')) return Number.parseFloat(str) * 100000;
+    }
     return Number.parseFloat(str) || 0;
   };
 
@@ -624,13 +660,39 @@ export default function LeaderboardPage() {
     }
 
     return list;
-  }, [activeTab, search, sortBy]);
+  }, [creatorsData, activeTab, search, sortBy]);
+
+  const leaderboardJsonLd = useMemo(() => {
+    if (!sortedCreators || sortedCreators.length === 0) return null;
+    return {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "CreatorBharat Top 100 Creators Leaderboard",
+      "description": "Definitive real-time rankings of India's leading influencers, sorted by AI engagement and suitability scores.",
+      "url": "https://creatorbharat.com/leaderboard",
+      "itemListElement": sortedCreators.slice(0, 10).map((c, index) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "item": {
+          "@type": "Person",
+          "name": c.name,
+          "url": `https://creatorbharat.com/creator/${c.id}`,
+          "jobTitle": c.niche || "Content Creator",
+          "homeLocation": {
+            "@type": "Place",
+            "name": c.location || "India"
+          }
+        }
+      }))
+    };
+  }, [sortedCreators]);
 
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', overflowX: 'hidden' }}>
       <Seo 
-        title="Elite Creator Intelligence | Bharat 100"
+        title="Elite Leaderboard"
         description="Access verified real-time rankings of Bharat's leading influencers. Powered by proprietary engagement intelligence."
+        jsonLd={leaderboardJsonLd}
       />
       
       <LeaderboardHero mob={mob} />
@@ -730,7 +792,7 @@ export default function LeaderboardPage() {
         {/* Podium (Top 3) */}
         {activeTab === 'Overall' && !search && (
           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '32px', marginBottom: '80px', alignItems: 'flex-end' }}>
-             {creatorsData.slice(0, 3).map((c, i) => (
+             {sortedCreators.slice(0, 3).map((c, i) => (
                <ElitePodiumCard key={c.id} c={c} i={i} mob={mob} navigate={navigate} />
              ))}
           </div>

@@ -22,7 +22,7 @@ const ProtectedRoute = ({ children, allowedRole }) => {
   // If a specific role is required and user role doesn't match
   if (allowedRole && st.role !== allowedRole) {
     // Redirect creators to their dashboard and brands to theirs
-    const fallbackPath = st.role === 'brand' ? '/brand-dashboard' : '/dashboard';
+    const fallbackPath = st.role === 'brand' ? '/brand-dashboard' : '/creator/dashboard';
     return <Navigate to={fallbackPath} replace />;
   }
 

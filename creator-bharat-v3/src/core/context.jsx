@@ -10,12 +10,14 @@ export const IS = {
   sel: { creator: null, campaign: null },
   user: null,
   role: null,
+  isPro: false,
   saved: [],
   compared: [],
   applied: [],
+  follows: [],        // who this user follows (creator/brand IDs)
   toasts: [],
   ui: { mobileMenu: false, hideNav: false },
-  cf: { q: '', state: '', niche: [], platform: [], sort: 'score', verified: false, minFollowers: '', minER: '' },
+  cf: { q: '', state: '', niche: [], platform: [], sort: 'score', verified: false, minFollowers: '', minER: '', minScore: '' },
   cpf: { q: '', niche: '', urgent: false }
 };
 
@@ -32,7 +34,27 @@ export function reducer(s, a) {
       const role = isValidRole(a.role) ? a.role : 'guest';
       return { ...s, user: a.u, role, ui: { ...s.ui, mobileMenu: false } };
     }
-    case 'LOGOUT': return { ...IS, page: 'home' };
+    case 'LOGOUT': {
+      localStorage.removeItem('cb_saved');
+      localStorage.removeItem('cb_compared');
+      localStorage.removeItem('cb_applied');
+      localStorage.removeItem('cb_is_pro');
+      localStorage.removeItem('cb_follows');
+      return { ...IS, page: 'home' };
+    }
+    case 'SET_PRO': {
+      localStorage.setItem('cb_is_pro', 'true');
+      return { ...s, isPro: true };
+    }
+    case 'FOLLOW': {
+      // Toggle follow — any logged-in user can follow anyone, unlimited
+      const isFollowing = s.follows.includes(a.id);
+      const newFollows = isFollowing
+        ? s.follows.filter(x => x !== a.id)
+        : [...s.follows, a.id];
+      localStorage.setItem('cb_follows', JSON.stringify(newFollows));
+      return { ...s, follows: newFollows };
+    }
     case 'SAVE': {
       const h = s.saved.includes(a.id);
       return { ...s, saved: h ? s.saved.filter(x => x !== a.id) : [...s.saved, a.id] };
@@ -60,7 +82,16 @@ export const AppProvider = ({ children }) => {
       const savedUser = localStorage.getItem('cb_user');
       const savedRole = localStorage.getItem('cb_role');
       if (savedUser && savedRole && isValidRole(savedRole)) {
-        return { ...IS, user: JSON.parse(savedUser), role: savedRole };
+        return { 
+          ...IS, 
+          user: JSON.parse(savedUser), 
+          role: savedRole,
+          isPro: localStorage.getItem('cb_is_pro') === 'true',
+          saved: JSON.parse(localStorage.getItem('cb_saved') || '[]'),
+          compared: JSON.parse(localStorage.getItem('cb_compared') || '[]'),
+          applied: JSON.parse(localStorage.getItem('cb_applied') || '[]'),
+          follows: JSON.parse(localStorage.getItem('cb_follows') || '[]'),
+        };
       }
     } catch (e) {
       console.warn('Failed to parse saved user from localStorage:', e);
@@ -82,6 +113,14 @@ export const AppProvider = ({ children }) => {
       localStorage.removeItem('cb_role');
     }
   }, [st.user, st.role]);
+
+  // Sync user actions (saved, compared, applied, follows) to localStorage
+  React.useEffect(() => {
+    localStorage.setItem('cb_saved', JSON.stringify(st.saved));
+    localStorage.setItem('cb_compared', JSON.stringify(st.compared));
+    localStorage.setItem('cb_applied', JSON.stringify(st.applied));
+    localStorage.setItem('cb_follows', JSON.stringify(st.follows));
+  }, [st.saved, st.compared, st.applied, st.follows]);
 
   const value = useMemo(() => ({ st, dsp }), [st, dsp]);
 

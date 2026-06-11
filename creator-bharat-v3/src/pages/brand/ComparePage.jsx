@@ -36,7 +36,7 @@ export default function ComparePage() {
   };
 
   const removeCreator = (id) => {
-    dsp({ t: 'COMPARE_TOGGLE', id });
+    dsp({ t: 'COMPARE', id });
   };
 
   if (creators.length < 2) {

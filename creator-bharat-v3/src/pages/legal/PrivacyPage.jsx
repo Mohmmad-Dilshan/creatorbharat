@@ -1,250 +1,119 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { 
-  Shield, 
-  Clock, 
-  Eye, 
-  Lock, 
-  Database, 
-  UserCheck, 
-  Globe,
-  ChevronRight
-} from 'lucide-react';
-import { Bdg, Btn } from '@/components/common/Primitives';
+import React, { useEffect } from 'react';
+import { ShieldCheck, Lock, EyeOff } from 'lucide-react';
 import Seo from '@/components/common/SEO';
 
 const SECTIONS = [
-  { id: 'collection', title: 'Data Collection', icon: Database },
-  { id: 'usage', title: 'Usage Protocol', icon: Eye },
-  { id: 'sharing', title: 'Sharing Policy', icon: Globe },
-  { id: 'security', title: 'Security Nodes', icon: Lock },
-  { id: 'rights', title: 'Your Rights', icon: UserCheck },
+  { id: 'data-collection', title: '1. Information We Collect' },
+  { id: 'kyc-data', title: '2. KYC & Identity Data' },
+  { id: 'data-sharing', title: '3. Data Sharing & Partners' },
+  { id: 'security', title: '4. Data Security' },
+  { id: 'user-rights', title: '5. Your Privacy Rights' },
 ];
 
 export default function PrivacyPage() {
-  const [activeSection, setActiveSection] = useState('collection');
-  const [mob, setMob] = useState(globalThis.innerWidth < 1024);
+  const mob = window.innerWidth < 768;
 
   useEffect(() => {
-    const h = () => setMob(globalThis.innerWidth < 1024);
-    globalThis.addEventListener('resize', h);
-    return () => globalThis.removeEventListener('resize', h);
+    window.scrollTo(0, 0);
   }, []);
 
   const scrollTo = (id) => {
-    setActiveSection(id);
     const el = document.getElementById(id);
     if (el) {
-      const offset = 100;
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = el.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
-      const offsetPosition = elementPosition - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
+      window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
     }
   };
 
   return (
-    <div style={{ background: '#fff', minHeight: '100vh', color: '#0f172a' }}>
-      <Seo 
-        title="Privacy Policy | The Bharat Protocol"
-        description="Learn how CreatorBharat protects your data and privacy. We are committed to transparency and security for all users."
-        keywords="privacy policy, data protection, creator bharat security"
-      />
-
-      {/* Cinematic Hero */}
-      <section style={{ 
-        background: '#050505', 
-        padding: mob ? '120px 20px 60px' : '160px 20px 100px', 
-        textAlign: 'center', 
-        position: 'relative', 
-        overflow: 'hidden' 
-      }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(16,185,129,0.1), transparent 70%)' }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #10B981, #fff, #FF9431)' }} />
-        
-        <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-             <Bdg color="green" sm style={{ marginBottom: '24px', letterSpacing: '2px' }}>DATA COMPLIANCE</Bdg>
-             <h1 style={{ 
-               fontFamily: '"Playfair Display", serif', 
-               fontSize: 'clamp(40px, 8vw, 72px)', 
-               fontWeight: 900, 
-               color: '#fff', 
-               lineHeight: 1,
-               marginBottom: '24px'
-             }}>
-               Privacy <span style={{ fontStyle: 'italic', color: '#10B981' }}>Protocol.</span>
-             </h1>
-             <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.6)', fontWeight: 500, maxWidth: '600px', margin: '0 auto' }}>
-               Advanced encryption, transparent logic, and absolute respect for your digital identity.
-             </p>
-          </motion.div>
+    <div style={{ minHeight: '100vh', background: '#f8fafc', paddingBottom: 100 }}>
+      <Seo title="Privacy Policy | CreatorBharat" description="How CreatorBharat protects your data, KYC documents, and Escrow transactions." />
+      
+      {/* HEADER */}
+      <div style={{ background: '#0f172a', paddingTop: mob ? 100 : 140, paddingBottom: mob ? 60 : 80, paddingLeft: 20, paddingRight: 20 }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: 'rgba(34, 197, 94, 0.1)', borderRadius: 100, marginBottom: 24, border: '1px solid rgba(34,197,94,0.2)' }}>
+            <Lock size={16} color="#22C55E" />
+            <span style={{ fontSize: 13, fontWeight: 800, color: '#22C55E', textTransform: 'uppercase', letterSpacing: 1.5 }}>Data Protection</span>
+          </div>
+          <h1 style={{ fontSize: mob ? 36 : 56, fontWeight: 950, color: '#fff', lineHeight: 1.1, letterSpacing: '-0.03em', margin: '0 0 20px 0' }}>
+            Privacy Policy
+          </h1>
+          <p style={{ fontSize: 18, color: '#94a3b8', margin: 0 }}>Last Updated: June 1, 2026</p>
         </div>
-      </section>
-
-      <div style={{ maxWidth: '1300px', margin: '0 auto', padding: mob ? '40px 20px' : '80px 24px', display: 'grid', gridTemplateColumns: mob ? '1fr' : '300px 1fr', gap: '80px', alignItems: 'start' }}>
-        
-        {/* Sticky Sidebar */}
-        {!mob && (
-          <aside style={{ position: 'sticky', top: '120px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '24px' }}>PROTOCOL INDEX</div>
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {SECTIONS.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => scrollTo(s.id)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '12px 16px',
-                    borderRadius: '12px',
-                    background: activeSection === s.id ? '#10B98110' : 'transparent',
-                    border: 'none',
-                    color: activeSection === s.id ? '#10B981' : '#64748b',
-                    fontSize: '14px',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    transition: '0.2s'
-                  }}
-                >
-                  <s.icon size={18} />
-                  {s.title}
-                  {activeSection === s.id && <motion.div layoutId="privacy-indicator" style={{ marginLeft: 'auto' }}><ChevronRight size={14} /></motion.div>}
-                </button>
-              ))}
-            </nav>
-
-            <div style={{ marginTop: '48px', padding: '24px', background: '#f8fafc', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
-               <Shield size={24} color="#10B981" style={{ marginBottom: '16px' }} />
-               <h4 style={{ fontSize: '15px', fontWeight: 900, marginBottom: '8px' }}>Safe & Secure</h4>
-               <p style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.5, marginBottom: '16px' }}>Your data is encrypted using AES-256 standards at every node.</p>
-               <Btn full sm style={{ background: '#0f172a', color: '#fff' }}>DPO Contact</Btn>
-            </div>
-          </aside>
-        )}
-
-        {/* Content Area */}
-        <main style={{ fontSize: '18px', lineHeight: 1.8, color: '#334155' }}>
-          
-          <div id="collection" style={{ marginBottom: '80px' }}>
-            <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '36px', fontWeight: 900, color: '#0f172a', marginBottom: '24px' }}>1. Data Collection</h2>
-            <p>
-              We only collect data that is essential for maintaining the integrity of the **Elite Talent Discovery** system. This includes information you provide directly and automated technical metadata.
-            </p>
-            <div style={{ background: '#f8fafc', padding: '32px', borderRadius: '24px', border: '1px solid #f1f5f9', marginTop: '24px' }}>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '16px' }}>
-                {[
-                  { id: 'id-1', t: 'Identity: Name, professional handle, and regional location.' },
-                  { id: 'id-2', t: 'Ecosystem: Social media metrics and public audience demographics.' },
-                  { id: 'id-3', t: 'Commercial: Payout bank details and tax (GST) information.' },
-                  { id: 'id-4', t: 'Behavioral: Interaction data within the Deal Desk and Dashboard.' }
-                ].map((item, idx) => (
-                  <li key={item.id} style={{ display: 'flex', gap: '12px', fontSize: '16px', fontWeight: 500 }}>
-                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#10B981', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', flexShrink: 0, marginTop: '4px' }}>{idx + 1}</div>
-                    {item.t}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div id="usage" style={{ marginBottom: '80px' }}>
-            <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '36px', fontWeight: 900, color: '#0f172a', marginBottom: '24px' }}>2. Usage Protocol</h2>
-            <p>
-              Your information is processed to power the **CreatorBharat discovery engine**. We use AI algorithms to calculate Elite Scores and match creators with relevant brand campaigns.
-            </p>
-            <p style={{ marginTop: '20px' }}>
-              We **never** use your private contact details for unsolicited marketing. Your data stays within the secure perimeter of our internal cloud infrastructure.
-            </p>
-          </div>
-
-          <div id="sharing" style={{ marginBottom: '80px' }}>
-            <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '36px', fontWeight: 900, color: '#0f172a', marginBottom: '24px' }}>3. Sharing Policy</h2>
-            <p>
-              Transparency is our core value. We do not sell your personal data to third-party advertisers. 
-            </p>
-            <div style={{ marginTop: '24px', padding: '24px', background: '#ecfdf5', borderRadius: '20px', border: '1px solid #d1fae5' }}>
-               <h4 style={{ fontSize: '14px', fontWeight: 900, color: '#065f46', textTransform: 'uppercase', marginBottom: '12px' }}>Public vs Private Data</h4>
-               <ul style={{ fontSize: '14px', color: '#065f46', paddingLeft: '20px', lineHeight: 1.6 }}>
-                 <li>Public: Your handle, bio, city, and general audience reach.</li>
-                 <li>Private: Email, phone number, and bank details (only shared during active deals).</li>
-                 <li>Encrypted: Identity documents used for Elite verification.</li>
-               </ul>
-            </div>
-          </div>
-
-          <div id="security" style={{ marginBottom: '80px' }}>
-            <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '36px', fontWeight: 900, color: '#0f172a', marginBottom: '24px' }}>4. Security Nodes</h2>
-            <p>
-              We implement enterprise-grade security protocols. Every data packet is protected by industrial-strength encryption.
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '20px', marginTop: '24px' }}>
-               <div style={{ padding: '24px', background: '#f8fafc', borderRadius: '20px', border: '1px solid #f1f5f9' }}>
-                  <Lock size={20} color="#10B981" style={{ marginBottom: '12px' }} />
-                  <h4 style={{ fontSize: '15px', fontWeight: 900, marginBottom: '8px' }}>AES-256 Encryption</h4>
-                  <p style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.5 }}>All commercial and identity data is stored in air-gapped secure nodes.</p>
-               </div>
-               <div style={{ padding: '24px', background: '#f8fafc', borderRadius: '20px', border: '1px solid #f1f5f9' }}>
-                  <Clock size={20} color="#10B981" style={{ marginBottom: '12px' }} />
-                  <h4 style={{ fontSize: '15px', fontWeight: 900, marginBottom: '8px' }}>24/7 Monitoring</h4>
-                  <p style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.5 }}>Real-time threat detection and automated protocol lockdowns.</p>
-               </div>
-            </div>
-          </div>
-
-          <div id="rights" style={{ marginBottom: '80px' }}>
-            <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '36px', fontWeight: 900, color: '#0f172a', marginBottom: '24px' }}>5. Your Rights</h2>
-            <p>
-              As a user of the Bharat Protocol, you have full control over your digital footprint:
-            </p>
-            <ul style={{ marginTop: '20px', display: 'grid', gap: '12px' }}>
-               <li style={{ display: 'flex', gap: '10px', fontSize: '16px' }}><ChevronRight size={18} color="#10B981" style={{ flexShrink: 0 }} /> Right to access and download your complete data profile.</li>
-               <li style={{ display: 'flex', gap: '10px', fontSize: '16px' }}><ChevronRight size={18} color="#10B981" style={{ flexShrink: 0 }} /> Right to rectify or update your commercial information.</li>
-               <li style={{ display: 'flex', gap: '10px', fontSize: '16px' }}><ChevronRight size={18} color="#10B981" style={{ flexShrink: 0 }} /> Right to be forgotten (permanent account termination).</li>
-            </ul>
-          </div>
-
-          {/* Bottom Summary */}
-          <section style={{ 
-            marginTop: '100px', 
-            padding: '60px 40px', 
-            background: '#0f172a', 
-            borderRadius: '40px', 
-            textAlign: 'center',
-            color: '#fff',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            <div style={{ position: 'absolute', top: '-40px', right: '-40px', opacity: 0.1 }}><Shield size={200} color="#10B981" /></div>
-            <div style={{ position: 'relative', zIndex: 1 }}>
-               <Eye size={48} color="#10B981" style={{ marginBottom: '24px' }} />
-               <h3 style={{ fontFamily: '"Playfair Display", serif', fontSize: '32px', fontWeight: 900, marginBottom: '16px' }}>Absolute Transparency</h3>
-               <p style={{ fontSize: '16px', color: 'rgba(255,255,255,0.6)', marginBottom: '32px', maxWidth: '500px', margin: '0 auto 32px' }}>
-                 Your privacy is our priority. We are fully compliant with the Indian DPDP Act and international security standards.
-               </p>
-            </div>
-          </section>
-
-        </main>
       </div>
 
-      {/* Footer Meta */}
-      <footer style={{ padding: '40px 20px', borderTop: '1px solid #f1f5f9', textAlign: 'center' }}>
-         <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', opacity: 0.4, fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>
-            <span>Last Updated: May 2026</span>
-            <span>•</span>
-            <span>Compliance: DPDP-IN-2024</span>
-            <span>•</span>
-            <span>© 2026 CreatorBharat</span>
-         </div>
-      </footer>
+      {/* CONTENT LAYOUT */}
+      <div style={{ maxWidth: 1000, margin: '0 auto', padding: '40px 20px', display: 'flex', gap: 60, flexDirection: mob ? 'column' : 'row' }}>
+        
+        {/* SIDEBAR */}
+        {!mob && (
+          <div style={{ width: 260, flexShrink: 0 }}>
+            <div style={{ position: 'sticky', top: 120 }}>
+              <h4 style={{ fontSize: 12, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16 }}>Contents</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {SECTIONS.map(s => (
+                  <button 
+                    key={s.id}
+                    onClick={() => scrollTo(s.id)}
+                    style={{ background: 'none', border: 'none', textAlign: 'left', padding: 0, fontSize: 15, fontWeight: 600, color: '#475569', cursor: 'pointer', transition: 'color 0.2s' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#0f172a'}
+                    onMouseLeave={e => e.currentTarget.style.color = '#475569'}
+                  >
+                    {s.title}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* MAIN TEXT */}
+        <div style={{ flex: 1, fontSize: 16, color: '#334155', lineHeight: 1.8 }}>
+          
+          <div style={{ background: 'rgba(34, 197, 94, 0.05)', borderLeft: '4px solid #22C55E', padding: 24, borderRadius: '0 16px 16px 0', marginBottom: 40 }}>
+            <h4 style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 800, color: '#166534', margin: '0 0 8px 0' }}>
+              <ShieldCheck size={20} /> Bank-Grade Security
+            </h4>
+            <p style={{ margin: 0, color: '#166534', fontSize: 15 }}>
+              We do not sell your personal data. Period. As a financial intermediary managing Escrow transactions, your privacy and data security are our highest priorities.
+            </p>
+          </div>
+
+          <section id="data-collection" style={{ marginBottom: 48 }}>
+            <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', marginBottom: 16 }}>1. Information We Collect</h2>
+            <p>We collect information directly from you when you register, including your name, email, brand name, social media handles, and engagement metrics. For creators, we dynamically fetch public metrics via official APIs to calculate your CB Score.</p>
+          </section>
+
+          <section id="kyc-data" style={{ marginBottom: 48 }}>
+            <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', marginBottom: 16 }}>2. KYC & Identity Data</h2>
+            <p>To prevent fraud and maintain the integrity of our Blue/Orange Ticks, we require KYC verification.</p>
+            <ul style={{ paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <li><strong>Government IDs:</strong> Aadhaar, PAN, or GSTIN documents are processed by our secure third-party KYC partners. <em>We do not store raw images of your ID cards on our servers.</em></li>
+              <li><strong>Bank Details:</strong> Account numbers and UPI IDs are collected solely for routing your Escrow payouts safely.</li>
+            </ul>
+          </section>
+
+          <section id="data-sharing" style={{ marginBottom: 48 }}>
+            <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', marginBottom: 16 }}>3. Data Sharing & Partners</h2>
+            <p>We only share data with essential infrastructure partners to make the platform work:</p>
+            <ul style={{ paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <li><strong>Razorpay:</strong> We share transaction data required to process Escrow payments and creator payouts securely.</li>
+              <li><strong>Brands:</strong> If you are a Creator, your CB Score, public portfolio, and verified status are visible to Brands to help them hire you. Your private contact info is only shared <em>after</em> a campaign is agreed upon.</li>
+            </ul>
+          </section>
+
+          <section id="security" style={{ marginBottom: 48 }}>
+            <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', marginBottom: 16 }}>4. Data Security</h2>
+            <p>We implement strict security measures including AES-256 encryption for database at-rest data, TLS 1.3 for data in transit, and multi-factor authentication for our internal staff. No employee has direct access to your financial routing data.</p>
+          </section>
+
+          <section id="user-rights" style={{ marginBottom: 48 }}>
+            <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', marginBottom: 16 }}>5. Your Privacy Rights</h2>
+            <p>Under the DPDP Act (India), you have the right to request a copy of your data or request account deletion. However, if you have active Escrow transactions or pending disputes, deletion requests will be paused until the financial obligations are cleared.</p>
+          </section>
+
+        </div>
+      </div>
     </div>
   );
 }

@@ -27,6 +27,7 @@ const NAV_COLS = [
       { label: 'Monetization', path: '/monetize' },
       { label: 'Leaderboard', path: '/leaderboard' },
       { label: 'Rate Calculator', path: '/rate-calc' },
+      { label: 'Verification Guide', path: '/verify-guide' },
       { label: 'Blog & Insights', path: '/blog' },
       { label: 'Success Stories', path: '/stories' },
     ],
@@ -272,11 +273,11 @@ export default function Footer() {
               Premium infrastructure for India's rising creator economy, built around identity, trust, regional voice, and direct brand access.
             </p>
             <div className="footer-contact-list">
-              <a href="mailto:hello@creatorbharat.in" className="footer-contact-link">
-                <Mail size={14} /> hello@creatorbharat.in
+              <a href="mailto:hello@creatorbharat.com" className="footer-contact-link">
+                <Mail size={14} /> hello@creatorbharat.com
               </a>
-              <a href="mailto:brands@creatorbharat.in" className="footer-contact-link">
-                <ExternalLink size={14} /> brands@creatorbharat.in
+              <a href="mailto:brands@creatorbharat.com" className="footer-contact-link">
+                <ExternalLink size={14} /> brands@creatorbharat.com
               </a>
               <div className="footer-contact-text">
                 <MapPin size={14} /> India, focused on Tier 2 and Tier 3 cities

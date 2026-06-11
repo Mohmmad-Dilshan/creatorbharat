@@ -102,6 +102,8 @@ CampaignsFloatingIcons.propTypes = {
 const THEME = {
   primary: '#FF9431',
   dark: '#0f172a',
+  blue: '#3B82F6',
+  success: '#10B981',
   bg: '#f8fafc',
   surface: '#ffffff',
   border: '#e2e8f0',
@@ -564,9 +566,28 @@ export default function CampaignsPage() {
 
   const onSubmit = (target) => {
     if (!user) return navigate('/login');
-    LS.push('cb_applications', { id: `app-${Date.now()}`, campaignId: target?.id, date: new Date().toISOString() });
-    dsp({ t: 'APPLY', id: target?.id }); setIsDone(true);
-    dsp({ t: 'TOAST', d: { type: 'success', msg: `Applied for ${target?.title}` } });
+    const campaign = target || applyModal;
+    const newApp = {
+      id: `app-${Date.now()}`,
+      campaignId: campaign?.id,
+      campaignTitle: campaign?.title || 'Campaign',
+      brand: typeof campaign?.brand === 'object' ? campaign.brand.companyName : (campaign?.brand || 'Brand'),
+      applicantEmail: user?.email,
+      status: 'applied',
+      date: new Date().toISOString(),
+      rate: Number(form.rate) || campaign?.budgetMax || campaign?.budget || 15000,
+      pitch: form.pitch || 'Applied via Campaign Marketplace'
+    };
+    
+    // Prevent duplicate applications
+    const existing = LS.get('cb_applications', []);
+    if (!existing.find(a => a.campaignId === campaign?.id && a.applicantEmail === user?.email)) {
+      LS.push('cb_applications', newApp);
+    }
+    
+    dsp({ t: 'APPLY', id: campaign?.id }); 
+    setIsDone(true);
+    dsp({ t: 'TOAST', d: { type: 'success', msg: `Applied for ${campaign?.title}` } });
   };
 
   return (

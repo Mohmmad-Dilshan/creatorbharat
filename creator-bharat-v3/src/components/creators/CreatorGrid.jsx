@@ -223,44 +223,48 @@ export default function CreatorGrid({ loading, filtered, visible, view, mob, onC
       {/* Search Insights Panel */}
       {!mob && <SearchInsights avgReach={avgReach} avgER={avgER} count={filtered.length} />}
 
-      {view === 'grid' ? (
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: getGridColumns(), 
-          gap: mob ? 10 : 32 
-        }}>
-          {visible.map((c, i) => (
-            <motion.div
-              key={c.id || i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: (i % 8) * 0.05, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <CreatorCard creator={c} onView={() => onCardView(c)} />
-            </motion.div>
-          ))}
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {!mob && (
-            <div style={{ display: 'flex', padding: '0 24px 12px', borderBottom: '1px solid rgba(0,0,0,0.05)', fontSize: 11, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              <span style={{ flex: 1.5 }}>Creator Profile</span>
-              <span style={{ flex: 1 }}>Location</span>
-              <span style={{ flex: 1 }}>Category</span>
-              <span style={{ flex: 1 }}>Reach</span>
-              <span style={{ width: 100, textAlign: 'right' }}>Elite Score</span>
-            </div>
-          )}
-          {visible.map((c, i) => (
-            <CreatorListItem key={c.id || i} c={c} i={i} mob={mob} onCardView={onCardView} />
-          ))}
-        </div>
-      )}
+      {/* When gated, show only first 6 cards */}
+      {(() => {
+        const displayList = isGated ? visible.slice(0, 6) : visible;
+        return view === 'grid' ? (
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: getGridColumns(), 
+            gap: mob ? 10 : 32 
+          }}>
+            {displayList.map((c, i) => (
+              <motion.div
+                key={c.id || i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: (i % 8) * 0.05, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <CreatorCard creator={c} onView={() => onCardView(c)} />
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {!mob && (
+              <div style={{ display: 'flex', padding: '0 24px 12px', borderBottom: '1px solid rgba(0,0,0,0.05)', fontSize: 11, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                <span style={{ flex: 1.5 }}>Creator Profile</span>
+                <span style={{ flex: 1 }}>Location</span>
+                <span style={{ flex: 1 }}>Category</span>
+                <span style={{ flex: 1 }}>Reach</span>
+                <span style={{ width: 100, textAlign: 'right' }}>Elite Score</span>
+              </div>
+            )}
+            {displayList.map((c, i) => (
+              <CreatorListItem key={c.id || i} c={c} i={i} mob={mob} onCardView={onCardView} />
+            ))}
+          </div>
+        );
+      })()}
 
       {isGated ? (
         <GatedGridFooter 
-          title={`Unlock ${filtered.length} Verified Creators`}
-          description="Sign in as a verified Brand to search, filter, and view our complete database of elite digital creators across India."
+          title={`${filtered.length - 6}+ More Verified Creators Locked`}
+          description="You're viewing 6 free profiles. Sign in as a verified Brand to unlock the full database of elite creators across India — with advanced filters, direct contact, and campaign tools."
           onUnlock={onUnlock}
         />
       ) : visible.length < filtered.length && (

@@ -31,7 +31,14 @@ import {
   Image as ImageIcon,
   MessageSquare,
   MapPin,
-  Lock
+  Lock,
+  Megaphone,
+  Link2,
+  ExternalLink,
+  Crown,
+  Plus,
+  Trash2,
+  Edit3
 } from 'lucide-react';
 
 // --- CUSTOM ELITE SOCIAL ICONS (SVG) ---
@@ -121,38 +128,127 @@ GatedOverlay.propTypes = {
   onCtaClick: PropTypes.func.isRequired
 };
 
+const TAB_LIST = [
+  { id: 'identity',  label: 'Identity',   icon: '👤', desc: 'Who they are' },
+  { id: 'story',     label: 'My Story',   icon: '📖', desc: 'Creator journey' },
+  { id: 'gallery',   label: 'Gallery',    icon: '🖼️', desc: 'Visual portfolio' },
+  { id: 'work',      label: 'Pro Work',   icon: '💼', desc: 'Achievements & services' },
+  { id: 'local',     label: 'Local Hub',  icon: '📍', desc: 'Regional presence' },
+  { id: 'reviews',   label: 'Reviews',    icon: '⭐', desc: 'Brand feedback' },
+  { id: 'packages',  label: 'Packages',   icon: '⚡', desc: 'Hire & rates' },
+  { id: 'sponsor',   label: 'Sponsored',  icon: '📢', desc: 'Promoted content' },
+  { id: 'connect',   label: 'Connect',    icon: '💬', desc: 'Get in touch' },
+];
+
 const TabNavigator = ({ activeTab, setActiveTab, mob }) => {
-  const TABS = [
-    { id: 'identity', label: 'Identity' },
-    { id: 'story', label: 'My Story' },
-    { id: 'gallery', label: 'Gallery' },
-    { id: 'work', label: 'Pro Work' },
-    { id: 'local', label: 'Local Hub' },
-    { id: 'reviews', label: 'Reviews' },
-    { id: 'packages', label: 'Packages' },
-    { id: 'connect', label: 'Connect' }
-  ];
-  const currentIndex = TABS.findIndex(t => t.id === activeTab);
-  const nextTab = currentIndex < TABS.length - 1 ? TABS[currentIndex + 1] : null;
+  const currentIndex = TAB_LIST.findIndex(t => t.id === activeTab);
+  const prevTab = currentIndex > 0 ? TAB_LIST[currentIndex - 1] : null;
+  const nextTab = currentIndex < TAB_LIST.length - 1 ? TAB_LIST[currentIndex + 1] : null;
+  const isActionTab = ['packages', 'sponsor', 'connect'].includes(nextTab?.id);
+
+  if (!nextTab && !prevTab) return null;
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '40px' }}>
-       {nextTab && (
-         <button 
-           onClick={() => setActiveTab(nextTab.id)}
-           style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#0073b1', border: 'none', padding: '16px 32px', borderRadius: '100px', cursor: 'pointer', color: '#fff', fontWeight: 800, fontSize: '14px', boxShadow: '0 8px 24px rgba(0,115,177,0.2)', width: mob ? '100%' : 'auto' }}
-         >
-            Next: {nextTab.label} <ArrowRight size={18} />
-         </button>
-       )}
-       <style>{`
-          @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
-          .hide-scrollbar::-webkit-scrollbar { display: none; }
-          .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-          .mobile-snap { scroll-snap-type: x mandatory; }
-          .mobile-snap > * { scroll-snap-align: center; }
-       `}</style>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2 }}
+      style={{
+        marginTop: 48,
+        padding: mob ? '20px' : '24px 32px',
+        background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+        borderRadius: 24,
+        border: '1px solid #e2e8f0',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 16,
+        flexWrap: mob ? 'wrap' : 'nowrap'
+      }}
+    >
+      {/* Progress dots */}
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
+        {TAB_LIST.map((t, i) => (
+          <button
+            key={t.id}
+            onClick={() => setActiveTab(t.id)}
+            title={t.label}
+            style={{
+              width: t.id === activeTab ? 24 : 8,
+              height: 8,
+              borderRadius: 100,
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+              background: t.id === activeTab
+                ? 'linear-gradient(90deg, #0073b1, #0ea5e9)'
+                : i < currentIndex ? '#cbd5e1' : '#e2e8f0',
+              transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)'
+            }}
+          />
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', gap: 10, flex: 1, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+        {/* Prev button */}
+        {prevTab && (
+          <motion.button
+            whileHover={{ x: -3 }}
+            whileTap={{ scale: 0.96 }}
+            onClick={() => setActiveTab(prevTab.id)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              background: '#fff',
+              border: '1.5px solid #e2e8f0',
+              padding: mob ? '11px 18px' : '12px 22px',
+              borderRadius: 100,
+              cursor: 'pointer',
+              color: '#64748b',
+              fontWeight: 700,
+              fontSize: mob ? 12 : 13,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+            }}
+          >
+            <ArrowRight size={14} style={{ transform: 'rotate(180deg)' }} />
+            {prevTab.icon} {prevTab.label}
+          </motion.button>
+        )}
+
+        {/* Next button */}
+        {nextTab && (
+          <motion.button
+            whileHover={{ x: 3 }}
+            whileTap={{ scale: 0.96 }}
+            onClick={() => setActiveTab(nextTab.id)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              background: isActionTab
+                ? 'linear-gradient(135deg, #FF9431, #EA580C)'
+                : 'linear-gradient(135deg, #0073b1, #0ea5e9)',
+              border: 'none',
+              padding: mob ? '11px 20px' : '12px 28px',
+              borderRadius: 100,
+              cursor: 'pointer',
+              color: '#fff',
+              fontWeight: 800,
+              fontSize: mob ? 12 : 13,
+              boxShadow: isActionTab
+                ? '0 8px 20px rgba(255,148,49,0.25)'
+                : '0 8px 20px rgba(0,115,177,0.2)',
+              flex: mob ? 1 : 'none'
+            }}
+          >
+            {nextTab.icon} {nextTab.label}
+            <ArrowRight size={14} />
+          </motion.button>
+        )}
+      </div>
+
+      <style>{`
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
+    </motion.div>
   );
 };
 TabNavigator.propTypes = { activeTab: PropTypes.string.isRequired, setActiveTab: PropTypes.func.isRequired, mob: PropTypes.bool };
@@ -306,10 +402,10 @@ const BiographySection = ({ c, city, name, storyBodyPadding, storyBodyTextSize, 
      <div style={{ position: 'relative', zIndex: 1 }}>
         <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', marginBottom: '32px' }}>Beyond the Milestones: <span style={{ color: '#FF9431' }}>My Full Story</span></h3>
         <div style={{ fontSize: storyBodyTextSize, color: '#475569', lineHeight: 1.8, fontWeight: 500 }}>
-           <p style={{ marginBottom: '24px' }} dangerouslySetInnerHTML={{__html: c.full_story?.p1 || `Mera safar ${city} ki un galiyon se shuru hua jahan har mod par ek kahani hai. Shuruat mein mere paas sirf ek purana phone aur ek junoon tha. Log kehte the ki Bharat ke regional stories mein global appeal nahi hai, par maine hamesha mana ki "Authenticity is the only language that the world understands."`}} />
-           <blockquote style={{ margin: '40px 0', padding: '24px 32px', borderLeft: '6px solid #FF9431', background: '#fff', borderRadius: '0 24px 24px 0', fontSize: quoteFontSize, fontWeight: 750, fontStyle: 'italic', color: '#111827', boxShadow: '0 8px 32px rgba(0,0,0,0.02)' }} dangerouslySetInnerHTML={{__html: c.full_story?.quote || `"Content sirf views ke liye nahi hona chahiye, wo ek connection hona chahiye jo screen ke uss paar baithe insaan ke dil tak jaye. Main, ${name}, hamesha isme vishwas rakhta hoon."`}} />
-           <p style={{ marginBottom: '24px' }} dangerouslySetInnerHTML={{__html: c.full_story?.p2 || 'Aaj, jab main CreatorBharat ke verified creators ki list mein aata hoon, toh mujhe garv hota hai. Maine seekha hai ki elite banna sirf followers se nahi, balki consistency aur audience ke saath sacche rishte se hota hai. Mera agla chapter Bharat ki regional creativity ko ek global benchmark banana hai.'}} />
-           <p dangerouslySetInnerHTML={{__html: c.full_story?.p3 || 'Ye toh bas shuruat hai. Abhi toh bohot saari aisi kahaniyan hain jo sunani baaki hain, aur bohot saari aisi jagah hain jahan Bharat ka jhanda gaadna hai.'}} />
+           <p style={{ marginBottom: '24px' }}>{c.full_story?.p1 || `Mera safar ${city} ki un galiyon se shuru hua jahan har mod par ek kahani hai. Shuruat mein mere paas sirf ek purana phone aur ek junoon tha. Log kehte the ki Bharat ke regional stories mein global appeal nahi hai, par maine hamesha mana ki "Authenticity is the only language that the world understands."`}</p>
+           <blockquote style={{ margin: '40px 0', padding: '24px 32px', borderLeft: '6px solid #FF9431', background: '#fff', borderRadius: '0 24px 24px 0', fontSize: quoteFontSize, fontWeight: 750, fontStyle: 'italic', color: '#111827', boxShadow: '0 8px 32px rgba(0,0,0,0.02)' }}>{c.full_story?.quote || `"Content sirf views ke liye nahi hona chahiye, wo ek connection hona chahiye jo screen ke uss paar baithe insaan ke dil tak jaye. Main, ${name}, hamesha isme vishwas rakhta hoon."`}</blockquote>
+           <p style={{ marginBottom: '24px' }}>{c.full_story?.p2 || 'Aaj, jab main CreatorBharat ke verified creators ki list mein aata hoon, toh mujhe garv hota hai. Maine seekha hai ki elite banna sirf followers se nahi, balki consistency aur audience ke saath sacche rishte se hota hai. Mera agla chapter Bharat ki regional creativity ko ek global benchmark banana hai.'}</p>
+           <p>{c.full_story?.p3 || 'Ye toh bas shuruat hai. Abhi toh bohot saari aisi kahaniyan hain jo sunani baaki hain, aur bohot saari aisi jagah hain jahan Bharat ka jhanda gaadna hai.'}</p>
         </div>
         <div style={{ marginTop: '40px' }}>
            <Btn lg onClick={() => navigate(`/blog/creator-story-${c?.id || 'elite'}`)} style={{ borderRadius: '100px', background: '#0f172a', color: '#fff', gap: '12px', padding: '16px 40px', width: readBtnWidth }}>
@@ -1021,7 +1117,7 @@ const CollabFAQ = ({ mob }) => (
 );
 CollabFAQ.propTypes = { mob: PropTypes.bool };
 
-const GalleryItem = ({ i, src, mob, dsp }) => {
+const GalleryItem = ({ i, src, mob, onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
   const imgUrl = typeof src === 'string' ? src : `https://picsum.photos/seed/elite-gal-${i}/1000/1000`;
   return (
@@ -1030,7 +1126,7 @@ const GalleryItem = ({ i, src, mob, dsp }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{ position: 'relative', aspectRatio: '1/1', borderRadius: '32px', overflow: 'hidden', cursor: 'pointer', border: '1px solid #f1f5f9', boxShadow: '0 8px 32px rgba(0,0,0,0.02)', outline: 'none', padding: 0, background: 'none', width: '100%', display: 'block' }}
-      onClick={() => dsp({ t: 'TOAST', d: { type: 'info', msg: 'Full Image View coming soon!' } })}
+      onClick={() => onClick(imgUrl)}
     >
       <img src={imgUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
       <span style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)', opacity: isHovered ? 1 : 0, transition: 'opacity 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -1039,10 +1135,10 @@ const GalleryItem = ({ i, src, mob, dsp }) => {
     </button>
   );
 };
-GalleryItem.propTypes = { i: PropTypes.number.isRequired, src: PropTypes.any, mob: PropTypes.bool, dsp: PropTypes.func.isRequired };
+GalleryItem.propTypes = { i: PropTypes.number.isRequired, src: PropTypes.any, mob: PropTypes.bool, onClick: PropTypes.func.isRequired };
 
 const GalleryTab = ({ c, mob, setActiveTab }) => {
-  const { dsp } = useApp();
+  const [selectedImg, setSelectedImg] = useState(null);
   const isDummy = c.id === 'fallback';
   if (!c.gallery && !isDummy) return <TabEmptyState title="Gallery" icon={ImageIcon} mob={mob} setActiveTab={setActiveTab} tabId="gallery" />;
   const images = c.gallery || [1,2,3,4,5,6,7,8,9];
@@ -1057,7 +1153,7 @@ const GalleryTab = ({ c, mob, setActiveTab }) => {
           
           <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: mob ? '16px' : '24px' }}>
              {images.map((img, idx) => (
-               <GalleryItem key={img} i={idx + 1} src={img} mob={mob} dsp={dsp} />
+                <GalleryItem key={img} i={idx + 1} src={img} mob={mob} onClick={setSelectedImg} />
              ))}
           </div>
           <div style={{ marginTop: '48px', textAlign: 'center' }}>
@@ -1066,6 +1162,66 @@ const GalleryTab = ({ c, mob, setActiveTab }) => {
              </Btn>
           </div>
        </div>
+
+       <AnimatePresence>
+         {selectedImg && (
+           <motion.div
+             initial={{ opacity: 0 }}
+             animate={{ opacity: 1 }}
+             exit={{ opacity: 0 }}
+             onClick={() => setSelectedImg(null)}
+             style={{
+               position: 'fixed',
+               inset: 0,
+               background: 'rgba(15, 23, 42, 0.9)',
+               backdropFilter: 'blur(12px)',
+               display: 'flex',
+               alignItems: 'center',
+               justifyContent: 'center',
+               zIndex: 99999,
+               padding: '24px'
+             }}
+           >
+             <button 
+               onClick={() => setSelectedImg(null)} 
+               style={{
+                 position: 'absolute',
+                 top: '24px',
+                 right: '24px',
+                 background: 'rgba(255,255,255,0.1)',
+                 border: 'none',
+                 borderRadius: '50%',
+                 width: '44px',
+                 height: '44px',
+                 display: 'flex',
+                 alignItems: 'center',
+                 justifyContent: 'center',
+                 color: '#fff',
+                 cursor: 'pointer',
+                 fontSize: '18px'
+               }}
+             >
+               ✕
+             </button>
+             <motion.img
+               initial={{ scale: 0.9, y: 20 }}
+               animate={{ scale: 1, y: 0 }}
+               exit={{ scale: 0.9, y: 20 }}
+               src={selectedImg}
+               alt="Gallery lightbox"
+               onClick={(e) => e.stopPropagation()}
+               style={{
+                 maxHeight: '85vh',
+                 maxWidth: '90vw',
+                 borderRadius: '24px',
+                 objectFit: 'contain',
+                 boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
+               }}
+             />
+           </motion.div>
+         )}
+       </AnimatePresence>
+
        <TrustBadge />
        <TabNavigator activeTab="gallery" setActiveTab={setActiveTab} mob={mob} />
     </motion.div>
@@ -1186,6 +1342,409 @@ const PackagesTab = ({ c, mob, onSelect, setActiveTab }) => {
 };
 PackagesTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, onSelect: PropTypes.func.isRequired, setActiveTab: PropTypes.func.isRequired };
 
+// ─── SPONSOR TAB ─────────────────────────────────────────────────────────────
+// Creator apne sponsor posts / promoted content yahan add kar sakta hai
+// Free: max 1 post | Pro: unlimited posts
+// Visitor view: promoted links, banners, shoutouts dekhta hai
+
+const SPONSOR_TYPES = [
+  { id: 'link', label: 'Promoted Link', icon: '🔗', desc: 'Kisi bhi website / app / product ka link promote karo', color: '#3B82F6' },
+  { id: 'banner', label: 'Ad Banner', icon: '🖼️', desc: 'Image banner with CTA button — brand awareness ke liye', color: '#FF9431' },
+  { id: 'shoutout', label: 'Shoutout Post', icon: '📣', desc: 'Kisi brand, creator ya product ka text shoutout', color: '#10B981' },
+];
+
+const SponsorPostCard = ({ post, isOwner, onDelete, mob }) => {
+  const typeInfo = SPONSOR_TYPES.find(t => t.id === post.type) || SPONSOR_TYPES[0];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      style={{
+        background: '#fff',
+        borderRadius: 24,
+        border: `1.5px solid ${typeInfo.color}20`,
+        padding: mob ? '20px' : '28px',
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
+      }}
+    >
+      {/* Accent top line */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: typeInfo.color, borderRadius: '24px 24px 0 0' }} />
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+          <span style={{ fontSize: 22 }}>{typeInfo.icon}</span>
+          <div>
+            <span style={{ fontSize: 10, fontWeight: 900, color: typeInfo.color, textTransform: 'uppercase', letterSpacing: '1.5px', display: 'block' }}>
+              {typeInfo.label}
+            </span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8' }}>{post.date}</span>
+          </div>
+        </div>
+        {isOwner && (
+          <button
+            onClick={() => onDelete(post.id)}
+            style={{ background: '#fef2f2', border: 'none', borderRadius: 10, padding: '6px 12px', fontSize: 11, fontWeight: 800, color: '#ef4444', cursor: 'pointer' }}
+          >
+            Remove
+          </button>
+        )}
+      </div>
+
+      {/* Banner image */}
+      {post.imageUrl && (
+        <div style={{ width: '100%', height: 160, borderRadius: 16, overflow: 'hidden', marginBottom: 16 }}>
+          <img src={post.imageUrl} alt="Sponsor banner" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        </div>
+      )}
+
+      <h4 style={{ fontSize: 18, fontWeight: 900, color: '#0f172a', marginBottom: 8 }}>{post.title}</h4>
+      <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.6, fontWeight: 500, marginBottom: post.link ? 16 : 0 }}>
+        {post.description}
+      </p>
+
+      {post.link && (
+        <a
+          href={post.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: typeInfo.color, color: '#fff',
+            padding: '10px 20px', borderRadius: 100,
+            fontSize: 13, fontWeight: 800, textDecoration: 'none',
+            marginTop: 4
+          }}
+        >
+          {post.ctaText || 'Visit Now'} →
+        </a>
+      )}
+
+      {/* Sponsored label */}
+      <div style={{ position: 'absolute', bottom: 12, right: 16, fontSize: 9, fontWeight: 900, color: '#cbd5e1', textTransform: 'uppercase', letterSpacing: '1px' }}>
+        SPONSORED
+      </div>
+    </motion.div>
+  );
+};
+SponsorPostCard.propTypes = {
+  post: PropTypes.object.isRequired,
+  isOwner: PropTypes.bool,
+  onDelete: PropTypes.func.isRequired,
+  mob: PropTypes.bool
+};
+
+const AddSponsorModal = ({ onClose, onAdd, existingCount, isPro }) => {
+  const navigate = useNavigate();
+  const [type, setType] = useState('link');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [link, setLink] = useState('');
+  const [ctaText, setCtaText] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const FREE_LIMIT = 1;
+  const isLocked = !isPro && existingCount >= FREE_LIMIT;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!title.trim()) return;
+    setSaving(true);
+    setTimeout(() => {
+      onAdd({
+        id: 'sp-' + Date.now(),
+        type,
+        title: title.trim(),
+        description: description.trim(),
+        link: link.trim(),
+        ctaText: ctaText.trim() || 'Visit Now',
+        imageUrl: imageUrl.trim(),
+        date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+      });
+      setSaving(false);
+      onClose();
+    }, 800);
+  };
+
+  return (
+    <div
+      style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        onClick={e => e.stopPropagation()}
+        style={{ background: '#fff', borderRadius: 28, padding: 36, maxWidth: 520, width: '100%', boxShadow: '0 40px 80px rgba(0,0,0,0.2)', maxHeight: '90vh', overflowY: 'auto' }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+          <h3 style={{ fontSize: 20, fontWeight: 950, color: '#0f172a', margin: 0 }}>Add Sponsor Post</h3>
+          <button onClick={onClose} style={{ background: '#f8fafc', border: 'none', borderRadius: 10, width: 36, height: 36, display: 'grid', placeItems: 'center', cursor: 'pointer', fontSize: 18, color: '#64748b' }}>✕</button>
+        </div>
+
+        {isLocked ? (
+          <div style={{ textAlign: 'center', padding: '32px 16px' }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
+            <h4 style={{ fontSize: 18, fontWeight: 900, color: '#0f172a', marginBottom: 8 }}>Pro Feature</h4>
+            <p style={{ fontSize: 14, color: '#64748b', marginBottom: 24, lineHeight: 1.6 }}>
+              Free plan mein sirf 1 sponsor post allowed hai. Unlimited posts ke liye Pro upgrade karo.
+            </p>
+            <button onClick={() => navigate('/creator/pricing')} style={{ display: 'inline-block', background: '#0f172a', color: '#fff', padding: '12px 28px', borderRadius: 100, fontWeight: 900, fontSize: 14, border: 'none', cursor: 'pointer' }}>
+              Upgrade to Pro →
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            {/* Type selector */}
+            <div>
+              <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 10 }}>Post Type</label>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {SPONSOR_TYPES.map(t => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setType(t.id)}
+                    style={{
+                      flex: 1, padding: '10px 6px', borderRadius: 12,
+                      border: `1.5px solid ${type === t.id ? t.color : '#e2e8f0'}`,
+                      background: type === t.id ? t.color + '10' : '#fff',
+                      cursor: 'pointer', fontSize: 11, fontWeight: 800,
+                      color: type === t.id ? t.color : '#64748b',
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4
+                    }}
+                  >
+                    <span style={{ fontSize: 18 }}>{t.icon}</span>
+                    {t.label.split(' ')[0]}
+                  </button>
+                ))}
+              </div>
+              <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 8, fontWeight: 500 }}>
+                {SPONSOR_TYPES.find(t => t.id === type)?.desc}
+              </p>
+            </div>
+
+            {/* Title */}
+            <div>
+              <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 8 }}>
+                Title <span style={{ color: '#ef4444' }}>*</span>
+              </label>
+              <input
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                placeholder="e.g. Nykaa New Launch — 20% Off"
+                required
+                style={{ width: '100%', padding: '12px 16px', border: '1.5px solid #e2e8f0', borderRadius: 14, fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 8 }}>Description</label>
+              <textarea
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+                placeholder="Brief description jo visitor ko action lene ke liye inspire kare..."
+                rows={3}
+                style={{ width: '100%', padding: '12px 16px', border: '1.5px solid #e2e8f0', borderRadius: 14, fontSize: 14, outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
+              />
+            </div>
+
+            {/* Link */}
+            <div>
+              <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 8 }}>URL / Link</label>
+              <input
+                value={link}
+                onChange={e => setLink(e.target.value)}
+                placeholder="https://..."
+                type="url"
+                style={{ width: '100%', padding: '12px 16px', border: '1.5px solid #e2e8f0', borderRadius: 14, fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+              />
+            </div>
+
+            {/* CTA Text */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div>
+                <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 8 }}>CTA Button Text</label>
+                <input
+                  value={ctaText}
+                  onChange={e => setCtaText(e.target.value)}
+                  placeholder="Visit Now"
+                  style={{ width: '100%', padding: '12px 16px', border: '1.5px solid #e2e8f0', borderRadius: 14, fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 8 }}>Image URL (Optional)</label>
+                <input
+                  value={imageUrl}
+                  onChange={e => setImageUrl(e.target.value)}
+                  placeholder="https://image..."
+                  style={{ width: '100%', padding: '12px 16px', border: '1.5px solid #e2e8f0', borderRadius: 14, fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={saving || !title.trim()}
+              style={{ width: '100%', padding: '16px', background: saving ? '#94a3b8' : '#0f172a', color: '#fff', border: 'none', borderRadius: 14, fontWeight: 900, fontSize: 15, cursor: saving ? 'not-allowed' : 'pointer', marginTop: 4 }}
+            >
+              {saving ? 'Adding...' : 'Publish Sponsor Post'}
+            </button>
+          </form>
+        )}
+      </motion.div>
+    </div>
+  );
+};
+AddSponsorModal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  onAdd: PropTypes.func.isRequired,
+  existingCount: PropTypes.number.isRequired,
+  isPro: PropTypes.bool
+};
+
+const SponsorTab = ({ c, mob, setActiveTab }) => {
+  const STORAGE_KEY = `cb_sponsor_posts_${c?.id || c?.slug || 'default'}`;
+
+  // Load posts from localStorage — demo posts for fallback/preview creators
+  const posts = (() => {
+    if (c?.sponsored_posts && c.sponsored_posts.length > 0) {
+      return c.sponsored_posts;
+    }
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.length > 0) return parsed;
+      }
+    } catch (_) { /* ignore */ }
+    if (c?.id === 'fallback' || !c?.email) {
+      return [
+        {
+          id: 'sp-demo-1', type: 'link',
+          title: 'Nykaa Summer Collection — Flat 30% Off',
+          description: 'Meri favourite beauty brand ka summer sale chal raha hai. Is link se extra 30% discount milega — limited time offer!',
+          link: 'https://nykaa.com', ctaText: 'Shop Now', imageUrl: '', date: '12 Jun 2026'
+        },
+        {
+          id: 'sp-demo-2', type: 'shoutout',
+          title: 'Shoutout: @BharatStartups Podcast',
+          description: 'Ye podcast sunna chahiye — India ke young founders ki real stories. Weekly episodes, amazing guests. Highly recommend!',
+          link: 'https://bharatstartups.in', ctaText: 'Listen Now', imageUrl: '', date: '8 Jun 2026'
+        }
+      ];
+    }
+    return [];
+  })();
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+
+      {/* Section heading */}
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+          <span style={{ fontSize: 24 }}>📢</span>
+          <h2 style={{ fontSize: mob ? 22 : 28, fontWeight: 950, color: '#0f172a', margin: 0 }}>
+            Sponsored Content
+          </h2>
+        </div>
+        <p style={{ fontSize: 14, color: '#64748b', fontWeight: 500, margin: 0 }}>
+          Creator ke promoted products, links aur shoutouts — unke audience ke liye.
+        </p>
+      </div>
+
+      {/* Empty state */}
+      {posts.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '60px 20px', background: '#f8fafc', borderRadius: 24, border: '1.5px dashed #e2e8f0' }}>
+          <div style={{ fontSize: 48, marginBottom: 12 }}>📢</div>
+          <div style={{ fontSize: 16, fontWeight: 800, color: '#475569', marginBottom: 6 }}>No sponsored content yet</div>
+          <div style={{ fontSize: 13, color: '#94a3b8', fontWeight: 500 }}>Creator ne abhi koi promoted post share nahi kiya.</div>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
+          {posts.map(post => {
+            const typeInfo = SPONSOR_TYPES.find(t => t.id === post.type) || SPONSOR_TYPES[0];
+            return (
+              <motion.div
+                key={post.id}
+                whileHover={{ y: -4 }}
+                style={{
+                  background: '#fff', borderRadius: 24,
+                  border: `1.5px solid ${typeInfo.color}20`,
+                  padding: mob ? '20px' : '26px',
+                  position: 'relative', overflow: 'hidden',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
+                }}
+              >
+                {/* Top accent */}
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: typeInfo.color, borderRadius: '24px 24px 0 0' }} />
+
+                {/* Type + date */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+                  <span style={{ fontSize: 18 }}>{typeInfo.icon}</span>
+                  <span style={{ fontSize: 10, fontWeight: 900, color: typeInfo.color, textTransform: 'uppercase', letterSpacing: '1.5px' }}>
+                    {typeInfo.label}
+                  </span>
+                  <span style={{ marginLeft: 'auto', fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>{post.date}</span>
+                </div>
+
+                {/* Banner image */}
+                {post.imageUrl && (
+                  <div style={{ width: '100%', height: 150, borderRadius: 14, overflow: 'hidden', marginBottom: 14 }}>
+                    <img src={post.imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                )}
+
+                {/* Title */}
+                <h4 style={{ fontSize: 17, fontWeight: 900, color: '#0f172a', marginBottom: 8, lineHeight: 1.3 }}>
+                  {post.title}
+                </h4>
+
+                {/* Description */}
+                {post.description && (
+                  <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.6, fontWeight: 500, marginBottom: post.link ? 16 : 0 }}>
+                    {post.description}
+                  </p>
+                )}
+
+                {/* CTA Button */}
+                {post.link && (
+                  <a
+                    href={post.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      background: typeInfo.color, color: '#fff',
+                      padding: '9px 18px', borderRadius: 100,
+                      fontSize: 13, fontWeight: 800, textDecoration: 'none'
+                    }}
+                  >
+                    {post.ctaText || 'Visit Now'} →
+                  </a>
+                )}
+
+                {/* Sponsored watermark */}
+                <div style={{ position: 'absolute', bottom: 10, right: 14, fontSize: 9, fontWeight: 900, color: '#e2e8f0', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                  SPONSORED
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
+
+      <TrustBadge />
+      <TabNavigator activeTab="sponsor" setActiveTab={setActiveTab} mob={mob} />
+    </motion.div>
+  );
+};
+SponsorTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, setActiveTab: PropTypes.func.isRequired };
+
+
 // --- MAIN PAGE ---
 
 const getFallbackCreator = (id) => {
@@ -1231,6 +1790,8 @@ const ProfileTabContent = ({
       return <ReviewsTab key="tab-reviews" c={c} mob={mob} navigate={navigate} onWriteReview={onRateClick} setActiveTab={setActiveTab} />;
     case 'packages':
       return <PackagesTab key="tab-packages" c={c} mob={mob} onSelect={onPackageSelect} setActiveTab={setActiveTab} />;
+    case 'sponsor':
+      return <SponsorTab key="tab-sponsor" c={c} mob={mob} st={dsp} setActiveTab={setActiveTab} />;
     case 'connect':
       return (
         <motion.div key="tab-connect" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
@@ -1371,6 +1932,75 @@ ProfileSkeleton.propTypes = {
   mob: PropTypes.bool
 };
 
+const CreatorBharatFollowBanner = ({ followed, onFollow, mob }) => (
+  <div style={{
+    background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)',
+    borderRadius: '32px',
+    padding: mob ? '28px 24px' : '40px 48px',
+    display: 'flex',
+    flexDirection: mob ? 'column' : 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '24px',
+    boxShadow: '0 20px 40px rgba(234, 88, 12, 0.15)',
+    margin: '60px auto 0',
+    maxWidth: '1100px',
+    width: '100%',
+    boxSizing: 'border-box'
+  }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1, flexDirection: mob ? 'column' : 'row', textAlign: mob ? 'center' : 'left' }}>
+      <div style={{ 
+        width: '56px', 
+        height: '56px', 
+        borderRadius: '16px', 
+        background: '#fff', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        boxShadow: '0 8px 16px rgba(0,0,0,0.06)',
+        flexShrink: 0
+      }}>
+        <span style={{ fontSize: '28px' }}>🇮🇳</span>
+      </div>
+      <div>
+        <h4 style={{ fontSize: '20px', fontWeight: 950, color: '#fff', margin: '0 0 6px', letterSpacing: '-0.02em' }}>
+          Follow @CreatorBharat Official
+        </h4>
+        <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.85)', margin: 0, fontWeight: 650 }}>
+          Platform ke events, campaigns, updates, aur meetup alerts se connected rahein.
+        </p>
+      </div>
+    </div>
+    <button
+      onClick={onFollow}
+      style={{
+        background: followed ? 'rgba(255,255,255,0.15)' : '#fff',
+        color: followed ? '#fff' : '#EA580C',
+        border: followed ? '1.5px solid rgba(255,255,255,0.3)' : 'none',
+        borderRadius: '100px',
+        padding: '14px 32px',
+        fontSize: '14px',
+        fontWeight: 900,
+        cursor: 'pointer',
+        boxShadow: followed ? 'none' : '0 8px 16px rgba(0,0,0,0.06)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        transition: 'all 0.2s',
+        whiteSpace: 'nowrap'
+      }}
+    >
+      {followed ? <CheckCircle2 size={16} /> : <Plus size={16} />}
+      {followed ? 'Following Official' : 'Follow Page'}
+    </button>
+  </div>
+);
+CreatorBharatFollowBanner.propTypes = {
+  followed: PropTypes.bool.isRequired,
+  onFollow: PropTypes.func.isRequired,
+  mob: PropTypes.bool
+};
+
 export default function CreatorProfilePage() {
   const { id } = useParams();
   const { st, dsp } = useApp();
@@ -1384,6 +2014,7 @@ export default function CreatorProfilePage() {
   const [mediaKitOpen, setMediaKitOpen] = useState(false);
   const [selectedPkg, setSelectedPkg] = useState(null);
   const [navVisible, setNavVisible] = useState(true);
+  const [tabScrolled, setTabScrolled] = useState(false);
   const lastY = useRef(0);
 
   useEffect(() => {
@@ -1399,6 +2030,7 @@ export default function CreatorProfilePage() {
       if (curY < 50) setNavVisible(true);
       else if (diff > 10) setNavVisible(false);
       else if (diff < -10) setNavVisible(true);
+      setTabScrolled(curY > 280);
       lastY.current = curY;
     };
     globalThis.addEventListener('scroll', handleScroll, { passive: true });
@@ -1489,33 +2121,192 @@ export default function CreatorProfilePage() {
     setMediaKitOpen(true);
   };
 
+  const profileJsonLd = useMemo(() => {
+    if (!c) return null;
+    return {
+      "@context": "https://schema.org",
+      "@type": "ProfilePage",
+      "mainEntity": {
+        "@type": "Person",
+        "name": c.name,
+        "description": c.bio || `${c.name} is an elite storyteller and verified digital content creator on CreatorBharat.`,
+        "image": c.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name)}&background=0f172a&color=fff`,
+        "jobTitle": c.niche || "Content Creator",
+        "homeLocation": {
+          "@type": "Place",
+          "name": c.city || "India"
+        },
+        "url": typeof window !== 'undefined' ? window.location.href : `https://creatorbharat.com/creator/${c.id || c.slug || 'profile'}`,
+        "interactionStatistic": [
+          {
+            "@type": "InteractionCounter",
+            "interactionType": "https://schema.org/FollowAction",
+            "userInteractionCount": stats?.followers || 12000
+          }
+        ]
+      }
+    };
+  }, [c, stats]);
+
+  const tabBarRef = useRef(null);
+  const contentRef = useRef(null);
+
+  // When tab changes: scroll to content top + scroll active tab into view in bar
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+
+    // Scroll page so content area is just below sticky tab bar
+    setTimeout(() => {
+      if (tabBarRef.current) {
+        const barBottom = tabBarRef.current.getBoundingClientRect().bottom;
+        const scrollTarget = globalThis.scrollY + barBottom - 8;
+        globalThis.scrollTo({ top: scrollTarget, behavior: 'smooth' });
+      }
+    }, 40);
+
+    // Scroll active tab into view horizontally in the sticky bar (mobile)
+    setTimeout(() => {
+      if (tabBarRef.current) {
+        const activeBtn = tabBarRef.current.querySelector(`[data-tabid="${tabId}"]`);
+        if (activeBtn) activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }, 20);
+  };
+
   if (ld) return <ProfileSkeleton id={id} mob={mob} />;
   if (!c) return <div style={{ ...W(), padding: '120px 20px', textAlign: 'center' }}><Empty title="Profile Not Found" onCta={() => navigate('/creators')} /></div>;
 
   let stickyTop = '0px';
   if (!mob) {
     stickyTop = navVisible ? '72px' : '0px';
+  } else {
+    // Mobile: account for top navbar height
+    stickyTop = '0px';
   }
 
   return (
-    <div style={{ background: '#fcfcfc', minHeight: '100vh', paddingBottom: '100px' }}>
+    <div style={{ background: '#fcfcfc', minHeight: '100vh', paddingBottom: '100px', overflow: 'visible' }}>
       <Seo 
         title={`${c.name} | Verified Creator`}
-        description={c.bio || `${c.name} is an elite storyteller and verified digital content creator on CreatorBharat, Jaipur, India.`}
+        description={c.bio || `${c.name} is an elite storyteller and verified digital content creator on CreatorBharat, ${c.city || 'Jaipur'}, India.`}
+        jsonLd={profileJsonLd}
       />
       <ProfileHero c={c} stats={stats} navigate={navigate} st={st} dsp={dsp} mob={mob} onRate={handleRateClick} onContact={() => setActiveTab('connect')} onMediaKit={handleMediaKitOpen} navVisible={navVisible} onBrief={handlePackageSelect} />
       
-      <div style={{ position: 'sticky', top: stickyTop, transition: 'top 0.4s cubic-bezier(0.16, 1, 0.3, 1)', zIndex: 1000, background: 'rgba(252, 252, 252, 0.9)', backdropFilter: 'blur(30px)', borderBottom: '1px solid #f1f5f9', overflowX: mob ? 'auto' : 'hidden', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-         <div style={{ ...W(1100), padding: mob ? '0 16px' : '0 24px', display: 'flex', gap: mob ? '32px' : '48px', minWidth: mob ? 'fit-content' : 'auto' }}>
-            {[{ id: 'identity', label: 'Identity', icon: Activity }, { id: 'story', label: 'My Story', icon: Globe }, { id: 'gallery', label: 'Gallery', icon: ImageIcon }, { id: 'work', label: 'Pro Work', icon: Briefcase }, { id: 'local', label: 'Local Hub', icon: MapPin }, { id: 'reviews', label: 'Reviews', icon: Star }, { id: 'packages', label: 'Packages', icon: Zap }, { id: 'connect', label: 'Connect', icon: MessageSquare }].map(t => (
-               <button key={t.id} onClick={() => setActiveTab(t.id)} style={{ padding: '20px 0', background: 'none', border: 'none', borderBottom: `3.5px solid ${activeTab === t.id ? '#0073b1' : 'transparent'}`, color: activeTab === t.id ? '#111827' : '#6b7280', fontSize: '14px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', whiteSpace: 'nowrap' }}>
-                 <t.icon size={18} /> {t.label}
-               </button>
-            ))}
-         </div>
+      {/* ── STICKY TAB BAR ── */}
+      <div
+        ref={tabBarRef}
+        style={{
+          position: 'sticky',
+          top: stickyTop,
+          transition: 'top 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, background 0.3s ease',
+          zIndex: 1000,
+          background: tabScrolled
+            ? 'rgba(255,255,255,0.98)'
+            : 'rgba(255,255,255,0.92)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          borderBottom: '1px solid #f1f5f9',
+          boxShadow: tabScrolled
+            ? '0 4px 24px rgba(0,0,0,0.08)'
+            : '0 1px 4px rgba(0,0,0,0.02)'
+        }}
+      >
+        <div style={{ ...W(1100), padding: mob ? '0 12px' : '0 24px' }}>
+          <div style={{
+            display: 'flex',
+            gap: mob ? 0 : 4,
+            overflowX: 'auto',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            minWidth: 0,
+            WebkitOverflowScrolling: 'touch'
+          }}>
+            {[
+              { id: 'identity',  label: 'Identity',   icon: Activity,      group: 'main' },
+              { id: 'story',     label: 'Story',       icon: Globe,         group: 'main' },
+              { id: 'gallery',   label: 'Gallery',     icon: ImageIcon,     group: 'main' },
+              { id: 'work',      label: 'Work',        icon: Briefcase,     group: 'main' },
+              { id: 'local',     label: 'Local',       icon: MapPin,        group: 'main' },
+              { id: 'reviews',   label: 'Reviews',     icon: Star,          group: 'main' },
+              { id: 'packages',  label: 'Packages',    icon: Zap,           group: 'action' },
+              { id: 'sponsor',   label: 'Sponsored',   icon: Megaphone,     group: 'action' },
+              { id: 'connect',   label: 'Connect',     icon: MessageSquare, group: 'action' },
+            ].map((t, idx, arr) => {
+              const isActive = activeTab === t.id;
+              const isAction = t.group === 'action';
+              const showDivider = !mob && idx > 0 && arr[idx - 1].group !== t.group;
+
+              return (
+                <React.Fragment key={t.id}>
+                  {showDivider && (
+                    <div style={{ width: 1, background: '#e2e8f0', margin: '10px 6px', alignSelf: 'stretch', flexShrink: 0 }} />
+                  )}
+                  <button
+                    data-tabid={t.id}
+                    onClick={() => handleTabChange(t.id)}
+                    style={{
+                      position: 'relative',
+                      flexShrink: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: mob ? 5 : 7,
+                      padding: mob ? '13px 12px' : '16px 14px',
+                      background: isActive
+                        ? (isAction ? 'rgba(255,148,49,0.06)' : 'rgba(0,115,177,0.06)')
+                        : 'none',
+                      border: 'none',
+                      borderRadius: isActive ? '12px 12px 0 0' : 0,
+                      cursor: 'pointer',
+                      color: isActive
+                        ? (isAction ? '#FF9431' : '#0073b1')
+                        : '#94a3b8',
+                      fontSize: mob ? 11 : 13,
+                      fontWeight: isActive ? 900 : 600,
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    <t.icon size={mob ? 14 : 15} strokeWidth={isActive ? 2.5 : 2} />
+                    {t.label}
+
+                    {/* Sponsor AD badge */}
+                    {t.id === 'sponsor' && !isActive && (
+                      <span style={{ background: '#FF943118', color: '#FF9431', fontSize: 8, fontWeight: 900, padding: '1px 5px', borderRadius: 100, letterSpacing: '0.5px', textTransform: 'uppercase' }}>AD</span>
+                    )}
+                    {/* Connect HIRE badge */}
+                    {t.id === 'connect' && !isActive && (
+                      <span style={{ background: '#10B98118', color: '#10B981', fontSize: 8, fontWeight: 900, padding: '1px 5px', borderRadius: 100, letterSpacing: '0.5px' }}>HIRE</span>
+                    )}
+
+                    {/* Active underline */}
+                    {isActive && (
+                      <span style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        height: 3,
+                        borderRadius: '3px 3px 0 0',
+                        background: isAction
+                          ? 'linear-gradient(90deg, #FF9431, #EA580C)'
+                          : 'linear-gradient(90deg, #0073b1, #0ea5e9)',
+                        boxShadow: isAction
+                          ? '0 0 8px rgba(255,148,49,0.35)'
+                          : '0 0 8px rgba(0,115,177,0.25)'
+                      }} />
+                    )}
+                  </button>
+                </React.Fragment>
+              );
+            })}
+          </div>
+        </div>
+        {/* Hide scrollbar CSS */}
+        <style>{`.creator-tab-scroll::-webkit-scrollbar{display:none}`}</style>
       </div>
 
-      <div id="profile-content-area" style={{ ...W(1100), padding: mob ? '0 16px 120px' : '60px 24px' }}>
+      <div ref={contentRef} id="profile-content-area" style={{ ...W(1100), padding: mob ? '0 16px 120px' : '60px 24px' }}>
          <AnimatePresence mode="wait">
             <ProfileTabContent 
                activeTab={activeTab}
@@ -1528,16 +2319,37 @@ export default function CreatorProfilePage() {
                dsp={dsp}
                setBriefOpen={setBriefOpen}
                setMediaKitOpen={handleMediaKitOpen}
-               setActiveTab={setActiveTab}
+               setActiveTab={handleTabChange}
             />
          </AnimatePresence>
       </div>
+
+      {c?.id !== 'creatorbharat-official' && (
+        <div style={{ ...W(1100), margin: '0 auto', padding: mob ? '0 16px' : '0 24px' }}>
+          <CreatorBharatFollowBanner 
+            followed={st?.follows?.includes('creatorbharat-official')}
+            onFollow={() => {
+              dsp({ t: 'FOLLOW', id: 'creatorbharat-official' });
+              dsp({ 
+                t: 'TOAST', 
+                d: { 
+                  type: st?.follows?.includes('creatorbharat-official') ? 'info' : 'success', 
+                  msg: st?.follows?.includes('creatorbharat-official') 
+                    ? 'Unfollowed @CreatorBharat Official' 
+                    : '🎉 Following @CreatorBharat Official!' 
+                } 
+              });
+            }}
+            mob={mob}
+          />
+        </div>
+      )}
 
       <section style={{ marginTop: '100px', padding: mob ? '60px 16px' : '100px 0', background: '#0f172a', position: 'relative', overflow: 'hidden' }}>
          <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '400px', height: '400px', background: '#FF9431', borderRadius: '50%', filter: 'blur(150px)', opacity: 0.1 }} />
          <div style={{ ...W(1100), margin: '0 auto', position: 'relative', zIndex: 1, textAlign: 'center' }}>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
-               <button onClick={() => navigate('/')} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', padding: '8px 24px', borderRadius: '100px', fontSize: '12px', fontWeight: 900, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+               <button onClick={() => navigate(st.user ? (st.role === 'brand' ? '/brand-dashboard' : '/creator/dashboard') : '/')} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', padding: '8px 24px', borderRadius: '100px', fontSize: '12px', fontWeight: 900, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                   Visit Official Platform <ArrowRight size={14} />
                </button>
             </div>
@@ -1549,18 +2361,18 @@ export default function CreatorProfilePage() {
                   <div style={{ width: '50px', height: '50px', background: '#FF943120', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
                      <Briefcase size={24} color="#FF9431" />
                   </div>
-                  <h4 style={{ fontSize: '20px', fontWeight: 900, color: '#fff', marginBottom: '12px' }}>I am a Brand</h4>
+                  <h4 style={{ fontSize: '20px', fontWeight: 900, color: '#fff', marginBottom: '12px' }}>{st?.role === 'brand' ? 'Brand Console' : 'I am a Brand'}</h4>
                   <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px' }}>Hire {c?.name || 'Elite Creators'} or explore our elite creators network for your next big campaign.</p>
-                  <Btn full lg style={{ background: '#FF9431', borderRadius: '100px' }} onClick={() => navigate('/creators')}>Hire Elite Creators</Btn>
+                  <Btn full lg style={{ background: '#FF9431', borderRadius: '100px' }} onClick={() => navigate(st?.role === 'brand' ? '/brand-dashboard' : '/creators')}>{st?.role === 'brand' ? 'Open Brand Dashboard' : 'Hire Elite Creators'}</Btn>
                </div>
 
                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '40px', borderRadius: '32px', textAlign: 'center', width: mob ? '100%' : '450px', backdropFilter: 'blur(10px)' }}>
                   <div style={{ width: '50px', height: '50px', background: '#10B98120', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
                      <Verified size={24} color="#10B981" />
                   </div>
-                  <h4 style={{ fontSize: '20px', fontWeight: 900, color: '#fff', marginBottom: '12px' }}>I am a Creator</h4>
-                  <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px' }}>Apply for an Elite Audit and get a professional profile like this one.</p>
-                  <Btn full lg style={{ background: '#fff', color: '#0f172a', borderRadius: '100px' }} onClick={() => navigate('/apply')}>Get Elite Verified</Btn>
+                  <h4 style={{ fontSize: '20px', fontWeight: 900, color: '#fff', marginBottom: '12px' }}>{st?.role === 'creator' ? 'Creator Workspace' : 'I am a Creator'}</h4>
+                  <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px' }}>{st?.role === 'creator' ? 'Edit your profile builder and keep this public page polished for brands.' : 'Apply for an Elite Audit and get a professional profile like this one.'}</p>
+                  <Btn full lg style={{ background: '#fff', color: '#0f172a', borderRadius: '100px' }} onClick={() => navigate(st?.role === 'creator' ? '/creator/profile' : '/apply')}>{st?.role === 'creator' ? 'Edit My Profile' : 'Get Elite Verified'}</Btn>
                </div>
             </div>
          </div>

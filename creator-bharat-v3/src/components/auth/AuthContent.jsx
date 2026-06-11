@@ -5,6 +5,7 @@ import './auth.css';
 import { ShieldCheck } from 'lucide-react';
 import { useApp } from '@/core/context';
 import { Logo } from '@/components/common';
+import WelcomeSplash from '@/components/common/WelcomeSplash';
 import ApplyForm from '../apply/ApplyForm.jsx';
 import { sanitize } from '@/utils/security';
 import { LS } from '@/utils/helpers';
@@ -19,10 +20,21 @@ import ForgotView from './views/ForgotView.jsx';
 import { useNavigate } from 'react-router-dom';
 
 const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
-  const { dsp } = useApp();
+  const { st, dsp } = useApp();
   const navigate = useNavigate();
   const [view, setView] = useState(initialView); 
   const [isMobile, setIsMobile] = useState(globalThis.innerWidth <= 768);
+  const [showSplash, setShowSplash] = useState(false);
+
+  useEffect(() => {
+    if (st.user) {
+      if (st.role === 'brand') {
+        navigate('/brand-dashboard', { replace: true });
+      } else if (st.role === 'creator') {
+        navigate('/creator/dashboard', { replace: true });
+      }
+    }
+  }, [st.user, st.role, navigate]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(globalThis.innerWidth <= 768);
@@ -66,7 +78,15 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
     } else if (user.role === 'creator') {
       // In a real app, we would check if email is verified
       // if (!user.isVerified) { navigate('/verify'); return; }
-      navigate('/dashboard');
+      setShowSplash(true);
+      setTimeout(() => {
+        setShowSplash(false);
+        if (view === 'register') {
+          navigate('/creator/onboarding');
+        } else {
+          navigate('/creator/dashboard');
+        }
+      }, 2500); // Wait for splash to finish
     } else {
       navigate('/');
     }
@@ -117,71 +137,74 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
   const hero = getHeroContent();
 
   return (
-    <div className={`auth-container ${isPage ? 'is-standalone-page' : 'is-modal'}`}>
-      <div className="auth-modal-grid">
-        <aside className="auth-aside" style={{ 
-          background: `linear-gradient(165deg, ${accent} 0%, ${isBrand ? '#065F46' : '#9A3412'} 100%)` 
-        }}>
-          <div className="auth-aside-content">
-            <div className="auth-brand" style={{ animation: 'float 4s ease-in-out infinite' }}>
-              <Logo light sm />
-            </div>
-            
-            <div className="auth-hero-text">
-              <h2 className="auth-hero-title">
-                {hero.title}
-              </h2>
-              <p className="auth-hero-sub">
-                {hero.sub}
-              </p>
-              
-              <div className="auth-stats-grid">
-                {[
-                  [isBrand ? '1.2K+' : '50K+', isBrand ? 'Active Brands' : 'Creators'],
-                  ['98%', 'Verified'],
-                  ['₹45Cr+', 'Paid Out']
-                ].map(([num, label]) => (
-                  <div key={label} className="auth-stat-card">
-                    <p className="auth-stat-num">{num}</p>
-                    <p className="auth-stat-label">{label}</p>
-                  </div>
-                ))}
+    <>
+      {showSplash && <WelcomeSplash />}
+      <div className={`auth-container ${isPage ? 'is-standalone-page' : 'is-modal'}`}>
+        <div className="auth-modal-grid">
+          <aside className="auth-aside" style={{ 
+            background: `linear-gradient(165deg, ${accent} 0%, ${isBrand ? '#065F46' : '#9A3412'} 100%)` 
+          }}>
+            <div className="auth-aside-content">
+              <div className="auth-brand" style={{ animation: 'float 4s ease-in-out infinite' }}>
+                <Logo light sm />
               </div>
               
-              <div className="auth-security-badge">
-                <ShieldCheck size={18} color="#fff" />
-                <p>
-                  {isBrand ? "ISO 27001 Certified Security" : "Verified Local Identity Protocol"}
+              <div className="auth-hero-text">
+                <h2 className="auth-hero-title">
+                  {hero.title}
+                </h2>
+                <p className="auth-hero-sub">
+                  {hero.sub}
                 </p>
+                
+                <div className="auth-stats-grid">
+                  {[
+                    [isBrand ? '1.2K+' : '50K+', isBrand ? 'Active Brands' : 'Creators'],
+                    ['98%', 'Verified'],
+                    ['₹45Cr+', 'Paid Out']
+                  ].map(([num, label]) => (
+                    <div key={label} className="auth-stat-card">
+                      <p className="auth-stat-num">{num}</p>
+                      <p className="auth-stat-label">{label}</p>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="auth-security-badge">
+                  <ShieldCheck size={18} color="#fff" />
+                  <p>
+                    {isBrand ? "ISO 27001 Certified Security" : "Verified Local Identity Protocol"}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        </aside>
+          </aside>
 
-        <main className="auth-main">
-          {!isPage && onClose && (
-            <button onClick={onClose} className="auth-close-btn" aria-label="Close">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-          )}
-          
-          <div className="auth-scroll-area">
-            <div className="auth-mobile-header">
-               <Logo sm onClick={() => navigate('/')} />
+          <main className="auth-main">
+            {!isPage && onClose && (
+              <button onClick={onClose} className="auth-close-btn" aria-label="Close">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            )}
+            
+            <div className="auth-scroll-area">
+              <div className="auth-mobile-header">
+                 <Logo sm onClick={() => navigate('/')} />
+              </div>
+              <div className="auth-form-wrapper">
+                <AnimatePresence mode="wait">
+                  {view === 'gateway' && <GatewayView setView={handleSetView} setRole={setRole} mob={isMobile} />}
+                  {view === 'login' && <LoginView role={role} setRole={setRole} onLogin={handleLogin} loading={loading} setView={handleSetView} mob={isMobile} />}
+                  {view === 'register' && <ApplyForm onSuccess={onAuthSuccess} onBackToLogin={() => handleSetView('login')} mob={isMobile} />}
+                  {view === 'brand-register' && <BrandRegisterView setView={handleSetView} onSuccess={onAuthSuccess} mob={isMobile} />}
+                  {view === 'forgot' && <ForgotView setView={handleSetView} />}
+                </AnimatePresence>
+              </div>
             </div>
-            <div className="auth-form-wrapper">
-              <AnimatePresence mode="wait">
-                {view === 'gateway' && <GatewayView setView={handleSetView} setRole={setRole} mob={isMobile} />}
-                {view === 'login' && <LoginView role={role} setRole={setRole} onLogin={handleLogin} loading={loading} setView={handleSetView} mob={isMobile} />}
-                {view === 'register' && <ApplyForm onSuccess={onAuthSuccess} onBackToLogin={() => handleSetView('login')} mob={isMobile} />}
-                {view === 'brand-register' && <BrandRegisterView setView={handleSetView} onSuccess={onAuthSuccess} mob={isMobile} />}
-                {view === 'forgot' && <ForgotView setView={handleSetView} />}
-              </AnimatePresence>
-            </div>
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

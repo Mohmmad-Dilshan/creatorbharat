@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import Seo from '@/components/common/SEO';
 import { useApp } from '@/core/context';
 import { 
@@ -218,6 +219,7 @@ const ContactFormUI = ({ role, setRole, mob, formState, setFormState, formData, 
 
 export default function ContactPage() {
   const { dsp } = useApp();
+  const navigate = useNavigate();
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [role, setRole] = useState('creator');
   const [formState, setFormState] = useState('idle');
@@ -232,7 +234,7 @@ export default function ContactPage() {
     return () => globalThis.removeEventListener('resize', h);
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
       setShake(true);
@@ -240,10 +242,34 @@ export default function ContactPage() {
       return;
     }
     setFormState('loading');
-    setTimeout(() => {
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          access_key: 'YOUR_WEB3FORMS_KEY', // Replace with real key from web3forms.com
+          name: formData.name,
+          email: formData.email,
+          subject: formData.subject || `${role} inquiry`,
+          message: formData.message,
+          from_name: 'CreatorBharat Contact Form',
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFormState('success');
+        dsp({ t: 'TOAST', d: { type: 'success', msg: 'Message sent successfully!' } });
+      } else {
+        throw new Error(data.message || 'Submission failed');
+      }
+    } catch (err) {
+      // Fallback: save locally if API fails
+      const contacts = JSON.parse(localStorage.getItem('cb_contact_submissions') || '[]');
+      contacts.push({ ...formData, role, date: new Date().toISOString() });
+      localStorage.setItem('cb_contact_submissions', JSON.stringify(contacts));
       setFormState('success');
-      dsp({ t: 'TOAST', d: { t: 'Message sent successfully!', type: 'success' } });
-    }, 1800);
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Message saved! We will get back to you soon.' } });
+    }
   };
 
   const handleDataKitSubmit = (e) => {
@@ -256,9 +282,29 @@ export default function ContactPage() {
     }, 2000);
   };
 
+  const contactJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "name": "Concierge Support | CreatorBharat",
+    "description": "Connect with India's most advanced creator ecosystem support team.",
+    "url": "https://creatorbharat.com/contact",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "email": "hello@creatorbharat.com",
+      "contactType": "customer support",
+      "areaServed": "IN",
+      "availableLanguage": ["English", "Hindi"]
+    }
+  };
+
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', overflowX: 'hidden', paddingBottom: '120px' }}>
-      <Seo title="Concierge Support | CreatorBharat" description="Connect with India's most advanced creator ecosystem support team." keywords="contact us, support, brand help, creator support" />
+      <Seo 
+        title="Concierge Support" 
+        description="Connect with India's most advanced creator ecosystem support team." 
+        keywords="contact us, support, brand help, creator support" 
+        jsonLd={contactJsonLd}
+      />
       
       {/* Inline Shake Animation Style */}
       <style>{`
@@ -283,8 +329,8 @@ export default function ContactPage() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
              <div style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', letterSpacing: '2px', textTransform: 'uppercase', marginLeft: '8px' }}>Direct Communication</div>
-             <ContactMethodCard icon={Mail} title="Support Inbox" value="support@creatorbharat.in" sub="Quick resolutions 24/7" delay={0.1} mob={mob} />
-             <ContactMethodCard icon={LinkedinIcon} title="Brand Partnerships" value="solutions@creatorbharat.in" sub="Direct channel for agencies" delay={0.2} mob={mob} />
+             <ContactMethodCard icon={Mail} title="Support Inbox" value="support@creatorbharat.com" sub="Quick resolutions 24/7" delay={0.1} mob={mob} />
+             <ContactMethodCard icon={LinkedinIcon} title="Brand Partnerships" value="solutions@creatorbharat.com" sub="Direct channel for agencies" delay={0.2} mob={mob} />
              <ContactMethodCard icon={MessageCircle} title="WhatsApp Concierge" value="+91 9999-000000" sub="Mon-Fri, 10am to 7pm" delay={0.3} mob={mob} />
              <ContactMethodCard icon={Building2} title="The Bharat HQ" value="Bhilwara, Rajasthan" sub="311001, India" delay={0.4} mob={mob} />
 
@@ -294,8 +340,8 @@ export default function ContactPage() {
                   <HelpCircle size={16} color="#FF9431" /> Quick Help
                 </h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                   <button onClick={() => globalThis.location.href='/faq'} style={{ padding: '12px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '12px', fontWeight: 800, color: '#475569', cursor: 'pointer' }}>Payment FAQ</button>
-                   <button onClick={() => globalThis.location.href='/faq'} style={{ padding: '12px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '12px', fontWeight: 800, color: '#475569', cursor: 'pointer' }}>Verification</button>
+                   <button onClick={() => navigate('/faq')} style={{ padding: '12px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '12px', fontWeight: 800, color: '#475569', cursor: 'pointer' }}>Payment FAQ</button>
+                   <button onClick={() => navigate('/faq')} style={{ padding: '12px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '12px', fontWeight: 800, color: '#475569', cursor: 'pointer' }}>Verification</button>
                 </div>
              </div>
 

@@ -6,7 +6,7 @@ export const contactChannels = [
     id: 'direct',
     icon: Mail, 
     title: "Direct Support", 
-    value: "support@creatorbharat.in", 
+    value: "support@creatorbharat.com", 
     sub: "Median response time: 4 hours", 
     delay: 0.1 
   },
@@ -14,7 +14,7 @@ export const contactChannels = [
     id: 'brand',
     icon: LinkedinIcon, 
     title: "Brand Solutions", 
-    value: "solutions@creatorbharat.in", 
+    value: "solutions@creatorbharat.com", 
     sub: "For agency and large brand queries", 
     delay: 0.2 
   },

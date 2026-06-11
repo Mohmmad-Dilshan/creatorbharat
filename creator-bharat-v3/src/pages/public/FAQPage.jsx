@@ -243,9 +243,27 @@ export default function FAQPage() {
 
   const trending = ["Elite Score", "Payment Cycle", "Verification Badge", "Campaign ROI"];
 
+  const faqJsonLd = useMemo(() => ({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": FAQS.map(faq => ({
+      "@type": "Question",
+      "name": faq.q,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.a
+      }
+    }))
+  }), []);
+
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', paddingBottom: '100px' }}>
-      <Seo title="Knowledge Base | CreatorBharat" description="Detailed answers to all your questions about Bharat's elite creator ecosystem." keywords="faq, support, help center, creator guide, brand guide" />
+      <Seo 
+        title="Knowledge Base" 
+        description="Detailed answers to all your questions about Bharat's elite creator ecosystem." 
+        keywords="faq, support, help center, creator guide, brand guide" 
+        jsonLd={faqJsonLd}
+      />
       
       <FAQHero search={search} setSearch={setSearch} mob={mob} trending={trending} />
 

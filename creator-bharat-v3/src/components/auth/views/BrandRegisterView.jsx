@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Mail, Phone, Lock, MapPin, CheckCircle2, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Btn, Fld } from '@/components/common/Primitives';
 import { useApp } from '@/core/context';
-import { LS } from '../../../utils/storage.js';
+import { LS } from '../../../utils/helpers.js';
 import { INDIAN_STATES, STATE_CITY_MAP, MAJOR_CITIES } from '../../../utils/geo.js';
 
 const PhoneVerifySection = ({ form, up, blur, errors, mob, otpSent, verified, loading, sendOTP, verifyOTP, timer }) => {

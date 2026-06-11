@@ -1,10 +1,11 @@
 import React, { lazy, Suspense } from 'react';
 import PropTypes from 'prop-types';
-import { Routes, Route, Outlet } from 'react-router-dom';
+import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
 
 // Layouts
 import PublicLayout from '@/components/layout/PublicLayout';
 import DashboardLayout from '@/components/layout/DashboardLayout';
+import CreatorLayout from '@/components/layout/CreatorLayout';
 import { useApp } from '@/core/context';
 import PremiumLock from '@/components/auth/PremiumLock';
 import PageLoader from '@/components/common/PageLoader';
@@ -21,17 +22,25 @@ const OfficialProfilePage = lazy(() => import('./pages/public/OfficialProfilePag
 const ServerErrorPage = lazy(() => import('./pages/public/ServerErrorPage'));
 const NotificationsHub = lazy(() => import('./pages/public/NotificationsHub'));
 const SuccessStoriesPage = lazy(() => import('./pages/public/SuccessStoriesPage'));
+const BrandLandingPage = lazy(() => import('./pages/public/BrandLandingPage'));
+const CreatorLandingPage = lazy(() => import('./pages/public/CreatorLandingPage'));
+const EventsPublicPage = lazy(() => import('./pages/creator/EventsPage'));
+const AiFaqPage = lazy(() => import('./pages/public/AiFaqPage'));
+const VerificationGuidePage = lazy(() => import('./pages/public/VerificationGuidePage'));
 
 // Brand/Marketplace Pages
 const CreatorsPage = lazy(() => import('./pages/brand/CreatorsPage'));
 const CampaignsPage = lazy(() => import('./pages/brand/CampaignsPage'));
 const CampaignBuilderPage = lazy(() => import('./pages/brand/CampaignBuilderPage'));
 const BrandDashboardPage = lazy(() => import('./pages/brand/BrandDashboardPage'));
+const BrandApplicationsPage = lazy(() => import('./pages/brand/BrandApplicationsPage'));
+const BrandAnalyticsPage = lazy(() => import('./pages/brand/BrandAnalyticsPage'));
 const ComparePage = lazy(() => import('./pages/brand/ComparePage'));
 
 // Creator Pages
 const DashboardPage = lazy(() => import('./pages/creator/DashboardPage'));
 const SettingsPage = lazy(() => import('./pages/creator/SettingsPage'));
+const ProfileBuilderPage = lazy(() => import('./pages/creator/ProfileBuilderPage'));
 const WalletPage = lazy(() => import('./pages/creator/WalletPage'));
 const ApplicationsPage = lazy(() => import('./pages/creator/ApplicationsPage'));
 const CreatorScorePage = lazy(() => import('./pages/creator/CreatorScorePage'));
@@ -39,6 +48,17 @@ const CreatorProfilePage = lazy(() => import('./pages/creator/CreatorProfilePage
 const SavedPage = lazy(() => import('./pages/creator/SavedPage'));
 const MonetizationPage = lazy(() => import('./pages/creator/MonetizationPage'));
 const MessagesPage = lazy(() => import('./pages/creator/MessagesPage'));
+const CreatorOnboardingPage = lazy(() => import('./pages/creator/OnboardingPage'));
+const CreatorOpportunitiesPage = lazy(() => import('./pages/creator/OpportunitiesPage'));
+const CreatorCommunityPage = lazy(() => import('./pages/creator/CommunityPage'));
+const CreatorPublicPreviewPage = lazy(() => import('./pages/creator/PublicPreviewPage'));
+const CreatorVerificationPage = lazy(() => import('./pages/creator/VerificationPage'));
+const CreatorAnalyticsPage = lazy(() => import('./pages/creator/AnalyticsPage'));
+const CreatorCalendarPage = lazy(() => import('./pages/creator/CalendarPage'));
+const CreatorBrandRequestsPage = lazy(() => import('./pages/creator/BrandRequestsPage'));
+const CreatorHelpPage = lazy(() => import('./pages/creator/HelpPage'));
+const CreatorEventsPage = lazy(() => import('./pages/creator/EventsPage'));
+const AchievementsPage = lazy(() => import('./pages/creator/AchievementsPage'));
 
 // Legal
 const PrivacyPage = lazy(() => import('./pages/legal/PrivacyPage'));
@@ -97,11 +117,16 @@ export default function AppRoutes({ location }) {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/faq" element={<FAQPage />} />
+          <Route path="/verify-guide" element={<VerificationGuidePage />} />
+          <Route path="/ai-knowledge" element={<AiFaqPage />} />
           <Route path="/rate-calc" element={<AuthLock><RateCalcPage /></AuthLock>} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/official-profile" element={<OfficialProfilePage />} />
           <Route path="/notifications" element={<NotificationsHub />} />
           <Route path="/stories" element={<SuccessStoriesPage />} />
+          <Route path="/brand" element={<BrandLandingPage />} />
+          <Route path="/creator-hub" element={<CreatorLandingPage />} />
+          <Route path="/events" element={<EventsPublicPage />} />
           <Route path="/creators" element={<CreatorsPage />} />
           <Route path="/campaigns" element={<CampaignsPage />} />
           <Route path="/compare" element={<ProtectedRoute allowedRole="brand"><ComparePage /></ProtectedRoute>} />
@@ -116,28 +141,65 @@ export default function AppRoutes({ location }) {
           <Route path="/creator/:id" element={<CreatorProfilePage />} />
         </Route>
 
-        {/* Dashboard Layout Group - Unified Protection */}
-        <Route element={<ProtectedRoute><DashboardLayout><Outlet /></DashboardLayout></ProtectedRoute>}>
-          
-          {/* Creator ONLY Routes */}
-          <Route element={<ProtectedRoute allowedRole="creator"><Outlet /></ProtectedRoute>}>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/wallet" element={<WalletPage />} />
-            <Route path="/applications" element={<ApplicationsPage />} />
-            <Route path="/creator-score" element={<CreatorScorePage />} />
-            <Route path="/saved" element={<SavedPage />} />
-            <Route path="/monetize" element={<MonetizationPage />} />
-            <Route path="/monetization" element={<MonetizationPage />} />
-            <Route path="/messages" element={<MessagesPage />} />
-          </Route>
-          
-          {/* Brand ONLY Routes */}
-          <Route element={<ProtectedRoute allowedRole="brand"><Outlet /></ProtectedRoute>}>
-            <Route path="/brand-dashboard" element={<BrandDashboardPage />} />
-            <Route path="/campaign-builder" element={<CampaignBuilderPage />} />
-          </Route>
+        {/* Creator Ecosystem Group - Completely Isolated Layout */}
+        <Route element={<ProtectedRoute allowedRole="creator"><CreatorLayout><Outlet /></CreatorLayout></ProtectedRoute>}>
+          <Route path="/creator/dashboard" element={<DashboardPage />} />
+          <Route path="/creator/onboarding" element={<CreatorOnboardingPage />} />
+          <Route path="/creator/profile" element={<ProfileBuilderPage />} />
+          <Route path="/creator/public-preview" element={<CreatorPublicPreviewPage />} />
+          <Route path="/creator/opportunities" element={<CreatorOpportunitiesPage />} />
+          <Route path="/creator/applications" element={<ApplicationsPage />} />
+          <Route path="/creator/brand-requests" element={<CreatorBrandRequestsPage />} />
+          <Route path="/creator/community" element={<CreatorCommunityPage />} />
+          <Route path="/creator/community/:id" element={<CreatorCommunityPage />} />
+          <Route path="/creator/wallet" element={<WalletPage />} />
+          <Route path="/creator/analytics" element={<CreatorAnalyticsPage />} />
+          <Route path="/creator/monetization" element={<MonetizationPage />} />
+          <Route path="/creator/score" element={<CreatorScorePage />} />
+          <Route path="/creator/verification" element={<CreatorVerificationPage />} />
+          <Route path="/creator/calendar" element={<CreatorCalendarPage />} />
+          <Route path="/creator/messages" element={<MessagesPage />} />
+          <Route path="/creator/saved" element={<SavedPage />} />
+          <Route path="/creator/settings" element={<SettingsPage />} />
+          <Route path="/creator/help" element={<CreatorHelpPage />} />
+          <Route path="/creator/events" element={<CreatorEventsPage />} />
+          <Route path="/creator/achievements" element={<AchievementsPage />} />
+          {/* Public Features Embedded in Creator Flow */}
+          <Route path="/creator/blog" element={<BlogPage />} />
+          <Route path="/creator/blog/:slug" element={<BlogArticlePage />} />
+          <Route path="/creator/official-profile" element={<OfficialProfilePage />} />
+          <Route path="/creator/verify-guide" element={<VerificationGuidePage />} />
+          <Route path="/creator/stories" element={<SuccessStoriesPage />} />
+          <Route path="/creator/rate-calc" element={<RateCalcPage />} />
+          <Route path="/creator/leaderboard" element={<LeaderboardPage />} />
+          <Route path="/creator/guidelines" element={<CreatorGuidelinesPage />} />
+          <Route path="/creator/pricing" element={<PricingPage />} />
+          <Route path="/creator/about" element={<AboutPage />} />
+          <Route path="/creator/contact" element={<ContactPage />} />
+          <Route path="/creator/faq" element={<FAQPage />} />
+          <Route path="/creator/privacy" element={<PrivacyPage />} />
+          <Route path="/creator/terms" element={<TermsPage />} />
+          <Route path="/creator/cookies" element={<CookiePolicyPage />} />
+          <Route path="/creator/refunds" element={<RefundPolicyPage />} />
+          <Route path="/creator/c/:id" element={<CreatorProfilePage />} />
 
-          {/* Shared Dashboard Routes (Settings) */}
+          {/* Legacy creator routes mapping to the new layout */}
+          <Route path="/dashboard" element={<Navigate to="/creator/dashboard" replace />} />
+          <Route path="/wallet" element={<Navigate to="/creator/wallet" replace />} />
+          <Route path="/applications" element={<Navigate to="/creator/applications" replace />} />
+          <Route path="/creator-score" element={<Navigate to="/creator/score" replace />} />
+          <Route path="/saved" element={<Navigate to="/creator/saved" replace />} />
+          <Route path="/monetize" element={<Navigate to="/creator/monetization" replace />} />
+          <Route path="/monetization" element={<Navigate to="/creator/monetization" replace />} />
+          <Route path="/messages" element={<Navigate to="/creator/messages" replace />} />
+        </Route>
+
+        {/* Brand Ecosystem Group - Completely Isolated Layout */}
+        <Route element={<ProtectedRoute allowedRole="brand"><DashboardLayout><Outlet /></DashboardLayout></ProtectedRoute>}>
+          <Route path="/brand-dashboard" element={<BrandDashboardPage />} />
+          <Route path="/brand-applications" element={<BrandApplicationsPage />} />
+          <Route path="/brand-analytics" element={<BrandAnalyticsPage />} />
+          <Route path="/campaign-builder" element={<CampaignBuilderPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
 
