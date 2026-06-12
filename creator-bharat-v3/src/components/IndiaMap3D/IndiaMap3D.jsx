@@ -88,7 +88,7 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
         
         setSelectedState(name);
         if (onSelectState) onSelectState(name);
-        d3.selectAll("path").attr("stroke-width", 0.5).attr("stroke-opacity", 0.2);
+        svg.selectAll("path").attr("stroke-width", 0.5).attr("stroke-opacity", 0.2);
         d3.select(this).attr("stroke-width", 2).attr("stroke-opacity", 1).attr("stroke", "#000080");
         setTimeout(() => setSelectedState(null), 3000);
       });
