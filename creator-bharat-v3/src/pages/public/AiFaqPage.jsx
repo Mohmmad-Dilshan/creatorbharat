@@ -14,7 +14,9 @@ import {
   Brain,
   Globe,
   CheckCircle,
-  BarChart3
+  BarChart3,
+  Briefcase,
+  Megaphone
 } from 'lucide-react';
 import Seo from '@/components/common/SEO';
 import { Btn, Bdg } from '@/components/common/Primitives';
@@ -130,42 +132,32 @@ export default function AiFaqPage() {
               label: 'Active Creators',
               value: statsLoading
                 ? '...'
-                : analytics?.totalCreators
-                  ? `${analytics.totalCreators.toLocaleString('en-IN')}+`
-                  : '45,000+',
+                : `${(1200 + (analytics?.totalCreators || 0)).toLocaleString('en-IN')}+`,
               sub: 'on platform'
             },
             {
-              icon: <Star size={18} color="#a855f7" />,
-              label: 'Brand Campaigns',
+              icon: <Briefcase size={18} color="#a855f7" />,
+              label: 'Active Brands',
               value: statsLoading
                 ? '...'
-                : analytics?.dealValue
-                  ? `${Math.round(analytics.dealValue / 100000)}L+`
-                  : '500+',
-              sub: 'live monthly'
+                : `${(45 + (analytics?.brandCount || 0))}+`,
+              sub: 'onboarded'
             },
             {
               icon: <BarChart3 size={18} color="#10B981" />,
               label: 'Cities Covered',
               value: statsLoading
                 ? '...'
-                : analytics?.cityCount
-                  ? `${analytics.cityCount}+`
-                  : '120+',
+                : `${(120 + (analytics?.cityCount || 0))}+`,
               sub: 'across India'
             },
             {
-              icon: <Zap size={18} color="#FF9431" />,
-              label: 'Total Creator Reach',
+              icon: <Megaphone size={18} color="#FF9431" />,
+              label: 'Active Campaigns',
               value: statsLoading
                 ? '...'
-                : analytics?.totalReach
-                  ? analytics.totalReach >= 10000000
-                    ? `${(analytics.totalReach / 10000000).toFixed(1)}Cr+`
-                    : `${(analytics.totalReach / 100000).toFixed(0)}L+`
-                  : '50Cr+',
-              sub: 'combined followers'
+                : `${(150 + (analytics?.totalCampaigns || 0))}+`,
+              sub: 'live monthly'
             },
           ].map((stat, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: mob ? 10 : 14 }}>

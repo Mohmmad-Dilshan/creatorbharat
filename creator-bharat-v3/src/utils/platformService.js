@@ -264,6 +264,10 @@ export function derivePlatformAnalytics(creators = [], campaigns = []) {
     .sort((a, b) => b.creators - a.creators)
     .slice(0, 5);
 
+  const brandSet = new Set(campaigns.filter(c => c.brand).map(c => c.brand));
+  const brandCount = brandSet.size;
+  const totalCampaigns = campaigns.length;
+
   return {
     totalCreators,
     totalReach,
@@ -271,6 +275,8 @@ export function derivePlatformAnalytics(creators = [], campaigns = []) {
     dealValue,
     topNiches,
     topCities,
+    totalCampaigns,
+    brandCount,
   };
 }
 
