@@ -19,7 +19,7 @@ import {
 import Seo from '@/components/common/SEO';
 import { Btn, Bdg } from '@/components/common/Primitives';
 import { usePlatformStats } from '@/hooks/usePlatformStats';
-import CreatorScoreSimulator from '@/components/features/ai/CreatorScoreSimulator';
+
 
 // AI FAQs
 const AI_FAQS = [
@@ -493,10 +493,7 @@ export default function AiFaqPage() {
         </motion.div>
       </section>
 
-      {/* Main Grid: Simulator + Results */}
-      <section style={{ padding: mob ? '0 16px' : '0 20px', maxWidth: 1200, margin: '0 auto', position: 'relative', zIndex: 3 }}>
-        <CreatorScoreSimulator mob={mob} />
-      </section>
+
 
       {/* AI Matchmaker System Pipeline Visual */}
       <section style={{ maxWidth: 1200, margin: '80px auto 40px', padding: mob ? '0 16px' : '0 20px' }}>
