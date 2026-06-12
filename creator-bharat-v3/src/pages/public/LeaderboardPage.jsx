@@ -1,36 +1,32 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Crown, Search, ArrowUpRight, Globe, 
-  MapPin, Layers, Filter, Star,
-  Activity, ShieldCheck, Plus, BarChart3, Loader2
+  Crown, Search, Globe, 
+  MapPin, Layers, Filter,
+  Activity, ShieldCheck
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { Btn, Card } from '@/components/common/Primitives';
 import Seo from '@/components/common/SEO';
 import { fetchCreators } from '@/utils/platformService';
 import { fmt } from '@/utils/helpers';
 
-// ----------------------------------------------------------------------
-// 1. ADVANCED BRAND TOKENS & MOCK DATA
-// ----------------------------------------------------------------------
+// Extracted Feature Components
+import LeaderboardHero from '@/components/features/leaderboard/LeaderboardHero';
+import ElitePodiumCard from '@/components/features/leaderboard/ElitePodiumCard';
+import RankingsTable from '@/components/features/leaderboard/RankingsTable';
 
 const THEME = {
   primary: '#FF9431',
   secondary: '#3b82f6',
   dark: '#050505',
-  glass: 'rgba(255, 255, 255, 0.7)',
-  glassDark: 'rgba(15, 23, 42, 0.8)',
   border: '#f1f5f9',
   green: '#10b981',
-  red: '#f43f5e',
-  textSec: '#64748b'
+  red: '#f43f5e'
 };
 
 const categories = ['Overall', 'Tech', 'Finance', 'Lifestyle', 'Gaming', 'Travel', 'Beauty', 'Fitness', 'Food'];
 
-// creatorsData is now loaded dynamically via fetchCreators() in the component below.
 // Transform function to normalize API/seed data into leaderboard format:
 function transformToLeaderboard(creators) {
   return creators
@@ -59,540 +55,6 @@ function transformToLeaderboard(creators) {
     .sort((a, b) => b.score - a.score)
     .map((c, i) => ({ ...c, rank: i + 1 }));
 }
-
-// ----------------------------------------------------------------------
-// 2. ADVANCED SUB-COMPONENTS
-// ----------------------------------------------------------------------
-
-const Sparkline = ({ color, points, id }) => {
-  const gradId = useMemo(() => `sparkline-grad-${id || Math.floor(Math.random() * 1000000)}`, [id]);
-  const pathD = `M 0 ${points[0]} L 15 ${points[1]} L 30 ${points[2]} L 45 ${points[3]} L 60 ${points[4]}`;
-  const fillD = `${pathD} L 60 20 L 0 20 Z`;
-  
-  return (
-    <svg width="60" height="20" viewBox="0 0 60 20" style={{ overflow: 'visible' }}>
-      <defs>
-        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.4" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <motion.path
-        d={fillD}
-        fill={`url(#${gradId})`}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-      />
-      <motion.path
-        d={pathD}
-        fill="none"
-        stroke={color}
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 1.5, ease: "easeInOut" }}
-      />
-    </svg>
-  );
-};
-
-Sparkline.propTypes = {
-  color: PropTypes.string.isRequired,
-  points: PropTypes.arrayOf(PropTypes.number).isRequired,
-  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-};
-
-const LeaderboardHero = ({ mob }) => (
-  <section style={{ 
-    background: THEME.dark, padding: mob ? '140px 20px 100px' : '180px 24px 120px', 
-    textAlign: 'center', position: 'relative', overflow: 'hidden'
-  }}>
-    {/* Immersive Background Particles (Abstract) */}
-    <div style={{ position: 'absolute', inset: 0, opacity: 0.4 }}>
-       {['p1', 'p2', 'p3', 'p4', 'p5', 'p6'].map((p, i) => (
-         <motion.div
-           key={p}
-           animate={{ 
-             y: [0, -20, 0], 
-             opacity: [0.1, 0.3, 0.1],
-             scale: [1, 1.1, 1]
-           }}
-           transition={{ duration: 4 + i, repeat: Infinity }}
-           style={{ 
-             position: 'absolute', 
-             width: '300px', height: '300px', 
-             background: 'radial-gradient(circle, rgba(255, 148, 49, 0.15) 0%, transparent 70%)',
-             left: `${(i * 17) % 100}%`,
-             top: `${(i * 23) % 100}%`,
-             borderRadius: '50%'
-           }}
-         />
-       ))}
-     </div>
-
-    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '160px', background: 'linear-gradient(to top, #fcfcfc, transparent)' }} />
-    
-    <div style={{ maxWidth: '1000px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }} 
-        animate={{ opacity: 1, y: 0 }} 
-        style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', background: 'rgba(255, 255, 255, 0.03)', padding: '12px 24px', borderRadius: '100px', marginBottom: '40px', border: '1px solid rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(12px)' }}
-      >
-        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: THEME.primary, boxShadow: `0 0 10px ${THEME.primary}` }} />
-        <span style={{ fontSize: '12px', fontWeight: 950, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.25em' }}>Verified Influence Intelligence</span>
-      </motion.div>
-
-      <motion.h1 
-        initial={{ opacity: 0, y: 30 }} 
-        animate={{ opacity: 1, y: 0 }} 
-        style={{ fontSize: mob ? '52px' : '110px', fontWeight: 950, color: '#fff', marginBottom: '32px', letterSpacing: '-0.07em', lineHeight: 0.85 }}
-      >
-        Bharat's <br />
-        <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #fff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Top 100 Creators.</span>
-      </motion.h1>
-      
-      <p style={{ fontSize: mob ? '18px' : '22px', color: 'rgba(255, 255, 255, 0.4)', maxWidth: '700px', margin: '0 auto', lineHeight: 1.5, fontWeight: 500 }}>
-        The definitive real-time index of Bharat's most powerful digital economy drivers.{' '}
-        <span style={{ color: '#fff' }}>Ranked by proprietary AI metrics.</span>
-      </p>
-    </div>
-  </section>
-);
-
-LeaderboardHero.propTypes = {
-  mob: PropTypes.bool.isRequired
-};
-
-const GoldPodiumCard = ({ c, mob, navigate }) => {
-  const mockPoints = [15, 5, 12, 2, 8];
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ y: -12, scale: 1.02 }}
-      onClick={() => navigate(`/creator/${c.id}`)}
-      style={{
-        background: 'linear-gradient(165deg, #090d16 0%, #030408 100%)',
-        padding: mob ? '32px' : '56px 48px', borderRadius: '48px', 
-        border: '2px solid rgba(255, 148, 49, 0.45)',
-        textAlign: 'center', position: 'relative', overflow: 'hidden', 
-        boxShadow: '0 30px 80px rgba(255, 148, 49, 0.22)', 
-        cursor: 'pointer',
-        order: mob ? 0 : 2
-      }}
-    >
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: `linear-gradient(90deg, transparent, ${THEME.primary}, transparent)` }} />
-      
-      <div style={{ position: 'relative', width: '120px', height: '120px', margin: '0 auto 32px' }}>
-         <div style={{ width: '100%', height: '100%', borderRadius: '40px', overflow: 'hidden', border: '4px solid #FF9431', boxShadow: '0 20px 40px rgba(255,148,49,0.25)' }}>
-            {c.avatar ? (
-              <img src={c.avatar} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            ) : (
-              <div style={{ width: '100%', height: '100%', background: THEME.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px', fontWeight: 950, color: '#fff' }}>
-                {c.name.charAt(0)}
-              </div>
-            )}
-         </div>
-         <div style={{ position: 'absolute', bottom: -10, right: -10, width: '48px', height: '48px', background: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}>
-            <Crown size={24} color={THEME.primary} style={{ filter: 'drop-shadow(0 0 4px rgba(255, 148, 49, 0.4))' }} />
-         </div>
-      </div>
-
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,148,49,0.12)', padding: '10px 20px', borderRadius: '100px', marginBottom: '24px', border: '1px solid rgba(255,148,49,0.2)' }}>
-        <ShieldCheck size={14} color={THEME.primary} />
-        <span style={{ fontSize: '12px', fontWeight: 950, color: THEME.primary, textTransform: 'uppercase', letterSpacing: '2px' }}>
-          TOP ELITE #1
-        </span>
-      </div>
-
-      <h3 style={{ fontSize: '32px', fontWeight: 950, color: '#fff', marginBottom: '12px', letterSpacing: '-0.03em' }}>{c.name}</h3>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '40px' }}>
-         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'rgba(255,255,255,0.5)', fontSize: '14px', fontWeight: 600 }}>
-            <MapPin size={14} /> {c.location}
-         </div>
-         <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#94a3b8' }} />
-         <div style={{ color: THEME.primary, fontSize: '14px', fontWeight: 850 }}>{c.niche}</div>
-      </div>
-
-      <div style={{ background: 'rgba(255,255,255,0.03)', padding: '24px', borderRadius: '32px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
-        <div style={{ textAlign: 'left' }}>
-          <div style={{ fontSize: '10px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: '4px' }}>Impact Score</div>
-          <div style={{ fontSize: '24px', fontWeight: 950, color: '#fff' }}>{c.score}<span style={{ fontSize: '14px', color: THEME.green }}>.9</span></div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }}>
-           <div style={{ fontSize: '10px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: '6px' }}>Velocity</div>
-           <Sparkline color={THEME.primary} points={mockPoints} id={c.id} />
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-GoldPodiumCard.propTypes = {
-  c: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    name: PropTypes.string.isRequired,
-    niche: PropTypes.string.isRequired,
-    location: PropTypes.string.isRequired,
-    score: PropTypes.number.isRequired,
-    avatar: PropTypes.string
-  }).isRequired,
-  mob: PropTypes.bool,
-  navigate: PropTypes.func.isRequired
-};
-
-const SilverPodiumCard = ({ c, mob, navigate }) => {
-  const mockPoints = [15, 8, 10, 3, 6];
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ y: -12, scale: 1.02 }}
-      onClick={() => navigate(`/creator/${c.id}`)}
-      style={{
-        background: 'linear-gradient(165deg, #070b14 0%, #020306 100%)',
-        padding: mob ? '32px' : '56px 48px', borderRadius: '48px', 
-        border: '1.5px solid rgba(59, 130, 246, 0.35)',
-        textAlign: 'center', position: 'relative', overflow: 'hidden', 
-        boxShadow: '0 25px 60px rgba(59, 130, 246, 0.12)', 
-        cursor: 'pointer',
-        order: 1
-      }}
-    >
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: `linear-gradient(90deg, transparent, ${THEME.secondary}, transparent)` }} />
-      
-      <div style={{ position: 'relative', width: '120px', height: '120px', margin: '0 auto 32px' }}>
-         <div style={{ width: '100%', height: '100%', borderRadius: '40px', overflow: 'hidden', border: '4px solid #3b82f6', boxShadow: '0 20px 40px rgba(59, 130, 246, 0.2)' }}>
-            {c.avatar ? (
-              <img src={c.avatar} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            ) : (
-              <div style={{ width: '100%', height: '100%', background: THEME.secondary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px', fontWeight: 950, color: '#fff' }}>
-                {c.name.charAt(0)}
-              </div>
-            )}
-         </div>
-         <div style={{ position: 'absolute', bottom: -10, right: -10, width: '48px', height: '48px', background: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}>
-            <span style={{ color: THEME.secondary, fontWeight: 950, fontSize: '18px' }}>#2</span>
-         </div>
-      </div>
-
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(59, 130, 246, 0.12)', padding: '10px 20px', borderRadius: '100px', marginBottom: '24px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
-        <ShieldCheck size={14} color={THEME.secondary} />
-        <span style={{ fontSize: '12px', fontWeight: 950, color: THEME.secondary, textTransform: 'uppercase', letterSpacing: '2px' }}>
-          {c.tier} Tier
-        </span>
-      </div>
-
-      <h3 style={{ fontSize: '32px', fontWeight: 950, color: '#fff', marginBottom: '12px', letterSpacing: '-0.03em' }}>{c.name}</h3>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '40px' }}>
-         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'rgba(255,255,255,0.5)', fontSize: '14px', fontWeight: 600 }}>
-            <MapPin size={14} /> {c.location}
-         </div>
-         <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#94a3b8' }} />
-         <div style={{ color: THEME.secondary, fontSize: '14px', fontWeight: 850 }}>{c.niche}</div>
-      </div>
-
-      <div style={{ background: 'rgba(255,255,255,0.03)', padding: '24px', borderRadius: '32px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
-        <div style={{ textAlign: 'left' }}>
-          <div style={{ fontSize: '10px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: '4px' }}>Impact Score</div>
-          <div style={{ fontSize: '24px', fontWeight: 950, color: '#fff' }}>{c.score}<span style={{ fontSize: '14px', color: THEME.green }}>.9</span></div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }}>
-           <div style={{ fontSize: '10px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: '6px' }}>Velocity</div>
-           <Sparkline color={THEME.secondary} points={mockPoints} id={c.id} />
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-SilverPodiumCard.propTypes = {
-  c: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    name: PropTypes.string.isRequired,
-    niche: PropTypes.string.isRequired,
-    location: PropTypes.string.isRequired,
-    score: PropTypes.number.isRequired,
-    tier: PropTypes.string.isRequired,
-    avatar: PropTypes.string
-  }).isRequired,
-  mob: PropTypes.bool,
-  navigate: PropTypes.func.isRequired
-};
-
-const BronzePodiumCard = ({ c, mob, navigate }) => {
-  const mockPoints = [15, 12, 10, 6, 2];
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ y: -12, scale: 1.02 }}
-      onClick={() => navigate(`/creator/${c.id}`)}
-      style={{
-        background: 'linear-gradient(165deg, #090b12 0%, #030407 100%)',
-        padding: mob ? '32px' : '56px 48px', borderRadius: '48px', 
-        border: '1.5px solid rgba(234, 88, 12, 0.35)',
-        textAlign: 'center', position: 'relative', overflow: 'hidden', 
-        boxShadow: '0 20px 50px rgba(234, 88, 12, 0.12)', 
-        cursor: 'pointer',
-        order: mob ? 2 : 3
-      }}
-    >
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: `linear-gradient(90deg, transparent, #EA580C, transparent)` }} />
-      
-      <div style={{ position: 'relative', width: '120px', height: '120px', margin: '0 auto 32px' }}>
-         <div style={{ width: '100%', height: '100%', borderRadius: '40px', overflow: 'hidden', border: '4px solid #EA580C', boxShadow: '0 20px 40px rgba(234, 88, 12, 0.2)' }}>
-            {c.avatar ? (
-              <img src={c.avatar} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            ) : (
-              <div style={{ width: '100%', height: '100%', background: '#EA580C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '40px', fontWeight: 950, color: '#fff' }}>
-                {c.name.charAt(0)}
-              </div>
-            )}
-         </div>
-         <div style={{ position: 'absolute', bottom: -10, right: -10, width: '48px', height: '48px', background: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}>
-            <span style={{ color: '#EA580C', fontWeight: 950, fontSize: '18px' }}>#3</span>
-         </div>
-      </div>
-
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(234, 88, 12, 0.12)', padding: '10px 20px', borderRadius: '100px', marginBottom: '24px', border: '1px solid rgba(234, 88, 12, 0.2)' }}>
-        <ShieldCheck size={14} color="#EA580C" />
-        <span style={{ fontSize: '12px', fontWeight: 950, color: '#EA580C', textTransform: 'uppercase', letterSpacing: '2px' }}>
-          {c.tier} Tier
-        </span>
-      </div>
-
-      <h3 style={{ fontSize: '32px', fontWeight: 950, color: '#fff', marginBottom: '12px', letterSpacing: '-0.03em' }}>{c.name}</h3>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '40px' }}>
-         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'rgba(255,255,255,0.5)', fontSize: '14px', fontWeight: 600 }}>
-            <MapPin size={14} /> {c.location}
-         </div>
-         <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#94a3b8' }} />
-         <div style={{ color: '#EA580C', fontSize: '14px', fontWeight: 850 }}>{c.niche}</div>
-      </div>
-
-      <div style={{ background: 'rgba(255,255,255,0.03)', padding: '24px', borderRadius: '32px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
-        <div style={{ textAlign: 'left' }}>
-          <div style={{ fontSize: '10px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: '4px' }}>Impact Score</div>
-          <div style={{ fontSize: '24px', fontWeight: 950, color: '#fff' }}>{c.score}<span style={{ fontSize: '14px', color: THEME.green }}>.9</span></div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }}>
-           <div style={{ fontSize: '10px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: '6px' }}>Velocity</div>
-           <Sparkline color="#EA580C" points={mockPoints} id={c.id} />
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-BronzePodiumCard.propTypes = {
-  c: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    name: PropTypes.string.isRequired,
-    niche: PropTypes.string.isRequired,
-    location: PropTypes.string.isRequired,
-    score: PropTypes.number.isRequired,
-    tier: PropTypes.string.isRequired,
-    avatar: PropTypes.string
-  }).isRequired,
-  mob: PropTypes.bool,
-  navigate: PropTypes.func.isRequired
-};
-
-const ElitePodiumCard = ({ c, i, mob, navigate }) => {
-  if (i === 0) {
-    return <GoldPodiumCard c={c} mob={mob} navigate={navigate} />;
-  }
-  if (i === 1) {
-    return <SilverPodiumCard c={c} mob={mob} navigate={navigate} />;
-  }
-  return <BronzePodiumCard c={c} mob={mob} navigate={navigate} />;
-};
-
-ElitePodiumCard.propTypes = {
-  c: PropTypes.object.isRequired,
-  i: PropTypes.number.isRequired,
-  mob: PropTypes.bool,
-  navigate: PropTypes.func.isRequired
-};
-
-const MobileRankCard = ({ c, navigate }) => (
-  <motion.div
-    whileTap={{ scale: 0.98 }}
-    onClick={() => navigate(`/creator/${c.id}`)}
-    style={{
-      background: '#fff', padding: '20px', borderRadius: '24px', border: '1px solid ' + THEME.border,
-      marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
-    }}
-  >
-    <div style={{ fontSize: '18px', fontWeight: 950, color: c.rank <= 3 ? THEME.primary : '#94a3b8', width: '32px' }}>#{c.rank}</div>
-    <div style={{ width: '56px', height: '56px', borderRadius: '18px', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 950, color: THEME.textSec, fontSize: '16px', overflow: 'hidden' }}>
-      {c.avatar ? (
-        <img src={c.avatar} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-      ) : (
-        c.name.charAt(0)
-      )}
-    </div>
-    <div style={{ flex: 1 }}>
-      <div style={{ fontWeight: 900, color: THEME.dark, fontSize: '17px' }}>{c.name}</div>
-      <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 600 }}>{c.niche} • {c.followers} • ER: {c.er}</div>
-    </div>
-    <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-       <div style={{ fontSize: '18px', fontWeight: 950, color: THEME.dark, lineHeight: 1 }}>{c.score}</div>
-       <div style={{ fontSize: '9px', fontWeight: 900, color: c.trend === 'up' ? THEME.green : THEME.red, background: c.trend === 'up' ? THEME.green + '10' : THEME.red + '10', padding: '2px 6px', borderRadius: '100px', display: 'inline-block' }}>
-          {c.velocity}
-       </div>
-    </div>
-  </motion.div>
-);
-
-MobileRankCard.propTypes = {
-  c: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    rank: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    niche: PropTypes.string.isRequired,
-    followers: PropTypes.string.isRequired,
-    score: PropTypes.number.isRequired,
-    er: PropTypes.string.isRequired,
-    trend: PropTypes.string.isRequired,
-    velocity: PropTypes.string.isRequired,
-    avatar: PropTypes.string
-  }).isRequired,
-  navigate: PropTypes.func.isRequired
-};
-
-const RankingsTable = ({ creators, mob, navigate }) => {
-  if (mob) {
-    return (
-      <div style={{ padding: '0 4px' }}>
-        <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-           <h4 style={{ fontSize: '18px', fontWeight: 950, color: THEME.dark }}>Verified Rankings</h4>
-           <div style={{ fontSize: '12px', color: THEME.textSec, fontWeight: 700 }}>{creators.length} Found</div>
-        </div>
-        {creators.map(c => (
-          <MobileRankCard key={c.id} c={c} navigate={navigate} />
-        ))}
-      </div>
-    );
-  }
-
-  return (
-    <div style={{ background: '#fff', borderRadius: '48px', border: '1px solid ' + THEME.border, overflow: 'hidden', boxShadow: '0 50px 120px rgba(0,0,0,0.04)' }}>
-      <div style={{ padding: '40px', borderBottom: '1px solid ' + THEME.border, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ width: '56px', height: '56px', background: '#0f172a', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><BarChart3 size={24} color="#fff" /></div>
-          <div>
-             <h4 style={{ fontSize: '24px', fontWeight: 950, color: THEME.dark, letterSpacing: '-0.02em' }}>Intelligence Index</h4>
-             <p style={{ fontSize: '14px', color: '#94a3b8', fontWeight: 600 }}>Deep-dive analysis of top 100 creators.</p>
-          </div>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-           <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '4px' }}>System Status</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: THEME.green, fontWeight: 900, fontSize: '14px' }}>
-                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: THEME.green, animation: 'pulse 2s infinite' }} />
-                 OPTIMAL
-              </div>
-           </div>
-        </div>
-      </div>
-
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#f8fafc' }}>
-              <th style={{ padding: '24px 40px', textAlign: 'left', fontSize: '12px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Identity</th>
-              <th style={{ padding: '24px 40px', textAlign: 'left', fontSize: '12px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Reach Tier</th>
-              <th style={{ padding: '24px 40px', textAlign: 'left', fontSize: '12px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Intelligence</th>
-              <th style={{ padding: '24px 40px', textAlign: 'left', fontSize: '12px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Growth Velocity</th>
-              <th style={{ padding: '24px 40px', textAlign: 'right' }}></th>
-            </tr>
-          </thead>
-          <tbody>
-            {creators.map((c, i) => (
-              <motion.tr 
-                key={c.id} 
-                initial={{ opacity: 0, x: -10 }} 
-                animate={{ opacity: 1, x: 0 }} 
-                transition={{ delay: i * 0.04 }} 
-                style={{ borderBottom: '1px solid ' + THEME.border, cursor: 'pointer' }} 
-                whileHover={{ background: '#fcfcfc' }} 
-                onClick={() => navigate(`/creator/${c.id}`)}
-              >
-                <td style={{ padding: '28px 40px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                    <div style={{ fontSize: '18px', fontWeight: 950, color: i < 3 ? THEME.primary : '#94a3b8', width: '32px' }}>#{c.rank}</div>
-                    <div style={{ width: '56px', height: '56px', borderRadius: '20px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 950, color: THEME.textSec, fontSize: '16px', position: 'relative', overflow: 'hidden' }}>
-                      {c.avatar ? (
-                        <img src={c.avatar} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      ) : (
-                        c.name.charAt(0)
-                      )}
-                      {c.rank === 1 && <div style={{ position: 'absolute', top: -8, right: -8, background: THEME.primary, borderRadius: '50%', padding: '4px' }}><Star size={10} color="#fff" fill="#fff" /></div>}
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: 900, color: THEME.dark, fontSize: '18px', marginBottom: '2px' }}>{c.name}</div>
-                      <div style={{ fontSize: '13px', color: '#94a3b8', fontWeight: 600 }}>{c.niche} • {c.location}</div>
-                    </div>
-                  </div>
-                </td>
-                <td style={{ padding: '28px 40px' }}>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '10px', background: c.tier === 'Mega' ? '#eff6ff' : '#f0fdf4', color: c.tier === 'Mega' ? '#3b82f6' : '#16a34a', fontWeight: 900, fontSize: '12px' }}>
-                     <Layers size={14} /> {c.tier}
-                  </div>
-                  <div style={{ fontSize: '13px', color: '#64748b', fontWeight: 700, marginTop: '6px', marginLeft: '4px' }}>{c.followers} followers</div>
-                </td>
-                <td style={{ padding: '28px 40px' }}>
-                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                         <Activity size={18} color={THEME.primary} />
-                      </div>
-                      <div>
-                         <div style={{ fontSize: '16px', fontWeight: 950, color: THEME.dark }}>{c.er}</div>
-                         <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase' }}>Engagement</div>
-                      </div>
-                   </div>
-                </td>
-                <td style={{ padding: '28px 40px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                     <div>
-                        <div style={{ fontSize: '16px', fontWeight: 950, color: c.trend === 'up' ? THEME.green : THEME.red }}>{c.velocity}</div>
-                        <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase' }}>Weekly Delta</div>
-                     </div>
-                     <Sparkline color={c.trend === 'up' ? THEME.green : THEME.red} points={c.trend === 'up' ? [15, 10 + (c.id.codePointAt ? c.id.codePointAt(0) % 5 : c.id % 5), 12, 5, 2] : [5, 8 + (c.id.codePointAt ? c.id.codePointAt(0) % 5 : c.id % 5), 12, 15, 18]} id={c.id} />
-                  </div>
-                </td>
-                <td style={{ padding: '28px 40px', textAlign: 'right' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '12px' }}>
-                     <button style={{ width: '44px', height: '44px', borderRadius: '14px', background: '#f8fafc', border: '1px solid ' + THEME.border, color: THEME.dark, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = '#fff'}>
-                        <Plus size={18} />
-                     </button>
-                     <button style={{ width: '44px', height: '44px', borderRadius: '14px', background: THEME.dark, border: 'none', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                        <ArrowUpRight size={18} />
-                     </button>
-                  </div>
-                </td>
-              </motion.tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
-
-RankingsTable.propTypes = {
-  creators: PropTypes.arrayOf(PropTypes.object).isRequired,
-  mob: PropTypes.bool,
-  navigate: PropTypes.func.isRequired
-};
-
-// ----------------------------------------------------------------------
-// 3. MAIN PAGE
-// ----------------------------------------------------------------------
 
 export default function LeaderboardPage() {
   const [activeTab, setActiveTab] = useState('Overall');
@@ -798,16 +260,23 @@ export default function LeaderboardPage() {
           </div>
         )}
 
-        <RankingsTable creators={sortedCreators} mob={mob} navigate={navigate} />
+        {loading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '100px 0', gap: '12px' }}>
+             <Activity size={24} color={THEME.primary} style={{ animation: 'spin 1.5s linear infinite' }} />
+             <span style={{ fontSize: '16px', fontWeight: 700, color: '#64748b' }}>Loading intelligence directory...</span>
+          </div>
+        ) : (
+          <RankingsTable creators={sortedCreators} mob={mob} navigate={navigate} />
+        )}
 
-        {/* Methodology Section (Redesigned) */}
+        {/* Methodology Section */}
         <section style={{ marginTop: '140px', padding: mob ? '40px 20px' : '100px 80px', background: THEME.dark, borderRadius: '64px', position: 'relative', overflow: 'hidden' }}>
            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.05, background: 'radial-gradient(circle at 100% 0%, #fff, transparent 50%)' }} />
            
            <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '80px', position: 'relative', zIndex: 1 }}>
               <div>
                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.05)', padding: '10px 20px', borderRadius: '100px', marginBottom: '32px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                    <BarChart3 size={16} color={THEME.primary} />
+                    <Activity size={16} color={THEME.primary} />
                     <span style={{ fontSize: '11px', fontWeight: 950, color: '#fff', textTransform: 'uppercase', letterSpacing: '2px' }}>Scoring Protocol</span>
                  </div>
                  <h2 style={{ fontSize: mob ? '40px' : '64px', fontWeight: 950, color: '#fff', letterSpacing: '-0.05em', lineHeight: 0.9, marginBottom: '32px' }}>The Math behind <br/><span style={{ color: THEME.primary }}>the Magic.</span></h2>
