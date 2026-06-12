@@ -16,6 +16,7 @@ import {
 const C = {
   saffron: '#FF7A00', // Crisp modern saffron accent
   green: '#10B981',   // Clean emerald green for positive metrics
+  blue: '#3B82F6',    // Standard blue for info/messages
   navy: 'var(--db-text-primary, #0F172A)',    // Deep charcoal for primary text
   slate: 'var(--db-text-secondary, #475569)',   // Slate for subtext
   slateLight: 'var(--db-text-muted, #94A3B8)',

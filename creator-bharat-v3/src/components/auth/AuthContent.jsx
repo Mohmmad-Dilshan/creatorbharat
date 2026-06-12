@@ -20,6 +20,7 @@ import ForgotView from './views/ForgotView.jsx';
 import { useNavigate } from 'react-router-dom';
 
 import { apiCall } from '../../utils/api';
+import { mergeRegistrationProfile } from '../../utils/authService';
 
 const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
   const { st, dsp } = useApp();
@@ -61,50 +62,69 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
   const [role, setRole] = useState('creator');
   const [loading, setLoading] = useState(false);
 
-  const onAuthSuccess = (backendUser, token) => {
+  const onAuthSuccess = (backendUser, token, formPhone) => {
     if (token) {
       localStorage.setItem('cb_token', token);
     }
     const role = (backendUser.role || 'CREATOR').toLowerCase();
-    
-    const normalizedUser = {
-      ...backendUser,
-      role: role,
-      creatorProfile: backendUser.creator || backendUser.creatorProfile
-    };
 
     if (role === 'creator') {
       const allCreators = LS.get('cb_creators', []);
-      const profile = normalizedUser.creatorProfile || {};
-      if (!allCreators.some(cr => cr.email === normalizedUser.email)) {
-        allCreators.push({
-          id: profile.id || normalizedUser.id || 'c-' + Date.now(),
-          name: profile.name || normalizedUser.name || normalizedUser.email.split('@')[0],
-          handle: profile.handle || normalizedUser.email.split('@')[0],
-          email: normalizedUser.email,
-          city: profile.city || 'Jaipur Hub',
-          state: profile.state || 'Rajasthan',
-          phone: profile.phone || '',
-          followers: profile.followers || 0,
-          score: profile.score || 85,
-          niche: profile.niche || ['Digital Creator'],
-          bio: profile.bio || '',
-          gallery: profile.gallery || [],
-          full_story: profile.fullStory || { p1: '', quote: '', p2: '', p3: '' },
-          milestones: profile.milestones || [],
-          services: profile.services || [],
-          awards: profile.awards || [],
-          collabs: profile.collabs || []
-        });
-        LS.set('cb_creators', allCreators);
-      }
-    }
+      const existingEntry = allCreators.find(cr => cr.email === backendUser.email) || {};
 
-    dsp({ t: 'LOGIN', u: normalizedUser, role: role });
+      // Build the form data object for merging — phone comes from the 3rd argument
+      const formData = {
+        name: backendUser.name,
+        phone: formPhone || '',
+        city: (backendUser.creator || backendUser.creatorProfile || {}).city || backendUser.city || '',
+        state: (backendUser.creator || backendUser.creatorProfile || {}).state || backendUser.state || '',
+        handle: (backendUser.creator || backendUser.creatorProfile || {}).handle || backendUser.handle || '',
+        email: backendUser.email,
+      };
+
+      const mergedProfile = mergeRegistrationProfile(backendUser, formData, existingEntry);
+
+      // Ensure required array/object fields are present
+      const profileEntry = {
+        ...mergedProfile,
+        id: mergedProfile.id || existingEntry.id || backendUser.id || 'c-' + Date.now(),
+        email: backendUser.email,
+        followers: mergedProfile.followers || 0,
+        score: mergedProfile.score || 85,
+        niche: mergedProfile.niche || ['Digital Creator'],
+        bio: mergedProfile.bio || '',
+        gallery: mergedProfile.gallery || [],
+        full_story: mergedProfile.full_story || mergedProfile.fullStory || { p1: '', quote: '', p2: '', p3: '' },
+        milestones: mergedProfile.milestones || [],
+        services: mergedProfile.services || [],
+        awards: mergedProfile.awards || [],
+        collabs: mergedProfile.collabs || [],
+      };
+
+      const updatedCreators = allCreators.filter(cr => cr.email !== backendUser.email);
+      updatedCreators.push(profileEntry);
+      LS.set('cb_creators', updatedCreators);
+
+      const normalizedUser = {
+        ...backendUser,
+        role,
+        creatorProfile: profileEntry,
+      };
+
+      dsp({ t: 'LOGIN', u: normalizedUser, role });
+    } else {
+      // Non-creator (brand, admin) — dispatch LOGIN with basic normalised user
+      const normalizedUser = {
+        ...backendUser,
+        role,
+        creatorProfile: backendUser.creator || backendUser.creatorProfile,
+      };
+      dsp({ t: 'LOGIN', u: normalizedUser, role });
+    }
     
     const pendingApply = LS.get('cb_pending_apply');
     if (pendingApply) {
-      LS.remove('cb_pending_apply', null);
+      localStorage.removeItem('cb_pending_apply');
       navigate(`/campaigns?apply=${pendingApply}`);
       return;
     }
@@ -132,18 +152,54 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
     const password = e.target.password?.value;
 
     setLoading(true);
-    try {
-      const res = await apiCall('/auth/login', {
-        method: 'POST',
-        body: { email, password }
-      });
-      onAuthSuccess(res.user, res.token);
+    // Bypassing real API for frontend mode
+    setTimeout(() => {
+      const cleanEmail = email || 'user@creatorbharat.com';
+      const cleanName = cleanEmail.split('@')[0];
+      const isCreator = role === 'creator';
+      
+      const mockUser = {
+        id: isCreator ? 'c-1' : 'b-1',
+        email: cleanEmail,
+        name: cleanName.charAt(0).toUpperCase() + cleanName.slice(1),
+        role: role,
+      };
+      
+      if (isCreator) {
+        const allCreators = LS.get('cb_creators', []);
+        const matchedCreator = allCreators.find(c => c.email === cleanEmail);
+        
+        mockUser.creator = matchedCreator || {
+          id: 'c-1',
+          handle: cleanName,
+          city: 'Mumbai',
+          state: 'Maharashtra',
+          followers: 25000,
+          score: 92,
+          niche: ['Digital Creator'],
+          bio: 'Elite creator on CreatorBharat',
+          gallery: [],
+          full_story: { p1: '', quote: '', p2: '', p3: '' },
+          milestones: [],
+          services: [],
+          awards: [],
+          collabs: []
+        };
+      } else {
+        mockUser.brand = {
+          id: 'b-1',
+          companyName: cleanName.charAt(0).toUpperCase() + cleanName.slice(1) + ' Brands',
+          industry: 'Tech',
+          city: 'Mumbai',
+          state: 'Maharashtra'
+        };
+      }
+      
+      const mockToken = 'mock-jwt-token-' + Date.now();
+      onAuthSuccess(mockUser, mockToken);
       dsp({ t: 'TOAST', d: { type: 'success', msg: `Welcome back!` } });
-    } catch (err) {
-      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Incorrect credentials' } });
-    } finally {
       setLoading(false);
-    }
+    }, 1000);
   };
 
   const isBrand = view === 'brand-register' || (view === 'login' && role === 'brand');
@@ -176,7 +232,7 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
           }}>
             <div className="auth-aside-content">
               <div className="auth-brand" style={{ animation: 'float 4s ease-in-out infinite' }}>
-                <Logo light sm />
+                <Logo light sm onClick={() => navigate('/')} />
               </div>
               
               <div className="auth-hero-text">

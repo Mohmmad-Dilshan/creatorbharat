@@ -243,24 +243,26 @@ const BrandRegisterView = ({ mob, setView, onSuccess }) => {
     if (Object.keys(errs).length) return;
 
     setLoading(true);
-    try {
-      const res = await apiCall('/auth/register/brand', {
-        method: 'POST',
-        body: {
-          email: form.email,
-          password: form.password,
+    // Bypassing real API for frontend mode
+    setTimeout(() => {
+      const mockUser = {
+        id: 'b-' + Date.now(),
+        email: form.email,
+        name: form.contactName,
+        role: 'brand',
+        brand: {
+          id: 'b-' + Date.now(),
           companyName: form.companyName,
-          contactName: form.contactName,
-          industry: form.industry
+          industry: form.industry,
+          city: form.city,
+          state: form.state
         }
-      });
+      };
+      const mockToken = 'mock-jwt-token-' + Date.now();
       dsp({ t: 'TOAST', d: { type: 'success', msg: 'Brand registered successfully!' } });
-      onSuccess(res.user, res.token);
-    } catch (err) {
-      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Registration failed' } });
-    } finally {
+      onSuccess(mockUser, mockToken);
       setLoading(false);
-    }
+    }, 1000);
   };
 
   return (
@@ -298,7 +300,7 @@ const BrandRegisterView = ({ mob, setView, onSuccess }) => {
           />
         )}
       </form>
-      <div style={{ marginTop: 24, textAlign: 'center', paddingBottom: 20 }}>
+      <div style={{ marginTop: 24, textAlign: 'center' }}>
         <p style={{ fontSize: 14, color: '#64748B', fontWeight: 650, margin: 0 }}>
           Already have an account?{' '}
           <button 
@@ -309,6 +311,15 @@ const BrandRegisterView = ({ mob, setView, onSuccess }) => {
             Sign in
           </button>
         </p>
+      </div>
+      <div style={{ marginTop: 12, textAlign: 'center', paddingBottom: 20 }}>
+        <button 
+          type="button"
+          onClick={() => window.location.href = '/'}
+          style={{ border: 'none', background: 'none', color: '#64748B', fontSize: 13, fontWeight: 800, cursor: 'pointer' }}
+        >
+          ← Back to Homepage
+        </button>
       </div>
     </motion.div>
   );

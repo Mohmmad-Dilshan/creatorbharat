@@ -5,25 +5,22 @@ import { Mail, Lock, User, Briefcase, ArrowRight, Phone } from 'lucide-react';
 import { Btn, Fld } from '@/components/common/Primitives';
 import { useApp } from '@/core/context';
 import { ModeButton } from '../AuthShared.jsx';
-import MobileLoginView from './MobileLoginView.jsx';
 
 const LoginView = ({ role, setRole, onLogin, loading, setView }) => {
   const { dsp } = useApp();
-  const [method, setMethod] = useState('email'); // 'email' or 'mobile'
   const [googleLoading, setGoogleLoading] = useState(false);
   const isCreator = role === 'creator';
   const themeColor = isCreator ? '#FF9431' : '#10B981';
 
   const onGoogle = () => {
-    setGoogleLoading(true);
-    setTimeout(() => {
-      setGoogleLoading(false);
-      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Logged in with Google' } });
-      onLogin({ preventDefault: () => {} }); // Trigger parent success
-    }, 1500);
+    dsp({ 
+      t: 'TOAST', 
+      d: { 
+        type: 'info', 
+        msg: 'Google Authentication is currently disabled. Please log in with your email and password.' 
+      } 
+    });
   };
-
-  if (method === 'mobile') return <MobileLoginView themeColor={themeColor} onBack={() => setMethod('email')} onSuccess={() => onLogin({ preventDefault: () => {} })} />;
 
   return (
     <motion.div key="login" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
@@ -44,8 +41,8 @@ const LoginView = ({ role, setRole, onLogin, loading, setView }) => {
       </div>
 
       <form onSubmit={onLogin}>
-        <Fld label="Email address" type="email" icon={Mail} placeholder="name@domain.com" required />
-        <Fld label="Password" type="password" icon={Lock} placeholder="Password" required />
+        <Fld label="Email address" type="email" name="email" icon={Mail} placeholder="name@domain.com" required />
+        <Fld label="Password" type="password" name="password" icon={Lock} placeholder="Password" required />
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginTop: -2, marginBottom: 20, flexWrap: 'wrap' }}>
           <label htmlFor="remember-me" style={{ display: 'flex', alignItems: 'center', gap: 9, fontSize: 13, color: '#64748B', fontWeight: 700, cursor: 'pointer' }}>
@@ -99,7 +96,7 @@ const LoginView = ({ role, setRole, onLogin, loading, setView }) => {
 
           <button 
             type="button"
-            onClick={() => setMethod('mobile')}
+            onClick={() => dsp({ t: 'TOAST', d: { type: 'info', msg: 'Mobile OTP Authentication is currently disabled. Please log in with your email and password.' } })}
             style={{ 
               height: 52, borderRadius: 14, border: '1px solid #E5E7EB', background: '#fff',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, cursor: 'pointer',
@@ -121,6 +118,15 @@ const LoginView = ({ role, setRole, onLogin, loading, setView }) => {
               Sign up as {isCreator ? 'Creator' : 'Brand'}
             </button>
           </p>
+        </div>
+        <div style={{ marginTop: 12, textAlign: 'center', paddingBottom: 20 }}>
+          <button 
+            type="button"
+            onClick={() => window.location.href = '/'}
+            style={{ border: 'none', background: 'none', color: '#64748B', fontSize: 13, fontWeight: 800, cursor: 'pointer' }}
+          >
+            ← Back to Homepage
+          </button>
         </div>
       </form>
     </motion.div>

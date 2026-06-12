@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Hash,
@@ -15,10 +15,12 @@ import { Btn, Fld } from '@/components/common/Primitives';
 
 import { INDIAN_STATES, MAJOR_CITIES, STATE_CITY_MAP } from '../../utils/geo';
 
-import { apiCall } from '../../utils/api';
+import { useApp } from '@/core/context';
+import { useOtpTimer } from '../../hooks/useOtpTimer';
 
 // Simplified 1-step registration flow
 export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
+  const { dsp } = useApp();
   const [loading, setLoading] = useState(false);
   const [F, setF] = useState({
     name: '',
@@ -34,15 +36,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
   const [otpSent, setOtpSent] = useState(false);
   const [verified, setVerified] = useState(false);
   const [errors, setErrors] = useState({});
-  const [timer, setTimer] = useState(0);
-
-  useEffect(() => {
-    let interval;
-    if (timer > 0) {
-      interval = setInterval(() => setTimer(prev => prev - 1), 1000);
-    }
-    return () => clearInterval(interval);
-  }, [timer]);
+  const { timer, startTimer } = useOtpTimer(30);
 
   const upF = (key, value) => {
     setF(prev => {
@@ -81,32 +75,39 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
     return Object.keys(errs).length === 0;
   };
 
-  const sendOTP = () => {
+  const sendOTP = async () => {
     if (!F.phone || F.phone.length < 10) {
       setErrors(prev => ({ ...prev, phone: 'Enter valid 10-digit number' }));
       return;
     }
     setLoading(true);
+    // Bypassing real API for frontend mode
     setTimeout(() => {
       setOtpSent(true);
-      setTimer(30); // 30 seconds timer
-      setLoading(false);
+      startTimer(30);
       setErrors(prev => ({ ...prev, phone: null }));
-      // Simulation: Telling the user the OTP
-      alert('Your demo OTP is 1234');
+      setLoading(false);
+      dsp({ t: 'TOAST', d: { type: 'info', msg: 'Demo OTP is 1234' } });
     }, 800);
   };
 
-  const verifyOTP = () => {
-    if (F.otp !== '1234') {
-      setErrors(prev => ({ ...prev, otp: 'Invalid OTP. Try 1234 for demo.' }));
+  const verifyOTP = async () => {
+    if (!F.otp) {
+      setErrors(prev => ({ ...prev, otp: 'Please enter the OTP.' }));
       return;
     }
     setLoading(true);
+    // Bypassing real API for frontend mode
     setTimeout(() => {
-      setVerified(true);
+      if (F.otp === '1234') {
+        setVerified(true);
+        setErrors(prev => ({ ...prev, otp: null }));
+        dsp({ t: 'TOAST', d: { type: 'success', msg: 'Phone verified successfully!' } });
+      } else {
+        setErrors(prev => ({ ...prev, otp: 'Invalid OTP. Please use 1234' }));
+        dsp({ t: 'TOAST', d: { type: 'error', msg: 'Invalid OTP. Use 1234' } });
+      }
       setLoading(false);
-      setErrors(prev => ({ ...prev, otp: null }));
     }, 800);
   };
 
@@ -114,25 +115,28 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
-    try {
+    // Bypassing real API for frontend mode
+    setTimeout(() => {
       const cleanHandle = F.handle || F.name.toLowerCase().replace(/\s+/g, '');
-      const res = await apiCall('/auth/register/creator', {
-        method: 'POST',
-        body: {
-          email: F.email,
-          password: F.password,
-          name: F.name,
+      const mockUser = {
+        id: 'c-' + Date.now(),
+        email: F.email,
+        name: F.name,
+        role: 'creator',
+        creator: {
+          id: 'c-' + Date.now(),
           handle: cleanHandle,
           city: F.city,
-          state: F.state
+          state: F.state,
+          followers: 0,
+          score: 85
         }
-      });
-      onSuccess(res.user, res.token);
-    } catch (err) {
-      setErrors(prev => ({ ...prev, email: err.message || 'Email already registered or handle taken' }));
-    } finally {
+      };
+      const mockToken = 'mock-jwt-token-' + Date.now();
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Welcome to CreatorBharat!' } });
+      onSuccess(mockUser, mockToken, F.phone);
       setLoading(false);
-    }
+    }, 1000);
   };
 
   const isInactive = otpSent || timer > 0;
@@ -158,7 +162,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
       <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {/* Step Indicator */}
         <div style={{ marginBottom: 24 }}>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+          <div className="apply-stepper">
             {[
               { n: 1, label: 'Identity', done: !!(F.name && F.email) },
               { n: 2, label: 'Phone', done: verified },
@@ -166,20 +170,35 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
               { n: 4, label: 'Location', done: !!(F.state && F.city) },
             ].map((step) => {
               const isDone = step.done;
-              const isActive = !isDone;
+              const isActive = !isDone && (
+                (step.n === 1 && !F.name) ||
+                (step.n === 2 && F.name && F.email && !verified) ||
+                (step.n === 3 && verified && !F.password) ||
+                (step.n === 4 && F.password && F.confirm && !F.state)
+              );
               return (
-                <div key={step.n} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6, padding: '8px 10px', borderRadius: 14, background: isDone ? 'rgba(16,185,129,0.07)' : 'rgba(255,148,49,0.07)', border: `1px solid ${isDone ? 'rgba(16,185,129,0.2)' : 'rgba(255,148,49,0.2)'}` }}>
-                  <div style={{ width: 22, height: 22, borderRadius: '50%', background: isDone ? '#10B981' : '#FF9431', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-                    {isDone ? <CheckCircle2 size={13} color="#fff" /> : <span style={{ fontSize: 10, fontWeight: 900, color: '#fff' }}>{step.n}</span>}
+                <div 
+                  key={step.n} 
+                  className={`apply-step ${isDone ? 'done' : isActive ? 'active' : ''}`}
+                >
+                  <div className="apply-step-icon">
+                    {isDone ? (
+                      <CheckCircle2 size={15} color="#fff" />
+                    ) : (
+                      <span style={{ fontSize: 11, fontWeight: 900, color: '#fff' }}>{step.n}</span>
+                    )}
                   </div>
-                  <span style={{ fontSize: 11, fontWeight: 800, color: isDone ? '#10B981' : '#FF9431', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{step.label}</span>
+                  <div>
+                    <strong>{step.label}</strong>
+                    <span>Step 0{step.n}</span>
+                  </div>
                 </div>
               );
             })}
           </div>
           {/* Progress bar */}
-          <div style={{ height: 4, background: '#f1f5f9', borderRadius: 100, overflow: 'hidden' }}>
-            <div style={{ height: '100%', background: 'linear-gradient(90deg, #FF9431, #10B981)', borderRadius: 100, width: `${([!!(F.name && F.email), verified, !!(F.password && F.confirm && F.password === F.confirm), !!(F.state && F.city)].filter(Boolean).length / 4) * 100}%`, transition: 'width 0.4s ease' }} />
+          <div className="apply-progress">
+            <span style={{ width: `${([!!(F.name && F.email), verified, !!(F.password && F.confirm && F.password === F.confirm), !!(F.state && F.city)].filter(Boolean).length / 4) * 100}%` }} />
           </div>
         </div>
         <div className="apply-section-title" style={{ marginBottom: 28 }}>
@@ -269,7 +288,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
           Launch My Portfolio <ChevronRight size={18} />
         </Btn>
 
-        <div style={{ marginTop: 24, textAlign: 'center', paddingBottom: 20 }}>
+        <div style={{ marginTop: 24, textAlign: 'center' }}>
           <p style={{ fontSize: 14, color: '#64748B', fontWeight: 650, margin: 0 }}>
             Already have an account?{' '}
             <button 
@@ -280,6 +299,16 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
               Sign in
             </button>
           </p>
+        </div>
+
+        <div style={{ marginTop: 12, textAlign: 'center', paddingBottom: 20 }}>
+          <button 
+            type="button"
+            onClick={() => window.location.href = '/'}
+            style={{ border: 'none', background: 'none', color: '#64748B', fontSize: 13, fontWeight: 800, cursor: 'pointer' }}
+          >
+            ← Back to Homepage
+          </button>
         </div>
       </form>
 
@@ -673,7 +702,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
           .apply-two-col,
           .apply-review-grid {
             grid-template-columns: 1fr;
-            gap: 0;
+            gap: 16px;
           }
 
           .apply-section-title h3 {

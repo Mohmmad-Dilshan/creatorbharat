@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../../core/context';
 import { LS } from '../../utils/helpers';
 import { Btn, Card, Fld, Bdg } from '../../components/common/Primitives';
@@ -22,9 +22,14 @@ import {
   CreditCard,
   Bell,
   Sparkles,
-  Check
+  Check,
+  User
 } from 'lucide-react';
 import AuthGatekeeper from '../../components/auth/AuthGatekeeper';
+import { changePassword, sendOtp, updatePhone, updateEmail } from '../../utils/authService';
+import { useOtpTimer } from '../../hooks/useOtpTimer';
+import OtpInput from '../../components/auth/views/OtpInput';
+import { INDIAN_STATES, STATE_CITY_MAP, MAJOR_CITIES } from '../../utils/geo';
 
 const T = {
   saffron: '#FF9431',
@@ -61,21 +66,456 @@ StepNavItem.propTypes = {
   onClick: PropTypes.func.isRequired
 };
 
-const SecurityTabContent = ({ st }) => {
+const ProfileInfoTabContent = ({ c, st, mob }) => {
+  const { dsp } = useApp();
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState(c.name || '');
+  const [state, setState] = useState(c.state || 'Maharashtra');
+  const [city, setCity] = useState(c.city || 'Mumbai');
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (c) {
+      setName(c.name || '');
+      setState(c.state || 'Maharashtra');
+      setCity(c.city || 'Mumbai');
+    }
+  }, [c]);
+
+  const handleStateChange = (e) => {
+    const newState = e.target.value;
+    setState(newState);
+    const citiesForState = STATE_CITY_MAP[newState] || MAJOR_CITIES;
+    setCity(citiesForState[0] || '');
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!name.trim()) {
+      setError('Full name is required and cannot be empty.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const enriched = await updateCreatorProfile({
+        ...c,
+        name: name.trim(),
+        state,
+        city
+      });
+      
+      dsp({ 
+        t: 'UPDATE_PROFILE', 
+        profile: { name: name.trim(), state, city } 
+      });
+
+      const allCreators = LS.get('cb_creators', []);
+      const updatedCreators = allCreators.map(cr => {
+        if (cr.email === st.user.email) {
+          return { ...cr, name: name.trim(), state, city };
+        }
+        return cr;
+      });
+      LS.set('cb_creators', updatedCreators);
+
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Profile details saved successfully! 👤' } });
+    } catch (err) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: 'Failed to save profile: ' + err.message } });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Card className="settings-form-card card-3d-effect">
-       <h3 className="db-section-title">Account Security</h3>
+      <h3 className="db-section-title">Profile Info</h3>
+      <p className="db-sub-text" style={{ marginBottom: 28 }}>
+        Update your personal details, handle and location.
+      </p>
+
+      <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        {error && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#EF4444', fontSize: 13, fontWeight: 700, background: '#FEF2F2', padding: '12px 16px', borderRadius: '12px', border: '1px solid #FECACA' }}>
+            <span>⚠️</span> {error}
+          </div>
+        )}
+
+        <Fld 
+          label="Full Name" 
+          value={name} 
+          onChange={e => setName(e.target.value)} 
+          placeholder="Aman Deep" 
+          required 
+        />
+        
+        <Fld 
+          label="Email Address" 
+          value={st.user?.email || ''} 
+          readOnly 
+          disabled
+          helper="To change email, use the Account Security tab"
+        />
+
+        <Fld 
+          label="Phone Number" 
+          value={st.user?.phone || c.phone || ''} 
+          readOnly 
+          disabled
+          helper="To change phone number, use the Account Security tab"
+        />
+
+        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
+          <Fld 
+            label="State" 
+            value={state} 
+            onChange={handleStateChange} 
+            options={INDIAN_STATES} 
+            required 
+          />
+          <Fld 
+            label="City / District" 
+            value={city} 
+            onChange={e => setCity(e.target.value)} 
+            options={STATE_CITY_MAP[state] || MAJOR_CITIES} 
+            required 
+          />
+        </div>
+
+        <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end' }}>
+          <Btn lg type="submit" loading={loading} style={{ height: 'auto', padding: '16px 48px', background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', border: 'none' }}>
+            Save Changes
+          </Btn>
+        </div>
+      </form>
+    </Card>
+  );
+};
+
+ProfileInfoTabContent.propTypes = {
+  c: PropTypes.object.isRequired,
+  st: PropTypes.object.isRequired,
+  mob: PropTypes.bool.isRequired
+};
+
+const SecurityTabContent = ({ st }) => {
+  const { dsp } = useApp();
+
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState(null);
+
+  const [showPhoneForm, setShowPhoneForm] = useState(false);
+  const [newPhone, setNewPhone] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [phoneLoading, setPhoneLoading] = useState(false);
+  const [phoneError, setPhoneError] = useState(null);
+  const { timer: phoneTimer, startTimer: startPhoneTimer, isActive: isPhoneTimerActive } = useOtpTimer(30);
+
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
+  const [confirmEmailPassword, setConfirmEmailPassword] = useState('');
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [emailError, setEmailError] = useState(null);
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setPasswordError(null);
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setPasswordError('All fields are required.');
+      return;
+    }
+    if (newPassword.length < 8 || newPassword.length > 128) {
+      setPasswordError('New password must be between 8 and 128 characters.');
+      return;
+    }
+    if (newPassword === currentPassword) {
+      setPasswordError('New password cannot be the same as your current password.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError('New passwords do not match.');
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      await changePassword(currentPassword, newPassword);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Password changed successfully! 🔑' } });
+    } catch (err) {
+      setPasswordError(err.message || 'Failed to change password. Please check your credentials.');
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
+  const handleSendPhoneOtp = async () => {
+    setPhoneError(null);
+
+    if (!newPhone || !/^[6-9]\d{9}$/.test(newPhone)) {
+      setPhoneError('Please enter a valid 10-digit Indian mobile number starting with 6-9.');
+      return;
+    }
+
+    setPhoneLoading(true);
+    try {
+      await sendOtp(newPhone);
+      setOtpSent(true);
+      startPhoneTimer(30);
+      dsp({ t: 'TOAST', d: { type: 'info', msg: 'Demo OTP is 1234' } });
+    } catch (err) {
+      setPhoneError(err.message || 'Failed to send OTP. Please try again.');
+    } finally {
+      setPhoneLoading(false);
+    }
+  };
+
+  const handleVerifyPhone = async (e) => {
+    e.preventDefault();
+    setPhoneError(null);
+
+    if (!otp || otp.length !== 6) {
+      setPhoneError('Please enter a valid 6-digit OTP.');
+      return;
+    }
+
+    setPhoneLoading(true);
+    try {
+      await updatePhone(newPhone, otp);
+      
+      dsp({ t: 'UPDATE_PROFILE', phone: newPhone });
+      
+      const allCreators = LS.get('cb_creators', []);
+      const updated = allCreators.map(cr => {
+        if (cr.email === st.user.email) {
+          return { ...cr, phone: newPhone };
+        }
+        return cr;
+      });
+      LS.set('cb_creators', updated);
+
+      setShowPhoneForm(false);
+      setOtpSent(false);
+      setNewPhone('');
+      setOtp('');
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Mobile number updated successfully! 📱' } });
+    } catch (err) {
+      if (err.status === 409) {
+        setPhoneError('This mobile number is already registered.');
+      } else {
+        setPhoneError(err.message || 'OTP verification failed. Please try 1234.');
+      }
+    } finally {
+      setPhoneLoading(false);
+    }
+  };
+
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault();
+    setEmailError(null);
+
+    if (!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail) || newEmail.length > 254) {
+      setEmailError('Please enter a valid email address (max 254 characters).');
+      return;
+    }
+    if (newEmail === st.user?.email) {
+      setEmailError('New email cannot be the same as your current email.');
+      return;
+    }
+    if (!confirmEmailPassword) {
+      setEmailError('Current password is required to verify changes.');
+      return;
+    }
+
+    setEmailLoading(true);
+    try {
+      await updateEmail(newEmail, confirmEmailPassword);
+      
+      dsp({ t: 'UPDATE_PROFILE', email: newEmail });
+
+      const allCreators = LS.get('cb_creators', []);
+      const updated = allCreators.map(cr => {
+        if (cr.email === st.user.email) {
+          return { ...cr, email: newEmail };
+        }
+        return cr;
+      });
+      LS.set('cb_creators', updated);
+
+      setShowEmailForm(false);
+      setNewEmail('');
+      setConfirmEmailPassword('');
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Email address updated successfully! 📧' } });
+    } catch (err) {
+      if (err.status === 409) {
+        setEmailError('This email address is already in use.');
+      } else if (err.status === 401) {
+        setEmailError('Incorrect password.');
+      } else {
+        setEmailError(err.message || 'Failed to update email. Please try again.');
+      }
+    } finally {
+      setEmailLoading(false);
+    }
+  };
+
+  const currentEmail = st.user?.email || 'verified@user.com';
+  const currentPhone = st.user?.phone || st.user?.creatorProfile?.phone || 'Not configured';
+
+  return (
+    <Card className="settings-form-card card-3d-effect" style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+       <div>
+         <h3 className="db-section-title" style={{ margin: 0 }}>Account Security</h3>
+         <p style={{ fontSize: 13, color: '#64748b', fontWeight: 500, marginTop: 6 }}>
+           Manage your platform credentials and verification channels.
+         </p>
+       </div>
        
-       <div style={{ marginBottom: '40px' }}>
+       <div>
           <p className="db-sidebar-label" style={{ marginBottom: 12 }}>Verified Credentials</p>
-          <div className="activity-item" style={{ padding: '20px 24px', background: 'rgba(15, 23, 42, 0.02)', borderRadius: '16px', border: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-             <div>
-                <div style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a' }}>{st.user?.email || 'verified@user.com'}</div>
-                <div style={{ fontSize: '12px', color: '#10B981', fontWeight: 800, marginTop: '4px' }}>Primary Verification Email</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+             <div className="activity-item" style={{ padding: '16px 20px', background: 'rgba(15, 23, 42, 0.02)', borderRadius: '16px', border: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                   <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>{currentEmail}</div>
+                   <div style={{ fontSize: '11px', color: '#10B981', fontWeight: 800, marginTop: '2px' }}>Primary Verification Email</div>
+                </div>
+                <CheckCircle2 size={20} color="#10B981" />
              </div>
-             <CheckCircle2 size={24} color="#10B981" />
+             <div className="activity-item" style={{ padding: '16px 20px', background: 'rgba(15, 23, 42, 0.02)', borderRadius: '16px', border: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                   <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>{currentPhone}</div>
+                   <div style={{ fontSize: '11px', color: '#10B981', fontWeight: 800, marginTop: '2px' }}>Verified Mobile Number</div>
+                </div>
+                <CheckCircle2 size={20} color="#10B981" />
+             </div>
           </div>
        </div>
+
+       <div style={{ height: '1px', background: '#e2e8f0' }} />
+
+       <form onSubmit={handlePasswordSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+         <p className="db-sidebar-label" style={{ marginBottom: 4 }}>Change Password</p>
+         {passwordError && (
+           <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#EF4444', fontSize: 13, fontWeight: 750, background: '#FEF2F2', padding: '12px 16px', borderRadius: '12px', border: '1px solid #FECACA' }}>
+             <span>⚠️</span> {passwordError}
+           </div>
+         )}
+         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
+           <Fld label="Current Password" type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} placeholder="••••••••" required />
+           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+             <Fld label="New Password" type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="••••••••" required />
+             <Fld label="Confirm New Password" type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} placeholder="••••••••" required />
+           </div>
+         </div>
+         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+           <Btn type="submit" loading={passwordLoading} style={{ background: '#0f172a', color: '#fff', borderRadius: 12, padding: '12px 24px', fontWeight: 800 }}>
+             Change Password
+           </Btn>
+         </div>
+       </form>
+
+       <div style={{ height: '1px', background: '#e2e8f0' }} />
+
+       <div>
+         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+           <p className="db-sidebar-label" style={{ margin: 0 }}>Update Mobile Number</p>
+           <Btn sm outline onClick={() => { setShowPhoneForm(!showPhoneForm); setPhoneError(null); }} style={{ borderRadius: 10 }}>
+             {showPhoneForm ? 'Cancel' : 'Update'}
+           </Btn>
+         </div>
+
+         {showPhoneForm && (
+           <div style={{ marginTop: 16, padding: 20, background: 'rgba(15, 23, 42, 0.01)', border: '1px solid #e2e8f0', borderRadius: 16 }}>
+             {phoneError && (
+               <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#EF4444', fontSize: 13, fontWeight: 750, background: '#FEF2F2', padding: '12px 16px', borderRadius: '12px', border: '1px solid #FECACA', marginBottom: 16 }}>
+                 <span>⚠️</span> {phoneError}
+               </div>
+             )}
+             
+             {!otpSent ? (
+               <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 0.6fr', gap: 12, alignItems: 'flex-end' }}>
+                 <Fld 
+                   label="New Mobile Number" 
+                   type="tel" 
+                   value={newPhone} 
+                   onChange={e => {
+                     const val = e.target.value.replace(/\D/g, '');
+                     if (val.length <= 10) setNewPhone(val);
+                   }} 
+                   placeholder="9876543210" 
+                 />
+                 <Btn 
+                   onClick={handleSendPhoneOtp} 
+                   loading={phoneLoading} 
+                   disabled={isPhoneTimerActive}
+                   style={{ marginBottom: 18, height: 52, borderRadius: 12, background: '#0f172a', color: '#fff', fontSize: 13 }}
+                 >
+                   {isPhoneTimerActive ? `Resend in ${phoneTimer}s` : 'Send OTP'}
+                 </Btn>
+               </div>
+             ) : (
+               <form onSubmit={handleVerifyPhone} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                 <div style={{ color: '#475569', fontSize: 13, fontWeight: 600, marginBottom: 8 }}>OTP sent to +91 {newPhone}. (Use demo OTP: 1234)</div>
+                 <OtpInput value={otp} onChange={setOtp} error={phoneError} />
+                 
+                 <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                   <Btn type="submit" loading={phoneLoading} style={{ flex: 1.5, background: '#10B981', color: '#fff', borderRadius: 12, height: 52 }}>
+                     Verify & Update
+                   </Btn>
+                   <Btn 
+                     type="button" 
+                     disabled={isPhoneTimerActive} 
+                     onClick={handleSendPhoneOtp} 
+                     style={{ flex: 1, background: '#fff', border: '1px solid #e2e8f0', color: '#64748b', borderRadius: 12, height: 52 }}
+                   >
+                     {isPhoneTimerActive ? `Resend in ${phoneTimer}s` : 'Resend OTP'}
+                   </Btn>
+                 </div>
+               </form>
+             )}
+           </div>
+         )}
+       </div>
+
+       <div style={{ height: '1px', background: '#e2e8f0' }} />
+
+       <div>
+         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+           <p className="db-sidebar-label" style={{ margin: 0 }}>Update Email Address</p>
+           <Btn sm outline onClick={() => { setShowEmailForm(!showEmailForm); setEmailError(null); }} style={{ borderRadius: 10 }}>
+             {showEmailForm ? 'Cancel' : 'Update'}
+           </Btn>
+         </div>
+
+         {showEmailForm && (
+           <form onSubmit={handleEmailSubmit} style={{ marginTop: 16, padding: 20, background: 'rgba(15, 23, 42, 0.01)', border: '1px solid #e2e8f0', borderRadius: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
+             {emailError && (
+               <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#EF4444', fontSize: 13, fontWeight: 750, background: '#FEF2F2', padding: '12px 16px', borderRadius: '12px', border: '1px solid #FECACA' }}>
+                 <span>⚠️</span> {emailError}
+               </div>
+             )}
+             <Fld label="New Email Address" type="email" value={newEmail} onChange={e => setNewEmail(e.target.value)} placeholder="new@domain.com" required />
+             <Fld label="Confirm Account Password" type="password" value={confirmEmailPassword} onChange={e => setConfirmEmailPassword(e.target.value)} placeholder="••••••••" required />
+             
+             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+               <Btn type="submit" loading={emailLoading} style={{ background: '#0f172a', color: '#fff', borderRadius: 12, padding: '12px 24px', fontWeight: 800 }}>
+                 Verify & Update Email
+               </Btn>
+             </div>
+           </form>
+         )}
+       </div>
+
+       <div style={{ height: '1px', background: '#e2e8f0' }} />
 
        <div style={{ padding: '32px', background: '#FEF2F2', borderRadius: '32px', border: '1px solid #FECACA' }}>
           <h4 style={{ fontSize: '18px', fontWeight: 900, color: '#991B1B', marginBottom: '8px' }}>Danger Zone</h4>
@@ -787,9 +1227,13 @@ export default function SettingsPage() {
 
   const role = st.user?.role || 'creator';
   const isPro = st.isPro || localStorage.getItem('cb_is_pro') === 'true';
+  const location = useLocation();
 
-  // State for tabs
-  const [tab, setTab] = useState(role === 'brand' ? 'brandProfile' : 'sponsor');
+  // State for tabs (reads location.state for defaultTab)
+  const [tab, setTab] = useState(() => {
+    if (role === 'brand') return 'brandProfile';
+    return location.state?.defaultTab || 'profile';
+  });
 
   // Creator state
   const allCreators = LS.get('cb_creators', []);
@@ -865,6 +1309,7 @@ export default function SettingsPage() {
     { id: 'brandProfile', label: 'Company Profile', icon: Building2 },
     { id: 'security', label: 'Account Security', icon: Lock }
   ] : [
+    { id: 'profile', label: 'Profile Info', icon: User },
     { id: 'sponsor', label: 'Sponsored Posts', icon: Megaphone },
     { id: 'payout', label: 'Payout Settings', icon: CreditCard },
     { id: 'notifications', label: 'Notification Prefs', icon: Bell },
@@ -939,7 +1384,13 @@ export default function SettingsPage() {
                   </motion.div>
                )}
 
-               {tab === 'sponsor' && role === 'creator' && (
+                {tab === 'profile' && role === 'creator' && (
+                   <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="profile">
+                      <ProfileInfoTabContent c={creatorProfile} st={st} mob={mob} />
+                   </motion.div>
+                )}
+
+                {tab === 'sponsor' && role === 'creator' && (
                   <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="sponsor">
                      <SponsorSettingsTab c={creatorProfile} st={st} mob={mob} />
                   </motion.div>

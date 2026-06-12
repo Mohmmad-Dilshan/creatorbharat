@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useReducer, useMemo } from 'react';
+import React, { createContext, useContext, useReducer, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { isValidRole } from '@/utils/security';
+import { setUnauthorizedHandler } from '@/utils/api';
 
 const Ctx = createContext(null);
 export const useApp = () => useContext(Ctx);
@@ -42,6 +43,12 @@ export function reducer(s, a) {
       localStorage.removeItem('cb_follows');
       return { ...IS, page: 'home' };
     }
+    case 'SESSION_EXPIRED': {
+      ['cb_token','cb_user','cb_role','cb_creators','cb_is_pro',
+       'cb_follows','cb_saved','cb_compared','cb_applied']
+        .forEach(k => localStorage.removeItem(k));
+      return { ...IS, page: 'home' };
+    }
     case 'SET_PRO': {
       const isProVal = a.isPro !== undefined ? a.isPro : true;
       if (isProVal) {
@@ -76,6 +83,20 @@ export function reducer(s, a) {
     case 'CLEAR_COMPARE': return { ...s, compared: [] };
     case 'TOAST': return { ...s, toasts: [...s.toasts, { id: Date.now() + Math.random(), ...a.d }] };
     case 'RM_TOAST': return { ...s, toasts: s.toasts.filter(t => t.id !== a.id) };
+    case 'UPDATE_PROFILE': {
+      const updatedCreatorProfile = {
+        ...s.user?.creatorProfile,
+        ...(a.profile || {})
+      };
+      const updatedUser = {
+        ...s.user,
+        ...(a.phone ? { phone: a.phone } : {}),
+        ...(a.email ? { email: a.email } : {}),
+        creatorProfile: updatedCreatorProfile
+      };
+      localStorage.setItem('cb_user', JSON.stringify(updatedUser));
+      return { ...s, user: updatedUser };
+    }
     default: return s;
   }
 }
@@ -126,6 +147,14 @@ export const AppProvider = ({ children }) => {
     localStorage.setItem('cb_applied', JSON.stringify(st.applied));
     localStorage.setItem('cb_follows', JSON.stringify(st.follows));
   }, [st.saved, st.compared, st.applied, st.follows]);
+
+  // Register global 401 handler — dispatches SESSION_EXPIRED and redirects to /login
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      dsp({ t: 'SESSION_EXPIRED' });
+      window.location.href = '/login';
+    });
+  }, [dsp]);
 
   const value = useMemo(() => ({ st, dsp }), [st, dsp]);
 

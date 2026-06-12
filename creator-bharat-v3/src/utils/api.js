@@ -1,5 +1,8 @@
 const API_BASE = import.meta.env.VITE_API_URL || 'https://creatorbharat.onrender.com/api';
 
+let _unauthorizedHandler = null;
+export function setUnauthorizedHandler(fn) { _unauthorizedHandler = fn; }
+
 class HttpError extends Error {
   constructor(res, data) {
     super(data?.error || `Error ${res.status}: ${res.statusText}`);
@@ -83,6 +86,10 @@ export async function apiCall(endpoint, options = {}, retries = 2) {
         return execute(attempt + 1);
       }
       
+      if (err.isHttpError && err.status === 401 && _unauthorizedHandler) {
+        _unauthorizedHandler();
+      }
+
       logApiError(err, endpoint);
       throw err;
     }

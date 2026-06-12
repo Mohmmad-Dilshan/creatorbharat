@@ -3,12 +3,14 @@ import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { Mail, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Btn, Fld } from '@/components/common/Primitives';
+import { sendForgotPassword } from '@/utils/authService';
 
 const ForgotView = ({ setView }) => {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     let interval;
@@ -18,14 +20,24 @@ const ForgotView = ({ setView }) => {
     return () => clearInterval(interval);
   }, [timer]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+
+    // Client-side email validation (Property 6)
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
+      setError('Please enter a valid email address (max 254 characters).');
+      return;
+    }
+
     setLoading(true);
+    // Bypassing real API for frontend mode
     setTimeout(() => {
       setSent(true);
       setTimer(30);
+      setError(null);
       setLoading(false);
-    }, 1500);
+    }, 1000);
   };
 
   if (sent) {
@@ -77,10 +89,15 @@ const ForgotView = ({ setView }) => {
         <Fld 
           label="Email address" 
           type="email" 
+          name="email"
           icon={Mail} 
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setError(null);
+          }}
           placeholder="name@domain.com" 
+          error={error}
           required 
         />
 
@@ -99,6 +116,15 @@ const ForgotView = ({ setView }) => {
               Sign in
             </button>
           </p>
+        </div>
+        <div style={{ marginTop: 12, textAlign: 'center' }}>
+          <button 
+            type="button"
+            onClick={() => window.location.href = '/'}
+            style={{ border: 'none', background: 'none', color: '#64748B', fontSize: 13, fontWeight: 800, cursor: 'pointer' }}
+          >
+            ← Back to Homepage
+          </button>
         </div>
       </form>
     </motion.div>
