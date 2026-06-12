@@ -52,10 +52,8 @@ creatorbharat-plan-n8n.json
 
 
 # EVERYTHING IN BACKUPS IS HIDDEN
-backups/
-v3-backup-stable/
-backups_archive/
-V3_REF_BACKUP_PRO/
+local_backups/
+.kiro/
 scratch/
 temp/
 *.bak
