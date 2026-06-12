@@ -8,7 +8,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { TrendingUp, Users, Megaphone, MapPin, ArrowUpRight, RefreshCw } from 'lucide-react';
+import { Briefcase, Users, Megaphone, MapPin, ArrowUpRight, RefreshCw } from 'lucide-react';
 import { usePlatformStats } from '../../hooks/usePlatformStats';
 import { fmt } from '../../utils/helpers';
 
@@ -186,6 +186,8 @@ export default function ImpactStats({ mob }) {
   // Build KPI config from real analytics
   const buildKpis = (a) => {
     const scale = (base, pts) => pts.map(p => Math.round(base * p));
+    const activeBrands = a.brandCount || 0;
+    const activeCampaigns = a.totalCampaigns || 0;
     return [
       {
         label: 'Verified Creators',
@@ -194,16 +196,16 @@ export default function ImpactStats({ mob }) {
         spark: scale(a.totalCreators, [0.6, 0.65, 0.7, 0.72, 0.78, 0.8, 0.85, 0.88, 0.92, 1]),
       },
       {
-        label: 'Audience Reach',
-        value: fmt.num(a.totalReach),
-        color: '#10B981', icon: TrendingUp, sub: 'Combined followers',
-        spark: scale(a.totalReach, [0.5, 0.55, 0.62, 0.66, 0.71, 0.76, 0.82, 0.88, 0.93, 1]),
+        label: 'Active Brands',
+        value: String(activeBrands),
+        color: '#10B981', icon: Briefcase, sub: 'Onboarded partners',
+        spark: scale(activeBrands || 1, [0.5, 0.55, 0.62, 0.66, 0.71, 0.76, 0.82, 0.88, 0.93, 1]),
       },
       {
-        label: 'Campaign Value',
-        value: fmt.inr(a.dealValue) || '₹0',
-        color: '#3B82F6', icon: Megaphone, sub: 'Total deal value tracked',
-        spark: scale(a.dealValue, [0.4, 0.5, 0.55, 0.6, 0.68, 0.72, 0.8, 0.86, 0.92, 1]),
+        label: 'Active Campaigns',
+        value: String(activeCampaigns),
+        color: '#3B82F6', icon: Megaphone, sub: 'Live monthly deals',
+        spark: scale(activeCampaigns || 1, [0.4, 0.5, 0.55, 0.6, 0.68, 0.72, 0.8, 0.86, 0.92, 1]),
       },
       {
         label: 'Cities Covered',
