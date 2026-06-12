@@ -42,6 +42,7 @@ export default function MobileMenu({ open }) {
     { path: '/pricing', l: 'Pricing Plans', i: Sparkles },
     { path: '/verify-guide', l: 'Verification Guide', i: ShieldCheck },
     { path: '/ai-knowledge', l: 'AI Knowledge', i: BookOpen },
+    { path: '/official-profile', l: 'Official Profile', i: ShieldCheck },
     { path: '/about', l: 'Our Story', i: Heart }
   ];
 
@@ -55,6 +56,7 @@ export default function MobileMenu({ open }) {
     { path: '/creator/community', l: 'Community', i: Megaphone },
     { path: '/creator/events', l: 'Events', i: Award },
     { path: '/creator/messages', l: 'Messages & Alerts', i: Bell },
+    { path: '/creator/official-profile', l: 'Official Profile', i: ShieldCheck },
     { path: '/creator/settings', l: 'Settings', i: Settings }
   ];
 
@@ -65,6 +67,7 @@ export default function MobileMenu({ open }) {
     { path: '/brand-applications', l: 'Applicants', i: Briefcase },
     { path: '/compare', l: 'Compare Tool', i: Users },
     { path: '/brand-analytics', l: 'Analytics', i: BarChart3 },
+    { path: '/official-profile', l: 'Official Profile', i: ShieldCheck },
     { path: '/settings', l: 'Settings', i: Settings }
   ];
 

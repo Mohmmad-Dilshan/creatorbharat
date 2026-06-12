@@ -580,7 +580,8 @@ export default function Navbar() {
         { path: '/leaderboard', label: 'Leaderboard' },
         { path: '/rate-calc', label: 'Rate Calculator' },
         { path: '/pricing', label: 'Pricing Plans' },
-        { path: '/ai-knowledge', label: 'AI Knowledge' }
+        { path: '/ai-knowledge', label: 'AI Knowledge' },
+        { path: '/official-profile', label: 'Official Profile' }
       ]
     },
     { 
@@ -609,7 +610,8 @@ export default function Navbar() {
         { path: '/creator/verification', label: 'Verification Desk' },
         { path: '/creator/community', label: 'Community' },
         { path: '/creator/events', label: 'Events' },
-        { path: '/creator/messages', label: 'Messages & Alerts' }
+        { path: '/creator/messages', label: 'Messages & Alerts' },
+        { path: '/creator/official-profile', label: 'Official Profile' }
       ]
     },
     {
@@ -631,7 +633,8 @@ export default function Navbar() {
       items: [
         { path: '/brand-applications', label: 'Applicants' },
         { path: '/compare', label: 'Compare Tool' },
-        { path: '/brand-analytics', label: 'Analytics' }
+        { path: '/brand-analytics', label: 'Analytics' },
+        { path: '/official-profile', label: 'Official Profile' }
       ]
     },
     {

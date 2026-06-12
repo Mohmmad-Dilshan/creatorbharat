@@ -13,7 +13,8 @@ import {
   Users,
   Brain,
   Globe,
-  CheckCircle
+  CheckCircle,
+  BarChart3
 } from 'lucide-react';
 import Seo from '@/components/common/SEO';
 import { Btn, Bdg } from '@/components/common/Primitives';
@@ -145,7 +146,7 @@ export default function AiFaqPage() {
               sub: 'live monthly'
             },
             {
-              icon: <BarChart2 size={18} color="#10B981" />,
+              icon: <BarChart3 size={18} color="#10B981" />,
               label: 'Cities Covered',
               value: statsLoading
                 ? '...'
@@ -452,15 +453,15 @@ export default function AiFaqPage() {
           <div style={{ textAlign: 'center', marginBottom: 28 }}>
             <Bdg color="purple" sm>Score Tiers</Bdg>
             <h3 style={{ fontSize: mob ? 22 : 30, fontWeight: 950, color: '#fff', marginTop: 12, letterSpacing: '-0.02em' }}>
-              Tumhara Score = Tumhari Tier
+              Your Score = Your Tier
             </h3>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : '1fr 1fr 1fr 1fr', gap: mob ? 10 : 16 }}>
             {[
-              { score: '10–59', tier: 'Evolving', icon: '🌱', color: '#94a3b8', bg: 'rgba(148,163,184,0.06)', border: 'rgba(148,163,184,0.15)', perks: ['Platform access', 'Basic profile', 'Apply to open campaigns'], what: 'Abhi grow karo' },
-              { score: '60–74', tier: 'Rising Star', icon: '🚀', color: '#10B981', bg: 'rgba(16,185,129,0.06)', border: 'rgba(16,185,129,0.2)', perks: ['Brand discovery mein dikhna', 'Rising badge', 'Priority for micro campaigns'], what: 'Consistent raho' },
-              { score: '75–89', tier: 'Premium', icon: '⚡', color: '#FF9431', bg: 'rgba(255,148,49,0.06)', border: 'rgba(255,148,49,0.2)', perks: ['Premium brand campaigns', 'Verified badge', 'Higher rate bracket'], what: 'Top 25% creators' },
-              { score: '90–100', tier: 'Elite', icon: '👑', color: '#a855f7', bg: 'rgba(168,85,247,0.08)', border: 'rgba(168,85,247,0.25)', perks: ['Elite concierge matching', 'Dedicated manager', 'First access to premium deals'], what: 'Top 5% creators' },
+              { score: '10–59', tier: 'Evolving', icon: '🌱', color: '#94a3b8', bg: 'rgba(148,163,184,0.06)', border: 'rgba(148,163,184,0.15)', perks: ['Platform access', 'Basic profile', 'Apply to open campaigns'], what: 'Evolving Growth Mode' },
+              { score: '60–74', tier: 'Rising Star', icon: '🚀', color: '#10B981', bg: 'rgba(16,185,129,0.06)', border: 'rgba(16,185,129,0.2)', perks: ['Featured in brand discovery', 'Rising badge', 'Priority for micro campaigns'], what: 'Rising Traction Mode' },
+              { score: '75–89', tier: 'Premium', icon: '⚡', color: '#FF9431', bg: 'rgba(255,148,49,0.06)', border: 'rgba(255,148,49,0.2)', perks: ['Premium brand campaigns', 'Verified badge', 'Higher rate bracket'], what: 'Premium Verified' },
+              { score: '90–100', tier: 'Elite', icon: '👑', color: '#a855f7', bg: 'rgba(168,85,247,0.08)', border: 'rgba(168,85,247,0.25)', perks: ['Elite concierge matching', 'Dedicated manager', 'First access to premium deals'], what: 'Elite Platform Tier' },
             ].map((t, i) => (
               <motion.div
                 key={i}
