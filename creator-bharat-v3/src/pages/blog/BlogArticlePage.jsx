@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 
 import { Bdg, Btn } from '@/components/common/Primitives';
+import Seo from '@/components/common/SEO';
 import { 
   TwitterIcon, 
   LinkedinIcon, 
@@ -825,6 +826,13 @@ const BlogArticleView = ({
   claps, handleClap, activeId
 }) => (
   <div style={{ background: '#fff', minHeight: '100vh', paddingBottom: '100px', position: 'relative' }}>
+    <Seo 
+      title={article.title}
+      description={article.excerpt || `${article.title}. Read the full article on the CreatorBharat official blog.`}
+      image={article.image}
+      keywords={article.seoKeywords || (article.tags && article.tags.join(', '))}
+      type="article"
+    />
     <motion.div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: '5px', background: BRAND_ORANGE, transformOrigin: '0%', zIndex: 2000, scaleX }} />
     
     <Masthead mob={mob} />
