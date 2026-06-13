@@ -8,8 +8,6 @@ import {
   Search,
   MessageSquare,
   ArrowRight,
-  Zap,
-  Star,
   Users,
   Brain,
   Globe,
@@ -22,33 +20,19 @@ import Seo from '@/components/common/SEO';
 import { Btn, Bdg } from '@/components/common/Primitives';
 import { usePlatformStats } from '@/hooks/usePlatformStats';
 
-
-// AI FAQs
-const AI_FAQS = [
-  {
-    q: "How does the CreatorBharat AI calculate my Creator Score?",
-    a: "Our AI engine analyzes four core dimensions: 1) True Engagement Rate (excluding bot interactions), 2) Content Consistency (posting patterns and frequency), 3) Audience Authenticity (percentage of real vs suspicious followers), and 4) Niche Authority (how relevant and focused your content is to your category). These factors are combined using a dynamic weight model to generate your score out of 100."
-  },
-  {
-    q: "How does bot detection and audience verification work?",
-    a: "We integrate directly with social media platform APIs to analyze the follower network. Our machine learning algorithms check profile completeness, activity history, and commenting behaviors of your followers. Followers flagged as inactive or automated bots are excluded from engagement calculations, providing brands with an authentic audience quality report."
-  },
-  {
-    q: "Can the matchmaking AI predict my campaign ROI?",
-    a: "Yes! The matchmaking model simulates campaign outcomes before they launch. By matching your audience demographics (location, age, interest mapping) with the brand's target consumer profiles, the AI estimates key performance indicators (KPIs) such as click-through rates (CTR), impressions, and conversion probability, ensuring high ROI alignment."
-  },
-  {
-    q: "How can I optimize my profile to get better AI matchmaking recommendations?",
-    a: "To boost your match probability: 1) Keep all social links active and authenticated, 2) Keep your state and city updated as many brands target hyper-local demographics, 3) Select precise niche tags, and 4) Deliver high-quality deliverables on active campaigns to maintain a high platform feedback score."
-  },
-  {
-    q: "Does the AI engine support regional languages and local search?",
-    a: "Absolutely. Our natural language processing (NLP) models index creator content across 12+ Indian regional languages. This allows brands to run local vernacular campaigns, targeting specific language communities with maximum cultural relevance."
-  }
-];
+// Import Externalized Data
+import {
+  AI_FAQS,
+  OLD_WAY_POINTS,
+  AI_WAY_POINTS,
+  SCORE_DIMENSIONS,
+  PLATFORM_COMPARISON_ROWS,
+  SCORE_TIERS,
+  PIPELINE_STEPS
+} from '@/data/aiFaqData';
 
 export default function AiFaqPage() {
-  const [mob, setMob] = useState(() => typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+  const [mob, setMob] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
   const [search, setSearch] = useState('');
   const { analytics, loading: statsLoading } = usePlatformStats();
 
@@ -57,6 +41,7 @@ export default function AiFaqPage() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+  
   const [openIndex, setOpenIndex] = useState(null);
 
   // FAQ Filtering
@@ -110,7 +95,7 @@ export default function AiFaqPage() {
         </div>
       </section>
 
-      {/* Quick Stats Strip — Hero ke baad, Simulator se pehle */}
+      {/* Quick Stats Strip */}
       <section style={{ padding: mob ? '0 16px 40px' : '0 24px 60px', maxWidth: 1200, margin: '0 auto' }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -191,10 +176,8 @@ export default function AiFaqPage() {
         </motion.div>
       </section>
 
-      {/* ═══ AI UNDERSTANDING SECTION ═══ */}
-      {/* Yeh section public + other platform creators ko samjhata hai ki CreatorBharat AI kya hai */}
+      {/* AI UNDERSTANDING SECTION */}
       <section style={{ maxWidth: 1200, margin: '0 auto 80px', padding: mob ? '0 16px' : '0 24px' }}>
-
         {/* Section Header */}
         <div style={{ textAlign: 'center', marginBottom: mob ? 40 : 60 }}>
           <motion.div
@@ -221,7 +204,7 @@ export default function AiFaqPage() {
           </motion.p>
         </div>
 
-        {/* ── BLOCK 1: Platform Comparison — Pehle vs Ab ── */}
+        {/* BLOCK 1: Platform Comparison */}
         <motion.div
           initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           style={{ marginBottom: mob ? 40 : 64 }}
@@ -237,14 +220,7 @@ export default function AiFaqPage() {
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {[
-                  'Follower count hi sab kuch — quality matter nahi',
-                  'Bot followers pata nahi chalte brands ko',
-                  'Delhi ka creator Mumbai brands tak nahi pahunch pata',
-                  'Rate negotiation blind hoti hai — koi data nahi',
-                  'Campaign milta hai luck se, merit se nahi',
-                  'Regional language creators ignored rehte hain',
-                ].map((point, i) => (
+                {OLD_WAY_POINTS.map((point, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                     <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(239,68,68,0.15)', display: 'grid', placeItems: 'center', flexShrink: 0, marginTop: 1 }}>
                       <span style={{ fontSize: 10, color: '#ef4444', fontWeight: 900 }}>✕</span>
@@ -266,14 +242,7 @@ export default function AiFaqPage() {
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {[
-                  'True Engagement Score — bots filter out, real engagement count',
-                  'AI audience verification — brand ko real audience dikhti hai',
-                  'Hyper-local matching — Jaipur creator → Jaipur brand',
-                  'AI-calculated fair rate range — data se decide hota hai',
-                  'Algorithm-based matching — sahi campaign, sahi creator',
-                  '12+ Indian languages index — regional creators bhi visible',
-                ].map((point, i) => (
+                {AI_WAY_POINTS.map((point, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                     <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(16,185,129,0.15)', display: 'grid', placeItems: 'center', flexShrink: 0, marginTop: 1 }}>
                       <CheckCircle size={11} color="#10B981" />
@@ -286,7 +255,7 @@ export default function AiFaqPage() {
           </div>
         </motion.div>
 
-        {/* ── BLOCK 2: Creator Score Kya Hota Hai — Visual Explainer ── */}
+        {/* BLOCK 2: Creator Score Explained */}
         <motion.div
           initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           style={{ marginBottom: mob ? 40 : 64 }}
@@ -302,40 +271,7 @@ export default function AiFaqPage() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : '1fr 1fr 1fr 1fr', gap: mob ? 12 : 20 }}>
-            {[
-              {
-                num: '40%',
-                title: 'True Engagement',
-                icon: '💬',
-                color: '#FF9431',
-                desc: 'Bots remove karke real likes, comments, saves count kiye jaate hain.',
-                example: 'Example: 10K followers, 800 real interactions = 8% true ER'
-              },
-              {
-                num: '25%',
-                title: 'Content Consistency',
-                icon: '📅',
-                color: '#a855f7',
-                desc: 'Kitni regularity se post karte ho — weekly, daily, ya kabhi kabhi.',
-                example: 'Daily poster = max score, monthly = low score'
-              },
-              {
-                num: '20%',
-                title: 'Audience Authenticity',
-                icon: '🛡️',
-                color: '#10B981',
-                desc: 'Kitne followers real hain — bot accounts automatically detect hote hain.',
-                example: '85%+ real = verified badge, 50% se below = flagged'
-              },
-              {
-                num: '15%',
-                title: 'Niche Authority',
-                icon: '🎯',
-                color: '#0ea5e9',
-                desc: 'Apne niche mein kitne focused aur relevant ho — scattered content low score.',
-                example: 'Pure Finance creator > Mixed content creator in Finance niche'
-              },
-            ].map((item, i) => (
+            {SCORE_DIMENSIONS.map((item, i) => (
               <motion.div
                 key={i}
                 whileHover={{ y: -4 }}
@@ -364,7 +300,7 @@ export default function AiFaqPage() {
           </div>
         </motion.div>
 
-        {/* ── BLOCK 3: Platform se CreatorBharat kaise alag hai ── */}
+        {/* BLOCK 3: Platform Differentiation */}
         <motion.div
           initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           style={{ marginBottom: mob ? 40 : 64 }}
@@ -386,11 +322,7 @@ export default function AiFaqPage() {
                   Instagram aur YouTube pe sirf content dikhta hai — <strong style={{ color: '#fff' }}>brands tumhe dhundh nahi sakte.</strong> CreatorBharat pe AI tumhara verified profile banata hai jise brands actively search karte hain.
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {[
-                    { platform: 'Instagram', cb: 'Instagram = content feed. CB = verified creator marketplace.' },
-                    { platform: 'YouTube', cb: 'YouTube = views. CB = brand deal pipeline with verified data.' },
-                    { platform: 'Moj / Josh', cb: 'Short video platforms = reach. CB = monetization layer on top.' },
-                  ].map((row, i) => (
+                  {PLATFORM_COMPARISON_ROWS.map((row, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: 'rgba(255,255,255,0.02)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.05)' }}>
                       <Globe size={14} color="#71717a" style={{ flexShrink: 0 }} />
                       <span style={{ fontSize: 12, color: '#a1a1aa', lineHeight: 1.4, fontWeight: 650 }}>
@@ -407,9 +339,9 @@ export default function AiFaqPage() {
                   <div style={{ fontSize: 12, fontWeight: 900, color: '#a855f7', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 14 }}>CreatorBharat = Layer on top</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {[
-                      { icon: '📸', label: 'Instagram Creator', arrow: true },
-                      { icon: '▶️', label: 'YouTube Creator', arrow: true },
-                      { icon: '🎵', label: 'Moj / Josh Creator', arrow: true },
+                      { icon: '📸', label: 'Instagram Creator' },
+                      { icon: '▶️', label: 'YouTube Creator' },
+                      { icon: '🎵', label: 'Moj / Josh Creator' },
                     ].map((item, i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <div style={{ padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, fontSize: 12, fontWeight: 700, color: '#a1a1aa', flex: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -438,7 +370,7 @@ export default function AiFaqPage() {
           </div>
         </motion.div>
 
-        {/* ── BLOCK 4: Tier System Visual ── */}
+        {/* BLOCK 4: Score Tiers */}
         <motion.div
           initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
         >
@@ -449,12 +381,7 @@ export default function AiFaqPage() {
             </h3>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : '1fr 1fr 1fr 1fr', gap: mob ? 10 : 16 }}>
-            {[
-              { score: '10–59', tier: 'Evolving', icon: '🌱', color: '#94a3b8', bg: 'rgba(148,163,184,0.06)', border: 'rgba(148,163,184,0.15)', perks: ['Platform access', 'Basic profile', 'Apply to open campaigns'], what: 'Evolving Growth Mode' },
-              { score: '60–74', tier: 'Rising Star', icon: '🚀', color: '#10B981', bg: 'rgba(16,185,129,0.06)', border: 'rgba(16,185,129,0.2)', perks: ['Featured in brand discovery', 'Rising badge', 'Priority for micro campaigns'], what: 'Rising Traction Mode' },
-              { score: '75–89', tier: 'Premium', icon: '⚡', color: '#FF9431', bg: 'rgba(255,148,49,0.06)', border: 'rgba(255,148,49,0.2)', perks: ['Premium brand campaigns', 'Verified badge', 'Higher rate bracket'], what: 'Premium Verified' },
-              { score: '90–100', tier: 'Elite', icon: '👑', color: '#a855f7', bg: 'rgba(168,85,247,0.08)', border: 'rgba(168,85,247,0.25)', perks: ['Elite concierge matching', 'Dedicated manager', 'First access to premium deals'], what: 'Elite Platform Tier' },
-            ].map((t, i) => (
+            {SCORE_TIERS.map((t, i) => (
               <motion.div
                 key={i}
                 whileHover={{ scale: 1.02 }}
@@ -485,25 +412,18 @@ export default function AiFaqPage() {
         </motion.div>
       </section>
 
-
-
       {/* AI Matchmaker System Pipeline Visual */}
       <section style={{ maxWidth: 1200, margin: '80px auto 40px', padding: mob ? '0 16px' : '0 20px' }}>
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <Bdg color="orange" sm>THE ENGINE FLOW</Bdg>
-          <h2 style={{ fontSize: mob ? 28 : 40, fontWeight: 950, color: '#fff', marginTop: 12, letterSpacing: '-0.5px' }}>
+          <h2 style={{ fontSize: mob ? '28px' : '40px', fontWeight: 950, color: '#fff', marginTop: 12, letterSpacing: '-0.5px' }}>
             Algorithmic Pipeline
           </h2>
           <p style={{ color: '#71717a', fontSize: 14, marginTop: 4, fontWeight: 650 }}>How CreatorBharat processes your stats to match you with top Indian brands</p>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr 1fr 1fr', gap: 20 }}>
-          {[
-            { step: '01', title: 'Data Ingestion', desc: 'Secure APIs pull real-time follower networks, video reach, and engagement logs.' },
-            { step: '02', title: 'Audit Filtering', desc: 'Natural language processing and bot detection filter inactive accounts and comments.' },
-            { step: '03', title: 'Niche Indexing', desc: 'Semantic tag models parse content themes, indexing you under 20+ specialized creator domains.' },
-            { step: '04', title: 'Deal Matching', desc: 'Smart matches recommend your profile to verified brand campaigns targeting your niche.' }
-          ].map((item, idx) => (
+          {PIPELINE_STEPS.map((item) => (
             <motion.div 
               key={item.step}
               whileHover={{ y: -6, borderColor: '#a855f7' }}
@@ -525,7 +445,7 @@ export default function AiFaqPage() {
       <section style={{ maxWidth: 800, margin: '80px auto 0', padding: mob ? '0 16px' : '0 20px' }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <Bdg color="purple" sm>FREQUENTLY ASKED QUESTIONS</Bdg>
-          <h2 style={{ fontSize: mob ? 28 : 40, fontWeight: 950, color: '#fff', marginTop: 12, letterSpacing: '-0.5px' }}>
+          <h2 style={{ fontSize: mob ? '28px' : '40px', fontWeight: 950, color: '#fff', marginTop: 12, letterSpacing: '-0.5px' }}>
             Inside the AI Core
           </h2>
           <p style={{ color: '#71717a', fontSize: 14, marginTop: 4, fontWeight: 650 }}>Questions about machine learning, verification, and score updates</p>

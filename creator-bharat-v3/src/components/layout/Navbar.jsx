@@ -589,6 +589,8 @@ export default function Navbar() {
       items: [
         { path: '/stories', label: 'Success Stories' },
         { path: '/blog', label: 'Creator Hub' },
+        { path: '/ambassador', label: 'Campus Ambassador' },
+        { path: '/press', label: 'Press Kit' },
         { path: '/faq', label: 'Help & FAQ' },
         { path: '/contact', label: 'Contact Us' }
       ]

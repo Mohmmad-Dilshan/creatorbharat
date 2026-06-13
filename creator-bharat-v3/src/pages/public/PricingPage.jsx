@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Seo from '@/components/common/SEO';
 import { 
   Check, 
-  Zap, 
-  ShieldCheck, 
   ArrowRight,
   Target,
   Sparkles,
@@ -15,239 +12,24 @@ import {
   Wallet,
   X,
   CreditCard,
-  Lock
+  Lock,
+  ShieldCheck,
+  Zap
 } from 'lucide-react';
 import { Btn, Bdg } from '@/components/common/Primitives';
 import { useApp } from '@/core/context';
 
-const PricingCard = ({ plan, delay = 0, navigate, onProActivate }) => {
-  const isPro = plan.id === 'pro' || plan.id === 'brand_pro';
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      style={{
-        background: isPro ? '#fff' : 'rgba(255, 255, 255, 0.7)',
-        backdropFilter: 'blur(20px)',
-        borderRadius: '40px',
-        padding: '56px 40px',
-        border: `1.5px solid ${isPro ? '#FF9431' : 'rgba(0,0,0,0.04)'}`,
-        boxShadow: isPro ? '0 40px 80px rgba(255, 148, 49, 0.12)' : '0 20px 40px rgba(0,0,0,0.02)',
-        position: 'relative',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        zIndex: isPro ? 2 : 1
-      }}
-    >
-      {isPro && (
-        <div style={{ 
-          position: 'absolute', 
-          top: '-20px', 
-          left: '50%', 
-          transform: 'translateX(-50%)',
-          background: 'linear-gradient(90deg, #FF9431, #EA580C)', 
-          color: '#fff', 
-          padding: '8px 20px', 
-          borderRadius: '100px', 
-          fontSize: '12px', 
-          fontWeight: 950,
-          letterSpacing: '0.1em',
-          boxShadow: '0 10px 20px rgba(255, 148, 49, 0.3)'
-        }}>
-          ELITE SELECTION
-        </div>
-      )}
-
-      <div style={{ marginBottom: '32px' }}>
-        <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', marginBottom: '12px', letterSpacing: '-0.02em' }}>{plan.name}</h3>
-        <p style={{ fontSize: '15px', color: '#64748b', lineHeight: '1.6', margin: 0, fontWeight: 500 }}>{plan.desc}</p>
-        
-        {plan.promo && (
-          <div style={{
-            marginTop: '16px',
-            padding: '12px 16px',
-            background: 'linear-gradient(90deg, #10B98115, #05966915)',
-            border: '1.5px dashed #10B98140',
-            borderRadius: '16px',
-            color: '#059669',
-            fontSize: '13px',
-            fontWeight: 850,
-            lineHeight: 1.4,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            <Sparkles size={14} color="#10B981" style={{ flexShrink: 0 }} />
-            <span>{plan.promo}</span>
-          </div>
-        )}
-      </div>
-
-      <div style={{ marginBottom: '40px' }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-          <span style={{ fontSize: '64px', fontWeight: 950, color: isPro ? '#FF9431' : '#0f172a', letterSpacing: '-0.05em' }}>{plan.price}</span>
-          <span style={{ fontSize: '18px', fontWeight: 700, color: '#94a3b8' }}>/{plan.period}</span>
-        </div>
-      </div>
-
-      <div style={{ flex: 1, marginBottom: '48px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {plan.features.map((feature) => (
-          <div key={feature} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-            <div style={{ 
-              width: '24px', 
-              height: '24px', 
-              background: isPro ? '#FF943115' : '#10B98115', 
-              borderRadius: '8px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              flexShrink: 0,
-              marginTop: '2px'
-            }}>
-              <Check size={14} color={isPro ? '#FF9431' : '#10B981'} strokeWidth={3} />
-            </div>
-            <span style={{ fontSize: '15px', color: '#475569', fontWeight: 600, lineHeight: '1.5' }}>{feature}</span>
-          </div>
-        ))}
-      </div>
-
-      <Btn 
-        full 
-        lg={isPro}
-        onClick={() => isPro && onProActivate ? onProActivate() : navigate('/join')}
-        style={{
-          padding: '20px',
-          borderRadius: '100px',
-          background: isPro ? '#0f172a' : '#fff',
-          color: isPro ? '#fff' : '#0f172a',
-          border: isPro ? 'none' : '1.5px solid #f1f5f9',
-          fontSize: '16px',
-          fontWeight: 950,
-          boxShadow: isPro ? '0 15px 30px rgba(15, 23, 42, 0.2)' : 'none'
-        }}
-      >
-        {plan.cta} <ArrowRight size={18} />
-      </Btn>
-    </motion.div>
-  );
-};
-
-PricingCard.propTypes = {
-  plan: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    desc: PropTypes.string.isRequired,
-    price: PropTypes.string.isRequired,
-    period: PropTypes.string.isRequired,
-    features: PropTypes.arrayOf(PropTypes.string).isRequired,
-    cta: PropTypes.string.isRequired,
-    promo: PropTypes.string
-  }).isRequired,
-  delay: PropTypes.number,
-  navigate: PropTypes.func.isRequired,
-  onProActivate: PropTypes.func
-};
-
-const TabButton = ({ active, label, icon: Icon, onClick }) => (
-  <button
-    onClick={onClick}
-    style={{
-      flex: 1,
-      padding: '16px 32px',
-      borderRadius: '100px',
-      border: 'none',
-      background: active ? '#fff' : 'transparent',
-      color: active ? '#0f172a' : '#94a3b8',
-      fontSize: '15px',
-      fontWeight: 900,
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '12px',
-      transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-      boxShadow: active ? '0 10px 25px rgba(0,0,0,0.1)' : 'none'
-    }}
-  >
-    <Icon size={18} color={active ? '#FF9431' : '#94a3b8'} strokeWidth={2.5} />
-    {label}
-  </button>
-);
-
-TabButton.propTypes = {
-  active: PropTypes.bool.isRequired,
-  label: PropTypes.string.isRequired,
-  icon: PropTypes.elementType.isRequired,
-  onClick: PropTypes.func.isRequired
-};
-
-const PRICING_FAQS = [
-  { q: "Do you take any commission from brand deals?", a: "No, CreatorBharat is 100% commission-free. We do not take any cuts from your sponsorships, deals, or payouts. What you earn is entirely yours." },
-  { q: "Can I cancel my subscription anytime?", a: "Yes, absolutely! You can cancel, upgrade, or downgrade your brand subscription at any point directly from your Settings dashboard. No questions asked." },
-  { q: "What payment methods do you support?", a: "We support all major Indian credit/debit cards, UPI (GPay, PhonePe, Paytm), Net Banking, and corporate wallets through our highly secure payment gateway." },
-  { q: "Is the Creator Pro badge permanent?", a: "Yes! Creator Pro unlocks your premium status immediately, giving you top discovery spots and the verified elite badge to boost your personal branding." }
-];
-
-const PricingFAQAccordion = ({ q, a, i }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: i * 0.05, duration: 0.5 }}
-      style={{
-        background: isOpen ? '#fff' : 'rgba(255, 255, 255, 0.6)',
-        borderRadius: '24px',
-        border: `1.5px solid ${isOpen ? '#FF9431' : '#f1f5f9'}`,
-        marginBottom: '12px',
-        overflow: 'hidden',
-        boxShadow: isOpen ? '0 20px 40px rgba(255, 148, 49, 0.06)' : 'none',
-        transition: 'all 0.3s ease',
-        textAlign: 'left'
-      }}
-    >
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        style={{ width: '100%', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
-      >
-        <span style={{ fontSize: '16px', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.01em', paddingRight: '12px' }}>
-          {q}
-        </span>
-        <motion.div
-          animate={{ rotate: isOpen ? 180 : 0, color: isOpen ? '#FF9431' : '#cbd5e1' }}
-          style={{ flexShrink: 0, width: '28px', height: '28px', borderRadius: '50%', background: isOpen ? '#FF943110' : '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        >
-          <span style={{ fontSize: '18px', fontWeight: 700 }}>{isOpen ? '−' : '+'}</span>
-        </motion.div>
-      </button>
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            style={{ padding: '0 32px 24px', color: '#64748b', fontSize: '14px', lineHeight: 1.6, fontWeight: 500 }}
-          >
-            <div style={{ padding: '20px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
-               {a}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-};
-
-PricingFAQAccordion.propTypes = {
-  q: PropTypes.string.isRequired,
-  a: PropTypes.string.isRequired,
-  i: PropTypes.number.isRequired
-};
+// Import Modular Components & External Data
+import PricingCard from '@/components/pricing/PricingCard';
+import TabButton from '@/components/pricing/TabButton';
+import PricingFAQAccordion from '@/components/pricing/PricingFAQAccordion';
+import { 
+  getCreatorPlans, 
+  getBrandPlans, 
+  PRICING_FAQS, 
+  CREATOR_PRICING, 
+  BRAND_PRICING 
+} from '@/data/pricingData';
 
 export default function PricingPage() {
   const navigate = useNavigate();
@@ -269,76 +51,16 @@ export default function PricingPage() {
   };
 
   const getCreatorPrice = () => {
-    if (duration === '1m') return { price: '₹499', period: 'month' };
-    if (duration === '6m') return { price: '₹2,499', period: '6 months' };
-    return { price: '₹4,499', period: 'year' };
+    return CREATOR_PRICING[duration] || CREATOR_PRICING['1m'];
   };
 
   const getBrandPrice = () => {
-    if (duration === '1m') return { price: '₹4,999', period: 'month' };
-    if (duration === '6m') return { price: '₹24,999', period: '6 months' };
-    return { price: '₹44,999', period: 'year' };
+    return BRAND_PRICING[duration] || BRAND_PRICING['1m'];
   };
 
-  const creatorPlans = [
-    { 
-      id: 'free', 
-      name: 'Starter', 
-      price: 'Free', 
-      period: 'lifetime', 
-      desc: 'Create your elite profile, access basic tools & view your dashboard.', 
-      features: ['Basic Creator Dashboard', 'Smart Profile Builder', 'Standard Discovery Grid', 'View Campaigns Catalog', 'Public profile handle'], 
-      cta: 'Start Free'
-    },
-    {
-      id: 'pro', 
-      name: 'Creator Pro', 
-      price: getCreatorPrice().price, 
-      period: getCreatorPrice().period, 
-      desc: 'Unlock A4 resumes, verified badges, search prioritization, and brand pitching.', 
-      promo: 'SPECIAL PROMO: 100% Free for first 100 Elite Creators (1 Month Trial!)',
-      features: [
-        'Cinematic Elite Portfolio', 
-        'Dynamic A4 Media Kit PDF', 
-        'Verified Blue Elite Badge', 
-        'Top-Tier Search Priority (Top 1%)', 
-        'Unlimited Campaign Applications', 
-        'AI-Powered Profile SEO', 
-        'Direct Chat with Verified Brands'
-      ], 
-      cta: 'Claim Pro Access'
-    }
-  ];
-
-  const brandPlans = [
-    { 
-      id: 'brand_free', 
-      name: 'Launchpad', 
-      price: 'Free', 
-      period: 'lifetime', 
-      desc: 'Register your company and view standard creator catalog.', 
-      features: ['Register Company Profile', 'Explore Creator Catalog', 'Filter & Save Favorites', 'Access Community Forums', 'Standard Dashboard View'], 
-      cta: 'Start Scouting'
-    },
-    {
-      id: 'brand_pro', 
-      name: 'Enterprise', 
-      price: getBrandPrice().price, 
-      period: getBrandPrice().period, 
-      desc: 'Launch unlimited active campaigns, outreach pitches & advanced smart indexing.', 
-      promo: 'SPECIAL PROMO: Early Bird rate for first 100 Brands only! (Price rises by 50% after!)',
-      features: [
-        'Launch Unlimited Campaigns', 
-        'Direct Outreach Pitch Console', 
-        'Full A4 Creator Resume Access', 
-        'Verified Gold Brand Badge', 
-        'AI Smart Talent Matches', 
-        'Advanced Analytics Dashboard', 
-        '24/7 Premium Priority Support'
-      ], 
-      cta: 'Scale Your Brand'
-    }
-  ];
+  const creatorPlans = getCreatorPlans(duration);
+  const brandPlans = getBrandPlans(duration);
+  const activePlans = tab === 'creator' ? creatorPlans : brandPlans;
 
   const renderCellContent = (value, color) => {
     if (typeof value === 'boolean') {
@@ -354,8 +76,6 @@ export default function PricingPage() {
       </span>
     );
   };
-
-  const activePlans = tab === 'creator' ? creatorPlans : brandPlans;
 
   const pricingJsonLd = {
     "@context": "https://schema.org",
@@ -597,14 +317,14 @@ export default function PricingPage() {
                 }}
               >
                 <motion.div 
-                  initial={{ scale: 0.9, y: 20 }}
-                  animate={{ scale: 1, y: 0 }}
-                  exit={{ scale: 0.9, y: 20 }}
-                  style={{
-                    background: '#fff', borderRadius: '32px', padding: '40px',
-                    width: '100%', maxWidth: '440px', position: 'relative',
-                    boxShadow: '0 40px 80px rgba(0,0,0,0.2)'
-                  }}
+                   initial={{ scale: 0.9, y: 20 }}
+                   animate={{ scale: 1, y: 0 }}
+                   exit={{ scale: 0.9, y: 20 }}
+                   style={{
+                     background: '#fff', borderRadius: '32px', padding: '40px',
+                     width: '100%', maxWidth: '440px', position: 'relative',
+                     boxShadow: '0 40px 80px rgba(0,0,0,0.2)'
+                   }}
                 >
                   <button 
                     onClick={() => setShowModal(false)}
@@ -659,7 +379,7 @@ export default function PricingPage() {
             background: '#fff', 
             borderRadius: '32px', 
             border: '1px solid #f1f5f9', 
-            overflowX: 'auto', // Added scroll for mobile
+            overflowX: 'auto',
             boxShadow: '0 20px 40px rgba(0,0,0,0.02)',
             WebkitOverflowScrolling: 'touch'
           }}>

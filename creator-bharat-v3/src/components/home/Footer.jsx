@@ -38,6 +38,8 @@ const NAV_COLS = [
       { label: 'About Us', path: '/about' },
       { label: 'Official Profile', path: '/official-profile' },
       { label: 'Pricing', path: '/pricing' },
+      { label: 'Campus Ambassador', path: '/ambassador' },
+      { label: 'Press & Media Kit', path: '/press' },
       { label: 'Help & FAQ', path: '/faq' },
       { label: 'Contact Us', path: '/contact' },
     ],

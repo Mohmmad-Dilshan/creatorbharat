@@ -74,6 +74,8 @@ export default function MobileMenu({ open }) {
   const supportLinksPublic = [
     { path: '/faq', l: 'Help Center', i: LifeBuoy },
     { path: '/contact', l: 'Contact Support', i: MessageSquare },
+    { path: '/ambassador', l: 'Campus Ambassador', i: Award },
+    { path: '/press', l: 'Press Kit', i: BookOpen },
     { path: '/stories', l: 'Success Stories', i: Award },
     { path: '/blog', l: 'Creator Hub', i: BookOpen }
   ];
