@@ -119,7 +119,7 @@ export default function AppRoutes({ location }) {
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/verify-guide" element={<VerificationGuidePage />} />
           <Route path="/ai-knowledge" element={<AiFaqPage />} />
-          <Route path="/rate-calc" element={<AuthLock><RateCalcPage /></AuthLock>} />
+          <Route path="/rate-calc" element={<RateCalcPage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/official-profile" element={<OfficialProfilePage />} />
           <Route path="/notifications" element={<NotificationsHub />} />

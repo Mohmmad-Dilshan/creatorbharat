@@ -8,6 +8,13 @@ const GEOJSON_URL = "/india_states.json";
 
 const FLAG_COLORS = ["#FF9933", "#FFFFFF", "#138808"];
 
+const MAJOR_STATES = [
+  "Maharashtra", "Rajasthan", "Delhi", "Uttar Pradesh", "Karnataka", 
+  "Gujarat", "Madhya Pradesh", "Bihar", "West Bengal", "Tamil Nadu",
+  "Haryana", "Punjab", "Kerala", "Andhra Pradesh", "Telangana",
+  "Odisha", "Jharkhand", "Assam", "Uttarakhand", "Himachal Pradesh"
+];
+
 export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
   const svgRef  = useRef(null);
   const wrapRef = useRef(null);
@@ -24,6 +31,10 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
   const opacity = useTransform(scrollYProgress, [0, 0.5], mob ? [1, 1] : [0, 1]);
 
   useEffect(() => {
+    if (mob) {
+      setLoading(false);
+      return;
+    }
     let cancelled = false;
     async function init() {
       try {
@@ -38,7 +49,7 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
         const features = geojson.features || (Array.isArray(geojson) ? geojson : []);
         
         if (features.length === 0) throw new Error("No features found in GeoJSON");
-
+ 
         if (svgRef.current) {
           drawMap(d3, features);
         } else {
@@ -54,7 +65,7 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
     }
     init();
     return () => { cancelled = true; };
-  }, []);
+  }, [mob]);
 
   function drawMap(d3, features) {
     const svgEl = svgRef.current;
@@ -67,9 +78,9 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
     const pathGen = d3.geoPath().projection(projection);
     const svg = d3.select(svgEl);
     svg.selectAll("*").remove();
-
+ 
     const mapG = svg.append("g").attr("id","mapG");
-
+ 
     mapG.selectAll("path")
       .data(features)
       .join("path")
@@ -104,7 +115,7 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
           <div className={styles.flagLine} />
         </div>
 
-        <div className={styles.svgWrap} style={{ height: mob ? '450px' : '640px', position: 'relative' }}>
+        <div className={styles.svgWrap} style={{ height: mob ? 'auto' : '640px', position: 'relative' }}>
           {loading && (
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -116,9 +127,68 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
             </motion.div>
           )}
           
-          <svg ref={svgRef} viewBox="0 0 560 640" className={styles.svg} style={{ width: '100%', height: '100%', display: 'block', opacity: loading ? 0 : 1, transition: 'opacity 0.8s ease-in-out' }} />
+          {mob ? (
+            <div style={{ padding: '24px 8px', display: 'flex', flexDirection: 'column', gap: 16, width: '100%', boxSizing: 'border-box' }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: '#64748b', textAlign: 'center', margin: '0 0 8px 0' }}>
+                Select a state to explore verified local creators:
+              </p>
+              <div style={{ 
+                display: 'flex', 
+                flexWrap: 'wrap', 
+                gap: 10, 
+                justifyContent: 'center',
+                maxHeight: '340px',
+                overflowY: 'auto',
+                padding: '4px'
+              }}>
+                {MAJOR_STATES.map((state) => {
+                  const count = stateCounts[state] || 0;
+                  const isSelected = selectedState === state;
+                  return (
+                    <motion.button
+                      key={state}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        setSelectedState(state);
+                        if (onSelectState) onSelectState(state);
+                      }}
+                      style={{
+                        padding: '10px 18px',
+                        borderRadius: '100px',
+                        border: isSelected ? '2px solid #FF9431' : '1.5px solid rgba(0,0,0,0.06)',
+                        background: isSelected ? 'rgba(255,148,49,0.08)' : '#fff',
+                        color: isSelected ? '#FF9431' : '#0f172a',
+                        fontSize: 13,
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        boxShadow: '0 4px 10px rgba(0,0,0,0.02)',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <span>📍 {state}</span>
+                      <span style={{ 
+                        background: isSelected ? '#FF9431' : 'rgba(0,0,0,0.05)', 
+                        color: isSelected ? '#fff' : '#475569',
+                        padding: '2px 8px', 
+                        borderRadius: 100, 
+                        fontSize: 10,
+                        fontWeight: 900
+                      }}>
+                        {count}
+                      </span>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <svg ref={svgRef} viewBox="0 0 560 640" className={styles.svg} style={{ width: '100%', height: '100%', display: 'block', opacity: loading ? 0 : 1, transition: 'opacity 0.8s ease-in-out' }} />
+          )}
           
-          {selectedState && (
+          {selectedState && !mob && (
             <motion.div 
               initial={{ opacity: 0, y: 10, scale: 0.9 }} 
               animate={{ opacity: 1, y: 0, scale: 1 }} 

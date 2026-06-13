@@ -2187,8 +2187,10 @@ export default function CreatorProfilePage() {
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', paddingBottom: '100px', overflow: 'visible' }}>
       <Seo 
-        title={`${c.name} | Verified Creator`}
-        description={c.bio || `${c.name} is an elite storyteller and verified digital content creator on CreatorBharat, ${c.city || 'Jaipur'}, India.`}
+        title={`${c.name} (@${c.handle || 'creator'}) — Verified Profile`}
+        description={c.bio || `${c.name} is an elite storytelling content creator specializing in ${Array.isArray(c.niche) ? c.niche.join(', ') : (c.niche || 'Digital Content')} from ${c.city || 'Bharat'}. View portfolio, reach stats & campaign history on CreatorBharat.`}
+        image={c.profile_pic || c.avatarUrl}
+        type="profile"
         jsonLd={profileJsonLd}
       />
       <ProfileHero c={c} stats={stats} navigate={navigate} st={st} dsp={dsp} mob={mob} onRate={handleRateClick} onContact={() => setActiveTab('connect')} onMediaKit={handleMediaKitOpen} navVisible={navVisible} onBrief={handlePackageSelect} />

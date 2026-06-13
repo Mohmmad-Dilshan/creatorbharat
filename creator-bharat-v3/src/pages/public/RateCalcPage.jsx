@@ -168,7 +168,7 @@ const AuthLockOverlay = ({ mob, navigate }) => (
       marginBottom: '16px',
       lineHeight: 1.1
     }}>
-      Audited Pricing Intelligence is <span style={{ color: '#FF9431' }}>Locked</span>
+      Pricing Calculations <span style={{ color: '#FF9431' }}>Locked</span>
     </h2>
 
     <p style={{
@@ -179,7 +179,7 @@ const AuthLockOverlay = ({ mob, navigate }) => (
       fontWeight: 500,
       marginBottom: '40px'
     }}>
-      Sign up or log in to calculate accurate market rates, cinematic reel pricing, and story metrics powered by CreatorBharat Official Audit database.
+      You have used your 2 free trial calculations. Sign in or create a free account to unlock unlimited calculations, Youtube audits, and premium campaign rates.
     </p>
 
     <div style={{
@@ -214,7 +214,7 @@ const AuthLockOverlay = ({ mob, navigate }) => (
       </button>
 
       <button
-        onClick={() => navigate('/register')}
+        onClick={() => navigate('/join')}
         style={{
           background: '#ffffff',
           color: '#0f172a',
@@ -523,6 +523,12 @@ export default function RateCalcPage() {
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [F, setF] = useState({ platform: 'Instagram', followers: 25000, niche: 'Lifestyle', er: 4.2 });
   const [result, setResult] = useState(null);
+  const [calcCount, setCalcCount] = useState(() => {
+    return Number(localStorage.getItem('cb_ratecalc_count') || 0);
+  });
+
+  const isLocked = !isAuth && calcCount >= 2;
+  const isFirstMount = React.useRef(true);
 
   useEffect(() => {
     const h = () => setMob(globalThis.innerWidth < 768);
@@ -556,7 +562,18 @@ export default function RateCalcPage() {
 
   useEffect(() => {
     calculateRates();
-  }, [F]);
+    
+    if (isAuth) return;
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+    setCalcCount(prev => {
+      const next = prev + 1;
+      localStorage.setItem('cb_ratecalc_count', next);
+      return next;
+    });
+  }, [F, isAuth]);
 
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh' }}>
@@ -574,7 +591,7 @@ export default function RateCalcPage() {
          <div style={{ background: '#fff', borderRadius: '48px', padding: mob ? '24px' : '60px', boxShadow: '0 40px 100px rgba(0,0,0,0.06)', border: '1px solid #f1f5f9', position: 'relative', overflow: 'hidden' }}>
             
             {/* Glassmorphic AuthLock Overlay */}
-            {!isAuth && <AuthLockOverlay mob={mob} navigate={navigate} />}
+            {isLocked && <AuthLockOverlay mob={mob} navigate={navigate} />}
 
             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.2fr 0.8fr', gap: mob ? '40px' : '80px' }}>
                

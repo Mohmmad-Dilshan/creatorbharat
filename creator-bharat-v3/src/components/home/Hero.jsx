@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import PropTypes from 'prop-types';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { W, LS } from '../../utils/helpers';
 import { apiCall } from '../../utils/api';
 import { Btn } from '@/components/common/Primitives';
@@ -13,56 +13,91 @@ import {
   GithubIcon, TwitchIcon 
 } from '../icons/SocialIcons';
 
-const HeroValueProps = memo(({ mob }) => (
-  <div className="au d3" style={{ 
-    width: '100%', 
-    maxWidth: 1200, 
-    marginBottom: mob ? 60 : 100,
-    padding: mob ? '0 16px' : '0 40px',
-    boxSizing: 'border-box',
-    position: 'relative'
-  }}>
-    <div style={{ 
-      background: '#fff',
-      padding: mob ? '40px 24px' : '80px 64px',
-      borderRadius: mob ? 32 : 48,
-      border: '1.5px solid rgba(0,0,0,0.05)',
-      boxShadow: '0 20px 40px rgba(0,0,0,0.03)',
-      display: 'flex',
-      flexDirection: mob ? 'column' : 'row',
-      alignItems: 'center',
-      gap: mob ? 32 : 80,
-      textAlign: mob ? 'center' : 'left'
-    }}>
-      <div style={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 20px', background: 'rgba(255,148,49,0.08)', borderRadius: 100, marginBottom: mob ? 16 : 24, margin: mob ? '0 auto 16px' : '0 0 24px 0' }}>
-          <Globe size={14} color="#FF9431" />
-          <span style={{ fontSize: 11, fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '3px' }}>The Bharat Narrative</span>
-        </div>
-        <h2 style={{ fontSize: mob ? 28 : 56, fontWeight: 950, color: '#0f172a', lineHeight: 1.1, letterSpacing: '-0.04em', margin: 0 }}>
-          Find Every <br />
-          <span style={{ color: '#FF9431' }}>Tier City</span> <br />
-          Creator.
-        </h2>
-      </div>
+const CITIES_LIST = ['Jaipur', 'Mumbai', 'Lucknow', 'Indore', 'Bhopal', 'Surat', 'Bhilwara', 'Patna', 'Kochi'];
 
-      <div style={{ flex: 1.2, width: '100%', display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start' }}>
-        <p style={{ 
-          fontSize: mob ? 16 : 24, 
-          color: '#475569', 
-          fontWeight: 600, 
-          lineHeight: mob ? 1.5 : 1.6, 
-          margin: 0,
-          fontFamily: "'Outfit', sans-serif"
-        }}>
-          At CreatorBharat, we are mapping the heartbeat of India’s talent. From hidden gems in <span style={{ color: '#FF9431', fontWeight: 900 }}>Tier 2 & 3 cities</span> to bustling metros, we find and verify every creator to provide them with a <span style={{ color: '#0f172a', fontWeight: 900 }}>Unique Digital ID</span>. 
-          <br /><br />
-          Dive into their raw journeys through <span style={{ color: '#0f172a', fontWeight: 900 }}>Articles & Podcasts</span>, and join the mission by <span style={{ color: '#138808', fontWeight: 900 }}>Supporting & Rating</span> your favorite stars. This is where Bharat’s voice find its home.
-        </p>
+const HeroValueProps = memo(({ mob }) => {
+  const [cityIdx, setCityIdx] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCityIdx(prev => (prev + 1) % CITIES_LIST.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="au d3" style={{ 
+      width: '100%', 
+      maxWidth: 1200, 
+      marginBottom: mob ? 60 : 100,
+      padding: mob ? '0 16px' : '0 40px',
+      boxSizing: 'border-box',
+      position: 'relative'
+    }}>
+      <div style={{ 
+        background: '#fff',
+        padding: mob ? '40px 24px' : '80px 64px',
+        borderRadius: mob ? 32 : 48,
+        border: '1.5px solid rgba(0,0,0,0.05)',
+        boxShadow: '0 20px 40px rgba(0,0,0,0.03)',
+        display: 'flex',
+        flexDirection: mob ? 'column' : 'row',
+        alignItems: 'center',
+        gap: mob ? 32 : 80,
+        textAlign: mob ? 'center' : 'left'
+      }}>
+        <div style={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 20px', background: 'rgba(255,148,49,0.08)', borderRadius: 100, marginBottom: mob ? 16 : 24, margin: mob ? '0 auto 16px' : '0 0 24px 0' }}>
+            <Globe size={14} color="#FF9431" />
+            <span style={{ fontSize: 11, fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '3px' }}>The Bharat Narrative</span>
+          </div>
+          <h2 style={{ fontSize: mob ? 28 : 56, fontWeight: 950, color: '#0f172a', lineHeight: 1.1, letterSpacing: '-0.04em', margin: 0 }}>
+            Find Every <br />
+            <span style={{ color: '#FF9431' }}>Tier City</span> <br />
+            Creator.
+          </h2>
+        </div>
+
+        <div style={{ flex: 1.2, width: '100%', display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start' }}>
+          <p style={{ 
+            fontSize: mob ? 16 : 24, 
+            color: '#475569', 
+            fontWeight: 600, 
+            lineHeight: mob ? 1.5 : 1.6, 
+            margin: 0,
+            fontFamily: "'Outfit', sans-serif"
+          }}>
+            At CreatorBharat, we are mapping the heartbeat of India’s talent. From hidden gems in{' '}
+            <span style={{ 
+              display: 'inline-flex', 
+              position: 'relative', 
+              overflow: 'hidden', 
+              height: mob ? '24px' : '34px', 
+              verticalAlign: 'middle', 
+              padding: '0 4px' 
+            }}>
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={CITIES_LIST[cityIdx]}
+                  initial={{ y: mob ? 12 : 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: mob ? -12 : -20, opacity: 0 }}
+                  transition={{ duration: 0.35, ease: 'easeOut' }}
+                  style={{ color: '#FF9431', fontWeight: 900, display: 'inline-block' }}
+                >
+                  {CITIES_LIST[cityIdx]}
+                </motion.span>
+              </AnimatePresence>
+            </span>
+            {' '}to bustling metros, we find and verify every creator to provide them with a <span style={{ color: '#0f172a', fontWeight: 900 }}>Unique Digital ID</span>. 
+            <br /><br />
+            Dive into their raw journeys through <span style={{ color: '#0f172a', fontWeight: 900 }}>Articles & Podcasts</span>, and join the mission by <span style={{ color: '#138808', fontWeight: 900 }}>Supporting & Rating</span> your favorite stars. This is where Bharat’s voice find its home.
+          </p>
+        </div>
       </div>
     </div>
-  </div>
-));
+  );
+});
 
 HeroValueProps.propTypes = { mob: PropTypes.bool };
 
