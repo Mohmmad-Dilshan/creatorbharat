@@ -1,4 +1,6 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'https://creatorbharat.onrender.com/api';
+import { ENV } from '@/config/env';
+
+const API_BASE = ENV.apiUrl;
 
 let _unauthorizedHandler = null;
 export function setUnauthorizedHandler(fn) { _unauthorizedHandler = fn; }

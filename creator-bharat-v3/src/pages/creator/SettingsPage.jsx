@@ -26,7 +26,7 @@ import {
   User
 } from 'lucide-react';
 import AuthGatekeeper from '../../components/auth/AuthGatekeeper';
-import { changePassword, sendOtp, updatePhone, updateEmail } from '../../utils/authService';
+import { changePassword, sendOtp, updatePhone, updateEmail, isUsingDemoAuth, getDemoOtp } from '../../utils/authService';
 import { useOtpTimer } from '../../hooks/useOtpTimer';
 import OtpInput from '../../components/auth/views/OtpInput';
 import { INDIAN_STATES, STATE_CITY_MAP, MAJOR_CITIES } from '../../utils/geo';
@@ -271,7 +271,7 @@ const SecurityTabContent = ({ st }) => {
       await sendOtp(newPhone);
       setOtpSent(true);
       startPhoneTimer(30);
-      dsp({ t: 'TOAST', d: { type: 'info', msg: 'Demo OTP is 1234' } });
+      dsp({ t: 'TOAST', d: { type: 'info', msg: isUsingDemoAuth() ? 'Demo OTP is ' + getDemoOtp() : 'OTP sent successfully.' } });
     } catch (err) {
       setPhoneError(err.message || 'Failed to send OTP. Please try again.');
     } finally {
@@ -312,7 +312,7 @@ const SecurityTabContent = ({ st }) => {
       if (err.status === 409) {
         setPhoneError('This mobile number is already registered.');
       } else {
-        setPhoneError(err.message || 'OTP verification failed. Please try 1234.');
+        setPhoneError(err.message || 'OTP verification failed.');
       }
     } finally {
       setPhoneLoading(false);
@@ -464,7 +464,7 @@ const SecurityTabContent = ({ st }) => {
                </div>
              ) : (
                <form onSubmit={handleVerifyPhone} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                 <div style={{ color: '#475569', fontSize: 13, fontWeight: 600, marginBottom: 8 }}>OTP sent to +91 {newPhone}. (Use demo OTP: 1234)</div>
+                 <div style={{ color: '#475569', fontSize: 13, fontWeight: 600, marginBottom: 8 }}>OTP sent to +91 {newPhone}. {isUsingDemoAuth() && '(Use demo OTP: ' + getDemoOtp() + ')'}</div>
                  <OtpInput value={otp} onChange={setOtp} error={phoneError} />
                  
                  <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>

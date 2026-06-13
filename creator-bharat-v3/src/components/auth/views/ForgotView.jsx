@@ -31,13 +31,16 @@ const ForgotView = ({ setView }) => {
     }
 
     setLoading(true);
-    // Bypassing real API for frontend mode
-    setTimeout(() => {
+    try {
+      await sendForgotPassword(email);
       setSent(true);
       setTimer(30);
       setError(null);
+    } catch (err) {
+      setError(err.message || 'Failed to send reset link. Please try again.');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   if (sent) {

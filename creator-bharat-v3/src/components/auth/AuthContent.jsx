@@ -19,8 +19,7 @@ import ForgotView from './views/ForgotView.jsx';
 
 import { useNavigate } from 'react-router-dom';
 
-import { apiCall } from '../../utils/api';
-import { mergeRegistrationProfile } from '../../utils/authService';
+import { loginWithPassword, mergeRegistrationProfile } from '../../utils/authService';
 
 const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
   const { st, dsp } = useApp();
@@ -152,54 +151,15 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
     const password = e.target.password?.value;
 
     setLoading(true);
-    // Bypassing real API for frontend mode
-    setTimeout(() => {
-      const cleanEmail = email || 'user@creatorbharat.com';
-      const cleanName = cleanEmail.split('@')[0];
-      const isCreator = role === 'creator';
-      
-      const mockUser = {
-        id: isCreator ? 'c-1' : 'b-1',
-        email: cleanEmail,
-        name: cleanName.charAt(0).toUpperCase() + cleanName.slice(1),
-        role: role,
-      };
-      
-      if (isCreator) {
-        const allCreators = LS.get('cb_creators', []);
-        const matchedCreator = allCreators.find(c => c.email === cleanEmail);
-        
-        mockUser.creator = matchedCreator || {
-          id: 'c-1',
-          handle: cleanName,
-          city: 'Mumbai',
-          state: 'Maharashtra',
-          followers: 25000,
-          score: 92,
-          niche: ['Digital Creator'],
-          bio: 'Elite creator on CreatorBharat',
-          gallery: [],
-          full_story: { p1: '', quote: '', p2: '', p3: '' },
-          milestones: [],
-          services: [],
-          awards: [],
-          collabs: []
-        };
-      } else {
-        mockUser.brand = {
-          id: 'b-1',
-          companyName: cleanName.charAt(0).toUpperCase() + cleanName.slice(1) + ' Brands',
-          industry: 'Tech',
-          city: 'Mumbai',
-          state: 'Maharashtra'
-        };
-      }
-      
-      const mockToken = 'mock-jwt-token-' + Date.now();
-      onAuthSuccess(mockUser, mockToken);
+    try {
+      const { user, token } = await loginWithPassword({ email, password, role });
+      onAuthSuccess(user, token);
       dsp({ t: 'TOAST', d: { type: 'success', msg: `Welcome back!` } });
+    } catch (err) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Login failed. Please try again.' } });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   const isBrand = view === 'brand-register' || (view === 'login' && role === 'brand');

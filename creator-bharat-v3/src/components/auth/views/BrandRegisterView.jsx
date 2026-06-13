@@ -4,9 +4,8 @@ import { motion } from 'framer-motion';
 import { Mail, Phone, Lock, MapPin, CheckCircle2, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Btn, Fld } from '@/components/common/Primitives';
 import { useApp } from '@/core/context';
-import { LS } from '../../../utils/helpers.js';
 import { INDIAN_STATES, STATE_CITY_MAP, MAJOR_CITIES } from '../../../utils/geo.js';
-import { apiCall } from '../../../utils/api.js';
+import { getDemoOtp, isUsingDemoAuth, registerBrand, sendOtp, verifyOtp } from '../../../utils/authService.js';
 
 const PhoneVerifySection = ({ form, up, blur, errors, mob, otpSent, verified, loading, sendOTP, verifyOTP, timer }) => {
   const isInactive = otpSent || timer > 0;
@@ -203,34 +202,38 @@ const BrandRegisterView = ({ mob, setView, onSuccess }) => {
     if (!Object.keys(errs).filter(k => !['website', 'linkedin'].includes(k)).length) setStep(2);
   };
 
-  const sendOTP = () => {
+  const sendOTP = async () => {
     if (form.phone.length < 10) {
       setErrors(prev => ({ ...prev, phone: 'Enter valid 10-digit number' }));
       return;
     }
     setLoading(true);
-    setTimeout(() => {
+    try {
+      await sendOtp(form.phone);
       setOtpSent(true);
       setTimer(30);
-      setLoading(false);
       setErrors(prev => ({ ...prev, phone: null }));
-      dsp({ t: 'TOAST', d: { type: 'info', msg: 'Demo OTP is 1234' } });
-    }, 800);
+      dsp({ t: 'TOAST', d: { type: 'info', msg: isUsingDemoAuth() ? `Demo OTP is ${getDemoOtp()}` : 'OTP sent successfully.' } });
+    } catch (err) {
+      setErrors(prev => ({ ...prev, phone: err.message || 'Failed to send OTP' }));
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const verifyOTP = () => {
-    if (form.otp !== '1234') {
-      setErrors(prev => ({ ...prev, otp: 'Invalid OTP' }));
-      dsp({ t: 'TOAST', d: { type: 'error', msg: 'Invalid OTP. Please use 1234' } });
-      return;
-    }
+  const verifyOTP = async () => {
     setLoading(true);
-    setTimeout(() => {
+    try {
+      await verifyOtp(form.phone, form.otp);
       setVerified(true);
-      setLoading(false);
       setErrors(prev => ({ ...prev, otp: null }));
       dsp({ t: 'TOAST', d: { type: 'success', msg: 'Phone verified successfully' } });
-    }, 800);
+    } catch (err) {
+      setErrors(prev => ({ ...prev, otp: err.message || 'Invalid OTP' }));
+      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Invalid OTP' } });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const submit = async (e) => {
@@ -243,26 +246,15 @@ const BrandRegisterView = ({ mob, setView, onSuccess }) => {
     if (Object.keys(errs).length) return;
 
     setLoading(true);
-    // Bypassing real API for frontend mode
-    setTimeout(() => {
-      const mockUser = {
-        id: 'b-' + Date.now(),
-        email: form.email,
-        name: form.contactName,
-        role: 'brand',
-        brand: {
-          id: 'b-' + Date.now(),
-          companyName: form.companyName,
-          industry: form.industry,
-          city: form.city,
-          state: form.state
-        }
-      };
-      const mockToken = 'mock-jwt-token-' + Date.now();
+    try {
+      const { user, token } = await registerBrand(form);
       dsp({ t: 'TOAST', d: { type: 'success', msg: 'Brand registered successfully!' } });
-      onSuccess(mockUser, mockToken);
+      onSuccess(user, token);
+    } catch (err) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Brand registration failed. Please try again.' } });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (

@@ -17,7 +17,8 @@ const T={
 (function(){
   const s=document.createElement('style');
   s.textContent=`
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    *:focus{outline:none}
     body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0a0a;color:#fff;-webkit-font-smoothing:antialiased}
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:wght@700;900&display=swap');
     ::-webkit-scrollbar{width:4px;height:4px}

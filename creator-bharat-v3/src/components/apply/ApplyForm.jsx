@@ -17,6 +17,7 @@ import { INDIAN_STATES, MAJOR_CITIES, STATE_CITY_MAP } from '../../utils/geo';
 
 import { useApp } from '@/core/context';
 import { useOtpTimer } from '../../hooks/useOtpTimer';
+import { getDemoOtp, isUsingDemoAuth, registerCreator, sendOtp, verifyOtp } from '../../utils/authService';
 
 // Simplified 1-step registration flow
 export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
@@ -81,14 +82,17 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
       return;
     }
     setLoading(true);
-    // Bypassing real API for frontend mode
-    setTimeout(() => {
+    try {
+      await sendOtp(F.phone);
       setOtpSent(true);
       startTimer(30);
       setErrors(prev => ({ ...prev, phone: null }));
+      dsp({ t: 'TOAST', d: { type: 'info', msg: isUsingDemoAuth() ? `Demo OTP is ${getDemoOtp()}` : 'OTP sent successfully.' } });
+    } catch (err) {
+      setErrors(prev => ({ ...prev, phone: err.message || 'Failed to send OTP' }));
+    } finally {
       setLoading(false);
-      dsp({ t: 'TOAST', d: { type: 'info', msg: 'Demo OTP is 1234' } });
-    }, 800);
+    }
   };
 
   const verifyOTP = async () => {
@@ -97,46 +101,32 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
       return;
     }
     setLoading(true);
-    // Bypassing real API for frontend mode
-    setTimeout(() => {
-      if (F.otp === '1234') {
-        setVerified(true);
-        setErrors(prev => ({ ...prev, otp: null }));
-        dsp({ t: 'TOAST', d: { type: 'success', msg: 'Phone verified successfully!' } });
-      } else {
-        setErrors(prev => ({ ...prev, otp: 'Invalid OTP. Please use 1234' }));
-        dsp({ t: 'TOAST', d: { type: 'error', msg: 'Invalid OTP. Use 1234' } });
-      }
+    try {
+      await verifyOtp(F.phone, F.otp);
+      setVerified(true);
+      setErrors(prev => ({ ...prev, otp: null }));
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Phone verified successfully!' } });
+    } catch (err) {
+      setErrors(prev => ({ ...prev, otp: err.message || 'Invalid OTP' }));
+      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Invalid OTP' } });
+    } finally {
       setLoading(false);
-    }, 800);
+    }
   };
 
   const submit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
-    // Bypassing real API for frontend mode
-    setTimeout(() => {
-      const cleanHandle = F.handle || F.name.toLowerCase().replace(/\s+/g, '');
-      const mockUser = {
-        id: 'c-' + Date.now(),
-        email: F.email,
-        name: F.name,
-        role: 'creator',
-        creator: {
-          id: 'c-' + Date.now(),
-          handle: cleanHandle,
-          city: F.city,
-          state: F.state,
-          followers: 0,
-          score: 85
-        }
-      };
-      const mockToken = 'mock-jwt-token-' + Date.now();
+    try {
+      const { user, token } = await registerCreator(F);
       dsp({ t: 'TOAST', d: { type: 'success', msg: 'Welcome to CreatorBharat!' } });
-      onSuccess(mockUser, mockToken, F.phone);
+      onSuccess(user, token, F.phone);
+    } catch (err) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Registration failed. Please try again.' } });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   const isInactive = otpSent || timer > 0;

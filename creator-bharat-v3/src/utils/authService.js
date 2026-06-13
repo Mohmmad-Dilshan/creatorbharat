@@ -1,10 +1,104 @@
 import { apiCall } from './api';
+import { isDemoAuthMode } from '@/config/env';
+
+const DEMO_DELAY = 800;
+const DEMO_OTP = '1234';
+
+const wait = (ms = DEMO_DELAY) => new Promise(resolve => setTimeout(resolve, ms));
+
+function makeMockToken() {
+  return 'mock-jwt-token-' + Date.now();
+}
+
+function cleanEmailName(email, fallback = 'user') {
+  const cleanEmail = email || `${fallback}@creatorbharat.com`;
+  const baseName = cleanEmail.split('@')[0] || fallback;
+  return {
+    cleanEmail,
+    cleanName: baseName.charAt(0).toUpperCase() + baseName.slice(1),
+    handle: baseName.toLowerCase().replace(/\s+/g, ''),
+  };
+}
+
+function normalizeAuthResponse(res) {
+  return {
+    token: res.token,
+    user: res.user || res.creator || res.brand || res,
+  };
+}
+
+function demoError(message, status = 400) {
+  const err = new Error(message);
+  err.status = status;
+  return err;
+}
+
+export function getDemoOtp() {
+  return DEMO_OTP;
+}
+
+export function isUsingDemoAuth() {
+  return isDemoAuthMode();
+}
+
+export async function loginWithPassword({ email, password, role }) {
+  if (!isDemoAuthMode()) {
+    return normalizeAuthResponse(await apiCall('/auth/login', {
+      method: 'POST',
+      body: { email, password },
+    }));
+  }
+
+  await wait(1000);
+  const { cleanEmail, cleanName, handle } = cleanEmailName(email);
+  const isCreator = role === 'creator';
+
+  const user = {
+    id: isCreator ? 'c-1' : 'b-1',
+    email: cleanEmail,
+    name: cleanName,
+    role,
+  };
+
+  if (isCreator) {
+    user.creator = {
+      id: 'c-1',
+      handle,
+      city: 'Mumbai',
+      state: 'Maharashtra',
+      followers: 25000,
+      score: 92,
+      niche: ['Digital Creator'],
+      bio: 'Elite creator on CreatorBharat',
+      gallery: [],
+      full_story: { p1: '', quote: '', p2: '', p3: '' },
+      milestones: [],
+      services: [],
+      awards: [],
+      collabs: [],
+    };
+  } else {
+    user.brand = {
+      id: 'b-1',
+      companyName: cleanName.charAt(0).toUpperCase() + cleanName.slice(1) + ' Brands',
+      industry: 'Tech',
+      city: 'Mumbai',
+      state: 'Maharashtra',
+    };
+  }
+
+  return { token: makeMockToken(), user };
+}
 
 /**
  * Send OTP to the given phone number for login or phone update.
  * POST /auth/send-otp
  */
 export async function sendOtp(phone) {
+  if (isDemoAuthMode()) {
+    await wait();
+    return { ok: true, demoOtp: DEMO_OTP, phone };
+  }
   return apiCall('/auth/send-otp', { method: 'POST', body: { phone } });
 }
 
@@ -13,7 +107,90 @@ export async function sendOtp(phone) {
  * POST /auth/verify-otp
  */
 export async function verifyOtp(phone, otp) {
+  if (isDemoAuthMode()) {
+    await wait();
+    if (otp !== DEMO_OTP) throw demoError(`Invalid OTP. Please use ${DEMO_OTP}`);
+    return { ok: true, phone };
+  }
   return apiCall('/auth/verify-otp', { method: 'POST', body: { phone, otp } });
+}
+
+export async function registerCreator(form) {
+  if (!isDemoAuthMode()) {
+    return normalizeAuthResponse(await apiCall('/auth/register/creator', {
+      method: 'POST',
+      body: {
+        email: form.email,
+        password: form.password,
+        name: form.name,
+        handle: form.handle || form.name.toLowerCase().replace(/\s+/g, ''),
+        city: form.city,
+        state: form.state,
+        phone: form.phone,
+        otp: form.otp,
+      },
+    }));
+  }
+
+  await wait(1000);
+  const cleanHandle = form.handle || form.name.toLowerCase().replace(/\s+/g, '');
+  return {
+    token: makeMockToken(),
+    user: {
+      id: 'c-' + Date.now(),
+      email: form.email,
+      name: form.name,
+      role: 'creator',
+      creator: {
+        id: 'c-' + Date.now(),
+        handle: cleanHandle,
+        city: form.city,
+        state: form.state,
+        followers: 0,
+        score: 85,
+      },
+    },
+  };
+}
+
+export async function registerBrand(form) {
+  if (!isDemoAuthMode()) {
+    return normalizeAuthResponse(await apiCall('/auth/register/brand', {
+      method: 'POST',
+      body: {
+        email: form.email,
+        password: form.password,
+        companyName: form.companyName,
+        contactName: form.contactName,
+        industry: form.industry,
+        phone: form.phone,
+        otp: form.otp,
+        website: form.website,
+        linkedin: form.linkedin,
+        gstin: form.gstin,
+        city: form.city,
+        state: form.state,
+      },
+    }));
+  }
+
+  await wait(1000);
+  return {
+    token: makeMockToken(),
+    user: {
+      id: 'b-' + Date.now(),
+      email: form.email,
+      name: form.contactName,
+      role: 'brand',
+      brand: {
+        id: 'b-' + Date.now(),
+        companyName: form.companyName,
+        industry: form.industry,
+        city: form.city,
+        state: form.state,
+      },
+    },
+  };
 }
 
 /**
@@ -21,6 +198,10 @@ export async function verifyOtp(phone, otp) {
  * POST /auth/forgot-password
  */
 export async function sendForgotPassword(email) {
+  if (isDemoAuthMode()) {
+    await wait(1000);
+    return { ok: true, email };
+  }
   return apiCall('/auth/forgot-password', { method: 'POST', body: { email } });
 }
 
@@ -29,6 +210,11 @@ export async function sendForgotPassword(email) {
  * POST /auth/reset-password
  */
 export async function resetPassword(token, newPassword) {
+  if (isDemoAuthMode()) {
+    await wait();
+    if (!token) throw demoError('This password reset link is invalid or has expired.');
+    return { ok: true };
+  }
   return apiCall('/auth/reset-password', { method: 'POST', body: { token, newPassword } });
 }
 
