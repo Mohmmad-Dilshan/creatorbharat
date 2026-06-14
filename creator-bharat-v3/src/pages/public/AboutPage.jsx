@@ -266,7 +266,7 @@ export default function AboutPage() {
       {/* CINEMATIC HERO SECTION */}
       <section style={{ 
         background: '#ffffff', 
-        padding: '140px 24px 100px', 
+        padding: mob ? '90px 20px 60px' : '130px 24px 100px', 
         position: 'relative',
         overflow: 'hidden',
         borderBottom: '1px solid #e2e8f0'

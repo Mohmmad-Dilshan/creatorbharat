@@ -125,7 +125,7 @@ export default function CalculatorsHubPage() {
 
       {/* Hero Section */}
       <section style={{ 
-        padding: mob ? '120px 20px 60px' : '180px 24px 120px', 
+        padding: mob ? '90px 20px 60px' : '130px 24px 100px', 
         position: 'relative', 
         overflow: 'hidden'
       }}>

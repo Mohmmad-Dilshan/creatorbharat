@@ -65,7 +65,7 @@ export default function PressPage() {
 
       {/* Hero Section */}
       <section style={{ 
-        padding: mob ? '120px 20px 80px' : '180px 24px 120px', 
+        padding: mob ? '90px 20px 60px' : '130px 24px 100px', 
         position: 'relative', 
         borderBottom: '1px solid #e2e8f0',
         overflow: 'hidden'

@@ -161,7 +161,7 @@ export default function PricingPage() {
       {/* Cinematic Hero */}
       <section style={{ 
         background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', 
-        padding: '180px 24px 140px', 
+        padding: mob ? '90px 20px 60px' : '130px 24px 100px', 
         position: 'relative',
         overflow: 'hidden',
         borderBottom: '1px solid #e2e8f0'
