@@ -159,186 +159,158 @@ export default function PricingPage() {
       `}</style>
 
       {/* Cinematic Hero */}
+      {/* Cinematic Hero */}
       <section style={{ 
         background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', 
         padding: mob ? '90px 20px 60px' : '130px 24px 100px', 
         position: 'relative',
         overflow: 'hidden',
+        minHeight: mob ? 'auto' : '520px',
+        display: 'flex',
+        alignItems: 'center',
         borderBottom: '1px solid #e2e8f0'
       }}>
-        {/* Abstract Background Elements */}
-        <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '40%', height: '40%', background: '#FF9431', borderRadius: '50%', filter: 'blur(150px)', opacity: 0.05 }} />
-        <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '40%', height: '40%', background: '#10B981', borderRadius: '50%', filter: 'blur(150px)', opacity: 0.03 }} />
-        
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1 }}>
-          <div className="pricing-landing-grid">
-            {/* Left side: text and selectors */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start' }}>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                style={{ 
-                  display: 'inline-flex', 
-                  alignItems: 'center', 
-                  gap: '10px', 
-                  background: 'rgba(255, 148, 49, 0.06)', 
-                  padding: '10px 20px', 
-                  borderRadius: '100px',
-                  marginBottom: '32px',
-                  border: '1px solid rgba(255, 148, 49, 0.15)',
-                  backdropFilter: 'blur(10px)'
-                }}
-              >
-                <Sparkles size={16} color="#FF9431" />
-                <span style={{ fontSize: '13px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Value-Driven Ecosystem</span>
-              </motion.div>
+        {/* Full-bleed background poster image (real humans, no text in image) */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/pricing_hero.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: mob ? 'center' : '20% center',
+          opacity: mob ? 0.25 : 0.95,
+          zIndex: 0
+        }} />
 
-              <motion.h1 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                style={{ fontSize: mob ? '40px' : '68px', fontWeight: 950, color: '#0f172a', marginBottom: '24px', letterSpacing: '-0.04em', lineHeight: 1.05, textAlign: mob ? 'center' : 'left' }}
-              >
-                Invest in Your <br />
-                <span style={{ background: 'linear-gradient(90deg, #FF9431, #0f172a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Digital Future.</span>
-              </motion.h1>
-              
-              <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                style={{ fontSize: mob ? '15px' : '18px', color: '#475569', maxWidth: '600px', margin: mob ? '0 auto 40px' : '0 0 40px 0', lineHeight: 1.6, fontWeight: 500, textAlign: mob ? 'center' : 'left' }}
-              >
-                Join Bharat's most transparent influencer ecosystem. Zero commission on deals. Affordable tools for everyone.
-              </motion.p>
+        {/* Gradient mask to transition background image to soft white on the left for text readability */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: mob 
+            ? 'linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%)'
+            : 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 30%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 70%)',
+          zIndex: 1,
+          pointerEvents: 'none'
+        }} />
 
-              {/* Perspective Toggle */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                style={{ 
-                  width: '100%',
-                  maxWidth: '360px', 
-                  margin: mob ? '0 auto' : '0 0 24px 0', 
-                  background: '#f1f5f9', 
-                  padding: '6px', 
-                  borderRadius: '100px', 
-                  display: 'flex',
-                  border: '1px solid #e2e8f0'
-                }}
-              >
-                 <TabButton active={tab === 'creator'} label="For Creators" icon={Zap} onClick={() => setTab('creator')} />
-                 <TabButton active={tab === 'brand'} label="For Brands" icon={Target} onClick={() => setTab('brand')} />
-              </motion.div>
-
-              {/* Duration Selector Switch */}
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                style={{ 
-                  display: 'inline-flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  background: '#f1f5f9', 
-                  padding: '6px', 
-                  borderRadius: '100px', 
-                  marginTop: mob ? '20px' : '0px',
-                  border: '1px solid #e2e8f0',
-                  gap: '4px'
-                }}
-              >
-                {[
-                  { id: '1m', label: '1 Month' },
-                  { id: '6m', label: '6 Months', save: tab === 'creator' ? 'Save ~15%' : 'Save ~33%' },
-                  { id: '1y', label: '1 Year', save: tab === 'creator' ? 'Save ~15%' : 'Save ~45%' }
-                ].map(d => {
-                  const active = duration === d.id;
-                  return (
-                    <button
-                      key={d.id}
-                      onClick={() => setDuration(d.id)}
-                      style={{
-                        padding: '10px 20px',
-                        borderRadius: '100px',
-                        border: 'none',
-                        background: active ? '#FF9431' : 'transparent',
-                        color: active ? '#fff' : '#64748b',
-                        fontSize: '13px',
-                        fontWeight: 900,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-                      }}
-                    >
-                      {d.label}
-                      {d.save && (
-                        <span style={{ 
-                          fontSize: '9px', 
-                          background: active ? '#fff' : 'rgba(16, 185, 129, 0.1)', 
-                          color: active ? '#FF9431' : '#10B981', 
-                          padding: '2px 6px', 
-                          borderRadius: '100px',
-                          fontWeight: 950
-                        }}>
-                          {d.save}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </motion.div>
-            </div>
-
-            {/* Right side: Canva Visual Image */}
+        <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%', padding: '0 24px', position: 'relative', zIndex: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start', maxWidth: mob ? '100%' : '600px' }}>
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              whileHover={{ y: -6 }}
-              style={{
-                background: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: 24,
-                padding: 12,
-                boxShadow: '0 20px 40px rgba(255, 148, 49, 0.05)',
-                position: 'relative',
-                overflow: 'hidden'
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              style={{ 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                gap: '10px', 
+                background: 'rgba(255, 148, 49, 0.06)', 
+                padding: '10px 20px', 
+                borderRadius: '100px',
+                marginBottom: '32px',
+                border: '1px solid rgba(255, 148, 49, 0.15)',
+                backdropFilter: 'blur(10px)'
               }}
             >
-              <div style={{
-                position: 'absolute', inset: 0,
-                background: 'radial-gradient(circle at 80% 20%, rgba(255, 148, 49, 0.05) 0%, transparent 60%)',
-                pointerEvents: 'none'
-              }} />
-              <div style={{
-                borderRadius: 16,
-                overflow: 'hidden',
-                position: 'relative',
-                paddingTop: '75%', // 4:3 Aspect Ratio
-                background: '#f8fafc'
-              }}>
-                <img
-                  src="/pricing_hero.png"
-                  alt="Secure Payments & Trust Plans"
-                  style={{
-                    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-                    objectFit: 'cover'
-                  }}
-                />
-              </div>
-              <div style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                marginTop: 12, padding: '0 8px'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff9431' }} className="animate-pulse" />
-                  <span style={{ fontSize: 11, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Trust Escrow Sync</span>
-                </div>
-                <span style={{ fontSize: 11, fontWeight: 700, color: '#10B981' }}>Secure SSL</span>
-              </div>
+              <Sparkles size={16} color="#FF9431" />
+              <span style={{ fontSize: '13px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Value-Driven Ecosystem</span>
+            </motion.div>
+
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              style={{ fontSize: mob ? '40px' : '68px', fontWeight: 950, color: '#0f172a', marginBottom: '24px', letterSpacing: '-0.04em', lineHeight: 1.05, textAlign: mob ? 'center' : 'left' }}
+            >
+              Invest in Your <br />
+              <span style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Digital Future.</span>
+            </motion.h1>
+            
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              style={{ fontSize: mob ? '15px' : '18px', color: '#475569', maxWidth: '600px', margin: mob ? '0 auto 40px' : '0 0 40px 0', lineHeight: 1.6, fontWeight: 500, textAlign: mob ? 'center' : 'left' }}
+            >
+              Join Bharat's most transparent influencer ecosystem. Zero commission on deals. Affordable tools for everyone.
+            </motion.p>
+
+            {/* Perspective Toggle */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              style={{ 
+                width: '100%',
+                maxWidth: '360px', 
+                margin: mob ? '0 auto 24px' : '0 0 24px 0', 
+                background: '#ffffff', 
+                padding: '6px', 
+                borderRadius: '100px', 
+                display: 'flex',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 4px 10px rgba(0,0,0,0.02)'
+              }}
+            >
+               <TabButton active={tab === 'creator'} label="For Creators" icon={Zap} onClick={() => setTab('creator')} />
+               <TabButton active={tab === 'brand'} label="For Brands" icon={Target} onClick={() => setTab('brand')} />
+            </motion.div>
+
+            {/* Duration Selector Switch */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{ 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                background: '#ffffff', 
+                padding: '6px', 
+                borderRadius: '100px', 
+                border: '1px solid #e2e8f0',
+                gap: '4px',
+                boxShadow: '0 4px 10px rgba(0,0,0,0.02)'
+              }}
+            >
+              {[
+                { id: '1m', label: '1 Month' },
+                { id: '6m', label: '6 Months', save: tab === 'creator' ? 'Save ~15%' : 'Save ~33%' },
+                { id: '1y', label: '1 Year', save: tab === 'creator' ? 'Save ~15%' : 'Save ~45%' }
+              ].map(d => {
+                const active = duration === d.id;
+                return (
+                  <button
+                    key={d.id}
+                    onClick={() => setDuration(d.id)}
+                    style={{
+                      padding: '10px 20px',
+                      borderRadius: '100px',
+                      border: 'none',
+                      background: active ? 'linear-gradient(135deg, #FF9431 0%, #ff7b00 100%)' : 'transparent',
+                      color: active ? '#fff' : '#64748b',
+                      fontSize: '13px',
+                      fontWeight: 900,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                      boxShadow: active ? '0 4px 12px rgba(255, 148, 49, 0.2)' : 'none'
+                    }}
+                  >
+                    {d.label}
+                    {d.save && (
+                      <span style={{ 
+                        fontSize: '9px', 
+                        background: active ? '#fff' : 'rgba(16, 185, 129, 0.1)', 
+                        color: active ? '#FF9431' : '#10B981', 
+                        padding: '2px 6px', 
+                        borderRadius: '100px',
+                        fontWeight: 950
+                      }}>
+                        {d.save}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </motion.div>
           </div>
         </div>
