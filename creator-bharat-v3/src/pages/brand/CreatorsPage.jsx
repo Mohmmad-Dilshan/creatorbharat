@@ -777,30 +777,60 @@ SpotlightCard.propTypes = {
   onClick: PropTypes.func.isRequired
 };
 
-const SpotlightHeader = ({ mob, onAction }) => (
+const SpotlightHeader = ({ mob, onAction, count }) => (
   <div style={{ 
     display: 'flex', 
-    alignItems: mob ? 'center' : 'flex-end', 
+    alignItems: mob ? 'flex-start' : 'center', 
     flexDirection: mob ? 'column' : 'row', 
-    textAlign: mob ? 'center' : 'left', 
+    textAlign: 'left', 
     justifyContent: 'space-between', 
-    marginBottom: mob ? '28px' : '36px',
+    marginBottom: mob ? '24px' : '36px',
     gap: 16
   }}>
     <div>
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
-        <Bdg color="orange" sm>HANDPICKED TALENT</Bdg>
-        <span className="live-pulse-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: '#EF4444', display: 'inline-block' }} />
+      {/* Row: badge + live dot */}
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', marginBottom: 10 }}>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          background: 'rgba(255,148,49,0.07)', border: '1.5px solid rgba(255,148,49,0.18)',
+          borderRadius: 100, padding: '5px 14px',
+          fontSize: 10, fontWeight: 950, color: '#FF9431', letterSpacing: '2px', textTransform: 'uppercase'
+        }}>
+          <span className="live-pulse-dot" style={{ width: 7, height: 7, borderRadius: '50%', background: '#EF4444', display: 'inline-block', flexShrink: 0 }} />
+          LIVE HANDPICKED TALENT
+        </div>
+        {count > 0 && (
+          <div style={{ fontSize: 13, fontWeight: 800, color: '#64748b', background: '#f1f5f9', padding: '4px 12px', borderRadius: 100 }}>
+            {count} verified
+          </div>
+        )}
       </div>
-      <h2 style={{ fontSize: mob ? '26px' : '36px', fontWeight: 950, color: '#0f172a', marginTop: '8px', letterSpacing: '-0.04em', lineHeight: 1.1 }}>Elite Spotlight</h2>
+      <h2 style={{ fontSize: mob ? '26px' : '40px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.05em', lineHeight: 1.0, marginBottom: 6 }}>Elite Spotlight</h2>
+      {!mob && <p style={{ fontSize: 14, color: '#94a3b8', fontWeight: 600, maxWidth: 440 }}>India's most followed and campaign-ready verified creators — handpicked by our AI talent engine.</p>}
     </div>
-    {!mob && <Btn outline sm onClick={onAction} style={{ borderRadius: '16px', padding: '12px 28px' }}>View All Verified</Btn>}
+    <button
+      onClick={onAction}
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: 10,
+        background: '#0f172a', color: '#fff', border: 'none',
+        padding: mob ? '12px 24px' : '14px 30px', borderRadius: 14,
+        fontSize: mob ? 13 : 14, fontWeight: 950, cursor: 'pointer',
+        boxShadow: '0 12px 28px rgba(15,23,42,0.14)', transition: 'all 0.3s',
+        whiteSpace: 'nowrap', flexShrink: 0,
+      }}
+      onMouseEnter={e => { e.currentTarget.style.background = '#FF9431'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(255,148,49,0.3)'; }}
+      onMouseLeave={e => { e.currentTarget.style.background = '#0f172a'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(15,23,42,0.14)'; }}
+    >
+      View All Verified
+      <ChevronRight size={16} />
+    </button>
   </div>
 );
 
 SpotlightHeader.propTypes = {
   mob: PropTypes.bool,
-  onAction: PropTypes.func.isRequired
+  onAction: PropTypes.func.isRequired,
+  count: PropTypes.number
 };
 
 const SpotlightList = ({ loading, skeletons, spotlightCreators, mob, onSelect }) => {
@@ -863,16 +893,23 @@ SpotlightList.propTypes = {
 const EliteSpotlight = ({ mob, all, setSelectedCreator, dsp, loading }) => {
   const skeletons = [1, 2, 3, 4];
   const spotlightCreators = useMemo(() => all.filter(c => c.verified).slice(0, 5), [all]);
+  const verifiedCount = useMemo(() => all.filter(c => c.verified).length, [all]);
+
+  const handleViewAll = () => {
+    dsp({ t: 'CF', v: { verified: true } });
+    const grid = document.getElementById('creators-grid-anchor');
+    if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
     <section style={{ 
       padding: mob ? '40px 0 20px' : '65px 0 45px', 
-      background: 'radial-gradient(circle at top right, rgba(255, 148, 49, 0.05) 0%, #fcfcfc 70%)', 
+      background: 'linear-gradient(180deg, #ffffff 0%, #fafafa 100%)', 
       borderBottom: '1px solid #f1f5f9', 
       overflow: 'hidden' 
     }}>
       <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px' }}>
-        <SpotlightHeader mob={mob} onAction={() => dsp({ t: 'CF', v: { verified: true } })} />
+        <SpotlightHeader mob={mob} onAction={handleViewAll} count={verifiedCount} />
         <SpotlightList 
           loading={loading} 
           skeletons={skeletons} 
@@ -988,90 +1025,82 @@ CreatorsFloatingIcons.propTypes = {
   mob: PropTypes.bool
 };
 
-const SearchLimitModal = ({ isOpen, onClose, onUnlock }) => {
+const FREE_SEARCH_LIMIT = 5;
+
+const SearchLimitModal = ({ isOpen, onClose, onUnlock, usedSearches }) => {
   if (!isOpen) return null;
+  const dots = Array.from({ length: FREE_SEARCH_LIMIT });
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       style={{
-        position: 'fixed', inset: 0, background: 'rgba(5, 5, 5, 0.85)',
-        backdropFilter: 'blur(20px)', zIndex: 1000000,
+        position: 'fixed', inset: 0, background: 'rgba(5,5,5,0.88)',
+        backdropFilter: 'blur(24px)', zIndex: 1000000,
         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px'
       }}
       onClick={onClose}
     >
       <motion.div
-        initial={{ y: 50, opacity: 0, scale: 0.95 }}
+        initial={{ y: 40, opacity: 0, scale: 0.96 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
-        exit={{ y: 50, opacity: 0, scale: 0.95 }}
+        exit={{ y: 40, opacity: 0, scale: 0.96 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 28 }}
         onClick={e => e.stopPropagation()}
         style={{
           width: '100%', maxWidth: '480px',
-          background: '#fff', borderRadius: '32px', padding: '40px 32px',
-          boxShadow: '0 50px 100px rgba(0,0,0,0.5)', textAlign: 'center',
-          position: 'relative', border: '1px solid rgba(0, 0, 0, 0.05)'
+          background: '#fff', borderRadius: '36px', padding: '44px 36px',
+          boxShadow: '0 60px 120px rgba(0,0,0,0.45)', textAlign: 'center',
+          position: 'relative',
         }}
       >
-        <button 
-          onClick={onClose} 
-          style={{ 
-            position: 'absolute', top: '20px', right: '20px', 
-            background: 'none', border: 'none', cursor: 'pointer',
-            color: '#64748b', fontSize: '20px', fontWeight: 'bold'
-          }}
-        >
-          ✕
-        </button>
+        {/* Close */}
+        <button onClick={onClose} style={{ position: 'absolute', top: '20px', right: '20px', background: '#f1f5f9', border: 'none', cursor: 'pointer', width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#64748b' }}>✕</button>
 
-        <div style={{
-          width: '64px',
-          height: '64px',
-          borderRadius: '20px',
-          background: 'linear-gradient(135deg, rgba(255, 148, 49, 0.1) 0%, rgba(234, 88, 12, 0.1) 100%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#EA580C',
-          margin: '0 auto 24px',
-          border: '1.5px solid rgba(234, 88, 12, 0.1)'
-        }}>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            <line x1="8" y1="11" x2="14" y2="11" strokeWidth="3" />
+        {/* Icon */}
+        <div style={{ width: 72, height: 72, borderRadius: 24, background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', boxShadow: '0 20px 40px rgba(15,23,42,0.2)' }}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF9431" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
         </div>
 
-        <h3 style={{ fontSize: '22px', fontWeight: 950, color: '#0f172a', marginBottom: '12px', letterSpacing: '-0.02em' }}>
-          Search Limit Reached
+        <div style={{ fontSize: 11, fontWeight: 950, color: '#FF9431', letterSpacing: '3px', textTransform: 'uppercase', marginBottom: 12 }}>Free Limit Reached</div>
+        <h3 style={{ fontSize: 26, fontWeight: 950, color: '#0f172a', marginBottom: 12, letterSpacing: '-0.03em', lineHeight: 1.1 }}>
+          You've used all<br />{FREE_SEARCH_LIMIT} free searches
         </h3>
-        <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, fontWeight: 550, marginBottom: '32px' }}>
-          You have reached the limit of 5 free searches as a guest. Sign in as a verified Brand to unlock unlimited searches, advanced filters, and direct creator access.
+        <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.65, fontWeight: 600, marginBottom: 28, maxWidth: 360, margin: '0 auto 28px' }}>
+          Sign in as a verified Brand to unlock unlimited searches, advanced filters, AI creator matching, and direct campaign tools.
         </p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <button 
+        {/* Search usage dots */}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, marginBottom: 32 }}>
+          {dots.map((_, i) => (
+            <div key={i} style={{
+              width: i < (usedSearches || FREE_SEARCH_LIMIT) ? 32 : 10,
+              height: 10, borderRadius: 100, transition: 'all 0.4s',
+              background: i < (usedSearches || FREE_SEARCH_LIMIT) ? '#FF9431' : '#f1f5f9',
+            }} />
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <button
             onClick={onUnlock}
             style={{
-              background: 'linear-gradient(90deg, #FF9431, #EA580C)',
-              color: '#fff', border: 'none', padding: '14px 28px',
-              borderRadius: '100px', fontSize: '14px', fontWeight: 850,
-              cursor: 'pointer', boxShadow: '0 12px 24px rgba(234, 88, 12, 0.25)',
-              width: '100%'
+              background: '#0f172a', color: '#fff', border: 'none',
+              padding: '16px 28px', borderRadius: 16,
+              fontSize: 15, fontWeight: 950, cursor: 'pointer',
+              boxShadow: '0 16px 36px rgba(15,23,42,0.18)', width: '100%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
             }}
           >
-            Unlock as Brand
+            Login as Brand — Unlock All
+            <ChevronRight size={18} />
           </button>
-          <button 
-            onClick={onClose}
-            style={{
-              background: 'none', border: 'none', color: '#64748b',
-              fontSize: '13px', fontWeight: 750, cursor: 'pointer', padding: '8px'
-            }}
-          >
-            Close & Reset Filters
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: 13, fontWeight: 750, cursor: 'pointer', padding: '8px' }}>
+            Continue Browsing (View Only)
           </button>
         </div>
       </motion.div>
@@ -1082,7 +1111,8 @@ const SearchLimitModal = ({ isOpen, onClose, onUnlock }) => {
 SearchLimitModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  onUnlock: PropTypes.func.isRequired
+  onUnlock: PropTypes.func.isRequired,
+  usedSearches: PropTypes.number
 };
 
 export default function CreatorsPage() {
@@ -1100,10 +1130,13 @@ export default function CreatorsPage() {
   const [selectedCreator, setSelectedCreator] = useState(null);
   const [searchLimitModalOpen, setSearchLimitModalOpen] = useState(false);
 
-  // Guest users: free to browse first 6 cards, filter/search triggers login prompt
+  // Track how many searches a guest has used (session only, resets on refresh)
+  const guestSearchCount = useRef(0);
+
+  // Guest users: 5 free filter/search actions, then login prompt
   const safeDsp = (action) => {
     if (action.t === 'CF' && !st.user) {
-      // Check if this is a real filter action (not a clear)
+      // Determine if this action is a real filter (not a reset/clear)
       const isClear = action.v && (
         action.v.q === '' &&
         (action.v.niche === '' || (Array.isArray(action.v.niche) && action.v.niche.length === 0)) &&
@@ -1114,13 +1147,20 @@ export default function CreatorsPage() {
       );
 
       if (!isClear) {
-        // Guest trying to filter — show login prompt
-        setSearchLimitModalOpen(true);
-        return;
+        guestSearchCount.current += 1;
+        if (guestSearchCount.current > FREE_SEARCH_LIMIT) {
+          // Limit exceeded — show premium gate
+          setSearchLimitModalOpen(true);
+          return;
+        }
+        // Still within free limit — allow, but update so UI can show counter
       }
     }
     dsp(action);
   };
+
+  // Remaining free searches (only relevant for guests)
+  const remainingSearches = Math.max(0, FREE_SEARCH_LIMIT - guestSearchCount.current);
 
   useEffect(() => {
     const h = () => setMob(globalThis.innerWidth < 768);
@@ -1534,6 +1574,42 @@ export default function CreatorsPage() {
         niches={NICHES} 
       />
 
+      {/* ── Guest free-search quota indicator ── */}
+      {!st.user && (
+        <div style={{
+          background: remainingSearches <= 2 ? 'rgba(255,148,49,0.04)' : '#fafafa',
+          borderBottom: '1px solid #f1f5f9',
+          padding: mob ? '10px 16px' : '10px 24px',
+        }}>
+          <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: 12, fontWeight: 800, color: remainingSearches <= 1 ? '#EA580C' : '#64748b' }}>
+                {remainingSearches > 0 ? `${remainingSearches} free search${remainingSearches !== 1 ? 'es' : ''} remaining` : 'Free search limit reached'}
+              </span>
+              <div style={{ display: 'flex', gap: 4 }}>
+                {Array.from({ length: FREE_SEARCH_LIMIT }).map((_, i) => (
+                  <div key={i} style={{
+                    width: 20, height: 6, borderRadius: 100,
+                    background: i < guestSearchCount.current ? '#FF9431' : '#e2e8f0',
+                    transition: 'background 0.3s',
+                  }} />
+                ))}
+              </div>
+            </div>
+            <button
+              onClick={() => navigate('/login')}
+              style={{
+                background: 'none', border: '1px solid #e2e8f0',
+                padding: '6px 16px', borderRadius: 100,
+                fontSize: 12, fontWeight: 800, color: '#0f172a', cursor: 'pointer',
+              }}
+            >
+              Login as Brand — Unlimited Access
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* MAP & DISCOVERY SECTIONS - CENTERED */}
       <section style={{ background: '#fff', borderTop: '1px solid #f1f5f9' }}>
         <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px' }}>
@@ -1603,8 +1679,9 @@ export default function CreatorsPage() {
         {searchLimitModalOpen && (
           <SearchLimitModal 
             isOpen={searchLimitModalOpen} 
-            onClose={() => { setSearchLimitModalOpen(false); clearFilters(); }} 
-            onUnlock={() => { setSearchLimitModalOpen(false); navigate('/login'); }} 
+            onClose={() => setSearchLimitModalOpen(false)} 
+            onUnlock={() => { setSearchLimitModalOpen(false); navigate('/login'); }}
+            usedSearches={guestSearchCount.current}
           />
         )}
       </AnimatePresence>
