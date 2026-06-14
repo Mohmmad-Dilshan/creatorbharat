@@ -102,7 +102,7 @@ export default function VerificationPage() {
         }}>
           <ShieldCheck size={18} color="#94a3b8" />
           <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-            Secure Verification Protocol v3.1
+            Secure Verification Protocol v1.1
           </span>
         </div>
       </motion.div>

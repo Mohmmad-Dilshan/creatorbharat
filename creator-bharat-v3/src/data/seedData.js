@@ -21,7 +21,7 @@ export const SEED_CREATORS = [
     likes: 14582,
     tagline: 'Bridging elite luxury automobiles, futuristic tech, and authentic Indian storytelling.',
     philosophy: "Content creation isn't just about demonstrating silicon specifications or horsepower; it's about building a desire and connecting with the heart of every tech and auto lover in Bharat.",
-    honest_review: "CreatorBharat V3 has completely transformed my brand collaboration pipeline. The media kit builder and live analytical proof allow me to close tier-1 automotive campaigns with absolute transparency and 3x faster response times.",
+    honest_review: "CreatorBharat has completely transformed my brand collaboration pipeline. The media kit builder and live analytical proof allow me to close tier-1 automotive campaigns with absolute transparency and 3x faster response times.",
     ai_intel: {
       match: '98%',
       summary: 'Vibrant Cinematic Editing, Luxury Niche Authority, and High Conversion ROI Potential',
@@ -370,5 +370,5 @@ export const SEED_CREATORS = [
 export const SEED_CAMPAIGNS = [
   { id: 'c1', title: 'Summer Collection Launch', brand: 'Nykaa', budget: 500000, targetCity: 'Mumbai', status: 'active' },
   { id: 'c2', title: 'Tech Review Series', brand: 'Samsung', budget: 1200000, targetCity: 'Bangalore', status: 'active' },
-  { id: 'c3', title: 'Fitness Challenge 2024', brand: 'Cult.fit', budget: 300000, targetCity: 'Delhi', status: 'completed' }
+  { id: 'c3', title: 'Fitness Challenge 2026', brand: 'Cult.fit', budget: 300000, targetCity: 'Delhi', status: 'completed' }
 ];

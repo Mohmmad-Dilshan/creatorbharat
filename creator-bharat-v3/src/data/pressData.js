@@ -59,8 +59,8 @@ export const BRAND_ASSETS = [
 export const PRESS_RELEASES = [
   {
     date: "June 10, 2026",
-    title: "CreatorBharat V3 Launched: Setting up India's First Identity Layer for Tier 2 & 3 Creators",
-    excerpt: "CreatorBharat today announced the rollout of V3, introducing an AI-driven digital trust score, localized regional discovery, and 0% commission structures for micro-creators.",
+    title: "CreatorBharat Launched: Setting up India's First Identity Layer for Tier 2 & 3 Creators",
+    excerpt: "CreatorBharat today announced the rollout of v1, introducing an AI-driven digital trust score, localized regional discovery, and 0% commission structures for micro-creators.",
     url: "#"
   },
   {
@@ -78,7 +78,7 @@ export const PRESS_RELEASES = [
 ];
 
 export const CORPORATE_FACTS = [
-  { label: "Founded", value: "2025" },
+  { label: "Founded", value: "2026" },
   { label: "Headquarters", value: "Rajasthan, India" },
   { label: "Key Focus Cities", value: "Bhilwara, Jaipur, Indore, Jodhpur, Bhopal" },
   { label: "Creator Commission", value: "0% Lifetime Commission" },

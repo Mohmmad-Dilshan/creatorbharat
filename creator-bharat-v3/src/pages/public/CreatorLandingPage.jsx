@@ -350,9 +350,9 @@ export default function CreatorLandingPage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3,1fr)', gap: 24 }}>
             {[
-              { phase: 'Phase 1', title: 'Rajasthan Launch', timeline: '2024 → 2025', desc: 'Bhilwara, Jaipur, Udaipur ke creators ke saath shuruwaat. 150+ creators manually mapped. City interns hired from MDS University, BITS Pilani.', icon: '🌱', color: '#10B981', done: true },
-              { phase: 'Phase 2', title: 'Tier-2 India Belt', timeline: '2025 → 2026', desc: 'UP, MP, Gujarat, Bihar ke Tier-2 cities mein expansion. College Ambassador Program launch. 2,400+ creators onboarded.', icon: '🚀', color: '#FF9431', done: true },
-              { phase: 'Phase 3', title: 'National Scale', timeline: '2027 onwards', desc: 'Pan-India presence. 50,000+ verified creators. Summit events every quarter. Creator Union formally registered. International brand partnerships.', icon: '🇮🇳', color: '#7C3AED', done: false },
+              { phase: 'Phase 1', title: 'Rajasthan Launch', timeline: 'Jan - Mar 2026', desc: 'Bhilwara, Jaipur, Udaipur ke creators ke saath shuruwaat. 150+ creators manually mapped. City interns hired from MDS University, BITS Pilani.', icon: '🌱', color: '#10B981', done: true },
+              { phase: 'Phase 2', title: 'Tier-2 India Belt', timeline: 'Apr - Jun 2026', desc: 'UP, MP, Gujarat, Bihar ke Tier-2 cities mein expansion. College Ambassador Program launch. 2,400+ creators onboarded.', icon: '🚀', color: '#FF9431', done: true },
+              { phase: 'Phase 3', title: 'National Scale', timeline: 'Jul 2026 onwards', desc: 'Pan-India presence. 50,000+ verified creators. Summit events every quarter. Creator Union formally registered. International brand partnerships.', icon: '🇮🇳', color: '#7C3AED', done: false },
             ].map((step, i) => (
               <motion.div key={step.phase} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} style={{ padding: 36, background: step.done ? '#fff' : 'rgba(124,58,237,0.03)', borderRadius: 32, border: `1.5px solid ${step.done ? '#f1f5f9' : '#7C3AED30'}`, position: 'relative', overflow: 'hidden' }}>
                 {step.done && <div style={{ position: 'absolute', top: 20, right: 20 }}><Bdg sm color="green">Completed</Bdg></div>}

@@ -26,7 +26,7 @@ export const BLUEPRINT_CARDS = [
 
 export const TIMELINE_DATA = [
   {
-    year: "2024: THE SPARK",
+    year: "JAN 2026: THE SPARK",
     title: "The Bhilwara Prototype",
     desc: "Identifying the massive gap between regional talent in Tier 2 & 3 cities and national brand opportunities. We tested our first directory manually mapping 150 local creators in Rajasthan.",
     stats: [
@@ -35,7 +35,7 @@ export const TIMELINE_DATA = [
     ]
   },
   {
-    year: "2025: THE INFRASTRUCTURE",
+    year: "APR 2026: THE INFRASTRUCTURE",
     title: "The Trust & Identity Layer",
     desc: "Launched our proprietary Creator Score algorithm and verified Digital Pehchan. This allowed upcoming creators to present data-validated analytics without expensive agencies.",
     stats: [
@@ -44,7 +44,7 @@ export const TIMELINE_DATA = [
     ]
   },
   {
-    year: "2026: THE REVOLUTION",
+    year: "JUN 2026: THE EXPANSION",
     title: "Elite National Marketplace",
     desc: "Scaled CreatorBharat into an elite SaaS platform with zero broker fee policies, automated ROI calculators, interactive podium leaderboards, and safe escrow ledger systems.",
     stats: [

@@ -308,7 +308,7 @@ export default function ContactPage() {
       {/* PRESS & DATA KIT REQUEST MODAL */}
       <Modal open={showDataModal} onClose={() => setShowDataModal(false)} title="Request Premium Data Kit">
         <form onSubmit={handleDataKitSubmit} style={{ padding: '24px' }}>
-          <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '24px', lineHeight: 1.6 }}>Please provide your business details. Our team will verify and send the '2024 Creator Economy Insights' report to your inbox.</p>
+          <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '24px', lineHeight: 1.6 }}>Please provide your business details. Our team will verify and send the '2026 Creator Economy Insights' report to your inbox.</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <input required type="text" placeholder="Organization Name" style={{ width: '100%', padding: '14px 20px', borderRadius: '12px', border: '1px solid #e2e8f0', outline: 'none' }} />
             <input required type="email" placeholder="Work Email" style={{ width: '100%', padding: '14px 20px', borderRadius: '12px', border: '1px solid #e2e8f0', outline: 'none' }} />

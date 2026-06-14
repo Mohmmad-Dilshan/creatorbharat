@@ -1322,7 +1322,7 @@ const DevBar = ({ profileCompleted, verificationStatus, updateProfileComplete, u
 
 // ─── Welcome Onboarding Slides ──────────────────────────────────────────────────
 const SLIDES = [
-  { index: 0, title: 'Namaste, Creator! 🇮🇳', description: "Welcome to CreatorBharat V3 — India's elite brand cooperation gateway. Let's sync your creator credentials.", icon: Sparkles, color: C.saffron },
+  { index: 0, title: 'Namaste, Creator! 🇮🇳', description: "Welcome to CreatorBharat — India's elite brand cooperation gateway. Let's sync your creator credentials.", icon: Sparkles, color: C.saffron },
   { index: 1, title: 'Live Interactive Portfolio 📸', description: "Configure your digital profile hub connected directly to verified social APIs. Brands search you directly.", icon: Globe, color: '#6366F1' },
   { index: 2, title: 'Escrow Protected Deals 🔒', description: "Accept briefs and get paid via secure escrow verification before you upload a single content asset.", icon: ShieldCheck, color: C.green },
 ];

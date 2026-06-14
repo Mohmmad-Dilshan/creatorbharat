@@ -484,8 +484,8 @@ const CreatorHonestReviewCard = ({ c, mob }) => {
 
   const honestReviewText = c?.honest_review || c?.platform_review || c?.philosophy || (
     reviewerName === 'Arjun Kapoor' 
-    ? "CreatorBharat V3 has completely transformed my brand collaboration pipeline. The media kit builder and live analytical proof allow me to close tier-1 automotive campaigns with absolute transparency and 3x faster response times."
-    : `CreatorBharat V3 is the ultimate growth layer for my career. It handles my media kit verification and escrow payments automatically, allowing me to build premium brand relationships with 100% trust.`
+    ? "CreatorBharat has completely transformed my brand collaboration pipeline. The media kit builder and live analytical proof allow me to close tier-1 automotive campaigns with absolute transparency and 3x faster response times."
+    : `CreatorBharat is the ultimate growth layer for my career. It handles my media kit verification and escrow payments automatically, allowing me to build premium brand relationships with 100% trust.`
   );
 
   const dpImg = c?.photo || c?.avatarUrl || c?.profile_pic || c?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(reviewerName)}&background=FF9431&color=fff&size=200`;

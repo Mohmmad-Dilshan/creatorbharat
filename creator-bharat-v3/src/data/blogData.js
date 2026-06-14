@@ -45,7 +45,7 @@ export const blogData = [
       <p><strong>Platform Side:</strong> Creator Union protection, monthly missions, events, verification system, aur zero brokerage infrastructure.</p>
 
       <h2 id="bhilwara-origin">Bhilwara se Shuruwaat Kyun?</h2>
-      <p>Founder Mohmmad Dilshan ne 2024 mein Bhilwara, Rajasthan se ye platform start kiya. Reason simple tha — Bhilwara ke local creators ke paas talent tha, audience thi, lekin koi system nahi tha unhe national brands se connect karne ka. Agency ka route expensive aur opaque tha. <a href="/creator-hub">CreatorBharat ne direct route khola.</a></p>
+      <p>Founder Mohmmad Dilshan ne 2026 mein Bhilwara, Rajasthan se ye platform start kiya. Reason simple tha — Bhilwara ke local creators ke paas talent tha, audience thi, lekin koi system nahi tha unhe national brands se connect karne ka. Agency ka route expensive aur opaque tha. <a href="/creator-hub">CreatorBharat ne direct route khola.</a></p>
 
       <h2 id="how-different">Doosre Platforms se Kaise Alag?</h2>
       <p>Instagram/YouTube sirf distribution platforms hain — wo creators ko brands se connect nahi karte. Influencer agencies middlemen hain jo 15-30% commission lete hain. CreatorBharat <strong>zero commission</strong> leta hai. Jo creators kamaaते hain, 100% unka hai.</p>

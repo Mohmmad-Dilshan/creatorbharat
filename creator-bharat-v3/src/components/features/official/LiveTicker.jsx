@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 const liveFeed = [
   "Node 102 synced in Maharashtra",
-  "Protocol V3.2 deployment started",
+  "Protocol v1.0 deployment started",
   "Security audit 100% completed",
   "New brand cluster synced in Delhi",
   "Regional shard update: UP-Node active"
