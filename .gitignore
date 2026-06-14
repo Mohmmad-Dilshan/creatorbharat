@@ -67,4 +67,5 @@ PROJECT_CONTEX
 # creatorbharat-admin/
 # creatorbharat-backend/
 
- 
+# Ignore AI configuration/instructions folder
+.ai/
