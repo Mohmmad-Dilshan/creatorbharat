@@ -1,100 +1,149 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
-import { Crown, ShieldCheck, MapPin, Star } from 'lucide-react';
+import { Crown, ShieldCheck, MapPin, Award, Activity } from 'lucide-react';
 import Sparkline from './Sparkline';
 
 const THEME = {
   primary: '#FF9431',
   secondary: '#3b82f6',
-  dark: '#090d16',
   green: '#10b981',
-  bronze: '#EA580C'
+  bronze: '#EA580C',
+  gold: '#F59E0B'
 };
 
-const GoldPodiumCard = ({ c, mob, navigate }) => {
-  const mockPoints = [15, 5, 12, 2, 8];
+const MetricBox = ({ label, value, color }) => (
+  <div style={{ textAlign: 'left' }}>
+    <div style={{ fontSize: '9px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</div>
+    <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a', marginTop: '2px', color }}>{value}</div>
+  </div>
+);
+
+MetricBox.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  color: PropTypes.string
+};
+
+// Pedestal Card template for the podium
+const PedestalColumn = ({ c, rank, height, border, background, shadow, glowColor, badgeBg, badgeText, navigate }) => {
+  const mockPoints = rank === 1 ? [15, 5, 12, 2, 8] : rank === 2 ? [15, 8, 10, 3, 6] : [15, 12, 10, 6, 2];
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ y: -10, scale: 1.02 }}
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -8, boxShadow: `0 30px 60px ${glowColor}25` }}
       onClick={() => navigate(`/creator/${c.id}`)}
       style={{
-        background: 'linear-gradient(165deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.005) 100%)',
-        backdropFilter: 'blur(16px)',
-        padding: mob ? '32px' : '48px 36px', 
-        borderRadius: '40px', 
-        border: '2px solid rgba(255, 148, 49, 0.4)',
-        textAlign: 'center', 
-        position: 'relative', 
-        overflow: 'hidden', 
-        boxShadow: '0 30px 60px rgba(255, 148, 49, 0.15)', 
+        background,
+        border,
+        borderRadius: '36px',
+        padding: '36px 28px',
+        textAlign: 'center',
+        width: '320px',
+        position: 'relative',
+        boxShadow: shadow,
         cursor: 'pointer',
-        order: mob ? 0 : 2
-      }}
-    >
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: `linear-gradient(90deg, transparent, ${THEME.primary}, transparent)` }} />
-      
-      <div style={{ position: 'relative', width: '110px', height: '110px', margin: '0 auto 28px' }}>
-         <div style={{ width: '100%', height: '100%', borderRadius: '36px', overflow: 'hidden', border: '4px solid #FF9431', boxShadow: '0 16px 32px rgba(255,148,49,0.2)' }}>
-            {c.avatar ? (
-               <img src={c.avatar} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            ) : (
-               <div style={{ width: '100%', height: '100%', background: THEME.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px', fontWeight: 950, color: '#fff' }}>
-                 {c.name.charAt(0)}
-               </div>
-            )}
-         </div>
-         <div style={{ position: 'absolute', bottom: -8, right: -8, width: '42px', height: '42px', background: '#090d16', border: '2px solid #FF9431', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 16px rgba(0,0,0,0.2)' }}>
-            <Crown size={20} color={THEME.primary} style={{ filter: 'drop-shadow(0 0 3px rgba(255, 148, 49, 0.4))' }} />
-         </div>
-      </div>
-
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(255,148,49,0.12)', padding: '8px 16px', borderRadius: '100px', marginBottom: '20px', border: '1px solid rgba(255,148,49,0.2)' }}>
-        <ShieldCheck size={13} color={THEME.primary} />
-        <span style={{ fontSize: '11px', fontWeight: 950, color: THEME.primary, textTransform: 'uppercase', letterSpacing: '1.5px' }}>
-          TOP ELITE #1
-        </span>
-      </div>
-
-      <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#fff', marginBottom: '8px', letterSpacing: '-0.5px' }}>{c.name}</h3>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '32px' }}>
-         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'rgba(255,255,255,0.4)', fontSize: '13px', fontWeight: 600 }}>
-            <MapPin size={12} /> {c.location}
-         </div>
-         <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }} />
-         <div style={{ color: THEME.primary, fontSize: '13px', fontWeight: 850 }}>{c.niche}</div>
-      </div>
-
-      {/* Structured Telemetry Grid */}
-      <div style={{ 
-        background: 'rgba(255,255,255,0.02)', 
-        padding: '20px', 
-        borderRadius: '24px', 
-        border: '1px solid rgba(255,255,255,0.05)',
         display: 'flex',
         flexDirection: 'column',
-        gap: '14px'
-      }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: '10px' }}>
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: '9px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Followers</div>
-            <div style={{ fontSize: '15px', fontWeight: 950, color: '#fff', marginTop: '2px' }}>{c.followers}</div>
+        justifyContent: 'space-between',
+        height: height
+      }}
+    >
+      <div>
+        {/* Crown / Rank Indicator */}
+        <div style={{ position: 'relative', width: '90px', height: '90px', margin: '0 auto 20px' }}>
+          <div style={{ 
+            width: '100%', 
+            height: '100%', 
+            borderRadius: '28px', 
+            overflow: 'hidden', 
+            border: `3px solid ${glowColor}`, 
+            boxShadow: `0 10px 20px ${glowColor}20` 
+          }}>
+            {c.avatar ? (
+              <img src={c.avatar} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              <div style={{ width: '100%', height: '100%', background: glowColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', fontWeight: 950, color: '#fff' }}>
+                {c.name.charAt(0)}
+              </div>
+            )}
           </div>
+          
+          <div style={{ 
+            position: 'absolute', 
+            bottom: -6, 
+            right: -6, 
+            width: '36px', 
+            height: '36px', 
+            background: '#ffffff', 
+            borderRadius: '50%', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            border: `2px solid ${glowColor}`,
+            boxShadow: '0 4px 10px rgba(0,0,0,0.1)' 
+          }}>
+            {rank === 1 ? (
+              <Crown size={16} color={THEME.gold} fill={THEME.gold} />
+            ) : (
+              <span style={{ color: glowColor, fontWeight: 950, fontSize: '13px' }}>#{rank}</span>
+            )}
+          </div>
+        </div>
+
+        {/* Verification Tag */}
+        <div style={{ 
+          display: 'inline-flex', 
+          alignItems: 'center', 
+          gap: '4px', 
+          background: badgeBg, 
+          padding: '6px 12px', 
+          borderRadius: '100px', 
+          marginBottom: '16px', 
+          border: `1px solid ${glowColor}25` 
+        }}>
+          <ShieldCheck size={12} color={glowColor} />
+          <span style={{ fontSize: '10px', fontWeight: 950, color: glowColor, textTransform: 'uppercase', letterSpacing: '1px' }}>
+            {badgeText}
+          </span>
+        </div>
+
+        {/* Creator Identity */}
+        <h3 style={{ fontSize: '22px', fontWeight: 950, color: '#0f172a', marginBottom: '6px', letterSpacing: '-0.5px' }}>{c.name}</h3>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#64748b', fontSize: '12px', fontWeight: 600 }}>
+            <MapPin size={12} /> {c.location}
+          </div>
+          <span style={{ width: '3px', height: '3px', borderRadius: '50%', background: '#cbd5e1' }} />
+          <span style={{ color: glowColor, fontSize: '12px', fontWeight: 850 }}>{c.niche}</span>
+        </div>
+      </div>
+
+      {/* Telemetry Grid */}
+      <div style={{ 
+        background: 'rgba(15,23,42,0.02)', 
+        padding: '18px', 
+        borderRadius: '24px', 
+        border: '1px solid rgba(15,23,42,0.05)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '12px'
+      }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', borderBottom: '1px solid rgba(15,23,42,0.04)', paddingBottom: '8px' }}>
+          <MetricBox label="Followers" value={c.followers} />
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '9px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Engagement</div>
+            <div style={{ fontSize: '9px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Engagement</div>
             <div style={{ fontSize: '15px', fontWeight: 950, color: THEME.green, marginTop: '2px' }}>{c.er}</div>
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', alignItems: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', alignItems: 'center' }}>
           <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: '9px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Impact Score</div>
-            <div style={{ fontSize: '22px', fontWeight: 950, color: '#fff', marginTop: '2px' }}>{c.score}<span style={{ fontSize: '12px', color: THEME.green }}>.9</span></div>
+            <div style={{ fontSize: '9px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Impact Score</div>
+            <div style={{ fontSize: '20px', fontWeight: 950, color: '#0f172a', marginTop: '2px' }}>{c.score}</div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-             <div style={{ fontSize: '9px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.5px' }}>Velocity</div>
-             <Sparkline color={THEME.primary} points={mockPoints} id={c.id} />
+            <Sparkline color={glowColor} points={mockPoints} id={c.id} />
           </div>
         </div>
       </div>
@@ -102,217 +151,142 @@ const GoldPodiumCard = ({ c, mob, navigate }) => {
   );
 };
 
-GoldPodiumCard.propTypes = {
+PedestalColumn.propTypes = {
   c: PropTypes.object.isRequired,
-  mob: PropTypes.bool,
+  rank: PropTypes.number.isRequired,
+  height: PropTypes.string.isRequired,
+  border: PropTypes.string.isRequired,
+  background: PropTypes.string.isRequired,
+  shadow: PropTypes.string.isRequired,
+  glowColor: PropTypes.string.isRequired,
+  badgeBg: PropTypes.string.isRequired,
+  badgeText: PropTypes.string.isRequired,
   navigate: PropTypes.func.isRequired
 };
 
-const SilverPodiumCard = ({ c, mob, navigate }) => {
-  const mockPoints = [15, 8, 10, 3, 6];
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ y: -10, scale: 1.02 }}
-      onClick={() => navigate(`/creator/${c.id}`)}
-      style={{
-        background: 'linear-gradient(165deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.005) 100%)',
-        backdropFilter: 'blur(16px)',
-        padding: mob ? '32px' : '48px 36px', 
-        borderRadius: '40px', 
-        border: '1.5px solid rgba(59, 130, 246, 0.3)',
-        textAlign: 'center', 
-        position: 'relative', 
-        overflow: 'hidden', 
-        boxShadow: '0 25px 50px rgba(59, 130, 246, 0.08)', 
-        cursor: 'pointer',
-        order: 1
-      }}
-    >
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: `linear-gradient(90deg, transparent, ${THEME.secondary}, transparent)` }} />
-      
-      <div style={{ position: 'relative', width: '110px', height: '110px', margin: '0 auto 28px' }}>
-         <div style={{ width: '100%', height: '100%', borderRadius: '36px', overflow: 'hidden', border: '4px solid #3b82f6', boxShadow: '0 16px 32px rgba(59, 130, 246, 0.15)' }}>
-            {c.avatar ? (
-               <img src={c.avatar} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            ) : (
-               <div style={{ width: '100%', height: '100%', background: THEME.secondary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px', fontWeight: 950, color: '#fff' }}>
-                 {c.name.charAt(0)}
-               </div>
-            )}
-         </div>
-         <div style={{ position: 'absolute', bottom: -8, right: -8, width: '42px', height: '42px', background: '#090d16', border: '2px solid #3b82f6', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 16px rgba(0,0,0,0.2)' }}>
-            <span style={{ color: THEME.secondary, fontWeight: 950, fontSize: '15px' }}>#2</span>
-         </div>
+// Mobile Fallback Card
+const MobileEliteCard = ({ c, rank, glowColor, badgeText, navigate }) => (
+  <motion.div
+    whileTap={{ scale: 0.98 }}
+    onClick={() => navigate(`/creator/${c.id}`)}
+    style={{
+      background: '#ffffff',
+      border: `1.5px solid ${glowColor}30`,
+      padding: '20px',
+      borderRadius: '24px',
+      marginBottom: '16px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '16px',
+      boxShadow: '0 8px 24px rgba(0,0,0,0.03)',
+      cursor: 'pointer'
+    }}
+  >
+    <div style={{ fontSize: '20px', fontWeight: 950, color: glowColor, width: '32px' }}>#{rank}</div>
+    <div style={{ width: '60px', height: '60px', borderRadius: '18px', border: `2px solid ${glowColor}`, overflow: 'hidden' }}>
+      {c.avatar ? <img src={c.avatar} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : c.name.charAt(0)}
+    </div>
+    <div style={{ flex: 1 }}>
+      <div style={{ fontWeight: 900, color: '#0f172a', fontSize: '16px', display: 'flex', alignItems: 'center', gap: 4 }}>
+        {c.name}
+        {rank === 1 && <Crown size={14} color={THEME.gold} fill={THEME.gold} />}
       </div>
+      <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{c.niche} • {c.followers} • ER: {c.er}</div>
+    </div>
+    <div style={{ textAlign: 'right' }}>
+      <div style={{ fontSize: '18px', fontWeight: 950, color: '#0f172a' }}>{c.score}</div>
+      <div style={{ fontSize: '9px', fontWeight: 900, color: glowColor, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Score</div>
+    </div>
+  </motion.div>
+);
 
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(59, 130, 246, 0.12)', padding: '8px 16px', borderRadius: '100px', marginBottom: '20px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
-        <ShieldCheck size={13} color={THEME.secondary} />
-        <span style={{ fontSize: '11px', fontWeight: 950, color: THEME.secondary, textTransform: 'uppercase', letterSpacing: '1.5px' }}>
-          {c.tier} Tier
-        </span>
-      </div>
-
-      <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#fff', marginBottom: '8px', letterSpacing: '-0.5px' }}>{c.name}</h3>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '32px' }}>
-         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'rgba(255,255,255,0.4)', fontSize: '13px', fontWeight: 600 }}>
-            <MapPin size={12} /> {c.location}
-         </div>
-         <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }} />
-         <div style={{ color: THEME.secondary, fontSize: '13px', fontWeight: 850 }}>{c.niche}</div>
-      </div>
-
-      {/* Structured Telemetry Grid */}
-      <div style={{ 
-        background: 'rgba(255,255,255,0.02)', 
-        padding: '20px', 
-        borderRadius: '24px', 
-        border: '1px solid rgba(255,255,255,0.05)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '14px'
-      }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: '10px' }}>
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: '9px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Followers</div>
-            <div style={{ fontSize: '15px', fontWeight: 950, color: '#fff', marginTop: '2px' }}>{c.followers}</div>
-          </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '9px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Engagement</div>
-            <div style={{ fontSize: '15px', fontWeight: 950, color: THEME.green, marginTop: '2px' }}>{c.er}</div>
-          </div>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', alignItems: 'center' }}>
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: '9px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Impact Score</div>
-            <div style={{ fontSize: '22px', fontWeight: 950, color: '#fff', marginTop: '2px' }}>{c.score}<span style={{ fontSize: '12px', color: THEME.green }}>.9</span></div>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-             <div style={{ fontSize: '9px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.5px' }}>Velocity</div>
-             <Sparkline color={THEME.secondary} points={mockPoints} id={c.id} />
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-SilverPodiumCard.propTypes = {
+MobileEliteCard.propTypes = {
   c: PropTypes.object.isRequired,
-  mob: PropTypes.bool,
+  rank: PropTypes.number.isRequired,
+  glowColor: PropTypes.string.isRequired,
+  badgeText: PropTypes.string.isRequired,
   navigate: PropTypes.func.isRequired
 };
 
-const BronzePodiumCard = ({ c, mob, navigate }) => {
-  const mockPoints = [15, 12, 10, 6, 2];
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ y: -10, scale: 1.02 }}
-      onClick={() => navigate(`/creator/${c.id}`)}
-      style={{
-        background: 'linear-gradient(165deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.005) 100%)',
-        backdropFilter: 'blur(16px)',
-        padding: mob ? '32px' : '48px 36px', 
-        borderRadius: '40px', 
-        border: '1.5px solid rgba(234, 88, 12, 0.3)',
-        textAlign: 'center', 
-        position: 'relative', 
-        overflow: 'hidden', 
-        boxShadow: '0 20px 40px rgba(234, 88, 12, 0.08)', 
-        cursor: 'pointer',
-        order: mob ? 2 : 3
-      }}
-    >
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: `linear-gradient(90deg, transparent, ${THEME.bronze}, transparent)` }} />
-      
-      <div style={{ position: 'relative', width: '110px', height: '110px', margin: '0 auto 28px' }}>
-         <div style={{ width: '100%', height: '100%', borderRadius: '36px', overflow: 'hidden', border: '4px solid #EA580C', boxShadow: '0 16px 32px rgba(234, 88, 12, 0.15)' }}>
-            {c.avatar ? (
-               <img src={c.avatar} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            ) : (
-               <div style={{ width: '100%', height: '100%', background: THEME.bronze, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px', fontWeight: 950, color: '#fff' }}>
-                 {c.name.charAt(0)}
-               </div>
-            )}
-         </div>
-         <div style={{ position: 'absolute', bottom: -8, right: -8, width: '42px', height: '42px', background: '#090d16', border: '2px solid #EA580C', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 16px rgba(0,0,0,0.2)' }}>
-            <span style={{ color: THEME.bronze, fontWeight: 950, fontSize: '15px' }}>#3</span>
-         </div>
+export default function ElitePodiumCard({ creators, mob, navigate }) {
+  if (!creators || creators.length === 0) return null;
+  const first = creators[0];
+  const second = creators[1];
+  const third = creators[2];
+
+  if (mob) {
+    return (
+      <div style={{ padding: '0 4px', marginBottom: '32px' }}>
+        <h4 style={{ fontSize: '18px', fontWeight: 950, color: '#0f172a', marginBottom: '16px' }}>Elite Top 3</h4>
+        {first && <MobileEliteCard c={first} rank={1} glowColor={THEME.gold} badgeText="Top Elite #1" navigate={navigate} />}
+        {second && <MobileEliteCard c={second} rank={2} glowColor={THEME.secondary} badgeText="Elite Rank #2" navigate={navigate} />}
+        {third && <MobileEliteCard c={third} rank={3} glowColor={THEME.bronze} badgeText="Elite Rank #3" navigate={navigate} />}
       </div>
-
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(234, 88, 12, 0.12)', padding: '8px 16px', borderRadius: '100px', marginBottom: '20px', border: '1px solid rgba(234, 88, 12, 0.2)' }}>
-        <ShieldCheck size={13} color={THEME.bronze} />
-        <span style={{ fontSize: '11px', fontWeight: 950, color: THEME.bronze, textTransform: 'uppercase', letterSpacing: '1.5px' }}>
-          {c.tier} Tier
-        </span>
-      </div>
-
-      <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#fff', marginBottom: '8px', letterSpacing: '-0.5px' }}>{c.name}</h3>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '32px' }}>
-         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'rgba(255,255,255,0.4)', fontSize: '13px', fontWeight: 600 }}>
-            <MapPin size={12} /> {c.location}
-         </div>
-         <div style={{ width: '3px', height: '3px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }} />
-         <div style={{ color: THEME.bronze, fontSize: '13px', fontWeight: 850 }}>{c.niche}</div>
-      </div>
-
-      {/* Structured Telemetry Grid */}
-      <div style={{ 
-        background: 'rgba(255,255,255,0.02)', 
-        padding: '20px', 
-        borderRadius: '24px', 
-        border: '1px solid rgba(255,255,255,0.05)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '14px'
-      }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: '10px' }}>
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: '9px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Followers</div>
-            <div style={{ fontSize: '15px', fontWeight: 950, color: '#fff', marginTop: '2px' }}>{c.followers}</div>
-          </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '9px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Engagement</div>
-            <div style={{ fontSize: '15px', fontWeight: 950, color: THEME.green, marginTop: '2px' }}>{c.er}</div>
-          </div>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', alignItems: 'center' }}>
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: '9px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Impact Score</div>
-            <div style={{ fontSize: '22px', fontWeight: 950, color: '#fff', marginTop: '2px' }}>{c.score}<span style={{ fontSize: '12px', color: THEME.green }}>.9</span></div>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-             <div style={{ fontSize: '9px', fontWeight: 900, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.5px' }}>Velocity</div>
-             <Sparkline color={THEME.bronze} points={mockPoints} id={c.id} />
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-BronzePodiumCard.propTypes = {
-  c: PropTypes.object.isRequired,
-  mob: PropTypes.bool,
-  navigate: PropTypes.func.isRequired
-};
-
-export default function ElitePodiumCard({ c, i, mob, navigate }) {
-  if (i === 0) {
-    return <GoldPodiumCard c={c} mob={mob} navigate={navigate} />;
+    );
   }
-  if (i === 1) {
-    return <SilverPodiumCard c={c} mob={mob} navigate={navigate} />;
-  }
-  return <BronzePodiumCard c={c} mob={mob} navigate={navigate} />;
+
+  return (
+    <div style={{ 
+      display: 'flex', 
+      alignItems: 'flex-end', 
+      justifyContent: 'center', 
+      gap: '24px', 
+      margin: '20px 0 64px',
+      flexWrap: 'wrap'
+    }}>
+      {/* 2nd Place (Silver) Pedestal Column */}
+      {second && (
+        <PedestalColumn
+          c={second}
+          rank={2}
+          height="390px"
+          border="1px solid #e2e8f0"
+          background="linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)"
+          shadow="0 15px 35px rgba(59, 130, 246, 0.05)"
+          glowColor={THEME.secondary}
+          badgeBg="rgba(59, 130, 246, 0.08)"
+          badgeText="Elite Rank #2"
+          navigate={navigate}
+        />
+      )}
+
+      {/* 1st Place (Gold) Pedestal Column */}
+      {first && (
+        <PedestalColumn
+          c={first}
+          rank={1}
+          height="450px"
+          border="2px solid rgba(245, 158, 11, 0.3)"
+          background="linear-gradient(135deg, #ffffff 0%, #fffdf5 100%)"
+          shadow="0 25px 55px rgba(245, 158, 11, 0.12)"
+          glowColor={THEME.gold}
+          badgeBg="rgba(245, 158, 11, 0.08)"
+          badgeText="TOP ELITE #1"
+          navigate={navigate}
+        />
+      )}
+
+      {/* 3rd Place (Bronze) Pedestal Column */}
+      {third && (
+        <PedestalColumn
+          c={third}
+          rank={3}
+          height="360px"
+          border="1px solid #e2e8f0"
+          background="linear-gradient(135deg, #ffffff 0%, #fffaf5 100%)"
+          shadow="0 15px 35px rgba(234, 88, 12, 0.05)"
+          glowColor={THEME.bronze}
+          badgeBg="rgba(234, 88, 12, 0.08)"
+          badgeText="Elite Rank #3"
+          navigate={navigate}
+        />
+      )}
+    </div>
+  );
 }
 
 ElitePodiumCard.propTypes = {
-  c: PropTypes.object.isRequired,
-  i: PropTypes.number.isRequired,
+  creators: PropTypes.array.isRequired,
   mob: PropTypes.bool,
   navigate: PropTypes.func.isRequired
 };

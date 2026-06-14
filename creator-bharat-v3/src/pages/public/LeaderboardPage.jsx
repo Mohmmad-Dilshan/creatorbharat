@@ -19,8 +19,8 @@ import RankingsTable from '@/components/features/leaderboard/RankingsTable';
 const THEME = {
   primary: '#FF9431',
   secondary: '#3b82f6',
-  dark: '#090d16',
-  border: 'rgba(255, 255, 255, 0.08)',
+  dark: '#0f172a',
+  border: '#e2e8f0',
   green: '#10b981',
   red: '#f43f5e'
 };
@@ -150,7 +150,7 @@ export default function LeaderboardPage() {
   }, [sortedCreators]);
 
   return (
-    <div style={{ background: '#090d16', minHeight: '100vh', overflowX: 'hidden', color: '#fff' }}>
+    <div style={{ background: '#f8fafc', minHeight: '100vh', overflowX: 'hidden' }}>
       <Seo 
         title="Elite Leaderboard"
         description="Access verified real-time rankings of Bharat's leading influencers. Powered by proprietary engagement intelligence."
@@ -159,17 +159,17 @@ export default function LeaderboardPage() {
       
       <LeaderboardHero mob={mob} />
 
-      <main style={{ maxWidth: '1300px', margin: mob ? '-30px auto 120px' : '-60px auto 120px', padding: '0 24px', position: 'relative', zIndex: 10 }}>
+      <main style={{ maxWidth: '1120px', margin: mob ? '-30px auto 120px' : '-60px auto 120px', padding: '0 20px', position: 'relative', zIndex: 10 }}>
         
         {/* Floating Advanced Toolbar */}
         <div style={{ 
-          background: 'rgba(255, 255, 255, 0.03)', padding: mob ? '16px' : '12px 12px 12px 32px', 
-          borderRadius: '40px', boxShadow: '0 30px 70px rgba(0,0,0,0.2)', 
-          border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', flexDirection: mob ? 'column' : 'row', 
-          gap: '20px', alignItems: 'center', marginBottom: '56px', backdropFilter: 'blur(20px)' 
+          background: '#ffffff', padding: mob ? '16px' : '12px 12px 12px 32px', 
+          borderRadius: '40px', boxShadow: '0 20px 40px rgba(15,23,42,0.05)', 
+          border: '1px solid #e2e8f0', display: 'flex', flexDirection: mob ? 'column' : 'row', 
+          gap: '20px', alignItems: 'center', marginBottom: '56px' 
         }}>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', width: '100%', padding: '4px 0', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#fff', fontWeight: 950, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px', marginRight: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: THEME.dark, fontWeight: 950, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '1px', marginRight: '12px' }}>
                <Filter size={16} style={{ color: THEME.primary }} /> Filter
             </div>
             {categories.map(cat => (
@@ -181,7 +181,7 @@ export default function LeaderboardPage() {
                   borderRadius: '100px', 
                   border: 'none', 
                   background: activeTab === cat ? THEME.primary : 'transparent', 
-                  color: activeTab === cat ? '#fff' : 'rgba(255,255,255,0.4)', 
+                  color: activeTab === cat ? '#fff' : '#64748b', 
                   fontSize: '14px', 
                   fontWeight: 850, 
                   cursor: 'pointer', 
@@ -203,30 +203,30 @@ export default function LeaderboardPage() {
                 width: '100%', 
                 padding: '18px 24px 18px 56px', 
                 borderRadius: '100px', 
-                border: '1px solid rgba(255, 255, 255, 0.08)', 
-                background: 'rgba(255, 255, 255, 0.02)', 
-                color: '#fff',
+                border: '1px solid #e2e8f0', 
+                background: '#ffffff', 
+                color: THEME.dark,
                 fontSize: '15px', 
                 fontWeight: 600, 
                 outline: 'none', 
-                boxShadow: '0 4px 12px rgba(0,0,0,0.1)' 
+                boxShadow: '0 4px 12px rgba(0,0,0,0.02)' 
               }} 
             />
           </div>
         </div>
 
         {/* Intelligence Pulse Bar */}
-        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '20px', marginBottom: '64px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '20px', marginBottom: '56px' }}>
            {[
              { label: 'Network Reach', val: '420M+', icon: <Globe />, color: THEME.secondary },
              { label: 'Verified Creators', val: '12,402', icon: <ShieldCheck />, color: THEME.green },
              { label: 'Avg ROI Delta', val: '+24.8%', icon: <Activity />, color: THEME.primary }
            ].map((item) => (
-             <div key={item.label} style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '28px', borderRadius: '32px', border: '1px solid rgba(255, 255, 255, 0.06)', display: 'flex', alignItems: 'center', gap: '20px', backdropFilter: 'blur(12px)' }}>
-                <div style={{ width: '56px', height: '56px', background: item.color + '15', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: item.color }}>{item.icon}</div>
+             <div key={item.label} style={{ background: '#ffffff', padding: '28px', borderRadius: '32px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.015)' }}>
+                <div style={{ width: '56px', height: '56px', background: item.color + '10', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: item.color }}>{item.icon}</div>
                 <div>
                    <div style={{ fontSize: '11px', fontWeight: 950, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>{item.label}</div>
-                   <div style={{ fontSize: '24px', fontWeight: 950, color: '#fff' }}>{item.val}</div>
+                   <div style={{ fontSize: '24px', fontWeight: 950, color: THEME.dark }}>{item.val}</div>
                 </div>
              </div>
            ))}
@@ -255,9 +255,9 @@ export default function LeaderboardPage() {
                        style={{
                          padding: '10px 20px',
                          borderRadius: '100px',
-                         border: `1.5px solid ${active ? THEME.primary : 'rgba(255, 255, 255, 0.08)'}`,
-                         background: active ? 'rgba(255, 148, 49, 0.1)' : 'rgba(255, 255, 255, 0.02)',
-                         color: active ? THEME.primary : '#94a3b8',
+                         border: `1.5px solid ${active ? THEME.primary : '#e2e8f0'}`,
+                         background: active ? 'rgba(255, 148, 49, 0.08)' : '#ffffff',
+                         color: active ? THEME.primary : '#64748b',
                          fontWeight: 900,
                          fontSize: '13px',
                          cursor: 'pointer',
@@ -279,11 +279,7 @@ export default function LeaderboardPage() {
 
         {/* Podium (Top 3) */}
         {activeTab === 'Overall' && !search && (
-          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '32px', marginBottom: '80px', alignItems: 'flex-end' }}>
-             {sortedCreators.slice(0, 3).map((c, i) => (
-               <ElitePodiumCard key={c.id} c={c} i={i} mob={mob} navigate={navigate} />
-             ))}
-          </div>
+          <ElitePodiumCard creators={sortedCreators.slice(0, 3)} mob={mob} navigate={navigate} />
         )}
 
         {loading ? (
@@ -299,11 +295,11 @@ export default function LeaderboardPage() {
         <section style={{ 
           marginTop: '140px', 
           padding: mob ? '40px 20px' : '100px 80px', 
-          background: '#04060b', 
-          border: '1px solid rgba(255, 148, 49, 0.1)',
+          background: '#0a0f1d', 
           borderRadius: '64px', 
           position: 'relative', 
-          overflow: 'hidden' 
+          overflow: 'hidden',
+          border: '1px solid rgba(255,148,49,0.1)'
         }}>
            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.05, background: 'radial-gradient(circle at 100% 0%, #fff, transparent 50%)' }} />
            
@@ -340,7 +336,7 @@ export default function LeaderboardPage() {
                       onClick={() => navigate('/contact')}
                       style={{ 
                         width: '100%', 
-                        background: '#fff', 
+                        background: '#ffffff', 
                         color: '#090d16', 
                         border: 'none',
                         fontWeight: 950, 
@@ -352,10 +348,10 @@ export default function LeaderboardPage() {
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.background = '#FF9431';
-                        e.currentTarget.style.color = '#fff';
+                        e.currentTarget.style.color = '#ffffff';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.background = '#fff';
+                        e.currentTarget.style.background = '#ffffff';
                         e.currentTarget.style.color = '#090d16';
                       }}
                     >
@@ -374,7 +370,25 @@ export default function LeaderboardPage() {
                  <h2 style={{ fontSize: mob ? '48px' : '72px', fontWeight: 950, marginBottom: '24px', letterSpacing: '-0.05em', lineHeight: 0.9 }}>Join Bharat's <br/> Hall of Fame.</h2>
                  <p style={{ fontSize: '20px', color: 'rgba(255,255,255,0.85)', maxWidth: '700px', margin: '0 auto 48px', fontWeight: 500 }}>Join the circle of Bharat's most influential creators. Apply for official verification today.</p>
                  <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-                    <Btn lg onClick={() => navigate('/join')} style={{ background: '#fff', color: '#EA580C', borderRadius: '100px', fontWeight: 950, padding: '20px 56px', fontSize: '18px', border: 'none', cursor: 'pointer' }}>Apply for Verification</Btn>
+                    <button 
+                      onClick={() => navigate('/join')} 
+                      style={{ 
+                        background: '#fff', 
+                        color: '#EA580C', 
+                        borderRadius: '100px', 
+                        fontWeight: 950, 
+                        padding: '20px 56px', 
+                        fontSize: '18px', 
+                        border: 'none', 
+                        cursor: 'pointer',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                        transition: '0.2s'
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+                    >
+                      Apply for Verification
+                    </button>
                  </div>
               </div>
            </div>
