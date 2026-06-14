@@ -5,7 +5,7 @@ import { useApp } from '@/core/context';
 import { Btn, Logo } from '@/components/common/Primitives';
 import { scrollToTop } from '../../utils/helpers';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Users, Megaphone, BookOpen, Heart, LogOut, LayoutDashboard, Briefcase, Bookmark, Settings, ChevronRight, User, LifeBuoy, MessageSquare, Sparkles, Search, Calculator, Trophy, ShieldCheck, Home, IndianRupee, Bell, Award, Zap, Wallet, BarChart3 } from 'lucide-react';
+import { X, Users, Megaphone, BookOpen, Heart, LogOut, LayoutDashboard, Briefcase, Bookmark, Settings, ChevronRight, User, LifeBuoy, MessageSquare, Sparkles, Search, Calculator, Trophy, ShieldCheck, Home, IndianRupee, Bell, Award, Zap, Wallet, BarChart3, Camera } from 'lucide-react';
 
 export default function MobileMenu({ open }) {
   const { st, dsp } = useApp();
@@ -72,6 +72,7 @@ export default function MobileMenu({ open }) {
   ];
 
   const supportLinksPublic = [
+    { path: '/gallery', l: 'Ecosystem Gallery', i: Camera },
     { path: '/faq', l: 'Help Center', i: LifeBuoy },
     { path: '/contact', l: 'Contact Support', i: MessageSquare },
     { path: '/ambassador', l: 'Campus Ambassador', i: Award },
@@ -81,6 +82,7 @@ export default function MobileMenu({ open }) {
   ];
 
   const supportLinksCreator = [
+    { path: '/creator/gallery', l: 'Ecosystem Gallery', i: Camera },
     { path: '/creator/help', l: 'Help & FAQ', i: LifeBuoy },
     { path: '/creator/stories', l: 'Success Stories', i: Award },
     { path: '/creator/blog', l: 'Platform Blog', i: BookOpen },
@@ -88,6 +90,7 @@ export default function MobileMenu({ open }) {
   ];
 
   const supportLinksBrand = [
+    { path: '/gallery', l: 'Ecosystem Gallery', i: Camera },
     { path: '/faq', l: 'Help Center', i: LifeBuoy },
     { path: '/brand-guidelines', l: 'Brand Rules', i: ShieldCheck },
     { path: '/stories', l: 'Success Stories', i: Award },

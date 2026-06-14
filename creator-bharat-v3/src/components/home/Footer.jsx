@@ -28,6 +28,7 @@ const NAV_COLS = [
       { label: 'Leaderboard', path: '/leaderboard' },
       { label: 'Rate Calculator', path: '/rate-calc' },
       { label: 'Verification Guide', path: '/verify-guide' },
+      { label: 'Ecosystem Gallery', path: '/gallery' },
       { label: 'Blog & Insights', path: '/blog' },
       { label: 'Success Stories', path: '/stories' },
     ],

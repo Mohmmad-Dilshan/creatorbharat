@@ -587,6 +587,7 @@ export default function Navbar() {
     { 
       label: 'Resources', 
       items: [
+        { path: '/gallery', label: 'Ecosystem Gallery' },
         { path: '/stories', label: 'Success Stories' },
         { path: '/blog', label: 'Creator Hub' },
         { path: '/ambassador', label: 'Campus Ambassador' },
@@ -619,6 +620,7 @@ export default function Navbar() {
     {
       label: 'Resources',
       items: [
+        { path: '/creator/gallery', label: 'Ecosystem Gallery' },
         { path: '/creator/stories', label: 'Success Stories' },
         { path: '/creator/blog', label: 'Platform Blog' },
         { path: '/creator/help', label: 'Support & Help' }
@@ -642,6 +644,7 @@ export default function Navbar() {
     {
       label: 'Resources',
       items: [
+        { path: '/gallery', label: 'Ecosystem Gallery' },
         { path: '/stories', label: 'Success Stories' },
         { path: '/blog', label: 'Platform Blog' },
         { path: '/brand-guidelines', label: 'Brand Guidelines' },

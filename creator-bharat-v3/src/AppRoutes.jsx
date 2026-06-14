@@ -29,6 +29,7 @@ const AiFaqPage = lazy(() => import('./pages/public/AiFaqPage'));
 const VerificationGuidePage = lazy(() => import('./pages/public/VerificationGuidePage'));
 const AmbassadorPage = lazy(() => import('./pages/public/AmbassadorPage'));
 const PressPage = lazy(() => import('./pages/public/PressPage'));
+const GalleryPage = lazy(() => import('./pages/public/GalleryPage'));
 
 // Brand/Marketplace Pages
 const CreatorsPage = lazy(() => import('./pages/brand/CreatorsPage'));
@@ -124,6 +125,7 @@ export default function AppRoutes({ location }) {
           <Route path="/rate-calc" element={<RateCalcPage />} />
           <Route path="/ambassador" element={<AmbassadorPage />} />
           <Route path="/press" element={<PressPage />} />
+          <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/official-profile" element={<OfficialProfilePage />} />
           <Route path="/notifications" element={<NotificationsHub />} />
@@ -174,6 +176,7 @@ export default function AppRoutes({ location }) {
           <Route path="/creator/official-profile" element={<OfficialProfilePage />} />
           <Route path="/creator/verify-guide" element={<VerificationGuidePage />} />
           <Route path="/creator/stories" element={<SuccessStoriesPage />} />
+          <Route path="/creator/gallery" element={<GalleryPage />} />
           <Route path="/creator/rate-calc" element={<RateCalcPage />} />
           <Route path="/creator/leaderboard" element={<LeaderboardPage />} />
           <Route path="/creator/guidelines" element={<CreatorGuidelinesPage />} />
