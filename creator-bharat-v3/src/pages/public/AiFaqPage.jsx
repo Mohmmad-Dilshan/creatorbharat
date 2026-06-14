@@ -59,39 +59,110 @@ export default function AiFaqPage() {
         description="Explore CreatorBharat's AI scoring engine and matchmaking algorithms. Estimate your score and brand earnings with our real-time simulator."
         keywords="AI creator, creator score, matchmaker, creator earnings, brand ROI, influencer algorithms"
       />
+      <style>{`
+        .aifaq-landing-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 48px;
+          align-items: center;
+          text-align: center;
+        }
+        @media (min-width: 1024px) {
+          .aifaq-landing-grid {
+            grid-template-columns: 1.15fr 0.85fr;
+            text-align: left;
+          }
+        }
+      `}</style>
 
-      {/* Hero Section */}
-      <section style={{ position: 'relative', padding: mob ? '90px 16px 48px' : '160px 24px 100px', textAlign: 'center', background: 'radial-gradient(circle at top, rgba(255, 148, 49, 0.05) 0%, rgba(168, 85, 247, 0.03) 50%, transparent 100%)' }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #FF9431, #e2e8f0, #10B981)' }} />
+      <section style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', padding: mob ? '120px 20px 80px' : '180px 24px 120px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.04), transparent 70%)' }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #a855f7, #e2e8f0, #FF9431)' }} />
         
-        <div style={{ maxWidth: 800, margin: '0 auto', position: 'relative', zIndex: 2 }}>
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }} 
-            animate={{ opacity: 1, y: 0 }}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255, 148, 49, 0.08)', border: '1px solid rgba(255, 148, 49, 0.2)', padding: '8px 16px', borderRadius: 100, marginBottom: 24 }}
-          >
-            <Sparkles size={14} color="#FF9431" />
-            <span style={{ fontSize: 11, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', color: '#ff9431' }}>Algorithmic Discovery Hub</span>
-          </motion.div>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1 }}>
+          <div className="aifaq-landing-grid">
+            {/* Left Side: Content & Action */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start', width: '100%' }}>
+              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(168, 85, 247, 0.08)', padding: '10px 20px', borderRadius: '100px', marginBottom: '28px', border: '1px solid rgba(168, 85, 247, 0.2)', color: '#0f172a' }}>
+                <Brain size={14} color="#a855f7" />
+                <span style={{ fontSize: '11px', fontWeight: 900, color: '#a855f7', textTransform: 'uppercase', letterSpacing: '0.15em', fontFamily: "'Outfit', sans-serif" }}>AI Brain & Simulator Hub</span>
+              </motion.div>
 
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            style={{ fontSize: mob ? '32px' : '64px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 20 }}
-          >
-            Where Creativity Meets <br />
-            <span style={{ background: 'linear-gradient(90deg, #FF9431, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Data-Driven Precision</span>
-          </motion.h1>
+              <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ fontSize: mob ? '36px' : '64px', fontWeight: 950, color: '#0f172a', marginBottom: '28px', letterSpacing: '-0.04em', lineHeight: 1.05, fontFamily: "'Outfit', sans-serif", textAlign: mob ? 'center' : 'left' }}>
+                Verified Score. <br />
+                <span style={{ background: 'linear-gradient(90deg, #a855f7, #FF9431)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Fair Matchmaking.</span>
+              </motion.h1>
 
-          <motion.p 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            style={{ fontSize: mob ? 15 : 18, color: '#475569', fontWeight: 500, lineHeight: 1.6, maxWidth: 600, margin: '0 auto 40px' }}
-          >
-            Explore our advanced AI scoring models, calculate your estimated worth, and understand the intelligence connecting top Indian creators with elite brands.
-          </motion.p>
+              <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ fontSize: mob ? '14px' : '17px', color: '#475569', fontWeight: 650, marginBottom: '32px', maxWidth: '540px', lineHeight: 1.6, textAlign: mob ? 'center' : 'left' }}>
+                Hamara AI engine aapke multi-platform content metrics aur engagement quality ko analyze karke transparent score generate karta hai. Isase premium brand collaborations simple ho jati hain.
+              </motion.p>
+
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ display: 'flex', gap: '12px', justifyContent: mob ? 'center' : 'flex-start', flexWrap: 'wrap' }}>
+                <Btn primary onClick={() => {
+                  const el = document.getElementById('scoring-engine');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}>
+                  Scoring Engine <ArrowRight size={16} style={{ marginLeft: 6 }} />
+                </Btn>
+                <Btn secondary onClick={() => {
+                  const el = document.getElementById('ai-faq-accordion');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}>
+                  View AI FAQs
+                </Btn>
+              </motion.div>
+            </div>
+
+            {/* Right Side: Canva Visual Image */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              whileHover={{ y: -6 }}
+              style={{
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: 24,
+                padding: 12,
+                boxShadow: '0 20px 40px rgba(168, 85, 247, 0.05)',
+                position: 'relative',
+                overflow: 'hidden',
+                width: '100%'
+              }}
+            >
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 60%)',
+                pointerEvents: 'none'
+              }} />
+              <div style={{
+                borderRadius: 16,
+                overflow: 'hidden',
+                position: 'relative',
+                paddingTop: '75%', // 4:3 Aspect Ratio
+                background: '#f8fafc'
+              }}>
+                <img
+                  src="/faq_hero.png"
+                  alt="AI Knowledge Hub & Matchmaker illustration"
+                  style={{
+                    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                    objectFit: 'cover'
+                  }}
+                />
+              </div>
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                marginTop: 12, padding: '0 8px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#a855f7' }} className="animate-pulse" />
+                  <span style={{ fontSize: 11, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>CB Matchmaker V1.0</span>
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#10B981' }}>Secured Core Node</span>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
@@ -259,6 +330,7 @@ export default function AiFaqPage() {
 
         {/* BLOCK 2: Creator Score Explained */}
         <motion.div
+          id="scoring-engine"
           initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           style={{ marginBottom: mob ? 40 : 64 }}
         >
@@ -446,7 +518,7 @@ export default function AiFaqPage() {
       </section>
 
       {/* AI FAQ Accordion */}
-      <section style={{ maxWidth: 800, margin: '80px auto 0', padding: mob ? '0 16px' : '0 20px' }}>
+      <section id="ai-faq-accordion" style={{ maxWidth: 800, margin: '80px auto 0', padding: mob ? '0 16px' : '0 20px' }}>
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <Bdg color="purple" sm>FREQUENTLY ASKED QUESTIONS</Bdg>
           <h2 style={{ fontSize: mob ? '28px' : '40px', fontWeight: 950, color: '#0f172a', marginTop: 12, letterSpacing: '-0.5px' }}>

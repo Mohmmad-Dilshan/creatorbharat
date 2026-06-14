@@ -47,11 +47,28 @@ export default function PressPage() {
       />
 
       {/* Hero Section */}
+      <style>{`
+        .press-landing-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 48px;
+          align-items: center;
+          text-align: center;
+        }
+        @media (min-width: 1024px) {
+          .press-landing-grid {
+            grid-template-columns: 1.15fr 0.85fr;
+            text-align: left;
+          }
+        }
+      `}</style>
+
+      {/* Hero Section */}
       <section style={{ 
         padding: mob ? '120px 20px 80px' : '180px 24px 120px', 
-        textAlign: 'center', 
         position: 'relative', 
-        borderBottom: '1px solid #e2e8f0' 
+        borderBottom: '1px solid #e2e8f0',
+        overflow: 'hidden'
       }}>
         <div style={{ 
           position: 'absolute', 
@@ -68,62 +85,117 @@ export default function PressPage() {
           background: 'linear-gradient(90deg, #10B981, #e2e8f0, #FF9431)' 
         }} />
 
-        <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }} 
-            animate={{ opacity: 1, scale: 1 }} 
-            style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              gap: '10px', 
-              background: 'rgba(16, 185, 129, 0.06)', 
-              padding: '10px 20px', 
-              borderRadius: '100px', 
-              marginBottom: '28px', 
-              border: '1px solid rgba(16, 185, 129, 0.15)', 
-              backdropFilter: 'blur(10px)',
-              color: '#0f172a'
-            }}
-          >
-            <FileText size={14} color="#10B981" />
-            <span style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em' }}>Brand Guidelines & Press Room</span>
-          </motion.div>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1 }}>
+          <div className="press-landing-grid">
+            {/* Left side: content */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start' }}>
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }} 
+                animate={{ opacity: 1, scale: 1 }} 
+                style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  gap: '10px', 
+                  background: 'rgba(16, 185, 129, 0.06)', 
+                  padding: '10px 20px', 
+                  borderRadius: '100px', 
+                  marginBottom: '28px', 
+                  border: '1px solid rgba(16, 185, 129, 0.15)', 
+                  backdropFilter: 'blur(10px)',
+                  color: '#0f172a'
+                }}
+              >
+                <FileText size={14} color="#10B981" />
+                <span style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em' }}>Brand Guidelines & Press Room</span>
+              </motion.div>
 
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            style={{ 
-              fontSize: 'clamp(42px, 8vw, 84px)', 
-              fontWeight: 950, 
-              letterSpacing: '-0.05em', 
-              lineHeight: 0.95, 
-              marginBottom: '24px',
-              fontFamily: "'Outfit', sans-serif",
-              color: '#0f172a'
-            }}
-          >
-            Press, Media Kit & <br />
-            <span style={{ background: 'linear-gradient(90deg, #10B981, #065f46)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Branding Assets.</span>
-          </motion.h1>
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                style={{ 
+                  fontSize: mob ? '40px' : '68px', 
+                  fontWeight: 950, 
+                  letterSpacing: '-0.04em', 
+                  lineHeight: 1.05, 
+                  marginBottom: '24px',
+                  fontFamily: "'Outfit', sans-serif",
+                  color: '#0f172a',
+                  textAlign: mob ? 'center' : 'left'
+                }}
+              >
+                Press, Media Kit & <br />
+                <span style={{ background: 'linear-gradient(90deg, #10B981, #065f46)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Branding Assets.</span>
+              </motion.h1>
 
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.1 }}
-            style={{ 
-              fontSize: mob ? '16px' : '20px', 
-              color: '#475569', 
-              maxWidth: '700px', 
-              margin: '0 auto', 
-              lineHeight: 1.6, 
-              fontWeight: 500 
-            }}
-          >
-            Explore official color configurations, corporate profiles, milestones, and download our complete high-resolution media asset package.
-          </motion.p>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ delay: 0.1 }}
+                style={{ 
+                  fontSize: mob ? '15px' : '18px', 
+                  color: '#475569', 
+                  maxWidth: '600px', 
+                  margin: mob ? '0 auto 32px' : '0 0 32px 0', 
+                  lineHeight: 1.6, 
+                  fontWeight: 500,
+                  textAlign: mob ? 'center' : 'left'
+                }}
+              >
+                Explore official color configurations, corporate profiles, milestones, and download our complete high-resolution media asset package.
+              </motion.p>
+            </div>
+
+            {/* Right side: Canva Visual Image */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              whileHover={{ y: -6 }}
+              style={{
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: 24,
+                padding: 12,
+                boxShadow: '0 20px 40px rgba(16, 185, 129, 0.05)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 60%)',
+                pointerEvents: 'none'
+              }} />
+              <div style={{
+                borderRadius: 16,
+                overflow: 'hidden',
+                position: 'relative',
+                paddingTop: '75%', // 4:3 Aspect Ratio
+                background: '#f8fafc'
+              }}>
+                <img
+                  src="/press_hero.png"
+                  alt="Branding Guidelines & Press Assets"
+                  style={{
+                    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                    objectFit: 'cover'
+                  }}
+                />
+              </div>
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                marginTop: 12, padding: '0 8px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} className="animate-pulse" />
+                  <span style={{ fontSize: 11, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Brand Assets Updated</span>
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#10B981' }}>Live Sync</span>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
-
       {/* Corporate Facts Grid */}
       <section style={{ padding: '80px 24px', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '60px' }}>

@@ -34,45 +34,135 @@ export default function CreatorLandingPage() {
         keywords="creator platform india, influencer marketing, tier 2 creators, brand deals, creator monetization"
       />
 
+      <style>{`
+        .creator-landing-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 48px;
+          align-items: center;
+          text-align: center;
+        }
+        @media (min-width: 1024px) {
+          .creator-landing-grid {
+            grid-template-columns: 1.15fr 0.85fr;
+            text-align: left;
+          }
+        }
+        .step-connect-arrow {
+          display: none;
+        }
+        @media (min-width: 1024px) {
+          .step-connect-arrow {
+            display: block;
+            position: absolute;
+            top: 50%;
+            right: -24px;
+            transform: translateY(-50%);
+            z-index: 10;
+            color: #FF9431;
+            opacity: 0.5;
+          }
+        }
+        .milestone-trophy-card:hover {
+          transform: translateY(-8px) scale(1.02);
+          box-shadow: 0 25px 50px rgba(255, 148, 49, 0.08) !important;
+          border-color: rgba(255, 148, 49, 0.25) !important;
+        }
+      `}</style>
+
       {/* ── HERO ── */}
       <section style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', padding: mob ? '120px 20px 80px' : '180px 24px 120px', position: 'relative', overflow: 'hidden', borderBottom: '1px solid #e2e8f0' }}>
         <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: '50%', height: '60%', background: 'radial-gradient(circle, rgba(255,148,49,0.05) 0%, transparent 70%)', filter: 'blur(60px)' }} />
         <div style={{ position: 'absolute', bottom: '-10%', left: '-5%', width: '50%', height: '60%', background: 'radial-gradient(circle, rgba(16,185,129,0.04) 0%, transparent 70%)', filter: 'blur(60px)' }} />
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #FF9431, #e2e8f0, #138808)' }} />
 
-        <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 2, textAlign: 'center' }}>
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: 'rgba(255,148,49,0.1)', padding: '10px 20px', borderRadius: 100, marginBottom: 32, border: '1px solid rgba(255,148,49,0.2)' }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#FF9431', boxShadow: '0 0 10px #FF9431' }} />
-            <span style={{ fontSize: 12, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.2em' }}>India's Creator Ecosystem</span>
-          </motion.div>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 2 }}>
+          <div className="creator-landing-grid">
+            {/* Left Column: Text & Actions */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start' }}>
+              <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: 'rgba(255,148,49,0.1)', padding: '10px 20px', borderRadius: 100, marginBottom: 32, border: '1px solid rgba(255,148,49,0.2)' }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#FF9431', boxShadow: '0 0 10px #FF9431' }} />
+                <span style={{ fontSize: 12, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.2em' }}>India's Creator Ecosystem</span>
+              </motion.div>
 
-          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ fontSize: mob ? '44px' : '88px', fontWeight: 950, color: '#0f172a', lineHeight: 0.9, letterSpacing: '-0.05em', marginBottom: 32 }}>
-            Build Your <br />
-            <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #0f172a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Creator Legacy.</span>
-          </motion.h1>
+              <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ fontSize: mob ? '40px' : '68px', fontWeight: 950, color: '#0f172a', lineHeight: 1.05, letterSpacing: '-0.04em', marginBottom: 24, textAlign: mob ? 'center' : 'left' }}>
+                Build Your <br />
+                <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #0f172a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Creator Legacy.</span>
+              </motion.h1>
 
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ fontSize: mob ? '16px' : '20px', color: '#475569', maxWidth: 680, margin: '0 auto 48px', lineHeight: 1.6, fontWeight: 500 }}>
-            Bharat ke har creator ke liye — Tier 2, Tier 3, ya metro. <span style={{ color: '#0f172a', fontWeight: 700 }}>Verified profile, direct brand deals, zero commission.</span> Apni pehchan banao.
-          </motion.p>
+              <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ fontSize: mob ? '15px' : '18px', color: '#475569', maxWidth: 600, margin: mob ? '0 auto 32px' : '0 0 32px 0', lineHeight: 1.6, fontWeight: 500, textAlign: mob ? 'center' : 'left' }}>
+                Bharat ke har creator ke liye — Tier 2, Tier 3, ya metro. <span style={{ color: '#0f172a', fontWeight: 700 }}>Verified profile, direct brand deals, zero commission.</span> Apni pehchan banao.
+              </motion.p>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Btn lg onClick={() => navigate('/apply')} style={{ background: '#FF9431', color: '#fff', borderRadius: 100, padding: '18px 40px', fontSize: 16, fontWeight: 950, boxShadow: '0 20px 40px rgba(255,148,49,0.25)' }}>
-              Join Free — Start Today <ArrowRight size={20} />
-            </Btn>
-            <Btn lg onClick={() => navigate('/creators')} style={{ background: '#ffffff', color: '#475569', borderRadius: 100, padding: '18px 40px', fontSize: 16, fontWeight: 950, border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
-              See Creator Profiles
-            </Btn>
-          </motion.div>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ display: 'flex', gap: 16, justifyContent: mob ? 'center' : 'flex-start', flexWrap: 'wrap', width: '100%' }}>
+                <Btn lg onClick={() => navigate('/apply')} style={{ background: '#FF9431', color: '#fff', borderRadius: 100, padding: '16px 36px', fontSize: 15, fontWeight: 950, boxShadow: '0 20px 40px rgba(255,148,49,0.25)' }}>
+                  Join Free — Start Today <ArrowRight size={18} />
+                </Btn>
+                <Btn lg onClick={() => navigate('/creators')} style={{ background: '#ffffff', color: '#475569', borderRadius: 100, padding: '16px 36px', fontSize: 15, fontWeight: 950, border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+                  See Creator Profiles
+                </Btn>
+              </motion.div>
 
-          {/* Stats */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2,1fr)' : 'repeat(4,1fr)', gap: 16, marginTop: 64, maxWidth: 800, margin: '64px auto 0' }}>
-            {STATS.map(s => (
-              <div key={s.l} style={{ background: '#ffffff', padding: '24px 16px', borderRadius: 20, border: '1px solid #e2e8f0', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
-                <div style={{ fontSize: mob ? '28px' : '36px', fontWeight: 950, color: '#FF9431', letterSpacing: '-0.03em' }}>{s.v}</div>
-                <div style={{ fontSize: 11, fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', marginTop: 4 }}>{s.l}</div>
+              {/* Stats */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginTop: 48, width: '100%' }}>
+                {STATS.map(s => (
+                  <div key={s.l} style={{ background: '#ffffff', padding: '14px 10px', borderRadius: 16, border: '1px solid #e2e8f0', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.02)' }}>
+                    <div style={{ fontSize: mob ? '18px' : '24px', fontWeight: 950, color: '#FF9431', letterSpacing: '-0.03em', lineHeight: 1 }}>{s.v}</div>
+                    <div style={{ fontSize: 9, fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 6 }}>{s.l}</div>
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+
+            {/* Right Column: Visual Poster Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              whileHover={{ y: -6 }}
+              style={{
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: 28,
+                padding: 12,
+                boxShadow: '0 20px 40px rgba(255, 148, 49, 0.05)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'radial-gradient(circle at 80% 20%, rgba(255, 148, 49, 0.05) 0%, transparent 60%)',
+                pointerEvents: 'none'
+              }} />
+              <div style={{
+                borderRadius: 20,
+                overflow: 'hidden',
+                position: 'relative',
+                paddingTop: '75%', // 4:3 Aspect Ratio
+                background: '#f8fafc'
+              }}>
+                <img
+                  src="/creator_landing_hero.png"
+                  alt="Creator Legacy"
+                  style={{
+                    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                    objectFit: 'cover'
+                  }}
+                />
               </div>
-            ))}
-          </motion.div>
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                marginTop: 12, padding: '0 8px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff9431' }} className="animate-pulse" />
+                  <span style={{ fontSize: 11, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Verified Node Feed</span>
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#10B981' }}>Live Sync</span>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
@@ -94,6 +184,11 @@ export default function CreatorLandingPage() {
                 </div>
                 <h3 style={{ fontSize: 22, fontWeight: 900, color: '#0f172a', marginBottom: 12 }}>{step.title}</h3>
                 <p style={{ fontSize: 15, color: '#64748b', lineHeight: 1.6, fontWeight: 500 }}>{step.desc}</p>
+                {i < 2 && (
+                  <div className="step-connect-arrow">
+                    <ArrowRight size={24} />
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>
@@ -143,7 +238,7 @@ export default function CreatorLandingPage() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3,1fr)', gap: 24 }}>
             {MILESTONES.map((m, i) => (
-              <motion.div key={m.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} style={{ padding: 40, background: '#ffffff', borderRadius: 40, border: '1px solid #e2e8f0', textAlign: 'center', boxShadow: '0 15px 40px rgba(0,0,0,0.02)' }}>
+              <motion.div key={m.title} className="milestone-trophy-card" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} style={{ padding: 40, background: '#ffffff', borderRadius: 40, border: '1px solid #e2e8f0', textAlign: 'center', boxShadow: '0 15px 40px rgba(0,0,0,0.02)', transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)' }}>
                 <div style={{ fontSize: 56, marginBottom: 20 }}>{m.icon}</div>
                 <h3 style={{ fontSize: 22, fontWeight: 950, color: '#0f172a', marginBottom: 12 }}>{m.title}</h3>
                 <div style={{ padding: '12px 16px', background: `${m.color}15`, borderRadius: 16, border: `1px solid ${m.color}30`, marginBottom: 20 }}>

@@ -26,48 +26,116 @@ export const Highlight = ({ text, highlight }) => {
 Highlight.propTypes = {
   text: PropTypes.string.isRequired,
   highlight: PropTypes.string.isRequired
-};
-
-export const FAQHero = ({ search, setSearch, mob, trending }) => (
-  <section style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', padding: mob ? '120px 20px 80px' : '180px 24px 140px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+};export const FAQHero = ({ search, setSearch, mob, trending }) => (
+  <section style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', padding: mob ? '120px 20px 80px' : '180px 24px 140px', position: 'relative', overflow: 'hidden' }}>
     <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255, 148, 49, 0.04), transparent 70%)' }} />
     <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #FF9431, #e2e8f0, #10B981)' }} />
     
-    <div style={{ maxWidth: '1000px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(255, 148, 49, 0.08)', padding: '10px 20px', borderRadius: '100px', marginBottom: '32px', border: '1px solid rgba(255, 148, 49, 0.2)' }}>
-        <Command size={16} color="#FF9431" />
-        <span style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.15em', fontFamily: "'Outfit', sans-serif" }}>Concierge Knowledge Base</span>
-      </motion.div>
+    <style>{`
+      .faq-landing-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 48px;
+        align-items: center;
+        text-align: center;
+      }
+      @media (min-width: 1024px) {
+        .faq-landing-grid {
+          grid-template-columns: 1.15fr 0.85fr;
+          text-align: left;
+        }
+      }
+    `}</style>
 
-      <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ fontSize: 'clamp(42px, 8vw, 84px)', fontWeight: 950, color: '#0f172a', marginBottom: '40px', letterSpacing: '-0.05em', lineHeight: 0.95, fontFamily: "'Outfit', sans-serif" }}>
-        Knowledge is <br />
-        <span style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Power & Growth.</span>
-      </motion.h1>
+    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1 }}>
+      <div className="faq-landing-grid">
+        {/* Left Side: Content & Search */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start', width: '100%' }}>
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(255, 148, 49, 0.08)', padding: '10px 20px', borderRadius: '100px', marginBottom: '28px', border: '1px solid rgba(255, 148, 49, 0.2)', color: '#0f172a' }}>
+            <Command size={14} color="#FF9431" />
+            <span style={{ fontSize: '11px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.15em', fontFamily: "'Outfit', sans-serif" }}>Concierge Knowledge Base</span>
+          </motion.div>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ position: 'relative', maxWidth: '640px', margin: '0 auto' }}>
-        <Search style={{ position: 'absolute', left: '24px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} size={22} />
-        <input 
-          type="text" 
-          placeholder="Search for questions, terms, or policies..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ width: '100%', padding: mob ? '20px 60px' : '28px 64px', borderRadius: '100px', border: '1.5px solid #e2e8f0', background: '#ffffff', color: '#0f172a', fontSize: '18px', fontWeight: 600, outline: 'none', transition: '0.3s', boxSizing: 'border-box', boxShadow: '0 20px 40px rgba(0,0,0,0.04)' }} 
-        />
-        {search && (
-          <button onClick={() => setSearch('')} style={{ position: 'absolute', right: '24px', top: '50%', transform: 'translateY(-50%)', background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#475569' }}><X size={18} /></button>
-        )}
-      </motion.div>
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ fontSize: mob ? '40px' : '68px', fontWeight: 950, color: '#0f172a', marginBottom: '28px', letterSpacing: '-0.04em', lineHeight: 1.05, fontFamily: "'Outfit', sans-serif", textAlign: mob ? 'center' : 'left' }}>
+            Knowledge is <br />
+            <span style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Power & Growth.</span>
+          </motion.h1>
 
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap', marginTop: '32px' }}>
-        <span style={{ fontSize: '11px', fontWeight: 900, color: 'rgba(15, 23, 42, 0.4)', textTransform: 'uppercase', alignSelf: 'center', letterSpacing: '1px', fontFamily: "'Outfit', sans-serif" }}>Trending:</span>
-        {trending.map(t => (
-          <button key={t} onClick={() => setSearch(t)} style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', color: '#475569', padding: '8px 18px', borderRadius: '100px', fontSize: '13px', fontWeight: 800, cursor: 'pointer', transition: '0.2s', fontFamily: "'Outfit', sans-serif" }} onMouseOver={(e) => e.target.style.borderColor = '#FF9431'} onMouseOut={(e) => e.target.style.borderColor = '#e2e8f0'}>{t}</button>
-        ))}
-      </motion.div>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ position: 'relative', width: '100%', maxWidth: '580px', margin: mob ? '0 auto' : '0' }}>
+            <Search style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} size={18} />
+            <input 
+              type="text" 
+              placeholder="Search for questions, terms, or policies..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ width: '100%', padding: mob ? '16px 48px' : '22px 52px', borderRadius: '100px', border: '1.5px solid #e2e8f0', background: '#ffffff', color: '#0f172a', fontSize: '16px', fontWeight: 600, outline: 'none', transition: '0.3s', boxSizing: 'border-box', boxShadow: '0 10px 30px rgba(0,0,0,0.02)', fontFamily: "'Outfit', sans-serif" }} 
+            />
+            {search && (
+              <button onClick={() => setSearch('')} style={{ position: 'absolute', right: '20px', top: '50%', transform: 'translateY(-50%)', background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#475569' }}><X size={14} /></button>
+            )}
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} style={{ display: 'flex', justifyContent: mob ? 'center' : 'flex-start', gap: '8px', flexWrap: 'wrap', marginTop: '24px' }}>
+            <span style={{ fontSize: '11px', fontWeight: 900, color: 'rgba(15, 23, 42, 0.4)', textTransform: 'uppercase', alignSelf: 'center', letterSpacing: '0.5px', fontFamily: "'Outfit', sans-serif" }}>Trending:</span>
+            {trending.map(t => (
+              <button key={t} onClick={() => setSearch(t)} style={{ background: '#ffffff', border: '1.5px solid #e2e8f0', color: '#475569', padding: '6px 14px', borderRadius: '100px', fontSize: '12px', fontWeight: 800, cursor: 'pointer', transition: '0.2s', fontFamily: "'Outfit', sans-serif" }} onMouseOver={(e) => e.target.style.borderColor = '#FF9431'} onMouseOut={(e) => e.target.style.borderColor = '#e2e8f0'}>{t}</button>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Right Side: Canva Visual Image */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          whileHover={{ y: -6 }}
+          style={{
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: 24,
+            padding: 12,
+            boxShadow: '0 20px 40px rgba(255, 148, 49, 0.05)',
+            position: 'relative',
+            overflow: 'hidden',
+            width: '100%'
+          }}
+        >
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'radial-gradient(circle at 80% 20%, rgba(255, 148, 49, 0.05) 0%, transparent 60%)',
+            pointerEvents: 'none'
+          }} />
+          <div style={{
+            borderRadius: 16,
+            overflow: 'hidden',
+            position: 'relative',
+            paddingTop: '75%', // 4:3 Aspect Ratio
+            background: '#f8fafc'
+          }}>
+            <img
+              src="/faq_hero.png"
+              alt="Helpdesk & AI Support Hub"
+              style={{
+                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                objectFit: 'cover'
+              }}
+            />
+          </div>
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            marginTop: 12, padding: '0 8px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff9431' }} className="animate-pulse" />
+              <span style={{ fontSize: 11, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Assistant Online</span>
+            </div>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#10B981' }}>24/7 Active</span>
+          </div>
+        </motion.div>
+      </div>
     </div>
   </section>
-);
-
+)
 FAQHero.propTypes = {
   search: PropTypes.string.isRequired,
   setSearch: PropTypes.func.isRequired,

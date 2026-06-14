@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Seo from '@/components/common/SEO';
@@ -38,6 +38,14 @@ export default function PricingPage() {
   const [duration, setDuration] = useState('1m'); // '1m', '6m', '1y'
   const [showModal, setShowModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [mob, setMob] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+
+  useEffect(() => {
+    const checkSize = () => setMob(window.innerWidth < 768);
+    checkSize();
+    window.addEventListener('resize', checkSize);
+    return () => window.removeEventListener('resize', checkSize);
+  }, []);
 
   const handleProPayment = () => {
     setIsProcessing(true);
@@ -134,11 +142,26 @@ export default function PricingPage() {
         jsonLd={pricingJsonLd}
       />
       
+      <style>{`
+        .pricing-landing-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 48px;
+          align-items: center;
+          text-align: center;
+        }
+        @media (min-width: 1024px) {
+          .pricing-landing-grid {
+            grid-template-columns: 1.15fr 0.85fr;
+            text-align: left;
+          }
+        }
+      `}</style>
+
       {/* Cinematic Hero */}
       <section style={{ 
         background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', 
         padding: '180px 24px 140px', 
-        textAlign: 'center',
         position: 'relative',
         overflow: 'hidden',
         borderBottom: '1px solid #e2e8f0'
@@ -147,125 +170,179 @@ export default function PricingPage() {
         <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '40%', height: '40%', background: '#FF9431', borderRadius: '50%', filter: 'blur(150px)', opacity: 0.05 }} />
         <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '40%', height: '40%', background: '#10B981', borderRadius: '50%', filter: 'blur(150px)', opacity: 0.03 }} />
         
-        <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              gap: '10px', 
-              background: 'rgba(255, 148, 49, 0.06)', 
-              padding: '10px 20px', 
-              borderRadius: '100px',
-              marginBottom: '32px',
-              border: '1px solid rgba(255, 148, 49, 0.15)',
-              backdropFilter: 'blur(10px)'
-            }}
-          >
-            <Sparkles size={16} color="#FF9431" />
-            <span style={{ fontSize: '13px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Value-Driven Ecosystem</span>
-          </motion.div>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1 }}>
+          <div className="pricing-landing-grid">
+            {/* Left side: text and selectors */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start' }}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  gap: '10px', 
+                  background: 'rgba(255, 148, 49, 0.06)', 
+                  padding: '10px 20px', 
+                  borderRadius: '100px',
+                  marginBottom: '32px',
+                  border: '1px solid rgba(255, 148, 49, 0.15)',
+                  backdropFilter: 'blur(10px)'
+                }}
+              >
+                <Sparkles size={16} color="#FF9431" />
+                <span style={{ fontSize: '13px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Value-Driven Ecosystem</span>
+              </motion.div>
 
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            style={{ fontSize: 'clamp(48px, 8vw, 84px)', fontWeight: 950, color: '#0f172a', marginBottom: '24px', letterSpacing: '-0.05em', lineHeight: 0.95 }}
-          >
-            Invest in Your <br />
-            <span style={{ background: 'linear-gradient(90deg, #FF9431, #0f172a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Digital Future.</span>
-          </motion.h1>
-          
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            style={{ fontSize: '20px', color: '#475569', maxWidth: '650px', margin: '0 auto 56px', lineHeight: 1.6, fontWeight: 500 }}
-          >
-            Join Bharat's most transparent influencer ecosystem. Zero commission on deals. Affordable tools for everyone.
-          </motion.p>
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                style={{ fontSize: mob ? '40px' : '68px', fontWeight: 950, color: '#0f172a', marginBottom: '24px', letterSpacing: '-0.04em', lineHeight: 1.05, textAlign: mob ? 'center' : 'left' }}
+              >
+                Invest in Your <br />
+                <span style={{ background: 'linear-gradient(90deg, #FF9431, #0f172a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Digital Future.</span>
+              </motion.h1>
+              
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                style={{ fontSize: mob ? '15px' : '18px', color: '#475569', maxWidth: '600px', margin: mob ? '0 auto 40px' : '0 0 40px 0', lineHeight: 1.6, fontWeight: 500, textAlign: mob ? 'center' : 'left' }}
+              >
+                Join Bharat's most transparent influencer ecosystem. Zero commission on deals. Affordable tools for everyone.
+              </motion.p>
 
-          {/* Perspective Toggle */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            style={{ 
-              maxWidth: '480px', 
-              margin: '0 auto', 
-              background: '#f1f5f9', 
-              padding: '8px', 
-              borderRadius: '100px', 
-              display: 'flex',
-              border: '1px solid #e2e8f0'
-            }}
-          >
-             <TabButton active={tab === 'creator'} label="For Creators" icon={Zap} onClick={() => setTab('creator')} />
-             <TabButton active={tab === 'brand'} label="For Brands" icon={Target} onClick={() => setTab('brand')} />
-          </motion.div>
+              {/* Perspective Toggle */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                style={{ 
+                  width: '100%',
+                  maxWidth: '360px', 
+                  margin: mob ? '0 auto' : '0 0 24px 0', 
+                  background: '#f1f5f9', 
+                  padding: '6px', 
+                  borderRadius: '100px', 
+                  display: 'flex',
+                  border: '1px solid #e2e8f0'
+                }}
+              >
+                 <TabButton active={tab === 'creator'} label="For Creators" icon={Zap} onClick={() => setTab('creator')} />
+                 <TabButton active={tab === 'brand'} label="For Brands" icon={Target} onClick={() => setTab('brand')} />
+              </motion.div>
 
-          {/* Duration Selector Switch */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              background: '#f1f5f9', 
-              padding: '6px', 
-              borderRadius: '100px', 
-              marginTop: '32px',
-              border: '1px solid #e2e8f0',
-              gap: '4px'
-            }}
-          >
-            {[
-              { id: '1m', label: '1 Month' },
-              { id: '6m', label: '6 Months', save: tab === 'creator' ? 'Save ~15%' : 'Save ~33%' },
-              { id: '1y', label: '1 Year', save: tab === 'creator' ? 'Save ~15%' : 'Save ~45%' }
-            ].map(d => {
-              const active = duration === d.id;
-              return (
-                <button
-                  key={d.id}
-                  onClick={() => setDuration(d.id)}
+              {/* Duration Selector Switch */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  background: '#f1f5f9', 
+                  padding: '6px', 
+                  borderRadius: '100px', 
+                  marginTop: mob ? '20px' : '0px',
+                  border: '1px solid #e2e8f0',
+                  gap: '4px'
+                }}
+              >
+                {[
+                  { id: '1m', label: '1 Month' },
+                  { id: '6m', label: '6 Months', save: tab === 'creator' ? 'Save ~15%' : 'Save ~33%' },
+                  { id: '1y', label: '1 Year', save: tab === 'creator' ? 'Save ~15%' : 'Save ~45%' }
+                ].map(d => {
+                  const active = duration === d.id;
+                  return (
+                    <button
+                      key={d.id}
+                      onClick={() => setDuration(d.id)}
+                      style={{
+                        padding: '10px 20px',
+                        borderRadius: '100px',
+                        border: 'none',
+                        background: active ? '#FF9431' : 'transparent',
+                        color: active ? '#fff' : '#64748b',
+                        fontSize: '13px',
+                        fontWeight: 900,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                      }}
+                    >
+                      {d.label}
+                      {d.save && (
+                        <span style={{ 
+                          fontSize: '9px', 
+                          background: active ? '#fff' : 'rgba(16, 185, 129, 0.1)', 
+                          color: active ? '#FF9431' : '#10B981', 
+                          padding: '2px 6px', 
+                          borderRadius: '100px',
+                          fontWeight: 950
+                        }}>
+                          {d.save}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </motion.div>
+            </div>
+
+            {/* Right side: Canva Visual Image */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              whileHover={{ y: -6 }}
+              style={{
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: 24,
+                padding: 12,
+                boxShadow: '0 20px 40px rgba(255, 148, 49, 0.05)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'radial-gradient(circle at 80% 20%, rgba(255, 148, 49, 0.05) 0%, transparent 60%)',
+                pointerEvents: 'none'
+              }} />
+              <div style={{
+                borderRadius: 16,
+                overflow: 'hidden',
+                position: 'relative',
+                paddingTop: '75%', // 4:3 Aspect Ratio
+                background: '#f8fafc'
+              }}>
+                <img
+                  src="/pricing_hero.png"
+                  alt="Secure Payments & Trust Plans"
                   style={{
-                    padding: '10px 20px',
-                    borderRadius: '100px',
-                    border: 'none',
-                    background: active ? '#FF9431' : 'transparent',
-                    color: active ? '#fff' : '#64748b',
-                    fontSize: '13px',
-                    fontWeight: 900,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                    objectFit: 'cover'
                   }}
-                >
-                  {d.label}
-                  {d.save && (
-                    <span style={{ 
-                      fontSize: '9px', 
-                      background: active ? '#fff' : 'rgba(16, 185, 129, 0.1)', 
-                      color: active ? '#FF9431' : '#10B981', 
-                      padding: '2px 6px', 
-                      borderRadius: '100px',
-                      fontWeight: 950
-                    }}>
-                      {d.save}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </motion.div>
+                />
+              </div>
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                marginTop: 12, padding: '0 8px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff9431' }} className="animate-pulse" />
+                  <span style={{ fontSize: 11, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Trust Escrow Sync</span>
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#10B981' }}>Secure SSL</span>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
-
       {/* Pricing Grid */}
       <section style={{ padding: '0 24px 120px', marginTop: '-60px', position: 'relative', zIndex: 2 }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>

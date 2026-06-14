@@ -107,11 +107,27 @@ export default function CalculatorsHubPage() {
       />
 
       {/* Hero Section */}
+      <style>{`
+        .calculators-landing-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 48px;
+          align-items: center;
+          text-align: center;
+        }
+        @media (min-width: 1024px) {
+          .calculators-landing-grid {
+            grid-template-columns: 1.15fr 0.85fr;
+            text-align: left;
+          }
+        }
+      `}</style>
+
+      {/* Hero Section */}
       <section style={{ 
-        padding: mob ? '120px 20px 60px' : '180px 24px 100px', 
-        textAlign: 'center', 
+        padding: mob ? '120px 20px 60px' : '180px 24px 120px', 
         position: 'relative', 
-        borderBottom: '1px solid #e2e8f0' 
+        overflow: 'hidden'
       }}>
         <div style={{ 
           position: 'absolute', 
@@ -128,63 +144,129 @@ export default function CalculatorsHubPage() {
           background: 'linear-gradient(90deg, #FF9431, #e2e8f0, #10B981)' 
         }} />
 
-        <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }} 
-            animate={{ opacity: 1, scale: 1 }} 
-            style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              gap: '10px', 
-              background: 'rgba(255, 148, 49, 0.06)', 
-              padding: '10px 20px', 
-              borderRadius: '100px', 
-              marginBottom: '28px', 
-              border: '1px solid rgba(255, 148, 49, 0.15)', 
-              backdropFilter: 'blur(10px)' 
-            }}
-          >
-            <Calculator size={14} color="#FF9431" />
-            <span style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#FF9431' }}>Ecosystem Free Tools</span>
-          </motion.div>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1 }}>
+          <div className="calculators-landing-grid">
+            {/* Left Side: Content */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start', width: '100%' }}>
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }} 
+                animate={{ opacity: 1, scale: 1 }} 
+                style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  gap: '10px', 
+                  background: 'rgba(255, 148, 49, 0.06)', 
+                  padding: '10px 20px', 
+                  borderRadius: '100px', 
+                  marginBottom: '28px', 
+                  border: '1px solid rgba(255, 148, 49, 0.15)', 
+                  backdropFilter: 'blur(10px)' 
+                }}
+              >
+                <Calculator size={14} color="#FF9431" />
+                <span style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#FF9431' }}>Ecosystem Free Tools</span>
+              </motion.div>
 
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            style={{ 
-              fontSize: 'clamp(42px, 8vw, 84px)', 
-              fontWeight: 950, 
-              letterSpacing: '-0.05em', 
-              lineHeight: 0.95, 
-              marginBottom: '24px',
-              fontFamily: "'Outfit', sans-serif",
-              color: '#0f172a'
-            }}
-          >
-            Free Influencer & <br />
-            <span style={{ background: 'linear-gradient(90deg, #FF9431, #0f172a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Campaign Calculators.</span>
-          </motion.h1>
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                style={{ 
+                  fontSize: mob ? '36px' : '64px', 
+                  fontWeight: 950, 
+                  letterSpacing: '-0.04em', 
+                  lineHeight: 1.05, 
+                  marginBottom: '24px',
+                  fontFamily: "'Outfit', sans-serif",
+                  color: '#0f172a',
+                  textAlign: mob ? 'center' : 'left'
+                }}
+              >
+                Free Influencer & <br />
+                <span style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Campaign Calculators.</span>
+              </motion.h1>
 
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.1 }}
-            style={{ 
-              fontSize: mob ? '16px' : '20px', 
-              color: '#475569', 
-              maxWidth: '700px', 
-              margin: '0 auto', 
-              lineHeight: 1.6, 
-              fontWeight: 500 
-            }}
-          >
-            Calculate critical metrics to measure your performance, value campaigns accurately, and map budgets scientifically.
-          </motion.p>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ delay: 0.1 }}
+                style={{ 
+                  fontSize: mob ? '14px' : '17px', 
+                  color: '#475569', 
+                  maxWidth: '540px', 
+                  margin: '0 0 32px 0', 
+                  lineHeight: 1.6, 
+                  fontWeight: 600,
+                  textAlign: mob ? 'center' : 'left'
+                }}
+              >
+                Calculate critical engagement rates, estimate campaign budget valuations, and evaluate your brand deal values scientifically using real-time market averages.
+              </motion.p>
+
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: mob ? 'center' : 'flex-start' }}>
+                <Btn primary onClick={() => {
+                  const el = document.getElementById('calculators-switcher');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}>
+                  Start Calculator
+                </Btn>
+              </motion.div>
+            </div>
+
+            {/* Right Side: Canva Visual Image */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              whileHover={{ y: -6 }}
+              style={{
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: 24,
+                padding: 12,
+                boxShadow: '0 20px 40px rgba(255, 148, 49, 0.05)',
+                position: 'relative',
+                overflow: 'hidden',
+                width: '100%'
+              }}
+            >
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'radial-gradient(circle at 80% 20%, rgba(255, 148, 49, 0.05) 0%, transparent 60%)',
+                pointerEvents: 'none'
+              }} />
+              <div style={{
+                borderRadius: 16,
+                overflow: 'hidden',
+                position: 'relative',
+                paddingTop: '75%', // 4:3 Aspect Ratio
+                background: '#f8fafc'
+              }}>
+                <img
+                  src="/calculators_hub_hero.png"
+                  alt="Rupee Coins and 3D Charts Calculator illustration"
+                  style={{
+                    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                    objectFit: 'cover'
+                  }}
+                />
+              </div>
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                marginTop: 12, padding: '0 8px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff9431' }} className="animate-pulse" />
+                  <span style={{ fontSize: 11, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Metrics Engine Active</span>
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#10B981' }}>Updated for 2026</span>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Tabs Switcher */}
-      <section style={{ padding: '40px 24px 20px', display: 'flex', justifyContent: 'center' }}>
+      <section id="calculators-switcher" style={{ padding: '40px 24px 20px', display: 'flex', justifyContent: 'center' }}>
         <LayoutGroup>
           <div style={{ 
             display: 'flex', 

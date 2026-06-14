@@ -130,13 +130,28 @@ export default function AmbassadorPage() {
         title="Campus Ambassador Program | CreatorBharat" 
         description="Become the voice of CreatorBharat at your college. Empower regional creators, organize events, earn commissions and official experience certificates." 
       />
+      <style>{`
+        .ambassador-landing-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 48px;
+          align-items: center;
+          text-align: center;
+        }
+        @media (min-width: 1024px) {
+          .ambassador-landing-grid {
+            grid-template-columns: 1.15fr 0.85fr;
+            text-align: left;
+          }
+        }
+      `}</style>
 
       {/* Hero Section */}
       <section style={{ 
         padding: mob ? '120px 20px 80px' : '180px 24px 120px', 
-        textAlign: 'center', 
         position: 'relative', 
-        borderBottom: '1px solid #e2e8f0' 
+        borderBottom: '1px solid #e2e8f0',
+        overflow: 'hidden'
       }}>
         <div style={{ 
           position: 'absolute', 
@@ -153,73 +168,127 @@ export default function AmbassadorPage() {
           background: 'linear-gradient(90deg, #FF9431, #e2e8f0, #10B981)' 
         }} />
 
-        <div style={{ maxWidth: '1000px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }} 
-            animate={{ opacity: 1, scale: 1 }} 
-            style={{ 
-              display: 'inline-flex', 
-              alignItems: 'center', 
-              gap: '10px', 
-              background: 'rgba(255, 148, 49, 0.06)', 
-              padding: '10px 20px', 
-              borderRadius: '100px', 
-              marginBottom: '28px', 
-              border: '1px solid rgba(255, 148, 49, 0.15)', 
-              backdropFilter: 'blur(10px)',
-              color: '#0f172a'
-            }}
-          >
-            <Trophy size={14} color="#FF9431" />
-            <span style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em' }}>Campus Ambassador Program 2026</span>
-          </motion.div>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1 }}>
+          <div className="ambassador-landing-grid">
+            {/* Left side: content */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start' }}>
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }} 
+                animate={{ opacity: 1, scale: 1 }} 
+                style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  gap: '10px', 
+                  background: 'rgba(255, 148, 49, 0.06)', 
+                  padding: '10px 20px', 
+                  borderRadius: '100px', 
+                  marginBottom: '28px', 
+                  border: '1px solid rgba(255, 148, 49, 0.15)', 
+                  backdropFilter: 'blur(10px)',
+                  color: '#0f172a'
+                }}
+              >
+                <Trophy size={14} color="#FF9431" />
+                <span style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em' }}>Campus Ambassador Program 2026</span>
+              </motion.div>
 
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            style={{ 
-              fontSize: 'clamp(42px, 8vw, 88px)', 
-              fontWeight: 950, 
-              letterSpacing: '-0.05em', 
-              lineHeight: 0.95, 
-              marginBottom: '24px',
-              fontFamily: "'Outfit', sans-serif",
-              color: '#0f172a'
-            }}
-          >
-            Represent Bharat's <br />
-            <span style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Creator Revolution.</span>
-          </motion.h1>
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                style={{ 
+                  fontSize: mob ? '40px' : '68px', 
+                  fontWeight: 950, 
+                  letterSpacing: '-0.04em', 
+                  lineHeight: 1.05, 
+                  marginBottom: '24px',
+                  fontFamily: "'Outfit', sans-serif",
+                  color: '#0f172a',
+                  textAlign: mob ? 'center' : 'left'
+                }}
+              >
+                Represent Bharat's <br />
+                <span style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Creator Revolution.</span>
+              </motion.h1>
 
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.1 }}
-            style={{ 
-              fontSize: mob ? '16px' : '20px', 
-              color: '#475569', 
-              maxWidth: '700px', 
-              margin: '0 auto 40px', 
-              lineHeight: 1.6, 
-              fontWeight: 500 
-            }}
-          >
-            Empower the next wave of regional voices, coordinate student communities, and gain top-tier startup experience. Turn your campus network into growth opportunities.
-          </motion.p>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ delay: 0.1 }}
+                style={{ 
+                  fontSize: mob ? '15px' : '18px', 
+                  color: '#475569', 
+                  maxWidth: '600px', 
+                  margin: mob ? '0 auto 32px' : '0 0 32px 0', 
+                  lineHeight: 1.6, 
+                  fontWeight: 500,
+                  textAlign: mob ? 'center' : 'left'
+                }}
+              >
+                Empower the next wave of regional voices, coordinate student communities, and gain top-tier startup experience. Turn your campus network into growth opportunities.
+              </motion.p>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.2 }}
-          >
-            <Btn lg onClick={() => document.getElementById('apply-form').scrollIntoView({ behavior: 'smooth' })} style={{ background: 'linear-gradient(135deg, #FF9431, #FF5B1A)', color: '#fff', borderRadius: '100px', fontWeight: 900 }}>
-              Apply Now <ArrowRight size={16} />
-            </Btn>
-          </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ delay: 0.2 }}
+              >
+                <Btn lg onClick={() => document.getElementById('apply-form').scrollIntoView({ behavior: 'smooth' })} style={{ background: 'linear-gradient(135deg, #FF9431, #FF5B1A)', color: '#fff', borderRadius: '100px', fontWeight: 900 }}>
+                  Apply Now <ArrowRight size={16} />
+                </Btn>
+              </motion.div>
+            </div>
+
+            {/* Right side: Canva Visual Image */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              whileHover={{ y: -6 }}
+              style={{
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: 24,
+                padding: 12,
+                boxShadow: '0 20px 40px rgba(255, 148, 49, 0.05)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'radial-gradient(circle at 80% 20%, rgba(255, 148, 49, 0.05) 0%, transparent 60%)',
+                pointerEvents: 'none'
+              }} />
+              <div style={{
+                borderRadius: 16,
+                overflow: 'hidden',
+                position: 'relative',
+                paddingTop: '75%', // 4:3 Aspect Ratio
+                background: '#f8fafc'
+              }}>
+                <img
+                  src="/ambassador_hero.png"
+                  alt="Campus Ambassador Program"
+                  style={{
+                    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                    objectFit: 'cover'
+                  }}
+                />
+              </div>
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                marginTop: 12, padding: '0 8px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff9431' }} className="animate-pulse" />
+                  <span style={{ fontSize: 11, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Campus Nodes Syncing</span>
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#FF9431' }}>Open for Apply</span>
+              </div>
+            </motion.div>
+          </div>
         </div>
-      </section>
-
-      {/* Perks Section */}
+      </section>      {/* Perks Section */}
       <section style={{ padding: '80px 24px', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '60px' }}>
           <Bdg color="orange" sm>EXCLUSIVE REWARDS</Bdg>

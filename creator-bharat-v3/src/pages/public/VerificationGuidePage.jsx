@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShieldCheck, FileCheck2, CreditCard, BadgeCheck, CheckCircle2, ArrowRight, Users, Star } from 'lucide-react';
@@ -21,28 +21,122 @@ const BRAND_STEPS = [
 
 export default function VerificationGuidePage() {
   const navigate = useNavigate();
+  const [mob, setMob] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => setMob(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <div style={{ background: '#fff', minHeight: '100vh', overflowX: 'hidden' }}>
       <Seo title="Verification Guide" description="Step-by-step guide to get verified on CreatorBharat as a creator or brand." />
 
+      <style>{`
+        .verification-landing-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 48px;
+          align-items: center;
+          text-align: center;
+        }
+        @media (min-width: 1024px) {
+          .verification-landing-grid {
+            grid-template-columns: 1.15fr 0.85fr;
+            text-align: left;
+          }
+        }
+      `}</style>
+
       {/* Hero */}
-      <section style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', padding: '160px 24px 100px', textAlign: 'center', position: 'relative', overflow: 'hidden', borderBottom: '1px solid #e2e8f0' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255,148,49,0.04), transparent 70%)' }} />
+      <section style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', padding: mob ? '120px 20px 80px' : '180px 24px 120px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255, 148, 49, 0.04), transparent 70%)' }} />
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #FF9431, #e2e8f0, #10B981)' }} />
-        <div style={{ maxWidth: 800, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <Bdg color="saffron" sm>VERIFICATION GUIDE</Bdg>
-          <h1 style={{ fontSize: 'clamp(40px, 8vw, 72px)', fontWeight: 950, color: '#0f172a', marginTop: 20, marginBottom: 24, letterSpacing: '-0.05em', lineHeight: 0.95 }}>
-            How to Get <br /><span style={{ background: 'linear-gradient(90deg, #FF9431, #0f172a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Verified.</span>
-          </h1>
-          <p style={{ fontSize: 18, color: '#475569', maxWidth: 600, margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}>
-            Step-by-step guide for creators and brands to get verified on CreatorBharat.
-          </p>
+        
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1 }}>
+          <div className="verification-landing-grid">
+            {/* Left Column (55% width) */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start', width: '100%' }}>
+              <Bdg color="saffron" sm style={{ marginBottom: '24px' }}>VERIFICATION GUIDE</Bdg>
+              <h1 style={{ fontSize: mob ? '36px' : '64px', fontWeight: 950, color: '#0f172a', margin: '0 0 24px 0', letterSpacing: '-0.04em', lineHeight: 1.05, textAlign: mob ? 'center' : 'left', fontFamily: "'Outfit', sans-serif" }}>
+                How to Get <br /><span style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Verified.</span>
+              </h1>
+              <p style={{ fontSize: mob ? '14px' : '17px', color: '#475569', maxWidth: '540px', margin: '0 0 32px 0', fontWeight: 600, lineHeight: 1.6, textAlign: mob ? 'center' : 'left', fontFamily: "'Outfit', sans-serif" }}>
+                Step-by-step guide for Indian creators and premium brands to verify their credentials, activate their trust metrics, and unlock full marketplace capabilities.
+              </p>
+
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: mob ? 'center' : 'flex-start' }}>
+                <Btn primary onClick={() => {
+                  const el = document.getElementById('creator-steps');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}>
+                  For Creators <ArrowRight size={16} style={{ marginLeft: 6 }} />
+                </Btn>
+                <Btn secondary onClick={() => {
+                  const el = document.getElementById('brand-steps');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}>
+                  For Brands
+                </Btn>
+              </div>
+            </div>
+
+            {/* Right Column (45% width) */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              whileHover={{ y: -6 }}
+              style={{
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: 24,
+                padding: 12,
+                boxShadow: '0 20px 40px rgba(255, 148, 49, 0.05)',
+                position: 'relative',
+                overflow: 'hidden',
+                width: '100%'
+              }}
+            >
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'radial-gradient(circle at 80% 20%, rgba(255, 148, 49, 0.05) 0%, transparent 60%)',
+                pointerEvents: 'none'
+              }} />
+              <div style={{
+                borderRadius: 16,
+                overflow: 'hidden',
+                position: 'relative',
+                paddingTop: '75%', // 4:3 Aspect Ratio
+                background: '#f8fafc'
+              }}>
+                <img
+                  src="/verification_guide_hero.png"
+                  alt="Verification Shield and Badge Graphic"
+                  style={{
+                    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                    objectFit: 'cover'
+                  }}
+                />
+              </div>
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                marginTop: 12, padding: '0 8px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff9431' }} className="animate-pulse" />
+                  <span style={{ fontSize: 11, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Trust Engine Active</span>
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#10B981' }}>2-Step Consensus</span>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Creator Steps */}
-      <section style={{ padding: '80px 24px', background: '#fcfcfc' }}>
+      <section id="creator-steps" style={{ padding: '80px 24px', background: '#fcfcfc' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <Bdg color="saffron" sm>FOR CREATORS</Bdg>
@@ -69,7 +163,7 @@ export default function VerificationGuidePage() {
       </section>
 
       {/* Brand Steps */}
-      <section style={{ padding: '80px 24px', background: '#fff' }}>
+      <section id="brand-steps" style={{ padding: '80px 24px', background: '#fff' }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <Bdg color="green" sm>FOR BRANDS</Bdg>
