@@ -147,7 +147,7 @@ export default function EliteMobileNav({ role, user }) {
           transform: translateX(-50%);
           width: 92vw;
           max-width: 440px;
-          background: rgba(255, 255, 255, 0.85);
+          background: rgba(255, 255, 255, 0.95);
           backdrop-filter: blur(24px) saturate(180%);
           -webkit-backdrop-filter: blur(24px) saturate(180%);
           border-radius: 32px;
@@ -155,10 +155,10 @@ export default function EliteMobileNav({ role, user }) {
           display: flex;
           justify-content: space-around;
           align-items: center;
-          border: 1px solid rgba(255, 255, 255, 0.5);
+          border: 1px solid #e2e8f0;
           box-shadow: 
-            0 20px 40px rgba(0, 0, 0, 0.1),
-            0 0 1px rgba(0, 0, 0, 0.1);
+            0 20px 40px rgba(15, 23, 42, 0.08),
+            0 0 1px rgba(15, 23, 42, 0.1);
           pointer-events: auto;
         }
 
@@ -172,9 +172,10 @@ export default function EliteMobileNav({ role, user }) {
           background: none;
           border: none;
           cursor: pointer;
-          color: #94a3b8;
+          color: #64748b;
           transition: color 0.3s ease;
           position: relative;
+          font-family: 'Outfit', sans-serif;
         }
 
         .elite-dock-btn.active {
@@ -202,10 +203,11 @@ export default function EliteMobileNav({ role, user }) {
 
         .elite-dock-label {
           font-size: 9px;
-          font-weight: 800;
+          font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.05em;
-          opacity: 0.7;
+          opacity: 0.8;
+          font-family: 'Outfit', sans-serif;
         }
 
         .elite-dock-btn.active .elite-dock-label {

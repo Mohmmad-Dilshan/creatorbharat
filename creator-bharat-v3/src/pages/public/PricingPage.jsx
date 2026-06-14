@@ -136,15 +136,16 @@ export default function PricingPage() {
       
       {/* Cinematic Hero */}
       <section style={{ 
-        background: '#050505', 
+        background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', 
         padding: '180px 24px 140px', 
         textAlign: 'center',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        borderBottom: '1px solid #e2e8f0'
       }}>
         {/* Abstract Background Elements */}
-        <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '40%', height: '40%', background: '#FF9431', borderRadius: '50%', filter: 'blur(150px)', opacity: 0.15 }} />
-        <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '40%', height: '40%', background: '#10B981', borderRadius: '50%', filter: 'blur(150px)', opacity: 0.1 }} />
+        <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '40%', height: '40%', background: '#FF9431', borderRadius: '50%', filter: 'blur(150px)', opacity: 0.05 }} />
+        <div style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '40%', height: '40%', background: '#10B981', borderRadius: '50%', filter: 'blur(150px)', opacity: 0.03 }} />
         
         <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <motion.div
@@ -154,33 +155,33 @@ export default function PricingPage() {
               display: 'inline-flex', 
               alignItems: 'center', 
               gap: '10px', 
-              background: 'rgba(255, 255, 255, 0.05)', 
+              background: 'rgba(255, 148, 49, 0.06)', 
               padding: '10px 20px', 
               borderRadius: '100px',
               marginBottom: '32px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 148, 49, 0.15)',
               backdropFilter: 'blur(10px)'
             }}
           >
             <Sparkles size={16} color="#FF9431" />
-            <span style={{ fontSize: '13px', fontWeight: 900, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Value-Driven Ecosystem</span>
+            <span style={{ fontSize: '13px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Value-Driven Ecosystem</span>
           </motion.div>
 
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            style={{ fontSize: 'clamp(48px, 8vw, 84px)', fontWeight: 950, color: '#fff', marginBottom: '24px', letterSpacing: '-0.05em', lineHeight: 0.95 }}
+            style={{ fontSize: 'clamp(48px, 8vw, 84px)', fontWeight: 950, color: '#0f172a', marginBottom: '24px', letterSpacing: '-0.05em', lineHeight: 0.95 }}
           >
             Invest in Your <br />
-            <span style={{ background: 'linear-gradient(90deg, #FF9431, #fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Digital Future.</span>
+            <span style={{ background: 'linear-gradient(90deg, #FF9431, #0f172a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Digital Future.</span>
           </motion.h1>
           
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            style={{ fontSize: '20px', color: 'rgba(255, 255, 255, 0.6)', maxWidth: '650px', margin: '0 auto 56px', lineHeight: 1.6, fontWeight: 500 }}
+            style={{ fontSize: '20px', color: '#475569', maxWidth: '650px', margin: '0 auto 56px', lineHeight: 1.6, fontWeight: 500 }}
           >
             Join Bharat's most transparent influencer ecosystem. Zero commission on deals. Affordable tools for everyone.
           </motion.p>
@@ -193,12 +194,11 @@ export default function PricingPage() {
             style={{ 
               maxWidth: '480px', 
               margin: '0 auto', 
-              background: 'rgba(255, 255, 255, 0.05)', 
+              background: '#f1f5f9', 
               padding: '8px', 
               borderRadius: '100px', 
               display: 'flex',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(20px)'
+              border: '1px solid #e2e8f0'
             }}
           >
              <TabButton active={tab === 'creator'} label="For Creators" icon={Zap} onClick={() => setTab('creator')} />
@@ -213,12 +213,11 @@ export default function PricingPage() {
               display: 'inline-flex', 
               alignItems: 'center', 
               justifyContent: 'center', 
-              background: 'rgba(255, 255, 255, 0.05)', 
+              background: '#f1f5f9', 
               padding: '6px', 
               borderRadius: '100px', 
               marginTop: '32px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(20px)',
+              border: '1px solid #e2e8f0',
               gap: '4px'
             }}
           >
@@ -237,7 +236,7 @@ export default function PricingPage() {
                     borderRadius: '100px',
                     border: 'none',
                     background: active ? '#FF9431' : 'transparent',
-                    color: active ? '#fff' : 'rgba(255, 255, 255, 0.6)',
+                    color: active ? '#fff' : '#64748b',
                     fontSize: '13px',
                     fontWeight: 900,
                     cursor: 'pointer',
@@ -251,7 +250,7 @@ export default function PricingPage() {
                   {d.save && (
                     <span style={{ 
                       fontSize: '9px', 
-                      background: active ? '#fff' : 'rgba(16, 185, 129, 0.2)', 
+                      background: active ? '#fff' : 'rgba(16, 185, 129, 0.1)', 
                       color: active ? '#FF9431' : '#10B981', 
                       padding: '2px 6px', 
                       borderRadius: '100px',
@@ -476,20 +475,20 @@ export default function PricingPage() {
            style={{ 
             maxWidth: '1100px', 
             margin: '0 auto', 
-            background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', 
+            background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)', 
             borderRadius: '56px', 
             padding: '100px 40px', 
             color: '#fff',
             position: 'relative',
             overflow: 'hidden',
-            boxShadow: '0 40px 100px rgba(0,0,0,0.2)'
+            boxShadow: '0 30px 60px rgba(234,88,12,0.2)'
           }}>
             <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'url("https://www.transparenttextures.com/patterns/carbon-fibre.png")', opacity: 0.05 }} />
             <h2 style={{ fontSize: '56px', fontWeight: 950, marginBottom: '24px', letterSpacing: '-0.05em', position: 'relative' }}>Ready to Scale?</h2>
-            <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.5)', marginBottom: '48px', maxWidth: '600px', margin: '0 auto 56px', fontWeight: 500 }}>
+            <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.85)', marginBottom: '48px', maxWidth: '600px', margin: '0 auto 56px', fontWeight: 500 }}>
               Join the elite circle of creators and brands building the future of commerce in Bharat.
             </p>
-            <Btn lg onClick={() => navigate('/join')} style={{ padding: '24px 64px', borderRadius: '100px', background: '#fff', color: '#0f172a', fontSize: '18px', fontWeight: 950 }}>
+            <Btn lg onClick={() => navigate('/join')} style={{ padding: '24px 64px', borderRadius: '100px', background: '#fff', color: '#EA580C', fontSize: '18px', fontWeight: 950, boxShadow: '0 15px 30px rgba(0,0,0,0.1)' }}>
               Get Started Now <ArrowRight size={22} />
             </Btn>
          </motion.div>

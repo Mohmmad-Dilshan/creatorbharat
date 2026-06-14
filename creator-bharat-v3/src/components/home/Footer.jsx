@@ -269,7 +269,7 @@ export default function Footer() {
         <section className="footer-main">
           <div className="footer-brand-col">
             <div className="footer-logo-wrap">
-              <Logo light onClick={() => go('/')} />
+              <Logo onClick={() => go('/')} />
             </div>
             <p className="footer-tagline">
               Premium infrastructure for India's rising creator economy, built around identity, trust, regional voice, and direct brand access.
@@ -323,22 +323,22 @@ export default function Footer() {
 
       <style>{`
         .site-footer {
-          --footer-bg: #050607;
-          --footer-panel: rgba(255, 255, 255, 0.055);
-          --footer-panel-strong: rgba(255, 255, 255, 0.09);
-          --footer-line: rgba(255, 255, 255, 0.1);
-          --footer-text: rgba(255, 255, 255, 0.74);
-          --footer-muted: rgba(255, 255, 255, 0.48);
-          --footer-dim: rgba(255, 255, 255, 0.28);
+          --footer-bg: #ffffff;
+          --footer-panel: #f8fafc;
+          --footer-panel-strong: #f1f5f9;
+          --footer-line: #e2e8f0;
+          --footer-text: #475569;
+          --footer-muted: #64748b;
+          --footer-dim: #94a3b8;
           --footer-orange: #ff9431;
           --footer-green: #138808;
           position: relative;
           overflow: hidden;
-          color: #fff;
+          color: #475569;
           background:
-            radial-gradient(circle at 18% 10%, rgba(255, 148, 49, 0.18), transparent 30%),
-            radial-gradient(circle at 85% 22%, rgba(19, 136, 8, 0.14), transparent 28%),
-            linear-gradient(180deg, #0c0d0f 0%, var(--footer-bg) 48%, #030404 100%);
+            radial-gradient(circle at 18% 10%, rgba(255, 148, 49, 0.04), transparent 30%),
+            radial-gradient(circle at 85% 22%, rgba(19, 136, 8, 0.03), transparent 28%),
+            linear-gradient(180deg, #ffffff 0%, var(--footer-bg) 48%, #f8fafc 100%);
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
 
@@ -346,11 +346,11 @@ export default function Footer() {
           content: '';
           position: absolute;
           inset: 0;
-          opacity: 0.3;
+          opacity: 0.35;
           pointer-events: none;
           background-image:
-            linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+            linear-gradient(rgba(15,23,42,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(15,23,42,0.03) 1px, transparent 1px);
           background-size: 48px 48px;
           mask-image: linear-gradient(to bottom, transparent, black 18%, black 72%, transparent);
         }
@@ -361,7 +361,7 @@ export default function Footer() {
           left: 0;
           right: 0;
           height: 2px;
-          background: linear-gradient(90deg, #ff9431 0%, #fff 50%, #138808 100%);
+          background: linear-gradient(90deg, #ff9431 0%, #ffc085 50%, #10b981 100%);
           opacity: 0.9;
         }
 
@@ -380,10 +380,8 @@ export default function Footer() {
           padding: 24px;
           border: 1px solid var(--footer-line);
           border-radius: 28px;
-          background:
-            linear-gradient(135deg, rgba(255,255,255,0.105), rgba(255,255,255,0.03)),
-            linear-gradient(135deg, rgba(255,148,49,0.08), rgba(19,136,8,0.055));
-          box-shadow: 0 28px 90px rgba(0, 0, 0, 0.35);
+          background: #ffffff;
+          box-shadow: 0 10px 30px rgba(15, 23, 42, 0.02);
           backdrop-filter: blur(24px);
           -webkit-backdrop-filter: blur(24px);
         }
@@ -403,9 +401,9 @@ export default function Footer() {
           min-height: 32px;
           padding: 0 12px;
           border-radius: 999px;
-          border: 1px solid rgba(255,148,49,0.22);
-          background: rgba(255,148,49,0.09);
-          color: rgba(255,255,255,0.82);
+          border: 1px solid rgba(255,148,49,0.3);
+          background: rgba(255,148,49,0.06);
+          color: #ea580c;
           font-size: 12px;
           font-weight: 800;
         }
@@ -420,7 +418,7 @@ export default function Footer() {
 
         .footer-hero h2 {
           margin: 18px 0 14px;
-          color: #fff;
+          color: #0f172a;
           font-family: 'Outfit', 'Inter', sans-serif;
           font-size: clamp(32px, 5vw, 64px);
           line-height: 0.96;
@@ -463,15 +461,15 @@ export default function Footer() {
         }
 
         .footer-primary {
-          color: #0a0a0a;
-          background: linear-gradient(135deg, #fff 0%, #ffe0c3 38%, #ff9431 100%);
-          box-shadow: 0 16px 36px rgba(255,148,49,0.22);
+          color: #ffffff;
+          background: linear-gradient(135deg, #ff9431 0%, #ea580c 100%);
+          box-shadow: 0 10px 20px rgba(234,88,12,0.15);
         }
 
         .footer-secondary {
-          color: #fff;
-          background: rgba(255,255,255,0.065);
-          border-color: rgba(255,255,255,0.12);
+          color: #0f172a;
+          background: #f1f5f9;
+          border-color: #e2e8f0;
         }
 
         .footer-primary:hover,
@@ -482,10 +480,9 @@ export default function Footer() {
         .footer-command-card {
           align-self: stretch;
           border-radius: 22px;
-          border: 1px solid rgba(255,255,255,0.12);
-          background:
-            linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.055)),
-            rgba(0,0,0,0.22);
+          border: 1px solid #e2e8f0;
+          background: #ffffff;
+          box-shadow: 0 10px 30px rgba(15, 23, 42, 0.02);
           padding: 20px;
           min-height: 260px;
           display: flex;
@@ -503,7 +500,7 @@ export default function Footer() {
           width: 180px;
           height: 180px;
           border-radius: 999px;
-          border: 36px solid rgba(255,148,49,0.12);
+          border: 36px solid rgba(255,148,49,0.06);
         }
 
         .command-top {
@@ -518,7 +515,7 @@ export default function Footer() {
         }
 
         .command-top span:last-child {
-          color: #86efac;
+          color: #16a34a;
         }
 
         .command-metric {
@@ -529,7 +526,7 @@ export default function Footer() {
 
         .command-metric strong {
           display: block;
-          color: #fff;
+          color: #0f172a;
           font-family: 'Outfit', 'Inter', sans-serif;
           font-size: clamp(28px, 4vw, 44px);
           line-height: 1;
@@ -538,7 +535,7 @@ export default function Footer() {
 
         .command-metric p {
           margin-top: 12px;
-          color: var(--footer-muted);
+          color: var(--footer-text);
           line-height: 1.6;
           font-size: 14px;
           max-width: 330px;
@@ -558,8 +555,9 @@ export default function Footer() {
           gap: 10px;
           padding: 0 12px;
           border-radius: 12px;
-          background: rgba(255,255,255,0.065);
-          color: rgba(255,255,255,0.78);
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          color: #475569;
           font-size: 13px;
           font-weight: 750;
         }
@@ -584,8 +582,9 @@ export default function Footer() {
           gap: 7px;
           padding: 18px;
           border-radius: 18px;
-          border: 1px solid rgba(255,255,255,0.09);
-          background: rgba(255,255,255,0.045);
+          border: 1px solid #e2e8f0;
+          background: #ffffff;
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.01);
         }
 
         .footer-trust-item svg {
@@ -593,7 +592,7 @@ export default function Footer() {
         }
 
         .footer-trust-item strong {
-          color: #fff;
+          color: #0f172a;
           font-size: 18px;
           font-weight: 900;
         }
@@ -610,8 +609,8 @@ export default function Footer() {
           grid-template-columns: 1fr;
           gap: 40px;
           padding: 48px 0;
-          border-top: 1px solid rgba(255,255,255,0.08);
-          border-bottom: 1px solid rgba(255,255,255,0.08);
+          border-top: 1px solid var(--footer-line);
+          border-bottom: 1px solid var(--footer-line);
         }
 
         @media (min-width: 1024px) {
@@ -623,6 +622,7 @@ export default function Footer() {
 
         .footer-logo-wrap {
           margin-bottom: 20px;
+          color: #0f172a;
         }
 
         .footer-tagline {
@@ -647,7 +647,7 @@ export default function Footer() {
           gap: 9px;
           color: var(--footer-muted);
           font-size: 13px;
-          font-weight: 700;
+          font-weight: 750;
           line-height: 1.4;
           text-decoration: none;
           overflow-wrap: anywhere;
@@ -655,7 +655,7 @@ export default function Footer() {
 
         .footer-contact-link:hover,
         .footer-contact-link:focus {
-          color: #fff;
+          color: #0f172a;
           outline: none;
         }
 
@@ -669,21 +669,21 @@ export default function Footer() {
           width: 40px;
           height: 40px;
           border-radius: 12px;
-          background: rgba(255,255,255,0.07);
-          border: 1px solid rgba(255,255,255,0.1);
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          color: rgba(255,255,255,0.72);
+          color: #64748b;
           text-decoration: none;
           transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease;
         }
 
         .footer-social-btn:hover,
         .footer-social-btn:focus {
-          color: #fff;
-          background: rgba(255,148,49,0.13);
-          border-color: rgba(255,148,49,0.28);
+          color: var(--footer-orange);
+          background: rgba(255,148,49,0.08);
+          border-color: rgba(255,148,49,0.3);
           outline: none;
         }
 
@@ -702,7 +702,7 @@ export default function Footer() {
 
         .footer-nav-col h3 {
           margin: 0 0 16px;
-          color: rgba(255,255,255,0.34);
+          color: #64748b;
           font-size: 11px;
           font-weight: 900;
           text-transform: uppercase;
@@ -727,7 +727,7 @@ export default function Footer() {
           padding: 0;
           border: 0;
           background: transparent;
-          color: var(--footer-muted);
+          color: var(--footer-text);
           font-family: inherit;
           font-size: 14px;
           font-weight: 750;
@@ -744,7 +744,7 @@ export default function Footer() {
 
         .footer-nav-link:hover,
         .footer-nav-link:focus {
-          color: #fff;
+          color: #0f172a;
           transform: translateX(2px);
           outline: none;
         }
@@ -757,10 +757,9 @@ export default function Footer() {
 
         .footer-newsletter {
           border-radius: 20px;
-          border: 1px solid rgba(255,255,255,0.1);
-          background:
-            linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04)),
-            rgba(255,255,255,0.035);
+          border: 1px solid #e2e8f0;
+          background: #ffffff;
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.01);
           padding: 18px;
         }
 
@@ -779,14 +778,14 @@ export default function Footer() {
           align-items: center;
           justify-content: center;
           color: var(--footer-orange);
-          background: rgba(255,148,49,0.13);
-          border: 1px solid rgba(255,148,49,0.18);
+          background: rgba(255,148,49,0.08);
+          border: 1px solid rgba(255,148,49,0.2);
           flex: 0 0 auto;
         }
 
         .newsletter-head span {
           display: block;
-          color: #fff;
+          color: #0f172a;
           font-size: 15px;
           font-weight: 900;
           margin-bottom: 4px;
@@ -825,9 +824,9 @@ export default function Footer() {
           width: 100%;
           height: 46px;
           border-radius: 13px;
-          border: 1px solid rgba(255,255,255,0.1);
-          background: rgba(0,0,0,0.24);
-          color: #fff;
+          border: 1px solid #e2e8f0;
+          background: #f8fafc;
+          color: #0f172a;
           font-family: inherit;
           font-size: 14px;
           font-weight: 650;
@@ -836,7 +835,7 @@ export default function Footer() {
         }
 
         .footer-input-wrap input:focus {
-          border-color: rgba(255,148,49,0.52);
+          border-color: var(--footer-orange);
           box-shadow: 0 0 0 4px rgba(255,148,49,0.1);
         }
 
@@ -849,8 +848,8 @@ export default function Footer() {
           align-items: center;
           justify-content: center;
           gap: 8px;
-          background: #fff;
-          color: #070707;
+          background: linear-gradient(135deg, #ff9431 0%, #ea580c 100%);
+          color: #ffffff;
           font-family: inherit;
           font-size: 13px;
           font-weight: 900;
@@ -862,7 +861,7 @@ export default function Footer() {
           display: flex;
           align-items: center;
           gap: 9px;
-          color: #86efac;
+          color: #16a34a;
           font-size: 14px;
           font-weight: 850;
         }
@@ -903,6 +902,10 @@ export default function Footer() {
           display: inline-flex;
           align-items: center;
           gap: 5px;
+          background: #f1f5f9;
+          border: 1px solid #e2e8f0;
+          padding: 4px 10px;
+          border-radius: 8px;
         }
 
         @media (max-width: 1040px) {
@@ -1000,8 +1003,8 @@ export default function Footer() {
           .footer-nav-col {
             padding: 16px;
             border-radius: 18px;
-            border: 1px solid rgba(255,255,255,0.08);
-            background: rgba(255,255,255,0.04);
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
           }
 
           .footer-nav-col h3 {

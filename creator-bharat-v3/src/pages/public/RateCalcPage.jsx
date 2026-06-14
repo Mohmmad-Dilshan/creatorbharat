@@ -58,7 +58,7 @@ const RatingGauge = ({ score }) => {
             cy="55"
             r={radius}
             fill="transparent"
-            stroke="rgba(255,255,255,0.06)"
+            stroke="#f1f5f9"
             strokeWidth="8"
           />
           {/* Progress circle */}
@@ -74,11 +74,11 @@ const RatingGauge = ({ score }) => {
             animate={{ strokeDashoffset }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             strokeLinecap="round"
-            style={{ filter: 'drop-shadow(0 0 8px rgba(255, 148, 49, 0.5))' }}
+            style={{ filter: 'drop-shadow(0 0 6px rgba(255, 148, 49, 0.2))' }}
           />
         </svg>
         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontSize: '24px', fontWeight: 950, color: '#fff', lineHeight: 1 }}>{score}%</span>
+          <span style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', lineHeight: 1 }}>{score}%</span>
           <span style={{ fontSize: '8px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '2px' }}>Power</span>
         </div>
       </div>
@@ -244,14 +244,15 @@ AuthLockOverlay.propTypes = {
 
 const RateCalcHeader = ({ mob }) => (
   <section style={{ 
-    background: '#050505', 
+    background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', 
     padding: mob ? '120px 20px 60px' : '160px 24px 100px', 
     textAlign: 'center',
     position: 'relative',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    borderBottom: '1px solid #e2e8f0'
   }}>
-    <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255, 148, 49, 0.12), transparent 70%)', opacity: 0.8 }} />
-    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #FF9431, #fff, #10B981)' }} />
+    <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255, 148, 49, 0.04), transparent 70%)', opacity: 0.8 }} />
+    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #FF9431, #e2e8f0, #10B981)' }} />
     
     <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
       <motion.div
@@ -261,32 +262,32 @@ const RateCalcHeader = ({ mob }) => (
           display: 'inline-flex', 
           alignItems: 'center', 
           gap: '10px', 
-          background: 'rgba(255, 255, 255, 0.05)', 
+          background: 'rgba(255, 148, 49, 0.06)', 
           padding: '10px 20px', 
           borderRadius: '100px',
           marginBottom: '32px',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          border: '1px solid rgba(255, 148, 49, 0.15)',
           backdropFilter: 'blur(10px)'
         }}
       >
         <Calculator size={16} color="#FF9431" />
-        <span style={{ fontSize: '13px', fontWeight: 900, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Creator Value Intelligence</span>
+        <span style={{ fontSize: '13px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Creator Value Intelligence</span>
       </motion.div>
 
       <motion.h1 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        style={{ fontSize: 'clamp(48px, 8vw, 84px)', fontWeight: 950, color: '#fff', marginBottom: '24px', letterSpacing: '-0.05em', lineHeight: 0.95 }}
+        style={{ fontSize: 'clamp(48px, 8vw, 84px)', fontWeight: 950, color: '#0f172a', marginBottom: '24px', letterSpacing: '-0.05em', lineHeight: 0.95 }}
       >
         Quantify Your <br />
-        <span style={{ background: 'linear-gradient(90deg, #FF9431, #fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Social Equity.</span>
+        <span style={{ background: 'linear-gradient(90deg, #FF9431, #0f172a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Social Equity.</span>
       </motion.h1>
       <motion.p 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        style={{ fontSize: mob ? '16px' : '20px', color: 'rgba(255, 255, 255, 0.6)', maxWidth: '650px', margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}
+        style={{ fontSize: mob ? '16px' : '20px', color: '#475569', maxWidth: '650px', margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}
       >
         Use real-time algorithms powered by 25,000+ Bharat creators to calculate exactly what you should be charging brands.
       </motion.p>
@@ -302,11 +303,11 @@ const RateCalcFooter = () => (
   <section style={{ padding: '0 24px 120px', textAlign: 'center' }}>
      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', flexWrap: 'wrap' }}>
-           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#94a3b8' }}>
+           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#64748b' }}>
               <Sparkles size={20} />
               <span style={{ fontSize: '14px', fontWeight: 700 }}>AI Price Discovery</span>
            </div>
-           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#94a3b8' }}>
+           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#64748b' }}>
               <Flame size={20} />
               <span style={{ fontSize: '14px', fontWeight: 700 }}>Bharat Market Real-time</span>
            </div>
@@ -455,13 +456,13 @@ const RateCalcResultsConsole = ({ result, mob, navigate }) => (
   <div>
      {result ? (
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-           <div style={{ background: 'linear-gradient(165deg, #090d16 0%, #030408 100%)', borderRadius: '40px', padding: mob ? '32px' : '48px', color: '#fff', position: 'relative', overflow: 'hidden', border: '1px solid rgba(255,148,49,0.15)', boxShadow: '0 30px 80px rgba(255,148,49,0.15)' }}>
-              <div style={{ position: 'absolute', top: 0, right: 0, width: '150px', height: '150px', background: 'radial-gradient(circle at 100% 0%, rgba(255, 148, 49, 0.2), transparent 70%)' }} />
+           <div style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', borderRadius: '40px', padding: mob ? '32px' : '48px', color: '#475569', position: 'relative', overflow: 'hidden', border: '1.5px solid #e2e8f0', boxShadow: '0 30px 60px rgba(0,0,0,0.02)' }}>
+              <div style={{ position: 'absolute', top: 0, right: 0, width: '150px', height: '150px', background: 'radial-gradient(circle at 100% 0%, rgba(255, 148, 49, 0.08), transparent 70%)' }} />
               
               <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.2fr 0.8fr', gap: '24px', alignItems: 'center' }}>
                 <div>
                    <div style={{ fontSize: '11px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '12px' }}>Estimated Base Rate</div>
-                   <div style={{ fontSize: mob ? '40px' : '54px', fontWeight: 950, letterSpacing: '-0.04em', marginBottom: '24px' }}>
+                   <div style={{ fontSize: mob ? '40px' : '54px', fontWeight: 955, color: '#0f172a', letterSpacing: '-0.04em', marginBottom: '24px' }}>
                       <RollingNumber value={result.post} />
                    </div>
                 </div>
@@ -471,20 +472,20 @@ const RateCalcResultsConsole = ({ result, mob, navigate }) => (
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '24px' }}>
-                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '16px' }}>
-                    <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>Min. Expected</span>
-                    <span style={{ fontSize: '16px', fontWeight: 800 }}>₹{fmt.num(result.post * 0.85)}</span>
+                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #e2e8f0', paddingBottom: '16px' }}>
+                    <span style={{ fontSize: '14px', color: '#475569', fontWeight: 600 }}>Min. Expected</span>
+                    <span style={{ fontSize: '16px', fontWeight: 800, color: '#0f172a' }}>₹{fmt.num(result.post * 0.85)}</span>
                  </div>
-                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '16px' }}>
-                    <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>Max. Potential</span>
-                    <span style={{ fontSize: '16px', fontWeight: 800 }}>₹{fmt.num(result.post * 1.25)}</span>
+                 <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #e2e8f0', paddingBottom: '16px' }}>
+                    <span style={{ fontSize: '14px', color: '#475569', fontWeight: 600 }}>Max. Potential</span>
+                    <span style={{ fontSize: '16px', fontWeight: 800, color: '#0f172a' }}>₹{fmt.num(result.post * 1.25)}</span>
                  </div>
               </div>
 
               <Btn 
                 full lg 
                 onClick={() => navigate('/apply')}
-                style={{ marginTop: '40px', background: '#FF9431', color: '#fff', border: 'none', borderRadius: '100px', padding: '20px', fontWeight: 950, boxShadow: '0 10px 30px rgba(255,148,49,0.3)' }}
+                style={{ marginTop: '40px', background: '#FF9431', color: '#fff', border: 'none', borderRadius: '100px', padding: '20px', fontWeight: 950, boxShadow: '0 10px 24px rgba(255,148,49,0.2)' }}
               >
                  Claim My Elite Profile <ArrowRight size={20} />
               </Btn>

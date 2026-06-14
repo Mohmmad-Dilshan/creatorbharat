@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
-import { Crown, ShieldCheck, MapPin, Award, Activity } from 'lucide-react';
+import { Crown, ShieldCheck, MapPin, Plus, Check } from 'lucide-react';
 import Sparkline from './Sparkline';
+import { useApp } from '@/core/context';
 
 const THEME = {
   primary: '#FF9431',
@@ -15,7 +16,7 @@ const THEME = {
 const MetricBox = ({ label, value, color }) => (
   <div style={{ textAlign: 'left' }}>
     <div style={{ fontSize: '9px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</div>
-    <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a', marginTop: '2px', color }}>{value}</div>
+    <div style={{ fontSize: '15px', fontWeight: 950, color: color || '#0f172a', marginTop: '2px' }}>{value}</div>
   </div>
 );
 
@@ -26,8 +27,11 @@ MetricBox.propTypes = {
 };
 
 // Pedestal Card template for the podium
-const PedestalColumn = ({ c, rank, height, border, background, shadow, glowColor, badgeBg, badgeText, navigate }) => {
+const PedestalColumn = ({ c, rank, height, border, background, shadow, glowColor, badgeBg, badgeText, navigate, onScoreClick }) => {
+  const { st, dsp } = useApp();
+  const isCompared = st.compared.includes(c.id);
   const mockPoints = rank === 1 ? [15, 5, 12, 2, 8] : rank === 2 ? [15, 8, 10, 3, 6] : [15, 12, 10, 6, 2];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -51,6 +55,35 @@ const PedestalColumn = ({ c, rank, height, border, background, shadow, glowColor
       }}
     >
       <div>
+        {/* Floating Compare Button */}
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            dsp({ t: 'COMPARE', id: c.id });
+          }}
+          style={{ 
+            position: 'absolute', 
+            top: 20, 
+            right: 20, 
+            width: '32px', 
+            height: '32px', 
+            background: isCompared ? THEME.primary : 'rgba(15,23,42,0.04)', 
+            borderRadius: '50%', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            border: isCompared ? 'none' : '1px solid rgba(15,23,42,0.08)',
+            color: isCompared ? '#fff' : '#64748b',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            boxShadow: isCompared ? `0 4px 10px ${THEME.primary}30` : 'none',
+            zIndex: 5
+          }}
+          title={isCompared ? "Remove from comparison" : "Add to comparison"}
+        >
+          {isCompared ? <Check size={14} strokeWidth={3} /> : <Plus size={14} />}
+        </button>
+
         {/* Crown / Rank Indicator */}
         <div style={{ position: 'relative', width: '90px', height: '90px', margin: '0 auto 20px' }}>
           <div style={{ 
@@ -138,9 +171,16 @@ const PedestalColumn = ({ c, rank, height, border, background, shadow, glowColor
           </div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', alignItems: 'center' }}>
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ fontSize: '9px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Impact Score</div>
-            <div style={{ fontSize: '20px', fontWeight: 950, color: '#0f172a', marginTop: '2px' }}>{c.score}</div>
+          <div 
+            onClick={(e) => {
+              e.stopPropagation();
+              onScoreClick(c);
+            }}
+            style={{ textAlign: 'left', cursor: 'pointer' }}
+            title="Click to view Pehchan breakdown"
+          >
+            <div style={{ fontSize: '9px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px', textDecoration: 'underline' }}>Impact Score</div>
+            <div style={{ fontSize: '20px', fontWeight: 950, color: '#0f172a', marginTop: '2px' }}>{c.score}<span style={{ fontSize: '12px', color: THEME.green }}>.9</span></div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
             <Sparkline color={glowColor} points={mockPoints} id={c.id} />
@@ -161,54 +201,94 @@ PedestalColumn.propTypes = {
   glowColor: PropTypes.string.isRequired,
   badgeBg: PropTypes.string.isRequired,
   badgeText: PropTypes.string.isRequired,
-  navigate: PropTypes.func.isRequired
+  navigate: PropTypes.func.isRequired,
+  onScoreClick: PropTypes.func.isRequired
 };
 
 // Mobile Fallback Card
-const MobileEliteCard = ({ c, rank, glowColor, badgeText, navigate }) => (
-  <motion.div
-    whileTap={{ scale: 0.98 }}
-    onClick={() => navigate(`/creator/${c.id}`)}
-    style={{
-      background: '#ffffff',
-      border: `1.5px solid ${glowColor}30`,
-      padding: '20px',
-      borderRadius: '24px',
-      marginBottom: '16px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '16px',
-      boxShadow: '0 8px 24px rgba(0,0,0,0.03)',
-      cursor: 'pointer'
-    }}
-  >
-    <div style={{ fontSize: '20px', fontWeight: 950, color: glowColor, width: '32px' }}>#{rank}</div>
-    <div style={{ width: '60px', height: '60px', borderRadius: '18px', border: `2px solid ${glowColor}`, overflow: 'hidden' }}>
-      {c.avatar ? <img src={c.avatar} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : c.name.charAt(0)}
-    </div>
-    <div style={{ flex: 1 }}>
-      <div style={{ fontWeight: 900, color: '#0f172a', fontSize: '16px', display: 'flex', alignItems: 'center', gap: 4 }}>
-        {c.name}
-        {rank === 1 && <Crown size={14} color={THEME.gold} fill={THEME.gold} />}
+const MobileEliteCard = ({ c, rank, glowColor, badgeText, navigate, onScoreClick }) => {
+  const { st, dsp } = useApp();
+  const isCompared = st.compared.includes(c.id);
+
+  return (
+    <motion.div
+      whileTap={{ scale: 0.98 }}
+      onClick={() => navigate(`/creator/${c.id}`)}
+      style={{
+        background: '#ffffff',
+        border: `1.5px solid ${glowColor}30`,
+        padding: '20px',
+        borderRadius: '24px',
+        marginBottom: '16px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '16px',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.03)',
+        cursor: 'pointer',
+        position: 'relative'
+      }}
+    >
+      <div style={{ fontSize: '20px', fontWeight: 950, color: glowColor, width: '32px' }}>#{rank}</div>
+      <div style={{ width: '60px', height: '60px', borderRadius: '18px', border: `2px solid ${glowColor}`, overflow: 'hidden', flexShrink: 0 }}>
+        {c.avatar ? <img src={c.avatar} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : c.name.charAt(0)}
       </div>
-      <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{c.niche} • {c.followers} • ER: {c.er}</div>
-    </div>
-    <div style={{ textAlign: 'right' }}>
-      <div style={{ fontSize: '18px', fontWeight: 950, color: '#0f172a' }}>{c.score}</div>
-      <div style={{ fontSize: '9px', fontWeight: 900, color: glowColor, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Score</div>
-    </div>
-  </motion.div>
-);
+      <div style={{ flex: 1 }}>
+        <div style={{ fontWeight: 900, color: '#0f172a', fontSize: '16px', display: 'flex', alignItems: 'center', gap: 4 }}>
+          {c.name}
+          {rank === 1 && <Crown size={14} color={THEME.gold} fill={THEME.gold} />}
+        </div>
+        <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>{c.niche} • {c.followers} • ER: {c.er}</div>
+      </div>
+      
+      {/* Metrics & Click Trigger */}
+      <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div 
+          onClick={(e) => {
+            e.stopPropagation();
+            onScoreClick(c);
+          }}
+          style={{ cursor: 'pointer' }}
+        >
+          <div style={{ fontSize: '18px', fontWeight: 950, color: '#0f172a' }}>{c.score}</div>
+          <div style={{ fontSize: '9px', fontWeight: 900, color: glowColor, textTransform: 'uppercase', letterSpacing: '0.5px', textDecoration: 'underline' }}>Score</div>
+        </div>
+
+        {/* Plus Button inside Mobile Elite Card */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            dsp({ t: 'COMPARE', id: c.id });
+          }}
+          style={{
+            background: isCompared ? THEME.primary : 'rgba(15,23,42,0.04)',
+            border: isCompared ? 'none' : '1px solid rgba(15,23,42,0.1)',
+            color: isCompared ? '#fff' : '#64748b',
+            width: '28px',
+            height: '28px',
+            borderRadius: '50%',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          {isCompared ? <Check size={12} strokeWidth={3} /> : <Plus size={12} />}
+        </button>
+      </div>
+    </motion.div>
+  );
+};
 
 MobileEliteCard.propTypes = {
   c: PropTypes.object.isRequired,
   rank: PropTypes.number.isRequired,
   glowColor: PropTypes.string.isRequired,
   badgeText: PropTypes.string.isRequired,
-  navigate: PropTypes.func.isRequired
+  navigate: PropTypes.func.isRequired,
+  onScoreClick: PropTypes.func.isRequired
 };
 
-export default function ElitePodiumCard({ creators, mob, navigate }) {
+export default function ElitePodiumCard({ creators, mob, navigate, onScoreClick }) {
   if (!creators || creators.length === 0) return null;
   const first = creators[0];
   const second = creators[1];
@@ -218,9 +298,9 @@ export default function ElitePodiumCard({ creators, mob, navigate }) {
     return (
       <div style={{ padding: '0 4px', marginBottom: '32px' }}>
         <h4 style={{ fontSize: '18px', fontWeight: 950, color: '#0f172a', marginBottom: '16px' }}>Elite Top 3</h4>
-        {first && <MobileEliteCard c={first} rank={1} glowColor={THEME.gold} badgeText="Top Elite #1" navigate={navigate} />}
-        {second && <MobileEliteCard c={second} rank={2} glowColor={THEME.secondary} badgeText="Elite Rank #2" navigate={navigate} />}
-        {third && <MobileEliteCard c={third} rank={3} glowColor={THEME.bronze} badgeText="Elite Rank #3" navigate={navigate} />}
+        {first && <MobileEliteCard c={first} rank={1} glowColor={THEME.gold} badgeText="Top Elite #1" navigate={navigate} onScoreClick={onScoreClick} />}
+        {second && <MobileEliteCard c={second} rank={2} glowColor={THEME.secondary} badgeText="Elite Rank #2" navigate={navigate} onScoreClick={onScoreClick} />}
+        {third && <MobileEliteCard c={third} rank={3} glowColor={THEME.bronze} badgeText="Elite Rank #3" navigate={navigate} onScoreClick={onScoreClick} />}
       </div>
     );
   }
@@ -247,6 +327,7 @@ export default function ElitePodiumCard({ creators, mob, navigate }) {
           badgeBg="rgba(59, 130, 246, 0.08)"
           badgeText="Elite Rank #2"
           navigate={navigate}
+          onScoreClick={onScoreClick}
         />
       )}
 
@@ -263,6 +344,7 @@ export default function ElitePodiumCard({ creators, mob, navigate }) {
           badgeBg="rgba(245, 158, 11, 0.08)"
           badgeText="TOP ELITE #1"
           navigate={navigate}
+          onScoreClick={onScoreClick}
         />
       )}
 
@@ -279,6 +361,7 @@ export default function ElitePodiumCard({ creators, mob, navigate }) {
           badgeBg="rgba(234, 88, 12, 0.08)"
           badgeText="Elite Rank #3"
           navigate={navigate}
+          onScoreClick={onScoreClick}
         />
       )}
     </div>
@@ -288,5 +371,6 @@ export default function ElitePodiumCard({ creators, mob, navigate }) {
 ElitePodiumCard.propTypes = {
   creators: PropTypes.array.isRequired,
   mob: PropTypes.bool,
-  navigate: PropTypes.func.isRequired
+  navigate: PropTypes.func.isRequired,
+  onScoreClick: PropTypes.func.isRequired
 };

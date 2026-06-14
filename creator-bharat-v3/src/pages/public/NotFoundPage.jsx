@@ -13,8 +13,8 @@ export default function NotFoundPage() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#050505',
-      color: '#ffffff',
+      background: '#fcfcfc',
+      color: '#475569',
       padding: '24px',
       position: 'relative',
       overflow: 'hidden',
@@ -31,7 +31,7 @@ export default function NotFoundPage() {
         position: 'absolute',
         width: '600px',
         height: '600px',
-        background: 'radial-gradient(circle, rgba(255, 148, 49, 0.08) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(255, 148, 49, 0.04) 0%, transparent 70%)',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
@@ -46,13 +46,12 @@ export default function NotFoundPage() {
         style={{
           maxWidth: '600px',
           width: '100%',
-          background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px solid rgba(255, 255, 255, 0.06)',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
           borderRadius: '40px',
           padding: '60px 40px',
           textAlign: 'center',
-          backdropFilter: 'blur(20px)',
-          boxShadow: '0 40px 100px rgba(0,0,0,0.8)',
+          boxShadow: '0 30px 60px rgba(0,0,0,0.03)',
           zIndex: 1,
           display: 'flex',
           flexDirection: 'column',
@@ -97,13 +96,14 @@ export default function NotFoundPage() {
             fontSize: '28px',
             fontWeight: 900,
             margin: 0,
-            letterSpacing: '-0.5px'
+            letterSpacing: '-0.5px',
+            color: '#0f172a'
           }}>
             Ecosystem Route Offline
           </h2>
           <p style={{
             fontSize: '15px',
-            color: 'rgba(255, 255, 255, 0.5)',
+            color: '#475569',
             lineHeight: 1.6,
             maxWidth: '440px',
             margin: '0 auto'
@@ -116,9 +116,9 @@ export default function NotFoundPage() {
         <div style={{
           fontSize: '12px',
           fontFamily: 'monospace',
-          color: 'rgba(255, 255, 255, 0.3)',
-          background: 'rgba(255,255,255,0.02)',
-          border: '1px solid rgba(255,255,255,0.04)',
+          color: '#64748b',
+          background: '#f8fafc',
+          border: '1px solid #e2e8f0',
           padding: '8px 16px',
           borderRadius: '12px',
           display: 'flex',
@@ -164,7 +164,7 @@ export default function NotFoundPage() {
           </motion.button>
 
           <motion.button 
-            whileHover={{ scale: 1.05, y: -2, borderColor: 'rgba(255, 255, 255, 0.2)', backgroundColor: 'rgba(255,255,255,0.04)' }}
+            whileHover={{ scale: 1.05, y: -2, borderColor: '#cbd5e1', backgroundColor: '#f8fafc' }}
             whileTap={{ scale: 0.98 }}
             onClick={() => navigate('/leaderboard')}
             style={{
@@ -173,8 +173,8 @@ export default function NotFoundPage() {
               padding: '16px 28px',
               borderRadius: '100px',
               background: 'transparent',
-              color: '#ffffff',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: '#475569',
+              border: '1px solid #e2e8f0',
               fontWeight: 800,
               fontSize: '14px',
               cursor: 'pointer',

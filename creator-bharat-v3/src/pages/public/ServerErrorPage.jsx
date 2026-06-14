@@ -30,8 +30,8 @@ export default function ServerErrorPage() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#050505',
-      color: '#ffffff',
+      background: '#fcfcfc',
+      color: '#475569',
       padding: '24px',
       position: 'relative',
       overflow: 'hidden',
@@ -48,7 +48,7 @@ export default function ServerErrorPage() {
         position: 'absolute',
         width: '600px',
         height: '600px',
-        background: 'radial-gradient(circle, rgba(239, 68, 68, 0.08) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(239, 68, 68, 0.04) 0%, transparent 70%)',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
@@ -63,13 +63,12 @@ export default function ServerErrorPage() {
         style={{
           maxWidth: '520px',
           width: '100%',
-          background: 'rgba(255, 255, 255, 0.02)',
-          border: '1px solid rgba(255, 255, 255, 0.06)',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
           borderRadius: '40px',
           padding: '48px 36px',
           textAlign: 'center',
-          backdropFilter: 'blur(20px)',
-          boxShadow: '0 40px 100px rgba(0,0,0,0.8)',
+          boxShadow: '0 30px 60px rgba(0,0,0,0.03)',
           zIndex: 1,
           display: 'flex',
           flexDirection: 'column',
@@ -115,13 +114,14 @@ export default function ServerErrorPage() {
             fontSize: '24px',
             fontWeight: 900,
             margin: 0,
-            letterSpacing: '-0.5px'
+            letterSpacing: '-0.5px',
+            color: '#0f172a'
           }}>
             Ecosystem Pipeline Offline
           </h2>
           <p style={{
             fontSize: '14px',
-            color: 'rgba(255, 255, 255, 0.5)',
+            color: '#475569',
             lineHeight: 1.5,
             maxWidth: '380px',
             margin: '0 auto',
@@ -133,11 +133,11 @@ export default function ServerErrorPage() {
 
         {/* Auto-retry Progress Bar */}
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '11px', color: 'rgba(255,255,255,0.6)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '11px', color: '#475569', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             <span>🔄 Auto-reconnecting in</span>
             <span style={{ color: '#ef4444', fontWeight: 950 }}>{countdown}s</span>
           </div>
-          <div style={{ width: '100%', height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 10, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ width: '100%', height: 5, background: '#f1f5f9', borderRadius: 10, position: 'relative', overflow: 'hidden' }}>
             <motion.div 
               initial={{ width: '100%' }} 
               animate={{ width: `${(countdown / 10) * 100}%` }} 
@@ -154,7 +154,7 @@ export default function ServerErrorPage() {
             style={{
               background: 'transparent',
               border: 'none',
-              color: 'rgba(255,255,255,0.4)',
+              color: '#64748b',
               fontSize: '11px',
               fontWeight: 800,
               cursor: 'pointer',
@@ -178,9 +178,9 @@ export default function ServerErrorPage() {
                 style={{
                   fontSize: '11px',
                   fontFamily: 'monospace',
-                  color: 'rgba(255, 255, 255, 0.5)',
-                  background: 'rgba(0,0,0,0.3)',
-                  border: '1px solid rgba(255,255,255,0.06)',
+                  color: '#475569',
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
                   padding: '16px',
                   borderRadius: '16px',
                   display: 'flex',
@@ -241,7 +241,7 @@ export default function ServerErrorPage() {
           </motion.button>
 
           <motion.button 
-            whileHover={{ scale: 1.03, y: -1, borderColor: 'rgba(255, 255, 255, 0.2)', backgroundColor: 'rgba(255,255,255,0.04)' }}
+            whileHover={{ scale: 1.03, y: -1, borderColor: '#cbd5e1', backgroundColor: '#f8fafc' }}
             whileTap={{ scale: 0.98 }}
             onClick={() => navigate('/contact')}
             style={{
@@ -250,8 +250,8 @@ export default function ServerErrorPage() {
               padding: '14px 20px',
               borderRadius: '100px',
               background: 'transparent',
-              color: '#ffffff',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: '#475569',
+              border: '1px solid #e2e8f0',
               fontWeight: 800,
               fontSize: '13px',
               cursor: 'pointer',

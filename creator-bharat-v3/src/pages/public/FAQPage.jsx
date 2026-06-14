@@ -94,10 +94,10 @@ export default function FAQPage() {
          </div>
 
          {/* Helpdesk Footer */}
-         <div style={{ marginTop: '80px', background: 'linear-gradient(165deg, #090d16 0%, #030408 100%)', borderRadius: mob ? '32px' : '48px', padding: mob ? '32px 24px' : '56px', border: '1px solid rgba(255, 148, 49, 0.1)', color: '#fff', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: 0, right: 0, width: '150px', height: '150px', background: 'radial-gradient(circle at 100% 0%, rgba(255,148,49,0.15), transparent 70%)' }} />
-            <h3 style={{ fontSize: mob ? '26px' : '36px', fontWeight: 950, marginBottom: '16px', letterSpacing: '-0.02em', fontFamily: "'Outfit', sans-serif" }}>Still Have Questions?</h3>
-            <p style={{ fontSize: mob ? '15px' : '16px', color: '#94a3b8', maxWidth: '520px', margin: '0 auto 32px', lineHeight: 1.6 }}>Our Concierge Helpdesk is available 24/7. Connect directly with our support engineers.</p>
+         <div style={{ marginTop: '80px', background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', borderRadius: mob ? '32px' : '48px', padding: mob ? '32px 24px' : '56px', border: '1.5px solid #e2e8f0', color: '#0f172a', textAlign: 'center', position: 'relative', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.02)' }}>
+            <div style={{ position: 'absolute', top: 0, right: 0, width: '150px', height: '150px', background: 'radial-gradient(circle at 100% 0%, rgba(255,148,49,0.08), transparent 70%)' }} />
+            <h3 style={{ fontSize: mob ? '26px' : '36px', fontWeight: 950, marginBottom: '16px', letterSpacing: '-0.02em', fontFamily: "'Outfit', sans-serif", color: '#0f172a' }}>Still Have Questions?</h3>
+            <p style={{ fontSize: mob ? '15px' : '16px', color: '#475569', maxWidth: '520px', margin: '0 auto 32px', lineHeight: 1.6 }}>Our Concierge Helpdesk is available 24/7. Connect directly with our support engineers.</p>
             <Btn lg onClick={() => navigate('/contact')} style={{ background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)', color: '#fff', borderRadius: '100px', fontWeight: 950, display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                <MessageCircle size={18} /> Contact Support
             </Btn>

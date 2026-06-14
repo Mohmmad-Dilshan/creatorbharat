@@ -167,14 +167,15 @@ export default function MobileMenu({ open }) {
               background: '#ffffff', 
               zIndex: 2000001,
               display: 'flex', flexDirection: 'column',
-              boxShadow: '-20px 0 60px rgba(0,0,0,0.15)',
-              borderLeft: '1px solid rgba(0,0,0,0.05)',
+              boxShadow: '-20px 0 60px rgba(15, 23, 42, 0.08)',
+              borderLeft: '1px solid #e2e8f0',
+              fontFamily: '"Outfit", sans-serif'
             }}
           >
             {/* HEADER WITH LOGO & CLOSE */}
             <div style={{ 
               display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-              padding: '24px 28px', borderBottom: '1px solid rgba(0,0,0,0.05)'
+              padding: '24px 28px', borderBottom: '1px solid #e2e8f0'
             }}>
                <Logo onClick={() => {
                  const logoPath = st.user ? (st.role === 'brand' ? '/brand-dashboard' : '/creator/dashboard') : '/';
@@ -183,13 +184,15 @@ export default function MobileMenu({ open }) {
                <button 
                   onClick={() => dsp({ t: 'UI', v: { mobileMenu: false } })}
                   style={{ 
-                    width: 36, height: 36, borderRadius: '10px', border: '1px solid rgba(0,0,0,0.05)', 
+                    width: 36, height: 36, borderRadius: '10px', border: '1px solid #e2e8f0', 
                     background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', 
                     cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.02)',
                     transition: 'all 0.2s ease'
                   }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}
                >
-                  <X size={18} color="#111" />
+                  <X size={18} color="#0f172a" />
                </button>
             </div>
 
@@ -202,7 +205,7 @@ export default function MobileMenu({ open }) {
                   onSubmit={handleSearch}
                   style={{ 
                     display: 'flex', alignItems: 'center', gap: 12, padding: '4px 14px', 
-                    background: '#F9FAFB', borderRadius: 12, border: '1px solid rgba(0,0,0,0.05)',
+                    background: '#f8fafc', borderRadius: 12, border: '1px solid #e2e8f0',
                     width: '100%'
                   }}
                 >
@@ -210,7 +213,7 @@ export default function MobileMenu({ open }) {
                     type="submit" 
                     style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                   >
-                    <Search size={18} color={search ? '#FF9431' : 'rgba(0,0,0,0.4)'} />
+                    <Search size={18} color={search ? '#FF9431' : '#64748b'} />
                   </button>
                   <input 
                     type="text"
@@ -221,12 +224,13 @@ export default function MobileMenu({ open }) {
                     placeholder="Search creators or pages..."
                     style={{ 
                       background: 'none', border: 'none', outline: 'none', 
-                      fontSize: 14, color: '#111', fontWeight: 600, 
-                      width: '100%', height: '44px'
+                      fontSize: 14, color: '#0f172a', fontWeight: 600, 
+                      width: '100%', height: '44px',
+                      fontFamily: '"Outfit", sans-serif'
                     }}
                   />
                   {search && (
-                    <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', color: '#94a3b8' }}>
+                    <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', color: '#64748b' }}>
                       <X size={16} />
                     </button>
                   )}
@@ -242,24 +246,24 @@ export default function MobileMenu({ open }) {
                       style={{
                         position: 'absolute', top: '110%', left: 0, right: 0,
                         background: '#fff', borderRadius: 16, 
-                        boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-                        border: '1px solid rgba(0,0,0,0.05)',
+                        boxShadow: '0 20px 40px rgba(15, 23, 42, 0.08)',
+                        border: '1px solid #e2e8f0',
                         zIndex: 100, overflow: 'hidden', padding: '12px'
                       }}
                     >
                       {results.pages.length > 0 && (
                         <div style={{ marginBottom: 12 }}>
-                          <div style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', padding: '4px 8px' }}>Pages</div>
+                          <div style={{ fontSize: 10, fontWeight: 800, color: '#64748b', textTransform: 'uppercase', padding: '4px 8px', letterSpacing: '0.05em' }}>Pages</div>
                           {results.pages.map(p => (
                             <button 
                               key={p.path} 
                               onClick={() => go(p.path)}
-                              style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 8px', background: 'none', border: 'none', borderRadius: 8, cursor: 'pointer', textAlign: 'left' }}
-                              onMouseEnter={e => e.currentTarget.style.background = '#F9FAFB'}
+                              style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 8px', background: 'none', border: 'none', borderRadius: 8, cursor: 'pointer', textAlign: 'left', fontFamily: '"Outfit", sans-serif' }}
+                              onMouseEnter={e => e.currentTarget.style.background = '#f1f5f9'}
                               onMouseLeave={e => e.currentTarget.style.background = 'none'}
                             >
                               <p.i size={14} color="#FF9431" />
-                              <span style={{ fontSize: 13, fontWeight: 700, color: '#111' }}>{p.l}</span>
+                              <span style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>{p.l}</span>
                             </button>
                           ))}
                         </div>
@@ -267,17 +271,17 @@ export default function MobileMenu({ open }) {
 
                       {results.creators.length > 0 && (
                         <div>
-                          <div style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', padding: '4px 8px' }}>Creators</div>
+                          <div style={{ fontSize: 10, fontWeight: 800, color: '#64748b', textTransform: 'uppercase', padding: '4px 8px', letterSpacing: '0.05em' }}>Creators</div>
                           {results.creators.map(c => (
                             <button 
                               key={c.id} 
                               onClick={() => { go(`/creator/${c.handle || c.id}`); setSearch(''); }}
-                              style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 8px', background: 'none', border: 'none', borderRadius: 8, cursor: 'pointer', textAlign: 'left' }}
-                              onMouseEnter={e => e.currentTarget.style.background = '#F9FAFB'}
+                              style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 8px', background: 'none', border: 'none', borderRadius: 8, cursor: 'pointer', textAlign: 'left', fontFamily: '"Outfit", sans-serif' }}
+                              onMouseEnter={e => e.currentTarget.style.background = '#f1f5f9'}
                               onMouseLeave={e => e.currentTarget.style.background = 'none'}
                             >
                               <img src={c.photo || `https://ui-avatars.com/api/?name=${c.name}`} style={{ width: 24, height: 24, borderRadius: '50%' }} alt="" />
-                              <span style={{ fontSize: 13, fontWeight: 700, color: '#111' }}>{c.name}</span>
+                              <span style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>{c.name}</span>
                             </button>
                           ))}
                         </div>
@@ -289,7 +293,7 @@ export default function MobileMenu({ open }) {
 
               {/* MAIN NAVIGATION */}
               <div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 16 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 16 }}>
                   {!st.user ? 'Explore Platform' : st.role === 'creator' ? 'Creator Workspace' : 'Brand Workspace'}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -303,23 +307,24 @@ export default function MobileMenu({ open }) {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.05 + 0.1 }}
                         onClick={() => go(n.path)}
-                        onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; }}
+                        onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = '#f8fafc'; }}
                         onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
                         style={{ 
                           padding: '14px 16px', borderRadius: 12, 
-                          background: isActive ? 'rgba(0,0,0,0.05)' : 'transparent',
+                          background: isActive ? '#f1f5f9' : 'transparent',
                           display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer',
-                          transition: 'all 0.2s ease', border: 'none', width: '100%', textAlign: 'left'
+                          transition: 'all 0.2s ease', border: 'none', width: '100%', textAlign: 'left',
+                          fontFamily: '"Outfit", sans-serif'
                         }}
                       >
-                        <Icon size={18} color={isActive ? '#FF9431' : 'rgba(0,0,0,0.6)'} />
+                        <Icon size={18} color={isActive ? '#FF9431' : '#475569'} />
                         <span style={{ 
                           fontWeight: isActive ? 700 : 500, 
                           fontSize: 15, 
-                          color: isActive ? '#111' : 'rgba(0,0,0,0.7)',
+                          color: isActive ? '#0f172a' : '#475569',
                           flex: 1 
                         }}>{n.l}</span>
-                        {isActive && <ChevronRight size={16} color="#111" style={{ opacity: 0.5 }} />}
+                        {isActive && <ChevronRight size={16} color="#0f172a" style={{ opacity: 0.5 }} />}
                       </motion.button>
                     );
                   })}
@@ -328,7 +333,7 @@ export default function MobileMenu({ open }) {
 
               {/* SUPPORT & RESOURCES */}
               <div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(0,0,0,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 16 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 16 }}>
                   {!st.user ? 'Resources' : 'Support & Rules'}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -338,17 +343,18 @@ export default function MobileMenu({ open }) {
                       <button 
                         key={n.l} 
                         onClick={() => go(n.path)} 
-                        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.02)'; }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = '#f8fafc'; }}
                         onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                         style={{ 
                           display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '14px 16px', 
                           background: 'transparent',
                           border: 'none', textAlign: 'left', fontSize: 15, 
-                          color: '#111', cursor: 'pointer', fontWeight: 500, 
-                          borderRadius: 12, transition: 'all 0.2s'
+                          color: '#475569', cursor: 'pointer', fontWeight: 500, 
+                          borderRadius: 12, transition: 'all 0.2s',
+                          fontFamily: '"Outfit", sans-serif'
                         }}
                       >
-                        <Icon size={18} color="rgba(0,0,0,0.5)" />
+                        <Icon size={18} color="#64748b" />
                         {n.l}
                       </button>
                     );
@@ -361,7 +367,7 @@ export default function MobileMenu({ open }) {
                 padding: '20px', borderRadius: 16, 
                 background: 'linear-gradient(135deg, #FFF9F2 0%, #FFF2E5 100%)', 
                 border: '1px solid rgba(255,148,49,0.2)',
-                color: '#111', position: 'relative', overflow: 'hidden',
+                color: '#0f172a', position: 'relative', overflow: 'hidden',
               }}>
                 <div style={{ position: 'absolute', top: -20, right: -20, opacity: 0.05 }}>
                   <Sparkles size={80} color="#FF9431" />
@@ -371,14 +377,15 @@ export default function MobileMenu({ open }) {
                   <span style={{ fontSize: 12, fontWeight: 800, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px' }}>CreatorBharat Pro</span>
                 </div>
                 <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8, lineHeight: 1.3 }}>Unlock premium tools & analytics</h4>
-                <p style={{ fontSize: 13, color: 'rgba(0,0,0,0.6)', marginBottom: 16, lineHeight: 1.4 }}>Get verified, access elite campaigns, and grow faster.</p>
+                <p style={{ fontSize: 13, color: '#475569', marginBottom: 16, lineHeight: 1.4 }}>Get verified, access elite campaigns, and grow faster.</p>
                 <button 
                   onClick={() => go(st.user && st.role === 'creator' ? '/creator/pricing' : '/pricing')}
                   style={{ 
                     padding: '10px 16px', background: '#FF9431', color: '#fff', 
                     border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, 
                     cursor: 'pointer', width: '100%', transition: 'all 0.2s',
-                    boxShadow: '0 4px 12px rgba(255,148,49,0.2)'
+                    boxShadow: '0 4px 12px rgba(255,148,49,0.2)',
+                    fontFamily: '"Outfit", sans-serif'
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
                   onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
@@ -392,21 +399,21 @@ export default function MobileMenu({ open }) {
             {/* FOOTER ACTION AREA */}
             <div style={{ 
               padding: '24px 28px', 
-              borderTop: '1px solid rgba(0,0,0,0.05)',
-              background: '#FAFAFA'
+              borderTop: '1px solid #e2e8f0',
+              background: '#f8fafc'
             }}>
               
               {st.user ? (
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
                     <img 
-                      src={(st.creatorProfile?.photo || st.creatorProfile?.avatarUrl) || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user?.name || 'U')}&background=111111&color=fff`} 
-                      style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(0,0,0,0.1)' }} 
+                      src={(st.creatorProfile?.photo || st.creatorProfile?.avatarUrl) || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user?.name || 'U')}&background=0f172a&color=fff`} 
+                      style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: '1px solid #e2e8f0' }} 
                       alt=""
                     />
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{st.user?.name || st.user?.companyName}</div>
-                      <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.5)' }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{st.user?.name || st.user?.companyName}</div>
+                      <div style={{ fontSize: 12, color: '#475569' }}>
                         {(() => {
                           if (isCreator) return 'Creator Account';
                           if (isBrand) return 'Brand Account';
@@ -417,7 +424,7 @@ export default function MobileMenu({ open }) {
                   </div>
                   <button 
                     onClick={() => { dsp({ t: 'LOGOUT' }); dsp({ t: 'UI', v: { mobileMenu: false } }); navigate('/'); }} 
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '14px', background: 'rgba(239,68,68,0.1)', border: 'none', fontSize: 14, color: '#DC2626', cursor: 'pointer', fontWeight: 600, borderRadius: 10 }}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '14px', background: '#fef2f2', border: '1px solid #fecaca', fontSize: 14, color: '#dc2626', cursor: 'pointer', fontWeight: 600, borderRadius: 10, fontFamily: '"Outfit", sans-serif' }}
                   >
                     <LogOut size={16} />
                     Log Out securely
@@ -426,16 +433,16 @@ export default function MobileMenu({ open }) {
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                    <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <User size={20} color="#111" />
+                    <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <User size={20} color="#0f172a" />
                     </div>
                     <div>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: '#111' }}>Guest User</div>
-                      <div style={{ fontSize: 12, color: 'rgba(0,0,0,0.5)' }}>Sign in to access features</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a' }}>Guest User</div>
+                      <div style={{ fontSize: 12, color: '#475569' }}>Sign in to access features</div>
                     </div>
                   </div>
-                  <Btn full lg onClick={() => { navigate('/login'); dsp({ t: 'UI', v: { mobileMenu: false } }); }} style={{ padding: '14px', borderRadius: 10, fontSize: 14, background: '#111', color: '#fff', border: 'none' }}>Sign In to Portal</Btn>
-                  <Btn full lg variant="outline" onClick={() => { navigate('/join'); dsp({ t: 'UI', v: { mobileMenu: false } }); }} style={{ padding: '14px', borderRadius: 10, fontSize: 14, background: '#fff', border: '1px solid rgba(0,0,0,0.1)', color: '#111' }}>Create Free Account</Btn>
+                  <Btn full lg onClick={() => { navigate('/login'); dsp({ t: 'UI', v: { mobileMenu: false } }); }} style={{ padding: '14px', borderRadius: 10, fontSize: 14, background: '#0f172a', color: '#fff', border: 'none', fontFamily: '"Outfit", sans-serif' }}>Sign In to Portal</Btn>
+                  <Btn full lg variant="outline" onClick={() => { navigate('/join'); dsp({ t: 'UI', v: { mobileMenu: false } }); }} style={{ padding: '14px', borderRadius: 10, fontSize: 14, background: '#fff', border: '1px solid #e2e8f0', color: '#0f172a', fontFamily: '"Outfit", sans-serif' }}>Create Free Account</Btn>
                 </div>
               )}
             </div>

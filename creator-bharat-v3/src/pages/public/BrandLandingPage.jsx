@@ -33,10 +33,10 @@ export default function BrandLandingPage() {
       />
 
       {/* ── HERO ── */}
-      <section style={{ background: '#050505', padding: mob ? '120px 20px 80px' : '180px 24px 120px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: '-10%', left: '-5%', width: '50%', height: '60%', background: 'radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%)', filter: 'blur(60px)' }} />
-        <div style={{ position: 'absolute', bottom: '-10%', right: '-5%', width: '50%', height: '60%', background: 'radial-gradient(circle, rgba(255,148,49,0.1) 0%, transparent 70%)', filter: 'blur(60px)' }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #10B981, #fff, #FF9431)' }} />
+      <section style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', padding: mob ? '120px 20px 80px' : '180px 24px 120px', position: 'relative', overflow: 'hidden', borderBottom: '1px solid #e2e8f0' }}>
+        <div style={{ position: 'absolute', top: '-10%', left: '-5%', width: '50%', height: '60%', background: 'radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        <div style={{ position: 'absolute', bottom: '-10%', right: '-5%', width: '50%', height: '60%', background: 'radial-gradient(circle, rgba(255,148,49,0.04) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #10B981, #e2e8f0, #FF9431)' }} />
 
         <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 2, textAlign: 'center' }}>
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: 'rgba(16,185,129,0.1)', padding: '10px 20px', borderRadius: 100, marginBottom: 32, border: '1px solid rgba(16,185,129,0.2)' }}>
@@ -44,20 +44,20 @@ export default function BrandLandingPage() {
             <span style={{ fontSize: 12, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Brand Command Center</span>
           </motion.div>
 
-          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ fontSize: mob ? '44px' : '88px', fontWeight: 950, color: '#fff', lineHeight: 0.9, letterSpacing: '-0.05em', marginBottom: 32 }}>
+          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ fontSize: mob ? '44px' : '88px', fontWeight: 950, color: '#0f172a', lineHeight: 0.9, letterSpacing: '-0.05em', marginBottom: 32 }}>
             Scale with <br />
-            <span style={{ background: 'linear-gradient(135deg, #10B981 0%, #fff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bharat's Best.</span>
+            <span style={{ background: 'linear-gradient(135deg, #10B981 0%, #0f172a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bharat's Best.</span>
           </motion.h1>
 
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ fontSize: mob ? '16px' : '20px', color: 'rgba(255,255,255,0.55)', maxWidth: 680, margin: '0 auto 48px', lineHeight: 1.6, fontWeight: 500 }}>
-            Scout verified regional creators, launch campaigns with escrow protection, and track ROI in real-time. <span style={{ color: '#fff', fontWeight: 700 }}>Zero commission. Zero middlemen.</span>
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ fontSize: mob ? '16px' : '20px', color: '#475569', maxWidth: 680, margin: '0 auto 48px', lineHeight: 1.6, fontWeight: 500 }}>
+            Scout verified regional creators, launch campaigns with escrow protection, and track ROI in real-time. <span style={{ color: '#0f172a', fontWeight: 700 }}>Zero commission. Zero middlemen.</span>
           </motion.p>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Btn lg onClick={() => navigate('/brand-register')} style={{ background: '#10B981', color: '#fff', borderRadius: 100, padding: '18px 40px', fontSize: 16, fontWeight: 950, boxShadow: '0 20px 40px rgba(16,185,129,0.25)' }}>
               Start Scouting Free <ArrowRight size={20} />
             </Btn>
-            <Btn lg onClick={() => navigate('/creators')} style={{ background: 'rgba(255,255,255,0.06)', color: '#fff', borderRadius: 100, padding: '18px 40px', fontSize: 16, fontWeight: 950, border: '1px solid rgba(255,255,255,0.12)' }}>
+            <Btn lg onClick={() => navigate('/creators')} style={{ background: '#ffffff', color: '#475569', borderRadius: 100, padding: '18px 40px', fontSize: 16, fontWeight: 950, border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
               Browse Creators
             </Btn>
           </motion.div>
@@ -65,9 +65,9 @@ export default function BrandLandingPage() {
           {/* Stats */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2,1fr)' : 'repeat(4,1fr)', gap: 16, marginTop: 64, maxWidth: 800, margin: '64px auto 0' }}>
             {STATS.map(s => (
-              <div key={s.l} style={{ background: 'rgba(255,255,255,0.04)', padding: '24px 16px', borderRadius: 20, border: '1px solid rgba(255,255,255,0.06)', textAlign: 'center' }}>
+              <div key={s.l} style={{ background: '#ffffff', padding: '24px 16px', borderRadius: 20, border: '1px solid #e2e8f0', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
                 <div style={{ fontSize: mob ? '28px' : '36px', fontWeight: 950, color: '#10B981', letterSpacing: '-0.03em' }}>{s.v}</div>
-                <div style={{ fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: 4 }}>{s.l}</div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', marginTop: 4 }}>{s.l}</div>
               </div>
             ))}
           </motion.div>
@@ -186,20 +186,20 @@ export default function BrandLandingPage() {
       {/* ── FINAL CTA ── */}
       <section style={{ padding: mob ? '80px 20px' : '120px 24px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <motion.div whileHover={{ y: -8 }} style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: mob ? 40 : 64, padding: mob ? '60px 28px' : '100px 80px', textAlign: 'center', position: 'relative', overflow: 'hidden', boxShadow: '0 40px 100px rgba(0,0,0,0.2)' }}>
-            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 30% 50%, rgba(16,185,129,0.1), transparent 60%)' }} />
+          <motion.div whileHover={{ y: -8 }} style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', borderRadius: mob ? 40 : 64, padding: mob ? '60px 28px' : '100px 80px', textAlign: 'center', position: 'relative', overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 30px 60px rgba(0,0,0,0.03)' }}>
+            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 30% 50%, rgba(16,185,129,0.04), transparent 60%)' }} />
             <div style={{ position: 'relative', zIndex: 1 }}>
-              <h2 style={{ fontSize: mob ? '36px' : '64px', fontWeight: 950, color: '#fff', marginBottom: 24, letterSpacing: '-0.04em' }}>
+              <h2 style={{ fontSize: mob ? '36px' : '64px', fontWeight: 950, color: '#0f172a', marginBottom: 24, letterSpacing: '-0.04em' }}>
                 Ready to Scale? <br /><span style={{ color: '#10B981' }}>Join 500+ Brands.</span>
               </h2>
-              <p style={{ fontSize: mob ? '16px' : '20px', color: 'rgba(255,255,255,0.5)', maxWidth: 600, margin: '0 auto 48px', lineHeight: 1.6, fontWeight: 500 }}>
+              <p style={{ fontSize: mob ? '16px' : '20px', color: '#475569', maxWidth: 600, margin: '0 auto 48px', lineHeight: 1.6, fontWeight: 500 }}>
                 Start free. No credit card required. Access Bharat's most verified creator network today.
               </p>
               <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Btn lg onClick={() => navigate('/brand-register')} style={{ background: '#10B981', color: '#fff', borderRadius: 100, padding: '20px 48px', fontSize: 17, fontWeight: 950, boxShadow: '0 20px 40px rgba(16,185,129,0.3)' }}>
                   Register Your Brand <ArrowRight size={20} />
                 </Btn>
-                <Btn lg onClick={() => navigate('/creators')} style={{ background: 'rgba(255,255,255,0.08)', color: '#fff', borderRadius: 100, padding: '20px 48px', fontSize: 17, fontWeight: 950, border: '1px solid rgba(255,255,255,0.15)' }}>
+                <Btn lg onClick={() => navigate('/creators')} style={{ background: '#ffffff', color: '#475569', borderRadius: 100, padding: '20px 48px', fontSize: 17, fontWeight: 950, border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
                   Browse Creators
                 </Btn>
               </div>

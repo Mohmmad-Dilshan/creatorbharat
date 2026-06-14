@@ -27,15 +27,15 @@ export default function VerificationGuidePage() {
       <Seo title="Verification Guide" description="Step-by-step guide to get verified on CreatorBharat as a creator or brand." />
 
       {/* Hero */}
-      <section style={{ background: '#050505', padding: '160px 24px 100px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255,148,49,0.1), transparent 70%)' }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #FF9431, #fff, #10B981)' }} />
+      <section style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', padding: '160px 24px 100px', textAlign: 'center', position: 'relative', overflow: 'hidden', borderBottom: '1px solid #e2e8f0' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255,148,49,0.04), transparent 70%)' }} />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #FF9431, #e2e8f0, #10B981)' }} />
         <div style={{ maxWidth: 800, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <Bdg color="saffron" sm>VERIFICATION GUIDE</Bdg>
-          <h1 style={{ fontSize: 'clamp(40px, 8vw, 72px)', fontWeight: 950, color: '#fff', marginTop: 20, marginBottom: 24, letterSpacing: '-0.05em', lineHeight: 0.95 }}>
-            How to Get <br /><span style={{ background: 'linear-gradient(90deg, #FF9431, #fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Verified.</span>
+          <h1 style={{ fontSize: 'clamp(40px, 8vw, 72px)', fontWeight: 950, color: '#0f172a', marginTop: 20, marginBottom: 24, letterSpacing: '-0.05em', lineHeight: 0.95 }}>
+            How to Get <br /><span style={{ background: 'linear-gradient(90deg, #FF9431, #0f172a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Verified.</span>
           </h1>
-          <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.55)', maxWidth: 600, margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}>
+          <p style={{ fontSize: 18, color: '#475569', maxWidth: 600, margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}>
             Step-by-step guide for creators and brands to get verified on CreatorBharat.
           </p>
         </div>

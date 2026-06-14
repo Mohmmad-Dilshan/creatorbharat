@@ -42,22 +42,23 @@ export default function CampaignPipelineVisualizer() {
 
   return (
     <div className="pipeline-container" style={{
-      background: '#0a0a0a',
+      background: '#f8fafc',
       borderRadius: '60px',
       padding: '80px 60px',
-      color: '#fff',
+      color: '#0f172a',
       margin: '0 auto 90px',
       maxWidth: '1200px',
       position: 'relative',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      border: '1px solid #e2e8f0'
     }}>
       {/* Glow decorative */}
-      <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(255, 148, 49, 0.08) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+      <div style={{ position: 'absolute', top: '-10%', left: '-10%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(255, 148, 49, 0.04) 0%, transparent 70%)', filter: 'blur(40px)' }} />
 
       <div style={{ textAlign: 'center', marginBottom: '60px', position: 'relative', zIndex: 2 }}>
         <span style={{ fontSize: '11px', fontWeight: 900, color: '#FF9431', background: 'rgba(255,148,49,0.1)', padding: '6px 16px', borderRadius: '100px', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Ecosystem Workflow</span>
-        <h2 style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 950, letterSpacing: '-0.04em', margin: '16px 0 12px', color: '#fff' }}>The Creator-Brand Pipeline</h2>
-        <p style={{ fontSize: '16px', color: 'rgba(255,255,255,0.4)', maxWidth: '600px', margin: '0 auto' }}>How CreatorBharat powers seamless campaigns with absolute transparency. Click any step to inspect the infrastructure.</p>
+        <h2 style={{ fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 950, letterSpacing: '-0.04em', margin: '16px 0 12px', color: '#0f172a' }}>The Creator-Brand Pipeline</h2>
+        <p style={{ fontSize: '16px', color: '#64748b', maxWidth: '600px', margin: '0 auto' }}>How CreatorBharat powers seamless campaigns with absolute transparency. Click any step to inspect the infrastructure.</p>
       </div>
 
       <div className="pipeline-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '48px', alignItems: 'center', position: 'relative', zIndex: 2 }}>
@@ -72,8 +73,8 @@ export default function CampaignPipelineVisualizer() {
                 onClick={() => setActiveStep(idx)}
                 style={{
                   textAlign: 'left',
-                  background: isCurrent ? 'rgba(255,255,255,0.03)' : 'transparent',
-                  border: isCurrent ? '1.5px solid rgba(255,255,255,0.08)' : '1.5px solid transparent',
+                  background: isCurrent ? '#ffffff' : 'transparent',
+                  border: isCurrent ? `1.5px solid ${step.color}40` : '1.5px solid transparent',
                   borderRadius: '24px',
                   padding: '24px',
                   cursor: 'pointer',
@@ -82,15 +83,16 @@ export default function CampaignPipelineVisualizer() {
                   gap: '20px',
                   transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                   outline: 'none',
-                  width: '100%'
+                  width: '100%',
+                  boxShadow: isCurrent ? '0 10px 30px rgba(0,0,0,0.02)' : 'none'
                 }}
               >
                 <div style={{
                   width: '48px',
                   height: '48px',
                   borderRadius: '16px',
-                  background: isCurrent ? step.color : 'rgba(255,255,255,0.02)',
-                  color: isCurrent ? '#fff' : 'rgba(255,255,255,0.4)',
+                  background: isCurrent ? step.color : '#e2e8f0',
+                  color: isCurrent ? '#fff' : '#64748b',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -99,8 +101,8 @@ export default function CampaignPipelineVisualizer() {
                   <Icon size={20} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '11px', fontWeight: 900, color: isCurrent ? step.color : 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '1px' }}>{step.tag}</div>
-                  <div style={{ fontSize: '18px', fontWeight: 900, color: isCurrent ? '#fff' : 'rgba(255,255,255,0.6)', marginTop: '4px' }}>{step.title}</div>
+                  <div style={{ fontSize: '11px', fontWeight: 900, color: isCurrent ? step.color : '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.2px' }}>{step.tag}</div>
+                  <div style={{ fontSize: '18px', fontWeight: 900, color: isCurrent ? '#0f172a' : '#475569', marginTop: '4px' }}>{step.title}</div>
                 </div>
               </button>
             );
@@ -117,32 +119,33 @@ export default function CampaignPipelineVisualizer() {
             transition={{ duration: 0.3 }}
             className="pipeline-detail-card"
             style={{
-              background: 'rgba(255, 255, 255, 0.02)',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
               borderRadius: '36px',
               padding: '48px',
               minHeight: '340px',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              position: 'relative'
+              position: 'relative',
+              boxShadow: '0 15px 40px rgba(0,0,0,0.02)'
             }}
           >
             <div>
               <span style={{ fontSize: '11px', fontWeight: 900, color: steps[activeStep].color, background: `${steps[activeStep].color}15`, padding: '6px 12px', borderRadius: '100px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                 {steps[activeStep].tag}
               </span>
-              <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#fff', marginTop: '24px', marginBottom: '16px', letterSpacing: '-0.02em' }}>{steps[activeStep].title}</h3>
-              <p style={{ fontSize: '16px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, margin: 0 }}>{steps[activeStep].desc}</p>
+              <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', marginTop: '24px', marginBottom: '16px', letterSpacing: '-0.02em' }}>{steps[activeStep].title}</h3>
+              <p style={{ fontSize: '16px', color: '#475569', lineHeight: 1.7, margin: 0 }}>{steps[activeStep].desc}</p>
             </div>
 
-            <div style={{ marginTop: '32px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+            <div style={{ marginTop: '32px', borderTop: '1px solid #e2e8f0', paddingTop: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
               <div>
-                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>System Metric:</div>
+                <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>System Metric:</div>
                 <div style={{ fontSize: '16px', fontWeight: 800, color: steps[activeStep].color, marginTop: '4px' }}>{steps[activeStep].metric}</div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'rgba(255,255,255,0.4)', fontSize: '12px', fontWeight: 800 }}>
-                <span>Interactive Tooltip</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b', fontSize: '12px', fontWeight: 800 }}>
+                <span>Interactive Pipeline</span>
                 <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981' }} />
               </div>
             </div>

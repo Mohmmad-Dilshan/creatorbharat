@@ -11,7 +11,7 @@ const FAQItem = ({ q, a, index }) => {
 
   return (
     <div style={{
-      borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+      borderBottom: '1px solid #e2e8f0',
       padding: '24px 0',
       width: '100%'
     }}>
@@ -25,7 +25,7 @@ const FAQItem = ({ q, a, index }) => {
           background: 'none',
           border: 'none',
           padding: 0,
-          color: '#fff',
+          color: '#0f172a',
           textAlign: 'left',
           cursor: 'pointer',
           fontFamily: "'Outfit', sans-serif"
@@ -36,7 +36,7 @@ const FAQItem = ({ q, a, index }) => {
           width: '32px',
           height: '32px',
           borderRadius: '50%',
-          background: 'rgba(255, 255, 255, 0.05)',
+          background: '#f1f5f9',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -56,7 +56,7 @@ const FAQItem = ({ q, a, index }) => {
             style={{ overflow: 'hidden' }}
           >
             <p style={{
-              color: 'rgba(255, 255, 255, 0.6)',
+              color: '#475569',
               fontSize: '15px',
               lineHeight: 1.6,
               margin: 0
@@ -125,7 +125,7 @@ export default function AmbassadorPage() {
   };
 
   return (
-    <div style={{ background: '#050505', color: '#fff', minHeight: '100vh', overflow: 'hidden' }}>
+    <div style={{ background: '#fcfcfc', color: '#475569', minHeight: '100vh', overflow: 'hidden' }}>
       <Seo 
         title="Campus Ambassador Program | CreatorBharat" 
         description="Become the voice of CreatorBharat at your college. Empower regional creators, organize events, earn commissions and official experience certificates." 
@@ -136,12 +136,12 @@ export default function AmbassadorPage() {
         padding: mob ? '120px 20px 80px' : '180px 24px 120px', 
         textAlign: 'center', 
         position: 'relative', 
-        borderBottom: '1px solid rgba(255, 255, 255, 0.05)' 
+        borderBottom: '1px solid #e2e8f0' 
       }}>
         <div style={{ 
           position: 'absolute', 
           inset: 0, 
-          background: 'radial-gradient(circle at 50% 50%, rgba(255, 148, 49, 0.12), transparent 70%)', 
+          background: 'radial-gradient(circle at 50% 50%, rgba(255, 148, 49, 0.05), transparent 70%)', 
           opacity: 0.9 
         }} />
         <div style={{ 
@@ -150,7 +150,7 @@ export default function AmbassadorPage() {
           left: 0, 
           right: 0, 
           height: '4px', 
-          background: 'linear-gradient(90deg, #FF9431, #fff, #10B981)' 
+          background: 'linear-gradient(90deg, #FF9431, #e2e8f0, #10B981)' 
         }} />
 
         <div style={{ maxWidth: '1000px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
@@ -161,12 +161,13 @@ export default function AmbassadorPage() {
               display: 'inline-flex', 
               alignItems: 'center', 
               gap: '10px', 
-              background: 'rgba(255, 255, 255, 0.05)', 
+              background: 'rgba(255, 148, 49, 0.06)', 
               padding: '10px 20px', 
               borderRadius: '100px', 
               marginBottom: '28px', 
-              border: '1px solid rgba(255, 255, 255, 0.1)', 
-              backdropFilter: 'blur(10px)' 
+              border: '1px solid rgba(255, 148, 49, 0.15)', 
+              backdropFilter: 'blur(10px)',
+              color: '#0f172a'
             }}
           >
             <Trophy size={14} color="#FF9431" />
@@ -182,11 +183,12 @@ export default function AmbassadorPage() {
               letterSpacing: '-0.05em', 
               lineHeight: 0.95, 
               marginBottom: '24px',
-              fontFamily: "'Outfit', sans-serif"
+              fontFamily: "'Outfit', sans-serif",
+              color: '#0f172a'
             }}
           >
             Represent Bharat's <br />
-            <span style={{ background: 'linear-gradient(90deg, #FF9431, #fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Creator Revolution.</span>
+            <span style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Creator Revolution.</span>
           </motion.h1>
 
           <motion.p 
@@ -195,7 +197,7 @@ export default function AmbassadorPage() {
             transition={{ delay: 0.1 }}
             style={{ 
               fontSize: mob ? '16px' : '20px', 
-              color: 'rgba(255, 255, 255, 0.5)', 
+              color: '#475569', 
               maxWidth: '700px', 
               margin: '0 auto 40px', 
               lineHeight: 1.6, 
@@ -221,8 +223,8 @@ export default function AmbassadorPage() {
       <section style={{ padding: '80px 24px', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '60px' }}>
           <Bdg color="orange" sm>EXCLUSIVE REWARDS</Bdg>
-          <h2 style={{ fontSize: mob ? '32px' : '48px', fontWeight: 900, fontFamily: "'Outfit', sans-serif", marginTop: '12px' }}>Perks of Being an Ambassador</h2>
-          <p style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '16px', marginTop: '10px' }}>We value your effort and leadership. Here is what you get in return.</p>
+          <h2 style={{ fontSize: mob ? '32px' : '48px', fontWeight: 900, color: '#0f172a', fontFamily: "'Outfit', sans-serif", marginTop: '12px' }}>Perks of Being an Ambassador</h2>
+          <p style={{ color: '#64748b', fontSize: '16px', marginTop: '10px' }}>We value your effort and leadership. Here is what you get in return.</p>
         </div>
 
         <div style={{ 
@@ -239,10 +241,10 @@ export default function AmbassadorPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.05 * i }}
-                whileHover={{ y: -6, borderColor: 'rgba(255, 255, 255, 0.15)' }}
+                whileHover={{ y: -6, borderColor: '#FF9431', boxShadow: '0 20px 40px rgba(0, 0, 0, 0.03)' }}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.02)',
-                  border: '1px solid rgba(255, 255, 255, 0.05)',
+                  background: '#ffffff',
+                  border: '1px solid #e2e8f0',
                   borderRadius: '24px',
                   padding: '32px',
                   display: 'flex',
@@ -264,8 +266,8 @@ export default function AmbassadorPage() {
                   <Icon size={24} />
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#fff', marginBottom: '8px', fontFamily: "'Outfit', sans-serif" }}>{perk.title}</h3>
-                  <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.5)', lineHeight: 1.6, margin: 0 }}>{perk.desc}</p>
+                  <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#0f172a', marginBottom: '8px', fontFamily: "'Outfit', sans-serif" }}>{perk.title}</h3>
+                  <p style={{ fontSize: '14px', color: '#475569', lineHeight: 1.6, margin: 0 }}>{perk.desc}</p>
                 </div>
               </motion.div>
             );
@@ -276,15 +278,15 @@ export default function AmbassadorPage() {
       {/* Steps Section */}
       <section style={{ 
         padding: '80px 24px', 
-        background: 'rgba(255, 255, 255, 0.01)', 
-        borderTop: '1px solid rgba(255, 255, 255, 0.03)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.03)'
+        background: '#f8fafc', 
+        borderTop: '1px solid #e2e8f0',
+        borderBottom: '1px solid #e2e8f0'
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '60px' }}>
             <Bdg color="green" sm>THE JOURNEY</Bdg>
-            <h2 style={{ fontSize: mob ? '32px' : '48px', fontWeight: 900, fontFamily: "'Outfit', sans-serif", marginTop: '12px' }}>How it Works</h2>
-            <p style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '16px', marginTop: '10px' }}>A streamlined path from onboarding to leading your community.</p>
+            <h2 style={{ fontSize: mob ? '32px' : '48px', fontWeight: 900, color: '#0f172a', fontFamily: "'Outfit', sans-serif", marginTop: '12px' }}>How it Works</h2>
+            <p style={{ color: '#64748b', fontSize: '16px', marginTop: '10px' }}>A streamlined path from onboarding to leading your community.</p>
           </div>
 
           <div style={{ 
@@ -300,8 +302,8 @@ export default function AmbassadorPage() {
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 * i }}
                 style={{
-                  background: 'rgba(255,255,255,0.01)',
-                  border: '1px solid rgba(255,255,255,0.03)',
+                  background: '#ffffff',
+                  border: '1px solid #e2e8f0',
                   borderRadius: '24px',
                   padding: '32px',
                   position: 'relative'
@@ -313,13 +315,13 @@ export default function AmbassadorPage() {
                   right: '24px',
                   fontSize: '48px',
                   fontWeight: 950,
-                  color: 'rgba(255, 148, 49, 0.1)',
+                  color: 'rgba(255, 148, 49, 0.15)',
                   fontFamily: "'Outfit', sans-serif",
                   lineHeight: 1
                 }}>{step.num}</div>
                 
-                <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#fff', marginBottom: '12px', marginTop: '24px', fontFamily: "'Outfit', sans-serif" }}>{step.title}</h3>
-                <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.5)', lineHeight: 1.6, margin: 0 }}>{step.desc}</p>
+                <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#0f172a', marginBottom: '12px', marginTop: '24px', fontFamily: "'Outfit', sans-serif" }}>{step.title}</h3>
+                <p style={{ fontSize: '14px', color: '#475569', lineHeight: 1.6, margin: 0 }}>{step.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -329,8 +331,9 @@ export default function AmbassadorPage() {
       {/* Application Form */}
       <section id="apply-form" style={{ padding: '100px 24px', maxWidth: '800px', margin: '0 auto' }}>
         <div style={{
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 20px 40px rgba(15, 23, 42, 0.03)',
           borderRadius: '32px',
           padding: mob ? '32px 20px' : '48px',
           position: 'relative',
@@ -357,15 +360,15 @@ export default function AmbassadorPage() {
               }}>
                 <Check size={36} />
               </div>
-              <h3 style={{ fontSize: '28px', fontWeight: 900, marginBottom: '12px', fontFamily: "'Outfit', sans-serif" }}>Application Received!</h3>
-              <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '16px', lineHeight: 1.6, maxWidth: '500px', margin: '0 auto 24px' }}>
+              <h3 style={{ fontSize: '28px', fontWeight: 900, color: '#0f172a', marginBottom: '12px', fontFamily: "'Outfit', sans-serif" }}>Application Received!</h3>
+              <p style={{ color: '#475569', fontSize: '16px', lineHeight: 1.6, maxWidth: '500px', margin: '0 auto 24px' }}>
                 Thank you for applying to the CreatorBharat Campus Ambassador Program. Our community team will review your application and reach out to you within 3-5 working days.
               </p>
               <button 
                 onClick={() => setSubmitted(false)}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  color: '#fff',
+                  background: '#f1f5f9',
+                  color: '#0f172a',
                   border: 'none',
                   padding: '12px 24px',
                   borderRadius: '100px',
@@ -380,8 +383,8 @@ export default function AmbassadorPage() {
           ) : (
             <div>
               <div style={{ marginBottom: '32px' }}>
-                <h3 style={{ fontSize: '28px', fontWeight: 900, fontFamily: "'Outfit', sans-serif", marginBottom: '8px' }}>Become a Campus Ambassador</h3>
-                <p style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '14px' }}>Fill out the application below accurately. Let's start the revolution together.</p>
+                <h3 style={{ fontSize: '28px', fontWeight: 900, color: '#0f172a', fontFamily: "'Outfit', sans-serif", marginBottom: '8px' }}>Become a Campus Ambassador</h3>
+                <p style={{ color: '#64748b', fontSize: '14px' }}>Fill out the application below accurately. Let's start the revolution together.</p>
               </div>
 
               <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '20px' }}>
@@ -524,7 +527,7 @@ export default function AmbassadorPage() {
       <section style={{ padding: '80px 24px', maxWidth: '800px', margin: '0 auto 100px' }}>
         <div style={{ textAlign: 'center', marginBottom: '48px' }}>
           <Bdg color="orange" sm>FAQ</Bdg>
-          <h2 style={{ fontSize: mob ? '32px' : '44px', fontWeight: 900, fontFamily: "'Outfit', sans-serif", marginTop: '12px' }}>Frequently Asked Questions</h2>
+          <h2 style={{ fontSize: mob ? '32px' : '44px', fontWeight: 900, color: '#0f172a', fontFamily: "'Outfit', sans-serif", marginTop: '12px' }}>Frequently Asked Questions</h2>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -541,7 +544,7 @@ const labelStyle = {
   display: 'block',
   fontSize: '11px',
   fontWeight: 900,
-  color: 'rgba(255, 255, 255, 0.4)',
+  color: '#64748b',
   textTransform: 'uppercase',
   marginBottom: '8px',
   marginLeft: '4px',
@@ -552,9 +555,9 @@ const inputStyle = {
   width: '100%',
   padding: '16px 20px',
   borderRadius: '14px',
-  border: '1.5px solid rgba(255, 255, 255, 0.08)',
-  background: 'rgba(255, 255, 255, 0.02)',
-  color: '#fff',
+  border: '1.5px solid #e2e8f0',
+  background: '#ffffff',
+  color: '#0f172a',
   fontSize: '15px',
   fontWeight: 600,
   outline: 'none',

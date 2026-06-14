@@ -12,6 +12,7 @@ import { TwitterIcon, LinkedinIcon, GithubIcon } from '@/components/icons/Social
 import LiveAnalyticsPulse from '@/components/features/about/LiveAnalyticsPulse';
 import CampaignPipelineVisualizer from '@/components/features/about/CampaignPipelineVisualizer';
 import TimelineStep from '@/components/features/about/TimelineStep';
+import CreatorNetworkCanvas from '@/components/features/about/CreatorNetworkCanvas';
 
 // Import Externalized Data
 import { 
@@ -28,8 +29,8 @@ const StatBlock = ({ value, label, delay = 0 }) => (
     transition={{ delay, duration: 0.6 }}
     style={{ textAlign: 'left' }}
   >
-    <div style={{ fontSize: '56px', fontWeight: 950, color: '#fff', marginBottom: '8px', letterSpacing: '-0.04em', fontFamily: "'Outfit', sans-serif" }}>{value}</div>
-    <div style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.4)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em' }}>{label}</div>
+    <div style={{ fontSize: '56px', fontWeight: 950, color: '#0f172a', marginBottom: '8px', letterSpacing: '-0.04em', fontFamily: "'Outfit', sans-serif" }}>{value}</div>
+    <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em' }}>{label}</div>
   </motion.div>
 );
 
@@ -54,10 +55,10 @@ const HeroBlueprint = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 * i, duration: 0.6 }}
-          whileHover={{ y: -6, borderColor: 'rgba(255, 255, 255, 0.2)' }}
+          whileHover={{ y: -6, borderColor: 'rgba(255, 148, 49, 0.25)', boxShadow: '0 15px 35px rgba(0,0,0,0.02)' }}
           style={{
-            background: 'rgba(255, 255, 255, 0.01)',
-            border: '1px solid rgba(255, 255, 255, 0.05)',
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
             borderRadius: '28px',
             padding: '32px',
             position: 'relative',
@@ -68,14 +69,14 @@ const HeroBlueprint = () => {
             transition: 'all 0.3s ease'
           }}
         >
-          <div style={{ position: 'absolute', top: '-10px', right: '-10px', fontSize: '90px', fontWeight: 950, color: 'rgba(255,255,255,0.02)', userSelect: 'none', lineHeight: 1 }}>{card.num}</div>
+          <div style={{ position: 'absolute', top: '-10px', right: '-10px', fontSize: '90px', fontWeight: 950, color: 'rgba(15,23,42,0.02)', userSelect: 'none', lineHeight: 1 }}>{card.num}</div>
           
           <div>
             <div style={{ display: 'inline-block', fontSize: '10px', fontWeight: 900, color: card.accent, background: `${card.accent}15`, padding: '6px 12px', borderRadius: '100px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '24px' }}>
               {card.sub}
             </div>
-            <h3 style={{ fontSize: '22px', fontWeight: 900, color: '#fff', marginBottom: '12px' }}>{card.title}</h3>
-            <p style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.48)', lineHeight: 1.6, margin: 0 }}>{card.desc}</p>
+            <h3 style={{ fontSize: '22px', fontWeight: 900, color: '#0f172a', marginBottom: '12px' }}>{card.title}</h3>
+            <p style={{ fontSize: '14px', color: '#475569', lineHeight: 1.6, margin: 0 }}>{card.desc}</p>
           </div>
         </motion.div>
       ))}
@@ -85,11 +86,18 @@ const HeroBlueprint = () => {
 
 export default function AboutPage() {
   const navigate = useNavigate();
+  const [mob, setMob] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
   const [activeStep, setActiveStep] = useState(2);
   const [selectedCity, setSelectedCity] = useState('bhilwara');
 
   const [creators, setCreators] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
+
+  useEffect(() => {
+    const handleResize = () => setMob(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -194,6 +202,62 @@ export default function AboutPage() {
           .pipeline-detail-card {
             padding: 32px 20px !important;
           }
+          .influence-heading {
+            font-size: 42px !important;
+            line-height: 1.05 !important;
+            margin-bottom: 24px !important;
+          }
+          .section-heading {
+            font-size: 38px !important;
+            letter-spacing: -0.03em !important;
+            margin-top: 12px !important;
+          }
+          .cta-heading {
+            font-size: 40px !important;
+            line-height: 1.05 !important;
+            margin-bottom: 20px !important;
+          }
+          .founder-card {
+            padding: 40px 24px !important;
+            border-radius: 32px !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+            gap: 24px !important;
+          }
+          .founder-card-verified {
+            position: relative !important;
+            top: auto !important;
+            right: auto !important;
+            margin-bottom: 12px !important;
+            display: inline-flex !important;
+          }
+          .founder-info {
+            text-align: center !important;
+            width: 100% !important;
+          }
+          .founder-skills {
+            justify-content: center !important;
+          }
+          .founder-socials {
+            justify-content: center !important;
+            border-top: 1px solid #f1f5f9 !important;
+            padding-top: 20px !important;
+            width: 100% !important;
+          }
+          .analytics-tabs {
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            padding-bottom: 8px !important;
+            margin-right: -20px !important;
+            margin-left: -20px !important;
+            padding-right: 20px !important;
+            padding-left: 20px !important;
+            -webkit-overflow-scrolling: touch !important;
+          }
+          .analytics-tabs::-webkit-scrollbar {
+            display: none !important;
+          }
         }
       `}</style>
 
@@ -201,14 +265,15 @@ export default function AboutPage() {
       
       {/* CINEMATIC HERO SECTION */}
       <section style={{ 
-        background: '#0a0a0a', 
+        background: '#ffffff', 
         padding: '140px 24px 100px', 
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        borderBottom: '1px solid #e2e8f0'
       }}>
         {/* Advanced Decorative Elements */}
-        <div style={{ position: 'absolute', top: '-10%', right: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(255, 148, 49, 0.08) 0%, transparent 70%)', filter: 'blur(60px)' }} />
-        <div style={{ position: 'absolute', bottom: '-10%', left: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        <div style={{ position: 'absolute', top: '-10%', right: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(255, 148, 49, 0.04) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        <div style={{ position: 'absolute', bottom: '-10%', left: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.02) 0%, transparent 70%)', filter: 'blur(60px)' }} />
         
         <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <motion.div
@@ -218,16 +283,15 @@ export default function AboutPage() {
               display: 'inline-flex', 
               alignItems: 'center', 
               gap: '12px', 
-              background: 'rgba(255, 255, 255, 0.03)', 
+              background: 'rgba(255, 148, 49, 0.08)', 
               padding: '8px 20px', 
               borderRadius: '100px',
               marginBottom: '48px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              backdropFilter: 'blur(20px)'
+              border: '1px solid rgba(255, 148, 49, 0.15)'
             }}
           >
             <Sparkles size={14} color="#FF9431" fill="#FF9431" />
-            <span style={{ fontSize: '12px', fontWeight: 900, color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', letterSpacing: '0.2em' }}>The Bharat Chapter</span>
+            <span style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.2em' }}>The Bharat Chapter</span>
           </motion.div>
 
           <div className="about-hero-grid" style={{ 
@@ -244,7 +308,7 @@ export default function AboutPage() {
                 style={{ 
                   fontSize: 'clamp(40px, 6.5vw, 75px)', 
                   fontWeight: 950, 
-                  color: '#fff', 
+                  color: '#0f172a', 
                   lineHeight: 1.0, 
                   letterSpacing: '-0.05em',
                   marginBottom: '24px',
@@ -255,7 +319,7 @@ export default function AboutPage() {
                 <span style={{ color: '#FF9431' }}>Next Billion.</span>
               </motion.h1>
               
-              <p className="about-hero-paragraph" style={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.65)', lineHeight: 1.6, fontWeight: 500, marginBottom: '40px', maxWidth: '560px' }}>
+              <p className="about-hero-paragraph" style={{ fontSize: '18px', color: '#475569', lineHeight: 1.6, fontWeight: 500, marginBottom: '40px', maxWidth: '560px' }}>
                 Metros are saturated. Influence is migrating. We are the infrastructure for India's regional rising stars, connecting brands directly to local voices.
               </p>
 
@@ -273,59 +337,14 @@ export default function AboutPage() {
               </div>
             </div>
 
-            {/* Premium 3D Poster Display */}
+            {/* Interactive HTML5 Canvas Creator Network */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3, duration: 0.8 }}
-              style={{
-                position: 'relative',
-                borderRadius: '36px',
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-                border: '1.5px solid rgba(255,255,255,0.08)',
-                padding: '16px',
-                boxShadow: '0 30px 60px rgba(0,0,0,0.4), inset 0 0 24px rgba(255,255,255,0.02)',
-                backdropFilter: 'blur(20px)',
-                overflow: 'hidden'
-              }}
+              style={{ width: '100%' }}
             >
-              {/* Saffron and Emerald neon ambient blurs */}
-              <div style={{ position: 'absolute', top: '10%', right: '10%', width: '120px', height: '120px', background: '#FF9431', opacity: 0.15, filter: 'blur(40px)', borderRadius: '50%', pointerEvents: 'none' }} />
-              <div style={{ position: 'absolute', bottom: '10%', left: '10%', width: '120px', height: '120px', background: '#10B981', opacity: 0.15, filter: 'blur(40px)', borderRadius: '50%', pointerEvents: 'none' }} />
-              
-              <img 
-                src="/about_hero_network.png" 
-                alt="CreatorBharat 3D Network" 
-                style={{
-                  width: '100%',
-                  borderRadius: '24px',
-                  display: 'block',
-                  border: '1px solid rgba(255,255,255,0.05)',
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
-                }}
-              />
-
-              {/* Monospace Telemetry Badges */}
-              <div style={{
-                position: 'absolute',
-                bottom: '32px',
-                left: '32px',
-                right: '32px',
-                background: 'rgba(10,10,10,0.85)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '18px',
-                padding: '12px 18px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                backdropFilter: 'blur(10px)'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', boxShadow: '0 0 8px #10B981', display: 'inline-block' }} />
-                  <span style={{ fontSize: '11px', color: '#fff', fontFamily: 'monospace', fontWeight: 700, letterSpacing: '0.5px' }}>NET_SYNC_OK</span>
-                </div>
-                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace', fontWeight: 600 }}>v1.0_LIVE_NODES</span>
-              </div>
+              <CreatorNetworkCanvas mob={mob} />
             </motion.div>
           </div>
 
@@ -430,7 +449,7 @@ export default function AboutPage() {
 
             <div>
               <Bdg color="orange" sm>THE REGIONAL SHIFT</Bdg>
-              <h2 style={{ fontSize: '64px', fontWeight: 950, color: '#0f172a', lineHeight: 0.95, margin: '24px 0 40px', letterSpacing: '-0.04em' }}>
+              <h2 className="influence-heading" style={{ fontSize: '64px', fontWeight: 950, color: '#0f172a', lineHeight: 0.95, margin: '24px 0 40px', letterSpacing: '-0.04em' }}>
                 Influence is no longer <br /> <span style={{ color: '#FF9431' }}>Metro-Limited.</span>
               </h2>
               <p style={{ fontSize: '19px', color: '#475569', lineHeight: 1.8, marginBottom: '24px', fontWeight: 500 }}>
@@ -458,7 +477,7 @@ export default function AboutPage() {
       <section style={{ padding: '90px 24px', background: '#f8fafc', borderRadius: '80px 80px 0 0' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '100px' }}>
-            <h2 style={{ fontSize: '56px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em' }}>Our Evolution</h2>
+            <h2 className="section-heading" style={{ fontSize: '56px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em' }}>Our Evolution</h2>
             <p style={{ fontSize: '18px', color: '#64748b', marginTop: '16px' }}>The journey from a local idea to a national movement. Click any year to explore milestones.</p>
           </div>
           
@@ -493,7 +512,7 @@ export default function AboutPage() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '80px' }}>
             <Bdg color="orange" sm>OUR CORE DNA</Bdg>
-            <h2 style={{ fontSize: '56px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', marginTop: '16px' }}>The Three Pillars of Bharat</h2>
+            <h2 className="section-heading" style={{ fontSize: '56px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', marginTop: '16px' }}>The Three Pillars of Bharat</h2>
             <p style={{ fontSize: '18px', color: '#64748b', marginTop: '12px' }}>Hover or click any pillar to see how we are transforming local talent into national brands.</p>
           </div>
           
@@ -550,13 +569,14 @@ export default function AboutPage() {
          <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: '60px' }}>
                <Bdg color="orange" sm>FOUNDER & VISION</Bdg>
-               <h2 style={{ fontSize: '56px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', marginTop: '16px' }}>Meet the Founder</h2>
+               <h2 className="section-heading" style={{ fontSize: '56px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', marginTop: '16px' }}>Meet the Founder</h2>
                <p style={{ fontSize: '18px', color: '#64748b', marginTop: '12px' }}>Empowering regional voices and leading the decentralized shift in the creator economy.</p>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                <motion.div
                  whileHover={{ y: -6 }}
+                 className="founder-card"
                  style={{
                    background: '#fff',
                    border: '1.5px solid #e2e8f0',
@@ -575,7 +595,7 @@ export default function AboutPage() {
                  }}
                >
                   {/* Glowing orange accent dot */}
-                  <div style={{ position: 'absolute', top: '24px', right: '24px', background: '#FF943115', color: '#FF9431', padding: '6px 14px', borderRadius: '100px', fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div className="founder-card-verified" style={{ position: 'absolute', top: '24px', right: '24px', background: '#FF943115', color: '#FF9431', padding: '6px 14px', borderRadius: '100px', fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FF9431' }} /> VERIFIED FOUNDER
                   </div>
 
@@ -590,9 +610,9 @@ export default function AboutPage() {
                        boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
                      }}>
                         <img 
-                          src="https://ui-avatars.com/api/?name=Mohmmad+Dilshan&background=FF9431&color=fff&size=256" 
-                          alt="Mohmmad Dilshan" 
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                           src="https://ui-avatars.com/api/?name=Mohmmad+Dilshan&background=FF9431&color=fff&size=256" 
+                           alt="Mohmmad Dilshan" 
+                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
                      </div>
                      <div style={{ position: 'absolute', bottom: '-10px', right: '-10px', background: '#0f172a', color: '#fff', padding: '6px 12px', borderRadius: '12px', fontSize: '11px', fontWeight: 800, border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -601,7 +621,7 @@ export default function AboutPage() {
                   </div>
 
                   {/* Profile Details */}
-                  <div style={{ flex: '1 1 300px' }}>
+                  <div className="founder-info" style={{ flex: '1 1 300px' }}>
                      <div style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px' }}>LEADERSHIP</div>
                      <h3 style={{ fontSize: '30px', fontWeight: 950, color: '#0f172a', margin: '4px 0 8px 0', letterSpacing: '-0.02em' }}>Mohmmad Dilshan</h3>
                      <div style={{ fontSize: '14px', fontWeight: 700, color: '#475569', marginBottom: '16px' }}>Founder & Chief Architect</div>
@@ -611,7 +631,7 @@ export default function AboutPage() {
                      </p>
 
                      {/* Skill Tag Clusters */}
-                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '28px' }}>
+                     <div className="founder-skills" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '28px' }}>
                         {['System Architecture', 'Product Strategy', 'Decentralized Networks', 'Escrow Ledgers'].map(skill => (
                           <span key={skill} style={{ fontSize: '12px', fontWeight: 650, color: '#475569', background: '#f1f5f9', padding: '5px 12px', borderRadius: '8px' }}>
                             {skill}
@@ -620,7 +640,7 @@ export default function AboutPage() {
                      </div>
 
                      {/* Social Links Row */}
-                     <div style={{ display: 'flex', gap: '16px', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '20px' }}>
+                     <div className="founder-socials" style={{ display: 'flex', gap: '16px', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '20px' }}>
                         <a href="https://linkedin.com/in/mohmmad-dilshan" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none', color: '#0f172a', fontSize: '13px', fontWeight: 800 }}>
                            <LinkedinIcon size={16} /> LinkedIn
                         </a>
@@ -647,25 +667,26 @@ export default function AboutPage() {
            style={{ 
             maxWidth: '1200px', 
             margin: '0 auto', 
-            background: '#0a0a0a', 
+            background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)', 
             borderRadius: '80px', 
             padding: '120px 40px', 
-            color: '#fff',
+            color: '#0f172a',
             textAlign: 'center',
             position: 'relative',
             overflow: 'hidden',
-            boxShadow: '0 40px 100px rgba(0,0,0,0.15)'
+            boxShadow: '0 20px 50px rgba(0,0,0,0.02)',
+            border: '1px solid #e2e8f0'
           }}>
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #FF9431, transparent, #10B981)' }} />
-            <h2 style={{ fontSize: 'clamp(48px, 6vw, 80px)', fontWeight: 950, marginBottom: '32px', letterSpacing: '-0.05em', lineHeight: 0.9 }}>Be part of the <br /> <span style={{ color: '#FF9431' }}>New Indian Dream.</span></h2>
-            <p style={{ fontSize: '22px', color: 'rgba(255,255,255,0.5)', marginBottom: '64px', maxWidth: '640px', margin: '0 auto 64px', fontWeight: 500 }}>
+            <h2 className="cta-heading" style={{ fontSize: 'clamp(48px, 6vw, 80px)', fontWeight: 950, marginBottom: '32px', letterSpacing: '-0.05em', lineHeight: 0.9 }}>Be part of the <br /> <span style={{ color: '#FF9431' }}>New Indian Dream.</span></h2>
+            <p style={{ fontSize: '22px', color: '#475569', marginBottom: '64px', maxWidth: '640px', margin: '0 auto 64px', fontWeight: 500 }}>
               The future of influence isn't in English or in Metros. It's in the real voices of Bharat.
             </p>
             <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
               <Btn lg onClick={() => navigate('/join')} style={{ padding: '24px 64px', borderRadius: '100px', background: '#FF9431', color: '#fff', fontSize: '18px', fontWeight: 950 }}>
                 Join as Creator
               </Btn>
-              <Btn lg onClick={() => navigate('/creators')} variant="outline" style={{ padding: '24px 64px', borderRadius: '100px', borderColor: 'rgba(255,255,255,0.2)', color: '#fff', fontSize: '18px', fontWeight: 950 }}>
+              <Btn lg onClick={() => navigate('/creators')} variant="outline" style={{ padding: '24px 64px', borderRadius: '100px', borderColor: '#0f172a', color: '#0f172a', fontSize: '18px', fontWeight: 950 }}>
                 Partner as Brand
               </Btn>
             </div>

@@ -100,7 +100,7 @@ export default function CalculatorsHubPage() {
   }, [budTargetReach, budTier]);
 
   return (
-    <div style={{ background: '#050505', color: '#fff', minHeight: '100vh', overflow: 'hidden' }}>
+    <div style={{ background: '#fcfcfc', color: '#475569', minHeight: '100vh', overflow: 'hidden' }}>
       <Seo 
         title="Creator Calculators Hub | CreatorBharat" 
         description="Free Engagement Rate, Brand Valuation, and Campaign Budget calculators for Indian creators and brands." 
@@ -111,12 +111,12 @@ export default function CalculatorsHubPage() {
         padding: mob ? '120px 20px 60px' : '180px 24px 100px', 
         textAlign: 'center', 
         position: 'relative', 
-        borderBottom: '1px solid rgba(255, 255, 255, 0.05)' 
+        borderBottom: '1px solid #e2e8f0' 
       }}>
         <div style={{ 
           position: 'absolute', 
           inset: 0, 
-          background: 'radial-gradient(circle at 50% 50%, rgba(255, 148, 49, 0.08), transparent 70%)', 
+          background: 'radial-gradient(circle at 50% 50%, rgba(255, 148, 49, 0.04), transparent 70%)', 
           opacity: 0.9 
         }} />
         <div style={{ 
@@ -125,7 +125,7 @@ export default function CalculatorsHubPage() {
           left: 0, 
           right: 0, 
           height: '4px', 
-          background: 'linear-gradient(90deg, #FF9431, #fff, #10B981)' 
+          background: 'linear-gradient(90deg, #FF9431, #e2e8f0, #10B981)' 
         }} />
 
         <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
@@ -136,16 +136,16 @@ export default function CalculatorsHubPage() {
               display: 'inline-flex', 
               alignItems: 'center', 
               gap: '10px', 
-              background: 'rgba(255, 255, 255, 0.05)', 
+              background: 'rgba(255, 148, 49, 0.06)', 
               padding: '10px 20px', 
               borderRadius: '100px', 
               marginBottom: '28px', 
-              border: '1px solid rgba(255, 255, 255, 0.1)', 
+              border: '1px solid rgba(255, 148, 49, 0.15)', 
               backdropFilter: 'blur(10px)' 
             }}
           >
             <Calculator size={14} color="#FF9431" />
-            <span style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em' }}>Ecosystem Free Tools</span>
+            <span style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#FF9431' }}>Ecosystem Free Tools</span>
           </motion.div>
 
           <motion.h1 
@@ -157,11 +157,12 @@ export default function CalculatorsHubPage() {
               letterSpacing: '-0.05em', 
               lineHeight: 0.95, 
               marginBottom: '24px',
-              fontFamily: "'Outfit', sans-serif"
+              fontFamily: "'Outfit', sans-serif",
+              color: '#0f172a'
             }}
           >
             Free Influencer & <br />
-            <span style={{ background: 'linear-gradient(90deg, #FF9431, #fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Campaign Calculators.</span>
+            <span style={{ background: 'linear-gradient(90deg, #FF9431, #0f172a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Campaign Calculators.</span>
           </motion.h1>
 
           <motion.p 
@@ -170,7 +171,7 @@ export default function CalculatorsHubPage() {
             transition={{ delay: 0.1 }}
             style={{ 
               fontSize: mob ? '16px' : '20px', 
-              color: 'rgba(255, 255, 255, 0.5)', 
+              color: '#475569', 
               maxWidth: '700px', 
               margin: '0 auto', 
               lineHeight: 1.6, 
@@ -187,8 +188,8 @@ export default function CalculatorsHubPage() {
         <LayoutGroup>
           <div style={{ 
             display: 'flex', 
-            background: 'rgba(255, 255, 255, 0.03)', 
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            background: '#f1f5f9', 
+            border: '1px solid #e2e8f0',
             padding: '6px', 
             borderRadius: '100px',
             flexDirection: mob ? 'column' : 'row',
@@ -205,7 +206,7 @@ export default function CalculatorsHubPage() {
                   borderRadius: '100px',
                   border: 'none',
                   background: 'transparent',
-                  color: activeTab === tab.id ? '#fff' : 'rgba(255,255,255,0.4)',
+                  color: activeTab === tab.id ? '#0f172a' : '#64748b',
                   fontSize: '14px',
                   fontWeight: 800,
                   cursor: 'pointer',
@@ -219,10 +220,11 @@ export default function CalculatorsHubPage() {
                     style={{ 
                       position: 'absolute', 
                       inset: 0, 
-                      background: 'rgba(255, 148, 49, 0.15)', 
-                      border: '1.5px solid rgba(255, 148, 49, 0.3)',
+                      background: '#ffffff', 
+                      border: '1.5px solid #FF9431',
                       borderRadius: '100px', 
-                      zIndex: -1 
+                      zIndex: -1,
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
                     }} 
                   />
                 )}
@@ -236,17 +238,17 @@ export default function CalculatorsHubPage() {
       {/* Main Workspace */}
       <section style={{ padding: '40px 24px 100px', maxWidth: '1100px', margin: '0 auto' }}>
         <div style={{
-          background: 'rgba(255, 255, 255, 0.01)',
-          border: '1px solid rgba(255, 255, 255, 0.05)',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
           borderRadius: '32px',
           padding: mob ? '24px 16px' : '48px',
-          backdropFilter: 'blur(20px)'
+          boxShadow: '0 15px 40px rgba(0,0,0,0.02)'
         }}>
           {activeTab === 'er' && (
             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.1fr 0.9fr', gap: '48px' }}>
               {/* Inputs */}
               <div>
-                <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '24px', fontFamily: "'Outfit', sans-serif" }}>Calculate Engagement Rate</h3>
+                <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '24px', fontFamily: "'Outfit', sans-serif", color: '#0f172a' }}>Calculate Engagement Rate</h3>
                 
                 <div style={{ display: 'flex', gap: '16px', marginBottom: '32px' }}>
                   <button
@@ -255,9 +257,9 @@ export default function CalculatorsHubPage() {
                       flex: 1,
                       padding: '16px',
                       borderRadius: '16px',
-                      border: `1.5px solid ${erPlatform === 'instagram' ? '#FF9431' : 'rgba(255,255,255,0.08)'}`,
-                      background: erPlatform === 'instagram' ? 'rgba(255, 148, 49, 0.05)' : 'transparent',
-                      color: erPlatform === 'instagram' ? '#FF9431' : 'rgba(255,255,255,0.4)',
+                      border: `1.5px solid ${erPlatform === 'instagram' ? '#FF9431' : '#e2e8f0'}`,
+                      background: erPlatform === 'instagram' ? 'rgba(255, 148, 49, 0.05)' : '#ffffff',
+                      color: erPlatform === 'instagram' ? '#FF9431' : '#64748b',
                       fontWeight: 800,
                       cursor: 'pointer',
                       display: 'flex',
@@ -274,9 +276,9 @@ export default function CalculatorsHubPage() {
                       flex: 1,
                       padding: '16px',
                       borderRadius: '16px',
-                      border: `1.5px solid ${erPlatform === 'youtube' ? '#FF9431' : 'rgba(255,255,255,0.08)'}`,
-                      background: erPlatform === 'youtube' ? 'rgba(255, 148, 49, 0.05)' : 'transparent',
-                      color: erPlatform === 'youtube' ? '#FF9431' : 'rgba(255,255,255,0.4)',
+                      border: `1.5px solid ${erPlatform === 'youtube' ? '#FF9431' : '#e2e8f0'}`,
+                      background: erPlatform === 'youtube' ? 'rgba(255, 148, 49, 0.05)' : '#ffffff',
+                      color: erPlatform === 'youtube' ? '#FF9431' : '#64748b',
                       fontWeight: 800,
                       cursor: 'pointer',
                       display: 'flex',
@@ -322,8 +324,8 @@ export default function CalculatorsHubPage() {
 
               {/* Results visualization */}
               <div style={{ 
-                background: 'rgba(255,255,255,0.02)', 
-                border: '1px solid rgba(255,255,255,0.05)',
+                background: '#f8fafc', 
+                border: '1px solid #e2e8f0',
                 borderRadius: '24px', 
                 padding: '32px',
                 display: 'flex',
@@ -337,7 +339,7 @@ export default function CalculatorsHubPage() {
                   <>
                     <div style={{ position: 'relative', width: '160px', height: '160px' }}>
                       <svg width="160" height="160" style={{ transform: 'rotate(-90deg)' }}>
-                        <circle cx="80" cy="80" r="70" fill="transparent" stroke="rgba(255,255,255,0.04)" strokeWidth="10" />
+                        <circle cx="80" cy="80" r="70" fill="transparent" stroke="#e2e8f0" strokeWidth="10" />
                         <motion.circle 
                           cx="80" 
                           cy="80" 
@@ -353,7 +355,7 @@ export default function CalculatorsHubPage() {
                         />
                       </svg>
                       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ fontSize: '36px', fontWeight: 950, fontFamily: "'Outfit', sans-serif" }}>{erResult.rate}%</span>
+                        <span style={{ fontSize: '36px', fontWeight: 955, fontFamily: "'Outfit', sans-serif", color: '#0f172a' }}>{erResult.rate}%</span>
                         <span style={{ fontSize: '10px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px' }}>Engagement</span>
                       </div>
                     </div>
@@ -362,18 +364,18 @@ export default function CalculatorsHubPage() {
                       <div style={{ display: 'inline-block', background: 'rgba(255, 148, 49, 0.1)', color: '#FF9431', padding: '6px 16px', borderRadius: '100px', fontWeight: 900, fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                         {erResult.rating} Rating
                       </div>
-                      <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px', lineHeight: 1.6, marginTop: '16px' }}>
+                      <p style={{ color: '#475569', fontSize: '14px', lineHeight: 1.6, marginTop: '16px' }}>
                         {erResult.desc}
                       </p>
                     </div>
 
-                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', width: '100%', paddingTop: '20px' }}>
+                    <div style={{ borderTop: '1px solid #e2e8f0', width: '100%', paddingTop: '20px' }}>
                       <button 
                         onClick={() => navigate('/apply')}
                         style={{
-                          background: 'rgba(255,255,255,0.05)',
-                          border: 'none',
-                          color: '#fff',
+                          background: '#ffffff',
+                          border: '1px solid #e2e8f0',
+                          color: '#475569',
                           width: '100%',
                           padding: '14px',
                           borderRadius: '12px',
@@ -382,7 +384,8 @@ export default function CalculatorsHubPage() {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          gap: '6px'
+                          gap: '6px',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
                         }}
                       >
                         Boost engagement with CB Growth OS <TrendingUp size={16} />
@@ -398,7 +401,7 @@ export default function CalculatorsHubPage() {
             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.1fr 0.9fr', gap: '48px' }}>
               {/* Inputs */}
               <div>
-                <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '24px', fontFamily: "'Outfit', sans-serif" }}>Valuation Estimator</h3>
+                <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '24px', fontFamily: "'Outfit', sans-serif", color: '#0f172a' }}>Valuation Estimator</h3>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                   <div>
@@ -442,8 +445,8 @@ export default function CalculatorsHubPage() {
 
               {/* Valuation Result visualizer */}
               <div style={{ 
-                background: 'rgba(255,255,255,0.02)', 
-                border: '1px solid rgba(255,255,255,0.05)',
+                background: '#f8fafc', 
+                border: '1px solid #e2e8f0',
                 borderRadius: '24px', 
                 padding: '32px',
                 display: 'flex',
@@ -469,11 +472,11 @@ export default function CalculatorsHubPage() {
                     </div>
 
                     <div>
-                      <span style={{ fontSize: '12px', fontWeight: 800, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Estimated Post Value</span>
+                      <span style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Estimated Post Value</span>
                       <h4 style={{ fontSize: '40px', fontWeight: 950, margin: '8px 0', fontFamily: "'Outfit', sans-serif", color: '#10B981' }}>
                         ₹{valResult.min} - ₹{valResult.max}
                       </h4>
-                      <p style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '14px', lineHeight: 1.6 }}>
+                      <p style={{ color: '#475569', fontSize: '14px', lineHeight: 1.6 }}>
                         Estimated valuation based on current CPM and local market brand campaigns in Tier 2/3 cities.
                       </p>
                     </div>
@@ -482,14 +485,14 @@ export default function CalculatorsHubPage() {
                       display: 'flex', 
                       alignItems: 'center', 
                       gap: '8px', 
-                      background: 'rgba(255, 148, 49, 0.05)', 
-                      border: '1px solid rgba(255, 148, 49, 0.15)',
+                      background: 'rgba(255, 148, 49, 0.04)', 
+                      border: '1px solid rgba(255, 148, 49, 0.1)',
                       padding: '12px 16px',
                       borderRadius: '16px',
                       textAlign: 'left'
                     }}>
                       <ShieldAlert size={20} color="#FF9431" style={{ flexShrink: 0 }} />
-                      <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.4 }}>
+                      <span style={{ fontSize: '12px', color: '#475569', lineHeight: 1.4 }}>
                         This is an approximation. Real values depend on your <strong>Digital Pehchan verification</strong> and brand negotiation.
                       </span>
                     </div>
@@ -518,7 +521,7 @@ export default function CalculatorsHubPage() {
             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.1fr 0.9fr', gap: '48px' }}>
               {/* Inputs */}
               <div>
-                <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '24px', fontFamily: "'Outfit', sans-serif" }}>Campaign Budget Planner</h3>
+                <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '24px', fontFamily: "'Outfit', sans-serif", color: '#0f172a' }}>Campaign Budget Planner</h3>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                   <div>
@@ -548,8 +551,8 @@ export default function CalculatorsHubPage() {
 
               {/* Budget Result visualizer */}
               <div style={{ 
-                background: 'rgba(255,255,255,0.02)', 
-                border: '1px solid rgba(255,255,255,0.05)',
+                background: '#f8fafc', 
+                border: '1px solid #e2e8f0',
                 borderRadius: '24px', 
                 padding: '32px',
                 display: 'flex',
@@ -575,11 +578,11 @@ export default function CalculatorsHubPage() {
                     </div>
 
                     <div>
-                      <span style={{ fontSize: '12px', fontWeight: 800, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Estimated Campaign Cost</span>
+                      <span style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Estimated Campaign Cost</span>
                       <h4 style={{ fontSize: '40px', fontWeight: 950, margin: '8px 0', fontFamily: "'Outfit', sans-serif", color: '#6366F1' }}>
                         ₹{budResult.total}
                       </h4>
-                      <p style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '14px', lineHeight: 1.6 }}>
+                      <p style={{ color: '#475569', fontSize: '14px', lineHeight: 1.6 }}>
                         Estimated budget to hire approx. <strong>{budResult.creatorsNeeded} creators</strong> in this category to drive {budTargetReach.toLocaleString()} impressions.
                       </p>
                     </div>
@@ -589,12 +592,13 @@ export default function CalculatorsHubPage() {
                       onClick={() => navigate('/brand-register')}
                       style={{ 
                         width: '100%', 
-                        background: 'rgba(255,255,255,0.05)', 
-                        color: '#fff',
+                        background: '#ffffff', 
+                        color: '#475569',
                         borderRadius: '12px',
                         justifyContent: 'center',
                         fontWeight: 800,
-                        border: '1.5px solid rgba(255,255,255,0.1)'
+                        border: '1.5px solid #e2e8f0',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
                       }}
                     >
                       Book Free Brand Strategy Call
@@ -614,7 +618,7 @@ const labelStyle = {
   display: 'block',
   fontSize: '11px',
   fontWeight: 900,
-  color: 'rgba(255, 255, 255, 0.4)',
+  color: '#475569',
   textTransform: 'uppercase',
   marginBottom: '8px',
   marginLeft: '4px',
@@ -625,9 +629,9 @@ const inputStyle = {
   width: '100%',
   padding: '16px 20px',
   borderRadius: '14px',
-  border: '1.5px solid rgba(255, 255, 255, 0.08)',
-  background: 'rgba(255, 255, 255, 0.02)',
-  color: '#fff',
+  border: '1.5px solid #e2e8f0',
+  background: '#ffffff',
+  color: '#0f172a',
   fontSize: '15px',
   fontWeight: 600,
   outline: 'none',

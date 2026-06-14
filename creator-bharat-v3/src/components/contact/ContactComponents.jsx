@@ -120,18 +120,18 @@ SuccessMessage.propTypes = {
 };
 
 export const ContactHero = ({ mob }) => (
-  <section style={{ background: '#050505', padding: mob ? '120px 20px 80px' : '180px 24px 140px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-    <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255, 148, 49, 0.15), transparent 70%)', opacity: 0.8 }} />
-    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #FF9431, #fff, #10B981)' }} />
+  <section style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', padding: mob ? '120px 20px 80px' : '180px 24px 140px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255, 148, 49, 0.04), transparent 70%)', opacity: 0.8 }} />
+    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #FF9431, #e2e8f0, #10B981)' }} />
     <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(255, 255, 255, 0.05)', padding: '10px 20px', borderRadius: '100px', marginBottom: '32px', border: '1px solid rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)' }}>
+      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(255, 148, 49, 0.08)', padding: '10px 20px', borderRadius: '100px', marginBottom: '32px', border: '1px solid rgba(255, 148, 49, 0.2)' }}>
         <Zap size={14} color="#FF9431" fill="#FF9431" />
-        <span style={{ fontSize: '12px', fontWeight: 900, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.15em', fontFamily: "'Outfit', sans-serif" }}>Concierge Service Active</span>
+        <span style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.15em', fontFamily: "'Outfit', sans-serif" }}>Concierge Service Active</span>
       </motion.div>
-      <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ fontSize: 'clamp(42px, 10vw, 96px)', fontWeight: 950, color: '#fff', marginBottom: '24px', letterSpacing: '-0.06em', lineHeight: 0.9, fontFamily: "'Outfit', sans-serif" }}>
-        How Can We <br /><span style={{ background: 'linear-gradient(90deg, #FF9431, #fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Assist You?</span>
+      <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ fontSize: 'clamp(42px, 10vw, 96px)', fontWeight: 950, color: '#0f172a', marginBottom: '24px', letterSpacing: '-0.06em', lineHeight: 0.9, fontFamily: "'Outfit', sans-serif" }}>
+        How Can We <br /><span style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Assist You?</span>
       </motion.h1>
-      <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ fontSize: mob ? '16px' : '20px', color: 'rgba(255, 255, 255, 0.5)', maxWidth: '650px', margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}>
+      <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ fontSize: mob ? '16px' : '20px', color: '#475569', maxWidth: '650px', margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}>
         Bhilwara se Bangalore tak, Bharat ke har creator aur brand ki success hamari priority hai. Aapka message hamare liye "Elite" priority hai.
       </motion.p>
     </div>
