@@ -120,20 +120,53 @@ SuccessMessage.propTypes = {
 };
 
 export const ContactHero = ({ mob }) => (
-  <section style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', padding: mob ? '90px 20px 60px' : '130px 24px 100px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-    <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255, 148, 49, 0.04), transparent 70%)', opacity: 0.8 }} />
-    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #FF9431, #e2e8f0, #10B981)' }} />
-    <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(255, 148, 49, 0.08)', padding: '10px 20px', borderRadius: '100px', marginBottom: '32px', border: '1px solid rgba(255, 148, 49, 0.2)' }}>
-        <Zap size={14} color="#FF9431" fill="#FF9431" />
-        <span style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.15em', fontFamily: "'Outfit', sans-serif" }}>Concierge Service Active</span>
-      </motion.div>
-      <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ fontSize: 'clamp(42px, 10vw, 96px)', fontWeight: 950, color: '#0f172a', marginBottom: '24px', letterSpacing: '-0.06em', lineHeight: 0.9, fontFamily: "'Outfit', sans-serif" }}>
-        How Can We <br /><span style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Assist You?</span>
-      </motion.h1>
-      <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ fontSize: mob ? '16px' : '20px', color: '#475569', maxWidth: '650px', margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}>
-        Bhilwara se Bangalore tak, Bharat ke har creator aur brand ki success hamari priority hai. Aapka message hamare liye "Elite" priority hai.
-      </motion.p>
+  <section style={{ 
+    background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', 
+    padding: mob ? '90px 20px 60px' : '130px 24px 100px', 
+    position: 'relative', 
+    overflow: 'hidden',
+    minHeight: mob ? 'auto' : '520px',
+    display: 'flex',
+    alignItems: 'center',
+    borderBottom: '1px solid #e2e8f0'
+  }}>
+    {/* Full-bleed background poster image (real humans, no text in image) */}
+    <div style={{
+      position: 'absolute',
+      inset: 0,
+      backgroundImage: 'url(/contact_hero.png)',
+      backgroundSize: 'cover',
+      backgroundPosition: mob ? 'center' : '20% center',
+      opacity: mob ? 0.25 : 0.95,
+      zIndex: 0
+    }} />
+
+    {/* Gradient mask to transition background image to soft white on the left for text readability */}
+    <div style={{
+      position: 'absolute',
+      inset: 0,
+      background: mob 
+        ? 'linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%)'
+        : 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 30%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 70%)',
+      zIndex: 1,
+      pointerEvents: 'none'
+    }} />
+
+    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #FF9431, #e2e8f0, #10B981)', zIndex: 3 }} />
+
+    <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%', padding: '0 24px', position: 'relative', zIndex: 2 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start', maxWidth: mob ? '100%' : '600px', textAlign: mob ? 'center' : 'left' }}>
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: 'rgba(255, 148, 49, 0.08)', padding: '10px 20px', borderRadius: '100px', marginBottom: '32px', border: '1px solid rgba(255, 148, 49, 0.2)' }}>
+          <Zap size={14} color="#FF9431" fill="#FF9431" />
+          <span style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.15em', fontFamily: "'Outfit', sans-serif" }}>Concierge Service Active</span>
+        </motion.div>
+        <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ fontSize: mob ? '42px' : '72px', fontWeight: 950, color: '#0f172a', marginBottom: '24px', letterSpacing: '-0.04em', lineHeight: 1.05, fontFamily: "'Outfit', sans-serif" }}>
+          How Can We <br /><span style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Assist You?</span>
+        </motion.h1>
+        <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ fontSize: mob ? '16px' : '18px', color: '#475569', maxWidth: '540px', margin: '0', lineHeight: 1.6, fontWeight: 500 }}>
+          Bhilwara se Bangalore tak, Bharat ke har creator aur brand ki success hamari priority hai. Aapka message hamare liye "Elite" priority hai.
+        </motion.p>
+      </div>
     </div>
   </section>
 );
