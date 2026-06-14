@@ -1,4 +1,8 @@
 {
+  "name": "creatorbharat",
+  "version": "1.0.0",
+  "description": "Infrastructure of Trust for India's Digital Creator Economy (Monorepo)",
+  "private": true,
   "scripts": {
     "build": "cd creator-bharat-v3 && npm run build",
     "dev": "cd creator-bharat-v3 && npm run dev",
