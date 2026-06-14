@@ -162,16 +162,31 @@ const EliteHeader = memo(({
       borderBottom: light ? '1px solid rgba(0,0,0,0.05)' : 'none'
     }}>
       {bgImage && (
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: `url(${bgImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          opacity: bgOpacity,
-          pointerEvents: 'none',
-          zIndex: 1
-        }} />
+        <>
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: `url(${bgImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: mob ? 'center' : 'right center',
+            opacity: mob ? 0.25 : 0.95,
+            pointerEvents: 'none',
+            zIndex: 1
+          }} />
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: mob 
+              ? (light 
+                  ? 'linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%)'
+                  : 'linear-gradient(180deg, rgba(5,5,5,0.9) 0%, rgba(5,5,5,0.95) 100%)')
+              : (light 
+                  ? 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 35%, rgba(255,255,255,0.4) 60%, rgba(255,255,255,0) 80%)'
+                  : 'linear-gradient(90deg, rgba(5,5,5,1) 0%, rgba(5,5,5,0.95) 35%, rgba(5,5,5,0.4) 60%, rgba(5,5,5,0) 80%)'),
+            pointerEvents: 'none',
+            zIndex: 2
+          }} />
+        </>
       )}
       {!compact && <ActivityTicker />}
 
