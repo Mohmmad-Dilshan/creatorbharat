@@ -1004,60 +1004,346 @@ export default function CreatorsPage() {
         description="Browse and connect with thousands of verified content creators across Bharat. Filter by niche, location, and impact scores."
         keywords="creator marketplace, hire influencers india, verified creators, brand collaborations india"
       />
-      <div style={{ position: 'relative', width: '100%' }}>
-        <EliteHeader
-          eyebrow="Marketplace Hub"
-          title={
-            <>
-              Discover the{' '}
-              <span
-                style={{
-                  background: 'linear-gradient(90deg, #FF9431, #EA580C)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                Elite
-              </span>{' '}
-              Talent of{' '}
-              <span
-                style={{
-                  background: 'linear-gradient(90deg, #FF9431, #128807)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  paddingRight: mob ? 4 : 12,
-                }}
-              >
-                Bharat
+      {/* ═══════════════════════════════════════════════
+          WORLD-CLASS CINEMATIC CREATORS HERO
+      ═══════════════════════════════════════════════ */}
+      <section style={{
+        position: 'relative',
+        minHeight: mob ? 'auto' : '620px',
+        display: 'flex',
+        alignItems: 'center',
+        overflow: 'hidden',
+        background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
+        borderBottom: '1px solid #e2e8f0',
+        padding: mob ? '100px 20px 60px' : '140px 24px 90px',
+      }}>
+
+        {/* ── Full-bleed creator photo on right ── */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/creator_landing_hero.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: mob ? 'center top' : 'right center',
+          opacity: mob ? 0.15 : 0.9,
+          zIndex: 0,
+        }} />
+
+        {/* ── White → transparent gradient mask (left to right) ── */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: mob
+            ? 'linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.97) 100%)'
+            : 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.98) 30%, rgba(255,255,255,0.6) 58%, rgba(255,255,255,0) 80%)',
+          zIndex: 1,
+          pointerEvents: 'none',
+        }} />
+
+        {/* ── Top accent stripe (Tricolor) ── */}
+        <div style={{
+          position: 'absolute',
+          top: 0, left: 0, right: 0,
+          height: '4px',
+          background: 'linear-gradient(90deg, #FF9431 0%, #ffffff 50%, #128807 100%)',
+          zIndex: 10,
+        }} />
+
+        {/* ── Content Layer ── */}
+        <div style={{
+          maxWidth: '1280px',
+          margin: '0 auto',
+          width: '100%',
+          padding: mob ? '0 4px' : '0 24px',
+          position: 'relative',
+          zIndex: 5,
+        }}>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: mob ? 'center' : 'flex-start',
+            maxWidth: mob ? '100%' : '640px',
+            textAlign: mob ? 'center' : 'left',
+          }}>
+
+            {/* Live badge */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '10px',
+                padding: '8px 20px',
+                background: 'rgba(255,148,49,0.06)',
+                border: '1.5px solid rgba(255,148,49,0.15)',
+                borderRadius: '100px',
+                marginBottom: '28px',
+              }}
+            >
+              <span style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', display: 'block' }} />
+                <span style={{
+                  position: 'absolute',
+                  inset: '-4px',
+                  borderRadius: '50%',
+                  border: '2px solid #10B981',
+                  opacity: 0.5,
+                  animation: 'creatorPulse 2s infinite ease-in-out',
+                }} />
               </span>
-            </>
+              <span style={{ fontSize: '11px', fontWeight: 950, color: '#FF9431', letterSpacing: '3px', textTransform: 'uppercase' }}>
+                {fmt.num(all.length || 2400)}+ Verified Creators Live
+              </span>
+            </motion.div>
+
+            {/* Main Headline */}
+            <motion.h1
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              style={{
+                fontSize: mob ? '40px' : '74px',
+                fontWeight: 950,
+                color: '#0f172a',
+                letterSpacing: '-0.05em',
+                lineHeight: 0.94,
+                marginBottom: '28px',
+                fontFamily: "'Outfit', sans-serif",
+              }}
+            >
+              Find Bharat's{' '}
+              <span style={{
+                background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>
+                Elite
+              </span>
+              <br />
+              Creator{' '}
+              <span style={{
+                background: 'linear-gradient(135deg, #FF9431 0%, #128807 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>
+                Network.
+              </span>
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              style={{
+                fontSize: mob ? '15px' : '18px',
+                color: '#475569',
+                maxWidth: '560px',
+                marginBottom: '40px',
+                fontWeight: 600,
+                lineHeight: 1.65,
+                letterSpacing: '0.01em',
+              }}
+            >
+              India's most trusted creator intelligence platform. Discover, verify, and collaborate with <span style={{ color: '#0f172a', fontWeight: 800 }}>authentic regional voices</span> across Tier-1, Tier-2, and Tier-3 cities — with real-time metric scorecards and secure escrow payments.
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              style={{
+                display: 'flex',
+                gap: '14px',
+                flexDirection: mob ? 'column' : 'row',
+                width: mob ? '100%' : 'auto',
+                marginBottom: '48px',
+              }}
+            >
+              <Btn
+                lg
+                onClick={() => {
+                  const grid = document.getElementById('creators-grid-anchor');
+                  if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }}
+                style={{
+                  background: '#0f172a',
+                  color: '#fff',
+                  padding: '16px 32px',
+                  borderRadius: '14px',
+                  fontWeight: 950,
+                  fontSize: '15px',
+                  width: mob ? '100%' : 'auto',
+                  boxShadow: '0 16px 36px rgba(15,23,42,0.18)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
+                Explore Creators <ChevronRight size={18} />
+              </Btn>
+              <Btn
+                lg
+                onClick={() => navigate('/brand-register')}
+                style={{
+                  background: '#fff',
+                  color: '#0f172a',
+                  padding: '16px 32px',
+                  borderRadius: '14px',
+                  border: '1.5px solid #e2e8f0',
+                  fontWeight: 950,
+                  fontSize: '15px',
+                  width: mob ? '100%' : 'auto',
+                }}
+              >
+                Post a Campaign
+              </Btn>
+            </motion.div>
+
+            {/* Trust Badge Row */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.45 }}
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '12px',
+                justifyContent: mob ? 'center' : 'flex-start',
+              }}
+            >
+              {[
+                { icon: <ShieldCheck size={14} />, label: 'AI-Verified Profiles', color: '#10B981' },
+                { icon: <TrendingUp size={14} />, label: 'Real-time Analytics', color: '#3B82F6' },
+                { icon: <Sparkles size={14} />, label: 'Zero Commission', color: '#FF9431' },
+                { icon: <CheckCircle size={14} />, label: 'Secure Escrow', color: '#8B5CF6' },
+              ].map(b => (
+                <div key={b.label} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '7px 14px',
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '100px',
+                  fontSize: '12px',
+                  fontWeight: 800,
+                  color: '#475569',
+                }}>
+                  <span style={{ color: b.color }}>{b.icon}</span>
+                  {b.label}
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+
+        {/* ── Floating live stat cards (desktop only) ── */}
+        {!mob && (
+          <>
+            {/* Top-right floating card: Creators Today */}
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5, duration: 0.7 }}
+              style={{
+                position: 'absolute',
+                top: '120px',
+                right: '80px',
+                zIndex: 8,
+                background: '#0f172a',
+                borderRadius: '20px',
+                padding: '18px 24px',
+                boxShadow: '0 24px 48px rgba(15,23,42,0.2)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                minWidth: '200px',
+              }}
+            >
+              <div style={{ fontSize: '10px', fontWeight: 900, color: '#FF9431', letterSpacing: '2px', marginBottom: '8px', textTransform: 'uppercase' }}>New This Week</div>
+              <div style={{ fontSize: '32px', fontWeight: 950, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1 }}>+247</div>
+              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, marginTop: '6px' }}>Verified creators joined</div>
+              <div style={{ display: 'flex', gap: '4px', marginTop: '12px' }}>
+                {[1,2,3,4,5].map(i => (
+                  <div key={i} style={{
+                    width: '28px', height: '28px', borderRadius: '50%',
+                    background: `hsl(${i * 40}, 60%, 55%)`,
+                    border: '2px solid #0f172a',
+                    marginLeft: i > 1 ? '-10px' : 0,
+                    backgroundImage: `url(https://picsum.photos/seed/${i * 77}/60/60)`,
+                    backgroundSize: 'cover',
+                  }} />
+                ))}
+                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#FF9431', border: '2px solid #0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: '-10px', fontSize: '9px', fontWeight: 900, color: '#fff' }}>+242</div>
+              </div>
+            </motion.div>
+
+            {/* Mid-right floating card: Avg Engagement */}
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+              style={{
+                position: 'absolute',
+                top: '330px',
+                right: '48px',
+                zIndex: 8,
+                background: '#fff',
+                borderRadius: '20px',
+                padding: '16px 22px',
+                boxShadow: '0 20px 40px rgba(15,23,42,0.08)',
+                border: '1px solid #e2e8f0',
+                minWidth: '180px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(16,185,129,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <TrendingUp size={16} color="#10B981" />
+                </div>
+                <span style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>Avg. Engagement</span>
+              </div>
+              <div style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.03em' }}>4.8%</div>
+              <div style={{ fontSize: '11px', color: '#10B981', fontWeight: 800, marginTop: '4px' }}>↑ 2.1x vs industry avg</div>
+            </motion.div>
+
+            {/* Bottom-right floating card: ROI */}
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut', delay: 1 }}
+              style={{
+                position: 'absolute',
+                bottom: '60px',
+                right: '140px',
+                zIndex: 8,
+                background: 'rgba(255,148,49,0.95)',
+                borderRadius: '16px',
+                padding: '14px 20px',
+                boxShadow: '0 16px 36px rgba(255,148,49,0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+              }}
+            >
+              <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Sparkles size={18} color="#fff" />
+              </div>
+              <div>
+                <div style={{ fontSize: '11px', fontWeight: 900, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase', letterSpacing: '1px' }}>Avg Campaign ROI</div>
+                <div style={{ fontSize: '20px', fontWeight: 950, color: '#fff', letterSpacing: '-0.02em' }}>4.2x Return</div>
+              </div>
+            </motion.div>
+          </>
+        )}
+
+        <style>{`
+          @keyframes creatorPulse {
+            0%   { transform: scale(0.8); opacity: 0.7; }
+            50%  { transform: scale(1.5); opacity: 0.1; }
+            100% { transform: scale(0.8); opacity: 0.7; }
           }
-          sub={<>Unlock the power of authentic regional influence with India’s premier verified creator directory. Partner with {fmt.num(all.length)}+ leading digital stars across Tier-1, Tier-2, and Tier-3 cities to drive high-impact campaigns with complete price transparency and real-time metric scorecards.</>}
-          gradient="saffron"
-          light={true}
-          compact={true}
-        >
-          <Btn
-            lg
-            active
-            onClick={() => {
-              const grid = document.getElementById('creators-grid-anchor');
-              if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }}
-            style={{
-              borderRadius: 999,
-              padding: mob ? '0 24px' : '0 34px',
-              height: mob ? 54 : 62,
-              background: '#0f172a',
-              color: '#fff',
-              boxShadow: '0 18px 38px rgba(15, 23, 42, 0.18)'
-            }}
-          >
-            Explore Verified Creators <ChevronRight size={20} />
-          </Btn>
-        </EliteHeader>
-        <CreatorsFloatingIcons mob={mob} />
-      </div>
+        `}</style>
+      </section>
 
       <EliteSpotlight mob={mob} all={all} setSelectedCreator={setSelectedCreator} dsp={safeDsp} loading={loading} />
 
