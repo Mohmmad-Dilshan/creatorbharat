@@ -593,26 +593,192 @@ export default function CampaignsPage() {
   return (
     <div style={{ background: THEME.bg, minHeight: '100vh', width: '100%', overflowX: 'hidden', color: THEME.text }}>
       <div style={{ position: 'relative', width: '100%' }}>
-        <EliteHeader light compact={viewMode === 'swipe'} title={
-          <div style={{ textAlign: 'center', padding: mob ? '40px 0' : '60px 0 40px' }}>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '16px' }}>
-              <div style={{ width: '8px', height: '8px', background: '#10B981', borderRadius: '50%', boxShadow: '0 0 12px #10B981' }} />
-              <div style={{ fontSize: '11px', fontWeight: 950, color: THEME.primary, letterSpacing: '4px' }}>LIVE INTELLIGENCE HUB</div>
-            </motion.div>
-            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ fontSize: mob ? '48px' : '80px', fontWeight: 950, color: THEME.dark, letterSpacing: '-0.05em', lineHeight: 1 }}>
-              Campaign Marketplace
-            </motion.h1>
-            <p style={{ marginTop: '24px', color: THEME.textSec, fontSize: mob ? '16px' : '20px', fontWeight: 500, maxWidth: '760px', margin: '24px auto 0', lineHeight: 1.7, letterSpacing: '0.01em' }}>
-              The definitive gateway to premium influencer commerce. Access <span style={{ color: THEME.dark, fontWeight: 800 }}>high-ticket collaborations</span>, verified brand deals, and data-driven advertising opportunities across India.
-            </p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexDirection: mob ? 'column' : 'row', marginTop: '28px' }}>
-              <Btn lg onClick={() => navigate('/brand-register')} style={{ background: THEME.primary, color: '#fff', padding: '16px 28px', borderRadius: '14px', fontWeight: 950, fontSize: '15px', width: mob ? '100%' : 'auto', boxShadow: '0 16px 32px rgba(255,148,49,0.18)' }}>
-                Create Campaign
-              </Btn>
-              <Btn lg onClick={() => navigate('/creators')} style={{ background: '#fff', color: THEME.dark, padding: '16px 28px', borderRadius: '14px', border: '1px solid #e2e8f0', fontWeight: 950, fontSize: '15px', width: mob ? '100%' : 'auto' }}>
-                Explore Creators
-              </Btn>
+        <EliteHeader light compact={viewMode === 'swipe'} maxWidth={1200} title={
+          <div className="campaigns-hero-grid" style={{ 
+            textAlign: mob ? 'center' : 'left', 
+            padding: mob ? '40px 0' : '60px 0 40px',
+            boxSizing: 'border-box'
+          }}>
+            {/* Left side text contents */}
+            <div>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '16px', background: 'rgba(255, 148, 49, 0.06)', border: '1.5px solid rgba(255, 148, 49, 0.12)', padding: '8px 16px', borderRadius: '100px' }}>
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '4px' }}>
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981' }} />
+                  <span className="pulsing-glow" style={{
+                    position: 'absolute',
+                    width: '16px',
+                    height: '16px',
+                    borderRadius: '50%',
+                    border: '2px solid #10B981',
+                    opacity: 0.6
+                  }} />
+                </div>
+                <div style={{ fontSize: '11px', fontWeight: 950, color: THEME.primary, letterSpacing: '4px' }}>LIVE INTELLIGENCE HUB</div>
+              </motion.div>
+              
+              <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ fontSize: mob ? '40px' : '72px', fontWeight: 950, color: THEME.dark, letterSpacing: '-0.05em', lineHeight: 0.95, marginBottom: '24px', fontFamily: "'Outfit', sans-serif" }}>
+                Campaign <br />
+                <span style={{
+                  background: 'linear-gradient(135deg, #FF9431 0%, #ff6b00 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  position: 'relative'
+                }}>
+                  Marketplace.
+                  <span style={{
+                    position: 'absolute',
+                    bottom: '4px',
+                    left: 0,
+                    width: '100%',
+                    height: '8px',
+                    background: 'rgba(255, 148, 49, 0.15)',
+                    borderRadius: '4px',
+                    zIndex: -1
+                  }} />
+                </span>
+              </motion.h1>
+
+              <p style={{ marginTop: '24px', color: THEME.textSec, fontSize: mob ? '15px' : '18px', fontWeight: 550, maxWidth: mob ? '100%' : '560px', margin: '24px 0 32px', lineHeight: 1.6, letterSpacing: '0.01em' }}>
+                The definitive gateway to premium influencer commerce. Access <span style={{ color: THEME.dark, fontWeight: 800 }}>high-ticket collaborations</span>, verified brand deals, and secure escrow contracts with zero middleman agent fees.
+              </p>
+              
+              <div style={{ display: 'flex', justifyContent: mob ? 'center' : 'flex-start', gap: '12px', flexDirection: mob ? 'column' : 'row' }}>
+                <Btn lg onClick={() => navigate('/brand-register')} style={{ background: THEME.primary, color: '#fff', padding: '16px 28px', borderRadius: '14px', fontWeight: 950, fontSize: '15px', width: mob ? '100%' : 'auto', boxShadow: '0 16px 32px rgba(255,148,49,0.18)' }}>
+                  Create Campaign
+                </Btn>
+                <Btn lg onClick={() => navigate('/creators')} style={{ background: '#fff', color: THEME.dark, padding: '16px 28px', borderRadius: '14px', border: '1px solid #e2e8f0', fontWeight: 950, fontSize: '15px', width: mob ? '100%' : 'auto' }}>
+                  Explore Creators
+                </Btn>
+              </div>
             </div>
+
+            {/* Right side: Mac dashboard mockup with overlapping human image */}
+            {!mob && (
+              <motion.div
+                initial={{ opacity: 0, x: 40 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3, duration: 0.8 }}
+                className="campaigns-hero-graphic"
+                style={{ width: '100%', position: 'relative' }}
+              >
+                {/* Glowing Background Radial */}
+                <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: '120%',
+                  height: '120%',
+                  background: 'radial-gradient(circle, rgba(255,148,49,0.08) 0%, transparent 70%)',
+                  filter: 'blur(40px)',
+                  zIndex: 0,
+                  pointerEvents: 'none'
+                }} />
+
+                {/* macOS mockup window */}
+                <div style={{
+                  position: 'relative',
+                  zIndex: 2,
+                  background: '#ffffff',
+                  border: '1.5px solid #e2e8f0',
+                  borderRadius: '32px',
+                  boxShadow: '0 30px 60px rgba(0,0,0,0.06)',
+                  overflow: 'hidden',
+                  width: '100%',
+                  aspectRatio: '4/3'
+                }}>
+                  {/* Window header bar */}
+                  <div style={{
+                    padding: '12px 20px',
+                    background: '#f8fafc',
+                    borderBottom: '1px solid #e2e8f0',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ff5f56' }} />
+                      <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ffbd2e' }} />
+                      <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#27c93f' }} />
+                    </div>
+                    <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', fontFamily: 'monospace' }}>CAMPAIGN_CONSOLE</div>
+                    <div style={{ width: '30px' }} />
+                  </div>
+
+                  {/* Dashboard Image */}
+                  <img
+                    src="/brand_landing_hero.png"
+                    alt="Campaign Dashboard Mockup"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                </div>
+
+                {/* Overlapping Floating curating headshot card on bottom-left */}
+                <motion.div
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                  style={{
+                    position: 'absolute',
+                    bottom: '-20px',
+                    left: '-30px',
+                    zIndex: 5,
+                    background: '#ffffff',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '24px',
+                    padding: '12px 18px',
+                    boxShadow: '0 20px 40px rgba(15,23,42,0.08)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    maxWidth: '260px'
+                  }}
+                >
+                  <div style={{
+                    width: '45px',
+                    height: '45px',
+                    borderRadius: '50%',
+                    overflow: 'hidden',
+                    border: '2px solid #fff',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                    flexShrink: 0
+                  }}>
+                    <img
+                      src="/team_sarah.jpg"
+                      alt="Sarah Jenkins"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', fontWeight: 900, color: '#0f172a' }}>Mamaearth Campaign</div>
+                    <div style={{ fontSize: '10px', color: '#10B981', fontWeight: 800 }}>✓ 1.2M Reach • 4.8x ROI</div>
+                  </div>
+                </motion.div>
+
+                {/* Overlapping Floating escrow badge on top-right */}
+                <motion.div
+                  animate={{ y: [0, 6, 0] }}
+                  transition={{ repeat: Infinity, duration: 3.5, ease: "easeInOut", delay: 1 }}
+                  style={{
+                    position: 'absolute',
+                    top: '-15px',
+                    right: '-20px',
+                    zIndex: 5,
+                    background: 'rgba(15,23,42,0.9)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: '16px',
+                    padding: '10px 16px',
+                    boxShadow: '0 15px 30px rgba(0,0,0,0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    color: '#ffffff'
+                  }}
+                >
+                  <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981' }} />
+                  <span style={{ fontSize: '11px', fontWeight: 800, fontFamily: 'monospace' }}>🔒 ESCROW RELEASED</span>
+                </motion.div>
+              </motion.div>
+            )}
           </div>
         } />
         <CampaignsFloatingIcons mob={mob} />
@@ -655,10 +821,48 @@ export default function CampaignsPage() {
         mob={mob}
       />
       <style>{`
+        .campaigns-hero-grid {
+          display: grid;
+          grid-template-columns: 1.15fr 0.85fr;
+          gap: 48px;
+          align-items: center;
+          width: 100%;
+          text-align: left;
+        }
+        .campaigns-hero-graphic {
+          width: 100%;
+          position: relative;
+          max-width: 550px;
+          margin: 0 auto;
+        }
+        @keyframes pulsing-glow {
+          0% {
+            transform: scale(0.9);
+            opacity: 0.6;
+          }
+          50% {
+            transform: scale(1.4);
+            opacity: 0.1;
+          }
+          100% {
+            transform: scale(0.9);
+            opacity: 0.6;
+          }
+        }
+        .pulsing-glow {
+          animation: pulsing-glow 2s infinite ease-in-out;
+        }
         .floating-campaign-btn:hover {
           background: #fff !important;
           border-color: rgba(0, 0, 0, 0.08) !important;
           box-shadow: 0 16px 36px rgba(0,0,0,0.06) !important;
+        }
+        @media (max-width: 1024px) {
+          .campaigns-hero-grid {
+            grid-template-columns: 1fr;
+            gap: 32px;
+            text-align: center;
+          }
         }
         @media (max-width: 1200px) {
           .campaigns-floating-icons-container {
