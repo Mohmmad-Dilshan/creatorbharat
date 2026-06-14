@@ -153,11 +153,22 @@ export default function AmbassadorPage() {
         borderBottom: '1px solid #e2e8f0',
         overflow: 'hidden'
       }}>
+        {/* Full-bleed background students image (low opacity) */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/ambassador_hero_bg.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.12,
+          zIndex: 0
+        }} />
         <div style={{ 
           position: 'absolute', 
           inset: 0, 
           background: 'radial-gradient(circle at 50% 50%, rgba(255, 148, 49, 0.05), transparent 70%)', 
-          opacity: 0.9 
+          opacity: 0.9,
+          zIndex: 0
         }} />
         <div style={{ 
           position: 'absolute', 
@@ -165,7 +176,8 @@ export default function AmbassadorPage() {
           left: 0, 
           right: 0, 
           height: '4px', 
-          background: 'linear-gradient(90deg, #FF9431, #e2e8f0, #10B981)' 
+          background: 'linear-gradient(90deg, #FF9431, #e2e8f0, #10B981)',
+          zIndex: 3
         }} />
 
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1 }}>
