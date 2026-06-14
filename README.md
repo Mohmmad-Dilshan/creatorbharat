@@ -1,5 +1,15 @@
 # 🇮🇳 CreatorBharat — Creator Economy Trust Infrastructure
 
+> [!CAUTION]
+> ### 🛑 PROPRIETARY & CONFIDENTIAL
+> **Copyright © 2026 Mohmmad Dilshan. All Rights Reserved.**
+> 
+> This repository and all its source code (including frontend client modules, backend Express api services, database schemas, and admin assets) are strictly **proprietary** and **confidential**. 
+> 
+> **Any unauthorized copying, cloning, modification, reproduction, public hosting, or commercial redistribution of this software is strictly prohibited under international copyright laws.**
+
+---
+
 Welcome to the **CreatorBharat** monorepo. CreatorBharat is the infrastructure of trust for India's digital creator economy, powering secure connections, campaigns, and payments between verified creators and brand partners.
 
 This repository is structured as a **Monorepo** to keep the frontend client, backend api server, and administrative management platforms synchronized under a single version-controlled tree.
@@ -15,7 +25,7 @@ creatorbharat/
 │       └── ci.yml             # Automated CI Build & Lint pipeline
 ├── .prettierrc                # Global code formatting standards
 ├── .editorconfig              # Code editor style syncing
-├── LICENSE                    # MIT License certificate
+├── LICENSE                    # Proprietary License certificate
 ├── package.json               # Root monorepo dev orchestrator
 ├── vercel.json                # Vercel monorepo deployment config
 │
@@ -95,4 +105,4 @@ Rules are defined in the global [.prettierrc](file:///.prettierrc) file.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](file:///LICENSE) file for details.
+This project is licensed under a proprietary and confidential license. See the [LICENSE](file:///LICENSE) file for details. Unauthorized reproduction is strictly prohibited.
