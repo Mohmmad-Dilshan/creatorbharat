@@ -27,22 +27,60 @@ const EliteSocialIcon = ({ type, size = 20, color = 'currentColor' }) => {
     insta: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" /></svg>,
     yt: <svg width={size} height={size} viewBox="0 0 24 24" fill={color}><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>,
     linkedin: <svg width={size} height={size} viewBox="0 0 24 24" fill={color}><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>,
-    twitter: <svg width={size} height={size} viewBox="0 0 24 24" fill={color}><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    twitter: <svg width={size} height={size} viewBox="0 0 24 24" fill={color}><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>,
+    fb: <svg width={size} height={size} viewBox="0 0 24 24" fill={color}><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 2.537-5.75 5.23-5.75 1.291 0 2.397.096 2.72.139v3.159h-1.87c-1.98 0-2.61.98-2.61 2.508v2.524h3.667l-.612 3.667h-3.055v7.98h-3.554z"/></svg>
   };
   return icons[type] || icons.insta;
 };
 
-const SocialIconsPanel = ({ mob }) => (
-  <div style={{ display: 'flex', flexDirection: 'row', gap: '16px', alignItems: 'center', background: 'rgba(0,0,0,0.04)', padding: '10px 20px', borderRadius: '100px', width: 'fit-content', marginTop: mob ? '20px' : '0' }}>
-     <EliteSocialIcon type="insta" size={18} color="#E4405F" />
-     <EliteSocialIcon type="yt" size={18} color="#FF0000" />
-     <EliteSocialIcon type="linkedin" size={18} color="#0077B5" />
-     <EliteSocialIcon type="twitter" size={16} color="#000" />
-     <div style={{ height: '16px', width: '1px', background: 'rgba(0,0,0,0.1)' }} />
-     <Verified size={18} color="#6b7280" />
-  </div>
-);
-SocialIconsPanel.propTypes = { mob: PropTypes.bool };
+const SocialIconsPanel = ({ c, mob }) => {
+  if (!c) return null;
+  const links = {
+    insta: c.instagram ? (c.instagram.startsWith('http') ? c.instagram : `https://instagram.com/${c.instagram.replace(/^@/, '')}`) : null,
+    yt: c.youtube ? (c.youtube.startsWith('http') ? c.youtube : `https://youtube.com/${c.youtube}`) : null,
+    linkedin: c.linkedin ? (c.linkedin.startsWith('http') ? c.linkedin : `https://linkedin.com/in/${c.linkedin}`) : null,
+    twitter: c.twitter ? (c.twitter.startsWith('http') ? c.twitter : `https://twitter.com/${c.twitter.replace(/^@/, '')}`) : null,
+    fb: c.facebook ? (c.facebook.startsWith('http') ? c.facebook : `https://facebook.com/${c.facebook}`) : null
+  };
+
+  const renderIcon = (type, defaultColor) => {
+    const url = links[type];
+    const icon = <EliteSocialIcon type={type} size={18} color={url ? defaultColor : '#9ca3af'} />;
+    if (url) {
+      return (
+        <a 
+          href={url} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          title={`Open ${type}`}
+          style={{ display: 'flex', alignItems: 'center', transition: 'transform 0.2s', cursor: 'pointer' }}
+          onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.15)'}
+          onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+        >
+          {icon}
+        </a>
+      );
+    }
+    return (
+      <div style={{ opacity: 0.35, display: 'flex', alignItems: 'center', cursor: 'not-allowed' }} title={`${type} not linked`}>
+        {icon}
+      </div>
+    );
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'row', gap: '16px', alignItems: 'center', background: 'rgba(0,0,0,0.04)', padding: '10px 20px', borderRadius: '100px', width: 'fit-content', marginTop: mob ? '20px' : '0' }}>
+       {renderIcon('insta', '#E4405F')}
+       {renderIcon('yt', '#FF0000')}
+       {renderIcon('linkedin', '#0077B5')}
+       {renderIcon('twitter', '#000')}
+       {renderIcon('fb', '#1877F2')}
+       <div style={{ height: '16px', width: '1px', background: 'rgba(0,0,0,0.1)' }} />
+       <Verified size={18} color="#6b7280" />
+    </div>
+  );
+};
+SocialIconsPanel.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
 
 const HeroKeyAchievements = ({ mob, activeUsers, activeViews, likes, isLiked, onLike }) => {
   const items = [
@@ -140,24 +178,27 @@ HeroKeyAchievements.propTypes = {
   onLike: PropTypes.func
 };
 
-const ContactMetadata = ({ city, followers, mob, onContact }) => (
-  <>
-     <div style={{ display: 'flex', flexWrap: 'wrap', gap: mob ? '12px' : '24px', color: '#6b7280', fontSize: '14px', fontWeight: 600, marginBottom: '12px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={16} color="#9ca3af" /> {city || 'Bharat'}</div>
-        <button 
-          onClick={onContact}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#0073b1', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: '14px', fontWeight: 700 }}
-        >
-          Contact info
-        </button>
-     </div>
-     <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '24px' }}>
-        <div style={{ color: '#0073b1', fontWeight: 700, fontSize: '14px' }}>{fmt.num(followers)} followers • 500+ connections</div>
-        {!mob && <SocialIconsPanel mob={false} />}
-     </div>
-  </>
-);
-ContactMetadata.propTypes = { city: PropTypes.string, followers: PropTypes.number, mob: PropTypes.bool, onContact: PropTypes.func.isRequired };
+const ContactMetadata = ({ c, followers, mob, onContact }) => {
+  const fullAddress = c.address || (c.city && c.state ? `${c.city}, ${c.state}, Bharat` : (c.city || 'Bharat'));
+  return (
+    <>
+       <div style={{ display: 'flex', flexWrap: 'wrap', gap: mob ? '12px' : '24px', color: '#6b7280', fontSize: '14px', fontWeight: 600, marginBottom: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={16} color="#9ca3af" /> {fullAddress}</div>
+          <button 
+            onClick={onContact}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#0073b1', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: '14px', fontWeight: 700 }}
+          >
+            Contact info
+          </button>
+       </div>
+       <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '24px' }}>
+          <div style={{ color: '#0073b1', fontWeight: 700, fontSize: '14px' }}>{fmt.num(followers)} followers • {c.connections || '500+'} connections</div>
+          {!mob && <SocialIconsPanel c={c} mob={false} />}
+       </div>
+    </>
+  );
+};
+ContactMetadata.propTypes = { c: PropTypes.object.isRequired, followers: PropTypes.number, mob: PropTypes.bool, onContact: PropTypes.func.isRequired };
 
 const IdentityHeader = ({ category, name, mob }) => {
   const catDisplay = Array.isArray(category) ? category.join(' • ') : category;
@@ -282,9 +323,9 @@ const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDo
     <div style={{ flex: 1 }}>
        <IdentityHeader category={c.category || c.niche} name={c.name} mob={mob} />
        <p style={{ fontSize: mob ? '16px' : '24px', color: '#475569', marginBottom: '24px', fontWeight: 500, lineHeight: 1.5, maxWidth: '850px', letterSpacing: '-0.01em' }}>
-          Expert in {c.niche || 'Lifestyle'} Storytelling | Building authentic brand identities across Bharat.
+          {c.tagline || `Expert in ${Array.isArray(c.niche) ? c.niche[0] : (c.niche || 'Lifestyle')} Storytelling | Building authentic brand identities across Bharat.`}
        </p>
-       <ContactMetadata city={c.city} followers={stats.followers} mob={mob} onContact={onContact} />
+       <ContactMetadata c={c} followers={stats.followers} mob={mob} onContact={onContact} />
        <BadgeRow score={stats.score || 94} />
        <RatingSection 
           val={Number(averageRating)} 
@@ -641,7 +682,7 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: mob ? 'center' : 'flex-start', textAlign: mob ? 'center' : 'left' }}>
              <div style={{ display: 'flex', alignItems: mob ? 'center' : 'flex-end', gap: '24px', flexDirection: mob ? 'column' : 'row', marginBottom: '12px' }}>
                 <ProfileImage src={dpImg} mob={mob} />
-                {mob && <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}><SocialIconsPanel mob={true} /></div>}
+                {mob && <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}><SocialIconsPanel c={c} mob={true} /></div>}
                 {!mob && (
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }}

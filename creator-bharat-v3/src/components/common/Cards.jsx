@@ -146,9 +146,14 @@ const CreatorBio = ({ c, mob }) => (
     <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 14 : 26, fontWeight: 900, color: '#0F172A', marginBottom: mob ? 2 : 4, letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: 6 }}>
       {c.name} {mob && c.verified && <Check size={12} color="#3B82F6" strokeWidth={4} style={{ flexShrink: 0 }} />}
     </h3>
+    {c.tagline && (
+      <p style={{ fontSize: mob ? 10 : 13, color: '#FF9431', fontWeight: 700, margin: '2px 0 6px 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={c.tagline}>
+        {c.tagline}
+      </p>
+    )}
     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
       <p style={{ fontSize: mob ? 10 : 15, color: '#64748B', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
-        <MapPin size={mob ? 10 : 14} color="#FF9431" strokeWidth={2.5} style={{ flexShrink: 0 }} /> 
+        <MapPin size={mob ? 10 : 14} color="#64748B" strokeWidth={2.5} style={{ flexShrink: 0 }} /> 
         <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')}</span>
       </p>
     </div>

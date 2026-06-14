@@ -120,9 +120,12 @@ const IdentityTabContent = ({ F, c, st, mob, upF, saveProfile, saving }) => (
            <Fld label="Cinematic Bio (150 chars)" value={F.bio} onChange={e => upF('bio', e.target.value.slice(0, 150))} rows={4} placeholder="I create high-impact tech reviews for regional India..." />
            <span style={{ position: 'absolute', bottom: 12, right: 16, fontSize: 11, color: (F.bio?.length || 0) >= 150 ? '#EF4444' : '#94a3b8', fontWeight: 600 }}>{F.bio?.length || 0}/150</span>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px' }}>
+        <Fld label="Professional Tagline / Headline (e.g. Gym Creator, YouTube Vlogger, Food Storyteller)" value={F.tagline} onChange={e => upF('tagline', e.target.value)} placeholder="Expert in FoodCulture Storytelling | Building authentic brand identities across Bharat." />
+        <Fld label="Full Address (Real Address)" value={F.address} onChange={e => upF('address', e.target.value)} placeholder="123 Street Name, Neighborhood, District, Jaipur, Rajasthan, 302001" />
+        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr 1fr', gap: '24px' }}>
            <Fld label="Base City" value={F.city} onChange={e => upF('city', e.target.value)} placeholder="Jaipur" />
            <Fld label="State / Region" value={F.state} onChange={e => upF('state', e.target.value)} placeholder="Rajasthan" />
+           <Fld label="Connections / Reach count (e.g. 500+)" value={F.connections} onChange={e => upF('connections', e.target.value)} placeholder="500+ connections" />
         </div>
         
         <div style={{ marginTop: '24px', borderTop: '1px solid #e2e8f0', paddingTop: '24px' }}>
@@ -163,14 +166,17 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
        <h3 className="db-section-title">Step 2: Social Ecosystem & Gallery</h3>
        <p className="db-sub-text" style={{ marginBottom: 40 }}>Link your active social channels, add extra links, and showcase your visual gallery.</p>
        
-       <div className="form-stack">
-          {/* Primary Platforms */}
-          <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', marginBottom: 16, textTransform: 'uppercase' }}>Primary Platforms</p>
-          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px' }}>
-             <Fld label="Instagram Profile Handle" value={F.instagram} onChange={e => upF('instagram', e.target.value)} placeholder="@username" />
-             <Fld label="YouTube Channel Link" value={F.youtube} onChange={e => upF('youtube', e.target.value)} placeholder="https://youtube.com/c/..." />
-          </div>
-          <Fld label="Portfolio / Website URL" value={F.portfolio} onChange={e => upF('portfolio', e.target.value)} placeholder="https://mywork.com" />
+      <div className="form-stack">
+         {/* Primary Platforms */}
+         <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', marginBottom: 16, textTransform: 'uppercase' }}>Primary Platforms & Handles</p>
+         <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px' }}>
+            <Fld label="Instagram Profile Handle" value={F.instagram} onChange={e => upF('instagram', e.target.value)} placeholder="@username" />
+            <Fld label="YouTube Channel Link" value={F.youtube} onChange={e => upF('youtube', e.target.value)} placeholder="https://youtube.com/c/..." />
+            <Fld label="LinkedIn Profile URL" value={F.linkedin} onChange={e => upF('linkedin', e.target.value)} placeholder="https://linkedin.com/in/username" />
+            <Fld label="Twitter / X Profile URL" value={F.twitter} onChange={e => upF('twitter', e.target.value)} placeholder="https://twitter.com/username" />
+            <Fld label="Facebook Profile URL" value={F.facebook} onChange={e => upF('facebook', e.target.value)} placeholder="https://facebook.com/username" />
+         </div>
+         <Fld label="Portfolio / Website URL" value={F.portfolio} onChange={e => upF('portfolio', e.target.value)} placeholder="https://mywork.com" />
 
           {/* Additional Social Links — Subscription Gated */}
           <div style={{ marginTop: 32, borderTop: '1px solid #f1f5f9', paddingTop: 32 }}>
@@ -775,7 +781,9 @@ const getInitialFormState = (c) => {
   return {
     name: c?.name || '', bio: c?.bio || '', city: c?.city || '', state: c?.state || '',
     photo: c?.photo || '', instagram: c?.instagram || '', youtube: c?.youtube || '',
+    linkedin: c?.linkedin || '', twitter: c?.twitter || '', facebook: c?.facebook || '',
     rateMin: c?.rateMin || '', rateMax: c?.rateMax || '', portfolio: c?.portfolio || '',
+    address: c?.address || '', tagline: c?.tagline || '', connections: c?.connections || '500+',
     gallery: [c?.gallery?.[0]||'', c?.gallery?.[1]||'', c?.gallery?.[2]||'', c?.gallery?.[3]||''],
     storyP1: c?.full_story?.p1 || '', storyQuote: c?.full_story?.quote || '',
     storyP2: c?.full_story?.p2 || '', storyP3: c?.full_story?.p3 || '',
@@ -865,6 +873,8 @@ export default function ProfileBuilderPage() {
         ...c, name: F.name, bio: F.bio, city: F.city, state: F.state,
         instagram: F.instagram, youtube: F.youtube, rateMin: F.rateMin, rateMax: F.rateMax,
         portfolio: F.portfolio, gallery: filteredGallery,
+        address: F.address, tagline: F.tagline, connections: F.connections,
+        facebook: F.facebook, linkedin: F.linkedin, twitter: F.twitter,
         photo: F.photo || c.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(F.name || st.user.name)}`,
         fullStory: { p1: F.storyP1, quote: F.storyQuote, p2: F.storyP2, p3: F.storyP3 },
         awards: filteredAwards, collabs: filteredCollabs, milestones: filteredMilestones,
