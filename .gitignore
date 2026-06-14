@@ -44,6 +44,9 @@ creatorbharat-plan-n8n.json
 *.log
 *.kilocode 
 
+# Ignore AI Contexts
+.ai/
+
 *.sixth
 *.sixth
 *.sixth.*
