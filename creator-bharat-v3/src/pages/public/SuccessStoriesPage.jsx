@@ -126,100 +126,77 @@ export default function SuccessStoriesPage() {
       `}</style>
 
       {/* Premium Split Hero Section */}
-      <section style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', padding: mob ? '90px 20px 60px' : '130px 24px 100px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(255, 148, 49, 0.04), transparent 70%)' }} />
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #FF9431, #e2e8f0, #10B981)' }} />
+      <section style={{ 
+        background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', 
+        padding: mob ? '90px 20px 60px' : '130px 24px 100px', 
+        position: 'relative', 
+        overflow: 'hidden',
+        minHeight: mob ? 'auto' : '520px',
+        display: 'flex',
+        alignItems: 'center'
+      }}>
+        {/* Full-bleed background poster image (real humans, no text in image) */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/success_stories_hero.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: mob ? 'center' : 'right center',
+          opacity: mob ? 0.15 : 0.85,
+          zIndex: 0
+        }} />
+
+        {/* Gradient mask to transition background image to soft white on the left for text readability */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: mob 
+            ? 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.98) 100%)'
+            : 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 40%, rgba(255,255,255,0.65) 60%, rgba(255,255,255,0.1) 100%)',
+          zIndex: 1,
+          pointerEvents: 'none'
+        }} />
+
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #FF9431, #e2e8f0, #10B981)', zIndex: 3 }} />
         
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1 }}>
-          <div className="success-landing-grid">
-            {/* Left Column (55% width) */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start', width: '100%' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', background: 'rgba(255,148,49,0.08)', borderRadius: 100, marginBottom: '24px', border: '1px solid rgba(255, 148, 49, 0.2)' }}>
-                <span style={{ width: 6, height: 6, background: '#FF9431', borderRadius: '50%', boxShadow: '0 0 6px #FF9431' }} />
-                <span style={{ fontSize: '10px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px' }}>Ecosystem Impact Report</span>
-              </div>
-              <h1 style={{ fontSize: mob ? '36px' : '64px', fontWeight: 950, color: '#0f172a', margin: '0 0 24px 0', letterSpacing: '-0.04em', lineHeight: 1.05, textAlign: mob ? 'center' : 'left', fontFamily: "'Outfit', sans-serif" }}>
-                Stories of <br />
-                <span style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Growth & Impact.</span>
-              </h1>
-              <p style={{ fontSize: mob ? '14px' : '17px', color: '#475569', maxWidth: '540px', margin: '0 0 40px 0', fontWeight: 600, lineHeight: 1.6, textAlign: mob ? 'center' : 'left', fontFamily: "'Outfit', sans-serif" }}>
-                Real case studies from India's rising creator ecosystem. Explore verified brand campaigns, creator career boosts, and platform verification milestones.
-              </p>
-
-              {/* Dynamic Category Tab Switcher inside Hero */}
-              <div style={{
-                display: 'flex',
-                gap: '12px',
-                overflowX: 'auto',
-                width: '100%',
-                paddingBottom: '8px',
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none'
-              }}>
-                <button onClick={() => setActiveTab('all')} style={getTabStyle('all')}>
-                  🌟 All Stories
-                </button>
-                <button onClick={() => setActiveTab('brand')} style={getTabStyle('brand')}>
-                  💼 Brand Campaigns
-                </button>
-                <button onClick={() => setActiveTab('creator')} style={getTabStyle('creator')}>
-                  🚀 Creator Boost
-                </button>
-                <button onClick={() => setActiveTab('platform')} style={getTabStyle('platform')}>
-                  🇮🇳 Platform Node
-                </button>
-              </div>
+        {/* Content Overlay */}
+        <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%', padding: '0 24px', position: 'relative', zIndex: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start', maxWidth: mob ? '100%' : '600px' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', background: 'rgba(255,148,49,0.08)', borderRadius: 100, marginBottom: '24px', border: '1px solid rgba(255, 148, 49, 0.2)' }}>
+              <span style={{ width: 6, height: 6, background: '#FF9431', borderRadius: '50%', boxShadow: '0 0 6px #FF9431' }} />
+              <span style={{ fontSize: '10px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px' }}>Ecosystem Impact Report</span>
             </div>
+            <h1 style={{ fontSize: mob ? '36px' : '60px', fontWeight: 950, color: '#0f172a', margin: '0 0 24px 0', letterSpacing: '-0.04em', lineHeight: 1.05, textAlign: mob ? 'center' : 'left', fontFamily: "'Outfit', sans-serif" }}>
+              Stories of <br />
+              <span style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Growth & Impact.</span>
+            </h1>
+            <p style={{ fontSize: mob ? '14px' : '17px', color: '#475569', maxWidth: '540px', margin: '0 0 40px 0', fontWeight: 600, lineHeight: 1.6, textAlign: mob ? 'center' : 'left', fontFamily: "'Outfit', sans-serif" }}>
+              Real case studies from India's rising creator ecosystem. Explore verified brand campaigns, creator career boosts, and platform verification milestones.
+            </p>
 
-            {/* Right Column (45% width) */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              whileHover={{ y: -6 }}
-              style={{
-                background: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: 24,
-                padding: 12,
-                boxShadow: '0 20px 40px rgba(255, 148, 49, 0.05)',
-                position: 'relative',
-                overflow: 'hidden',
-                width: '100%'
-              }}
-            >
-              <div style={{
-                position: 'absolute', inset: 0,
-                background: 'radial-gradient(circle at 80% 20%, rgba(255, 148, 49, 0.05) 0%, transparent 60%)',
-                pointerEvents: 'none'
-              }} />
-              <div style={{
-                borderRadius: 16,
-                overflow: 'hidden',
-                position: 'relative',
-                paddingTop: '75%', // 4:3 Aspect Ratio
-                background: '#f8fafc'
-              }}>
-                <img
-                  src="/success_stories_hero.png"
-                  alt="Ecosystem Growth Collage"
-                  style={{
-                    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-                    objectFit: 'cover'
-                  }}
-                />
-              </div>
-              <div style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                marginTop: 12, padding: '0 8px'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff9431' }} className="animate-pulse" />
-                  <span style={{ fontSize: 11, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Verified Growth Index</span>
-                </div>
-                <span style={{ fontSize: 11, fontWeight: 700, color: '#10B981' }}>+42.8% Average ROI</span>
-              </div>
-            </motion.div>
+            {/* Dynamic Category Tab Switcher inside Hero */}
+            <div style={{
+              display: 'flex',
+              gap: '12px',
+              overflowX: 'auto',
+              width: '100%',
+              paddingBottom: '8px',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
+            }}>
+              <button onClick={() => setActiveTab('all')} style={getTabStyle('all')}>
+                🌟 All Stories
+              </button>
+              <button onClick={() => setActiveTab('brand')} style={getTabStyle('brand')}>
+                💼 Brand Campaigns
+              </button>
+              <button onClick={() => setActiveTab('creator')} style={getTabStyle('creator')}>
+                🚀 Creator Boost
+              </button>
+              <button onClick={() => setActiveTab('platform')} style={getTabStyle('platform')}>
+                🇮🇳 Platform Node
+              </button>
+            </div>
           </div>
         </div>
       </section>
