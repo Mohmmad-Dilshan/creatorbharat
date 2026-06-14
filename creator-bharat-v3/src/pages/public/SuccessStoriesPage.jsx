@@ -141,8 +141,8 @@ export default function SuccessStoriesPage() {
           inset: 0,
           backgroundImage: 'url(/success_stories_hero.png)',
           backgroundSize: 'cover',
-          backgroundPosition: mob ? 'center' : 'right center',
-          opacity: mob ? 0.15 : 0.85,
+          backgroundPosition: mob ? 'center' : 'right 15% center',
+          opacity: mob ? 0.25 : 0.95,
           zIndex: 0
         }} />
 
@@ -151,8 +151,8 @@ export default function SuccessStoriesPage() {
           position: 'absolute',
           inset: 0,
           background: mob 
-            ? 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.98) 100%)'
-            : 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 40%, rgba(255,255,255,0.65) 60%, rgba(255,255,255,0.1) 100%)',
+            ? 'linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%)'
+            : 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 30%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 70%)',
           zIndex: 1,
           pointerEvents: 'none'
         }} />
@@ -178,11 +178,9 @@ export default function SuccessStoriesPage() {
             <div style={{
               display: 'flex',
               gap: '12px',
-              overflowX: 'auto',
+              flexWrap: 'wrap',
               width: '100%',
-              paddingBottom: '8px',
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none'
+              paddingBottom: '8px'
             }}>
               <button onClick={() => setActiveTab('all')} style={getTabStyle('all')}>
                 🌟 All Stories
