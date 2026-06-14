@@ -141,7 +141,7 @@ export default function SuccessStoriesPage() {
           inset: 0,
           backgroundImage: 'url(/success_stories_hero.png)',
           backgroundSize: 'cover',
-          backgroundPosition: mob ? 'center' : 'right 15% center',
+          backgroundPosition: mob ? 'center' : '20% center',
           opacity: mob ? 0.25 : 0.95,
           zIndex: 0
         }} />
