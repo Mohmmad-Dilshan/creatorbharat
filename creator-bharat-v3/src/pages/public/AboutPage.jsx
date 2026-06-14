@@ -6,6 +6,7 @@ import Seo from '@/components/common/SEO';
 import { MapPin, Sparkles } from 'lucide-react';
 import { Btn, Bdg } from '@/components/common/Primitives';
 import { fetchCreators, fetchCampaigns, derivePlatformAnalytics } from '@/utils/platformService';
+import { TwitterIcon, LinkedinIcon, GithubIcon } from '@/components/icons/SocialIcons';
 
 // Extracted Feature Components
 import LiveAnalyticsPulse from '@/components/features/about/LiveAnalyticsPulse';
@@ -231,9 +232,9 @@ export default function AboutPage() {
 
           <div className="about-hero-grid" style={{ 
             display: 'grid', 
-            gridTemplateColumns: '1.2fr 0.8fr', 
-            gap: '80px', 
-            alignItems: 'end' 
+            gridTemplateColumns: '1.1fr 0.9fr', 
+            gap: '50px', 
+            alignItems: 'center'
           }}>
             <div>
               <motion.h1
@@ -241,43 +242,91 @@ export default function AboutPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
                 style={{ 
-                  fontSize: 'clamp(44px, 10vw, 110px)', 
+                  fontSize: 'clamp(40px, 6.5vw, 75px)', 
                   fontWeight: 950, 
                   color: '#fff', 
-                  lineHeight: 0.85, 
-                  letterSpacing: '-0.06em',
-                  marginBottom: '0'
+                  lineHeight: 1.0, 
+                  letterSpacing: '-0.05em',
+                  marginBottom: '24px',
+                  fontFamily: "'Outfit', sans-serif"
                 }}
               >
                 Building for the <br />
                 <span style={{ color: '#FF9431' }}>Next Billion.</span>
               </motion.h1>
-            </div>
-            
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              style={{ paddingBottom: '20px' }}
-            >
-              <p className="about-hero-paragraph" style={{ fontSize: '20px', color: 'rgba(255, 255, 255, 0.5)', lineHeight: 1.5, fontWeight: 500 }}>
-                Metros are saturated. Influence is migrating. We are the infrastructure for India's regional rising stars.
+              
+              <p className="about-hero-paragraph" style={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.65)', lineHeight: 1.6, fontWeight: 500, marginBottom: '40px', maxWidth: '560px' }}>
+                Metros are saturated. Influence is migrating. We are the infrastructure for India's regional rising stars, connecting brands directly to local voices.
               </p>
+
+              {/* Stats Snapshot */}
+              <div className="about-hero-stats" style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(2, 1fr)', 
+                gap: '32px',
+                marginBottom: '40px'
+              }}>
+                <StatBlock value={liveStats.districts} label="Districts Covered" delay={0.2} />
+                <StatBlock value="4.9/5" label="Creator Rating" delay={0.3} />
+                <StatBlock value={liveStats.reach} label="Aggregate Reach" delay={0.4} />
+                <StatBlock value="0%" label="Broker Fees" delay={0.5} />
+              </div>
+            </div>
+
+            {/* Premium 3D Poster Display */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+              style={{
+                position: 'relative',
+                borderRadius: '36px',
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
+                border: '1.5px solid rgba(255,255,255,0.08)',
+                padding: '16px',
+                boxShadow: '0 30px 60px rgba(0,0,0,0.4), inset 0 0 24px rgba(255,255,255,0.02)',
+                backdropFilter: 'blur(20px)',
+                overflow: 'hidden'
+              }}
+            >
+              {/* Saffron and Emerald neon ambient blurs */}
+              <div style={{ position: 'absolute', top: '10%', right: '10%', width: '120px', height: '120px', background: '#FF9431', opacity: 0.15, filter: 'blur(40px)', borderRadius: '50%', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', bottom: '10%', left: '10%', width: '120px', height: '120px', background: '#10B981', opacity: 0.15, filter: 'blur(40px)', borderRadius: '50%', pointerEvents: 'none' }} />
+              
+              <img 
+                src="/about_hero_network.png" 
+                alt="CreatorBharat 3D Network" 
+                style={{
+                  width: '100%',
+                  borderRadius: '24px',
+                  display: 'block',
+                  border: '1px solid rgba(255,255,255,0.05)',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
+                }}
+              />
+
+              {/* Monospace Telemetry Badges */}
+              <div style={{
+                position: 'absolute',
+                bottom: '32px',
+                left: '32px',
+                right: '32px',
+                background: 'rgba(10,10,10,0.85)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '18px',
+                padding: '12px 18px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                backdropFilter: 'blur(10px)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', boxShadow: '0 0 8px #10B981', display: 'inline-block' }} />
+                  <span style={{ fontSize: '11px', color: '#fff', fontFamily: 'monospace', fontWeight: 700, letterSpacing: '0.5px' }}>NET_SYNC_OK</span>
+                </div>
+                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace', fontWeight: 600 }}>v1.0_LIVE_NODES</span>
+              </div>
             </motion.div>
-          </div>
-
-          <div className="about-hero-divider" style={{ height: '1px', background: 'rgba(255,255,255,0.1)', margin: '80px 0' }} />
-
-          {/* Stats Snapshot */}
-          <div className="about-hero-stats" style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', 
-            gap: '60px' 
-          }}>
-            <StatBlock value={liveStats.districts} label="Districts Covered" delay={0.2} />
-            <StatBlock value="4.9/5" label="Creator Rating" delay={0.3} />
-            <StatBlock value={liveStats.reach} label="Aggregate Reach" delay={0.4} />
-            <StatBlock value="0%" label="Broker Fees" delay={0.5} />
           </div>
 
           <HeroBlueprint />
@@ -494,6 +543,101 @@ export default function AboutPage() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* FOUNDER & LEADERSHIP SECTION */}
+      <section style={{ padding: '90px 24px', background: '#f8fafc', borderRadius: '80px 80px 0 0' }}>
+         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+            <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+               <Bdg color="orange" sm>FOUNDER & VISION</Bdg>
+               <h2 style={{ fontSize: '56px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', marginTop: '16px' }}>Meet the Founder</h2>
+               <p style={{ fontSize: '18px', color: '#64748b', marginTop: '12px' }}>Empowering regional voices and leading the decentralized shift in the creator economy.</p>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+               <motion.div
+                 whileHover={{ y: -6 }}
+                 style={{
+                   background: '#fff',
+                   border: '1.5px solid #e2e8f0',
+                   borderRadius: '40px',
+                   padding: '48px 32px',
+                   maxWidth: '850px',
+                   width: '100%',
+                   boxShadow: '0 20px 45px rgba(0,0,0,0.03)',
+                   display: 'flex',
+                   flexDirection: 'row',
+                   flexWrap: 'wrap',
+                   gap: '40px',
+                   alignItems: 'center',
+                   position: 'relative',
+                   textAlign: 'left'
+                 }}
+               >
+                  {/* Glowing orange accent dot */}
+                  <div style={{ position: 'absolute', top: '24px', right: '24px', background: '#FF943115', color: '#FF9431', padding: '6px 14px', borderRadius: '100px', fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                     <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FF9431' }} /> VERIFIED FOUNDER
+                  </div>
+
+                  {/* Avatar Frame */}
+                  <div style={{ position: 'relative', flexShrink: 0, margin: '0 auto' }}>
+                     <div style={{
+                       width: '160px',
+                       height: '160px',
+                       borderRadius: '32px',
+                       overflow: 'hidden',
+                       border: '3px solid #fff',
+                       boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+                     }}>
+                        <img 
+                          src="https://ui-avatars.com/api/?name=Mohmmad+Dilshan&background=FF9431&color=fff&size=256" 
+                          alt="Mohmmad Dilshan" 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                     </div>
+                     <div style={{ position: 'absolute', bottom: '-10px', right: '-10px', background: '#0f172a', color: '#fff', padding: '6px 12px', borderRadius: '12px', fontSize: '11px', fontWeight: 800, border: '1px solid rgba(255,255,255,0.1)' }}>
+                        🇮🇳 Bhilwara
+                     </div>
+                  </div>
+
+                  {/* Profile Details */}
+                  <div style={{ flex: '1 1 300px' }}>
+                     <div style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px' }}>LEADERSHIP</div>
+                     <h3 style={{ fontSize: '30px', fontWeight: 950, color: '#0f172a', margin: '4px 0 8px 0', letterSpacing: '-0.02em' }}>Mohmmad Dilshan</h3>
+                     <div style={{ fontSize: '14px', fontWeight: 700, color: '#475569', marginBottom: '16px' }}>Founder & Chief Architect</div>
+                     
+                     <p style={{ fontSize: '15px', color: '#64748b', lineHeight: 1.7, fontWeight: 550, margin: '0 0 24px 0' }}>
+                        Democratizing the digital economy for the next billion users through decentralized intelligence, modular architecture, and zero-brokerage campaigns.
+                     </p>
+
+                     {/* Skill Tag Clusters */}
+                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '28px' }}>
+                        {['System Architecture', 'Product Strategy', 'Decentralized Networks', 'Escrow Ledgers'].map(skill => (
+                          <span key={skill} style={{ fontSize: '12px', fontWeight: 650, color: '#475569', background: '#f1f5f9', padding: '5px 12px', borderRadius: '8px' }}>
+                            {skill}
+                          </span>
+                        ))}
+                     </div>
+
+                     {/* Social Links Row */}
+                     <div style={{ display: 'flex', gap: '16px', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '20px' }}>
+                        <a href="https://linkedin.com/in/mohmmad-dilshan" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none', color: '#0f172a', fontSize: '13px', fontWeight: 800 }}>
+                           <LinkedinIcon size={16} /> LinkedIn
+                        </a>
+                        <a href="https://github.com/mohmmad-dilshan" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none', color: '#0f172a', fontSize: '13px', fontWeight: 800 }}>
+                           <GithubIcon size={16} /> GitHub
+                        </a>
+                        <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: 'auto', fontWeight: 650, fontFamily: 'monospace' }}>CONSENSUS_NODE_001</span>
+                     </div>
+                  </div>
+               </motion.div>
+            </div>
+
+            {/* Distributed Network Notice */}
+            <div style={{ textAlign: 'center', marginTop: '40px', color: '#64748b', fontSize: '13.5px', fontWeight: 550 }}>
+               🌍 Supported by a distributed network of regional core contributors and ambassadors across India.
+            </div>
+         </div>
       </section>
 
       {/* FINAL VISION CTA */}
