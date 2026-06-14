@@ -94,55 +94,10 @@ export const LEADERSHIP_TEAM = [
     },
     tag: "CONSENSUS_NODE_001",
     location: "Bhilwara"
-  },
-  {
-    name: "Sarah Jenkins",
-    role: "Chief Growth Officer",
-    image: "/team_sarah.jpg",
-    bio: "Scaling creator networks across emerging markets. Former Sequoia Portfolio growth lead and D2C marketing specialist.",
-    skills: ["Growth Hacking", "Brand Relations", "Market Expansion", "Campaign ROI"],
-    socials: {
-      linkedin: "https://linkedin.com",
-      twitter: "https://twitter.com"
-    },
-    tag: "CONSENSUS_NODE_002",
-    location: "Mumbai Hub"
-  },
-  {
-    name: "Amit Verma",
-    role: "VP of Engineering",
-    image: "/team_amit.jpg",
-    bio: "Architecting high-scale matching engines and secure escrow ledgers. Former Tech Lead at top Indian unicorn startups.",
-    skills: ["Escrow Systems", "Matching Engines", "System Security", "API Design"],
-    socials: {
-      linkedin: "https://linkedin.com",
-      github: "https://github.com"
-    },
-    tag: "CONSENSUS_NODE_003",
-    location: "Jaipur Hub"
   }
 ];
 
-export const ADVISORY_BOARD = [
-  {
-    name: "Rajesh Sharma",
-    role: "Strategic Advisor",
-    company: "Partner @ Accel India",
-    desc: "Advising on institutional scaling and venture strategy for regional marketplaces."
-  },
-  {
-    name: "Dr. Kavita Nair",
-    role: "Economic Policy Advisor",
-    company: "Ex-NITI Aayog Consultant",
-    desc: "Guiding micro-entrepreneurship models and digital literacy incentives in Tier 3 cities."
-  },
-  {
-    name: "Saurabh Gupta",
-    role: "Trust & Escrow Advisor",
-    company: "Founder @ FinTech Ledgers",
-    desc: "Overseeing security audits of campaign escrows and automated payout architectures."
-  }
-];
+export const ADVISORY_BOARD = [];
 
 export const PRESS_LOGOS = [
   { name: "YourStory", desc: "Featured in Top Regional Startups" },

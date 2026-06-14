@@ -658,87 +658,95 @@ export default function AboutPage() {
       <section style={{ padding: '100px 24px', background: '#f8fafc', borderRadius: '80px 80px 0 0', borderTop: '1px solid #e2e8f0' }}>
          <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-               <Bdg color="orange" sm>EXECUTIVE TEAM</Bdg>
-               <h2 className="section-heading" style={{ fontSize: mob ? '38px' : '56px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', marginTop: '16px' }}>Leadership & Advisory</h2>
-               <p style={{ fontSize: '18px', color: '#64748b', marginTop: '12px', maxWidth: '600px', margin: '12px auto 0' }}>The builders and strategists scaling Bharat's creator matchmaking and secure escrow infrastructure.</p>
+               <Bdg color="orange" sm>FOUNDER & VISION</Bdg>
+               <h2 className="section-heading" style={{ fontSize: mob ? '38px' : '56px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', marginTop: '16px' }}>Meet the Founder</h2>
+               <p style={{ fontSize: '18px', color: '#64748b', marginTop: '12px', maxWidth: '600px', margin: '12px auto 0' }}>Empowering regional voices and leading the decentralized shift in the creator economy.</p>
             </div>
 
-            {/* Leadership Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px', marginBottom: '80px' }}>
+            {/* Leadership - Centered Founder Card */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '40px' }}>
                {LEADERSHIP_TEAM.map((member) => (
                   <motion.div
                     key={member.name}
                     whileHover={{ y: -6 }}
+                    className="founder-card"
                     style={{
                       background: '#ffffff',
                       border: '1.5px solid #e2e8f0',
                       borderRadius: '40px',
-                      padding: '40px 32px',
-                      boxShadow: '0 20px 45px rgba(0,0,0,0.02)',
+                      padding: '48px 32px',
+                      maxWidth: '850px',
+                      width: '100%',
+                      boxShadow: '0 20px 45px rgba(0,0,0,0.03)',
                       display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'space-between',
-                      position: 'relative'
+                      flexDirection: 'row',
+                      flexWrap: 'wrap',
+                      gap: '40px',
+                      alignItems: 'center',
+                      position: 'relative',
+                      textAlign: 'left'
                     }}
                   >
-                     <div style={{ position: 'absolute', top: '24px', right: '24px', background: 'rgba(255, 148, 49, 0.08)', color: '#FF9431', padding: '4px 12px', borderRadius: '100px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-                        {member.tag}
+                     {/* Glowing verified badge */}
+                     <div className="founder-card-verified" style={{ position: 'absolute', top: '24px', right: '24px', background: '#FF943115', color: '#FF9431', padding: '6px 14px', borderRadius: '100px', fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FF9431' }} /> {member.tag}
                      </div>
 
-                     <div>
-                        {/* Avatar */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '24px' }}>
-                           <div style={{
-                             width: '90px',
-                             height: '90px',
-                             borderRadius: '24px',
-                             overflow: 'hidden',
-                             border: '2px solid #fff',
-                             boxShadow: '0 8px 20px rgba(0,0,0,0.06)'
-                           }}>
-                              <img 
-                                 src={member.image} 
-                                 alt={member.name} 
-                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                              />
-                           </div>
-                           <div>
-                              <h3 style={{ fontSize: '22px', fontWeight: 950, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>{member.name}</h3>
-                              <div style={{ fontSize: '13px', fontWeight: 800, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '4px' }}>{member.role}</div>
-                              <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, marginTop: '2px' }}>📍 {member.location}</div>
-                           </div>
+                     {/* Avatar Frame */}
+                     <div style={{ position: 'relative', flexShrink: 0, margin: '0 auto' }}>
+                        <div style={{
+                          width: '160px',
+                          height: '160px',
+                          borderRadius: '32px',
+                          overflow: 'hidden',
+                          border: '3px solid #fff',
+                          boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+                        }}>
+                           <img 
+                              src={member.image} 
+                              alt={member.name} 
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                           />
                         </div>
+                        <div style={{ position: 'absolute', bottom: '-10px', right: '-10px', background: '#0f172a', color: '#fff', padding: '6px 12px', borderRadius: '12px', fontSize: '11px', fontWeight: 800, border: '1px solid rgba(255,255,255,0.1)' }}>
+                           🇮🇳 {member.location}
+                        </div>
+                     </div>
 
-                        <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, margin: '0 0 24px 0', minHeight: '80px' }}>
+                     {/* Profile Details */}
+                     <div className="founder-info" style={{ flex: '1 1 300px' }}>
+                        <div style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px' }}>LEADERSHIP</div>
+                        <h3 style={{ fontSize: '30px', fontWeight: 950, color: '#0f172a', margin: '4px 0 8px 0', letterSpacing: '-0.02em' }}>{member.name}</h3>
+                        <div style={{ fontSize: '14px', fontWeight: 700, color: '#475569', marginBottom: '16px' }}>{member.role}</div>
+                        
+                        <p style={{ fontSize: '15px', color: '#64748b', lineHeight: 1.7, fontWeight: 550, margin: '0 0 24px 0' }}>
                            {member.bio}
                         </p>
-                     </div>
 
-                     <div>
-                        {/* Skills */}
-                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '24px' }}>
+                        {/* Skill Tag Clusters */}
+                        <div className="founder-skills" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '28px' }}>
                            {member.skills.map(skill => (
-                             <span key={skill} style={{ fontSize: '11px', fontWeight: 700, color: '#475569', background: '#f1f5f9', padding: '4px 10px', borderRadius: '6px' }}>
+                             <span key={skill} style={{ fontSize: '12px', fontWeight: 650, color: '#475569', background: '#f1f5f9', padding: '5px 12px', borderRadius: '8px' }}>
                                {skill}
                              </span>
                            ))}
                         </div>
 
-                        {/* Socials */}
-                        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>
+                        {/* Social Links Row */}
+                        <div className="founder-socials" style={{ display: 'flex', gap: '16px', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '20px' }}>
                            {member.socials.linkedin && (
-                             <a href={member.socials.linkedin} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', color: '#0f172a', fontSize: '12px', fontWeight: 805 }}>
-                                <LinkedinIcon size={14} /> LinkedIn
+                             <a href={member.socials.linkedin} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none', color: '#0f172a', fontSize: '13px', fontWeight: 800 }}>
+                                <LinkedinIcon size={16} /> LinkedIn
                              </a>
                            )}
                            {member.socials.github && (
-                             <a href={member.socials.github} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', color: '#0f172a', fontSize: '12px', fontWeight: 805 }}>
-                                <GithubIcon size={14} /> GitHub
+                             <a href={member.socials.github} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none', color: '#0f172a', fontSize: '13px', fontWeight: 800 }}>
+                                <GithubIcon size={16} /> GitHub
                              </a>
                            )}
                            {member.socials.twitter && (
-                             <a href={member.socials.twitter} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', color: '#0f172a', fontSize: '12px', fontWeight: 805 }}>
-                                <TwitterIcon size={14} /> Twitter
+                             <a href={member.socials.twitter} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none', color: '#0f172a', fontSize: '13px', fontWeight: 800 }}>
+                                <TwitterIcon size={16} /> Twitter
                              </a>
                            )}
                         </div>
@@ -748,33 +756,35 @@ export default function AboutPage() {
             </div>
 
             {/* Advisory Board Row */}
-            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '80px' }}>
-               <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-                  <Bdg color="emerald" sm>BOARD OF ADVISORS</Bdg>
-                  <h3 style={{ fontSize: mob ? '30px' : '40px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.03em', marginTop: '12px' }}>Strategic Advisors</h3>
-               </div>
+            {ADVISORY_BOARD && ADVISORY_BOARD.length > 0 && (
+               <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '80px' }}>
+                  <div style={{ textAlign: 'center', marginBottom: '50px' }}>
+                     <Bdg color="emerald" sm>BOARD OF ADVISORS</Bdg>
+                     <h3 style={{ fontSize: mob ? '30px' : '40px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.03em', marginTop: '12px' }}>Strategic Advisors</h3>
+                  </div>
 
-               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-                  {ADVISORY_BOARD.map((advisor) => (
-                     <div key={advisor.name} style={{ background: 'rgba(255,255,255,0.6)', border: '1px solid #e2e8f0', borderRadius: '30px', padding: '32px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 10px 30px rgba(0,0,0,0.01)' }}>
-                        <div>
-                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
-                              <div>
-                                 <h4 style={{ fontSize: '18px', fontWeight: 900, color: '#0f172a', margin: 0 }}>{advisor.name}</h4>
-                                 <div style={{ fontSize: '12px', color: '#FF9431', fontWeight: 800, marginTop: '2px' }}>{advisor.role}</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                     {ADVISORY_BOARD.map((advisor) => (
+                        <div key={advisor.name} style={{ background: 'rgba(255,255,255,0.6)', border: '1px solid #e2e8f0', borderRadius: '30px', padding: '32px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 10px 30px rgba(0,0,0,0.01)' }}>
+                           <div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
+                                 <div>
+                                    <h4 style={{ fontSize: '18px', fontWeight: 900, color: '#0f172a', margin: 0 }}>{advisor.name}</h4>
+                                    <div style={{ fontSize: '12px', color: '#FF9431', fontWeight: 800, marginTop: '2px' }}>{advisor.role}</div>
+                                 </div>
+                                 <span style={{ fontSize: '11px', fontWeight: 900, color: '#10B981', background: 'rgba(16,185,129,0.08)', padding: '4px 12px', borderRadius: '100px', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                                    {advisor.company}
+                                 </span>
                               </div>
-                              <span style={{ fontSize: '11px', fontWeight: 900, color: '#10B981', background: 'rgba(16,185,129,0.08)', padding: '4px 12px', borderRadius: '100px', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                                 {advisor.company}
-                              </span>
+                              <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, marginTop: '16px', marginBottom: 0 }}>
+                                 {advisor.desc}
+                              </p>
                            </div>
-                           <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, marginTop: '16px', marginBottom: 0 }}>
-                              {advisor.desc}
-                           </p>
                         </div>
-                     </div>
-                  ))}
+                     ))}
+                  </div>
                </div>
-            </div>
+            )}
 
             {/* Distributed Network Notice */}
             <div style={{ textAlign: 'center', marginTop: '50px', color: '#64748b', fontSize: '13.5px', fontWeight: 550 }}>
