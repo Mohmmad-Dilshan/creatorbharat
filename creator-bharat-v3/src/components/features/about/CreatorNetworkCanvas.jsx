@@ -317,16 +317,17 @@ export default function CreatorNetworkCanvas({ mob }) {
   }, [mob, navigate, hoveredCreator]);
 
   return (
-    <div ref={containerRef} style={{ position: 'relative', width: '100%', borderRadius: '32px', background: '#ffffff', border: '1.5px solid #e2e8f0', boxShadow: '0 25px 60px rgba(0,0,0,0.03)', overflow: 'hidden' }}>
+    <div ref={containerRef} style={{ position: 'relative', width: '100%', borderRadius: '32px', background: 'transparent', overflow: 'hidden' }}>
       
       {/* Top telemetry signal bar */}
       <div style={{
         padding: '12px 20px',
-        borderBottom: '1px solid #e2e8f0',
+        borderBottom: '1px solid rgba(226, 232, 240, 0.8)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        background: '#f8fafc',
+        background: 'rgba(248, 250, 252, 0.85)',
+        backdropFilter: 'blur(12px)',
         fontSize: '11px',
         fontWeight: 800,
         color: '#64748b'
@@ -346,7 +347,7 @@ export default function CreatorNetworkCanvas({ mob }) {
         style={{ 
           display: 'block', 
           cursor: hoveredCreator ? 'pointer' : 'default',
-          background: 'radial-gradient(circle at center, #ffffff 0%, #fcfcfc 100%)' 
+          background: 'transparent' 
         }} 
       />
 

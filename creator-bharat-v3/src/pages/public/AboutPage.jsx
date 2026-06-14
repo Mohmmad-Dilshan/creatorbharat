@@ -518,8 +518,28 @@ export default function AboutPage() {
                 <span style={{ fontSize: '9px', color: '#64748b', fontWeight: 700 }}>Avg Tier-2/3 Uplift</span>
               </motion.div>
 
-              <div style={{ position: 'relative', zIndex: 2 }}>
-                <CreatorNetworkCanvas mob={mob} />
+              <div style={{
+                position: 'relative',
+                zIndex: 2,
+                borderRadius: '32px',
+                overflow: 'hidden',
+                backgroundImage: 'url(/about_hero_model.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center 20%',
+                border: '1.5px solid #e2e8f0',
+                boxShadow: '0 25px 60px rgba(0,0,0,0.06)'
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.65) 100%)',
+                  backdropFilter: 'blur(1.5px)',
+                  zIndex: 1,
+                  pointerEvents: 'none'
+                }} />
+                <div style={{ position: 'relative', zIndex: 2 }}>
+                  <CreatorNetworkCanvas mob={mob} />
+                </div>
               </div>
             </motion.div>
           </div>
