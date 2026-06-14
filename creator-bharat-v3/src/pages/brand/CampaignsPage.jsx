@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import {
   Zap, Search, X, Heart, Bookmark, CheckCircle2, Globe, Users, MapPin, Layers, Calendar,
-  Target, Briefcase, TrendingUp, Award, Rocket, BarChart3, Lightbulb, CheckCircle, Star, Sparkles, Send, MessageSquare
+  Target, Briefcase, TrendingUp, Award, Rocket, BarChart3, Lightbulb, CheckCircle, Star, Sparkles, Send, MessageSquare, Lock,
+  ShieldCheck, ChevronRight
 } from 'lucide-react';
 
 import { useApp } from '../../core/context';
@@ -281,10 +282,46 @@ const EliteDealCard = ({ campaign, index, onApply, isMob, onDetails, isGuest, is
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-25, 25]);
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
+  const { st, dsp } = useApp();
+  const navigate = useNavigate();
+
+  const hasApplied = useMemo(() => {
+    return st.applied?.includes(campaign.id);
+  }, [st.applied, campaign.id]);
 
   const handleDragEnd = (_, info) => {
     if (info.offset.x > 100) onSwipe?.('right', campaign);
     else if (info.offset.x < -100) onSwipe?.('left', campaign);
+  };
+
+  const [isSaved, setIsSaved] = useState(() => {
+    const savedList = JSON.parse(localStorage.getItem('cb_saved_campaigns') || '[]');
+    return savedList.includes(campaign.id);
+  });
+
+  const handleSave = (e) => {
+    e.stopPropagation();
+    if (!st.user) {
+      dsp?.({ t: 'TOAST', d: { type: 'error', msg: 'Please login as a Creator to save campaigns.' } });
+      return navigate('/login');
+    }
+    if (st.role !== 'creator') {
+      dsp?.({ t: 'TOAST', d: { type: 'error', msg: 'Only Creators can save campaigns. Please login as a Creator.' } });
+      return;
+    }
+    
+    const savedList = JSON.parse(localStorage.getItem('cb_saved_campaigns') || '[]');
+    let newList;
+    if (isSaved) {
+      newList = savedList.filter(id => id !== campaign.id);
+      setIsSaved(false);
+      dsp?.({ t: 'TOAST', d: { type: 'success', msg: `Removed ${campaign.title} from bookmarks.` } });
+    } else {
+      newList = [...savedList, campaign.id];
+      setIsSaved(true);
+      dsp?.({ t: 'TOAST', d: { type: 'success', msg: `Saved ${campaign.title} to bookmarks.` } });
+    }
+    localStorage.setItem('cb_saved_campaigns', JSON.stringify(newList));
   };
 
   return (
@@ -306,41 +343,85 @@ const EliteDealCard = ({ campaign, index, onApply, isMob, onDetails, isGuest, is
       onMouseEnter={() => !isSwipe && setHovered(true)} onMouseLeave={() => !isSwipe && setHovered(false)}
       onClick={() => !isSwipe && onDetails(campaign)}
     >
-      <div style={{ position: 'relative', height: isMob ? '220px' : '280px', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', height: isMob ? '160px' : '280px', overflow: 'hidden' }}>
         <motion.img src={cover} animate={{ scale: hovered ? 1.1 : 1 }} transition={{ duration: 1.2 }} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(15, 23, 42, 0.4) 100%)' }} />
         
-        <div style={{ position: 'absolute', top: '20px', left: '20px', display: 'flex', gap: '8px' }}>
-           <div style={{ background: '#fff', color: THEME.dark, padding: '6px 14px', borderRadius: '100px', fontSize: '10px', fontWeight: 900, border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>{campaign.niche?.[0] || 'LIFESTYLE'}</div>
+        <div style={{ position: 'absolute', top: isMob ? '12px' : '20px', left: isMob ? '12px' : '20px', display: 'flex', gap: '8px' }}>
+           <div style={{ background: '#fff', color: THEME.dark, padding: '4px 10px', borderRadius: '100px', fontSize: '9px', fontWeight: 900, border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>{campaign.niche?.[0] || 'LIFESTYLE'}</div>
         </div>
       </div>
 
-      <div style={{ padding: isMob ? '24px' : '32px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-           <div style={{ width: '40px', height: '40px', background: '#f8fafc', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 950, fontSize: '18px', color: THEME.dark, border: '1px solid #e2e8f0' }}>{campaign.brand?.companyName?.[0] || 'B'}</div>
+      <div style={{ padding: isMob ? '16px' : '32px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: isMob ? '8px' : '12px', marginBottom: isMob ? '12px' : '16px' }}>
+           <div style={{ width: isMob ? '32px' : '40px', height: isMob ? '32px' : '40px', background: '#f8fafc', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 950, fontSize: isMob ? '14px' : '18px', color: THEME.dark, border: '1px solid #e2e8f0' }}>{campaign.brand?.companyName?.[0] || 'B'}</div>
            <div>
-              <div style={{ fontSize: '14px', fontWeight: 800, color: THEME.dark }}>{campaign.brand?.companyName || 'Elite Brand'}</div>
-              <div style={{ fontSize: isMob ? '10px' : '11px', color: '#10B981', fontWeight: 900, letterSpacing: '0.5px' }}>VERIFIED ADVERTISER</div>
+              <div style={{ fontSize: isMob ? '12px' : '14px', fontWeight: 800, color: THEME.dark }}>{campaign.brand?.companyName || 'Elite Brand'}</div>
+              <div style={{ fontSize: isMob ? '9px' : '11px', color: '#10B981', fontWeight: 900, letterSpacing: '0.5px' }}>VERIFIED ADVERTISER</div>
            </div>
         </div>
 
-        <h3 style={{ fontSize: isMob ? '18px' : '24px', fontWeight: 950, color: THEME.dark, lineHeight: 1.2, marginBottom: '24px', letterSpacing: '-0.02em' }}>{campaign.title}</h3>
+        <h3 style={{ fontSize: isMob ? '15px' : '24px', fontWeight: 950, color: THEME.dark, lineHeight: 1.2, marginBottom: isMob ? '12px' : '24px', letterSpacing: '-0.02em' }}>{campaign.title}</h3>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: isMob ? '10px' : '16px', marginBottom: '32px' }}>
-           <div style={{ background: '#f8fafc', padding: isMob ? '12px' : '16px', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
-             <div style={{ fontSize: '8px', color: '#94a3b8', fontWeight: 900, letterSpacing: '1px', marginBottom: '4px' }}>EST. PAYOUT</div>
-             <div style={{ fontSize: isMob ? '14px' : '18px', fontWeight: 950, color: THEME.dark }}>{fmt.inr(campaign.budgetMax)}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: isMob ? '8px' : '16px', marginBottom: isMob ? '16px' : '32px' }}>
+           <div style={{ background: '#f8fafc', padding: isMob ? '8px 12px' : '16px', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
+             <div style={{ fontSize: '8px', color: '#94a3b8', fontWeight: 900, letterSpacing: '1px', marginBottom: '2px' }}>EST. PAYOUT</div>
+             <div style={{ fontSize: isMob ? '12px' : '18px', fontWeight: 950, color: THEME.dark }}>{fmt.inr(campaign.budgetMax)}</div>
            </div>
-           <div style={{ background: '#f8fafc', padding: isMob ? '12px' : '16px', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
-             <div style={{ fontSize: '8px', color: '#94a3b8', fontWeight: 900, letterSpacing: '1px', marginBottom: '4px' }}>AVAILABILITY</div>
-             <div style={{ fontSize: isMob ? '14px' : '18px', fontWeight: 950, color: THEME.primary }}>{campaign.slots || 10} SLOTS</div>
+           <div style={{ background: '#f8fafc', padding: isMob ? '8px 12px' : '16px', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
+             <div style={{ fontSize: '8px', color: '#94a3b8', fontWeight: 900, letterSpacing: '1px', marginBottom: '2px' }}>AVAILABILITY</div>
+             <div style={{ fontSize: isMob ? '12px' : '18px', fontWeight: 950, color: THEME.primary }}>{campaign.slots || 10} SLOTS</div>
            </div>
         </div>
 
-        <div style={{ marginTop: 'auto', display: 'flex', gap: '12px' }}>
-           <Btn full lg onClick={(e) => { e.stopPropagation(); onApply(campaign); }} style={{ background: THEME.dark, color: '#fff', border: 'none', fontWeight: 950, flex: 1, borderRadius: '14px' }}>View Campaign</Btn>
-           <button style={{ width: '56px', height: '56px', borderRadius: '14px', border: '1px solid #e2e8f0', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', cursor: 'pointer' }}><Bookmark size={20} /></button>
-        </div>
+        {!isSwipe && (
+          <div style={{ marginTop: 'auto', display: 'flex', gap: '8px' }}>
+             <Btn 
+               full lg 
+               onClick={(e) => { e.stopPropagation(); if (!hasApplied) onApply(campaign); }} 
+               style={{ 
+                 background: hasApplied ? '#10B981' : THEME.dark, 
+                 color: '#fff', 
+                 border: 'none', 
+                 fontWeight: 950, 
+                 flex: 1, 
+                 borderRadius: isMob ? '10px' : '14px',
+                 fontSize: isMob ? '12px' : '14px', 
+                 height: isMob ? '44px' : '56px',
+                 padding: 0, 
+                 display: 'flex', 
+                 alignItems: 'center', 
+                 justifyContent: 'center',
+                 gap: '6px',
+                 cursor: hasApplied ? 'default' : 'pointer'
+               }}
+             >
+               {hasApplied ? (
+                 <>
+                   <CheckCircle size={isMob ? 14 : 16} />
+                   Applied
+                 </>
+               ) : (
+                 <>
+                   {st.role !== 'creator' && <Lock size={isMob ? 12 : 14} />}
+                   {(!st.user) ? 'Unlock to Apply' : (st.role !== 'creator' ? 'Creator Only' : 'Apply Now')}
+                 </>
+               )}
+             </Btn>
+             <button 
+               onClick={handleSave}
+               style={{ 
+                 width: isMob ? '44px' : '56px', height: isMob ? '44px' : '56px', 
+                 borderRadius: isMob ? '10px' : '14px', border: '1px solid #e2e8f0', 
+                 background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                 color: isSaved ? '#FF9431' : '#94a3b8', cursor: 'pointer',
+                 flexShrink: 0
+               }}
+             >
+               <Bookmark size={20} fill={isSaved ? '#FF9431' : 'none'} color={isSaved ? '#FF9431' : '#94a3b8'} />
+             </button>
+          </div>
+        )}
       </div>
     </motion.div>
   );
@@ -394,35 +475,61 @@ const FilterBar = ({ mob, cpf, dsp, viewMode, setViewMode }) => (
   </div>
 );
 
-const CampaignDetailsModal = ({ open, campaign, onClose, onApply, isMob, isGuest }) => (
-  <Modal open={open} title='Campaign Intelligence' onClose={onClose} width={800}>
-    {campaign && (
-      <div style={{ display: 'flex', flexDirection: isMob ? 'column' : 'row', gap: '40px', padding: '20px' }}>
-        <div style={{ flex: 1 }}>
-           <img src={COVERS[0]} alt="Campaign Cover" style={{ width: '100%', height: '200px', borderRadius: '24px', objectFit: 'cover', marginBottom: '24px' }} />
-           <div style={{ display: 'flex', gap: '16px', marginBottom: '32px' }}>
-              <div style={{ flex: 1, background: '#f8fafc', padding: '16px', borderRadius: '20px', textAlign: 'center' }}><Users size={20} color={THEME.blue} style={{ marginBottom: '8px' }} /><div style={{ fontSize: '10px', opacity: 0.5 }}>TARGET</div><div style={{ fontWeight: 950 }}>18-35</div></div>
-              <div style={{ flex: 1, background: '#f8fafc', padding: '16px', borderRadius: '20px', textAlign: 'center' }}><MapPin size={20} color={THEME.primary} style={{ marginBottom: '8px' }} /><div style={{ fontSize: '10px', opacity: 0.5 }}>REGION</div><div style={{ fontWeight: 950 }}>India</div></div>
-              <div style={{ flex: 1, background: '#f8fafc', padding: '16px', borderRadius: '20px', textAlign: 'center' }}><Layers size={20} color={THEME.success} style={{ marginBottom: '8px' }} /><div style={{ fontSize: '10px', opacity: 0.5 }}>NICHE</div><div style={{ fontWeight: 950 }}>Tech</div></div>
-           </div>
-           <h3 style={{ fontSize: '24px', fontWeight: 950, marginBottom: '16px' }}>Campaign Brief</h3>
-           <p style={{ color: '#64748b', lineHeight: 1.8, fontSize: '15px' }}>{campaign.title}. The brand is looking for authentic storytelling. Submission deadline is strict. Ensure high-quality lighting and clear audio for video deliverables.</p>
+const CampaignDetailsModal = ({ open, campaign, onClose, onApply, isMob }) => {
+  const { st } = useApp();
+  return (
+    <Modal open={open} title='Campaign Intelligence' onClose={onClose} width={800}>
+      {campaign && (
+        <div style={{ display: 'flex', flexDirection: isMob ? 'column' : 'row', gap: '40px', padding: '20px' }}>
+          <div style={{ flex: 1 }}>
+             <img src={COVERS[0]} alt="Campaign Cover" style={{ width: '100%', height: '200px', borderRadius: '24px', objectFit: 'cover', marginBottom: '24px' }} />
+             <div style={{ display: 'flex', gap: '16px', marginBottom: '32px' }}>
+                <div style={{ flex: 1, background: '#f8fafc', padding: '16px', borderRadius: '20px', textAlign: 'center' }}><Users size={20} color={THEME.blue} style={{ marginBottom: '8px' }} /><div style={{ fontSize: '10px', opacity: 0.5 }}>TARGET</div><div style={{ fontWeight: 950 }}>18-35</div></div>
+                <div style={{ flex: 1, background: '#f8fafc', padding: '16px', borderRadius: '20px', textAlign: 'center' }}><MapPin size={20} color={THEME.primary} style={{ marginBottom: '8px' }} /><div style={{ fontSize: '10px', opacity: 0.5 }}>REGION</div><div style={{ fontWeight: 950 }}>India</div></div>
+                <div style={{ flex: 1, background: '#f8fafc', padding: '16px', borderRadius: '20px', textAlign: 'center' }}><Layers size={20} color={THEME.success} style={{ marginBottom: '8px' }} /><div style={{ fontSize: '10px', opacity: 0.5 }}>NICHE</div><div style={{ fontWeight: 950 }}>Tech</div></div>
+             </div>
+             <h3 style={{ fontSize: '24px', fontWeight: 950, marginBottom: '16px' }}>Campaign Brief</h3>
+             <p style={{ color: '#64748b', lineHeight: 1.8, fontSize: '15px' }}>{campaign.title}. The brand is looking for authentic storytelling. Submission deadline is strict. Ensure high-quality lighting and clear audio for video deliverables.</p>
+          </div>
+          <div style={{ flex: 0.6, background: '#f8fafc', borderRadius: '24px', padding: '32px', border: '1px solid #f1f5f9' }}>
+             <h4 style={{ fontWeight: 950, fontSize: '18px', marginBottom: '24px' }}>Deliverables</h4>
+             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><div style={{ width: '8px', height: '8px', background: THEME.primary, borderRadius: '50%' }} /> <div style={{ fontSize: '14px', fontWeight: 700 }}>1x Instagram Reel</div></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><div style={{ width: '8px', height: '8px', background: THEME.primary, borderRadius: '50%' }} /> <div style={{ fontSize: '14px', fontWeight: 700 }}>2x Story Sets</div></div>
+             </div>
+             <div style={{ height: '1px', background: '#e2e8f0', margin: '32px 0' }} />
+             <h4 style={{ fontWeight: 950, fontSize: '18px', marginBottom: '24px' }}>Timeline</h4>
+             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}><Calendar size={16} color={THEME.primary} /> <span style={{ fontSize: '14px', fontWeight: 700 }}>Starts: Next Week</span></div>
+             <Btn 
+               full lg 
+               style={{ 
+                 marginTop: '40px', 
+                 background: st.applied?.includes(campaign.id) ? '#10B981' : THEME.dark,
+                 display: 'flex',
+                 alignItems: 'center',
+                 justifyContent: 'center',
+                 gap: '6px'
+               }} 
+               onClick={() => { if (!st.applied?.includes(campaign.id)) onApply(campaign); }}
+             >
+               {st.applied?.includes(campaign.id) ? (
+                 <>
+                   <CheckCircle size={isMob ? 14 : 16} />
+                   Applied
+                 </>
+               ) : (
+                 <>
+                   {st.role !== 'creator' && <Lock size={16} />}
+                   {(!st.user) ? 'Unlock to Apply' : (st.role !== 'creator' ? 'Creator Only' : 'Apply Now')}
+                 </>
+               )}
+             </Btn>
+          </div>
         </div>
-        <div style={{ flex: 0.6, background: '#f8fafc', borderRadius: '24px', padding: '32px', border: '1px solid #f1f5f9' }}>
-           <h4 style={{ fontWeight: 950, fontSize: '18px', marginBottom: '24px' }}>Deliverables</h4>
-           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><div style={{ width: '8px', height: '8px', background: THEME.primary, borderRadius: '50%' }} /> <div style={{ fontSize: '14px', fontWeight: 700 }}>1x Instagram Reel</div></div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><div style={{ width: '8px', height: '8px', background: THEME.primary, borderRadius: '50%' }} /> <div style={{ fontSize: '14px', fontWeight: 700 }}>2x Story Sets</div></div>
-           </div>
-           <div style={{ height: '1px', background: '#e2e8f0', margin: '32px 0' }} />
-           <h4 style={{ fontWeight: 950, fontSize: '18px', marginBottom: '24px' }}>Timeline</h4>
-           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}><Calendar size={16} color={THEME.primary} /> <span style={{ fontSize: '14px', fontWeight: 700 }}>Starts: Next Week</span></div>
-           <Btn full lg style={{ marginTop: '40px' }} onClick={() => onApply(campaign)}>{isGuest ? 'Unlock to Apply' : 'Apply Now'}</Btn>
-        </div>
-      </div>
-    )}
-  </Modal>
-);
+      )}
+    </Modal>
+  );
+};
 
 const CampaignApplyModal = ({ open, isDone, onClose, form, setForm, onSubmit, mob }) => (
   <Modal open={open} title='Submit Pitch' onClose={onClose} width={650}>
@@ -463,14 +570,14 @@ const DiscoveryGridView = ({ mob, loading, filtered, isGuest, onApply, setDetail
 );
 
 const DiscoverySwipeView = ({ mob, filtered, swipeIdx, setSwipeIdx, onApply, setDetailsModal, isGuest }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: mob ? '20px 0' : '40px 0' }}>
-     <div style={{ position: 'relative', width: mob ? '100%' : '500px', height: '700px' }}>
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: mob ? '10px 0' : '40px 0' }}>
+     <div style={{ position: 'relative', width: mob ? '100%' : '500px', height: mob ? '380px' : '500px' }}>
         <AnimatePresence>
           {filtered.length > 0 && swipeIdx < filtered.length ? (
             filtered.slice(swipeIdx, swipeIdx + 2).reverse().map((it, idx) => (
               <motion.div 
                 key={it.id} 
-                style={{ position: 'absolute', width: '100%', height: '100%', zIndex: idx === 0 ? 2 : 1 }} 
+                style={{ position: 'absolute', width: '100%', height: '100%', zIndex: idx === 1 ? 2 : 1 }} 
                 initial={{ scale: 0.9, opacity: 0 }} 
                 animate={{ scale: idx === 1 ? 1 : 0.95, opacity: 1, y: idx === 1 ? 0 : 20 }}
                 exit={{ x: 500, opacity: 0, rotate: 45 }}
@@ -483,7 +590,7 @@ const DiscoverySwipeView = ({ mob, filtered, swipeIdx, setSwipeIdx, onApply, set
                   onApply={onApply} 
                   isMob={mob} 
                   onDetails={setDetailsModal} 
-                  isSwipe={idx === 1}
+                  isSwipe={true}
                   onSwipe={(dir) => {
                     if (dir === 'right') onApply(it);
                     setSwipeIdx(p => p + 1);
@@ -500,18 +607,18 @@ const DiscoverySwipeView = ({ mob, filtered, swipeIdx, setSwipeIdx, onApply, set
      </div>
      
      {filtered.length > 0 && swipeIdx < filtered.length && (
-       <div style={{ display: 'flex', gap: '32px', marginTop: '60px' }}>
+       <div style={{ display: 'flex', gap: mob ? '20px' : '32px', marginTop: mob ? '16px' : '32px' }}>
           <button 
             onClick={() => setSwipeIdx(p => p + 1)}
-            style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#fff', border: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', cursor: 'pointer' }}
+            style={{ width: mob ? '56px' : '80px', height: mob ? '56px' : '80px', borderRadius: '50%', background: '#fff', border: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', cursor: 'pointer' }}
           >
-            <X size={32} color={THEME.textSec} />
+            <X size={mob ? 22 : 32} color={THEME.textSec} />
           </button>
           <button 
             onClick={() => onApply(filtered[swipeIdx])}
-            style={{ width: '80px', height: '80px', borderRadius: '50%', background: THEME.primary, border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px rgba(255,148,49,0.2)', cursor: 'pointer' }}
+            style={{ width: mob ? '56px' : '80px', height: mob ? '56px' : '80px', borderRadius: '50%', background: THEME.primary, border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px rgba(255,148,49,0.2)', cursor: 'pointer' }}
           >
-            <Heart size={32} color='#fff' fill='#fff' />
+            <Heart size={mob ? 22 : 32} color='#fff' fill='#fff' />
           </button>
        </div>
      )}
@@ -560,12 +667,23 @@ export default function CampaignsPage() {
   }, [data, cpf.q, cpf.niche]);
 
   const onApply = (it) => {
-    if (isGuest) return navigate('/login');
+    if (!st.user) {
+      dsp?.({ t: 'TOAST', d: { type: 'error', msg: 'Please login as a Creator to apply.' } });
+      return navigate('/login');
+    }
+    if (st.role !== 'creator') {
+      dsp?.({ t: 'TOAST', d: { type: 'error', msg: 'Only Creators can apply to campaigns. Please login as a Creator.' } });
+      return;
+    }
     setApplyModal(it); setDetailsModal(null); setIsDone(false); setForm({ pitch: '', portfolio: '', rate: '' });
   };
 
   const onSubmit = (target) => {
     if (!user) return navigate('/login');
+    if (st.role !== 'creator') {
+      dsp?.({ t: 'TOAST', d: { type: 'error', msg: 'Only Creators can submit pitches.' } });
+      return;
+    }
     const campaign = target || applyModal;
     const newApp = {
       id: `app-${Date.now()}`,
@@ -592,70 +710,368 @@ export default function CampaignsPage() {
 
   return (
     <div style={{ background: THEME.bg, minHeight: '100vh', width: '100%', overflowX: 'hidden', color: THEME.text }}>
-      <div style={{ position: 'relative', width: '100%' }}>
-        <EliteHeader light compact={true} bgImage="https://images.unsplash.com/photo-1531538606174-0f90ff5dce83?auto=format&fit=crop&q=80&w=1600" maxWidth={1200} title={
-          <div style={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: mob ? 'center' : 'flex-start', 
-            maxWidth: mob ? '100%' : '600px', 
+      {/* ═══════════════════════════════════════════════
+          WORLD-CLASS CINEMATIC CAMPAIGNS HERO
+      ═══════════════════════════════════════════════ */}
+      <section style={{
+        position: 'relative',
+        minHeight: mob ? 'auto' : '620px',
+        display: 'flex',
+        alignItems: 'center',
+        overflow: 'hidden',
+        background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
+        borderBottom: '1px solid #e2e8f0',
+        padding: mob ? '100px 20px 60px' : '140px 24px 90px',
+        width: '100%',
+        boxSizing: 'border-box',
+      }}>
+
+        {/* ── Full-bleed brand marketing background on right ── */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/brand_landing_hero.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: mob ? 'center top' : 'right center',
+          opacity: mob ? 0.15 : 0.9,
+          zIndex: 0,
+        }} />
+
+        {/* ── White → transparent gradient mask (left to right) ── */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: mob
+            ? 'linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.97) 100%)'
+            : 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.98) 30%, rgba(255,255,255,0.6) 58%, rgba(255,255,255,0) 80%)',
+          zIndex: 1,
+          pointerEvents: 'none',
+        }} />
+
+        {/* ── Top accent stripe (Tricolor) ── */}
+        <div style={{
+          position: 'absolute',
+          top: 0, left: 0, right: 0,
+          height: '4px',
+          background: 'linear-gradient(90deg, #FF9431 0%, #ffffff 50%, #128807 100%)',
+          zIndex: 10,
+        }} />
+
+        {/* ── Content Layer ── */}
+        <div style={{
+          maxWidth: '1280px',
+          margin: '0 auto',
+          width: '100%',
+          padding: mob ? '0 4px' : '0 24px',
+          position: 'relative',
+          zIndex: 5,
+          boxSizing: 'border-box',
+        }}>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: mob ? 'center' : 'flex-start',
+            maxWidth: mob ? '100%' : '640px',
             textAlign: mob ? 'center' : 'left',
-            boxSizing: 'border-box'
           }}>
-            {/* Left side text contents */}
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '16px', background: 'rgba(255, 148, 49, 0.06)', border: '1.5px solid rgba(255, 148, 49, 0.12)', padding: '8px 16px', borderRadius: '100px' }}>
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '4px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981' }} />
+
+            {/* Live badge */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '10px',
+                padding: '8px 20px',
+                background: 'rgba(255,148,49,0.06)',
+                border: '1.5px solid rgba(255,148,49,0.15)',
+                borderRadius: '100px',
+                marginBottom: '28px',
+              }}
+            >
+              <span style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', display: 'block' }} />
                 <span className="pulsing-glow" style={{
                   position: 'absolute',
-                  width: '16px',
-                  height: '16px',
+                  inset: '-4px',
                   borderRadius: '50%',
                   border: '2px solid #10B981',
-                  opacity: 0.6
+                  opacity: 0.5,
                 }} />
-              </div>
-              <div style={{ fontSize: '11px', fontWeight: 950, color: THEME.primary, letterSpacing: '4px' }}>LIVE INTELLIGENCE HUB</div>
+              </span>
+              <span style={{ fontSize: '11px', fontWeight: 950, color: '#FF9431', letterSpacing: '3px', textTransform: 'uppercase' }}>
+                Live Opportunities Hub
+              </span>
             </motion.div>
-            
-            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ fontSize: mob ? '40px' : '72px', fontWeight: 950, color: THEME.dark, letterSpacing: '-0.05em', lineHeight: 0.95, marginBottom: '24px', fontFamily: "'Outfit', sans-serif" }}>
+
+            {/* Main Headline */}
+            <motion.h1
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              style={{
+                fontSize: mob ? '40px' : '74px',
+                fontWeight: 950,
+                color: '#0f172a',
+                letterSpacing: '-0.05em',
+                lineHeight: 0.94,
+                marginBottom: '28px',
+                fontFamily: "'Outfit', sans-serif",
+              }}
+            >
               Campaign <br />
               <span style={{
                 background: 'linear-gradient(135deg, #FF9431 0%, #ff6b00 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                position: 'relative'
               }}>
                 Marketplace.
-                <span style={{
-                  position: 'absolute',
-                  bottom: '4px',
-                  left: 0,
-                  width: '100%',
-                  height: '8px',
-                  background: 'rgba(255, 148, 49, 0.15)',
-                  borderRadius: '4px',
-                  zIndex: -1
-                }} />
               </span>
             </motion.h1>
 
-            <p style={{ marginTop: '24px', color: THEME.textSec, fontSize: mob ? '15px' : '18px', fontWeight: 550, maxWidth: mob ? '100%' : '560px', margin: '24px 0 32px', lineHeight: 1.6, letterSpacing: '0.01em' }}>
-              The definitive gateway to premium influencer commerce. Access <span style={{ color: THEME.dark, fontWeight: 800 }}>high-ticket collaborations</span>, verified brand deals, and secure escrow contracts with zero middleman agent fees.
-            </p>
-            
-            <div style={{ display: 'flex', justifyContent: mob ? 'center' : 'flex-start', gap: '12px', flexDirection: mob ? 'column' : 'row', width: mob ? '100%' : 'auto' }}>
-              <Btn lg onClick={() => navigate('/brand-register')} style={{ background: THEME.primary, color: '#fff', padding: '16px 28px', borderRadius: '14px', fontWeight: 950, fontSize: '15px', width: mob ? '100%' : 'auto', boxShadow: '0 16px 32px rgba(255,148,49,0.18)' }}>
-                Create Campaign
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              style={{
+                fontSize: mob ? '15px' : '18px',
+                color: '#475569',
+                maxWidth: '560px',
+                marginBottom: '40px',
+                fontWeight: 600,
+                lineHeight: 1.65,
+                letterSpacing: '0.01em',
+              }}
+            >
+              The gateway to premium influencer commerce. Access <span style={{ color: '#0f172a', fontWeight: 800 }}>high-ticket collaborations</span>, verified brand deals, and secure escrow contracts with zero middleman fees.
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              style={{
+                display: 'flex',
+                gap: '14px',
+                flexDirection: mob ? 'column' : 'row',
+                width: mob ? '100%' : 'auto',
+                marginBottom: '48px',
+              }}
+            >
+              <Btn
+                lg
+                onClick={() => navigate('/brand-register')}
+                style={{
+                  background: '#FF9431',
+                  color: '#fff',
+                  padding: '16px 32px',
+                  borderRadius: '14px',
+                  fontWeight: 950,
+                  fontSize: '15px',
+                  width: mob ? '100%' : 'auto',
+                  boxShadow: '0 16px 36px rgba(255,148,49,0.18)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                }}
+              >
+                Create Campaign <ChevronRight size={18} />
               </Btn>
-              <Btn lg onClick={() => navigate('/creators')} style={{ background: '#fff', color: THEME.dark, padding: '16px 28px', borderRadius: '14px', border: '1px solid #e2e8f0', fontWeight: 950, fontSize: '15px', width: mob ? '100%' : 'auto' }}>
+              <Btn
+                lg
+                onClick={() => navigate('/creators')}
+                style={{
+                  background: '#fff',
+                  color: '#0f172a',
+                  padding: '16px 32px',
+                  borderRadius: '14px',
+                  border: '1.5px solid #e2e8f0',
+                  fontWeight: 950,
+                  fontSize: '15px',
+                  width: mob ? '100%' : 'auto',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
                 Explore Creators
               </Btn>
-            </div>
+            </motion.div>
+
+            {/* Trust Badge Row */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.45 }}
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '12px',
+                justifyContent: mob ? 'center' : 'flex-start',
+              }}
+            >
+              {[
+                { icon: <ShieldCheck size={14} />, label: 'Escrow Secured', color: '#10B981' },
+                { icon: <Zap size={14} />, label: 'Direct Apply', color: '#FF9431' },
+                { icon: <CheckCircle size={14} />, label: 'Verified Brands', color: '#3B82F6' },
+                { icon: <Sparkles size={14} />, label: 'Zero Agent Fees', color: '#8B5CF6' },
+              ].map(b => (
+                <div key={b.label} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '7px 14px',
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '100px',
+                  fontSize: '12px',
+                  fontWeight: 800,
+                  color: '#475569',
+                }}>
+                  <span style={{ color: b.color }}>{b.icon}</span>
+                  {b.label}
+                </div>
+              ))}
+            </motion.div>
           </div>
-        } />
-        <CampaignsFloatingIcons mob={mob} />
-      </div>
+        </div>
+
+        {/* ── Floating live stat cards (desktop only) ── */}
+        {!mob ? (
+          <>
+            {/* Top-right floating card: Active Deals */}
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5, duration: 0.7 }}
+              style={{
+                position: 'absolute',
+                top: '100px',
+                right: '80px',
+                zIndex: 8,
+                background: '#0f172a',
+                borderRadius: '20px',
+                padding: '18px 24px',
+                boxShadow: '0 24px 48px rgba(15,23,42,0.2)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                minWidth: '220px',
+              }}
+            >
+              <div style={{ fontSize: '10px', fontWeight: 900, color: '#FF9431', letterSpacing: '2px', marginBottom: '8px', textTransform: 'uppercase' }}>Live Collaborations</div>
+              <div style={{ fontSize: '32px', fontWeight: 950, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1 }}>1.2K+</div>
+              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, marginTop: '6px' }}>Active Brand Campaigns</div>
+              <div style={{ display: 'flex', gap: '4px', marginTop: '12px' }}>
+                {COVERS.map((cover, i) => (
+                  <div key={cover} style={{
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '50%',
+                    border: '2px solid #0f172a',
+                    marginLeft: i > 0 ? '-10px' : 0,
+                    backgroundImage: `url(${cover})`,
+                    backgroundSize: 'cover',
+                  }} />
+                ))}
+                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#FF9431', border: '2px solid #0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: '-10px', fontSize: '9px', fontWeight: 900, color: '#fff' }}>+45</div>
+              </div>
+            </motion.div>
+
+            {/* Mid-right floating card: Escrow Active */}
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+              style={{
+                position: 'absolute',
+                top: '310px',
+                right: '48px',
+                zIndex: 8,
+                background: '#fff',
+                borderRadius: '20px',
+                padding: '16px 22px',
+                boxShadow: '0 20px 40px rgba(15,23,42,0.08)',
+                border: '1px solid #e2e8f0',
+                minWidth: '200px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(16,185,129,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ShieldCheck size={16} color="#10B981" />
+                </div>
+                <span style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>Escrow Guarantee</span>
+              </div>
+              <div style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.03em' }}>₹15 Lakhs+</div>
+              <div style={{ fontSize: '11px', color: '#10B981', fontWeight: 800, marginTop: '4px' }}>100% Payout Protection</div>
+            </motion.div>
+
+            {/* Bottom-right floating card: Avg Payout */}
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut', delay: 1 }}
+              style={{
+                position: 'absolute',
+                bottom: '60px',
+                right: '140px',
+                zIndex: 8,
+                background: 'rgba(255,148,49,0.95)',
+                borderRadius: '16px',
+                padding: '14px 20px',
+                boxShadow: '0 16px 36px rgba(255,148,49,0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+              }}
+            >
+              <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Sparkles size={18} color="#fff" />
+              </div>
+              <div>
+                <div style={{ fontSize: '11px', fontWeight: 900, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase', letterSpacing: '1px' }}>Avg Creator Payout</div>
+                <div style={{ fontSize: '20px', fontWeight: 950, color: '#fff', letterSpacing: '-0.02em' }}>₹45K per Deal</div>
+              </div>
+            </motion.div>
+          </>
+        ) : (
+          /* Mobile only: Glassmorphic Campaign Ticket */
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '32px' }}>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              style={{
+                background: 'rgba(255, 255, 255, 0.85)',
+                backdropFilter: 'blur(16px)',
+                border: '1.5px solid rgba(255, 255, 255, 0.5)',
+                borderRadius: '24px',
+                padding: '16px',
+                width: '100%',
+                maxWidth: '340px',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.05)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '14px',
+                textAlign: 'left',
+              }}
+            >
+              <div style={{ position: 'relative', width: '56px', height: '56px', borderRadius: '14px', overflow: 'hidden' }}>
+                <img src={COVERS[1]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }} />
+                  <span style={{ fontSize: '9px', fontWeight: 900, color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Verified Campaign</span>
+                </div>
+                <div style={{ fontSize: '13px', fontWeight: 950, color: '#0f172a', lineHeight: 1.25, marginBottom: '2px' }}>boAt Airdopes 500 Launch</div>
+                <div style={{ fontSize: '11px', fontWeight: 850, color: '#FF9431' }}>Payout: ₹1,00,000</div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </section>
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
         <MarketplaceStats isMob={mob} />
