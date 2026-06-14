@@ -50,34 +50,168 @@ export function GalleryHeader({ stats }) {
               </p>
             </div>
 
-            {/* Stats row inside left block */}
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.75)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid #e2e8f0',
-              borderRadius: 20,
-              padding: '20px',
-              boxShadow: '0 10px 30px rgba(15, 23, 42, 0.03)'
-            }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, textAlign: 'center' }}>
+            {/* Stats row inside left block (featuring premium 3D glassmorphic elements) */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', sm: 'repeat(4, 1fr)', gap: 16 }}>
+              {/* Stat Card 1: Media Nodes */}
+              <motion.div 
+                whileHover={{ y: -4, scale: 1.02 }}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.8)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: 16,
+                  padding: '16px',
+                  boxShadow: '0 10px 20px rgba(15, 23, 42, 0.02)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 12,
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}
+              >
+                {/* 3D Glass Sphere Background Element */}
+                <div style={{
+                  position: 'absolute', top: -15, right: -15, width: 50, height: 50, borderRadius: '50%',
+                  background: 'radial-gradient(circle at 30% 30%, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.02) 75%)',
+                  boxShadow: 'inset -2px -2px 6px rgba(255,255,255,0.8), inset 2px 2px 6px rgba(0,0,0,0.05)'
+                }} />
+                
+                {/* Icon Container with 3D shadow */}
+                <div style={{
+                  width: 36, height: 36, borderRadius: 10,
+                  background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 4px 10px rgba(15, 23, 42, 0.2), inset 0 2px 4px rgba(255,255,255,0.2)'
+                }}>
+                  <Camera size={16} color="#fff" />
+                </div>
+                
                 <div>
-                  <div style={{ fontSize: 22, fontWeight: 900, color: '#0f172a', fontFamily: '"Outfit", sans-serif' }}>{stats.totalItems}</div>
-                  <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600, marginTop: 2 }}>Media Nodes</div>
+                  <div style={{ fontSize: 24, fontWeight: 900, color: '#0f172a', fontFamily: '"Outfit", sans-serif', lineHeight: 1 }}>{stats.totalItems}</div>
+                  <div style={{ fontSize: 11, color: '#64748b', fontWeight: 700, marginTop: 4 }}>Media Nodes</div>
                 </div>
-                <div style={{ borderLeft: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: 22, fontWeight: 900, color: '#FF9431', fontFamily: '"Outfit", sans-serif', paddingLeft: 4 }}>{stats.cities}+</div>
-                  <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600, marginTop: 2, paddingLeft: 4 }}>Locations</div>
+              </motion.div>
+
+              {/* Stat Card 2: Locations */}
+              <motion.div 
+                whileHover={{ y: -4, scale: 1.02 }}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.8)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: 16,
+                  padding: '16px',
+                  boxShadow: '0 10px 20px rgba(15, 23, 42, 0.02)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 12,
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}
+              >
+                {/* 3D Glass Sphere Background Element */}
+                <div style={{
+                  position: 'absolute', top: -15, right: -15, width: 50, height: 50, borderRadius: '50%',
+                  background: 'radial-gradient(circle at 30% 30%, rgba(255,148,49,0.2) 0%, rgba(255,148,49,0.02) 75%)',
+                  boxShadow: 'inset -2px -2px 6px rgba(255,255,255,0.8), inset 2px 2px 6px rgba(255,148,49,0.1)'
+                }} />
+                
+                <div style={{
+                  width: 36, height: 36, borderRadius: 10,
+                  background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 4px 10px rgba(255, 148, 49, 0.25), inset 0 2px 4px rgba(255,255,255,0.3)'
+                }}>
+                  <MapPin size={16} color="#fff" />
                 </div>
-                <div style={{ borderLeft: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: 22, fontWeight: 900, color: '#10b981', fontFamily: '"Outfit", sans-serif', paddingLeft: 4 }}>4</div>
-                  <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600, marginTop: 2, paddingLeft: 4 }}>Categories</div>
+                
+                <div>
+                  <div style={{ fontSize: 24, fontWeight: 900, color: '#FF9431', fontFamily: '"Outfit", sans-serif', lineHeight: 1 }}>{stats.cities}+</div>
+                  <div style={{ fontSize: 11, color: '#64748b', fontWeight: 700, marginTop: 4 }}>Locations</div>
                 </div>
-                <div style={{ borderLeft: '1px solid #e2e8f0' }}>
-                  <div style={{ fontSize: 22, fontWeight: 900, color: '#0f172a', fontFamily: '"Outfit", sans-serif', paddingLeft: 4 }}>{stats.totalHoursVideo}</div>
-                  <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600, marginTop: 2, paddingLeft: 4 }}>Video Hours</div>
+              </motion.div>
+
+              {/* Stat Card 3: Categories */}
+              <motion.div 
+                whileHover={{ y: -4, scale: 1.02 }}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.8)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: 16,
+                  padding: '16px',
+                  boxShadow: '0 10px 20px rgba(15, 23, 42, 0.02)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 12,
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}
+              >
+                {/* 3D Glass Sphere Background Element */}
+                <div style={{
+                  position: 'absolute', top: -15, right: -15, width: 50, height: 50, borderRadius: '50%',
+                  background: 'radial-gradient(circle at 30% 30%, rgba(16,185,129,0.2) 0%, rgba(16,185,129,0.02) 75%)',
+                  boxShadow: 'inset -2px -2px 6px rgba(255,255,255,0.8), inset 2px 2px 6px rgba(16,185,129,0.1)'
+                }} />
+                
+                <div style={{
+                  width: 36, height: 36, borderRadius: 10,
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 4px 10px rgba(16, 185, 129, 0.25), inset 0 2px 4px rgba(255,255,255,0.3)'
+                }}>
+                  <SlidersHorizontal size={16} color="#fff" />
                 </div>
-              </div>
+                
+                <div>
+                  <div style={{ fontSize: 24, fontWeight: 900, color: '#10b981', fontFamily: '"Outfit", sans-serif', lineHeight: 1 }}>4</div>
+                  <div style={{ fontSize: 11, color: '#64748b', fontWeight: 700, marginTop: 4 }}>Categories</div>
+                </div>
+              </motion.div>
+
+              {/* Stat Card 4: Video Hours */}
+              <motion.div 
+                whileHover={{ y: -4, scale: 1.02 }}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.8)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: 16,
+                  padding: '16px',
+                  boxShadow: '0 10px 20px rgba(15, 23, 42, 0.02)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 12,
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}
+              >
+                {/* 3D Glass Sphere Background Element */}
+                <div style={{
+                  position: 'absolute', top: -15, right: -15, width: 50, height: 50, borderRadius: '50%',
+                  background: 'radial-gradient(circle at 30% 30%, rgba(99,102,241,0.2) 0%, rgba(99,102,241,0.02) 75%)',
+                  boxShadow: 'inset -2px -2px 6px rgba(255,255,255,0.8), inset 2px 2px 6px rgba(99,102,241,0.1)'
+                }} />
+                
+                <div style={{
+                  width: 36, height: 36, borderRadius: 10,
+                  background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 4px 10px rgba(99, 102, 241, 0.25), inset 0 2px 4px rgba(255,255,255,0.3)'
+                }}>
+                  <Play size={16} color="#fff" fill="#fff" />
+                </div>
+                
+                <div>
+                  <div style={{ fontSize: 24, fontWeight: 900, color: '#0f172a', fontFamily: '"Outfit", sans-serif', lineHeight: 1 }}>{stats.totalHoursVideo}</div>
+                  <div style={{ fontSize: 11, color: '#64748b', fontWeight: 700, marginTop: 4 }}>Video Hours</div>
+                </div>
+              </motion.div>
             </div>
           </div>
 
