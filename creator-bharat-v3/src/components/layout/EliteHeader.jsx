@@ -127,7 +127,9 @@ const EliteHeader = memo(({
   children, 
   maxWidth = 1100,
   light = false,
-  compact = false
+  compact = false,
+  bgImage = null,
+  bgOpacity = 0.08
 }) => {
   const isServer = globalThis.window === undefined;
   const mob = isServer ? false : globalThis.window.innerWidth < 768;
@@ -159,6 +161,18 @@ const EliteHeader = memo(({
       boxSizing: 'border-box',
       borderBottom: light ? '1px solid rgba(0,0,0,0.05)' : 'none'
     }}>
+      {bgImage && (
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: `url(${bgImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: bgOpacity,
+          pointerEvents: 'none',
+          zIndex: 1
+        }} />
+      )}
       {!compact && <ActivityTicker />}
 
       {/* SaaS Dot Grid Background */}
@@ -248,7 +262,9 @@ EliteHeader.propTypes = {
   children: PropTypes.node,
   maxWidth: PropTypes.number,
   light: PropTypes.bool,
-  compact: PropTypes.bool
+  compact: PropTypes.bool,
+  bgImage: PropTypes.string,
+  bgOpacity: PropTypes.number
 };
 
 EliteHeader.displayName = 'EliteHeader';

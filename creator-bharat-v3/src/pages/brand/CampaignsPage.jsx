@@ -593,10 +593,10 @@ export default function CampaignsPage() {
   return (
     <div style={{ background: THEME.bg, minHeight: '100vh', width: '100%', overflowX: 'hidden', color: THEME.text }}>
       <div style={{ position: 'relative', width: '100%' }}>
-        <EliteHeader light compact={viewMode === 'swipe'} maxWidth={1200} title={
+        <EliteHeader light compact={true} bgImage="https://images.unsplash.com/photo-1598257006458-087169a1f08d?auto=format&fit=crop&q=80&w=1600" bgOpacity={0.15} maxWidth={1200} title={
           <div className="campaigns-hero-grid" style={{ 
             textAlign: mob ? 'center' : 'left', 
-            padding: mob ? '40px 0' : '60px 0 40px',
+            padding: mob ? '20px 0' : '10px 0 30px',
             boxSizing: 'border-box'
           }}>
             {/* Left side text contents */}
