@@ -187,50 +187,134 @@ ToolbarButtons.propTypes = {
   isSticky: PropTypes.bool
 };
 
-const CategoryChips = ({ niches, f, dsp, mob, isSticky }) => (
-  <div 
-    style={{ 
-      display: 'flex', gap: isSticky ? 8 : 10, overflowX: 'auto', padding: isSticky ? '4px 0 0' : '16px 0 4px', 
-      scrollbarWidth: 'none', msOverflowStyle: 'none',
-      maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)'
-    }} 
-    className="no-scrollbar"
-  >
-    {niches.map(n => {
-      const isSel = f?.niche?.includes(n) || false;
-      return (
+const PLATFORM_ICONS = {
+  'Instagram': '📸',
+  'YouTube': '▶️',
+  'Twitter': '🐦',
+  'LinkedIn': '💼',
+  'Snapchat': '👻',
+  'Facebook': '📘',
+};
+
+const CategoryChips = ({ niches, platforms, f, dsp, mob, isSticky }) => {
+  const selectedNiches = f?.niche || [];
+  const selectedPlatforms = Array.isArray(f?.platform) ? f.platform : (f?.platform ? [f.platform] : []);
+  const allClear = selectedNiches.length === 0 && selectedPlatforms.length === 0;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: isSticky ? 6 : 10, padding: isSticky ? '4px 0 0' : '16px 0 4px' }}>
+
+      {/* ── Category chips ── */}
+      <div
+        style={{
+          display: 'flex', gap: isSticky ? 6 : 8, overflowX: 'auto',
+          scrollbarWidth: 'none', msOverflowStyle: 'none',
+          maskImage: 'linear-gradient(to right, transparent, black 3%, black 97%, transparent)'
+        }}
+        className="no-scrollbar"
+      >
+        {/* All Categories reset chip */}
         <button
-          key={n}
-          onClick={() => dsp?.({ t: 'CF', v: { niche: isSel ? f.niche.filter(x => x !== n) : [...(f.niche || []), n] } })}
+          onClick={() => dsp?.({ t: 'CF', v: { niche: [] } })}
           style={{
-            flexShrink: 0, padding: mob ? '8px 16px' : (isSticky ? '6px 14px' : '10px 20px'), borderRadius: 100,
-            border: '1.5px solid ' + (isSel ? '#FF9431' : 'rgba(0,0,0,0.06)'),
-            background: isSel ? '#FF9431' : '#fff',
-            color: isSel ? '#fff' : '#475569',
-            fontSize: mob ? 12 : (isSticky ? 12 : 13), fontWeight: 800, cursor: 'pointer',
-            transition: 'all 0.2s',
-            boxShadow: isSel ? '0 8px 16px rgba(255,148,49,0.2)' : 'none'
+            flexShrink: 0, padding: mob ? '7px 14px' : (isSticky ? '5px 12px' : '8px 18px'), borderRadius: 100,
+            border: '1.5px solid ' + (selectedNiches.length === 0 ? '#0f172a' : 'rgba(0,0,0,0.06)'),
+            background: selectedNiches.length === 0 ? '#0f172a' : '#fff',
+            color: selectedNiches.length === 0 ? '#fff' : '#64748b',
+            fontSize: mob ? 12 : (isSticky ? 11 : 13), fontWeight: 900, cursor: 'pointer',
+            transition: 'all 0.2s', whiteSpace: 'nowrap',
           }}
         >
-          {n}
+          All Categories
         </button>
-      );
-    })}
-  </div>
-);
+        {niches.map(n => {
+          const isSel = selectedNiches.includes(n);
+          return (
+            <button
+              key={n}
+              onClick={() => dsp?.({ t: 'CF', v: { niche: isSel ? selectedNiches.filter(x => x !== n) : [...selectedNiches, n] } })}
+              style={{
+                flexShrink: 0, padding: mob ? '7px 14px' : (isSticky ? '5px 12px' : '8px 18px'), borderRadius: 100,
+                border: '1.5px solid ' + (isSel ? '#FF9431' : 'rgba(0,0,0,0.06)'),
+                background: isSel ? '#FF9431' : '#fff',
+                color: isSel ? '#fff' : '#475569',
+                fontSize: mob ? 12 : (isSticky ? 11 : 13), fontWeight: 800, cursor: 'pointer',
+                transition: 'all 0.2s', whiteSpace: 'nowrap',
+                boxShadow: isSel ? '0 8px 16px rgba(255,148,49,0.2)' : 'none'
+              }}
+            >
+              {n}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ── Platform chips ── */}
+      {platforms && platforms.length > 0 && (
+        <div
+          style={{
+            display: 'flex', gap: isSticky ? 6 : 8, overflowX: 'auto',
+            scrollbarWidth: 'none', msOverflowStyle: 'none',
+            maskImage: 'linear-gradient(to right, transparent, black 3%, black 97%, transparent)'
+          }}
+          className="no-scrollbar"
+        >
+          {/* All Social Media reset chip */}
+          <button
+            onClick={() => dsp?.({ t: 'CF', v: { platform: [] } })}
+            style={{
+              flexShrink: 0, padding: mob ? '7px 14px' : (isSticky ? '5px 12px' : '8px 18px'), borderRadius: 100,
+              border: '1.5px solid ' + (selectedPlatforms.length === 0 ? '#0f172a' : 'rgba(0,0,0,0.06)'),
+              background: selectedPlatforms.length === 0 ? '#0f172a' : '#fff',
+              color: selectedPlatforms.length === 0 ? '#fff' : '#64748b',
+              fontSize: mob ? 12 : (isSticky ? 11 : 13), fontWeight: 900, cursor: 'pointer',
+              transition: 'all 0.2s', whiteSpace: 'nowrap',
+            }}
+          >
+            All Platforms
+          </button>
+          {platforms.map(p => {
+            const isSel = selectedPlatforms.includes(p);
+            return (
+              <button
+                key={p}
+                onClick={() => dsp?.({ t: 'CF', v: { platform: isSel ? selectedPlatforms.filter(x => x !== p) : [...selectedPlatforms, p] } })}
+                style={{
+                  flexShrink: 0, padding: mob ? '7px 14px' : (isSticky ? '5px 12px' : '8px 18px'), borderRadius: 100,
+                  border: '1.5px solid ' + (isSel ? '#3B82F6' : 'rgba(0,0,0,0.06)'),
+                  background: isSel ? '#3B82F6' : '#fff',
+                  color: isSel ? '#fff' : '#475569',
+                  fontSize: mob ? 12 : (isSticky ? 11 : 13), fontWeight: 800, cursor: 'pointer',
+                  transition: 'all 0.2s', whiteSpace: 'nowrap',
+                  boxShadow: isSel ? '0 8px 16px rgba(59,130,246,0.2)' : 'none',
+                  display: 'flex', alignItems: 'center', gap: 6,
+                }}
+              >
+                <span style={{ fontSize: 14 }}>{PLATFORM_ICONS[p] || '📱'}</span>
+                {p}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
 
 CategoryChips.propTypes = {
   niches: PropTypes.arrayOf(PropTypes.string).isRequired,
+  platforms: PropTypes.arrayOf(PropTypes.string),
   f: PropTypes.object.isRequired,
   dsp: PropTypes.func.isRequired,
-  mob: PropTypes.bool
+  mob: PropTypes.bool,
+  isSticky: PropTypes.bool
 };
 
-export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, showMap, setShowFilters, niches }) {
-  const filterCount = Object.values(f).filter(v => 
+export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, showMap, setShowFilters, niches, platforms }) {
+  const filterCount = Object.values(f).filter(v =>
     Array.isArray(v) ? v.length > 0 : (v && v !== 'score' && v !== '' && v !== false)
   ).length;
-  
+
   const hasFilters = filterCount > 0;
 
   const wrapperRef = useRef(null);
@@ -240,18 +324,16 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
   useEffect(() => {
     const handleScroll = () => {
       if (!wrapperRef.current) return;
-      
+
       const rect = wrapperRef.current.getBoundingClientRect();
       const triggerOffset = 0;
-      
-      // If the top of the wrapper has scrolled past our threshold (0px)
+
       if (rect.top <= triggerOffset) {
         setIsSticky(true);
       } else {
         setIsSticky(false);
       }
 
-      // Check if footer is approaching (only if currently sticky)
       const footer = document.querySelector('footer');
       if (footer && rect.top <= triggerOffset) {
         const footerRect = footer.getBoundingClientRect();
@@ -267,23 +349,19 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    // Run once on mount to check initial position
     handleScroll();
-    
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [mob]);
 
   return (
     <div ref={wrapperRef} style={{ minHeight: isSticky ? (mob ? '72px' : '110px') : 'auto', width: '100%' }}>
-      <div style={{ 
+      <div style={{
         position: isSticky ? 'fixed' : 'relative',
         top: isSticky ? '0px' : 'auto',
         left: 0,
         right: 0,
         zIndex: 1000,
-        background: 'rgba(255, 255, 255, 0.88)', 
+        background: 'rgba(255,255,255,0.92)',
         backdropFilter: 'blur(24px)',
         borderBottom: '1px solid rgba(0,0,0,0.05)',
         padding: isSticky ? '10px 0' : '20px 0',
@@ -295,7 +373,7 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
         justifyContent: 'center',
         boxShadow: isSticky ? '0 10px 30px rgba(0,0,0,0.05)' : 'none'
       }}>
-        <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px', display: 'flex', flexDirection: 'column', gap: isSticky ? '10px' : '20px', width: '100%' }}>
+        <div style={{ ...W(1280), padding: mob ? '0 16px' : '0 24px', display: 'flex', flexDirection: 'column', gap: isSticky ? '10px' : '16px', width: '100%' }}>
           <div style={{ display: 'flex', gap: mob ? '8px' : '16px', alignItems: 'center' }}>
             <SearchInput mob={mob} f={f} dsp={dsp} isSticky={isSticky} />
 
@@ -307,25 +385,26 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
             )}
 
             <div style={{ display: 'flex', gap: mob ? '8px' : '12px', flexShrink: 0 }}>
-              <ToolbarButtons 
-                mob={mob} 
-                showMap={showMap} 
-                setShowMap={setShowMap} 
-                setShowFilters={setShowFilters} 
-                hasFilters={hasFilters} 
-                filterCount={filterCount} 
+              <ToolbarButtons
+                mob={mob}
+                showMap={showMap}
+                setShowMap={setShowMap}
+                setShowFilters={setShowFilters}
+                hasFilters={hasFilters}
+                filterCount={filterCount}
                 isSticky={isSticky}
               />
             </div>
           </div>
 
-          {(!mob || !isSticky) && <CategoryChips niches={niches} f={f} dsp={dsp} mob={mob} isSticky={isSticky} />}
+          {(!mob || !isSticky) && (
+            <CategoryChips niches={niches} platforms={platforms} f={f} dsp={dsp} mob={mob} isSticky={isSticky} />
+          )}
         </div>
       </div>
     </div>
   );
 }
-
 
 SearchToolbar.propTypes = {
   mob: PropTypes.bool,
@@ -336,5 +415,6 @@ SearchToolbar.propTypes = {
   setShowMap: PropTypes.func.isRequired,
   showMap: PropTypes.bool.isRequired,
   setShowFilters: PropTypes.func.isRequired,
-  niches: PropTypes.arrayOf(PropTypes.string).isRequired
+  niches: PropTypes.arrayOf(PropTypes.string).isRequired,
+  platforms: PropTypes.arrayOf(PropTypes.string),
 };

@@ -1571,7 +1571,7 @@ export default function CreatorsPage() {
       <SearchToolbar 
         mob={mob} f={f} dsp={safeDsp} setView={setView} view={view} 
         setShowMap={setShowMap} showMap={showMap} setShowFilters={setShowFilters} 
-        niches={NICHES} 
+        niches={NICHES} platforms={PLATFORMS}
       />
 
       {/* ── Guest free-search quota indicator ── */}
