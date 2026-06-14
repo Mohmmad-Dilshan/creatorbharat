@@ -266,7 +266,7 @@ export function CreatorCard({ creator: c, onView }) {
         e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.03)';
       }}
     >
-      <CardHeader coverUrl={c.coverUrl} photo={img} id={c.id} saved={saved} dsp={dsp} mob={mob} tierLabel={tier?.label || 'Rising'} requireBrand={requireBrand} />
+      <CardHeader coverUrl={c.cover_image || c.banner_image || c.coverUrl || `https://picsum.photos/seed/${c.id}/1600/500`} photo={img} id={c.id} saved={saved} dsp={dsp} mob={mob} tierLabel={tier?.label || 'Rising'} requireBrand={requireBrand} />
 
       <div style={{ padding: mob ? '0 2px' : '0 24px', flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <CreatorIdentity c={c} mob={mob} img={img} score={score} />
