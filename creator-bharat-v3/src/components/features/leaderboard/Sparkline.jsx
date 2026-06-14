@@ -14,6 +14,13 @@ export default function Sparkline({ color, points, id }) {
           <stop offset="0%" stopColor={color} stopOpacity="0.4" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
+        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1.5" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
       </defs>
       <motion.path
         d={fillD}
@@ -28,9 +35,23 @@ export default function Sparkline({ color, points, id }) {
         stroke={color}
         strokeWidth="2.5"
         strokeLinecap="round"
+        filter="url(#glow)"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
         transition={{ duration: 1.5, ease: "easeInOut" }}
+      />
+      {/* Glowing pulse dot at the end of the sparkline */}
+      <motion.circle
+        cx="60"
+        cy={points[4]}
+        r="3"
+        fill={color}
+        initial={{ scale: 0.8, opacity: 0.5 }}
+        animate={{ 
+          scale: [1, 1.8, 1],
+          opacity: [0.7, 1, 0.7]
+        }}
+        transition={{ duration: 2, repeat: Infinity }}
       />
     </svg>
   );
