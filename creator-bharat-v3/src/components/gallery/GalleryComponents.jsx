@@ -12,17 +12,18 @@ export function GalleryHeader({ stats }) {
     <div style={{
       padding: '80px 0 40px',
       position: 'relative',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      background: 'linear-gradient(180deg, #ffffff 0%, #fffbf6 100%)'
     }}>
       {/* Decorative Blur Spheres */}
       <div style={{
         position: 'absolute', top: -100, right: '10%', width: 250, height: 250,
-        borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,148,49,0.1) 0%, transparent 70%)',
+        borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,148,49,0.12) 0%, transparent 70%)',
         filter: 'blur(60px)', pointerEvents: 'none', zIndex: 0
       }} />
       <div style={{
         position: 'absolute', bottom: -50, left: '5%', width: 200, height: 200,
-        borderRadius: '50%', background: 'radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)',
+        borderRadius: '50%', background: 'radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%)',
         filter: 'blur(50px)', pointerEvents: 'none', zIndex: 0
       }} />
 
@@ -56,13 +57,11 @@ export function GalleryHeader({ stats }) {
               <motion.div 
                 whileHover={{ y: -4, scale: 1.02 }}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.8)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
+                  background: '#ffffff',
                   border: '1px solid #e2e8f0',
                   borderRadius: 16,
                   padding: '16px',
-                  boxShadow: '0 10px 20px rgba(15, 23, 42, 0.02)',
+                  boxShadow: '0 10px 25px rgba(15, 23, 42, 0.03)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: 12,
@@ -70,25 +69,25 @@ export function GalleryHeader({ stats }) {
                   overflow: 'hidden'
                 }}
               >
-                {/* 3D Glass Sphere Background Element */}
+                {/* 3D Glass Sphere Background Element (Sky Blue Tint) */}
                 <div style={{
                   position: 'absolute', top: -15, right: -15, width: 50, height: 50, borderRadius: '50%',
-                  background: 'radial-gradient(circle at 30% 30%, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.02) 75%)',
-                  boxShadow: 'inset -2px -2px 6px rgba(255,255,255,0.8), inset 2px 2px 6px rgba(0,0,0,0.05)'
+                  background: 'radial-gradient(circle at 30% 30%, rgba(59,130,246,0.2) 0%, rgba(59,130,246,0.02) 75%)',
+                  boxShadow: 'inset -2px -2px 6px rgba(255,255,255,0.8), inset 2px 2px 6px rgba(59,130,246,0.05)'
                 }} />
                 
-                {/* Icon Container with 3D shadow */}
+                {/* Icon Container with 3D shadow (Vibrant Blue) */}
                 <div style={{
                   width: 36, height: 36, borderRadius: 10,
-                  background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: '0 4px 10px rgba(15, 23, 42, 0.2), inset 0 2px 4px rgba(255,255,255,0.2)'
+                  boxShadow: '0 4px 10px rgba(59, 130, 246, 0.25), inset 0 2px 4px rgba(255,255,255,0.3)'
                 }}>
                   <Camera size={16} color="#fff" />
                 </div>
                 
                 <div>
-                  <div style={{ fontSize: 24, fontWeight: 900, color: '#0f172a', fontFamily: '"Outfit", sans-serif', lineHeight: 1 }}>{stats.totalItems}</div>
+                  <div style={{ fontSize: 24, fontWeight: 900, color: '#3b82f6', fontFamily: '"Outfit", sans-serif', lineHeight: 1 }}>{stats.totalItems}</div>
                   <div style={{ fontSize: 11, color: '#64748b', fontWeight: 700, marginTop: 4 }}>Media Nodes</div>
                 </div>
               </motion.div>
@@ -97,13 +96,11 @@ export function GalleryHeader({ stats }) {
               <motion.div 
                 whileHover={{ y: -4, scale: 1.02 }}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.8)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
+                  background: '#ffffff',
                   border: '1px solid #e2e8f0',
                   borderRadius: 16,
                   padding: '16px',
-                  boxShadow: '0 10px 20px rgba(15, 23, 42, 0.02)',
+                  boxShadow: '0 10px 25px rgba(15, 23, 42, 0.03)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: 12,
@@ -111,11 +108,11 @@ export function GalleryHeader({ stats }) {
                   overflow: 'hidden'
                 }}
               >
-                {/* 3D Glass Sphere Background Element */}
+                {/* 3D Glass Sphere Background Element (Saffron Tint) */}
                 <div style={{
                   position: 'absolute', top: -15, right: -15, width: 50, height: 50, borderRadius: '50%',
-                  background: 'radial-gradient(circle at 30% 30%, rgba(255,148,49,0.2) 0%, rgba(255,148,49,0.02) 75%)',
-                  boxShadow: 'inset -2px -2px 6px rgba(255,255,255,0.8), inset 2px 2px 6px rgba(255,148,49,0.1)'
+                  background: 'radial-gradient(circle at 30% 30%, rgba(255,148,49,0.22) 0%, rgba(255,148,49,0.02) 75%)',
+                  boxShadow: 'inset -2px -2px 6px rgba(255,255,255,0.8), inset 2px 2px 6px rgba(255,148,49,0.05)'
                 }} />
                 
                 <div style={{
@@ -137,13 +134,11 @@ export function GalleryHeader({ stats }) {
               <motion.div 
                 whileHover={{ y: -4, scale: 1.02 }}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.8)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
+                  background: '#ffffff',
                   border: '1px solid #e2e8f0',
                   borderRadius: 16,
                   padding: '16px',
-                  boxShadow: '0 10px 20px rgba(15, 23, 42, 0.02)',
+                  boxShadow: '0 10px 25px rgba(15, 23, 42, 0.03)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: 12,
@@ -151,11 +146,11 @@ export function GalleryHeader({ stats }) {
                   overflow: 'hidden'
                 }}
               >
-                {/* 3D Glass Sphere Background Element */}
+                {/* 3D Glass Sphere Background Element (Emerald Tint) */}
                 <div style={{
                   position: 'absolute', top: -15, right: -15, width: 50, height: 50, borderRadius: '50%',
-                  background: 'radial-gradient(circle at 30% 30%, rgba(16,185,129,0.2) 0%, rgba(16,185,129,0.02) 75%)',
-                  boxShadow: 'inset -2px -2px 6px rgba(255,255,255,0.8), inset 2px 2px 6px rgba(16,185,129,0.1)'
+                  background: 'radial-gradient(circle at 30% 30%, rgba(16,185,129,0.22) 0%, rgba(16,185,129,0.02) 75%)',
+                  boxShadow: 'inset -2px -2px 6px rgba(255,255,255,0.8), inset 2px 2px 6px rgba(16,185,129,0.05)'
                 }} />
                 
                 <div style={{
@@ -177,13 +172,11 @@ export function GalleryHeader({ stats }) {
               <motion.div 
                 whileHover={{ y: -4, scale: 1.02 }}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.8)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
+                  background: '#ffffff',
                   border: '1px solid #e2e8f0',
                   borderRadius: 16,
                   padding: '16px',
-                  boxShadow: '0 10px 20px rgba(15, 23, 42, 0.02)',
+                  boxShadow: '0 10px 25px rgba(15, 23, 42, 0.03)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: 12,
@@ -191,11 +184,11 @@ export function GalleryHeader({ stats }) {
                   overflow: 'hidden'
                 }}
               >
-                {/* 3D Glass Sphere Background Element */}
+                {/* 3D Glass Sphere Background Element (Indigo Tint) */}
                 <div style={{
                   position: 'absolute', top: -15, right: -15, width: 50, height: 50, borderRadius: '50%',
-                  background: 'radial-gradient(circle at 30% 30%, rgba(99,102,241,0.2) 0%, rgba(99,102,241,0.02) 75%)',
-                  boxShadow: 'inset -2px -2px 6px rgba(255,255,255,0.8), inset 2px 2px 6px rgba(99,102,241,0.1)'
+                  background: 'radial-gradient(circle at 30% 30%, rgba(99,102,241,0.22) 0%, rgba(99,102,241,0.02) 75%)',
+                  boxShadow: 'inset -2px -2px 6px rgba(255,255,255,0.8), inset 2px 2px 6px rgba(99,102,241,0.05)'
                 }} />
                 
                 <div style={{
@@ -208,7 +201,7 @@ export function GalleryHeader({ stats }) {
                 </div>
                 
                 <div>
-                  <div style={{ fontSize: 24, fontWeight: 900, color: '#0f172a', fontFamily: '"Outfit", sans-serif', lineHeight: 1 }}>{stats.totalHoursVideo}</div>
+                  <div style={{ fontSize: 24, fontWeight: 900, color: '#6366f1', fontFamily: '"Outfit", sans-serif', lineHeight: 1 }}>{stats.totalHoursVideo}</div>
                   <div style={{ fontSize: 11, color: '#64748b', fontWeight: 700, marginTop: 4 }}>Video Hours</div>
                 </div>
               </motion.div>
@@ -223,7 +216,7 @@ export function GalleryHeader({ stats }) {
               border: '1px solid #e2e8f0',
               borderRadius: 24,
               padding: 12,
-              boxShadow: '0 20px 40px rgba(15, 23, 42, 0.05)',
+              boxShadow: '0 20px 40px rgba(255, 148, 49, 0.06)',
               position: 'relative',
               overflow: 'hidden'
             }}
@@ -231,7 +224,7 @@ export function GalleryHeader({ stats }) {
             {/* Ambient glows behind poster */}
             <div style={{
               position: 'absolute', inset: 0,
-              background: 'radial-gradient(circle at 80% 20%, rgba(255, 148, 49, 0.06) 0%, transparent 60%)',
+              background: 'radial-gradient(circle at 80% 20%, rgba(255, 148, 49, 0.08) 0%, transparent 60%)',
               pointerEvents: 'none'
             }} />
             
