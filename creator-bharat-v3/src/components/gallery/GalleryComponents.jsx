@@ -27,8 +27,32 @@ export function GalleryHeader({ stats }) {
         filter: 'blur(50px)', pointerEvents: 'none', zIndex: 0
       }} />
 
+      <style>{`
+        .gallery-header-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 48px;
+          align-items: center;
+        }
+        @media (min-width: 1024px) {
+          .gallery-header-grid {
+            grid-template-columns: 1.15fr 0.85fr;
+          }
+        }
+        .gallery-stats-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 16px;
+        }
+        @media (min-width: 640px) {
+          .gallery-stats-grid {
+            grid-template-columns: repeat(4, 1fr);
+          }
+        }
+      `}</style>
+
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr', lg: '1.1fr 0.9fr', gap: 48, alignItems: 'center' }}>
+        <div className="gallery-header-grid">
           {/* Left Title and Stats block */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
             <div>
@@ -52,7 +76,7 @@ export function GalleryHeader({ stats }) {
             </div>
 
             {/* Stats row inside left block (featuring premium 3D glassmorphic elements) */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', sm: 'repeat(4, 1fr)', gap: 16 }}>
+            <div className="gallery-stats-grid">
               {/* Stat Card 1: Media Nodes */}
               <motion.div 
                 whileHover={{ y: -4, scale: 1.02 }}
