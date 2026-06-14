@@ -121,14 +121,14 @@ const CreatorStats = ({ c, mob }) => (
     </div>
     <div>
       <div style={{ fontSize: mob ? 12 : 18, fontWeight: 900, color: '#10B981', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 2 }}>
-        {c.er || 4.2}%
+        {c.er || 4.8}%
         {!mob && <Sparkline color="#10B981" />}
       </div>
       <div style={{ fontSize: mob ? 8 : 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Eng. Rate</div>
     </div>
     {!mob && (
       <div>
-        <div style={{ fontSize: 18, fontWeight: 900, color: '#0F172A', marginBottom: 2 }}>{fmt.num(Math.floor(c.followers * ((c.er || 4.2) / 100)))}</div>
+        <div style={{ fontSize: 18, fontWeight: 900, color: '#0F172A', marginBottom: 2 }}>{fmt.num(Math.floor(c.followers * ((c.er || 4.8) / 100)))}</div>
         <div style={{ fontSize: 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Est. Reach</div>
       </div>
     )}

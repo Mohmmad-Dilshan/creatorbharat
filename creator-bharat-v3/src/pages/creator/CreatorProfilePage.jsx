@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../../core/context';
 import { fetchCreatorById } from '../../utils/platformService';
-import { W, LS } from '../../utils/helpers';
+import { W, LS, fmt } from '../../utils/helpers';
 import { ProfileHero } from '../../components/creators/profile/ProfileHero';
 import { IdentityTab, SocialLinkTree } from '../../components/creators/profile/IdentityTab';
 import { MediaKitPreview } from '../../components/creators/profile/MediaKitPreview';
@@ -2074,8 +2074,8 @@ export default function CreatorProfilePage() {
       followers: c.followers || 125000, 
       er: c.er || 4.8, 
       reach: Math.floor((c.followers || 125000) * 0.85), 
-      authenticity: 98.2, 
-      score: c.score || 94 
+      authenticity: c.authenticity || 98.2, 
+      score: c.score || fmt.score(c) 
     };
   }, [c]);
 

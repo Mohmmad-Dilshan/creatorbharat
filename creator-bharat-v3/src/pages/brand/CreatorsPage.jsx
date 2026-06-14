@@ -103,144 +103,165 @@ VisualPortal.propTypes = {
   mob: PropTypes.bool
 };
 
-const DataHub = ({ creator, mob, saved, compared, requireBrand, dsp, onFullView, navigate }) => (
-  <div style={{ flex: 1, padding: mob ? '32px 24px' : '50px 60px', overflowY: 'auto' }} className="no-scrollbar">
-    {/* TOP STATS & ACTIONS */}
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-         <Bdg color="orange" lg style={{ padding: '12px 24px', fontSize: '14px', borderRadius: '16px' }}>{creator.score || 98} ELITE SCORE</Bdg>
-         {!mob && <span style={{ fontSize: '12px', fontWeight: 900, color: '#10B981', display: 'flex', alignItems: 'center', gap: '4px', background: '#f0fdf4', padding: '6px 12px', borderRadius: '100px' }}>
-           <TrendingUp size={14} /> +12.4% Momentum
-         </span>}
-      </div>
-      <div style={{ display: 'flex', gap: '12px' }}>
-         <button 
-           onClick={() => requireBrand() && dsp({ t: 'SAVE', id: creator.id })}
-           style={{ width: '48px', height: '48px', borderRadius: '16px', border: '1.5px solid #f1f5f9', background: saved ? '#EF444410' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.3s' }}
-         >
-           <Heart size={20} fill={saved ? '#EF4444' : 'none'} color={saved ? '#EF4444' : '#64748b'} />
-         </button>
-         <button 
-           onClick={() => requireBrand() && dsp({ t: 'COMPARE', id: creator.id })}
-           style={{ width: '48px', height: '48px', borderRadius: '16px', border: '1.5px solid #f1f5f9', background: compared ? '#FF943110' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.3s' }}
-         >
-           <Scale size={20} color={compared ? '#FF9431' : '#64748b'} />
-         </button>
-      </div>
-    </div>
+const DataHub = ({ creator, mob, saved, compared, requireBrand, dsp, onFullView, navigate }) => {
+  const score = creator.score || fmt.score(creator);
+  const cityLabel = typeof creator.city === 'object' ? creator.city.name : (creator.city || 'Bharat');
+  const nicheLabel = Array.isArray(creator.niche) ? creator.niche.join(' & ') : (creator.niche || creator.category || 'Premium');
+  const erRate = creator.er || 4.8;
+  const followersCount = creator.followers || 125000;
+  const authenticityScore = creator.authenticity || 98.2;
+  const responseTimeVal = creator.responseTime || creator.response_time || '2.4 hrs';
+  const repeatRateVal = creator.repeatRate || creator.repeat_rate || '85%';
+  const bioText = creator.bio || `An elite storyteller, digital creator dedicated to high-impact content and cultural narratives across Bharat.`;
+  const aiSummary = creator.ai_intel?.summary || creator.aiIntel?.summary || `Best suited for ${nicheLabel} brands. High conversion potential for product launches in ${cityLabel} cities.`;
+  
+  const audienceHubs = creator.audience_hubs || creator.audienceHubs || [
+    { l: 'Fashion', p: 45 }, { l: 'Luxury', p: 30 }, 
+    { l: 'Tech', p: 15 }, { l: 'Travel', p: 10 }
+  ];
+  const recentContent = creator.viral_content || creator.viralContent || [
+    { views: fmt.num(followersCount / 2), img: `https://picsum.photos/seed/${creator.id}1/300/400` },
+    { views: fmt.num(followersCount / 3), img: `https://picsum.photos/seed/${creator.id}2/300/400` },
+    { views: fmt.num(followersCount / 4), img: `https://picsum.photos/seed/${creator.id}3/300/400` }
+  ];
+  const brandSafety = creator.ai_intel?.stats?.find(s => s.l.toLowerCase().includes('safety'))?.v || 'High (99.8%)';
 
-    {/* AI STRATEGIC RECOMMENDATION */}
-    <div style={{ 
-      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', 
-      padding: '24px', borderRadius: '24px', marginBottom: '40px',
-      border: '1px solid rgba(255,148,49,0.2)', position: 'relative', overflow: 'hidden'
-    }}>
-       <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,148,49,0.1)', borderRadius: '50%', filter: 'blur(30px)' }} />
-       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FF9431', fontSize: '11px', fontWeight: 950, textTransform: 'uppercase', marginBottom: '8px' }}>
-          <Sparkles size={14} /> AI Recommendation
-       </div>
-       <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: 700, lineHeight: 1.5 }}>
-          Best suited for <b>{creator.niche || creator.category || 'Premium'}</b> brands. High conversion potential for product launches in {creator.city || 'Tier-1'} cities. 
-       </p>
-    </div>
+  return (
+    <div style={{ flex: 1, padding: mob ? '32px 24px' : '50px 60px', overflowY: 'auto' }} className="no-scrollbar">
+      {/* TOP STATS & ACTIONS */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+           <Bdg color="orange" lg style={{ padding: '12px 24px', fontSize: '14px', borderRadius: '16px' }}>{score} ELITE SCORE</Bdg>
+           {!mob && <span style={{ fontSize: '12px', fontWeight: 900, color: '#10B981', display: 'flex', alignItems: 'center', gap: '4px', background: '#f0fdf4', padding: '6px 12px', borderRadius: '100px' }}>
+             <TrendingUp size={14} /> +12.4% Momentum
+           </span>}
+        </div>
+        <div style={{ display: 'flex', gap: '12px' }}>
+           <button 
+             onClick={() => requireBrand() && dsp({ t: 'SAVE', id: creator.id })}
+             style={{ width: '48px', height: '48px', borderRadius: '16px', border: '1.5px solid #f1f5f9', background: saved ? '#EF444410' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.3s' }}
+           >
+             <Heart size={20} fill={saved ? '#EF4444' : 'none'} color={saved ? '#EF4444' : '#64748b'} />
+           </button>
+           <button 
+             onClick={() => requireBrand() && dsp({ t: 'COMPARE', id: creator.id })}
+             style={{ width: '48px', height: '48px', borderRadius: '16px', border: '1.5px solid #f1f5f9', background: compared ? '#FF943110' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.3s' }}
+           >
+             <Scale size={20} color={compared ? '#FF9431' : '#64748b'} />
+           </button>
+        </div>
+      </div>
 
-    {/* PERFORMANCE PULSE */}
-    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px', marginBottom: '40px' }}>
-       {[
-         { l: 'Authenticity', v: '98%', c: '#10B981' },
-         { l: 'Avg Engagement', v: '4.8%', c: '#FF9431' },
-         { l: 'Response Time', v: '2.4 hrs', c: '#6366f1' },
-         { l: 'Repeat Rate', v: '85%', c: '#f59e0b' }
-       ].map(s => (
-         <div key={s.l} style={{ background: '#f8fafc', padding: '16px', borderRadius: '20px', border: '1px solid #f1f5f9' }}>
-            <div style={{ color: '#94a3b8', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', marginBottom: '4px' }}>{s.l}</div>
-            <div style={{ fontSize: '18px', fontWeight: 950, color: s.c }}>{s.v}</div>
+      {/* AI STRATEGIC RECOMMENDATION */}
+      <div style={{ 
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', 
+        padding: '24px', borderRadius: '24px', marginBottom: '40px',
+        border: '1px solid rgba(255,148,49,0.2)', position: 'relative', overflow: 'hidden'
+      }}>
+         <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px', background: 'rgba(255,148,49,0.1)', borderRadius: '50%', filter: 'blur(30px)' }} />
+         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#FF9431', fontSize: '11px', fontWeight: 950, textTransform: 'uppercase', marginBottom: '8px' }}>
+            <Sparkles size={14} /> AI Recommendation
          </div>
-       ))}
-    </div>
+         <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: 700, lineHeight: 1.5 }}>
+            {aiSummary}
+         </p>
+      </div>
 
-    {/* CREATOR BIOGRAPHY / LOCAL INSIGHT */}
-    <div style={{ marginBottom: '40px' }}>
-       <h4 style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '16px' }}>Expertise & Local Context</h4>
-       <div style={{ 
-         borderLeft: '4px solid #FF9431', padding: '16px 24px', 
-         borderRadius: '0 24px 24px 0', background: 'rgba(255,148,49,0.03)' 
-       }}>
-          <p style={{ fontSize: '15px', color: '#334155', fontWeight: 650, lineHeight: 1.6, fontStyle: 'italic' }}>
-            "{creator.name || 'This creator'} is a dominant force in the <b>{creator.city || 'local'} {creator.niche || 'creative'} scene</b>. Known for their high-retention storytelling and authentic connection with the {creator.niche || 'digital'} community, they specialize in bridging the gap between premium brand identity and relatable local aesthetics for maximum campaign impact."
-          </p>
-       </div>
-    </div>
+      {/* PERFORMANCE PULSE */}
+      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px', marginBottom: '40px' }}>
+         {[
+           { l: 'Authenticity', v: authenticityScore + '%', c: '#10B981' },
+           { l: 'Avg Engagement', v: erRate + '%', c: '#FF9431' },
+           { l: 'Response Time', v: responseTimeVal, c: '#6366f1' },
+           { l: 'Repeat Rate', v: repeatRateVal, c: '#f59e0b' }
+         ].map(s => (
+           <div key={s.l} style={{ background: '#f8fafc', padding: '16px', borderRadius: '20px', border: '1px solid #f1f5f9' }}>
+              <div style={{ color: '#94a3b8', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', marginBottom: '4px' }}>{s.l}</div>
+              <div style={{ fontSize: '18px', fontWeight: 950, color: s.c }}>{s.v}</div>
+           </div>
+         ))}
+      </div>
 
-    {/* AUDIENCE INTERESTS */}
-    <div style={{ marginBottom: '40px' }}>
-       <h4 style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '16px' }}>Audience Interest Breakdown</h4>
-       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-          {[
-            { t: 'Fashion', p: 45 }, { t: 'Luxury', p: 30 }, 
-            { t: 'Tech', p: 15 }, { t: 'Travel', p: 10 }
-          ].map(i => (
-            <div key={i.t} style={{ 
-              padding: '8px 16px', background: '#fff', border: '1.5px solid #f1f5f9', 
-              borderRadius: '100px', display: 'flex', alignItems: 'center', gap: '8px'
-            }}>
-               <span style={{ fontSize: '13px', fontWeight: 850, color: '#0f172a' }}>{i.t}</span>
-               <span style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431' }}>{i.p}%</span>
+      {/* CREATOR BIOGRAPHY / LOCAL INSIGHT */}
+      <div style={{ marginBottom: '40px' }}>
+         <h4 style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '16px' }}>Expertise & Local Context</h4>
+         <div style={{ 
+            borderLeft: '4px solid #FF9431', padding: '16px 24px', 
+            borderRadius: '0 24px 24px 0', background: 'rgba(255,148,49,0.03)' 
+         }}>
+            <p style={{ fontSize: '15px', color: '#334155', fontWeight: 650, lineHeight: 1.6, fontStyle: 'italic' }}>
+              "{bioText}"
+            </p>
+         </div>
+      </div>
+
+      {/* AUDIENCE INTERESTS */}
+      <div style={{ marginBottom: '40px' }}>
+         <h4 style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '16px' }}>Audience Hub breakdown</h4>
+         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            {audienceHubs.map(i => (
+              <div key={i.l} style={{ 
+                padding: '8px 16px', background: '#fff', border: '1.5px solid #f1f5f9', 
+                borderRadius: '100px', display: 'flex', alignItems: 'center', gap: '8px'
+              }}>
+                 <span style={{ fontSize: '13px', fontWeight: 850, color: '#0f172a' }}>{i.l}</span>
+                 <span style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431' }}>{i.p}%</span>
+              </div>
+            ))}
+         </div>
+      </div>
+
+      {/* RECENT CONTENT TEASER */}
+      <div style={{ marginBottom: '40px' }}>
+         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h4 style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Top Performing Content</h4>
+            <button style={{ fontSize: '11px', fontWeight: 900, color: '#FF9431', background: 'none', border: 'none', cursor: 'pointer' }} onClick={onFullView}>Audit All Posts</button>
+         </div>
+         <div style={{ display: 'flex', gap: '12px' }}>
+            {recentContent.slice(0, 3).map((item, idx) => (
+               <div key={idx} style={{ flex: 1, height: '120px', borderRadius: '20px', background: '#f1f5f9', overflow: 'hidden', position: 'relative' }}>
+                  <img src={item.img || item.image || item.photo || `https://picsum.photos/seed/${creator.id + idx * 10}/300/400`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="content" />
+                  <div style={{ position: 'absolute', bottom: '8px', left: '8px', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', padding: '4px 8px', borderRadius: '6px', color: '#fff', fontSize: '10px', fontWeight: 900 }}>
+                     {item.views || fmt.num(followersCount / (idx + 2))} Views
+                  </div>
+               </div>
+            ))}
+         </div>
+      </div>
+
+      {/* STRATEGIC INSIGHTS */}
+      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px', marginBottom: '40px' }}>
+         <div>
+            <h4 style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '12px' }}>Audience Age</h4>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+               <div style={{ flex: 1, height: '6px', background: '#f1f5f9', borderRadius: '100px', overflow: 'hidden' }}>
+                  <div style={{ width: '75%', height: '100%', background: '#0f172a' }} />
+               </div>
+               <span style={{ fontSize: '12px', fontWeight: 900, color: '#0f172a' }}>18-34 (75%)</span>
             </div>
-          ))}
-       </div>
-    </div>
+         </div>
+         <div>
+            <h4 style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '12px' }}>Brand Safety</h4>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10B981', fontWeight: 900, fontSize: '14px' }}>
+               <ShieldCheck size={18} /> {brandSafety}
+            </div>
+         </div>
+      </div>
 
-    {/* RECENT CONTENT TEASER */}
-    <div style={{ marginBottom: '40px' }}>
-       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h4 style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Top Performing Content</h4>
-          <button style={{ fontSize: '11px', fontWeight: 900, color: '#FF9431', background: 'none', border: 'none', cursor: 'pointer' }} onClick={onFullView}>Audit All Posts</button>
-       </div>
-       <div style={{ display: 'flex', gap: '12px' }}>
-          {[1, 2, 3].map(i => (
-             <div key={i} style={{ flex: 1, height: '120px', borderRadius: '20px', background: '#f1f5f9', overflow: 'hidden', position: 'relative' }}>
-                <img src={`https://picsum.photos/seed/${creator.id + i * 10}/300/400`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="content" />
-                <div style={{ position: 'absolute', bottom: '8px', left: '8px', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', padding: '4px 8px', borderRadius: '6px', color: '#fff', fontSize: '10px', fontWeight: 900 }}>
-                   {fmt.num(creator.followers / (i + 1))} Views
-                </div>
-             </div>
-          ))}
-       </div>
-    </div>
-
-    {/* STRATEGIC INSIGHTS */}
-    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px', marginBottom: '40px' }}>
-       <div>
-          <h4 style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '12px' }}>Audience Age</h4>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-             <div style={{ flex: 1, height: '6px', background: '#f1f5f9', borderRadius: '100px', overflow: 'hidden' }}>
-                <div style={{ width: '75%', height: '100%', background: '#0f172a' }} />
-             </div>
-             <span style={{ fontSize: '12px', fontWeight: 900, color: '#0f172a' }}>18-34 (75%)</span>
-          </div>
-       </div>
-       <div>
-          <h4 style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '12px' }}>Brand Safety</h4>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10B981', fontWeight: 900, fontSize: '14px' }}>
-             <ShieldCheck size={18} /> High (99.8%)
-          </div>
-       </div>
-    </div>
-
-    {/* CALL TO ACTION */}
-    <div style={{ display: 'flex', gap: '20px', marginTop: 'auto' }}>
-       <Btn lg style={{ flex: 1, borderRadius: '24px', height: '64px', fontSize: '16px' }} onClick={onFullView}>
-          View Full Portfolio & Analytics <ChevronRight size={20} />
-       </Btn>
-       {!mob && (
-         <Btn lg outline style={{ borderRadius: '24px', height: '64px', padding: '0 32px' }} onClick={() => requireBrand() && navigate('/campaign-builder')}>
-            Shortlist for Campaign
+      {/* CALL TO ACTION */}
+      <div style={{ display: 'flex', gap: '20px', marginTop: 'auto' }}>
+         <Btn lg style={{ flex: 1, borderRadius: '24px', height: '64px', fontSize: '16px' }} onClick={onFullView}>
+            View Full Portfolio & Analytics <ChevronRight size={20} />
          </Btn>
-       )}
+         {!mob && (
+           <Btn lg outline style={{ borderRadius: '24px', height: '64px', padding: '0 32px' }} onClick={() => requireBrand() && navigate('/campaign-builder')}>
+              Shortlist for Campaign
+           </Btn>
+         )}
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
 DataHub.propTypes = {
   creator: PropTypes.object.isRequired,
