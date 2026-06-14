@@ -1566,7 +1566,7 @@ export default function CreatorsPage() {
         `}</style>
       </section>
 
-      <EliteSpotlight mob={mob} all={all} setSelectedCreator={setSelectedCreator} dsp={safeDsp} loading={loading} />
+
 
       <SearchToolbar 
         mob={mob} f={f} dsp={safeDsp} setView={setView} view={view} 
