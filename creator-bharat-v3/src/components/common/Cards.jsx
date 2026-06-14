@@ -276,6 +276,11 @@ export function CreatorCard({ creator: c, onView }) {
       <div style={{ padding: mob ? '0 2px' : '0 24px', flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <CreatorIdentity c={c} mob={mob} img={img} score={score} />
         <CreatorBio c={c} mob={mob} />
+        {!mob && c.bio && (
+          <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.5, marginBottom: 16, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }} title={c.bio}>
+            {c.bio}
+          </p>
+        )}
 
         <div style={{ display: 'flex', gap: mob ? 4 : 8, flexWrap: 'wrap', marginBottom: mob ? 12 : 20 }}>
            {cp.slice(0, mob ? 1 : 2).map(p => (

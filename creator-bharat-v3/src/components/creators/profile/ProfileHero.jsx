@@ -322,9 +322,14 @@ const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDo
   return (
     <div style={{ flex: 1 }}>
        <IdentityHeader category={c.category || c.niche} name={c.name} mob={mob} />
-       <p style={{ fontSize: mob ? '16px' : '24px', color: '#475569', marginBottom: '24px', fontWeight: 500, lineHeight: 1.5, maxWidth: '850px', letterSpacing: '-0.01em' }}>
+       <p style={{ fontSize: mob ? '16px' : '24px', color: '#475569', marginBottom: '16px', fontWeight: 500, lineHeight: 1.5, maxWidth: '850px', letterSpacing: '-0.01em' }}>
           {c.tagline || `Expert in ${Array.isArray(c.niche) ? c.niche[0] : (c.niche || 'Lifestyle')} Storytelling | Building authentic brand identities across Bharat.`}
        </p>
+       {c.bio && (
+         <p style={{ fontSize: mob ? '14px' : '16px', color: '#64748b', marginBottom: '24px', lineHeight: 1.6, maxWidth: '850px' }}>
+           {c.bio}
+         </p>
+       )}
        <ContactMetadata c={c} followers={stats.followers} mob={mob} onContact={onContact} />
        <BadgeRow score={stats.score || 94} />
        <RatingSection 
