@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Seo from '@/components/common/SEO';
-import { MapPin, Sparkles } from 'lucide-react';
+import { MapPin, Sparkles, Lock, TrendingUp } from 'lucide-react';
 import { Btn, Bdg } from '@/components/common/Primitives';
 import { fetchCreators, fetchCampaigns, derivePlatformAnalytics } from '@/utils/platformService';
 import { TwitterIcon, LinkedinIcon, GithubIcon } from '@/components/icons/SocialIcons';
@@ -449,6 +449,74 @@ export default function AboutPage() {
               {/* Decorative Tech corner dots */}
               <div style={{ position: 'absolute', top: '-10px', left: '-10px', width: '20px', height: '20px', borderTop: '2px solid #FF9431', borderLeft: '2px solid #FF9431', zIndex: 1 }} />
               <div style={{ position: 'absolute', bottom: '-10px', right: '-10px', width: '20px', height: '20px', borderBottom: '2px solid #10B981', borderRight: '2px solid #10B981', zIndex: 1 }} />
+
+              {/* Floating trust card 1 */}
+              <motion.div
+                animate={{ y: [0, -8, 0] }}
+                transition={{ repeat: Infinity, duration: 3.5, ease: "easeInOut" }}
+                style={{
+                  display: mob ? 'none' : 'flex',
+                  flexDirection: 'column',
+                  position: 'absolute',
+                  top: '-24px',
+                  right: '-24px',
+                  background: 'rgba(15, 23, 42, 0.85)',
+                  backdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '20px',
+                  padding: '16px 20px',
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+                  color: '#fff',
+                  width: '185px',
+                  zIndex: 5,
+                  alignItems: 'flex-start',
+                  gap: '8px'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', boxShadow: '0 0 6px #10B981' }} />
+                  <span style={{ fontSize: '10px', fontWeight: 900, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.1em' }}>TRUST ESCROW</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Lock size={12} color="#FF9431" />
+                  <span style={{ fontSize: '12px', fontWeight: 800, fontFamily: 'monospace' }}>CB-SECURE-NODE</span>
+                </div>
+                <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: 650 }}>✓ Ledger Active & Audited</span>
+              </motion.div>
+
+              {/* Floating metrics card 2 */}
+              <motion.div
+                animate={{ y: [0, 8, 0] }}
+                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                style={{
+                  display: mob ? 'none' : 'flex',
+                  flexDirection: 'column',
+                  position: 'absolute',
+                  bottom: '-24px',
+                  left: '-24px',
+                  background: 'rgba(255, 255, 255, 0.95)',
+                  backdropFilter: 'blur(16px)',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '20px',
+                  padding: '16px 20px',
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.05)',
+                  color: '#0f172a',
+                  width: '185px',
+                  zIndex: 5,
+                  alignItems: 'flex-start',
+                  gap: '4px'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#FF9431', boxShadow: '0 0 6px #FF9431' }} />
+                  <span style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', letterSpacing: '0.1em' }}>CAMPAIGN ROI</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+                  <TrendingUp size={16} color="#10B981" />
+                  <span style={{ fontSize: '24px', fontWeight: 950, fontFamily: 'Outfit, sans-serif', letterSpacing: '-0.02em' }}>+45.8%</span>
+                </div>
+                <span style={{ fontSize: '9px', color: '#64748b', fontWeight: 700 }}>Avg Tier-2/3 Uplift</span>
+              </motion.div>
 
               <div style={{ position: 'relative', zIndex: 2 }}>
                 <CreatorNetworkCanvas mob={mob} />
