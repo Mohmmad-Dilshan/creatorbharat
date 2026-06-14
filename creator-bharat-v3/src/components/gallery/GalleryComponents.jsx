@@ -27,68 +27,108 @@ export function GalleryHeader({ stats }) {
       }} />
 
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 1 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr', lg: '1.2fr 0.8fr', gap: 40, alignItems: 'center' }}>
-          {/* Left Title block */}
-          <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,148,49,0.08)', padding: '6px 16px', borderRadius: 100, marginBottom: 16 }}>
-              <Activity size={14} color="#FF9431" className="animate-pulse" />
-              <span style={{ fontSize: 11, fontWeight: 800, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: '"Outfit", sans-serif' }}>Community Footprint</span>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', lg: '1.1fr 0.9fr', gap: 48, alignItems: 'center' }}>
+          {/* Left Title and Stats block */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+            <div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,148,49,0.08)', padding: '6px 16px', borderRadius: 100, marginBottom: 16 }}>
+                <Activity size={14} color="#FF9431" className="animate-pulse" />
+                <span style={{ fontSize: 11, fontWeight: 800, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: '"Outfit", sans-serif' }}>Community Footprint</span>
+              </div>
+              <h1 className="influence-heading" style={{
+                fontSize: '44px', fontWeight: 900, color: '#0f172a',
+                lineHeight: 1.1, marginBottom: 16, fontFamily: '"Outfit", sans-serif',
+                letterSpacing: '-0.02em'
+              }}>
+                Ecosystem Gallery
+              </h1>
+              <p style={{
+                fontSize: '16px', color: '#475569', lineHeight: 1.6,
+                maxWidth: 620, fontFamily: '"Outfit", sans-serif', margin: 0
+              }}>
+                Explore visual highlights of India's most trusted creator-brand network. Community summits, brand deals, live workshops, and engineering nodes syncing across the nation.
+              </p>
             </div>
-            <h1 className="influence-heading" style={{
-              fontSize: '44px', fontWeight: 900, color: '#0f172a',
-              lineHeight: 1.1, marginBottom: 16, fontFamily: '"Outfit", sans-serif',
-              letterSpacing: '-0.02em'
+
+            {/* Stats row inside left block */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.75)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid #e2e8f0',
+              borderRadius: 20,
+              padding: '20px',
+              boxShadow: '0 10px 30px rgba(15, 23, 42, 0.03)'
             }}>
-              Ecosystem Gallery
-            </h1>
-            <p style={{
-              fontSize: '16px', color: '#475569', lineHeight: 1.6,
-              maxWidth: 620, fontFamily: '"Outfit", sans-serif'
-            }}>
-              Explore visual highlights of India's most trusted creator-brand network. Community summits, brand deals, live workshops, and engineering nodes syncing across the nation.
-            </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, textAlign: 'center' }}>
+                <div>
+                  <div style={{ fontSize: 22, fontWeight: 900, color: '#0f172a', fontFamily: '"Outfit", sans-serif' }}>{stats.totalItems}</div>
+                  <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600, marginTop: 2 }}>Media Nodes</div>
+                </div>
+                <div style={{ borderLeft: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: 22, fontWeight: 900, color: '#FF9431', fontFamily: '"Outfit", sans-serif', paddingLeft: 4 }}>{stats.cities}+</div>
+                  <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600, marginTop: 2, paddingLeft: 4 }}>Locations</div>
+                </div>
+                <div style={{ borderLeft: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: 22, fontWeight: 900, color: '#10b981', fontFamily: '"Outfit", sans-serif', paddingLeft: 4 }}>4</div>
+                  <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600, marginTop: 2, paddingLeft: 4 }}>Categories</div>
+                </div>
+                <div style={{ borderLeft: '1px solid #e2e8f0' }}>
+                  <div style={{ fontSize: 22, fontWeight: 900, color: '#0f172a', fontFamily: '"Outfit", sans-serif', paddingLeft: 4 }}>{stats.totalHoursVideo}</div>
+                  <div style={{ fontSize: 10, color: '#64748b', fontWeight: 600, marginTop: 2, paddingLeft: 4 }}>Video Hours</div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Right Stats Dashboard Grid */}
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.75)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid #e2e8f0',
-            borderRadius: 24,
-            padding: '24px',
-            boxShadow: '0 20px 40px rgba(15, 23, 42, 0.04)'
-          }}>
-            <div style={{ fontSize: 12, fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 16, borderBottom: '1px solid #f1f5f9', paddingBottom: 10 }}>
-              Telemetry Node Status: Sync Ok
+          {/* Right Column: Premium Canva-style poster card */}
+          <motion.div 
+            whileHover={{ y: -6 }}
+            style={{
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: 24,
+              padding: 12,
+              boxShadow: '0 20px 40px rgba(15, 23, 42, 0.05)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+          >
+            {/* Ambient glows behind poster */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'radial-gradient(circle at 80% 20%, rgba(255, 148, 49, 0.06) 0%, transparent 60%)',
+              pointerEvents: 'none'
+            }} />
+            
+            <div style={{
+              borderRadius: 16,
+              overflow: 'hidden',
+              position: 'relative',
+              paddingTop: '66.67%', // 3:2 Aspect Ratio
+              background: '#f8fafc'
+            }}>
+              <img 
+                src="/gallery_hero_group.png" 
+                alt="CreatorBharat Ecosystem" 
+                style={{
+                  position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                  objectFit: 'cover'
+                }}
+              />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
-              <div style={{ padding: 12, background: '#f8fafc', borderRadius: 12 }}>
-                <div style={{ fontSize: 24, fontWeight: 900, color: '#0f172a', fontFamily: '"Outfit", sans-serif' }}>
-                  {stats.totalItems}
-                </div>
-                <div style={{ fontSize: 11, color: '#64748b', fontWeight: 600, marginTop: 4 }}>Media Nodes</div>
+            
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              marginTop: 14, padding: '0 8px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} className="animate-pulse" />
+                <span style={{ fontSize: 11, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Ecosystem Feed</span>
               </div>
-              <div style={{ padding: 12, background: '#f8fafc', borderRadius: 12 }}>
-                <div style={{ fontSize: 24, fontWeight: 900, color: '#FF9431', fontFamily: '"Outfit", sans-serif' }}>
-                  {stats.cities}+
-                </div>
-                <div style={{ fontSize: 11, color: '#64748b', fontWeight: 600, marginTop: 4 }}>Locations</div>
-              </div>
-              <div style={{ padding: 12, background: '#f8fafc', borderRadius: 12 }}>
-                <div style={{ fontSize: 24, fontWeight: 900, color: '#10b981', fontFamily: '"Outfit", sans-serif' }}>
-                  4
-                </div>
-                <div style={{ fontSize: 11, color: '#64748b', fontWeight: 600, marginTop: 4 }}>Categories</div>
-              </div>
-              <div style={{ padding: 12, background: '#f8fafc', borderRadius: 12 }}>
-                <div style={{ fontSize: 24, fontWeight: 900, color: '#0f172a', fontFamily: '"Outfit", sans-serif' }}>
-                  {stats.totalHoursVideo}
-                </div>
-                <div style={{ fontSize: 11, color: '#64748b', fontWeight: 600, marginTop: 4 }}>Video Hours</div>
-              </div>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#FF9431' }}>v1.0 Live</span>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
