@@ -82,7 +82,7 @@ const filterCreators = (all, f) => {
 const VisualPortal = ({ creator, mob }) => (
   <div style={{ width: mob ? '100%' : '45%', height: mob ? '300px' : 'auto', position: 'relative', background: '#050505' }}>
     <img 
-      src={creator.photo || creator.avatarUrl || creator.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(creator.name)}&background=FF9431&color=fff`} 
+      src={creator.photo || creator.image || creator.avatarUrl || creator.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(creator.name)}&background=FF9431&color=fff`} 
       alt={creator.name}
       style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.9 }}
     />
@@ -414,47 +414,228 @@ MarketplaceHeader.propTypes = {
 };
 
 const EliteConversion = ({ mob, navigate }) => (
-  <section style={{ padding: mob ? '80px 20px' : '120px 20px', background: '#fff', borderTop: '1px solid #f1f5f9' }}>
-    <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-      <div style={{ 
-        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', 
-        borderRadius: mob ? 32 : 56, padding: mob ? '48px 24px' : '80px',
-        textAlign: 'center', position: 'relative', overflow: 'hidden'
-      }}>
-        <div style={{ position: 'absolute', top: '-50%', left: '-20%', width: '100%', height: '200%', background: 'radial-gradient(circle, rgba(255,148,49,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        
-        <div style={{ position: 'relative', zIndex: 2 }}>
-          <h2 style={{ fontSize: mob ? 32 : 56, fontWeight: 950, color: '#fff', marginBottom: 24, letterSpacing: '-0.04em' }}>
-            Ready to Scale your <span style={{ color: '#FF9431' }}>Influence?</span>
-          </h2>
-          <p style={{ fontSize: mob ? 16 : 20, color: '#94a3b8', maxWidth: 700, margin: '0 auto 48px', lineHeight: 1.6 }}>
-            Whether you're a brand looking for elite talent or a creator building your sovereign identity, CreatorBharat is your protocol for growth.
-          </p>
+  <section style={{ padding: mob ? '60px 16px' : '100px 24px', background: '#f8fafc' }}>
+    <div style={{ maxWidth: 1280, margin: '0 auto' }}>
 
-          <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: 20, justifyContent: 'center' }}>
-            <button 
-              onClick={() => navigate('/brand-register')}
-              style={{ 
-                padding: '20px 48px', borderRadius: 100, background: '#FF9431', color: '#fff',
-                border: 'none', fontSize: 16, fontWeight: 900, cursor: 'pointer',
-                boxShadow: '0 20px 40px rgba(255,148,49,0.25)', transition: 'all 0.3s'
+      {/* ── Section label ── */}
+      <div style={{ textAlign: 'center', marginBottom: mob ? 32 : 56 }}>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 10,
+          padding: '8px 20px', borderRadius: 100,
+          background: 'rgba(255,148,49,0.06)', border: '1.5px solid rgba(255,148,49,0.15)',
+          fontSize: 11, fontWeight: 950, color: '#FF9431', letterSpacing: '3px', textTransform: 'uppercase',
+          marginBottom: 20
+        }}>
+          ✦ Your Next Move
+        </div>
+        <h2 style={{
+          fontSize: mob ? 32 : 56, fontWeight: 950, color: '#0f172a',
+          letterSpacing: '-0.04em', lineHeight: 1,
+        }}>
+          Ready to Scale your{' '}
+          <span style={{ background: 'linear-gradient(135deg,#FF9431,#EA580C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            Influence?
+          </span>
+        </h2>
+        {!mob && (
+          <p style={{ fontSize: 18, color: '#64748b', maxWidth: 600, margin: '16px auto 0', lineHeight: 1.65, fontWeight: 600 }}>
+            Whether you're a brand hunting elite talent or a creator building your sovereign identity — CreatorBharat is your protocol for growth.
+          </p>
+        )}
+      </div>
+
+      {/* ── Split Card Row ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 16 : 24 }}>
+
+        {/* ─── BRAND CARD ─── */}
+        <motion.div
+          whileHover={mob ? {} : { y: -8, scale: 1.01 }}
+          transition={{ duration: 0.4, ease: [0.16,1,0.3,1] }}
+          style={{
+            position: 'relative', overflow: 'hidden',
+            borderRadius: mob ? 28 : 40,
+            background: '#0f172a',
+            boxShadow: '0 32px 64px rgba(15,23,42,0.18)',
+            cursor: 'pointer',
+            minHeight: mob ? 340 : 460,
+          }}
+          onClick={() => navigate('/brand-register')}
+        >
+          {/* Real background photo — brand/advertising scene */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: 'url(https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&q=80&w=900)',
+            backgroundSize: 'cover', backgroundPosition: 'center',
+            opacity: 0.35,
+          }} />
+          {/* Gradient overlay */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(160deg, rgba(15,23,42,0.1) 0%, rgba(15,23,42,0.92) 70%)',
+          }} />
+          {/* Saffron glow orb */}
+          <div style={{
+            position: 'absolute', top: -60, right: -60,
+            width: 250, height: 250, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255,148,49,0.2) 0%, transparent 70%)',
+            filter: 'blur(30px)',
+          }} />
+
+          {/* Floating stat chips */}
+          <div style={{ position: 'absolute', top: mob ? 24 : 32, right: mob ? 20 : 32, display: 'flex', flexDirection: 'column', gap: 10, zIndex: 4 }}>
+            {[
+              { label: 'Avg Campaign ROI', value: '4.2x', color: '#10B981' },
+              { label: 'Active Brands', value: '1,200+', color: '#FF9431' },
+            ].map(s => (
+              <div key={s.label} style={{
+                background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(16px)',
+                border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14,
+                padding: mob ? '8px 14px' : '10px 18px', textAlign: 'right',
+              }}>
+                <div style={{ fontSize: mob ? 16 : 20, fontWeight: 950, color: s.color, letterSpacing: '-0.03em' }}>{s.value}</div>
+                <div style={{ fontSize: mob ? 9 : 10, fontWeight: 800, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '1px' }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Content */}
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: mob ? '28px 24px' : '44px 44px', zIndex: 4 }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              background: 'rgba(255,148,49,0.12)', border: '1px solid rgba(255,148,49,0.25)',
+              borderRadius: 100, padding: '6px 16px', marginBottom: 16
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF9431', display: 'block' }} />
+              <span style={{ fontSize: 11, fontWeight: 950, color: '#FF9431', letterSpacing: '2px', textTransform: 'uppercase' }}>For Brands</span>
+            </div>
+            <h3 style={{ fontSize: mob ? 24 : 36, fontWeight: 950, color: '#fff', letterSpacing: '-0.04em', marginBottom: 10, lineHeight: 1.05 }}>
+              Launch Campaigns<br />with Elite Creators
+            </h3>
+            <p style={{ fontSize: mob ? 13 : 15, color: 'rgba(255,255,255,0.55)', fontWeight: 600, lineHeight: 1.6, marginBottom: 28, maxWidth: 380 }}>
+              Access India's most verified creator intelligence platform. Filter by niche, city, reach, and engagement — with AI matching and escrow payments.
+            </p>
+            <button
+              onClick={e => { e.stopPropagation(); navigate('/brand-register'); }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 10,
+                background: '#FF9431', color: '#fff', border: 'none',
+                padding: mob ? '14px 28px' : '16px 36px', borderRadius: 14,
+                fontSize: mob ? 14 : 15, fontWeight: 950, cursor: 'pointer',
+                boxShadow: '0 16px 36px rgba(255,148,49,0.35)', transition: 'all 0.3s',
               }}
             >
               Start a Campaign
+              <ChevronRight size={18} />
             </button>
-            <button 
-              onClick={() => navigate('/apply')}
-              style={{ 
-                padding: '20px 48px', borderRadius: 100, background: 'rgba(255,255,255,0.05)', color: '#fff',
-                border: '1px solid rgba(255,255,255,0.1)', fontSize: 16, fontWeight: 900, cursor: 'pointer',
-                backdropFilter: 'blur(10px)', transition: 'all 0.3s'
+          </div>
+        </motion.div>
+
+        {/* ─── CREATOR CARD ─── */}
+        <motion.div
+          whileHover={mob ? {} : { y: -8, scale: 1.01 }}
+          transition={{ duration: 0.4, ease: [0.16,1,0.3,1] }}
+          style={{
+            position: 'relative', overflow: 'hidden',
+            borderRadius: mob ? 28 : 40,
+            background: '#fff',
+            border: '1.5px solid #e2e8f0',
+            boxShadow: '0 20px 48px rgba(15,23,42,0.06)',
+            cursor: 'pointer',
+            minHeight: mob ? 340 : 460,
+          }}
+          onClick={() => navigate('/apply')}
+        >
+          {/* Real background photo — creator/studio scene */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: 'url(https://images.unsplash.com/photo-1611532736597-de2d4265fba3?auto=format&fit=crop&q=80&w=900)',
+            backgroundSize: 'cover', backgroundPosition: 'center top',
+            opacity: 0.12,
+          }} />
+          {/* Light gradient overlay */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(160deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.97) 65%)',
+          }} />
+          {/* Saffron glow orb top-right */}
+          <div style={{
+            position: 'absolute', top: -40, right: -40,
+            width: 220, height: 220, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255,148,49,0.08) 0%, transparent 70%)',
+            filter: 'blur(20px)',
+          }} />
+
+          {/* Floating stat chips */}
+          <div style={{ position: 'absolute', top: mob ? 24 : 32, right: mob ? 20 : 32, display: 'flex', flexDirection: 'column', gap: 10, zIndex: 4 }}>
+            {[
+              { label: 'Avg Brand Deals/mo', value: '₹48K', color: '#0f172a' },
+              { label: 'Verified Creators', value: '2,400+', color: '#FF9431' },
+            ].map(s => (
+              <div key={s.label} style={{
+                background: '#f8fafc', border: '1px solid #e2e8f0',
+                borderRadius: 14, padding: mob ? '8px 14px' : '10px 18px', textAlign: 'right',
+              }}>
+                <div style={{ fontSize: mob ? 16 : 20, fontWeight: 950, color: s.color, letterSpacing: '-0.03em' }}>{s.value}</div>
+                <div style={{ fontSize: mob ? 9 : 10, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Content */}
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: mob ? '28px 24px' : '44px 44px', zIndex: 4 }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)',
+              borderRadius: 100, padding: '6px 16px', marginBottom: 16
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', display: 'block' }} />
+              <span style={{ fontSize: 11, fontWeight: 950, color: '#10B981', letterSpacing: '2px', textTransform: 'uppercase' }}>For Creators</span>
+            </div>
+            <h3 style={{ fontSize: mob ? 24 : 36, fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', marginBottom: 10, lineHeight: 1.05 }}>
+              Build Your Sovereign<br />Creator Identity
+            </h3>
+            <p style={{ fontSize: mob ? 13 : 15, color: '#64748b', fontWeight: 600, lineHeight: 1.6, marginBottom: 28, maxWidth: 380 }}>
+              Get AI-generated media kits, live analytics dashboards, and direct access to India's top brand deals — all in one place. Zero commission. Full control.
+            </p>
+            <button
+              onClick={e => { e.stopPropagation(); navigate('/apply'); }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 10,
+                background: '#0f172a', color: '#fff', border: 'none',
+                padding: mob ? '14px 28px' : '16px 36px', borderRadius: 14,
+                fontSize: mob ? 14 : 15, fontWeight: 950, cursor: 'pointer',
+                boxShadow: '0 16px 36px rgba(15,23,42,0.15)', transition: 'all 0.3s',
               }}
             >
               Join as a Creator
+              <ChevronRight size={18} />
             </button>
           </div>
-        </div>
+        </motion.div>
       </div>
+
+      {/* ── Bottom trust row ── */}
+      <div style={{
+        display: 'flex', flexWrap: 'wrap', justifyContent: 'center',
+        gap: mob ? 12 : 24, marginTop: mob ? 32 : 48,
+      }}>
+        {[
+          { icon: '🔒', text: 'Escrow-Secured Payments' },
+          { icon: '⚡', text: 'Live Campaign Analytics' },
+          { icon: '✅', text: 'AI-Verified Profiles' },
+          { icon: '🇮🇳', text: 'Made for Bharat' },
+          { icon: '🚫', text: 'Zero Hidden Commission' },
+        ].map(t => (
+          <div key={t.text} style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            fontSize: 13, fontWeight: 700, color: '#475569',
+          }}>
+            <span style={{ fontSize: 16 }}>{t.icon}</span>
+            {t.text}
+          </div>
+        ))}
+      </div>
+
     </div>
   </section>
 );
@@ -518,7 +699,7 @@ const CARD_S = {
 
 const SpotlightCard = ({ creator, mob, onClick }) => {
   const v = mob ? CARD_S.mob : CARD_S.desk;
-  const photo = creator.photo || creator.avatarUrl || creator.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(creator.name)}&background=FF9431&color=fff`;
+  const photo = creator.photo || creator.image || creator.avatarUrl || creator.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(creator.name)}&background=FF9431&color=fff`;
   const primaryNiche = Array.isArray(creator.niche) ? creator.niche[0] : (creator.niche || creator.category || 'Creator');
 
   return (

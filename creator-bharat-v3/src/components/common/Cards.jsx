@@ -31,16 +31,18 @@ const getSocialIcon = p => {
   return <Smartphone {...props} color="#64748B" />;
 };
 
-const CardHeader = ({ coverUrl, id, saved, dsp, mob, tierLabel, requireBrand }) => {
+const CardHeader = ({ coverUrl, photo, id, saved, dsp, mob, tierLabel, requireBrand }) => {
   const idHash = id ? id.toString().split('').reduce((a, b) => a + (b.codePointAt(0) || 0), 0) : 0;
   const hue1 = (idHash * 137) % 360;
   const hue2 = (hue1 + 40) % 360;
   const fallbackGradient = `linear-gradient(135deg, hsl(${hue1}, 80%, 90%), hsl(${hue2}, 80%, 80%))`;
+  // Use coverUrl first, then photo/image as a cinematic cover, else gradient
+  const coverSrc = coverUrl || photo;
 
   return (
     <div style={{ position: 'relative', height: mob ? 80 : 150, background: fallbackGradient, flexShrink: 0 }}>
-      {coverUrl && (
-        <img src={coverUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+      {coverSrc && (
+        <img src={coverSrc} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }} alt="" />
       )}
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6))' }} />
       <div style={{ position: 'absolute', top: mob ? 8 : 12, right: mob ? 8 : 12, display: 'flex', gap: 8 }}>
@@ -75,6 +77,7 @@ const CardHeader = ({ coverUrl, id, saved, dsp, mob, tierLabel, requireBrand }) 
 
 CardHeader.propTypes = {
   coverUrl: PropTypes.string,
+  photo: PropTypes.string,
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   saved: PropTypes.bool,
   dsp: PropTypes.func.isRequired,
@@ -233,7 +236,7 @@ export function CreatorCard({ creator: c, onView }) {
   const compared = st.compared?.includes(c.id) || false;
   const score = c.score || fmt.score(c);
   const tier = fmt.tier(score);
-  const img = c.photo || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name || 'C')}&background=FF9431&color=fff&size=200`;
+  const img = c.photo || c.image || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name || 'C')}&background=FF9431&color=fff&size=200`;
   const isBrowser = globalThis.window !== undefined;
   const mob = isBrowser && globalThis.window.innerWidth < 768;
   const isMega = (c.followers || 0) >= 100000;
@@ -263,7 +266,7 @@ export function CreatorCard({ creator: c, onView }) {
         e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.03)';
       }}
     >
-      <CardHeader coverUrl={c.coverUrl} id={c.id} saved={saved} dsp={dsp} mob={mob} tierLabel={tier?.label || 'Rising'} requireBrand={requireBrand} />
+      <CardHeader coverUrl={c.coverUrl} photo={img} id={c.id} saved={saved} dsp={dsp} mob={mob} tierLabel={tier?.label || 'Rising'} requireBrand={requireBrand} />
 
       <div style={{ padding: mob ? '0 2px' : '0 24px', flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <CreatorIdentity c={c} mob={mob} img={img} score={score} />

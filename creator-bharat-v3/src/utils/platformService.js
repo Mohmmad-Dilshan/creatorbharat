@@ -53,6 +53,14 @@ function mergeCreator(seed, remote) {
     }
   });
 
+  // Always preserve rich seed images when the API has no image data
+  const imageFields = ['photo', 'image', 'avatarUrl', 'profile_pic', 'coverUrl'];
+  imageFields.forEach(field => {
+    if (!remote[field]) {
+      merged[field] = seed[field];
+    }
+  });
+
   return merged;
 }
 
