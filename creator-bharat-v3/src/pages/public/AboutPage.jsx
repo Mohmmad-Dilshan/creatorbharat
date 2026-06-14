@@ -25,22 +25,45 @@ import {
   INVESTOR_LOGOS
 } from '@/data/aboutData';
 
-const StatBlock = ({ value, label, delay = 0 }) => (
+const StatBlock = ({ value, label, trend, delay = 0 }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
     transition={{ delay, duration: 0.6 }}
-    style={{ textAlign: 'left' }}
+    whileHover={{ y: -4 }}
+    style={{ 
+      textAlign: 'left',
+      background: 'rgba(255, 255, 255, 0.65)',
+      backdropFilter: 'blur(16px)',
+      border: '1px solid rgba(226, 232, 240, 0.8)',
+      padding: '24px',
+      borderRadius: '24px',
+      boxShadow: '0 10px 25px rgba(0,0,0,0.01)',
+      transition: 'all 0.3s ease',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      minHeight: '130px',
+      borderLeft: '4px solid #FF9431'
+    }}
   >
-    <div style={{ fontSize: '56px', fontWeight: 950, color: '#0f172a', marginBottom: '8px', letterSpacing: '-0.04em', fontFamily: "'Outfit', sans-serif" }}>{value}</div>
-    <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em' }}>{label}</div>
+    <div>
+      <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '8px' }}>{label}</div>
+      <div style={{ fontSize: '38px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', fontFamily: "'Outfit', sans-serif", lineHeight: 1 }}>{value}</div>
+    </div>
+    {trend && (
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 800, color: '#10B981', marginTop: '12px', background: 'rgba(16,185,129,0.08)', padding: '4px 10px', borderRadius: '100px', width: 'fit-content' }}>
+         <span>{trend}</span>
+      </div>
+    )}
   </motion.div>
 );
 
 StatBlock.propTypes = {
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   label: PropTypes.string.isRequired,
+  trend: PropTypes.string,
   delay: PropTypes.number
 };
 
@@ -266,6 +289,13 @@ export default function AboutPage() {
           .analytics-tabs::-webkit-scrollbar {
             display: none !important;
           }
+          @keyframes pulseGlow {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            100% { transform: scale(2.2); opacity: 0; }
+          }
+          .pulsing-glow {
+            animation: pulseGlow 1.8s infinite cubic-bezier(0.16, 1, 0.3, 1);
+          }
         }
       `}</style>
 
@@ -313,15 +343,26 @@ export default function AboutPage() {
               display: 'inline-flex', 
               alignItems: 'center', 
               gap: '12px', 
-              background: 'rgba(255, 148, 49, 0.08)', 
-              padding: '8px 20px', 
+              background: 'rgba(255, 148, 49, 0.06)', 
+              padding: '10px 24px', 
               borderRadius: '100px',
               marginBottom: '48px',
-              border: '1px solid rgba(255, 148, 49, 0.15)'
+              border: '1.5px solid rgba(255, 148, 49, 0.12)',
+              boxShadow: '0 4px 20px rgba(255, 148, 49, 0.03)'
             }}
           >
-            <Sparkles size={14} color="#FF9431" fill="#FF9431" />
-            <span style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.2em' }}>The Bharat Chapter</span>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '4px' }}>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#FF9431' }} />
+              <span className="pulsing-glow" style={{
+                position: 'absolute',
+                width: '16px',
+                height: '16px',
+                borderRadius: '50%',
+                border: '2px solid #FF9431',
+                opacity: 0.6
+              }} />
+            </div>
+            <span style={{ fontSize: '11px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.25em', fontFamily: 'monospace' }}>THE BHARAT CHAPTER</span>
           </motion.div>
 
           <div className="about-hero-grid" style={{ 
@@ -336,17 +377,34 @@ export default function AboutPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
                 style={{ 
-                  fontSize: 'clamp(40px, 6.5vw, 75px)', 
+                  fontSize: 'clamp(40px, 6.5vw, 78px)', 
                   fontWeight: 950, 
                   color: '#0f172a', 
-                  lineHeight: 1.0, 
+                  lineHeight: 0.95, 
                   letterSpacing: '-0.05em',
-                  marginBottom: '24px',
+                  marginBottom: '28px',
                   fontFamily: "'Outfit', sans-serif"
                 }}
               >
                 Building for the <br />
-                <span style={{ color: '#FF9431' }}>Next Billion.</span>
+                <span style={{
+                  background: 'linear-gradient(135deg, #FF9431 0%, #ff6b00 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  position: 'relative'
+                }}>
+                  Next Billion.
+                  <span style={{
+                    position: 'absolute',
+                    bottom: '4px',
+                    left: 0,
+                    width: '100%',
+                    height: '8px',
+                    background: 'rgba(255, 148, 49, 0.15)',
+                    borderRadius: '4px',
+                    zIndex: -1
+                  }} />
+                </span>
               </motion.h1>
               
               <p className="about-hero-paragraph" style={{ fontSize: '18px', color: '#475569', lineHeight: 1.6, fontWeight: 600, marginBottom: '40px', maxWidth: '560px' }}>
@@ -357,13 +415,13 @@ export default function AboutPage() {
               <div className="about-hero-stats" style={{ 
                 display: 'grid', 
                 gridTemplateColumns: 'repeat(2, 1fr)', 
-                gap: '32px',
+                gap: '24px',
                 marginBottom: '40px'
               }}>
-                <StatBlock value={liveStats.districts} label="Districts Covered" delay={0.2} />
-                <StatBlock value="4.9/5" label="Creator Rating" delay={0.3} />
-                <StatBlock value={liveStats.reach} label="Aggregate Reach" delay={0.4} />
-                <StatBlock value="0%" label="Broker Fees" delay={0.5} />
+                <StatBlock value={liveStats.districts} label="Districts Covered" trend="+12 Districts MoM" delay={0.2} />
+                <StatBlock value="4.9/5" label="Creator Rating" trend="★ Top Platform" delay={0.3} />
+                <StatBlock value={liveStats.reach} label="Aggregate Reach" trend="+2.4M Active" delay={0.4} />
+                <StatBlock value="0%" label="Broker Fees" trend="✓ 0% Middleman" delay={0.5} />
               </div>
             </div>
 
@@ -374,7 +432,27 @@ export default function AboutPage() {
               transition={{ delay: 0.3, duration: 0.8 }}
               style={{ width: '100%', position: 'relative', zIndex: 2 }}
             >
-              <CreatorNetworkCanvas mob={mob} />
+              {/* Glowing Background Ring */}
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '110%',
+                height: '110%',
+                background: 'radial-gradient(circle, rgba(255,148,49,0.08) 0%, transparent 65%)',
+                filter: 'blur(30px)',
+                zIndex: 0,
+                pointerEvents: 'none'
+              }} />
+
+              {/* Decorative Tech corner dots */}
+              <div style={{ position: 'absolute', top: '-10px', left: '-10px', width: '20px', height: '20px', borderTop: '2px solid #FF9431', borderLeft: '2px solid #FF9431', zIndex: 1 }} />
+              <div style={{ position: 'absolute', bottom: '-10px', right: '-10px', width: '20px', height: '20px', borderBottom: '2px solid #10B981', borderRight: '2px solid #10B981', zIndex: 1 }} />
+
+              <div style={{ position: 'relative', zIndex: 2 }}>
+                <CreatorNetworkCanvas mob={mob} />
+              </div>
             </motion.div>
           </div>
 
