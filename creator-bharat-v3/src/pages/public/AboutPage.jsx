@@ -18,7 +18,11 @@ import CreatorNetworkCanvas from '@/components/features/about/CreatorNetworkCanv
 import { 
   BLUEPRINT_CARDS, 
   TIMELINE_DATA, 
-  PHILOSOPHY_PILLARS 
+  PHILOSOPHY_PILLARS,
+  LEADERSHIP_TEAM,
+  ADVISORY_BOARD,
+  PRESS_LOGOS,
+  INVESTOR_LOGOS
 } from '@/data/aboutData';
 
 const StatBlock = ({ value, label, delay = 0 }) => (
@@ -46,7 +50,9 @@ const HeroBlueprint = () => {
       marginTop: '60px',
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-      gap: '24px'
+      gap: '24px',
+      position: 'relative',
+      zIndex: 2
     }}>
       {BLUEPRINT_CARDS.map((card, i) => (
         <motion.div
@@ -55,10 +61,11 @@ const HeroBlueprint = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 * i, duration: 0.6 }}
-          whileHover={{ y: -6, borderColor: 'rgba(255, 148, 49, 0.25)', boxShadow: '0 15px 35px rgba(0,0,0,0.02)' }}
+          whileHover={{ y: -6, borderColor: 'rgba(255, 148, 49, 0.25)', boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}
           style={{
-            background: '#ffffff',
-            border: '1px solid #e2e8f0',
+            background: 'rgba(255, 255, 255, 0.85)',
+            backdropFilter: 'blur(16px)',
+            border: '1px solid rgba(226, 232, 240, 0.8)',
             borderRadius: '28px',
             padding: '32px',
             position: 'relative',
@@ -66,7 +73,8 @@ const HeroBlueprint = () => {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            transition: 'all 0.3s ease'
+            transition: 'all 0.3s ease',
+            boxShadow: '0 4px 30px rgba(0, 0, 0, 0.01)'
           }}
         >
           <div style={{ position: 'absolute', top: '-10px', right: '-10px', fontSize: '90px', fontWeight: 950, color: 'rgba(15,23,42,0.02)', userSelect: 'none', lineHeight: 1 }}>{card.num}</div>
@@ -161,9 +169,9 @@ export default function AboutPage() {
   return (
     <div style={{ background: '#fff', overflowX: 'hidden' }}>
       <Seo 
-        title="Our Mission & DNA"
-        description="We are building the trust layer for Bharat's regional creator economy. Discover the story of CreatorBharat."
-        keywords="about us, bharat creator economy, bhilwara startup, regional creators"
+        title="Our Mission & DNA - Premium Creator Network"
+        description="We are building the trust layer and decentralized SaaS matching infrastructure for Bharat's regional creator economy. Discover our story."
+        keywords="about us, bharat creator economy, bhilwara startup, regional creators, creator network"
         jsonLd={jsonLd}
       />
 
@@ -263,7 +271,7 @@ export default function AboutPage() {
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       
-      {/* CINEMATIC HERO SECTION */}
+      {/* CINEMATIC HERO SECTION WITH REAL WORKSPACE POSTER */}
       <section style={{ 
         background: '#ffffff', 
         padding: mob ? '90px 20px 60px' : '130px 24px 100px', 
@@ -271,9 +279,31 @@ export default function AboutPage() {
         overflow: 'hidden',
         borderBottom: '1px solid #e2e8f0'
       }}>
-        {/* Advanced Decorative Elements */}
-        <div style={{ position: 'absolute', top: '-10%', right: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(255, 148, 49, 0.04) 0%, transparent 70%)', filter: 'blur(60px)' }} />
-        <div style={{ position: 'absolute', bottom: '-10%', left: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.02) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        {/* Full-bleed background workspace photo of creative team */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/about_workspace.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: mob ? 'center' : 'center 35%',
+          opacity: mob ? 0.15 : 0.85,
+          zIndex: 0
+        }} />
+
+        {/* Soft, premium gradient mask that ensures perfect text readability on the left */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: mob 
+            ? 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.98) 100%)'
+            : 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.98) 35%, rgba(255,255,255,0.65) 60%, rgba(255,255,255,0.15) 100%)',
+          zIndex: 1,
+          pointerEvents: 'none'
+        }} />
+
+        {/* Advanced Decorative Glows */}
+        <div style={{ position: 'absolute', top: '-10%', right: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(255, 148, 49, 0.06) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 1 }} />
+        <div style={{ position: 'absolute', bottom: '-10%', left: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.04) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 1 }} />
         
         <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <motion.div
@@ -319,8 +349,8 @@ export default function AboutPage() {
                 <span style={{ color: '#FF9431' }}>Next Billion.</span>
               </motion.h1>
               
-              <p className="about-hero-paragraph" style={{ fontSize: '18px', color: '#475569', lineHeight: 1.6, fontWeight: 500, marginBottom: '40px', maxWidth: '560px' }}>
-                Metros are saturated. Influence is migrating. We are the infrastructure for India's regional rising stars, connecting brands directly to local voices.
+              <p className="about-hero-paragraph" style={{ fontSize: '18px', color: '#475569', lineHeight: 1.6, fontWeight: 600, marginBottom: '40px', maxWidth: '560px' }}>
+                Metros are saturated. Influence is migrating. We are building the trust and matching infrastructure for India's regional rising stars, connecting brands directly to local voices with zero middleman broker fees.
               </p>
 
               {/* Stats Snapshot */}
@@ -337,12 +367,12 @@ export default function AboutPage() {
               </div>
             </div>
 
-            {/* Interactive HTML5 Canvas Creator Network */}
+            {/* Interactive HTML5 Canvas Creator Network inside clean device mockup */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3, duration: 0.8 }}
-              style={{ width: '100%' }}
+              style={{ width: '100%', position: 'relative', zIndex: 2 }}
             >
               <CreatorNetworkCanvas mob={mob} />
             </motion.div>
@@ -351,11 +381,69 @@ export default function AboutPage() {
           <HeroBlueprint />
 
           <LiveAnalyticsPulse />
+          
+          {/* PRESS & BACKERS LOGO WALL */}
+          <div style={{
+            marginTop: '80px',
+            borderTop: '1px solid #e2e8f0',
+            borderBottom: '1px solid #e2e8f0',
+            padding: '40px 0',
+            textAlign: 'center',
+            position: 'relative',
+            zIndex: 2
+          }}>
+            <div style={{ fontSize: '10px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '28px' }}>
+              Featured in & Backed by Leading Publications & VCs
+            </div>
+            
+            {/* Publications Grid */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: mob ? '32px' : '64px',
+              flexWrap: 'wrap',
+              opacity: 0.75,
+              marginBottom: '32px'
+            }}>
+              {PRESS_LOGOS.map((pub) => (
+                <div key={pub.name} style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: mob ? '18px' : '22px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', fontFamily: "'Outfit', sans-serif" }}>
+                    {pub.name}
+                  </div>
+                  <div style={{ fontSize: '9px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginTop: '2px' }}>
+                    {pub.desc.split(' ').slice(0, 2).join(' ')}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* VCs Row */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: mob ? '16px' : '24px',
+              flexWrap: 'wrap',
+              paddingTop: '24px',
+              borderTop: '1px dashed #e2e8f0',
+              opacity: 0.95
+            }}>
+              {INVESTOR_LOGOS.map((inv) => (
+                <div key={inv.name} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#f8fafc', padding: '6px 14px', borderRadius: '100px', border: '1px solid #e2e8f0' }}>
+                   <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FF9431', boxShadow: '0 0 6px #FF9431' }} />
+                   <span style={{ fontSize: '11px', fontWeight: 900, color: '#0f172a' }}>{inv.name}</span>
+                   <span style={{ fontSize: '9px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>({inv.type})</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       </section>
 
       {/* REGIONAL POWER SECTION */}
-      <section className="regional-power-section" style={{ padding: '90px 24px', background: '#fff' }}>
+      <section className="regional-power-section" style={{ padding: '100px 24px', background: '#fff' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div className="regional-power-grid" style={{ 
             display: 'grid', 
@@ -379,9 +467,10 @@ export default function AboutPage() {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                padding: '40px'
+                padding: '40px',
+                boxShadow: '0 30px 60px rgba(0,0,0,0.02)'
               }}>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', zIndex: 2 }}>
                   {[
                     { id: 'bhilwara', label: '📍 Bhilwara (HQ)' },
                     { id: 'jaipur', label: '🏰 Jaipur Hub' },
@@ -391,7 +480,7 @@ export default function AboutPage() {
                       key={c.id}
                       onClick={() => setSelectedCity(c.id)}
                       style={{
-                        padding: '6px 12px',
+                        padding: '8px 16px',
                         borderRadius: '100px',
                         border: selectedCity === c.id ? '1px solid rgba(255,148,49,0.3)' : '1px solid #cbd5e1',
                         background: selectedCity === c.id ? 'rgba(255,148,49,0.1)' : '#fff',
@@ -416,7 +505,7 @@ export default function AboutPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.97 }}
                     transition={{ duration: 0.2 }}
-                    style={{ textAlign: 'center', margin: '40px 0' }}
+                    style={{ textAlign: 'center', margin: '40px 0', zIndex: 2 }}
                   >
                     <MapPin size={80} color="#FF9431" strokeWidth={1.5} style={{ marginBottom: '20px', filter: 'drop-shadow(0 8px 16px rgba(255,148,49,0.25))' }} />
                     <div style={{ fontSize: '12px', fontWeight: 900, color: '#94a3b8', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Origin & Impact</div>
@@ -433,7 +522,7 @@ export default function AboutPage() {
                   </motion.div>
                 </AnimatePresence>
 
-                <div style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center' }}>
+                <div style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center', zIndex: 2 }}>
                   Click tabs to explore our roots
                 </div>
               </div>
@@ -474,7 +563,7 @@ export default function AboutPage() {
       </section>
 
       {/* ORIGIN TIMELINE */}
-      <section style={{ padding: '90px 24px', background: '#f8fafc', borderRadius: '80px 80px 0 0' }}>
+      <section style={{ padding: '100px 24px', background: '#f8fafc', borderRadius: '80px 80px 0 0', borderTop: '1px solid #e2e8f0' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '100px' }}>
             <h2 className="section-heading" style={{ fontSize: '56px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em' }}>Our Evolution</h2>
@@ -503,12 +592,12 @@ export default function AboutPage() {
       </section>
 
       {/* WORKFLOW PIPELINE ACCORDION */}
-      <section style={{ padding: '90px 24px 0', background: '#fff' }}>
+      <section style={{ padding: '100px 24px 0', background: '#fff' }}>
         <CampaignPipelineVisualizer />
       </section>
 
       {/* PHILOSOPHY GRID */}
-      <section style={{ padding: '90px 24px', background: '#fff' }}>
+      <section style={{ padding: '100px 24px', background: '#fff' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '80px' }}>
             <Bdg color="orange" sm>OUR CORE DNA</Bdg>
@@ -525,12 +614,13 @@ export default function AboutPage() {
                 style={{
                   padding: '60px 40px',
                   borderRadius: '48px',
-                  border: '1px solid #f1f5f9',
-                  background: '#fcfcfc',
+                  border: '1.5px solid rgba(241, 245, 249, 0.9)',
+                  background: 'rgba(255, 255, 255, 0.75)',
+                  backdropFilter: 'blur(20px)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
-                  boxShadow: '0 20px 50px rgba(0,0,0,0.01)',
+                  boxShadow: '0 20px 50px rgba(0,0,0,0.015)',
                   position: 'relative',
                   overflow: 'hidden'
                 }}
@@ -551,10 +641,10 @@ export default function AboutPage() {
                   <div style={{ fontSize: '12px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px' }}>Enabled Tools:</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {v.features.map(f => (
-                      <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#334155', fontWeight: 600 }}>
-                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: v.color }} />
-                        {f}
-                      </div>
+                       <div key={f} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#334155', fontWeight: 600 }}>
+                         <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: v.color }} />
+                         {f}
+                       </div>
                     ))}
                   </div>
                 </div>
@@ -564,97 +654,130 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* FOUNDER & LEADERSHIP SECTION */}
-      <section style={{ padding: '90px 24px', background: '#f8fafc', borderRadius: '80px 80px 0 0' }}>
+      {/* LEADERSHIP & ADVISORY BOARD SECTION */}
+      <section style={{ padding: '100px 24px', background: '#f8fafc', borderRadius: '80px 80px 0 0', borderTop: '1px solid #e2e8f0' }}>
          <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-            <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-               <Bdg color="orange" sm>FOUNDER & VISION</Bdg>
-               <h2 className="section-heading" style={{ fontSize: '56px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', marginTop: '16px' }}>Meet the Founder</h2>
-               <p style={{ fontSize: '18px', color: '#64748b', marginTop: '12px' }}>Empowering regional voices and leading the decentralized shift in the creator economy.</p>
+            <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+               <Bdg color="orange" sm>EXECUTIVE TEAM</Bdg>
+               <h2 className="section-heading" style={{ fontSize: mob ? '38px' : '56px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', marginTop: '16px' }}>Leadership & Advisory</h2>
+               <p style={{ fontSize: '18px', color: '#64748b', marginTop: '12px', maxWidth: '600px', margin: '12px auto 0' }}>The builders and strategists scaling Bharat's creator matchmaking and secure escrow infrastructure.</p>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-               <motion.div
-                 whileHover={{ y: -6 }}
-                 className="founder-card"
-                 style={{
-                   background: '#fff',
-                   border: '1.5px solid #e2e8f0',
-                   borderRadius: '40px',
-                   padding: '48px 32px',
-                   maxWidth: '850px',
-                   width: '100%',
-                   boxShadow: '0 20px 45px rgba(0,0,0,0.03)',
-                   display: 'flex',
-                   flexDirection: 'row',
-                   flexWrap: 'wrap',
-                   gap: '40px',
-                   alignItems: 'center',
-                   position: 'relative',
-                   textAlign: 'left'
-                 }}
-               >
-                  {/* Glowing orange accent dot */}
-                  <div className="founder-card-verified" style={{ position: 'absolute', top: '24px', right: '24px', background: '#FF943115', color: '#FF9431', padding: '6px 14px', borderRadius: '100px', fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                     <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FF9431' }} /> VERIFIED FOUNDER
-                  </div>
-
-                  {/* Avatar Frame */}
-                  <div style={{ position: 'relative', flexShrink: 0, margin: '0 auto' }}>
-                     <div style={{
-                       width: '160px',
-                       height: '160px',
-                       borderRadius: '32px',
-                       overflow: 'hidden',
-                       border: '3px solid #fff',
-                       boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
-                     }}>
-                        <img 
-                           src="https://ui-avatars.com/api/?name=Mohmmad+Dilshan&background=FF9431&color=fff&size=256" 
-                           alt="Mohmmad Dilshan" 
-                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
-                     </div>
-                     <div style={{ position: 'absolute', bottom: '-10px', right: '-10px', background: '#0f172a', color: '#fff', padding: '6px 12px', borderRadius: '12px', fontSize: '11px', fontWeight: 800, border: '1px solid rgba(255,255,255,0.1)' }}>
-                        🇮🇳 Bhilwara
-                     </div>
-                  </div>
-
-                  {/* Profile Details */}
-                  <div className="founder-info" style={{ flex: '1 1 300px' }}>
-                     <div style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px' }}>LEADERSHIP</div>
-                     <h3 style={{ fontSize: '30px', fontWeight: 950, color: '#0f172a', margin: '4px 0 8px 0', letterSpacing: '-0.02em' }}>Mohmmad Dilshan</h3>
-                     <div style={{ fontSize: '14px', fontWeight: 700, color: '#475569', marginBottom: '16px' }}>Founder & Chief Architect</div>
-                     
-                     <p style={{ fontSize: '15px', color: '#64748b', lineHeight: 1.7, fontWeight: 550, margin: '0 0 24px 0' }}>
-                        Democratizing the digital economy for the next billion users through decentralized intelligence, modular architecture, and zero-brokerage campaigns.
-                     </p>
-
-                     {/* Skill Tag Clusters */}
-                     <div className="founder-skills" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '28px' }}>
-                        {['System Architecture', 'Product Strategy', 'Decentralized Networks', 'Escrow Ledgers'].map(skill => (
-                          <span key={skill} style={{ fontSize: '12px', fontWeight: 650, color: '#475569', background: '#f1f5f9', padding: '5px 12px', borderRadius: '8px' }}>
-                            {skill}
-                          </span>
-                        ))}
+            {/* Leadership Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px', marginBottom: '80px' }}>
+               {LEADERSHIP_TEAM.map((member) => (
+                  <motion.div
+                    key={member.name}
+                    whileHover={{ y: -6 }}
+                    style={{
+                      background: '#ffffff',
+                      border: '1.5px solid #e2e8f0',
+                      borderRadius: '40px',
+                      padding: '40px 32px',
+                      boxShadow: '0 20px 45px rgba(0,0,0,0.02)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      position: 'relative'
+                    }}
+                  >
+                     <div style={{ position: 'absolute', top: '24px', right: '24px', background: 'rgba(255, 148, 49, 0.08)', color: '#FF9431', padding: '4px 12px', borderRadius: '100px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                        {member.tag}
                      </div>
 
-                     {/* Social Links Row */}
-                     <div className="founder-socials" style={{ display: 'flex', gap: '16px', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '20px' }}>
-                        <a href="https://linkedin.com/in/mohmmad-dilshan" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none', color: '#0f172a', fontSize: '13px', fontWeight: 800 }}>
-                           <LinkedinIcon size={16} /> LinkedIn
-                        </a>
-                        <a href="https://github.com/mohmmad-dilshan" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none', color: '#0f172a', fontSize: '13px', fontWeight: 800 }}>
-                           <GithubIcon size={16} /> GitHub
-                        </a>
-                        <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: 'auto', fontWeight: 650, fontFamily: 'monospace' }}>CONSENSUS_NODE_001</span>
+                     <div>
+                        {/* Avatar */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '24px' }}>
+                           <div style={{
+                             width: '90px',
+                             height: '90px',
+                             borderRadius: '24px',
+                             overflow: 'hidden',
+                             border: '2px solid #fff',
+                             boxShadow: '0 8px 20px rgba(0,0,0,0.06)'
+                           }}>
+                              <img 
+                                 src={member.image} 
+                                 alt={member.name} 
+                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              />
+                           </div>
+                           <div>
+                              <h3 style={{ fontSize: '22px', fontWeight: 950, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>{member.name}</h3>
+                              <div style={{ fontSize: '13px', fontWeight: 800, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: '4px' }}>{member.role}</div>
+                              <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, marginTop: '2px' }}>📍 {member.location}</div>
+                           </div>
+                        </div>
+
+                        <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, margin: '0 0 24px 0', minHeight: '80px' }}>
+                           {member.bio}
+                        </p>
                      </div>
-                  </div>
-               </motion.div>
+
+                     <div>
+                        {/* Skills */}
+                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '24px' }}>
+                           {member.skills.map(skill => (
+                             <span key={skill} style={{ fontSize: '11px', fontWeight: 700, color: '#475569', background: '#f1f5f9', padding: '4px 10px', borderRadius: '6px' }}>
+                               {skill}
+                             </span>
+                           ))}
+                        </div>
+
+                        {/* Socials */}
+                        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>
+                           {member.socials.linkedin && (
+                             <a href={member.socials.linkedin} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', color: '#0f172a', fontSize: '12px', fontWeight: 805 }}>
+                                <LinkedinIcon size={14} /> LinkedIn
+                             </a>
+                           )}
+                           {member.socials.github && (
+                             <a href={member.socials.github} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', color: '#0f172a', fontSize: '12px', fontWeight: 805 }}>
+                                <GithubIcon size={14} /> GitHub
+                             </a>
+                           )}
+                           {member.socials.twitter && (
+                             <a href={member.socials.twitter} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none', color: '#0f172a', fontSize: '12px', fontWeight: 805 }}>
+                                <TwitterIcon size={14} /> Twitter
+                             </a>
+                           )}
+                        </div>
+                     </div>
+                  </motion.div>
+               ))}
+            </div>
+
+            {/* Advisory Board Row */}
+            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '80px' }}>
+               <div style={{ textAlign: 'center', marginBottom: '50px' }}>
+                  <Bdg color="emerald" sm>BOARD OF ADVISORS</Bdg>
+                  <h3 style={{ fontSize: mob ? '30px' : '40px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.03em', marginTop: '12px' }}>Strategic Advisors</h3>
+               </div>
+
+               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                  {ADVISORY_BOARD.map((advisor) => (
+                     <div key={advisor.name} style={{ background: 'rgba(255,255,255,0.6)', border: '1px solid #e2e8f0', borderRadius: '30px', padding: '32px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 10px 30px rgba(0,0,0,0.01)' }}>
+                        <div>
+                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
+                              <div>
+                                 <h4 style={{ fontSize: '18px', fontWeight: 900, color: '#0f172a', margin: 0 }}>{advisor.name}</h4>
+                                 <div style={{ fontSize: '12px', color: '#FF9431', fontWeight: 800, marginTop: '2px' }}>{advisor.role}</div>
+                              </div>
+                              <span style={{ fontSize: '11px', fontWeight: 900, color: '#10B981', background: 'rgba(16,185,129,0.08)', padding: '4px 12px', borderRadius: '100px', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                                 {advisor.company}
+                              </span>
+                           </div>
+                           <p style={{ fontSize: '14px', color: '#64748b', lineHeight: 1.6, marginTop: '16px', marginBottom: 0 }}>
+                              {advisor.desc}
+                           </p>
+                        </div>
+                     </div>
+                  ))}
+               </div>
             </div>
 
             {/* Distributed Network Notice */}
-            <div style={{ textAlign: 'center', marginTop: '40px', color: '#64748b', fontSize: '13.5px', fontWeight: 550 }}>
+            <div style={{ textAlign: 'center', marginTop: '50px', color: '#64748b', fontSize: '13.5px', fontWeight: 550 }}>
                🌍 Supported by a distributed network of regional core contributors and ambassadors across India.
             </div>
          </div>
@@ -663,7 +786,7 @@ export default function AboutPage() {
       {/* FINAL VISION CTA */}
       <section style={{ padding: '0 24px 100px' }}>
          <motion.div 
-           whileHover={{ scale: 0.99 }}
+           whileHover={{ scale: 0.995 }}
            style={{ 
             maxWidth: '1200px', 
             margin: '0 auto', 
