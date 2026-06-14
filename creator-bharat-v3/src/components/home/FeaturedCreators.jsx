@@ -119,6 +119,11 @@ function CreatorCard({ c, go, mob }) {
         <div style={{ fontSize: 11, color: '#8e8e8e', fontWeight: 400, marginBottom: 4 }}>
           {handle}
         </div>
+        {(c.tagline || (Array.isArray(c.niche) && c.niche.length > 0 ? `${c.niche[0]} Creator` : 'Digital Content Creator')) && (
+          <div style={{ fontSize: 10, color: '#FF9431', fontWeight: 700, marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }} title={c.tagline || (Array.isArray(c.niche) && c.niche.length > 0 ? `${c.niche[0]} Creator` : 'Digital Content Creator')}>
+            {c.tagline || (Array.isArray(c.niche) && c.niche.length > 0 ? `${c.niche[0]} Creator` : 'Digital Content Creator')}
+          </div>
+        )}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 10, fontWeight: 600, color: '#94a3b8' }}>{c.city || 'India'}</span>
           {c.followers > 0 && (

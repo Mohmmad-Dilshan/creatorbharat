@@ -109,9 +109,12 @@ export async function fetchCreators({ limit = 250, force = false } = {}) {
       const remote = res.creators || (Array.isArray(res) ? res : []);
 
       const local = LS.get('cb_creators', []);
-      const enrichedRemote = remote.map(c => getEnrichedCreator(c));
+      let merged = remote.map(c => {
+        const localCopy = local.find(lc => lc.id === c.id || lc.email === c.email);
+        const base = getEnrichedCreator(c);
+        return localCopy ? { ...base, ...localCopy } : base;
+      });
 
-      let merged = [...enrichedRemote];
       local.forEach(lc => {
         if (!merged.some(c => c.id === lc.id || c.email === lc.email)) {
           merged.push(getEnrichedCreator(lc));
@@ -161,7 +164,11 @@ export async function fetchCreatorById(id) {
   // 3. API Call
   try {
     const res = await apiCall(`/creators/${id}`);
-    return getEnrichedCreator(res.creator || res);
+    const remoteCreator = res.creator || res;
+    const local = LS.get('cb_creators', []);
+    const localCopy = local.find(lc => lc.id === remoteCreator.id || lc.email === remoteCreator.email);
+    const base = getEnrichedCreator(remoteCreator);
+    return localCopy ? { ...base, ...localCopy } : base;
   } catch (err) {
     if (err.status !== 429) {
       if (import.meta.env.DEV && (err.name === 'TypeError' || err.message?.includes('Failed to fetch') || err.message?.includes('fetch'))) {

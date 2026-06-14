@@ -72,7 +72,8 @@ router.put('/me', auth, async (req, res) => {
       photo, coverPhoto, portfolio,
       fullStory, awards, collabs, milestones, viralContent,
       caseStudies, sponsoredPosts, socialLinks,
-      upiId, bankName, accountHolder, accountNo, ifscCode
+      upiId, bankName, accountHolder, accountNo, ifscCode,
+      tagline, address, connections, facebook, linkedin
     } = req.body;
 
     const updated = await prisma.creator.update({
@@ -88,7 +89,8 @@ router.put('/me', auth, async (req, res) => {
         photo, coverPhoto, portfolio,
         fullStory, awards, collabs, milestones, viralContent,
         caseStudies, sponsoredPosts, socialLinks,
-        upiId, bankName, accountHolder, accountNo, ifscCode
+        upiId, bankName, accountHolder, accountNo, ifscCode,
+        tagline, address, connections, facebook, linkedin
       }
     });
 

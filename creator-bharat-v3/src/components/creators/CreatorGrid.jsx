@@ -194,7 +194,7 @@ GatedGridFooter.propTypes = {
 export default function CreatorGrid({ loading, filtered, visible, view, mob, onCardView, limit, setLimit, clearFilters, isGated = false, onUnlock }) {
   if (loading) {
     let gridCols = '1fr';
-    if (mob) gridCols = 'repeat(2, 1fr)';
+    if (mob) gridCols = 'repeat(2, minmax(0, 1fr))';
     else if (view === 'grid') gridCols = 'repeat(auto-fill, minmax(340px, 1fr))';
 
     return (
@@ -214,7 +214,7 @@ export default function CreatorGrid({ loading, filtered, visible, view, mob, onC
   const avgER = filtered.length > 0 ? (filtered.reduce((sum, c) => sum + (Number.parseFloat(c.er) || 0), 0) / filtered.length).toFixed(1) : 0;
 
   const getGridColumns = () => {
-    if (mob) return 'repeat(2, 1fr)';
+    if (mob) return 'repeat(2, minmax(0, 1fr))';
     return 'repeat(auto-fill, minmax(340px, 1fr))';
   };
 

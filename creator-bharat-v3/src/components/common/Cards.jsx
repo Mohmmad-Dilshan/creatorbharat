@@ -40,7 +40,7 @@ const CardHeader = ({ coverUrl, photo, id, saved, dsp, mob, tierLabel, requireBr
   const coverSrc = coverUrl || photo;
 
   return (
-    <div style={{ position: 'relative', height: mob ? 80 : 150, background: fallbackGradient, flexShrink: 0 }}>
+    <div style={{ position: 'relative', height: mob ? 65 : 150, background: fallbackGradient, flexShrink: 0 }}>
       {coverSrc && (
         <img src={coverSrc} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }} alt="" />
       )}
@@ -87,10 +87,10 @@ CardHeader.propTypes = {
 };
 
 const CreatorIdentity = ({ c, mob, img, score }) => (
-  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: mob ? -24 : -48, marginBottom: mob ? 8 : 12, position: 'relative', zIndex: 2, minWidth: 0 }}>
+  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: mob ? -18 : -48, marginBottom: mob ? 4 : 12, position: 'relative', zIndex: 2, minWidth: 0 }}>
     <div style={{ position: 'relative' }}>
-      <img src={img} alt={c.name} style={{ width: mob ? 48 : 96, height: mob ? 48 : 96, borderRadius: mob ? 16 : 28, objectFit: 'cover', border: (mob ? '2px' : '4px') + ' solid #fff', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', backgroundColor: '#fff' }} />
-      <div style={{ position: 'absolute', bottom: 2, right: 2, width: mob ? 10 : 16, height: mob ? 10 : 16, background: '#10B981', border: (mob ? '2px' : '3px') + ' solid #fff', borderRadius: '50%', zIndex: 10 }}>
+      <img src={img} alt={c.name} style={{ width: mob ? 40 : 96, height: mob ? 40 : 96, borderRadius: mob ? 12 : 28, objectFit: 'cover', border: (mob ? '2px' : '4px') + ' solid #fff', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', backgroundColor: '#fff' }} />
+      <div style={{ position: 'absolute', bottom: 2, right: 2, width: mob ? 8 : 16, height: mob ? 8 : 16, background: '#10B981', border: (mob ? '2px' : '3px') + ' solid #fff', borderRadius: '50%', zIndex: 10 }}>
         <div style={{ position: 'absolute', inset: mob ? -2 : -3, borderRadius: '50%', border: '1px solid #10B981', animation: 'pulse-green 2s infinite', opacity: 0.5 }} />
       </div>
       {c.verified && !mob && (
@@ -99,9 +99,9 @@ const CreatorIdentity = ({ c, mob, img, score }) => (
         </div>
       )}
     </div>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: mob ? 4 : 8 }}>
-      <div style={{ fontSize: mob ? 9 : 11, fontWeight: 700, color: T.t3, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Score</div>
-      <div style={{ fontSize: mob ? 14 : 16, fontWeight: 900, color: '#FF9431', background: 'rgba(255,148,49,0.1)', padding: mob ? '2px 8px' : '4px 10px', borderRadius: 12 }}>{score}</div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: mob ? 2 : 8 }}>
+      <div style={{ fontSize: mob ? 8 : 11, fontWeight: 700, color: T.t3, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Score</div>
+      <div style={{ fontSize: mob ? 11 : 16, fontWeight: 900, color: '#FF9431', background: 'rgba(255,148,49,0.1)', padding: mob ? '1px 6px' : '4px 10px', borderRadius: mob ? 8 : 12 }}>{score}</div>
     </div>
   </div>
 );
@@ -114,7 +114,7 @@ CreatorIdentity.propTypes = {
 };
 
 const CreatorStats = ({ c, mob }) => (
-  <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : '1fr 1fr 1fr', gap: mob ? 4 : 12, padding: (mob ? '12px' : '20px') + ' 0', borderTop: '1px dashed rgba(0,0,0,0.08)', marginTop: 'auto', minWidth: 0 }}>
+  <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : '1fr 1fr 1fr', gap: mob ? 4 : 12, padding: (mob ? '8px' : '20px') + ' 0', borderTop: '1px dashed rgba(0,0,0,0.08)', marginTop: 'auto', minWidth: 0 }}>
     <div>
       <div style={{ fontSize: mob ? 12 : 18, fontWeight: 900, color: '#0F172A', marginBottom: 2 }}>{fmt.num(c.followers)}</div>
       <div style={{ fontSize: mob ? 8 : 11, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Followers</div>
@@ -142,18 +142,52 @@ CreatorStats.propTypes = {
 
 
 const CreatorBio = ({ c, mob }) => (
-  <div style={{ marginBottom: mob ? 10 : 16 }}>
-    <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 14 : 26, fontWeight: 900, color: '#0F172A', marginBottom: mob ? 2 : 4, letterSpacing: '-0.02em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: 6 }}>
-      {c.name} {mob && c.verified && <Check size={12} color="#3B82F6" strokeWidth={4} style={{ flexShrink: 0 }} />}
+  <div style={{ marginBottom: mob ? 6 : 16 }}>
+    <h3 style={{ 
+      fontFamily: "'Outfit', sans-serif", 
+      fontSize: mob ? 12 : 26, 
+      fontWeight: 900, 
+      color: '#0F172A', 
+      margin: 0, 
+      marginBottom: mob ? 1 : 4, 
+      letterSpacing: '-0.02em', 
+      whiteSpace: 'nowrap', 
+      overflow: 'hidden', 
+      textOverflow: 'ellipsis',
+      width: '100%'
+    }} title={c.name}>
+      {c.name}
+      {mob && c.verified && (
+        <span style={{ display: 'inline-flex', alignItems: 'center', marginLeft: 4, verticalAlign: 'middle' }}>
+          <Check size={11} color="#3B82F6" strokeWidth={4} />
+        </span>
+      )}
     </h3>
-    {c.tagline && (
-      <p style={{ fontSize: mob ? 10 : 13, color: '#FF9431', fontWeight: 700, margin: '2px 0 6px 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={c.tagline}>
-        {c.tagline}
+    {(c.tagline || (Array.isArray(c.niche) && c.niche.length > 0 ? `${c.niche[0]} Creator` : 'Digital Content Creator')) && (
+      <p style={{ 
+        fontSize: mob ? 9 : 13, 
+        color: '#FF9431', 
+        fontWeight: 700, 
+        margin: 0, 
+        marginBottom: mob ? 2 : 6, 
+        whiteSpace: 'nowrap', 
+        overflow: 'hidden', 
+        textOverflow: 'ellipsis' 
+      }} title={c.tagline || (Array.isArray(c.niche) && c.niche.length > 0 ? `${c.niche[0]} Creator` : 'Digital Content Creator')}>
+        {c.tagline || (Array.isArray(c.niche) && c.niche.length > 0 ? `${c.niche[0]} Creator` : 'Digital Content Creator')}
       </p>
     )}
     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-      <p style={{ fontSize: mob ? 10 : 15, color: '#64748B', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
-        <MapPin size={mob ? 10 : 14} color="#64748B" strokeWidth={2.5} style={{ flexShrink: 0 }} /> 
+      <p style={{ 
+        fontSize: mob ? 9 : 15, 
+        color: '#64748B', 
+        fontWeight: 600, 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: 4, 
+        margin: 0 
+      }}>
+        <MapPin size={mob ? 9 : 14} color="#64748B" strokeWidth={2.5} style={{ flexShrink: 0 }} /> 
         <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')}</span>
       </p>
     </div>
@@ -166,16 +200,17 @@ CreatorBio.propTypes = {
 };
 
 const CreatorFooter = ({ c, mob, compared, onView, dsp, requireBrand }) => (
-  <div style={{ display: 'flex', gap: mob ? 6 : 12, marginTop: mob ? 10 : 16, marginBottom: mob ? 12 : 24 }}>
+  <div style={{ display: 'flex', gap: mob ? 4 : 12, marginTop: mob ? 6 : 16, marginBottom: mob ? 4 : 24 }}>
     <button 
       onClick={(e) => { e.stopPropagation(); onView?.(c); }} 
       style={{ 
-        flex: 1, borderRadius: 16, fontWeight: 950, fontSize: mob ? 11 : 14, 
+        flex: 1, borderRadius: mob ? 10 : 16, fontWeight: 950, fontSize: mob ? 10 : 14, 
         background: '#0f172a', color: '#fff', border: 'none', cursor: 'pointer', 
-        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)', padding: mob ? '10px' : '16px',
+        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)', padding: mob ? '8px 4px' : '16px',
         boxShadow: '0 10px 20px rgba(15, 23, 42, 0.1)',
         textTransform: 'uppercase', letterSpacing: '0.05em',
-        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: mob ? 4 : 8,
+        minWidth: 0
       }}
       onMouseEnter={e => { 
         e.currentTarget.style.transform = 'translateY(-4px)'; 
@@ -188,7 +223,7 @@ const CreatorFooter = ({ c, mob, compared, onView, dsp, requireBrand }) => (
         e.currentTarget.style.background = '#0f172a'; 
       }}
     >
-      <Zap size={mob ? 12 : 16} fill="currentColor" /> {mob ? 'Preview' : 'Quick View'}
+      <Zap size={mob ? 12 : 16} fill="currentColor" style={{ flexShrink: 0 }} /> {mob ? 'Preview' : 'Quick View'}
     </button>
     <button 
       onClick={e => { 
@@ -196,17 +231,18 @@ const CreatorFooter = ({ c, mob, compared, onView, dsp, requireBrand }) => (
         if (requireBrand?.()) dsp?.({ t: 'COMPARE', id: c?.id }); 
       }} 
       style={{ 
-        width: mob ? 36 : 56, height: mob ? 36 : 56, borderRadius: 16, 
-        border: '2.5px solid ' + (compared ? '#FF9431' : '#f1f5f9'), 
+        width: mob ? 32 : 56, height: mob ? 32 : 56, borderRadius: mob ? 10 : 16, 
+        border: (mob ? '1.5px' : '2.5px') + ' solid ' + (compared ? '#FF9431' : '#f1f5f9'), 
         background: compared ? 'rgba(255,148,49,0.1)' : '#fff', 
         cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', 
-        transition: 'all 0.3s', color: compared ? '#FF9431' : '#64748B'
+        transition: 'all 0.3s', color: compared ? '#FF9431' : '#64748B',
+        flexShrink: 0
       }}
       title="Compare"
       onMouseEnter={e => { if(!compared) { e.currentTarget.style.borderColor = '#FF943140'; e.currentTarget.style.background = '#FF943105'; } }}
       onMouseLeave={e => { if(!compared) { e.currentTarget.style.borderColor = '#f1f5f9'; e.currentTarget.style.background = '#fff'; } }}
     >
-      <Scale size={mob ? 16 : 22} color={compared ? "#FF9431" : "#64748B"} strokeWidth={2.5} />
+      <Scale size={mob ? 14 : 22} color={compared ? "#FF9431" : "#64748B"} strokeWidth={2.5} />
     </button>
   </div>
 );
@@ -256,9 +292,9 @@ export function CreatorCard({ creator: c, onView }) {
         height: '100%', display: 'flex', flexDirection: 'column', 
         transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)', 
         border: isMega ? '1px solid rgba(251, 191, 36, 0.5)' : '1px solid rgba(0,0,0,0.04)', 
-        borderRadius: mob ? 16 : 32, overflow: 'hidden', background: '#fff',
+        borderRadius: mob ? 12 : 32, overflow: 'hidden', background: '#fff',
         boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
-        padding: mob ? '8px' : '32px',
+        padding: mob ? '6px' : '32px',
         minWidth: 0
       }}
       onMouseEnter={e => {
@@ -276,20 +312,16 @@ export function CreatorCard({ creator: c, onView }) {
       <div style={{ padding: mob ? '0 2px' : '0 24px', flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <CreatorIdentity c={c} mob={mob} img={img} score={score} />
         <CreatorBio c={c} mob={mob} />
-        {!mob && c.bio && (
-          <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.5, marginBottom: 16, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }} title={c.bio}>
-            {c.bio}
-          </p>
-        )}
 
-        <div style={{ display: 'flex', gap: mob ? 4 : 8, flexWrap: 'wrap', marginBottom: mob ? 12 : 20 }}>
+
+        <div style={{ display: 'flex', gap: mob ? 4 : 8, flexWrap: 'wrap', marginBottom: mob ? 6 : 20 }}>
            {cp.slice(0, mob ? 1 : 2).map(p => (
-             <div key={p} style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: mob ? '2px 6px' : '4px 10px', borderRadius: 100, fontSize: mob ? 9 : 12, fontWeight: 700, color: '#334155', display: 'flex', alignItems: 'center', gap: mob ? 4 : 6 }}>
+             <div key={p} style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', padding: mob ? '1px 5px' : '4px 10px', borderRadius: 100, fontSize: mob ? 8 : 12, fontWeight: 700, color: '#334155', display: 'flex', alignItems: 'center', gap: mob ? 3 : 6 }}>
                {getSocialIcon(p)} {!mob && <span>{p}</span>}
              </div>
            ))}
            {cn.slice(0, mob ? 1 : 2).map(n => (
-             <div key={n} style={{ background: '#FFF7ED', border: '1px solid #FFEDD5', color: '#EA580C', padding: mob ? '2px 6px' : '4px 10px', borderRadius: 100, fontSize: mob ? 9 : 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: mob ? '60px' : 'none' }}>
+             <div key={n} style={{ background: '#FFF7ED', border: '1px solid #FFEDD5', color: '#EA580C', padding: mob ? '1px 5px' : '4px 10px', borderRadius: 100, fontSize: mob ? 8 : 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: mob ? '50px' : 'none' }}>
                {n}
              </div>
            ))}

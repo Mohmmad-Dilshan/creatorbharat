@@ -58,6 +58,11 @@ model Creator {
   caseStudies    Json?
   sponsoredPosts Json?
   socialLinks    Json?
+  tagline        String?
+  address        String?
+  connections    String?
+  facebook       String?
+  linkedin       String?
   upiId          String?
   bankName       String?
   accountHolder  String?
