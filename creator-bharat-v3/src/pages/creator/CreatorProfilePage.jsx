@@ -36,7 +36,6 @@ import {
   Link2,
   ExternalLink,
   Crown,
-  Plus,
   Trash2,
   Edit3
 } from 'lucide-react';
@@ -1938,74 +1937,6 @@ ProfileSkeleton.propTypes = {
   mob: PropTypes.bool
 };
 
-const CreatorBharatFollowBanner = ({ followed, onFollow, mob }) => (
-  <div style={{
-    background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)',
-    borderRadius: '32px',
-    padding: mob ? '28px 24px' : '40px 48px',
-    display: 'flex',
-    flexDirection: mob ? 'column' : 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '24px',
-    boxShadow: '0 20px 40px rgba(234, 88, 12, 0.15)',
-    margin: '60px auto 0',
-    maxWidth: '1100px',
-    width: '100%',
-    boxSizing: 'border-box'
-  }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1, flexDirection: mob ? 'column' : 'row', textAlign: mob ? 'center' : 'left' }}>
-      <div style={{ 
-        width: '56px', 
-        height: '56px', 
-        borderRadius: '16px', 
-        background: '#fff', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        boxShadow: '0 8px 16px rgba(0,0,0,0.06)',
-        flexShrink: 0
-      }}>
-        <span style={{ fontSize: '28px' }}>🇮🇳</span>
-      </div>
-      <div>
-        <h4 style={{ fontSize: '20px', fontWeight: 950, color: '#fff', margin: '0 0 6px', letterSpacing: '-0.02em' }}>
-          Follow @CreatorBharat Official
-        </h4>
-        <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.85)', margin: 0, fontWeight: 650 }}>
-          Platform ke events, campaigns, updates, aur meetup alerts se connected rahein.
-        </p>
-      </div>
-    </div>
-    <button
-      onClick={onFollow}
-      style={{
-        background: followed ? 'rgba(255,255,255,0.15)' : '#fff',
-        color: followed ? '#fff' : '#EA580C',
-        border: followed ? '1.5px solid rgba(255,255,255,0.3)' : 'none',
-        borderRadius: '100px',
-        padding: '14px 32px',
-        fontSize: '14px',
-        fontWeight: 900,
-        cursor: 'pointer',
-        boxShadow: followed ? 'none' : '0 8px 16px rgba(0,0,0,0.06)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        transition: 'all 0.2s',
-        whiteSpace: 'nowrap'
-      }}
-    >
-      {followed ? <CheckCircle2 size={16} /> : <Plus size={16} />}
-      {followed ? 'Following Official' : 'Follow Page'}
-    </button>
-  </div>
-);
-CreatorBharatFollowBanner.propTypes = {
-  followed: PropTypes.bool.isRequired,
-  onFollow: PropTypes.func.isRequired,
-  mob: PropTypes.bool
-};
 
 export default function CreatorProfilePage() {
   const { id } = useParams();
@@ -2332,26 +2263,6 @@ export default function CreatorProfilePage() {
          </AnimatePresence>
       </div>
 
-      {c?.id !== 'creatorbharat-official' && (
-        <div style={{ ...W(1100), margin: '0 auto', padding: mob ? '0 16px' : '0 24px' }}>
-          <CreatorBharatFollowBanner 
-            followed={st?.follows?.includes('creatorbharat-official')}
-            onFollow={() => {
-              dsp({ t: 'FOLLOW', id: 'creatorbharat-official' });
-              dsp({ 
-                t: 'TOAST', 
-                d: { 
-                  type: st?.follows?.includes('creatorbharat-official') ? 'info' : 'success', 
-                  msg: st?.follows?.includes('creatorbharat-official') 
-                    ? 'Unfollowed @CreatorBharat Official' 
-                    : '🎉 Following @CreatorBharat Official!' 
-                } 
-              });
-            }}
-            mob={mob}
-          />
-        </div>
-      )}
 
       <section style={{ marginTop: '100px', padding: mob ? '60px 16px' : '100px 0', background: '#0f172a', position: 'relative', overflow: 'hidden' }}>
          <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '400px', height: '400px', background: '#FF9431', borderRadius: '50%', filter: 'blur(150px)', opacity: 0.1 }} />
