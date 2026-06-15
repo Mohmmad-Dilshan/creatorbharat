@@ -75,14 +75,14 @@ AIFitInsight.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool }
 const ContentPhilosophy = ({ c, mob }) => {
   const isDummy = c.id === 'fallback';
   if (!c.philosophy && !isDummy) return null;
-  const text = c.philosophy || "Mera content philosophy simple hai: content sirf screen par chalne ke liye nahi, balki viewer ke dil mein basne ke liye hona chahiye. Storytelling aisi ho jo real ho, raw ho, aur Bharat ki mitti se judi ho.";
+  const text = c.philosophy || "My content philosophy is simple: content shouldn't just be scrolled through, it should build a genuine connection. I strive to make storytelling that is raw, authentic, and deeply rooted in local culture.";
 
   return (
     <Card style={{ padding: mob ? '32px 24px' : '48px', borderRadius: '40px', marginBottom: '40px', border: '1.5px solid #f1f5f9', background: mob ? 'linear-gradient(135deg, #fff 0%, #f8fafc 100%)' : '#fff', position: 'relative', overflow: 'hidden' }}>
        <div style={{ position: 'absolute', top: '0', left: '0', width: '4px', height: '100%', background: '#FF9431' }} />
        <div style={{ position: 'absolute', top: '-10%', right: '-5%', opacity: 0.03, pointerEvents: 'none' }}><Zap size={200} color="#FF9431" /></div>
        <h3 style={{ fontSize: mob ? '20px' : '24px', fontWeight: 950, marginBottom: '24px', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Zap size={24} color="#FF9431" /> Mera Content Philosophy (The 'Why')
+          <Zap size={24} color="#FF9431" /> {c.philosophy_title || c.philosophyTitle || "My Content Philosophy (The 'Why')"}
        </h3>
        <p style={{ fontSize: mob ? '16px' : '20px', color: '#475569', lineHeight: 1.8, fontWeight: 500, maxWidth: '850px', fontStyle: mob ? 'italic' : 'normal', margin: 0 }}>
           "{text}"
@@ -212,10 +212,15 @@ TheEliteEdge.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool }
 
 const LocationDominanceVoice = ({ c, mob }) => {
   const isDummy = c.id === 'fallback';
-  if (!c.local_voice && !isDummy) return null;
-  const text = c.local_voice || `"Main sabse zyada <b>${c.city || 'Rajasthan'}</b> mein popular hoon kyunki wahan ki language aur culture meri videos ki soul hai. Brands ko agar is heartland mein ghusna hai, toh mera content sabse tez rasta hai."`;
-  const hubs = c.local_hubs || ['Indore', 'Mumbai', 'Bhopal'];
-  const pen = c.local_penetration || '85%';
+  if (!c.local_voice && !c.localVoice && !isDummy) return null;
+  const text = c.local_voice || c.localVoice || `"I have a strong regional dominance in <b>${c.city || 'Bharat'}</b>, where the local language and cultural nuances are the soul of my content. For brands looking to establish a deep connection in this heartland, my content offers the most direct and authentic path."`;
+  
+  let rawHubs = c.local_hubs || c.localHubs || [];
+  if (!Array.isArray(rawHubs) || rawHubs.length === 0) {
+    rawHubs = ['Indore', 'Mumbai', 'Bhopal'];
+  }
+  const hubs = rawHubs.map(h => typeof h === 'object' ? h.l : h);
+  const pen = c.local_penetration || c.localPenetration || '85%';
 
   return (
     <Card style={{ padding: mob ? '32px 24px' : '48px', borderRadius: '40px', marginBottom: '40px', border: '1.5px solid #f1f5f9', background: '#fff', position: 'relative', overflow: 'hidden' }}>
@@ -223,7 +228,7 @@ const LocationDominanceVoice = ({ c, mob }) => {
           <div>
              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
                 <MapPin size={24} color="#FF9431" fill="rgba(255,148,49,0.1)" />
-                <h3 style={{ fontSize: mob ? '20px' : '28px', fontWeight: 950, color: '#0f172a' }}>Mera Regional Dominance</h3>
+                 <h3 style={{ fontSize: mob ? '20px' : '28px', fontWeight: 950, color: '#0f172a' }}>{c.dominance_title || c.dominanceTitle || "My Regional Dominance"}</h3>
              </div>
              <p style={{ fontSize: mob ? '16px' : '20px', color: '#475569', fontWeight: 600, lineHeight: 1.6, marginBottom: '32px' }} dangerouslySetInnerHTML={{__html: text}} />
              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
@@ -274,10 +279,9 @@ export const IdentityTab = ({ c, stats, onRate, mob, setActiveTab }) => (
     <ExpertiseHub c={c} mob={mob} />
     <NationalToLocalBridge c={c} mob={mob} />
     
-    <TrustBadge />
     <TheEliteEdge c={c} mob={mob} />
     <LocationDominanceVoice c={c} mob={mob} />
-    <SocialLinkTree links={c?.links} mob={mob} />
+    <SocialLinkTree links={c?.links} c={c} mob={mob} compact={true} />
     <TabNavigator activeTab="identity" setActiveTab={setActiveTab} mob={mob} />
   </motion.div>
 );

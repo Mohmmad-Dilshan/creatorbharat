@@ -59,15 +59,37 @@ export const SEED_CREATORS = [
       { l: 'Pune', v: '76%' }
     ],
     local_collab: true,
+    fullStory: {
+      p1: "Crafting cinematic automotive reviews and tech stories started in the suburbs of Mumbai in 2020. I wanted to show that tech isn't just about silicon and specifications; it's about the lifestyle and emotions behind it.",
+      quote: "Connecting with the premium consumer demands a cinematic perspective that respects their intelligence.",
+      p2: "With a background in cinematic editing and automotive journalism, I started creating premium videos on YouTube. Crossing 1M followers was a testament to the hunger for high-production regional content.",
+      p3: "Today, as a verified CreatorBharat Elite voice, I collaborate with luxury automakers and premium tech giants to deliver high-retention stories that convert."
+    },
+    milestones: [
+      { y: '2020', t: 'The First Spark', d: 'Launched premium tech unboxings with cinematic camera setups in Bandra.', category: 'Launch', metric: 'First Studio', img: 'https://images.unsplash.com/photo-1461151304267-38535e780c79?auto=format&fit=crop&q=80&w=400', link: 'https://youtube.com/watch?v=arjun-first-studio' },
+      { y: '2022', t: 'Automotive Shift', d: 'Introduced 4K anamorphic luxury car reviews, hitting 500K subscribers.', category: 'Growth', metric: '500K Subs', img: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=400', link: 'https://youtube.com/watch?v=arjun-500k-special' },
+      { y: '2024', t: 'Million Milestone', d: 'Crossed 1M followers across platforms and received the CreatorBharat Elite validation.', category: 'Elite', metric: '1M followers', img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=400', link: 'https://creatorbharat.com/verify/arjun-kapoor' },
+      { y: '2026', t: 'Luxury Partnerships', d: 'Collaborated with premium brands like BMW India and OnePlus.', category: 'Collab', metric: 'BMW India', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=400', link: 'https://youtube.com/watch?v=BMW-X5-Launch' }
+    ],
+    awards: [
+      { t: 'Automotive Voice of the Year', o: 'Auto Guild India', y: '2025', img: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&q=80&w=200', link: 'https://autoguildindia.org/awards/2025/automotive-voice' },
+      { t: 'Elite Tech Storyteller', o: 'CreatorBharat Summit', y: '2024', img: 'https://images.unsplash.com/photo-1496181130204-7552cc14acfc?auto=format&fit=crop&q=80&w=200', link: 'https://creatorbharat.com/summit/2024/verify' },
+      { t: 'Premium Content Creator', o: 'Mumbai Digital Awards', y: '2023', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200', link: 'https://mumbaitechguild.org/awards/2023/arjun' }
+    ],
+    collabs: [
+      { p: 'BMW India', l: 'Brand Partner', d: 'Official campaign for the premium X5 launch, generating 3.2M reach.', brandLink: 'https://bmw.in', videoLink: 'https://youtube.com/watch?v=BMW-X5-Launch', metric: '3.2M Reach', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=400' },
+      { p: 'OnePlus Bharat', l: 'Elite Linkup', d: 'High-retention cinematic launch review for the OnePlus 12.', brandLink: 'https://oneplus.in', videoLink: 'https://youtube.com/watch?v=OnePlus12-Cinematic', metric: '120K Clicks', img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=400' },
+      { p: 'Pioneer Gear', l: 'Creative Collab', d: 'Curated professional audio showcase video.', brandLink: 'https://pioneer-car.in', videoLink: 'https://youtube.com/watch?v=Pioneer-Audio-Drop', metric: '2.1M Views', img: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=400' }
+    ],
     viral_content: [
-      { views: '2.4M', img: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=400' },
-      { views: '1.8M', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=400' },
-      { views: '3.1M', img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=400' }
+      { views: '2.4M', img: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=400', title: 'BMW X5 Cinematic Review', link: 'https://youtube.com/watch?v=BMW-X5-Launch' },
+      { views: '1.8M', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=400', title: 'OnePlus 12 Unboxing', link: 'https://youtube.com/watch?v=OnePlus12-Cinematic' },
+      { views: '3.1M', img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=400', title: 'Bandra Studio Makeover', link: 'https://youtube.com/watch?v=Bandra-Studio' }
     ],
     case_studies: [
-      { title: 'BMW India Premium X5 Launch', brand: 'BMW India', results: [{ l: 'Reach', v: '3.2M' }, { l: 'ROI', v: '5.2x' }] },
-      { title: 'OnePlus 12 Launch Campaign', brand: 'OnePlus Bharat', results: [{ l: 'Clicks', v: '120K' }, { l: 'Sales Hub', v: '22K+' }] },
-      { title: 'Premium Audio Drop', brand: 'Pioneer Gear', results: [{ l: 'Views', v: '2.1M' }, { l: 'Shares', v: '28K' }] }
+      { title: 'BMW India Premium X5 Launch', brand: 'BMW India', desc: 'Launched the premium X5 SUV with anamorphic storytelling, achieving 5.2x ROI on advertising spend.', link: 'https://youtube.com/watch?v=BMW-X5-Launch', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=400', results: [{ l: 'Reach', v: '3.2M' }, { l: 'ROI', v: '5.2x' }] },
+      { title: 'OnePlus 12 Launch Campaign', brand: 'OnePlus Bharat', desc: 'Conducted a deep tech unboxing and review for the OnePlus 12, driving 22K sales conversions.', link: 'https://youtube.com/watch?v=OnePlus12-Cinematic', img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=400', results: [{ l: 'Clicks', v: '120K' }, { l: 'Sales Hub', v: '22K+' }] },
+      { title: 'Premium Audio Drop', brand: 'Pioneer Gear', desc: 'Showcased Pioneer professional audio gear integrated into a cinematic drive through Mumbai.', link: 'https://youtube.com/watch?v=Pioneer-Audio-Drop', img: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=400', results: [{ l: 'Views', v: '2.1M' }, { l: 'Shares', v: '28K' }] }
     ],
     services: [
       { t: 'Cinematic Car Reviews', d: 'Custom-graded anamorphic 4K cinematic video reels featuring high-conversion visual storytelling.', c: '#FF9431' },
@@ -141,14 +163,33 @@ export const SEED_CREATORS = [
       { l: 'Bangalore Hub', v: '65%' }
     ],
     local_collab: true,
+    fullStory: {
+      p1: "My journey in Mumbai began with a simple camera and a messy desk. I wanted to show that smart technology can look beautiful and function seamlessly in a minimalist home.",
+      quote: "Good design is invisible. Technology should blend into your lifestyle, not dominate it.",
+      p2: "I focused on creating clean desk makeover series and gadgets that solve real problems. The minimalist aesthetic resonated deeply with modern young professionals.",
+      p3: "Now, my goal is to continue partnering with brands that value premium aesthetics, high utility, and sustainable productivity tools."
+    },
+    milestones: [
+      { y: '2021', t: 'Desk Zero', d: 'Started documenting clean workspace setups and smart-home routines on Instagram.', category: 'Launch', metric: 'Setup v1', img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=400', link: 'https://instagram.com' },
+      { y: '2023', t: 'Minimalist Wave', d: 'Hit 50K followers as regional professionals embraced productivity content.', category: 'Growth', metric: '50K Followers', img: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&q=80&w=400', link: 'https://instagram.com' },
+      { y: '2025', t: 'Smart Studio', d: 'Established my fully automated smart studio in Mumbai, sponsored by top lifestyle tech brands.', category: 'Studio', metric: 'Workspace', img: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=400', link: 'https://instagram.com' }
+    ],
+    awards: [
+      { t: 'Best Tech Lifestyle Creator', o: 'Mumbai Tech Guild', y: '2025', img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=200', link: 'https://mumbaitechguild.org/awards/2025/lifestyle' },
+      { t: 'Minimalist Design Champion', o: 'Clean Space Awards', y: '2024', img: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=200', link: 'https://cleanspaceawards.com/minimalist/2024' }
+    ],
+    collabs: [
+      { p: 'Sony India', l: 'Tech Integration', d: 'Immersive review and setup styling for ANC premium headphones.', brandLink: 'https://sony.co.in', videoLink: 'https://youtube.com/watch?v=Sony-ANC-Setup', metric: '1.8M Reach', img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=400' },
+      { p: 'IKEA India', l: 'Space Transformation', d: 'Workspace makeover campaign showcasing table frames and smart lighting.', brandLink: 'https://ikea.in', videoLink: 'https://youtube.com/watch?v=IKEA-Desk-Makeover', metric: '14% Conv', img: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=400' }
+    ],
     viral_content: [
-      { views: '1.6M', img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=400' },
-      { views: '980K', img: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&q=80&w=400' },
-      { views: '2.2M', img: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=400' }
+      { views: '1.6M', img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=400', title: 'Sony ANC Premium Setup', link: 'https://youtube.com/watch?v=Sony-ANC-Setup' },
+      { views: '980K', img: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&q=80&w=400', title: 'Minimalist Desk Makeover', link: 'https://youtube.com/watch?v=IKEA-Desk-Makeover' },
+      { views: '2.2M', img: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=400', title: 'Smart Studio Automation Tour', link: 'https://instagram.com' }
     ],
     case_studies: [
-      { title: 'Sony ANC Headphones Launch', brand: 'Sony India', results: [{ l: 'Reach', v: '1.8M' }, { l: 'ROI', v: '4.5x' }] },
-      { title: 'Smart Workspace Makeover', brand: 'IKEA India', results: [{ l: 'Clicks', v: '95K' }, { l: 'Conversion', v: '14%' }] }
+      { title: 'Sony ANC Headphones Launch', brand: 'Sony India', desc: 'Immersive review and setup styling for ANC premium headphones, yielding 4.5x ROI.', link: 'https://youtube.com/watch?v=Sony-ANC-Setup', img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=400', results: [{ l: 'Reach', v: '1.8M' }, { l: 'ROI', v: '4.5x' }] },
+      { title: 'Smart Workspace Makeover', brand: 'IKEA India', desc: 'Workspace transformation campaign showcasing table frames and smart lighting, yielding 14% conversion.', link: 'https://youtube.com/watch?v=IKEA-Desk-Makeover', img: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=400', results: [{ l: 'Clicks', v: '95K' }, { l: 'Conversion', v: '14%' }] }
     ],
     services: [
       { t: 'Minimalist Desk Integrations', d: 'High-aesthetic workspace integration videos featuring premium tech accessories.', c: '#0ea5e9' },
@@ -209,14 +250,33 @@ export const SEED_CREATORS = [
     local_hubs: ['Delhi NCR', 'Jaipur', 'Udaipur'],
     local_penetration: '96%',
     local_collab: true,
+    fullStory: {
+      p1: "Exploring the historic streets of Delhi and Rajasthan inspired me to capture local Indian craftsmanship and slow travel narratives. I believe every handloom and heritage stay has a story.",
+      quote: "Travel is about finding the soul of a place, and wearing clothes that tell its history.",
+      p2: "Through slow-travel diaries and sustainable styling lookbooks, I connected with an audience that values authenticity over checklist tourism. My focus remains on supporting local artisan hubs.",
+      p3: "I look forward to partnering with heritage stays, eco-resorts, and sustainable clothing brands that value cultural preservation."
+    },
+    milestones: [
+      { y: '2022', t: 'The Heritage Trail', d: 'Began documenting hidden heritage homestays across Rajasthan and North India.', category: 'Launch', metric: 'Heritage Tour', img: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=400', link: 'https://youtube.com' },
+      { y: '2024', t: 'Sustainable Switch', d: 'Pivoted entirely to sustainable fashion and slow-travel vlogging.', category: 'Niche', metric: 'Eco Vlogs', img: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=400', link: 'https://youtube.com' },
+      { y: '2025', t: 'Artisan Network', d: 'Partnered with regional handloom clusters to showcase traditional weavers.', category: 'Impact', metric: 'Artisan Partner', img: 'https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&q=80&w=400', link: 'https://youtube.com' }
+    ],
+    awards: [
+      { t: 'Sustainable Travel Voice', o: 'Green Tourism India', y: '2025', img: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=200', link: 'https://greentourismindia.gov.in/awards/2025/travel-voice' },
+      { t: 'Heritage Storyteller', o: 'Jaipur Travel Guild', y: '2024', img: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&q=80&w=200', link: 'https://jaipurtravelguild.org/verify/2024' }
+    ],
+    collabs: [
+      { p: 'Taj Heritage Hotels', l: 'Experience Campaign', d: 'Immersive property walkthroughs and photography vlogs.', brandLink: 'https://tajhotels.com', videoLink: 'https://youtube.com/watch?v=Taj-Heritage-SlowTravel', metric: '420+ Bookings', img: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=400' },
+      { p: 'FabIndia Sustainable', l: 'Style Partner', d: 'Curated linen lookbook campaign promoting organic regional wear.', brandLink: 'https://fabindia.com', videoLink: 'https://youtube.com/watch?v=FabIndia-Linen-Lookbook', metric: '5.6x ROI', img: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=400' }
+    ],
     viral_content: [
-      { views: '3.2M', img: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=400' },
-      { views: '2.4M', img: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=400' },
-      { views: '4.1M', img: 'https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&q=80&w=400' }
+      { views: '3.2M', img: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=400', title: 'Slow Travel Diaries: Udaipur', link: 'https://youtube.com/watch?v=Taj-Heritage-SlowTravel' },
+      { views: '2.4M', img: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=400', title: 'Sustainable Handlooms of India', link: 'https://youtube.com/watch?v=FabIndia-Linen-Lookbook' },
+      { views: '4.1M', img: 'https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&q=80&w=400', title: 'Hidden Homestays in Jaipur', link: 'https://youtube.com' }
     ],
     case_studies: [
-      { title: 'Heritage Stay Summer Campaign', brand: 'Taj Heritage Hotels', results: [{ l: 'Reach', v: '2.5M' }, { l: 'Bookings', v: '420+' }] },
-      { title: 'Sustainable Linen Drop', brand: 'FabIndia Sustainable', results: [{ l: 'Reach', v: '1.2M' }, { l: 'ROI', v: '5.6x' }] }
+      { title: 'Heritage Stay Summer Campaign', brand: 'Taj Heritage Hotels', desc: 'Immersive property walkthroughs and photography vlogs, securing 420+ bookings.', link: 'https://youtube.com/watch?v=Taj-Heritage-SlowTravel', img: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=400', results: [{ l: 'Reach', v: '2.5M' }, { l: 'Bookings', v: '420+' }] },
+      { title: 'Sustainable Linen Drop', brand: 'FabIndia Sustainable', desc: 'Curated linen lookbook campaign promoting organic regional wear with 5.6x ROI.', link: 'https://youtube.com/watch?v=FabIndia-Linen-Lookbook', img: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=400', results: [{ l: 'Reach', v: '1.2M' }, { l: 'ROI', v: '5.6x' }] }
     ],
     services: [
       { t: 'Boutique Hotel Showcase', d: 'Immersive property walkthroughs showcasing design, food, and native experiences.', c: '#FF9431' },
@@ -276,14 +336,33 @@ export const SEED_CREATORS = [
     local_hubs: ['Bangalore', 'Hyderabad', 'Chennai'],
     local_penetration: '92%',
     local_collab: true,
+    fullStory: {
+      p1: "Moving from Jaipur to Bangalore, I realized how corporate fatigue affects health. I started creating content to bring science-backed athletic training and nutrition to busy professionals.",
+      quote: "A resilient body builds a resilient mind. Longevity is the true goal.",
+      p2: "By posting evidence-based workout routines and macro-friendly meal preps, I helped over 10K professionals start their fitness journey without extreme diets.",
+      p3: "Today, I partner with premium athletic brands and supplement companies that stand by ingredient transparency and clean health."
+    },
+    milestones: [
+      { y: '2022', t: 'Basement Workouts', d: 'Began publishing simple bodyweight training guides from my garage.', category: 'Launch', metric: 'Garage Gym', img: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=400', link: 'https://youtube.com' },
+      { y: '2024', t: 'Corporate Fitness Shift', d: 'Tailored routines specifically for IT and desk-bound workers in Bangalore.', category: 'Growth', metric: 'Desk-Bound Fit', img: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=400', link: 'https://youtube.com' },
+      { y: '2025', t: 'Elite Athlete Status', d: 'Represented regional fitness leagues and expanded to macro-focused meal coaching.', category: 'Elite', metric: 'Pro Athlete', img: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&q=80&w=400', link: 'https://youtube.com' }
+    ],
+    awards: [
+      { t: 'Fitness Educator of the Year', o: 'Bangalore Athletic Guild', y: '2025', img: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=200', link: 'https://bangaloreathleticguild.org/awards/2025' },
+      { t: 'Science-Backed Creator', o: 'Health India Congress', y: '2024', img: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=200', link: 'https://healthindiacongress.org/verify/2024' }
+    ],
+    collabs: [
+      { p: 'MyProtein India', l: 'Athlete Partner', d: 'Supplement reviews and macro-tracking educational series.', brandLink: 'https://myprotein.co.in', videoLink: 'https://youtube.com/watch?v=MyProtein-Macros', metric: '18K Sales', img: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=400' },
+      { p: 'Cult.fit Elite', l: 'Growth Partner', d: 'Evidence-backed workouts driving premium app registrations.', brandLink: 'https://cult.fit', videoLink: 'https://youtube.com/watch?v=CultFit-Athletic-Transformation', metric: '6.1x ROI', img: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=400' }
+    ],
     viral_content: [
-      { views: '4.5M', img: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=400' },
-      { views: '3.1M', img: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=400' },
-      { views: '2.8M', img: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=400' }
+      { views: '4.5M', img: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=400', title: '5-Min Desk Posture Fix', link: 'https://youtube.com/watch?v=CultFit-Athletic-Transformation' },
+      { views: '3.1M', img: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=400', title: 'What I Eat as a Coach', link: 'https://youtube.com/watch?v=MyProtein-Macros' },
+      { views: '2.8M', img: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=400', title: 'Full Bodyweight Garage Routine', link: 'https://youtube.com' }
     ],
     case_studies: [
-      { title: 'Whey Protein Launch Campaign', brand: 'MyProtein India', results: [{ l: 'Reach', v: '2.8M' }, { l: 'Conversions', v: '18K Sales' }] },
-      { title: 'Fitness App Growth Drive', brand: 'Cult.fit Elite', results: [{ l: 'App Installs', v: '32K' }, { l: 'ROI', v: '6.1x' }] }
+      { title: 'Whey Protein Launch Campaign', brand: 'MyProtein India', desc: 'Supplement reviews and macro-tracking educational series, driving 18K sales conversions.', link: 'https://youtube.com/watch?v=MyProtein-Macros', img: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&q=80&w=400', results: [{ l: 'Reach', v: '2.8M' }, { l: 'Conversions', v: '18K Sales' }] },
+      { title: 'Fitness App Growth Drive', brand: 'Cult.fit Elite', desc: 'Evidence-backed workouts driving 32K premium app installs with 6.1x ROI.', link: 'https://youtube.com/watch?v=CultFit-Athletic-Transformation', img: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=400', results: [{ l: 'App Installs', v: '32K' }, { l: 'ROI', v: '6.1x' }] }
     ],
     services: [
       { t: 'Science-Backed Supplements Reviews', d: 'Rigorous and honest ingredient analysis combined with functional tests.', c: '#10B981' },
@@ -343,14 +422,33 @@ export const SEED_CREATORS = [
     local_hubs: ['Jaipur', 'Udaipur', 'Ahmedabad'],
     local_penetration: '94%',
     local_collab: true,
+    fullStory: {
+      p1: "Traditional cooking is like a time machine. From the spices of Chennai to the royal kitchens of Jaipur, I wanted to document the rich history behind our everyday dishes.",
+      quote: "Every recipe is a story of soil, trade routes, and grandmother's kitchen wisdom.",
+      p2: "By creating high-fidelity cooking tutorials and street food history guides, I brought traditional slow-cooking back into modern, fast-paced kitchens.",
+      p3: "I aim to partner with organic food brands and kitchenware makers who value culinary heritage and clean eating."
+    },
+    milestones: [
+      { y: '2021', t: 'Spices of the South', d: 'Documented traditional family recipes from Tamil Nadu.', category: 'Launch', metric: 'South Flavors', img: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=400', link: 'https://youtube.com' },
+      { y: '2023', t: 'Royal Recipe Archives', d: 'Traveled to document historical palace cuisines of Rajasthan.', category: 'Growth', metric: 'Palace Diaries', img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400', link: 'https://youtube.com' },
+      { y: '2025', t: 'Slow Cooking Revival', d: 'Launched a campaign bringing authentic slow-cooked clay pot recipes to young urbanites.', category: 'Campaign', metric: 'Clay Pot Revive', img: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&q=80&w=400', link: 'https://youtube.com' }
+    ],
+    awards: [
+      { t: 'Culinary Historian Award', o: 'Food Writers Guild', y: '2025', img: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=200', link: 'https://foodwritersguild.in/awards/2025' },
+      { t: 'Authentic Recipe Creator', o: 'Chennai Food Awards', y: '2024', img: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=200', link: 'https://chennaifoodawards.org/verify/2024' }
+    ],
+    collabs: [
+      { p: 'Aashirvaad Organic', l: 'Recipe Partner', d: 'High-fidelity organic ghee cooking and traditional recipe series.', brandLink: 'https://aashirvaad.com', videoLink: 'https://youtube.com/watch?v=Aashirvaad-Ghee-SlowCooking', metric: '+22% Sales', img: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=400' },
+      { p: 'Wonderchef India', l: 'Product Integration', d: 'Showcase of rustic table setups and durable cookware.', brandLink: 'https://wonderchef.com', videoLink: 'https://youtube.com/watch?v=Wonderchef-Rustic-Cooking', metric: '5.1x ROI', img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400' }
+    ],
     viral_content: [
-      { views: '2.8M', img: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=400' },
-      { views: '1.5M', img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400' },
-      { views: '3.6M', img: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&q=80&w=400' }
+      { views: '2.8M', img: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=400', title: 'Ancient Ghee Recipe Secret', link: 'https://youtube.com/watch?v=Aashirvaad-Ghee-SlowCooking' },
+      { views: '1.5M', img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400', title: 'Udaipur Royal Dal Baati', link: 'https://youtube.com/watch?v=Wonderchef-Rustic-Cooking' },
+      { views: '3.6M', img: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&q=80&w=400', title: 'Clay Pot Biryani History', link: 'https://youtube.com' }
     ],
     case_studies: [
-      { title: 'Organic Ghee Launch Campaign', brand: 'Aashirvaad Organic', results: [{ l: 'Reach', v: '1.9M' }, { l: 'Sales Growth', v: '22%' }] },
-      { title: 'Kitchen Equipment Review Drive', brand: 'Wonderchef India', results: [{ l: 'Clicks', v: '85K' }, { l: 'ROI', v: '5.1x' }] }
+      { title: 'Organic Ghee Launch Campaign', brand: 'Aashirvaad Organic', desc: 'High-fidelity organic ghee cooking and traditional recipe series, driving 22% sales growth.', link: 'https://youtube.com/watch?v=Aashirvaad-Ghee-SlowCooking', img: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=400', results: [{ l: 'Reach', v: '1.9M' }, { l: 'Sales Growth', v: '22%' }] },
+      { title: 'Kitchen Equipment Review Drive', brand: 'Wonderchef India', desc: 'Showcase of rustic table setups and durable cookware, driving 5.1x ROI.', link: 'https://youtube.com/watch?v=Wonderchef-Rustic-Cooking', img: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=400', results: [{ l: 'Clicks', v: '85K' }, { l: 'ROI', v: '5.1x' }] }
     ],
     services: [
       { t: 'Regional Recipe Creation', d: 'Authentic cooking tutorials highlighting traditional spices and preparation techniques.', c: '#FF9431' },

@@ -30,33 +30,130 @@ function mergeCreator(seed, remote) {
 
   const merged = { ...seed, ...remote };
 
-  // If a key array/object is empty or null in remote, fall back to seed details
-  const arrayFields = ['niche', 'platform', 'services', 'languages', 'portfolio', 'gallery', 'viral_content', 'case_studies', 'packages', 'reviews'];
+  const hasValue = (val) => {
+    if (val === undefined || val === null) return false;
+    if (Array.isArray(val) && val.length === 0) return false;
+    if (typeof val === 'object' && Object.keys(val).length === 0) return false;
+    if (typeof val === 'string' && val.trim() === '') return false;
+    return true;
+  };
+
+  // 1. Story mapping
+  const story = hasValue(remote.fullStory) ? remote.fullStory : (hasValue(remote.full_story) ? remote.full_story : seed.full_story);
+  merged.fullStory = story;
+  merged.full_story = story;
+
+  // 2. Viral Content mapping
+  const viral = hasValue(remote.viralContent) ? remote.viralContent : (hasValue(remote.viral_content) ? remote.viral_content : seed.viral_content);
+  merged.viralContent = viral;
+  merged.viral_content = viral;
+
+  // 3. Case Studies mapping
+  const caseStudies = hasValue(remote.caseStudies) ? remote.caseStudies : (hasValue(remote.case_studies) ? remote.case_studies : seed.case_studies);
+  merged.caseStudies = caseStudies;
+  merged.case_studies = caseStudies;
+
+  // 4. Sponsored Posts mapping
+  const sponsored = hasValue(remote.sponsoredPosts) ? remote.sponsoredPosts : (hasValue(remote.sponsored_posts) ? remote.sponsored_posts : seed.sponsored_posts);
+  merged.sponsoredPosts = sponsored;
+  merged.sponsored_posts = sponsored;
+
+  // 5. Social Links mapping
+  const social = hasValue(remote.socialLinks) ? remote.socialLinks : (hasValue(remote.social_links) ? remote.social_links : seed.social_links);
+  merged.socialLinks = social;
+  merged.social_links = social;
+
+  // 6. Local Impact Hubs / Audience Hubs mapping
+  const hubs = hasValue(remote.localHubs) ? remote.localHubs : (hasValue(remote.local_impact_hubs) ? remote.local_impact_hubs : (hasValue(remote.audience_hubs) ? remote.audience_hubs : seed.local_impact_hubs || seed.audience_hubs));
+  merged.localHubs = hubs;
+  merged.local_impact_hubs = hubs;
+  merged.local_hubs = hubs;
+  merged.audience_hubs = hubs;
+
+  // 7. AI Intel mapping
+  const hasRemoteAi = hasValue(remote.ai_intel) || hasValue(remote.aiMatch) || hasValue(remote.aiSummary) || hasValue(remote.aiSafety) || hasValue(remote.aiRetention) || hasValue(remote.aiRoi);
+  if (hasRemoteAi) {
+    const remoteIntel = remote.ai_intel || {};
+    merged.ai_intel = {
+      match: remote.aiMatch || remoteIntel.match || seed.ai_intel?.match || '90%',
+      summary: remote.aiSummary || remoteIntel.summary || seed.ai_intel?.summary || 'Elite Storyteller',
+      stats: [
+        { l: 'Safety', v: remote.aiSafety || remoteIntel.stats?.[0]?.v || seed.ai_intel?.stats?.[0]?.v || '99%' },
+        { l: 'Retention', v: remote.aiRetention || remoteIntel.stats?.[1]?.v || seed.ai_intel?.stats?.[1]?.v || 'High' },
+        { l: 'ROI Potential', v: remote.aiRoi || remoteIntel.stats?.[2]?.v || seed.ai_intel?.stats?.[2]?.v || '4.0x' }
+      ]
+    };
+  } else {
+    merged.ai_intel = seed.ai_intel;
+  }
+  if (merged.ai_intel) {
+    merged.aiMatch = merged.ai_intel.match;
+    merged.aiSummary = merged.ai_intel.summary;
+    merged.aiSafety = merged.ai_intel.stats?.[0]?.v;
+    merged.aiRetention = merged.ai_intel.stats?.[1]?.v;
+    merged.aiRoi = merged.ai_intel.stats?.[2]?.v;
+  }
+
+  // 8. Local Voice mapping
+  const localVoice = hasValue(remote.localVoice) ? remote.localVoice : (hasValue(remote.local_voice) ? remote.local_voice : seed.local_voice);
+  merged.localVoice = localVoice;
+  merged.local_voice = localVoice;
+
+  // 9. Local Penetration mapping
+  const localPenetration = hasValue(remote.localPenetration) ? remote.localPenetration : (hasValue(remote.local_penetration) ? remote.local_penetration : seed.local_penetration);
+  merged.localPenetration = localPenetration;
+  merged.local_penetration = localPenetration;
+
+  // 10. Regional Dialects mapping
+  const regionalDialects = hasValue(remote.regionalDialects) ? remote.regionalDialects : (hasValue(remote.regional_dialects) ? remote.regional_dialects : seed.regional_dialects);
+  merged.regionalDialects = regionalDialects;
+  merged.regional_dialects = regionalDialects;
+
+  // 11. Local Collab enable flag
+  merged.local_collab = remote.local_collab || seed.local_collab || !!(hubs?.length || regionalDialects || localVoice);
+
+  // 12. Titles mapping
+  const philosophyTitle = hasValue(remote.philosophyTitle) ? remote.philosophyTitle : (hasValue(remote.philosophy_title) ? remote.philosophy_title : seed.philosophy_title);
+  merged.philosophyTitle = philosophyTitle;
+  merged.philosophy_title = philosophyTitle;
+
+  const dominanceTitle = hasValue(remote.dominanceTitle) ? remote.dominanceTitle : (hasValue(remote.dominance_title) ? remote.dominance_title : seed.dominance_title);
+  merged.dominanceTitle = dominanceTitle;
+  merged.dominance_title = dominanceTitle;
+
+  const localTitle = hasValue(remote.localTitle) ? remote.localTitle : (hasValue(remote.local_title) ? remote.local_title : seed.local_title);
+  merged.localTitle = localTitle;
+  merged.local_title = localTitle;
+
+  const localHubsTitle = hasValue(remote.localHubsTitle) ? remote.localHubsTitle : (hasValue(remote.local_hubs_title) ? remote.local_hubs_title : seed.local_hubs_title);
+  merged.localHubsTitle = localHubsTitle;
+  merged.local_hubs_title = localHubsTitle;
+
+  // Other standard fallbacks
+  const arrayFields = ['niche', 'platform', 'services', 'languages', 'portfolio', 'gallery', 'packages', 'reviews'];
   arrayFields.forEach(field => {
-    if (!remote[field] || (Array.isArray(remote[field]) && remote[field].length === 0)) {
+    if (!hasValue(remote[field])) {
       merged[field] = seed[field];
     }
   });
 
-  const objectFields = ['ai_intel', 'audience_hubs', 'expertise', 'full_story'];
+  const objectFields = ['expertise'];
   objectFields.forEach(field => {
-    if (!remote[field] || (typeof remote[field] === 'object' && Object.keys(remote[field]).length === 0)) {
+    if (!hasValue(remote[field])) {
       merged[field] = seed[field];
     }
   });
 
-  // Verify text fields as well
-  const textFields = ['bio', 'tagline', 'philosophy', 'audience_desc', 'local_voice', 'local_penetration'];
+  const textFields = ['bio', 'tagline', 'philosophy', 'audience_desc'];
   textFields.forEach(field => {
-    if (!remote[field]) {
+    if (!hasValue(remote[field])) {
       merged[field] = seed[field];
     }
   });
 
-  // Always preserve rich seed images when the API has no image data
   const imageFields = ['photo', 'image', 'avatarUrl', 'profile_pic', 'coverUrl'];
   imageFields.forEach(field => {
-    if (!remote[field]) {
+    if (!hasValue(remote[field])) {
       merged[field] = seed[field];
     }
   });
@@ -331,7 +428,11 @@ export async function updateCreatorProfile(profileData) {
       viralContent: profileData.viralContent || profileData.viral_content,
       caseStudies: profileData.caseStudies || profileData.case_studies,
       sponsoredPosts: profileData.sponsoredPosts || profileData.sponsored_posts,
-      socialLinks: profileData.socialLinks || profileData.social_links
+      socialLinks: profileData.socialLinks || profileData.social_links,
+      philosophyTitle: profileData.philosophyTitle || profileData.philosophy_title,
+      dominanceTitle: profileData.dominanceTitle || profileData.dominance_title,
+      localTitle: profileData.localTitle || profileData.local_title,
+      localHubsTitle: profileData.localHubsTitle || profileData.local_hubs_title
     };
 
     const res = await apiCall('/creators/me', {

@@ -74,11 +74,14 @@ ProLockBanner.propTypes = {
   onUpgrade: PropTypes.func.isRequired
 };
 
-const PLATFORM_OPTIONS = ['Instagram', 'YouTube', 'Twitter / X', 'LinkedIn', 'Telegram', 'Threads', 'Snapchat', 'Pinterest', 'Discord', 'Website'];
+const PLATFORM_OPTIONS = ['Instagram', 'YouTube', 'LinkedIn', 'Twitter / X', 'Telegram', 'WhatsApp', 'Threads', 'Moj', 'ShareChat', 'Josh', 'Snapchat', 'Facebook', 'Pinterest', 'Twitch', 'Spotify', 'Discord', 'Reddit', 'GitHub', 'Behance', 'Dribbble', 'Medium', 'Website'];
 const PLATFORM_EMOJI = {
-  'Instagram': '📸', 'YouTube': '▶️', 'Twitter / X': '𝕏', 'LinkedIn': '💼',
-  'Telegram': '✈️', 'Threads': '🧵', 'Snapchat': '👻', 'Pinterest': '📌',
-  'Discord': '🎮', 'Website': '🌐'
+  'Instagram': '📸', 'YouTube': '▶️', 'LinkedIn': '💼', 'Twitter / X': '𝕏',
+  'Telegram': '✈️', 'WhatsApp': '💬', 'Threads': '🧵', 'Moj': '🎵',
+  'ShareChat': '💬', 'Josh': '🎥', 'Snapchat': '👻', 'Facebook': '👥',
+  'Pinterest': '📌', 'Twitch': '🎮', 'Spotify': '🎧', 'Discord': '👾',
+  'Reddit': '🤖', 'GitHub': '💻', 'Behance': '🎨', 'Dribbble': '🏀',
+  'Medium': '📝', 'Website': '🌐'
 };
 const PLATFORM_ICONS = {
   'Instagram': Link2, 'YouTube': Link2, 'Twitter / X': Link2,
@@ -130,6 +133,10 @@ const IdentityTabContent = ({ F, c, st, mob, upF, saveProfile, saving }) => (
         
         <div style={{ marginTop: '24px', borderTop: '1px solid #e2e8f0', paddingTop: '24px' }}>
            <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', marginBottom: 16, textTransform: 'uppercase' }}>Content Philosophy & Brand-Fit Intel</p>
+           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px', marginBottom: '16px' }}>
+              <Fld label="Content Philosophy Heading (e.g. My Content Vision)" value={F.philosophyTitle} onChange={e => upF('philosophyTitle', e.target.value)} placeholder="My Content Philosophy (The 'Why')" />
+              <Fld label="Regional Dominance Heading (e.g. Heartland Core Reach)" value={F.dominanceTitle} onChange={e => upF('dominanceTitle', e.target.value)} placeholder="My Regional Dominance" />
+           </div>
            <Fld label="Mera Content Philosophy (The 'Why')" value={F.philosophy} onChange={e => upF('philosophy', e.target.value)} rows={3} placeholder="Content creation isn't just about demonstrating silicon specifications..." />
            <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px', marginTop: '16px' }}>
               <Fld label="AI Brand-Fit Match %" value={F.aiMatch} onChange={e => upF('aiMatch', e.target.value)} placeholder="98%" />
@@ -339,12 +346,16 @@ const StoryTabContent = ({ F, mob, upF, upAward, upCollab, upMilestone, saveProf
            <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', marginBottom: 16, textTransform: 'uppercase' }}>🏆 Key Achievements & Awards (Up to 3)</p>
            <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: 16 }}>
               {['award-1', 'award-2', 'award-3'].map((awardKey, idx) => {
-                const award = F.awards[idx] || { t: '', o: '', y: '' };
+                const award = F.awards[idx] || { t: '', o: '', y: '', img: '', link: '' };
                 return (
                   <div key={awardKey} style={{ padding: 20, background: '#f8fafc', borderRadius: 16, border: '1px solid #f1f5f9' }}>
                      <Fld label={`Award Title ${idx + 1}`} value={award.t} onChange={e => upAward(idx, 't', e.target.value)} placeholder="Youth Icon Award" />
                      <Fld label="Issuer Organization" value={award.o} onChange={e => upAward(idx, 'o', e.target.value)} placeholder="Govt of Rajasthan" style={{ marginTop: 8 }} />
-                     <Fld label="Year" value={award.y} onChange={e => upAward(idx, 'y', e.target.value)} placeholder="2024" style={{ marginTop: 8 }} />
+                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: 8 }}>
+                       <Fld label="Year" value={award.y} onChange={e => upAward(idx, 'y', e.target.value)} placeholder="2024" />
+                       <Fld label="Verification Link" value={award.link || ''} onChange={e => upAward(idx, 'link', e.target.value)} placeholder="https://awards.org/verify" />
+                     </div>
+                     <Fld label="Award / Certificate Image URL" value={award.img || ''} onChange={e => upAward(idx, 'img', e.target.value)} placeholder="https://images.unsplash.com/..." style={{ marginTop: 8 }} />
                   </div>
                 );
               })}
@@ -356,12 +367,20 @@ const StoryTabContent = ({ F, mob, upF, upAward, upCollab, upMilestone, saveProf
            <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', marginBottom: 16, textTransform: 'uppercase' }}>🤝 Elite Partnerships & Collaborations (Up to 3)</p>
            <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: 16 }}>
               {['collab-1', 'collab-2', 'collab-3'].map((collabKey, idx) => {
-                const collab = F.collabs[idx] || { p: '', l: '', d: '' };
+                const collab = F.collabs[idx] || { p: '', l: '', d: '', brandLink: '', videoLink: '', img: '', metric: '' };
                 return (
                   <div key={collabKey} style={{ padding: 20, background: '#f8fafc', borderRadius: 16, border: '1px solid #f1f5f9' }}>
                      <Fld label={`Partner Name ${idx + 1}`} value={collab.p} onChange={e => upCollab(idx, 'p', e.target.value)} placeholder="Rajasthan Tourism Govt" />
-                     <Fld label="Collab Type" value={collab.l} onChange={e => upCollab(idx, 'l', e.target.value)} placeholder="Government Partner" style={{ marginTop: 8 }} />
+                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: 8 }}>
+                       <Fld label="Collab Type" value={collab.l} onChange={e => upCollab(idx, 'l', e.target.value)} placeholder="Government Partner" />
+                       <Fld label="Highlight Metric" value={collab.metric || ''} onChange={e => upCollab(idx, 'metric', e.target.value)} placeholder="3.2M Reach" />
+                     </div>
                      <Fld label="Description" value={collab.d} onChange={e => upCollab(idx, 'd', e.target.value)} placeholder="Official campaign promoting local heritage." style={{ marginTop: 8 }} />
+                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: 8 }}>
+                       <Fld label="Brand Website Link" value={collab.brandLink || ''} onChange={e => upCollab(idx, 'brandLink', e.target.value)} placeholder="https://brand.com" />
+                       <Fld label="Campaign Video URL" value={collab.videoLink || ''} onChange={e => upCollab(idx, 'videoLink', e.target.value)} placeholder="https://youtube.com/..." />
+                     </div>
+                     <Fld label="Campaign Image URL" value={collab.img || ''} onChange={e => upCollab(idx, 'img', e.target.value)} placeholder="https://images.unsplash.com/..." style={{ marginTop: 8 }} />
                   </div>
                 );
               })}
@@ -377,7 +396,15 @@ const StoryTabContent = ({ F, mob, upF, upAward, upCollab, upMilestone, saveProf
                     <Fld label="Year" value={m.y} onChange={e => upMilestone(idx, 'y', e.target.value)} placeholder="2022" />
                     <Fld label="Chapter Title" value={m.t} onChange={e => upMilestone(idx, 't', e.target.value)} placeholder="First Viral Short" />
                  </div>
-                 <Fld label="Chapter Details" value={m.d} onChange={e => upMilestone(idx, 'd', e.target.value)} placeholder="Crossed 100K views by highlighting regional monuments..." />
+                 <Fld label="Chapter Details" value={m.d} onChange={e => upMilestone(idx, 'd', e.target.value)} placeholder="Crossed 100K views by highlighting regional monuments..." style={{ marginBottom: 12 }} />
+                 <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 12, marginBottom: 12 }}>
+                    <Fld label="Category Tag (e.g. Launch, Collab)" value={m.category || ''} onChange={e => upMilestone(idx, 'category', e.target.value)} placeholder="Growth" />
+                    <Fld label="Highlight Metric (e.g. 500K Subs)" value={m.metric || ''} onChange={e => upMilestone(idx, 'metric', e.target.value)} placeholder="500K Views" />
+                 </div>
+                 <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 12 }}>
+                    <Fld label="Thumbnail Image URL" value={m.img || ''} onChange={e => upMilestone(idx, 'img', e.target.value)} placeholder="https://images.unsplash.com/..." />
+                    <Fld label="Verification Link" value={m.link || ''} onChange={e => upMilestone(idx, 'link', e.target.value)} placeholder="https://youtube.com/watch?..." />
+                 </div>
               </div>
            ))}
         </div>
@@ -427,11 +454,13 @@ const PackagesTabContent = ({ F, mob, upF, upService, upViralContent, upCaseStud
            <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', marginBottom: 16, textTransform: 'uppercase' }}>🔥 Viral Content Hits (Up to 3)</p>
            <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: 16 }}>
               {['viral-1', 'viral-2', 'viral-3'].map((viralKey, idx) => {
-                const viral = F.viralContent[idx] || { views: '', img: '' };
+                const viral = F.viralContent[idx] || { views: '', img: '', title: '', link: '' };
                 return (
                   <div key={viralKey} style={{ padding: 20, background: '#f8fafc', borderRadius: 16, border: '1px solid #f1f5f9' }}>
                      <Fld label={`Video ${idx + 1} Views`} value={viral.views} onChange={e => upViralContent(idx, 'views', e.target.value)} placeholder="1.2M" />
-                     <Fld label="Cover Image URL" value={viral.img} onChange={e => upViralContent(idx, 'img', e.target.value)} placeholder="https://images.unsplash.com/..." style={{ marginTop: 8 }} />
+                     <Fld label="Video Title / Topic" value={viral.title || ''} onChange={e => upViralContent(idx, 'title', e.target.value)} placeholder="BMW X5 Review" style={{ marginTop: 8 }} />
+                     <Fld label="Video Link / Proof" value={viral.link || ''} onChange={e => upViralContent(idx, 'link', e.target.value)} placeholder="https://youtube.com/watch?..." style={{ marginTop: 8 }} />
+                     <Fld label="Cover Image URL" value={viral.img || ''} onChange={e => upViralContent(idx, 'img', e.target.value)} placeholder="https://images.unsplash.com/..." style={{ marginTop: 8 }} />
                   </div>
                 );
               })}
@@ -446,6 +475,11 @@ const PackagesTabContent = ({ F, mob, upF, upService, upViralContent, upCaseStud
                  <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16, marginBottom: 12 }}>
                     <Fld label="Campaign Title" value={cs.title} onChange={e => upCaseStudy(idx, 'title', e.target.value)} placeholder="Jaipur Heritage Launch" />
                     <Fld label="Brand Name" value={cs.brand} onChange={e => upCaseStudy(idx, 'brand', e.target.value)} placeholder="OYO Rooms" />
+                 </div>
+                 <Fld label="Campaign Brief Description" value={cs.desc || ''} onChange={e => upCaseStudy(idx, 'desc', e.target.value)} placeholder="Promoted heritage homestays to urban young travelers via visual Reels..." style={{ marginBottom: 12 }} />
+                 <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16, marginBottom: 12 }}>
+                    <Fld label="Campaign Verification Link" value={cs.link || ''} onChange={e => upCaseStudy(idx, 'link', e.target.value)} placeholder="https://youtube.com/..." />
+                    <Fld label="Cover/Thumbnail Image URL" value={cs.img || ''} onChange={e => upCaseStudy(idx, 'img', e.target.value)} placeholder="https://images.unsplash.com/..." />
                  </div>
                  <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(4, 1fr)', gap: 12 }}>
                     <Fld label="Metric 1 Label" value={cs.r1_label} onChange={e => upCaseStudy(idx, 'r1_label', e.target.value)} placeholder="Reach" />
@@ -478,6 +512,10 @@ const LocalTabContent = ({ F, mob, upF, upLocalHub, saveProfile, setTab }) => (
      <p className="db-sub-text" style={{ marginBottom: 40 }}>Define your regional reach and attract hyper-local sponsorships from Tier-2 city brands.</p>
      
      <div className="form-stack">
+        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px', marginBottom: 24 }}>
+           <Fld label="Local Initiative Heading (e.g. Vocal for Local / Store Visits)" value={F.localTitle} onChange={e => upF('localTitle', e.target.value)} placeholder="Supporting Local Businesses & Homegrown Brands" />
+           <Fld label="Impact Hubs Section Heading (e.g. My Active Regional Hubs)" value={F.localHubsTitle} onChange={e => upF('localHubsTitle', e.target.value)} placeholder="My Hyper-Local Impact Hub" />
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px', marginBottom: 24 }}>
            <Fld label="Regional Dialects / Languages" value={F.regionalDialects} onChange={e => upF('regionalDialects', e.target.value)} placeholder="Bhojpuri, Marwari, Hinglish" />
            <Fld label="Local Market Penetration %" value={F.localPenetration} onChange={e => upF('localPenetration', e.target.value)} placeholder="85%" />
@@ -740,35 +778,57 @@ const getInitialFormState = (c) => {
     { l: 'Indore', v: '85%' }, { l: 'Bhopal', v: '72%' }, { l: 'Ujjain', v: '64%' }
   ];
   const awards = c?.awards?.length ? [...c.awards] : [
-    { t: 'Regional Pioneer', o: 'CreatorBharat', y: '2024' },
-    { t: 'Elite Hub Verified', o: 'Gov of Rajasthan', y: '2023' },
-    { t: 'Cultural Impact', o: 'Jaipur Literature Festival', y: '2025' }
+    { t: '', o: '', y: '' },
+    { t: '', o: '', y: '' },
+    { t: '', o: '', y: '' }
   ];
-  const collabs = c?.collabs?.length ? [...c.collabs] : [
-    { p: 'Rajasthan Tourism Govt', l: 'Government Partner', d: 'Official campaign promoting local heritage.' },
-    { p: 'MS Dhoni / Seven brand', l: 'Celebrity Linkup', d: 'Co-starred in the regional sportswear campaign.' },
-    { p: 'TEDx Jaipur', l: 'Keynote Feature', d: 'Talk on power of regional dialects in storytelling.' }
-  ];
+  const collabs = (c?.collabs?.length ? c.collabs : [
+    { p: '', l: '', d: '', brandLink: '', videoLink: '', img: '', metric: '' },
+    { p: '', l: '', d: '', brandLink: '', videoLink: '', img: '', metric: '' },
+    { p: '', l: '', d: '', brandLink: '', videoLink: '', img: '', metric: '' }
+  ]).map((col, idx) => ({
+    p: col.p || '',
+    l: col.l || '',
+    d: col.d || '',
+    brandLink: col.brandLink || '',
+    videoLink: col.videoLink || '',
+    img: col.img || '',
+    metric: col.metric || '',
+    id: col.id || `collab-${idx}`
+  }));
   const milestones = (c?.milestones?.length ? c.milestones : [
-    { y: '2022', t: 'The Foundation', d: '' }, { y: '2023', t: 'First Success', d: '' },
-    { y: '2024', t: 'Scaling Up', d: '' }, { y: '2025', t: 'Elite Status', d: '' }
-  ]).map((m, idx) => ({ ...m, id: m.id || `milestone-${idx}` }));
+    { y: '', t: '', d: '', category: '', metric: '', img: '', link: '' }, 
+    { y: '', t: '', d: '', category: '', metric: '', img: '', link: '' },
+    { y: '', t: '', d: '', category: '', metric: '', img: '', link: '' }, 
+    { y: '', t: '', d: '', category: '', metric: '', img: '', link: '' }
+  ]).map((m, idx) => ({
+    y: m.y || '',
+    t: m.t || '',
+    d: m.d || '',
+    category: m.category || '',
+    metric: m.metric || '',
+    img: m.img || '',
+    link: m.link || '',
+    id: m.id || `milestone-${idx}`
+  }));
   const services = (c?.services?.length ? c.services : [
     { t: 'Cinematic Reel', d: 'Brand integration in high-fidelity 4K video reel.', rate: '12000' },
     { t: 'Product Placement', d: 'Seamless product placement in community posts.', rate: '6000' },
     { t: 'Full YouTube Review', d: 'Dedicated 5-minute product breakdown.', rate: '25000' }
   ]).map((s, idx) => ({ ...s, id: s.id || `service-${idx}` }));
-  const viralContent = c?.viral_content?.length 
-    ? c.viral_content.map(v => typeof v === 'object' ? { views: v.views || '', img: v.img || '' } : { views: `${v}M`, img: '' }) 
-    : [{ views: '1.2M', img: '' }, { views: '3.5M', img: '' }, { views: '5.8M', img: '' }];
+  const viralContent = (c?.viral_content?.length 
+    ? c.viral_content.map(v => typeof v === 'object' ? { views: v.views || '', img: v.img || '', title: v.title || '', link: v.link || '' } : { views: `${v}M`, img: '', title: '', link: '' }) 
+    : [{ views: '1.2M', img: '', title: '', link: '' }, { views: '3.5M', img: '', title: '', link: '' }, { views: '5.8M', img: '', title: '', link: '' }]
+  ).map((v, idx) => ({ ...v, id: `viral-${idx}` }));
   const caseStudies = (c?.case_studies?.length ? c.case_studies.map(cs => ({
     title: cs.title || '', brand: cs.brand || '',
+    desc: cs.desc || '', link: cs.link || '', img: cs.img || '',
     r1_label: cs.results?.[0]?.l || 'Reach', r1_val: cs.results?.[0]?.v || '',
     r2_label: cs.results?.[1]?.l || 'ROI', r2_val: cs.results?.[1]?.v || ''
   })) : [
-    { title: '', brand: '', r1_label: 'Reach', r1_val: '', r2_label: 'ROI', r2_val: '' },
-    { title: '', brand: '', r1_label: 'Sales', r1_val: '', r2_label: 'Clicks', r2_val: '' },
-    { title: '', brand: '', r1_label: 'Views', r1_val: '', r2_label: 'Shares', r2_val: '' }
+    { title: '', brand: '', desc: '', link: '', img: '', r1_label: 'Reach', r1_val: '', r2_label: 'ROI', r2_val: '' },
+    { title: '', brand: '', desc: '', link: '', img: '', r1_label: 'Sales', r1_val: '', r2_label: 'Clicks', r2_val: '' },
+    { title: '', brand: '', desc: '', link: '', img: '', r1_label: 'Views', r1_val: '', r2_label: 'Shares', r2_val: '' }
   ]).map((cs, idx) => ({ ...cs, id: cs.id || `casestudy-${idx}` }));
 
   const socialLinks = c?.social_links?.length ? [...c.social_links] : [];
@@ -793,6 +853,10 @@ const getInitialFormState = (c) => {
     localVoice: c?.local_voice || '', localPenetration: c?.local_penetration || '',
     regionalDialects: c?.regional_dialects || '', localHubs, awards, collabs, milestones,
     services, viralContent, caseStudies, socialLinks, sponsoredPosts,
+    philosophyTitle: c?.philosophy_title || c?.philosophyTitle || '',
+    dominanceTitle: c?.dominance_title || c?.dominanceTitle || '',
+    localTitle: c?.local_title || c?.localTitle || '',
+    localHubsTitle: c?.local_hubs_title || c?.localHubsTitle || '',
     contactPhone: c?.contact_phone || '', contactMethod: c?.contact_method || 'whatsapp'
   };
 };
@@ -853,16 +917,28 @@ export default function ProfileBuilderPage() {
     setSaving(true);
     try {
       const filteredGallery = F.gallery.filter(Boolean);
-      const filteredMilestones = F.milestones.filter(m => m.y && m.t);
+      const filteredMilestones = F.milestones.filter(m => m.y && m.t).map(m => ({
+        y: m.y, t: m.t, d: m.d,
+        category: m.category || '', metric: m.metric || '', img: m.img || '', link: m.link || ''
+      }));
       const filteredServices = F.services.filter(s => s.t && s.rate);
       const filteredAwards = F.awards.filter(a => a.t && a.y);
-      const filteredCollabs = F.collabs.filter(col => col.p && col.l);
+      const filteredCollabs = F.collabs.filter(col => col.p && col.l).map(col => ({
+        p: col.p, l: col.l, d: col.d,
+        brandLink: col.brandLink || '',
+        videoLink: col.videoLink || '',
+        img: col.img || '',
+        metric: col.metric || ''
+      }));
       const filteredLocalHubs = F.localHubs.filter(h => h.l && h.v);
-      const filteredViral = F.viralContent.filter(v => v.views);
+      const filteredViral = F.viralContent.filter(v => v.views).map(v => ({
+        views: v.views, img: v.img || '', title: v.title || '', link: v.link || ''
+      }));
       const filteredSponsoredPosts = F.sponsoredPosts.filter(p => p.brand && p.campaign);
       const filteredSocialLinks = F.socialLinks.filter(l => l.url);
       const filteredCaseStudies = F.caseStudies.filter(cs => cs.title && cs.brand).map(cs => ({
         title: cs.title, brand: cs.brand,
+        desc: cs.desc || '', link: cs.link || '', img: cs.img || '',
         results: [
           { l: cs.r1_label || 'Reach', v: cs.r1_val || 'N/A' },
           { l: cs.r2_label || 'ROI', v: cs.r2_val || 'N/A' }
@@ -891,6 +967,10 @@ export default function ProfileBuilderPage() {
         localHubs: filteredLocalHubs,
         sponsoredPosts: filteredSponsoredPosts,
         socialLinks: filteredSocialLinks,
+        philosophyTitle: F.philosophyTitle,
+        dominanceTitle: F.dominanceTitle,
+        localTitle: F.localTitle,
+        localHubsTitle: F.localHubsTitle,
         contactPhone: F.contactPhone,
         contactMethod: F.contactMethod,
         email: st.user?.email
