@@ -2414,10 +2414,11 @@ export default function CreatorProfilePage() {
           }}
         >
           {[
-            { id: 'identity',  label: 'Identity',   icon: Activity,      group: 'main' },
+            { id: 'identity',  label: 'Identity',    icon: Activity,      group: 'main' },
             { id: 'story',     label: 'Story',       icon: Globe,         group: 'main' },
             { id: 'gallery',   label: 'Gallery',     icon: ImageIcon,     group: 'main' },
             { id: 'work',      label: 'Work',        icon: Briefcase,     group: 'main' },
+            { id: 'services',  label: 'Services',    icon: Sparkles,      group: 'main' },
             { id: 'local',     label: 'Local',       icon: MapPin,        group: 'main' },
             { id: 'reviews',   label: 'Reviews',     icon: Star,          group: 'main' },
             { id: 'packages',  label: 'Packages',    icon: Zap,           group: 'action' },
