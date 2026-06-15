@@ -2260,117 +2260,181 @@ export default function CreatorProfilePage() {
       />
       <ProfileHero c={c} stats={stats} navigate={navigate} st={st} dsp={dsp} mob={mob} onRate={handleRateClick} onContact={() => setActiveTab('connect')} onMediaKit={handleMediaKitOpen} navVisible={navVisible} onBrief={handlePackageSelect} />
       
-      {/* ── STICKY TAB BAR ── */}
+      {/* ── STICKY TAB BAR: Apple 2026 Glassmorphism Floating Pill ── */}
       <div
         ref={tabBarRef}
         style={{
           position: 'sticky',
           top: stickyTop,
-          transition: 'top 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, background 0.3s ease',
           zIndex: 1000,
-          background: tabScrolled
-            ? 'rgba(255,255,255,0.98)'
-            : 'rgba(255,255,255,0.92)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
-          borderBottom: '1px solid #f1f5f9',
-          boxShadow: tabScrolled
-            ? '0 4px 24px rgba(0,0,0,0.08)'
-            : '0 1px 4px rgba(0,0,0,0.02)'
+          display: 'flex',
+          justifyContent: 'center',
+          padding: mob ? '10px 12px' : '14px 24px',
+          transition: 'top 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          pointerEvents: 'none',
         }}
       >
-        <div style={{ ...W(1100), padding: mob ? '0 12px' : '0 24px' }}>
-          <div style={{
+        <style>{`
+          @keyframes cb-tab-pop {
+            0% { transform: scale(0.92); opacity: 0.6; }
+            60% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+          }
+          .cb-pill-btn { -webkit-tap-highlight-color: transparent; }
+          .cb-pill-btn:hover .cb-pill-hover { opacity: 1 !important; }
+        `}</style>
+
+        {/* The floating pill container */}
+        <div
+          style={{
+            pointerEvents: 'auto',
             display: 'flex',
-            gap: mob ? 0 : 4,
+            alignItems: 'center',
+            gap: mob ? '2px' : '3px',
+            padding: mob ? '5px' : '6px',
+            background: tabScrolled
+              ? 'rgba(255,255,255,0.88)'
+              : 'rgba(255,255,255,0.78)',
+            backdropFilter: 'blur(28px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+            borderRadius: '100px',
+            border: '1px solid rgba(255,255,255,0.7)',
+            boxShadow: tabScrolled
+              ? '0 8px 32px rgba(15,23,42,0.14), 0 2px 8px rgba(15,23,42,0.06), inset 0 1px 0 rgba(255,255,255,0.9)'
+              : '0 4px 20px rgba(15,23,42,0.08), 0 1px 4px rgba(15,23,42,0.04), inset 0 1px 0 rgba(255,255,255,0.9)',
             overflowX: 'auto',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
-            minWidth: 0,
-            WebkitOverflowScrolling: 'touch'
-          }}>
-            {[
-              { id: 'identity',  label: 'Identity',   icon: Activity,      group: 'main' },
-              { id: 'story',     label: 'Story',       icon: Globe,         group: 'main' },
-              { id: 'gallery',   label: 'Gallery',     icon: ImageIcon,     group: 'main' },
-              { id: 'work',      label: 'Work',        icon: Briefcase,     group: 'main' },
-              { id: 'local',     label: 'Local',       icon: MapPin,        group: 'main' },
-              { id: 'reviews',   label: 'Reviews',     icon: Star,          group: 'main' },
-              { id: 'packages',  label: 'Packages',    icon: Zap,           group: 'action' },
-              { id: 'sponsor',   label: 'Sponsored',   icon: Megaphone,     group: 'action' },
-              { id: 'connect',   label: 'Connect',     icon: MessageSquare, group: 'action' },
-            ].map((t, idx, arr) => {
-              const isActive = activeTab === t.id;
-              const isAction = t.group === 'action';
-              const showDivider = !mob && idx > 0 && arr[idx - 1].group !== t.group;
+            maxWidth: '100%',
+            WebkitOverflowScrolling: 'touch',
+            transition: 'box-shadow 0.3s ease, background 0.3s ease',
+          }}
+        >
+          {[
+            { id: 'identity',  label: 'Identity',   icon: Activity,      group: 'main' },
+            { id: 'story',     label: 'Story',       icon: Globe,         group: 'main' },
+            { id: 'gallery',   label: 'Gallery',     icon: ImageIcon,     group: 'main' },
+            { id: 'work',      label: 'Work',        icon: Briefcase,     group: 'main' },
+            { id: 'local',     label: 'Local',       icon: MapPin,        group: 'main' },
+            { id: 'reviews',   label: 'Reviews',     icon: Star,          group: 'main' },
+            { id: 'packages',  label: 'Packages',    icon: Zap,           group: 'action' },
+            { id: 'sponsor',   label: 'Sponsored',   icon: Megaphone,     group: 'action' },
+            { id: 'connect',   label: 'Connect',     icon: MessageSquare, group: 'action' },
+          ].map((t, idx, arr) => {
+            const isActive = activeTab === t.id;
+            const isAction = t.group === 'action';
+            const showDivider = !mob && idx > 0 && arr[idx - 1].group !== t.group;
 
-              return (
-                <React.Fragment key={t.id}>
-                  {showDivider && (
-                    <div style={{ width: 1, background: '#e2e8f0', margin: '10px 6px', alignSelf: 'stretch', flexShrink: 0 }} />
-                  )}
-                  <button
-                    data-tabid={t.id}
-                    onClick={() => handleTabChange(t.id)}
-                    style={{
-                      position: 'relative',
-                      flexShrink: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: mob ? 5 : 7,
-                      padding: mob ? '13px 12px' : '16px 14px',
-                      background: isActive
-                        ? (isAction ? 'rgba(255,148,49,0.06)' : 'rgba(0,115,177,0.06)')
-                        : 'none',
-                      border: 'none',
-                      borderRadius: isActive ? '12px 12px 0 0' : 0,
-                      cursor: 'pointer',
-                      color: isActive
-                        ? (isAction ? '#FF9431' : '#0073b1')
-                        : '#94a3b8',
-                      fontSize: mob ? 11 : 13,
-                      fontWeight: isActive ? 900 : 600,
-                      whiteSpace: 'nowrap',
-                      transition: 'all 0.2s ease',
-                    }}
-                  >
-                    <t.icon size={mob ? 14 : 15} strokeWidth={isActive ? 2.5 : 2} />
-                    {t.label}
+            const activeBg = isAction
+              ? 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)'
+              : 'linear-gradient(135deg, #0073b1 0%, #0ea5e9 100%)';
+            const activeGlow = isAction
+              ? '0 4px 14px rgba(255,148,49,0.5), 0 1px 3px rgba(0,0,0,0.1)'
+              : '0 4px 14px rgba(0,115,177,0.4), 0 1px 3px rgba(0,0,0,0.1)';
 
-                    {/* Sponsor AD badge */}
-                    {t.id === 'sponsor' && !isActive && (
-                      <span style={{ background: '#FF943118', color: '#FF9431', fontSize: 8, fontWeight: 900, padding: '1px 5px', borderRadius: 100, letterSpacing: '0.5px', textTransform: 'uppercase' }}>AD</span>
-                    )}
-                    {/* Connect HIRE badge */}
-                    {t.id === 'connect' && !isActive && (
-                      <span style={{ background: '#10B98118', color: '#10B981', fontSize: 8, fontWeight: 900, padding: '1px 5px', borderRadius: 100, letterSpacing: '0.5px' }}>HIRE</span>
-                    )}
-
-                    {/* Active underline */}
-                    {isActive && (
-                      <span style={{
+            return (
+              <React.Fragment key={t.id}>
+                {showDivider && (
+                  <div style={{
+                    width: '1px',
+                    height: '18px',
+                    background: 'linear-gradient(180deg, transparent 0%, rgba(203,213,225,0.7) 50%, transparent 100%)',
+                    flexShrink: 0,
+                    margin: '0 2px',
+                  }} />
+                )}
+                <button
+                  className="cb-pill-btn"
+                  data-tabid={t.id}
+                  onClick={() => handleTabChange(t.id)}
+                  style={{
+                    position: 'relative',
+                    flexShrink: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: mob ? 4 : 6,
+                    padding: isActive
+                      ? (mob ? '7px 13px' : '8px 16px')
+                      : (mob ? '7px 10px' : '8px 13px'),
+                    background: isActive ? activeBg : 'transparent',
+                    border: 'none',
+                    borderRadius: '100px',
+                    cursor: 'pointer',
+                    color: isActive ? '#fff' : '#64748b',
+                    fontSize: mob ? 11 : 12.5,
+                    fontWeight: isActive ? 800 : 600,
+                    whiteSpace: 'nowrap',
+                    boxShadow: isActive ? activeGlow : 'none',
+                    transition: 'all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    outline: 'none',
+                    letterSpacing: isActive ? '-0.01em' : '0',
+                    animation: isActive ? 'cb-tab-pop 0.28s cubic-bezier(0.34,1.56,0.64,1) forwards' : 'none',
+                  }}
+                >
+                  {/* Hover ghost for inactive */}
+                  {!isActive && (
+                    <span
+                      className="cb-pill-hover"
+                      style={{
                         position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        height: 3,
-                        borderRadius: '3px 3px 0 0',
-                        background: isAction
-                          ? 'linear-gradient(90deg, #FF9431, #EA580C)'
-                          : 'linear-gradient(90deg, #0073b1, #0ea5e9)',
-                        boxShadow: isAction
-                          ? '0 0 8px rgba(255,148,49,0.35)'
-                          : '0 0 8px rgba(0,115,177,0.25)'
-                      }} />
-                    )}
-                  </button>
-                </React.Fragment>
-              );
-            })}
-          </div>
+                        inset: 0,
+                        borderRadius: '100px',
+                        background: isAction ? 'rgba(255,148,49,0.08)' : 'rgba(15,23,42,0.06)',
+                        opacity: 0,
+                        transition: 'opacity 0.15s ease',
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  )}
+
+                  <t.icon size={mob ? 12 : 13} strokeWidth={isActive ? 2.5 : 2} style={{ flexShrink: 0 }} />
+
+                  <span>{t.label}</span>
+
+                  {/* AD badge */}
+                  {t.id === 'sponsor' && !isActive && (
+                    <span style={{
+                      background: 'rgba(255,148,49,0.12)',
+                      color: '#FF9431',
+                      fontSize: 7.5,
+                      fontWeight: 900,
+                      padding: '2px 5px',
+                      borderRadius: 100,
+                      letterSpacing: '0.5px',
+                      textTransform: 'uppercase',
+                      border: '1px solid rgba(255,148,49,0.18)',
+                    }}>AD</span>
+                  )}
+                  {/* HIRE badge */}
+                  {t.id === 'connect' && !isActive && (
+                    <span style={{
+                      background: 'rgba(16,185,129,0.1)',
+                      color: '#10B981',
+                      fontSize: 7.5,
+                      fontWeight: 900,
+                      padding: '2px 5px',
+                      borderRadius: 100,
+                      letterSpacing: '0.5px',
+                      textTransform: 'uppercase',
+                      border: '1px solid rgba(16,185,129,0.18)',
+                    }}>HIRE</span>
+                  )}
+
+                  {/* Shimmer overlay on active */}
+                  {isActive && (
+                    <span style={{
+                      position: 'absolute',
+                      inset: 0,
+                      borderRadius: '100px',
+                      background: 'linear-gradient(135deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 60%)',
+                      pointerEvents: 'none',
+                    }} />
+                  )}
+                </button>
+              </React.Fragment>
+            );
+          })}
         </div>
-        {/* Hide scrollbar CSS */}
-        <style>{`.creator-tab-scroll::-webkit-scrollbar{display:none}`}</style>
       </div>
 
       <div ref={contentRef} id="profile-content-area" style={{ ...W(1100), padding: mob ? '0 16px 120px' : '60px 24px' }}>
