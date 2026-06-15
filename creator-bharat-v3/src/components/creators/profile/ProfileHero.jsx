@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { 
@@ -17,7 +17,8 @@ import {
   Eye,
   Heart,
   Sparkles,
-  TrendingUp
+  TrendingUp,
+  Users
 } from 'lucide-react';
 import { W, fmt } from '@/utils/helpers';
 import { Bdg } from '@/components/common/Primitives';
@@ -380,7 +381,7 @@ const FollowBtn = ({ active, onClick, mob }) => (
       background: active ? '#f8fafc' : '#0f172a', 
       color: active ? '#0f172a' : '#fff', 
       border: active ? '1.5px solid #e2e8f0' : 'none', 
-      padding: mob ? '14px 20px' : '16px 48px', 
+      padding: mob ? '14px 20px' : '16px 32px', 
       borderRadius: '100px', 
       fontSize: mob ? '15px' : '16px', 
       fontWeight: 900, 
@@ -392,7 +393,8 @@ const FollowBtn = ({ active, onClick, mob }) => (
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       boxShadow: active ? 'none' : '0 10px 25px rgba(15,23,42,0.2)',
       textTransform: 'uppercase',
-      letterSpacing: '1px'
+      letterSpacing: '1px',
+      whiteSpace: 'nowrap'
     }}
   >
     {active ? <UserCheck size={mob ? 18 : 20} /> : <UserPlus size={mob ? 18 : 20} />} {active ? 'Following' : 'Follow Creator'}
@@ -408,7 +410,7 @@ const MessageBtn = ({ onClick, mob }) => (
       background: '#fff', 
       color: '#0073b1', 
       border: '2px solid #0073b1', 
-      padding: mob ? '14px 20px' : '16px 48px', 
+      padding: mob ? '14px 20px' : '16px 32px', 
       borderRadius: '100px', 
       fontSize: mob ? '15px' : '16px', 
       fontWeight: 900, 
@@ -420,7 +422,8 @@ const MessageBtn = ({ onClick, mob }) => (
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       boxShadow: '0 10px 25px rgba(0,115,177,0.1)',
       textTransform: 'uppercase',
-      letterSpacing: '1px'
+      letterSpacing: '1px',
+      whiteSpace: 'nowrap'
     }}
   >
     <MessageSquare size={mob ? 18 : 20} /> Message
@@ -447,7 +450,7 @@ const ActionButtons = ({ followed, onAction, mob, dsp, dlStatus, onDownload }) =
   else if (dlStatus === 'done') dlText = 'Media Kit Ready';
 
   return (
-    <div style={{ display: 'flex', gap: '12px', width: '100%', alignSelf: 'stretch', flexWrap: 'wrap', marginTop: mob ? '32px' : '0' }}>
+    <div style={{ display: 'flex', gap: '12px', width: '100%', alignSelf: 'stretch', flexWrap: mob ? 'wrap' : 'nowrap', marginTop: mob ? '32px' : '0' }}>
        <FollowBtn active={followed} onClick={() => onAction('follow')} mob={mob} />
        <MessageBtn onClick={() => onAction('message')} mob={mob} />
        {!mob && (
@@ -466,7 +469,8 @@ const ActionButtons = ({ followed, onAction, mob, dsp, dlStatus, onDownload }) =
               display: 'flex', 
               alignItems: 'center', 
               gap: '10px',
-              transition: 'all 0.3s'
+              transition: 'all 0.3s',
+              whiteSpace: 'nowrap'
             }}
           >
              {dlIcon} {dlText}
@@ -526,9 +530,166 @@ const ProfileImage = ({ src, mob }) => (
 );
 ProfileImage.propTypes = { src: PropTypes.string.isRequired, mob: PropTypes.bool };
 
+const ConstellationCanvas = ({ hovered }) => {
+  const canvasRef = useRef(null);
+  const [mouse, setMouse] = useState({ x: null, y: null });
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    let animationFrameId;
+    let width = canvas.width = canvas.offsetWidth || 400;
+    let height = canvas.height = canvas.offsetHeight || 400;
+
+    const resizeObserver = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        width = canvas.width = entry.contentRect.width;
+        height = canvas.height = entry.contentRect.height;
+      }
+    });
+    
+    if (canvas.parentElement) {
+      resizeObserver.observe(canvas.parentElement);
+      width = canvas.width = canvas.parentElement.offsetWidth;
+      height = canvas.height = canvas.parentElement.offsetHeight;
+    }
+
+    const particles = [];
+    const particleCount = 28;
+    const colors = [
+      'rgba(249, 115, 22, 0.35)', // Saffron
+      'rgba(16, 185, 129, 0.35)', // Green
+      'rgba(14, 165, 233, 0.35)'  // Sky Blue
+    ];
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.45,
+        vy: (Math.random() - 0.5) * 0.45,
+        radius: Math.random() * 2 + 1.5,
+        color: colors[i % colors.length]
+      });
+    }
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Connections
+      for (let i = 0; i < particles.length; i++) {
+        const p1 = particles[i];
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dx = p1.x - p2.x;
+          const dy = p1.y - p2.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 85) {
+            const alpha = (1 - dist / 85) * 0.12;
+            ctx.strokeStyle = `rgba(148, 163, 184, ${alpha})`;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Particles
+      particles.forEach((p) => {
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.shadowBlur = 4;
+        ctx.shadowColor = p.color;
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > width) p.vx *= -1;
+        if (p.y < 0 || p.y > height) p.vy *= -1;
+
+        if (mouse.x !== null && mouse.y !== null) {
+          const mdx = mouse.x - p.x;
+          const mdy = mouse.y - p.y;
+          const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+          if (mdist < 100) {
+            const malpha = (1 - mdist / 100) * 0.22;
+            ctx.strokeStyle = hovered 
+              ? `rgba(249, 115, 22, ${malpha})` 
+              : `rgba(148, 163, 184, ${malpha})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            ctx.stroke();
+
+            p.x += mdx * 0.005;
+            p.y += mdy * 0.005;
+          }
+        }
+      });
+      
+      ctx.shadowBlur = 0;
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    const handleMouseMove = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      setMouse({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      });
+    };
+
+    const handleMouseLeave = () => {
+      setMouse({ x: null, y: null });
+    };
+
+    const parent = canvas.parentElement;
+    if (parent) {
+      parent.addEventListener('mousemove', handleMouseMove);
+      parent.addEventListener('mouseleave', handleMouseLeave);
+    }
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      resizeObserver.disconnect();
+      if (parent) {
+        parent.removeEventListener('mousemove', handleMouseMove);
+        parent.removeEventListener('mouseleave', handleMouseLeave);
+      }
+    };
+  }, [mouse.x, mouse.y, hovered]);
+
+  return (
+    <canvas 
+      ref={canvasRef} 
+      style={{ 
+        position: 'absolute', 
+        inset: 0, 
+        width: '100%', 
+        height: '100%', 
+        zIndex: 0, 
+        pointerEvents: 'none',
+        borderRadius: 'inherit'
+      }} 
+    />
+  );
+};
+
 const CreatorHonestReviewCard = ({ c, mob }) => {
   const reviewerName = c?.name || 'Creator';
   const reviewerSlug = c?.slug || 'creator';
+  const [hovered, setHovered] = useState(false);
 
   const honestReviewText = c?.honest_review || c?.platform_review || c?.philosophy || (
     reviewerName === 'Arjun Kapoor' 
@@ -539,75 +700,133 @@ const CreatorHonestReviewCard = ({ c, mob }) => {
   const dpImg = c?.photo || c?.avatarUrl || c?.profile_pic || c?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(reviewerName)}&background=FF9431&color=fff&size=200`;
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      style={{ 
-        background: '#ffffff', 
-        borderRadius: '36px', 
-        padding: '36px', 
-        color: '#0f172a', 
-        boxShadow: '0 20px 40px rgba(15,23,42,0.03)',
-        position: 'relative',
-        border: '1.5px solid #f1f5f9',
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-        boxSizing: 'border-box'
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.transform = 'translateY(-4px)';
-        e.currentTarget.style.boxShadow = '0 30px 60px rgba(255,148,49,0.12)';
-        e.currentTarget.style.borderColor = 'rgba(255, 148, 49, 0.3)';
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.transform = 'none';
-        e.currentTarget.style.boxShadow = '0 20px 40px rgba(15,23,42,0.03)';
-        e.currentTarget.style.borderColor = '#f1f5f9';
-      }}
-    >
-      {/* Top Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#FF9431', boxShadow: '0 0 10px #FF9431' }} />
-          <span style={{ fontSize: '11px', fontWeight: 950, color: '#475569', textTransform: 'uppercase', letterSpacing: '2px' }}>Honest Review</span>
-        </div>
-        <div style={{ background: 'rgba(255, 148, 49, 0.08)', color: '#FF9431', padding: '6px 14px', borderRadius: '100px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px', border: '1px solid rgba(255, 148, 49, 0.15)' }}>
-          Verified review
-        </div>
-      </div>
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      {/* Ambient Glow Blobs */}
+      <div style={{
+        position: 'absolute',
+        top: '-10px',
+        left: '-10px',
+        width: '120px',
+        height: '120px',
+        borderRadius: '50%',
+        background: 'rgba(255, 148, 49, 0.12)',
+        filter: 'blur(40px)',
+        zIndex: 0,
+        transition: 'transform 0.5s ease',
+        transform: hovered ? 'scale(1.3)' : 'scale(1)',
+        pointerEvents: 'none'
+      }} />
+      <div style={{
+        position: 'absolute',
+        bottom: '-10px',
+        right: '-10px',
+        width: '140px',
+        height: '140px',
+        borderRadius: '50%',
+        background: 'rgba(0, 115, 177, 0.12)',
+        filter: 'blur(50px)',
+        zIndex: 0,
+        transition: 'transform 0.5s ease',
+        transform: hovered ? 'scale(1.3)' : 'scale(1)',
+        pointerEvents: 'none'
+      }} />
 
-      {/* Testimonial Quote */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', margin: '24px 0' }}>
-        <div style={{ fontSize: '72px', fontFamily: 'serif', color: 'rgba(255, 148, 49, 0.2)', lineHeight: 0.1, height: '36px', marginTop: '8px' }}>“</div>
-        <p style={{ 
-          fontSize: '16px', 
-          fontWeight: 600, 
-          color: '#334155', 
-          lineHeight: 1.7, 
-          fontStyle: 'italic',
-          fontFamily: "'Outfit', sans-serif",
-          margin: '0'
-        }}>
-          {honestReviewText}
-        </p>
-      </div>
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{ 
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', 
+          borderRadius: '36px', 
+          padding: '40px', 
+          color: '#0f172a', 
+          boxShadow: hovered 
+            ? '0 30px 60px rgba(255, 148, 49, 0.08), 0 0 30px rgba(0, 115, 177, 0.04)'
+            : '0 20px 40px rgba(15, 23, 42, 0.02)',
+          position: 'relative',
+          border: hovered ? '1.5px solid rgba(255, 148, 49, 0.25)' : '1.5px solid rgba(226, 232, 240, 0.8)',
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          boxSizing: 'border-box',
+          zIndex: 1,
+          transform: hovered ? 'translateY(-6px)' : 'none'
+        }}
+      >
+        <ConstellationCanvas hovered={hovered} />
 
-      {/* Reviewer signature */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderTop: '1.5px solid #f1f5f9', paddingTop: '20px' }}>
-        <div style={{ width: '44px', height: '44px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #FF9431', flexShrink: 0 }}>
-          <img src={dpImg} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+        {/* Top Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ 
+              width: '8px', 
+              height: '8px', 
+              borderRadius: '50%', 
+              background: '#FF9431', 
+              boxShadow: '0 0 12px #FF9431',
+              animation: 'pulse 2s infinite'
+            }} />
+            <span style={{ fontSize: '11px', fontWeight: 950, color: '#64748b', textTransform: 'uppercase', letterSpacing: '2px' }}>Honest Review</span>
+          </div>
+          <div style={{ 
+            background: 'rgba(16, 185, 129, 0.06)', 
+            color: '#059669', 
+            padding: '6px 14px', 
+            borderRadius: '100px', 
+            fontSize: '10px', 
+            fontWeight: 900, 
+            textTransform: 'uppercase', 
+            letterSpacing: '1px', 
+            border: '1.5px solid rgba(16, 185, 129, 0.15)' 
+          }}>
+            ✓ Verified review
+          </div>
         </div>
-        <div>
-          <div style={{ fontSize: '14.5px', fontWeight: 950, color: '#0f172a' }}>{reviewerName}</div>
-          <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 700 }}>@{reviewerSlug} • Verified Creator</div>
+
+        {/* Testimonial Quote */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', margin: '28px 0', zIndex: 1 }}>
+          <div style={{ fontSize: '72px', fontFamily: 'serif', color: 'rgba(255, 148, 49, 0.18)', lineHeight: 0.1, height: '36px', marginTop: '8px', userSelect: 'none' }}>“</div>
+          <p style={{ 
+            fontSize: '16.5px', 
+            fontWeight: 600, 
+            color: '#334155', 
+            lineHeight: 1.75, 
+            fontStyle: 'italic',
+            fontFamily: "'Outfit', sans-serif",
+            margin: '0',
+            letterSpacing: '-0.01em'
+          }}>
+            {honestReviewText}
+          </p>
         </div>
-      </div>
-    </motion.div>
+
+        {/* Reviewer signature */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', borderTop: '1.5px solid #f1f5f9', paddingTop: '20px', zIndex: 1 }}>
+          <div style={{ 
+            width: '46px', 
+            height: '46px', 
+            borderRadius: '50%', 
+            overflow: 'hidden', 
+            border: '2px solid #FF9431', 
+            flexShrink: 0,
+            boxShadow: '0 0 10px rgba(255, 148, 49, 0.15)'
+          }}>
+            <img src={dpImg} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+          </div>
+          <div>
+            <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.01em' }}>{reviewerName}</div>
+            <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+              @{reviewerSlug} <span style={{ color: 'rgba(0, 0, 0, 0.1)' }}>•</span> <span style={{ color: '#FF9431', fontWeight: 800 }}>Verified Creator</span>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
   );
 };
 
@@ -829,50 +1048,153 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
 
           {/* Stats & Trust Dashboard Card */}
           <div style={{ 
-            background: 'linear-gradient(135deg, rgba(255,148,49,0.05) 0%, rgba(0,115,177,0.05) 100%)',
+            background: 'rgba(255, 255, 255, 0.7)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
             border: '1.5px solid rgba(226, 232, 240, 0.8)',
             borderRadius: '24px',
             padding: '16px',
             width: '100%',
             maxWidth: '400px',
-            boxShadow: '0 8px 24px rgba(15,23,42,0.02)',
+            boxShadow: '0 10px 30px rgba(15,23,42,0.04)',
             display: 'grid',
             gridTemplateColumns: 'repeat(2, 1fr)',
             gap: '12px',
+            boxSizing: 'border-box'
           }}>
             {/* Metric 1: Followers */}
-            <div style={{ background: '#fff', borderRadius: '16px', padding: '10px 14px', textAlign: 'left', border: '1px solid rgba(226, 232, 240, 0.5)' }}>
-              <div style={{ fontSize: '7px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '2px' }}>Followers</div>
-              <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#3B82F6' }} />
-                {fmt.num(stats.followers)}
+            <div style={{ 
+              background: '#fff', 
+              borderRadius: '16px', 
+              padding: '12px 14px', 
+              textAlign: 'left', 
+              border: '1px solid rgba(226, 232, 240, 0.6)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.01)'
+            }}>
+              <div style={{ 
+                width: '32px', 
+                height: '32px', 
+                borderRadius: '50%', 
+                background: 'rgba(59, 130, 246, 0.08)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <Users size={14} color="#3B82F6" />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div style={{ fontSize: '16px', fontWeight: 950, color: '#0f172a', fontFamily: "'Outfit', sans-serif", lineHeight: 1.2 }}>
+                  {fmt.num(stats.followers)}
+                </div>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  CB Followers
+                </div>
               </div>
             </div>
 
             {/* Metric 2: Bharat Score */}
-            <div style={{ background: '#fff', borderRadius: '16px', padding: '10px 14px', textAlign: 'left', border: '1px solid rgba(226, 232, 240, 0.5)' }}>
-              <div style={{ fontSize: '7px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '2px' }}>Bharat Score</div>
-              <div style={{ fontSize: '15px', fontWeight: 950, color: '#FF9431', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Sparkles size={11} color="#FF9431" />
-                {stats.score || 94}
+            <div style={{ 
+              background: '#fff', 
+              borderRadius: '16px', 
+              padding: '12px 14px', 
+              textAlign: 'left', 
+              border: '1px solid rgba(226, 232, 240, 0.6)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.01)'
+            }}>
+              <div style={{ 
+                width: '32px', 
+                height: '32px', 
+                borderRadius: '50%', 
+                background: 'rgba(255, 148, 49, 0.08)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <Sparkles size={14} color="#FF9431" />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div style={{ fontSize: '16px', fontWeight: 950, color: '#FF9431', fontFamily: "'Outfit', sans-serif", lineHeight: 1.2 }}>
+                  {stats.score || 85}
+                </div>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Bharat Score
+                </div>
               </div>
             </div>
 
             {/* Metric 3: Engagement */}
-            <div style={{ background: '#fff', borderRadius: '16px', padding: '10px 14px', textAlign: 'left', border: '1px solid rgba(226, 232, 240, 0.5)' }}>
-              <div style={{ fontSize: '7px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '2px' }}>Engagement</div>
-              <div style={{ fontSize: '15px', fontWeight: 950, color: '#10B981', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <TrendingUp size={11} color="#10B981" />
-                {stats.er}%
+            <div style={{ 
+              background: '#fff', 
+              borderRadius: '16px', 
+              padding: '12px 14px', 
+              textAlign: 'left', 
+              border: '1px solid rgba(226, 232, 240, 0.6)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.01)'
+            }}>
+              <div style={{ 
+                width: '32px', 
+                height: '32px', 
+                borderRadius: '50%', 
+                background: 'rgba(16, 185, 129, 0.08)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <TrendingUp size={14} color="#10B981" />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div style={{ fontSize: '16px', fontWeight: 950, color: '#10B981', fontFamily: "'Outfit', sans-serif", lineHeight: 1.2 }}>
+                  {stats.er}%
+                </div>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Engagement
+                </div>
               </div>
             </div>
 
             {/* Metric 4: Rating */}
-            <div style={{ background: '#fff', borderRadius: '16px', padding: '10px 14px', textAlign: 'left', border: '1px solid rgba(226, 232, 240, 0.5)' }}>
-              <div style={{ fontSize: '7px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '2px' }}>Rating</div>
-              <div style={{ fontSize: '15px', fontWeight: 950, color: '#8B5CF6', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Star size={11} color="#8B5CF6" fill="#8B5CF6" />
-                5.0 <span style={{ fontSize: '9px', color: '#94a3b8', fontWeight: 600 }}>(Verified)</span>
+            <div style={{ 
+              background: '#fff', 
+              borderRadius: '16px', 
+              padding: '12px 14px', 
+              textAlign: 'left', 
+              border: '1px solid rgba(226, 232, 240, 0.6)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.01)'
+            }}>
+              <div style={{ 
+                width: '32px', 
+                height: '32px', 
+                borderRadius: '50%', 
+                background: 'rgba(139, 92, 246, 0.08)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <Star size={14} color="#8B5CF6" fill="#8B5CF6" />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div style={{ fontSize: '16px', fontWeight: 950, color: '#8B5CF6', fontFamily: "'Outfit', sans-serif", lineHeight: 1.2, display: 'flex', alignItems: 'center', gap: '3px' }}>
+                  5.0<span style={{ fontSize: '9px', color: '#94a3b8', fontWeight: 700 }}>(Verified)</span>
+                </div>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Rating
+                </div>
               </div>
             </div>
           </div>

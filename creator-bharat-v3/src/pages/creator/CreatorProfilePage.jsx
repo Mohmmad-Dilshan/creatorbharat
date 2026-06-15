@@ -1768,7 +1768,10 @@ const getFallbackCreator = (id) => {
     city: 'Mumbai',
     niche: 'Lifestyle & Tech',
     bio: 'Elite storyteller and digital creator dedicated to high-impact content and cultural narratives across Bharat.',
-    isVerified: true
+    isVerified: true,
+    followers: 130000,
+    score: 85,
+    er: 4.8
   };
 };
 
@@ -2071,11 +2074,11 @@ export default function CreatorProfilePage() {
   const stats = useMemo(() => {
     if (!c) return { followers: 0, er: 0, reach: 0, authenticity: 0, score: 0 };
     return { 
-      followers: c.followers || 125000, 
+      followers: c.followers || 130000, 
       er: c.er || 4.8, 
-      reach: Math.floor((c.followers || 125000) * 0.85), 
+      reach: Math.floor((c.followers || 130000) * 0.85), 
       authenticity: c.authenticity || 98.2, 
-      score: c.score || fmt.score(c) 
+      score: c.score || 85 
     };
   }, [c]);
 
