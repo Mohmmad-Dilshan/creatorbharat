@@ -145,9 +145,183 @@ const TabNavigator = ({ activeTab, setActiveTab, mob }) => {
   const prevTab = currentIndex > 0 ? TAB_LIST[currentIndex - 1] : null;
   const nextTab = currentIndex < TAB_LIST.length - 1 ? TAB_LIST[currentIndex + 1] : null;
   const isActionTab = ['packages', 'sponsor', 'connect'].includes(nextTab?.id);
+  const progressPct = Math.round(((currentIndex + 1) / TAB_LIST.length) * 100);
+  const currentTabData = TAB_LIST[currentIndex];
 
   if (!nextTab && !prevTab) return null;
 
+  /* ── MOBILE ────────────────────────────────────────────────── */
+  if (mob) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15, type: 'spring', stiffness: 300, damping: 28 }}
+        style={{
+          marginTop: 40,
+          borderRadius: 28,
+          overflow: 'hidden',
+          background: '#fff',
+          border: '1px solid #e8edf3',
+          boxShadow: '0 4px 24px rgba(15,23,42,0.08), 0 1px 4px rgba(15,23,42,0.04)',
+        }}
+      >
+        {/* Progress bar */}
+        <div style={{ height: 3, background: '#f1f5f9', width: '100%' }}>
+          <motion.div
+            animate={{ width: `${progressPct}%` }}
+            transition={{ type: 'spring', stiffness: 200, damping: 30 }}
+            style={{
+              height: '100%',
+              background: isActionTab
+                ? 'linear-gradient(90deg, #FF9431, #EA580C)'
+                : 'linear-gradient(90deg, #0073b1, #0ea5e9)',
+              borderRadius: '0 3px 3px 0',
+            }}
+          />
+        </div>
+
+        <div style={{ padding: '18px 20px' }}>
+          {/* Tab context row */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 16,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 18, lineHeight: 1 }}>{currentTabData?.icon}</span>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 800, color: '#0f172a', lineHeight: 1.2 }}>
+                  {currentTabData?.label}
+                </div>
+                <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 500, marginTop: 2 }}>
+                  {currentTabData?.desc}
+                </div>
+              </div>
+            </div>
+            {/* Step counter dots */}
+            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+              {TAB_LIST.map((t, i) => (
+                <button
+                  key={t.id}
+                  onClick={() => setActiveTab(t.id)}
+                  title={t.label}
+                  style={{
+                    width: t.id === activeTab ? 18 : 6,
+                    height: 6,
+                    borderRadius: 100,
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: 0,
+                    background: t.id === activeTab
+                      ? (isActionTab ? 'linear-gradient(90deg, #FF9431, #EA580C)' : 'linear-gradient(90deg, #0073b1, #0ea5e9)')
+                      : i < currentIndex ? '#cbd5e1' : '#e8edf3',
+                    transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)',
+                    flexShrink: 0,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Next tab preview (if not last) */}
+          {nextTab && (
+            <div style={{
+              background: '#f8fafc',
+              borderRadius: 14,
+              padding: '10px 14px',
+              marginBottom: 14,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 14 }}>{nextTab.icon}</span>
+                <div>
+                  <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Up Next</div>
+                  <div style={{ fontSize: 12, color: '#334155', fontWeight: 700 }}>{nextTab.label}</div>
+                </div>
+              </div>
+              <div style={{ fontSize: 11, color: '#94a3b8' }}>{currentIndex + 2}/{TAB_LIST.length}</div>
+            </div>
+          )}
+
+          {/* Action buttons */}
+          <div style={{ display: 'flex', gap: 10 }}>
+            {/* Back button */}
+            {prevTab && (
+              <motion.button
+                whileTap={{ scale: 0.94 }}
+                onClick={() => setActiveTab(prevTab.id)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                  background: '#f1f5f9',
+                  border: 'none',
+                  padding: '14px 20px',
+                  borderRadius: 100,
+                  cursor: 'pointer',
+                  color: '#475569',
+                  fontWeight: 700,
+                  fontSize: 13,
+                  flexShrink: 0,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <ArrowRight size={13} style={{ transform: 'rotate(180deg)' }} />
+                {prevTab.label}
+              </motion.button>
+            )}
+
+            {/* Next button — full width */}
+            {nextTab && (
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setActiveTab(nextTab.id)}
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  background: isActionTab
+                    ? 'linear-gradient(135deg, #FF9431, #EA580C)'
+                    : 'linear-gradient(135deg, #0073b1, #0ea5e9)',
+                  border: 'none',
+                  padding: '14px 20px',
+                  borderRadius: 100,
+                  cursor: 'pointer',
+                  color: '#fff',
+                  fontWeight: 800,
+                  fontSize: 14,
+                  boxShadow: isActionTab
+                    ? '0 6px 20px rgba(255,148,49,0.3)'
+                    : '0 6px 20px rgba(0,115,177,0.25)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+              >
+                {/* Shimmer */}
+                <span style={{
+                  position: 'absolute', inset: 0,
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%)',
+                  pointerEvents: 'none',
+                }} />
+                <span style={{ fontSize: 16 }}>{nextTab.icon}</span>
+                {nextTab.label}
+                <ArrowRight size={14} />
+              </motion.button>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
+  /* ── DESKTOP ────────────────────────────────────────────────── */
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -155,7 +329,7 @@ const TabNavigator = ({ activeTab, setActiveTab, mob }) => {
       transition={{ delay: 0.2 }}
       style={{
         marginTop: 48,
-        padding: mob ? '20px' : '24px 32px',
+        padding: '20px 28px',
         background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
         borderRadius: 24,
         border: '1px solid #e2e8f0',
@@ -163,19 +337,18 @@ const TabNavigator = ({ activeTab, setActiveTab, mob }) => {
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: 16,
-        flexWrap: mob ? 'wrap' : 'nowrap'
       }}
     >
       {/* Progress dots */}
-      <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
+      <div style={{ display: 'flex', gap: 5, alignItems: 'center', flexShrink: 0 }}>
         {TAB_LIST.map((t, i) => (
           <button
             key={t.id}
             onClick={() => setActiveTab(t.id)}
             title={t.label}
             style={{
-              width: t.id === activeTab ? 24 : 8,
-              height: 8,
+              width: t.id === activeTab ? 22 : 7,
+              height: 7,
               borderRadius: 100,
               border: 'none',
               cursor: 'pointer',
@@ -189,32 +362,30 @@ const TabNavigator = ({ activeTab, setActiveTab, mob }) => {
         ))}
       </div>
 
-      <div style={{ display: 'flex', gap: 10, flex: 1, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-        {/* Prev button */}
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
         {prevTab && (
           <motion.button
             whileHover={{ x: -3 }}
             whileTap={{ scale: 0.96 }}
             onClick={() => setActiveTab(prevTab.id)}
             style={{
-              display: 'flex', alignItems: 'center', gap: 8,
+              display: 'flex', alignItems: 'center', gap: 7,
               background: '#fff',
               border: '1.5px solid #e2e8f0',
-              padding: mob ? '11px 18px' : '12px 22px',
+              padding: '11px 22px',
               borderRadius: 100,
               cursor: 'pointer',
               color: '#64748b',
               fontWeight: 700,
-              fontSize: mob ? 12 : 13,
+              fontSize: 13,
               boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
             }}
           >
-            <ArrowRight size={14} style={{ transform: 'rotate(180deg)' }} />
+            <ArrowRight size={13} style={{ transform: 'rotate(180deg)' }} />
             {prevTab.icon} {prevTab.label}
           </motion.button>
         )}
 
-        {/* Next button */}
         {nextTab && (
           <motion.button
             whileHover={{ x: 3 }}
@@ -226,20 +397,19 @@ const TabNavigator = ({ activeTab, setActiveTab, mob }) => {
                 ? 'linear-gradient(135deg, #FF9431, #EA580C)'
                 : 'linear-gradient(135deg, #0073b1, #0ea5e9)',
               border: 'none',
-              padding: mob ? '11px 20px' : '12px 28px',
+              padding: '11px 26px',
               borderRadius: 100,
               cursor: 'pointer',
               color: '#fff',
               fontWeight: 800,
-              fontSize: mob ? 12 : 13,
+              fontSize: 13,
               boxShadow: isActionTab
                 ? '0 8px 20px rgba(255,148,49,0.25)'
                 : '0 8px 20px rgba(0,115,177,0.2)',
-              flex: mob ? 1 : 'none'
             }}
           >
             {nextTab.icon} {nextTab.label}
-            <ArrowRight size={14} />
+            <ArrowRight size={13} />
           </motion.button>
         )}
       </div>
