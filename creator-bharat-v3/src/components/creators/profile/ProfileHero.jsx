@@ -680,6 +680,222 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
   };
   const dpImg = c?.photo || c?.avatarUrl || c?.profile_pic || c?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(c?.name || 'C')}&background=FF9431&color=fff&size=200`;
   const bannerImg = c?.cover_image || c?.banner_image || `https://picsum.photos/seed/${c?.id}/1600/500`;
+
+  if (mob) {
+    return (
+      <section style={{ background: '#fff', borderBottom: '1px solid #e5e7eb', position: 'relative' }}>
+        <HeroBanner banner={bannerImg} mob={true} onBack={() => navigate('/creators')} onShare={handleShare} />
+        
+        {/* Profile Content Container */}
+        <div style={{ padding: '0 20px 32px', marginTop: '-60px', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+          
+          {/* Centered Display Picture (DP) */}
+          <ProfileImage src={dpImg} mob={true} />
+
+          {/* Social Icons Panel directly under DP */}
+          <SocialIconsPanel c={c} mob={true} />
+
+          {/* Name & Available Dot & verified badge */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '16px', justifyContent: 'center' }}>
+            <h1 style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', margin: 0 }}>
+              {c.name}
+            </h1>
+            <div style={{ background: '#0073b1', borderRadius: '50%', padding: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,115,177,0.2)' }}>
+              <Verified size={16} color="#fff" fill="currentColor" />
+            </div>
+          </div>
+
+          {/* Niche Tagline & Location */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', justifyContent: 'center', marginTop: '8px' }}>
+            <span style={{ 
+              background: 'linear-gradient(135deg, #FF9431 0%, #f97316 100%)', 
+              color: '#fff', 
+              padding: '4px 12px', 
+              borderRadius: '100px', 
+              fontSize: '10px', 
+              fontWeight: 900, 
+              textTransform: 'uppercase', 
+              letterSpacing: '1px'
+            }}>
+              {c.category || c.niche || 'Lifestyle'}
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#64748b', fontWeight: 700 }}>
+              <MapPin size={14} color="#94a3b8" /> {c.city || 'Bharat'}
+            </div>
+            {/* Status dot */}
+            <div style={{ 
+              background: '#ecfdf5', 
+              color: '#059669', 
+              padding: '4px 12px', 
+              borderRadius: '100px', 
+              fontSize: '10px', 
+              fontWeight: 900, 
+              textTransform: 'uppercase', 
+              letterSpacing: '1px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '6px', 
+              border: '1px solid rgba(16,185,129,0.2)' 
+            }}>
+              <div style={{ width: '6px', height: '6px', background: '#10B981', borderRadius: '50%', boxShadow: '0 0 6px #10B981', animation: 'pulse 2s infinite' }} /> 
+              Active
+            </div>
+          </div>
+
+          {/* Tagline */}
+          <p style={{ fontSize: '15px', color: '#475569', marginTop: '16px', marginBottom: '8px', fontWeight: 600, lineHeight: 1.4, maxWidth: '400px' }}>
+            {c.tagline || `Expert in ${c.niche || 'Lifestyle'} Storytelling | Building authentic brand identities.`}
+          </p>
+
+          {/* Bio (compact) */}
+          {c.bio && (
+            <p style={{ fontSize: '13px', color: '#64748b', margin: '0 0 16px', lineHeight: 1.5, maxWidth: '400px' }}>
+              {c.bio}
+            </p>
+          )}
+
+          {/* Unified Actions Row (Follow, Message, Download) */}
+          <div style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '400px', marginTop: '16px', marginBottom: '24px' }}>
+            {/* Follow Button (Primary) */}
+            <button 
+              onClick={() => handleAction('follow')}
+              style={{
+                flex: 2.5,
+                background: followed ? '#f1f5f9' : '#0f172a',
+                color: followed ? '#0f172a' : '#fff',
+                border: followed ? '1.5px solid #e2e8f0' : 'none',
+                height: '46px',
+                borderRadius: '12px',
+                fontSize: '13px',
+                fontWeight: 900,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                boxShadow: followed ? 'none' : '0 10px 20px rgba(15,23,42,0.15)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}
+            >
+              {followed ? <UserCheck size={16} /> : <UserPlus size={16} />} 
+              {followed ? 'Following' : 'Follow'}
+            </button>
+
+            {/* Message Button (Icon only) */}
+            <button 
+              onClick={() => handleAction('message')}
+              style={{
+                flex: 1,
+                background: '#fff',
+                color: '#0073b1',
+                border: '1.5px solid #0073b1',
+                height: '46px',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 8px 16px rgba(0,115,177,0.06)'
+              }}
+              title="Message Creator"
+            >
+              <MessageSquare size={18} />
+            </button>
+
+            {/* Download Media Kit Button (Icon only) */}
+            <button 
+              onClick={handleMediaKit}
+              style={{
+                flex: 1,
+                background: '#fff',
+                color: '#FF9431',
+                border: '1.5px solid #FF9431',
+                height: '46px',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 8px 16px rgba(255,148,49,0.06)'
+              }}
+              title="Download Media Kit"
+            >
+              <Download size={18} />
+            </button>
+          </div>
+
+          {/* Stats & Trust Dashboard Card */}
+          <div style={{ 
+            background: 'linear-gradient(135deg, rgba(255,148,49,0.05) 0%, rgba(0,115,177,0.05) 100%)',
+            border: '1.5px solid rgba(226, 232, 240, 0.8)',
+            borderRadius: '24px',
+            padding: '16px',
+            width: '100%',
+            maxWidth: '400px',
+            boxShadow: '0 8px 24px rgba(15,23,42,0.02)',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: '12px',
+          }}>
+            {/* Metric 1: Followers */}
+            <div style={{ background: '#fff', borderRadius: '16px', padding: '10px 14px', textAlign: 'left', border: '1px solid rgba(226, 232, 240, 0.5)' }}>
+              <div style={{ fontSize: '7px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '2px' }}>Followers</div>
+              <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#3B82F6' }} />
+                {fmt.num(stats.followers)}
+              </div>
+            </div>
+
+            {/* Metric 2: Bharat Score */}
+            <div style={{ background: '#fff', borderRadius: '16px', padding: '10px 14px', textAlign: 'left', border: '1px solid rgba(226, 232, 240, 0.5)' }}>
+              <div style={{ fontSize: '7px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '2px' }}>Bharat Score</div>
+              <div style={{ fontSize: '15px', fontWeight: 950, color: '#FF9431', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Sparkles size={11} color="#FF9431" />
+                {stats.score || 94}
+              </div>
+            </div>
+
+            {/* Metric 3: Engagement */}
+            <div style={{ background: '#fff', borderRadius: '16px', padding: '10px 14px', textAlign: 'left', border: '1px solid rgba(226, 232, 240, 0.5)' }}>
+              <div style={{ fontSize: '7px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '2px' }}>Engagement</div>
+              <div style={{ fontSize: '15px', fontWeight: 950, color: '#10B981', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <TrendingUp size={11} color="#10B981" />
+                {stats.er}%
+              </div>
+            </div>
+
+            {/* Metric 4: Rating */}
+            <div style={{ background: '#fff', borderRadius: '16px', padding: '10px 14px', textAlign: 'left', border: '1px solid rgba(226, 232, 240, 0.5)' }}>
+              <div style={{ fontSize: '7px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '2px' }}>Rating</div>
+              <div style={{ fontSize: '15px', fontWeight: 950, color: '#8B5CF6', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Star size={11} color="#8B5CF6" fill="#8B5CF6" />
+                5.0 <span style={{ fontSize: '9px', color: '#94a3b8', fontWeight: 600 }}>(Verified)</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Profile Likes & Visitors footer */}
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', alignItems: 'center', marginTop: '16px', fontSize: '12px', color: '#64748b', fontWeight: 700 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }} onClick={handleLike}>
+              <Heart size={14} color="#ef4444" fill={isLiked ? '#ef4444' : 'none'} /> {likes} likes
+            </span>
+            <span>•</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Eye size={14} color="#FF9431" /> {fmt.num(activeViews)} visitors
+            </span>
+            <span>•</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', display: 'inline-block', animation: 'pulse 2s infinite' }} />
+              {activeUsers} active
+            </span>
+          </div>
+
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section style={{ background: '#fff', borderBottom: '1px solid #e5e7eb', position: 'relative' }}>
        <HeroBanner banner={bannerImg} mob={mob} onBack={() => navigate('/creators')} onShare={handleShare} />
