@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../../core/context';
@@ -640,23 +641,37 @@ const InfluenceMedia = ({ c, mob }) => {
   ];
 
   return (
-    <div style={{ marginBottom: '60px', padding: mob ? '32px 24px' : '48px', background: '#0f172a', borderRadius: '40px', color: '#fff' }}>
+    <div style={{ 
+      marginBottom: '60px', 
+      padding: mob ? '32px 24px' : '48px', 
+      background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', 
+      borderRadius: '40px', 
+      color: '#0f172a',
+      border: '1.5px solid rgba(226, 232, 240, 0.8)',
+      boxShadow: '0 20px 40px rgba(15,23,42,0.03)'
+    }}>
        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1.2fr', gap: '40px', alignItems: 'center' }}>
           <div>
              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
                 <Play size={24} color="#FF9431" fill="#FF9431" />
                 <span style={{ fontSize: '11px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px' }}>Content Velocity</span>
              </div>
-             <h3 style={{ fontSize: mob ? '24px' : '36px', fontWeight: 950, color: '#fff', marginBottom: '24px', lineHeight: 1.2 }}>Mera Content <span style={{ color: '#FF9431' }}>Duniya</span> Tak Pahunchta Hai</h3>
-             <p style={{ fontSize: '16px', color: '#94a3b8', lineHeight: 1.7, fontWeight: 500 }}>
+             <h3 style={{ fontSize: mob ? '24px' : '36px', fontWeight: 950, color: '#0f172a', marginBottom: '24px', lineHeight: 1.2 }}>Mera Content <span style={{ color: '#FF9431' }}>Duniya</span> Tak Pahunchta Hai</h3>
+             <p style={{ fontSize: '16px', color: '#64748b', lineHeight: 1.7, fontWeight: 550 }}>
                 High-retention storytelling aur cinematic quality ke saath, main har brand ki kahani ko authentic banata hoon.
              </p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
              {stats.map(s => (
-               <div key={s.l} style={{ padding: '24px', background: 'rgba(255,255,255,0.03)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
+               <div key={s.l} style={{ 
+                  padding: '24px', 
+                  background: '#fff', 
+                  borderRadius: '24px', 
+                  border: '1.5px solid rgba(226, 232, 240, 0.8)',
+                  boxShadow: '0 8px 20px rgba(0,0,0,0.02)'
+                }}>
                   <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px' }}>{s.l}</div>
-                  <div style={{ fontSize: '20px', fontWeight: 950, color: '#fff' }}>{s.v}</div>
+                  <div style={{ fontSize: '20px', fontWeight: 950, color: '#0f172a' }}>{s.v}</div>
                </div>
              ))}
           </div>
@@ -871,9 +886,6 @@ const LocalCollabHub = ({ c, mob, setActiveTab }) => {
 };
 LocalCollabHub.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, setActiveTab: PropTypes.func.isRequired };
 
-// Duplicate logic removed
-// ProfileHero moved to @/components/creators/profile/ProfileHero
-
 const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
   const { st } = useApp();
   const navigate = useNavigate();
@@ -941,7 +953,7 @@ const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
                 </div>
                 <button 
                    onClick={handleSend}
-                   style={{ position: 'absolute', bottom: '16px', right: '16px', background: '#0f172a', color: '#fff', border: 'none', padding: '12px 28px', borderRadius: '100px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 8px 24px rgba(15,23,42,0.2)' }}
+                   style={{ position: 'absolute', bottom: '16px', right: '16px', background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)', color: '#fff', border: 'none', padding: '12px 28px', borderRadius: '100px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 8px 24px rgba(234, 88, 12, 0.25)' }}
                 >
                    Send Message <Send size={16} />
                 </button>
@@ -987,13 +999,13 @@ const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
                 </div>
              </Card>
 
-             <div style={{ padding: '32px', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: '32px', color: '#fff', position: 'relative', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', top: '-10px', right: '-10px', opacity: 0.1 }}><MapPin size={100} /></div>
+             <div style={{ padding: '32px', background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', borderRadius: '32px', color: '#0f172a', border: '1.5px solid rgba(226, 232, 240, 0.8)', boxShadow: '0 20px 40px rgba(15,23,42,0.03)', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', top: '-10px', right: '-10px', opacity: 0.05 }}><MapPin size={100} color="#FF9431" /></div>
                 <div style={{ fontSize: '11px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                    <Verified size={14} /> Regional Identity
                 </div>
-                <div style={{ fontSize: '18px', fontWeight: 950, marginBottom: '4px' }}>{c?.city || 'Bengaluru'}</div>
-                <div style={{ fontSize: '13px', color: '#94a3b8', fontWeight: 600 }}>Active in South & West Bharat Hubs</div>
+                <div style={{ fontSize: '18px', fontWeight: 950, color: '#0f172a', marginBottom: '4px' }}>{c?.city || 'Bengaluru'}</div>
+                <div style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>Active in South & West Bharat Hubs</div>
              </div>
           </div>
        </div>
@@ -1044,7 +1056,7 @@ const PackageCard = ({ p, onSelect }) => (
     </div>
     <button 
       onClick={() => onSelect(p)} 
-      style={{ width: '100%', padding: '16px', borderRadius: '100px', background: p.pop ? '#FF9431' : '#0f172a', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '16px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      style={{ width: '100%', padding: '16px', borderRadius: '100px', background: p.pop ? 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)' : '#1e293b', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '16px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
     >
       Select Package
     </button>
@@ -1116,7 +1128,7 @@ const CollabFAQ = ({ mob }) => (
 );
 CollabFAQ.propTypes = { mob: PropTypes.bool };
 
-const GalleryItem = ({ i, src, mob, onClick }) => {
+const GalleryItem = ({ i, src, index, mob, onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
   const imgUrl = typeof src === 'string' ? src : `https://picsum.photos/seed/elite-gal-${i}/1000/1000`;
   return (
@@ -1125,7 +1137,7 @@ const GalleryItem = ({ i, src, mob, onClick }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{ position: 'relative', aspectRatio: '1/1', borderRadius: '32px', overflow: 'hidden', cursor: 'pointer', border: '1px solid #f1f5f9', boxShadow: '0 8px 32px rgba(0,0,0,0.02)', outline: 'none', padding: 0, background: 'none', width: '100%', display: 'block' }}
-      onClick={() => onClick(imgUrl)}
+      onClick={() => onClick(index)}
     >
       <img src={imgUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
       <span style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)', opacity: isHovered ? 1 : 0, transition: 'opacity 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -1134,13 +1146,34 @@ const GalleryItem = ({ i, src, mob, onClick }) => {
     </button>
   );
 };
-GalleryItem.propTypes = { i: PropTypes.number.isRequired, src: PropTypes.any, mob: PropTypes.bool, onClick: PropTypes.func.isRequired };
+GalleryItem.propTypes = { i: PropTypes.number.isRequired, src: PropTypes.any, index: PropTypes.number.isRequired, mob: PropTypes.bool, onClick: PropTypes.func.isRequired };
 
 const GalleryTab = ({ c, mob, setActiveTab }) => {
-  const [selectedImg, setSelectedImg] = useState(null);
+  const [activeIndex, setActiveIndex] = useState(null);
   const isDummy = c.id === 'fallback';
   if (!c.gallery && !isDummy) return <TabEmptyState title="Gallery" icon={ImageIcon} mob={mob} setActiveTab={setActiveTab} tabId="gallery" />;
   const images = c.gallery || [1,2,3,4,5,6,7,8,9];
+
+  const getImgUrl = (idx) => {
+    if (idx === null || idx < 0 || idx >= images.length) return '';
+    const src = images[idx];
+    return typeof src === 'string' ? src : `https://picsum.photos/seed/elite-gal-${idx + 1}/1000/1000`;
+  };
+
+  useEffect(() => {
+    if (activeIndex === null) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
+        setActiveIndex((prev) => (prev + 1) % images.length);
+      } else if (e.key === 'ArrowLeft' || e.key === 'Left') {
+        setActiveIndex((prev) => (prev - 1 + images.length) % images.length);
+      } else if (e.key === 'Escape' || e.key === 'Esc') {
+        setActiveIndex(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeIndex, images.length]);
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
@@ -1152,7 +1185,7 @@ const GalleryTab = ({ c, mob, setActiveTab }) => {
           
           <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: mob ? '16px' : '24px' }}>
              {images.map((img, idx) => (
-                <GalleryItem key={img} i={idx + 1} src={img} mob={mob} onClick={setSelectedImg} />
+                <GalleryItem key={img} i={idx + 1} index={idx} src={img} mob={mob} onClick={setActiveIndex} />
              ))}
           </div>
           <div style={{ marginTop: '48px', textAlign: 'center' }}>
@@ -1162,64 +1195,143 @@ const GalleryTab = ({ c, mob, setActiveTab }) => {
           </div>
        </div>
 
-       <AnimatePresence>
-         {selectedImg && (
+       {activeIndex !== null && createPortal(
+         <AnimatePresence>
            <motion.div
              initial={{ opacity: 0 }}
              animate={{ opacity: 1 }}
              exit={{ opacity: 0 }}
-             onClick={() => setSelectedImg(null)}
+             onClick={() => setActiveIndex(null)}
              style={{
                position: 'fixed',
                inset: 0,
-               background: 'rgba(15, 23, 42, 0.9)',
-               backdropFilter: 'blur(12px)',
+               background: 'rgba(10, 10, 10, 0.95)',
+               backdropFilter: 'blur(20px)',
                display: 'flex',
+               flexDirection: 'column',
                alignItems: 'center',
                justifyContent: 'center',
-               zIndex: 99999,
+               zIndex: 999999,
                padding: '24px'
              }}
            >
-             <button 
-               onClick={() => setSelectedImg(null)} 
-               style={{
-                 position: 'absolute',
-                 top: '24px',
-                 right: '24px',
-                 background: 'rgba(255,255,255,0.1)',
-                 border: 'none',
-                 borderRadius: '50%',
-                 width: '44px',
-                 height: '44px',
-                 display: 'flex',
-                 alignItems: 'center',
-                 justifyContent: 'center',
-                 color: '#fff',
-                 cursor: 'pointer',
-                 fontSize: '18px'
-               }}
-             >
-               ✕
-             </button>
-             <motion.img
-               initial={{ scale: 0.9, y: 20 }}
-               animate={{ scale: 1, y: 0 }}
-               exit={{ scale: 0.9, y: 20 }}
-               src={selectedImg}
-               alt="Gallery lightbox"
-               onClick={(e) => e.stopPropagation()}
-               style={{
-                 maxHeight: '85vh',
-                 maxWidth: '90vw',
-                 borderRadius: '24px',
-                 objectFit: 'contain',
-                 boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)'
-               }}
-             />
+             {/* Lightbox Header */}
+             <div style={{ position: 'absolute', top: '24px', left: '24px', right: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#fff', zIndex: 10 }}>
+                <div style={{ fontSize: '14px', fontWeight: 750, color: '#94a3b8' }}>
+                   Image {activeIndex + 1} of {images.length}
+                </div>
+                <button 
+                  onClick={() => setActiveIndex(null)} 
+                  style={{
+                    background: 'rgba(255,255,255,0.08)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '50%',
+                    width: '44px',
+                    height: '44px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#fff',
+                    cursor: 'pointer',
+                    fontSize: '18px',
+                    transition: 'all 0.2s',
+                    outline: 'none'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.transform = 'scale(1.05)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.transform = 'scale(1)'; }}
+                >
+                  ✕
+                </button>
+             </div>
+
+             {/* Main Container with Nav buttons and Image */}
+             <div style={{ position: 'relative', width: '100%', maxWidth: '900px', display: 'flex', alignItems: 'center', justifyContent: 'center', height: mob ? '50vh' : '70vh' }}>
+                {/* Left Arrow Button */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); setActiveIndex((prev) => (prev - 1 + images.length) % images.length); }}
+                  style={{
+                    position: 'absolute',
+                    left: mob ? '12px' : '-80px',
+                    background: 'rgba(20, 20, 20, 0.6)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    color: '#fff',
+                    borderRadius: '50%',
+                    width: mob ? '44px' : '56px',
+                    height: mob ? '44px' : '56px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    fontSize: '24px',
+                    zIndex: 10,
+                    transition: 'all 0.2s',
+                    backdropFilter: 'blur(8px)',
+                    outline: 'none'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.transform = 'scale(1.08)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(20, 20, 20, 0.6)'; e.currentTarget.style.transform = 'scale(1)'; }}
+                >
+                  ‹
+                </button>
+
+                {/* Image Wrapper */}
+                <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+                  <motion.img
+                    key={activeIndex}
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.95, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    src={getImgUrl(activeIndex)}
+                    alt={`Gallery item ${activeIndex + 1}`}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      maxHeight: '100%',
+                      maxWidth: '100%',
+                      borderRadius: '24px',
+                      objectFit: 'contain',
+                      boxShadow: '0 25px 50px -12px rgba(0,0,0,0.6)'
+                    }}
+                  />
+                </div>
+
+                {/* Right Arrow Button */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); setActiveIndex((prev) => (prev + 1) % images.length); }}
+                  style={{
+                    position: 'absolute',
+                    right: mob ? '12px' : '-80px',
+                    background: 'rgba(20, 20, 20, 0.6)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    color: '#fff',
+                    borderRadius: '50%',
+                    width: mob ? '44px' : '56px',
+                    height: mob ? '44px' : '56px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    fontSize: '24px',
+                    zIndex: 10,
+                    transition: 'all 0.2s',
+                    backdropFilter: 'blur(8px)',
+                    outline: 'none'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.transform = 'scale(1.08)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(20, 20, 20, 0.6)'; e.currentTarget.style.transform = 'scale(1)'; }}
+                >
+                  ›
+                </button>
+             </div>
+
+             {/* Bottom watermark or caption */}
+             <div style={{ position: 'absolute', bottom: '24px', color: '#64748b', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px' }}>
+                Lifestyle Showcase • CreatorBharat verified
+             </div>
            </motion.div>
-         )}
-       </AnimatePresence>
+         </AnimatePresence>,
+         document.body
+       )}
 
        <TrustBadge />
        <TabNavigator activeTab="gallery" setActiveTab={setActiveTab} mob={mob} />
@@ -1244,20 +1356,29 @@ const ReviewsTab = ({ c, mob, navigate, onWriteReview, setActiveTab }) => {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.2fr 2fr', gap: '40px', marginBottom: '60px' }}>
           <div>
-             <Card style={{ padding: '40px', textAlign: 'center', borderRadius: '40px', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', color: '#fff', border: 'none', marginBottom: '24px' }}>
-                <div style={{ fontSize: '12px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '16px' }}>Aggregate Authority</div>
-                <div style={{ fontSize: '72px', fontWeight: 950, lineHeight: 1, marginBottom: '8px' }}>{averageRating}</div>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', marginBottom: '16px' }}>
-                   {[1,2,3,4,5].map(s => {
-                     const roundedRating = Math.round(Number(averageRating));
-                     return <Star key={s} size={20} fill={s <= roundedRating ? '#FF9431' : 'none'} color={s <= roundedRating ? '#FF9431' : '#cbd5e1'} />;
-                   })}
-                </div>
-                <div style={{ fontSize: '14px', fontWeight: 700, color: '#94a3b8' }}>Based on {c.reviews_count || totalReviews} Verified Collaborations</div>
-             </Card>
-             <Btn full lg onClick={() => onWriteReview()} style={{ borderRadius: '100px', background: '#fff', color: '#0f172a', border: '2px solid #0f172a', gap: '10px' }}>
-                 <Star size={18} /> Write a Review
-             </Btn>
+              <Card style={{ 
+                padding: '40px', 
+                textAlign: 'center', 
+                borderRadius: '40px', 
+                background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', 
+                color: '#0f172a', 
+                border: '1.5px solid rgba(226, 232, 240, 0.8)',
+                boxShadow: '0 20px 40px rgba(15,23,42,0.03)',
+                marginBottom: '24px' 
+              }}>
+                 <div style={{ fontSize: '12px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '16px' }}>Aggregate Authority</div>
+                 <div style={{ fontSize: '72px', fontWeight: 950, color: '#0f172a', lineHeight: 1, marginBottom: '8px' }}>{averageRating}</div>
+                 <div style={{ display: 'flex', justifyContent: 'center', gap: '4px', marginBottom: '16px' }}>
+                    {[1,2,3,4,5].map(s => {
+                      const roundedRating = Math.round(Number(averageRating));
+                      return <Star key={s} size={20} fill={s <= roundedRating ? '#FF9431' : 'none'} color={s <= roundedRating ? '#FF9431' : '#cbd5e1'} />;
+                    })}
+                 </div>
+                 <div style={{ fontSize: '14px', fontWeight: 750, color: '#64748b' }}>Based on {c.reviews_count || totalReviews} Verified Collaborations</div>
+              </Card>
+              <Btn full lg onClick={() => onWriteReview()} style={{ borderRadius: '100px', background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', border: 'none', gap: '10px', boxShadow: '0 12px 24px rgba(234, 88, 12, 0.2)' }}>
+                  <Star size={18} fill="currentColor" /> Write a Review
+              </Btn>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
              {reviews.map((rev) => (

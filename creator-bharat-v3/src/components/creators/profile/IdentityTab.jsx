@@ -74,7 +74,7 @@ AIFitInsight.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool }
 const ContentPhilosophy = ({ c, mob }) => {
   const isDummy = c.id === 'fallback';
   if (!c.philosophy && !isDummy) return null;
-  const text = c.philosophy;
+  const text = c.philosophy || "Mera content philosophy simple hai: content sirf screen par chalne ke liye nahi, balki viewer ke dil mein basne ke liye hona chahiye. Storytelling aisi ho jo real ho, raw ho, aur Bharat ki mitti se judi ho.";
 
   return (
     <Card style={{ padding: mob ? '32px 24px' : '48px', borderRadius: '40px', marginBottom: '40px', border: '1.5px solid #f1f5f9', background: mob ? 'linear-gradient(135deg, #fff 0%, #f8fafc 100%)' : '#fff', position: 'relative', overflow: 'hidden' }}>
@@ -98,29 +98,39 @@ const GeoIntelligence = ({ c, mob }) => {
   const hubs = c.audience_hubs || [{ l: 'Regional Bharat', d: '72% Majority', p: 72 }, { l: 'Metro Tier 1', d: '28% Reach', p: 28 }];
 
   return (
-    <Card style={{ padding: mob ? '28px' : '48px', borderRadius: '40px', background: '#0f172a', color: '#fff', marginBottom: '40px', overflow: 'hidden', position: 'relative' }}>
+    <Card style={{ 
+      padding: mob ? '28px' : '48px', 
+      borderRadius: '40px', 
+      background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', 
+      color: '#0f172a', 
+      border: '1.5px solid rgba(226, 232, 240, 0.8)',
+      boxShadow: '0 20px 40px rgba(15,23,42,0.03)',
+      marginBottom: '40px', 
+      overflow: 'hidden', 
+      position: 'relative' 
+    }}>
         <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.2fr 1fr', gap: '40px' }}>
            <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
                  <Globe size={24} color="#FF9431" />
                  <span style={{ fontSize: '11px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2px' }}>Geo-Cultural Intelligence</span>
               </div>
-              <h3 style={{ fontSize: mob ? '24px' : '32px', fontWeight: 950, color: '#fff', marginBottom: '24px', lineHeight: 1.2 }}>Dominating the <span style={{ color: '#FF9431' }}>Digital Heartland</span> of {c.city || 'Bharat'}</h3>
-              <p style={{ fontSize: '16px', color: '#94a3b8', lineHeight: 1.7, fontWeight: 500, marginBottom: '32px' }}>
+              <h3 style={{ fontSize: mob ? '24px' : '32px', fontWeight: 950, color: '#0f172a', marginBottom: '24px', lineHeight: 1.2 }}>Dominating the <span style={{ color: '#FF9431' }}>Digital Heartland</span> of {c.city || 'Bharat'}</h3>
+              <p style={{ fontSize: '16px', color: '#64748b', lineHeight: 1.7, fontWeight: 550, marginBottom: '32px' }}>
                  {text}
               </p>
            </div>
-           <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '32px', padding: '32px', border: '1px solid rgba(255,255,255,0.1)' }}>
-              <div style={{ fontSize: '12px', fontWeight: 950, color: '#fff', textTransform: 'uppercase', marginBottom: '24px', letterSpacing: '1px' }}>Audience Hubs</div>
+           <div style={{ background: '#fff', borderRadius: '32px', padding: '32px', border: '1.5px solid rgba(226, 232, 240, 0.8)', boxShadow: '0 8px 20px rgba(0,0,0,0.02)' }}>
+              <div style={{ fontSize: '12px', fontWeight: 950, color: '#0f172a', textTransform: 'uppercase', marginBottom: '24px', letterSpacing: '1px' }}>Audience Hubs</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                  {hubs.map(h => (
                     <div key={h.l}>
                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '13px', fontWeight: 800 }}>{h.l}</span>
+                          <span style={{ fontSize: '13px', fontWeight: 800, color: '#1e293b' }}>{h.l}</span>
                           <span style={{ fontSize: '13px', fontWeight: 950, color: '#FF9431' }}>{h.d}</span>
                        </div>
-                       <div style={{ height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '100px', overflow: 'hidden' }}>
-                          <div style={{ width: `${h.p}%`, height: '100%', background: '#FF9431' }} />
+                       <div style={{ height: '6px', background: '#f1f5f9', borderRadius: '100px', overflow: 'hidden' }}>
+                          <div style={{ width: `${h.p}%`, height: '100%', background: 'linear-gradient(90deg, #FF9431 0%, #f97316 100%)' }} />
                        </div>
                     </div>
                  ))}
@@ -184,27 +194,27 @@ const TrustBadge = () => (
   </div>
 );
 
-const TheEliteEdge = ({ mob }) => (
-  <Card style={{ padding: mob ? '28px' : '48px', borderRadius: '40px', marginBottom: '40px', border: '1.5px solid #f1f5f9', background: 'linear-gradient(to bottom, #fff, #f8fafc)' }}>
+const TheEliteEdge = ({ c, mob }) => (
+  <Card style={{ padding: mob ? '28px' : '48px', borderRadius: '40px', marginBottom: '40px', border: '1.5px solid rgba(226, 232, 240, 0.8)', background: 'linear-gradient(to bottom, #fff, #f8fafc)', boxShadow: '0 20px 40px rgba(15,23,42,0.02)' }}>
      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
         <ShieldCheck size={24} color="#FF9431" />
         <h3 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a' }}>The Elite Edge (Comparison)</h3>
       </div>
      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px' }}>
-        <div style={{ padding: '24px', background: '#fff', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
+        <div style={{ padding: '24px', background: '#fff', borderRadius: '24px', border: '1.5px solid rgba(226, 232, 240, 0.8)', boxShadow: '0 4px 12px rgba(0,0,0,0.01)' }}>
            <div style={{ fontSize: '12px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '16px' }}>Average Creator</div>
            <div style={{ fontSize: '24px', fontWeight: 950, color: '#64748b', marginBottom: '8px' }}>2.1% ER</div>
            <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 600 }}>Low Retention</div>
         </div>
-        <div style={{ padding: '24px', background: '#0f172a', borderRadius: '24px', color: '#fff', boxShadow: '0 20px 40px rgba(15,23,42,0.1)' }}>
-           <div style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', marginBottom: '16px' }}>This Elite Creator</div>
-           <div style={{ fontSize: '24px', fontWeight: 950, color: '#fff', marginBottom: '8px' }}>9.4% ER</div>
-           <div style={{ fontSize: '12px', color: '#10B981', fontWeight: 800 }}>High Conversion Power</div>
+        <div style={{ padding: '24px', background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)', borderRadius: '24px', color: '#fff', boxShadow: '0 12px 30px rgba(234, 88, 12, 0.25)' }}>
+           <div style={{ fontSize: '12px', fontWeight: 900, color: '#fff', textTransform: 'uppercase', marginBottom: '16px', opacity: 0.9 }}>This Elite Creator</div>
+           <div style={{ fontSize: '24px', fontWeight: 950, color: '#fff', marginBottom: '8px' }}>{c?.er || 9.4}% ER</div>
+           <div style={{ fontSize: '12px', color: '#fff', fontWeight: 900 }}>High Conversion Power</div>
         </div>
      </div>
   </Card>
 );
-TheEliteEdge.propTypes = { mob: PropTypes.bool };
+TheEliteEdge.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
 
 const LocationDominanceVoice = ({ c, mob }) => {
   const isDummy = c.id === 'fallback';
@@ -363,7 +373,7 @@ export const IdentityTab = ({ c, stats, onRate, mob, setActiveTab }) => (
     <NationalToLocalBridge c={c} mob={mob} />
     
     <TrustBadge />
-    <TheEliteEdge mob={mob} />
+    <TheEliteEdge c={c} mob={mob} />
     <LocationDominanceVoice c={c} mob={mob} />
     <SocialLinkTree links={c?.links} mob={mob} />
     <TabNavigator activeTab="identity" setActiveTab={setActiveTab} mob={mob} />
