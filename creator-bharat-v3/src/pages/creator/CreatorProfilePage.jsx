@@ -132,7 +132,8 @@ const TAB_LIST = [
   { id: 'identity',  label: 'Identity',   icon: '👤', desc: 'Who they are' },
   { id: 'story',     label: 'My Story',   icon: '📖', desc: 'Creator journey' },
   { id: 'gallery',   label: 'Gallery',    icon: '🖼️', desc: 'Visual portfolio' },
-  { id: 'work',      label: 'Pro Work',   icon: '💼', desc: 'Achievements & services' },
+  { id: 'work',      label: 'Pro Work',   icon: '💼', desc: 'Achievements' },
+  { id: 'services',  label: 'Services',   icon: '🛠️', desc: 'What I offer' },
   { id: 'local',     label: 'Local Hub',  icon: '📍', desc: 'Regional presence' },
   { id: 'reviews',   label: 'Reviews',    icon: '⭐', desc: 'Brand feedback' },
   { id: 'packages',  label: 'Packages',   icon: '⚡', desc: 'Hire & rates' },
@@ -776,7 +777,6 @@ const WorkTab = ({ c, mob, setActiveTab }) => {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
       <AchievementWall c={c} mob={mob} />
-      <ServiceCatalog c={c} mob={mob} />
       
       {hasViral && (
         <div style={{ marginBottom: '60px' }}>
@@ -820,6 +820,17 @@ const WorkTab = ({ c, mob, setActiveTab }) => {
   );
 };
 WorkTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, setActiveTab: PropTypes.func.isRequired };
+
+const ServicesTab = ({ c, mob, setActiveTab }) => {
+  return (
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+      <ServiceCatalog c={c} mob={mob} />
+      <TrustBadge />
+      <TabNavigator activeTab="services" setActiveTab={setActiveTab} mob={mob} />
+    </motion.div>
+  );
+};
+ServicesTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, setActiveTab: PropTypes.func.isRequired };
 
 // --- MODALS ---
 
@@ -1998,6 +2009,8 @@ const ProfileTabContent = ({
       return <GalleryTab key="tab-gallery" c={c} mob={mob} setActiveTab={setActiveTab} />;
     case 'work':
       return <WorkTab key="tab-work" c={c} mob={mob} setActiveTab={setActiveTab} />;
+    case 'services':
+      return <ServicesTab key="tab-services" c={c} mob={mob} setActiveTab={setActiveTab} />;
     case 'local':
       return <LocalCollabHub key="tab-local" c={c} mob={mob} setActiveTab={setActiveTab} />;
     case 'reviews':
