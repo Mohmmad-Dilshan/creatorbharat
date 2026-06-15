@@ -1961,6 +1961,13 @@ export default function CreatorProfilePage() {
   }, []);
 
   useEffect(() => {
+    globalThis.dispatchEvent(new CustomEvent('cb-tab-change', { detail: activeTab }));
+    return () => {
+      globalThis.dispatchEvent(new CustomEvent('cb-tab-change', { detail: 'identity' }));
+    };
+  }, [activeTab]);
+
+  useEffect(() => {
     const handleScroll = () => {
       const curY = globalThis.scrollY;
       const diff = curY - lastY.current;
@@ -2263,39 +2270,40 @@ export default function CreatorProfilePage() {
          </AnimatePresence>
       </div>
 
+      {activeTab === 'identity' && (
+        <section style={{ marginTop: '100px', padding: mob ? '60px 16px' : '100px 0', background: '#0f172a', position: 'relative', overflow: 'hidden' }}>
+           <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '400px', height: '400px', background: '#FF9431', borderRadius: '50%', filter: 'blur(150px)', opacity: 0.1 }} />
+           <div style={{ ...W(1100), margin: '0 auto', position: 'relative', zIndex: 1, textAlign: 'center' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+                 <button onClick={() => navigate(st.user ? (st.role === 'brand' ? '/brand-dashboard' : '/creator/dashboard') : '/')} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', padding: '8px 24px', borderRadius: '100px', fontSize: '12px', fontWeight: 900, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    Visit Official Platform <ArrowRight size={14} />
+                 </button>
+              </div>
+              <h2 style={{ fontSize: mob ? '32px' : '56px', fontWeight: 950, color: '#fff', letterSpacing: '-0.04em', marginBottom: '24px' }}>Ready to Scale Your <span style={{ color: '#FF9431' }}>Brand Legacy?</span></h2>
+              <p style={{ fontSize: '18px', color: '#94a3b8', fontWeight: 500, maxWidth: '700px', margin: '0 auto 48px' }}>Join the exclusive circle of Bharat's most influential voices and top-tier brands building the future of storytelling.</p>
+              
+              <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: '20px', justifyContent: 'center', alignItems: 'center' }}>
+                 <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '40px', borderRadius: '32px', textAlign: 'center', width: mob ? '100%' : '450px', backdropFilter: 'blur(10px)' }}>
+                    <div style={{ width: '50px', height: '50px', background: '#FF943120', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+                       <Briefcase size={24} color="#FF9431" />
+                    </div>
+                    <h4 style={{ fontSize: '20px', fontWeight: 900, color: '#fff', marginBottom: '12px' }}>{st?.role === 'brand' ? 'Brand Console' : 'I am a Brand'}</h4>
+                    <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px' }}>Hire {c?.name || 'Elite Creators'} or explore our elite creators network for your next big campaign.</p>
+                    <Btn full lg style={{ background: '#FF9431', borderRadius: '100px' }} onClick={() => navigate(st?.role === 'brand' ? '/brand-dashboard' : '/creators')}>{st?.role === 'brand' ? 'Open Brand Dashboard' : 'Hire Elite Creators'}</Btn>
+                 </div>
 
-      <section style={{ marginTop: '100px', padding: mob ? '60px 16px' : '100px 0', background: '#0f172a', position: 'relative', overflow: 'hidden' }}>
-         <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '400px', height: '400px', background: '#FF9431', borderRadius: '50%', filter: 'blur(150px)', opacity: 0.1 }} />
-         <div style={{ ...W(1100), margin: '0 auto', position: 'relative', zIndex: 1, textAlign: 'center' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
-               <button onClick={() => navigate(st.user ? (st.role === 'brand' ? '/brand-dashboard' : '/creator/dashboard') : '/')} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', padding: '8px 24px', borderRadius: '100px', fontSize: '12px', fontWeight: 900, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                  Visit Official Platform <ArrowRight size={14} />
-               </button>
-            </div>
-            <h2 style={{ fontSize: mob ? '32px' : '56px', fontWeight: 950, color: '#fff', letterSpacing: '-0.04em', marginBottom: '24px' }}>Ready to Scale Your <span style={{ color: '#FF9431' }}>Brand Legacy?</span></h2>
-            <p style={{ fontSize: '18px', color: '#94a3b8', fontWeight: 500, maxWidth: '700px', margin: '0 auto 48px' }}>Join the exclusive circle of Bharat's most influential voices and top-tier brands building the future of storytelling.</p>
-            
-            <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: '20px', justifyContent: 'center', alignItems: 'center' }}>
-               <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '40px', borderRadius: '32px', textAlign: 'center', width: mob ? '100%' : '450px', backdropFilter: 'blur(10px)' }}>
-                  <div style={{ width: '50px', height: '50px', background: '#FF943120', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-                     <Briefcase size={24} color="#FF9431" />
-                  </div>
-                  <h4 style={{ fontSize: '20px', fontWeight: 900, color: '#fff', marginBottom: '12px' }}>{st?.role === 'brand' ? 'Brand Console' : 'I am a Brand'}</h4>
-                  <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px' }}>Hire {c?.name || 'Elite Creators'} or explore our elite creators network for your next big campaign.</p>
-                  <Btn full lg style={{ background: '#FF9431', borderRadius: '100px' }} onClick={() => navigate(st?.role === 'brand' ? '/brand-dashboard' : '/creators')}>{st?.role === 'brand' ? 'Open Brand Dashboard' : 'Hire Elite Creators'}</Btn>
-               </div>
-
-               <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '40px', borderRadius: '32px', textAlign: 'center', width: mob ? '100%' : '450px', backdropFilter: 'blur(10px)' }}>
-                  <div style={{ width: '50px', height: '50px', background: '#10B98120', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-                     <Verified size={24} color="#10B981" />
-                  </div>
-                  <h4 style={{ fontSize: '20px', fontWeight: 900, color: '#fff', marginBottom: '12px' }}>{st?.role === 'creator' ? 'Creator Workspace' : 'I am a Creator'}</h4>
-                  <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px' }}>{st?.role === 'creator' ? 'Edit your profile builder and keep this public page polished for brands.' : 'Apply for an Elite Audit and get a professional profile like this one.'}</p>
-                  <Btn full lg style={{ background: '#fff', color: '#0f172a', borderRadius: '100px' }} onClick={() => navigate(st?.role === 'creator' ? '/creator/profile' : '/apply')}>{st?.role === 'creator' ? 'Edit My Profile' : 'Get Elite Verified'}</Btn>
-               </div>
-            </div>
-         </div>
-      </section>
+                 <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '40px', borderRadius: '32px', textAlign: 'center', width: mob ? '100%' : '450px', backdropFilter: 'blur(10px)' }}>
+                    <div style={{ width: '50px', height: '50px', background: '#10B98120', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+                       <Verified size={24} color="#10B981" />
+                    </div>
+                    <h4 style={{ fontSize: '20px', fontWeight: 900, color: '#fff', marginBottom: '12px' }}>{st?.role === 'creator' ? 'Creator Workspace' : 'I am a Creator'}</h4>
+                    <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px' }}>{st?.role === 'creator' ? 'Edit your profile builder and keep this public page polished for brands.' : 'Apply for an Elite Audit and get a professional profile like this one.'}</p>
+                    <Btn full lg style={{ background: '#fff', color: '#0f172a', borderRadius: '100px' }} onClick={() => navigate(st?.role === 'creator' ? '/creator/profile' : '/apply')}>{st?.role === 'creator' ? 'Edit My Profile' : 'Get Elite Verified'}</Btn>
+                 </div>
+              </div>
+           </div>
+        </section>
+      )}
 
 
       <RateCreatorModal open={rateOpen} name={c?.name || 'Creator'} dsp={dsp} onSubmit={handleReviewSubmit} user={st?.user} onClose={() => setRateOpen(false)} />

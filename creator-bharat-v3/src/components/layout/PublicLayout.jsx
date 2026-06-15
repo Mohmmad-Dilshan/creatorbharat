@@ -20,6 +20,15 @@ export default function PublicLayout({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
+  const [activeProfileTab, setActiveProfileTab] = useState('identity');
+
+  useEffect(() => {
+    const handleTab = (e) => setActiveProfileTab(e.detail);
+    globalThis.addEventListener('cb-tab-change', handleTab);
+    return () => {
+      globalThis.removeEventListener('cb-tab-change', handleTab);
+    };
+  }, []);
 
   // Redirect logged-in creators to their isolated private workspace
   useEffect(() => {
@@ -57,7 +66,8 @@ export default function PublicLayout({ children }) {
 
   const isModalOpen = st.ui.demoModal || st.ui.mobileMenu;
   const isBlogRoute = location.pathname.startsWith('/blog');
-  const showFooter = !mob || location.pathname === '/' || isBlogRoute;
+  const isCreatorProfilePublic = /^\/creator\/[^/]+$/.test(location.pathname);
+  const showFooter = (!mob || location.pathname === '/' || isBlogRoute) && (!isCreatorProfilePublic || activeProfileTab === 'identity');
 
   useEffect(() => {
     const isMobile = globalThis.innerWidth < 768;
