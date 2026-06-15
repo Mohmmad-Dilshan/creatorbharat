@@ -15,7 +15,9 @@ import {
   Share2,
   ShieldCheck,
   Eye,
-  Heart
+  Heart,
+  Sparkles,
+  TrendingUp
 } from 'lucide-react';
 import { W, fmt } from '@/utils/helpers';
 import { Bdg } from '@/components/common/Primitives';
