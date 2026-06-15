@@ -2095,7 +2095,7 @@ export default function CreatorProfilePage() {
       if (curY < 50) setNavVisible(true);
       else if (diff > 10) setNavVisible(false);
       else if (diff < -10) setNavVisible(true);
-      setTabScrolled(curY > 280);
+      setTabScrolled(curY > 100);
       lastY.current = curY;
     };
     globalThis.addEventListener('scroll', handleScroll, { passive: true });
@@ -2241,12 +2241,15 @@ export default function CreatorProfilePage() {
   if (ld) return <ProfileSkeleton id={id} mob={mob} />;
   if (!c) return <div style={{ ...W(), padding: '120px 20px', textAlign: 'center' }}><Empty title="Profile Not Found" onCta={() => navigate('/creators')} /></div>;
 
-  let stickyTop = '0px';
+  // Sticky offset — always account for Navbar height so tab bar hugs just below it
+  const NAVBAR_H_DESKTOP = 72;
+  const NAVBAR_H_MOBILE = 60;
+  let stickyTop;
   if (!mob) {
-    stickyTop = navVisible ? '72px' : '0px';
+    stickyTop = navVisible ? `${NAVBAR_H_DESKTOP}px` : '0px';
   } else {
-    // Mobile: account for top navbar height
-    stickyTop = '0px';
+    // On mobile the navbar is always visible at the top
+    stickyTop = `${NAVBAR_H_MOBILE}px`;
   }
 
   return (
@@ -2269,9 +2272,9 @@ export default function CreatorProfilePage() {
           zIndex: 1000,
           display: 'flex',
           justifyContent: 'center',
-          padding: mob ? '10px 12px' : '14px 24px',
+          padding: mob ? '8px 12px' : '12px 24px',
           transition: 'top 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-          pointerEvents: 'none',
+          // transparent row — pill itself has the glass background
         }}
       >
         <style>{`
@@ -2287,21 +2290,20 @@ export default function CreatorProfilePage() {
         {/* The floating pill container */}
         <div
           style={{
-            pointerEvents: 'auto',
             display: 'flex',
             alignItems: 'center',
             gap: mob ? '2px' : '3px',
             padding: mob ? '5px' : '6px',
             background: tabScrolled
-              ? 'rgba(255,255,255,0.88)'
-              : 'rgba(255,255,255,0.78)',
-            backdropFilter: 'blur(28px) saturate(180%)',
-            WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+              ? 'rgba(255,255,255,0.96)'
+              : 'rgba(255,255,255,0.82)',
+            backdropFilter: 'blur(32px) saturate(200%)',
+            WebkitBackdropFilter: 'blur(32px) saturate(200%)',
             borderRadius: '100px',
-            border: '1px solid rgba(255,255,255,0.7)',
+            border: '1px solid rgba(226,232,240,0.6)',
             boxShadow: tabScrolled
-              ? '0 8px 32px rgba(15,23,42,0.14), 0 2px 8px rgba(15,23,42,0.06), inset 0 1px 0 rgba(255,255,255,0.9)'
-              : '0 4px 20px rgba(15,23,42,0.08), 0 1px 4px rgba(15,23,42,0.04), inset 0 1px 0 rgba(255,255,255,0.9)',
+              ? '0 8px 32px rgba(15,23,42,0.16), 0 2px 8px rgba(15,23,42,0.08), inset 0 1px 0 rgba(255,255,255,0.95)'
+              : '0 4px 24px rgba(15,23,42,0.10), 0 1px 6px rgba(15,23,42,0.05), inset 0 1px 0 rgba(255,255,255,0.95)',
             overflowX: 'auto',
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
