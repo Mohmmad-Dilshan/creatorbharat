@@ -53,6 +53,27 @@ export default function SuccessStoriesPage() {
       <Seo 
         title="Success Stories & Case Studies" 
         description="See how brand managers, regional creators, and the CreatorBharat platform collaborate to build India's largest verified creator trust ecosystem."
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "CreatorBharat Success Stories & Case Studies",
+          "description": "Real case studies from India's rising creator ecosystem — verified brand campaigns, creator career boosts, and platform milestones.",
+          "url": "https://creatorbharat.com/stories",
+          "numberOfItems": ALL_STORIES.length,
+          "itemListElement": ALL_STORIES.slice(0, 5).map((story, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "name": story.title,
+            "description": story.description || story.challenge,
+            "url": `https://creatorbharat.com${story.actionPath || '/stories'}`
+          })),
+          "publisher": {
+            "@type": "Organization",
+            "name": "CreatorBharat",
+            "url": "https://creatorbharat.com",
+            "logo": "https://creatorbharat.com/android-chrome-512x512.png"
+          }
+        }}
       />
 
       {/* Injecting CSS classes for premium horizontal layout and responsiveness */}

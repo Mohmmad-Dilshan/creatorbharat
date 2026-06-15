@@ -89,7 +89,7 @@ export default function ContactPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          access_key: 'YOUR_WEB3FORMS_KEY', // Replace with real key from web3forms.com
+          access_key: import.meta.env.VITE_WEB3FORMS_KEY || (() => { console.warn('[ContactPage] VITE_WEB3FORMS_KEY not set in .env — form will use local fallback.'); return ''; })(),
           name: formData.name,
           email: formData.email,
           subject: formData.subject || `${role} inquiry`,

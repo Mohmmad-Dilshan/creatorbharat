@@ -30,6 +30,38 @@ export default function BrandLandingPage() {
         title="For Brands — Scale Campaign ROI"
         description="Scout verified regional creators, launch campaigns with escrow protection, and track ROI in real-time. Zero commission. Zero middlemen."
         keywords="influencer marketing india, brand campaigns, creator marketing, tier 2 creators, cb score"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "CreatorBharat Brand Platform",
+          "description": "Scout verified regional creators across India. Launch campaigns with escrow protection and real-time ROI tracking. Zero commission, zero middlemen.",
+          "url": "https://creatorbharat.com/brand",
+          "provider": {
+            "@type": "Organization",
+            "name": "CreatorBharat",
+            "url": "https://creatorbharat.com",
+            "logo": "https://creatorbharat.com/android-chrome-512x512.png",
+            "areaServed": { "@type": "Country", "name": "India" }
+          },
+          "offers": {
+            "@type": "AggregateOffer",
+            "priceCurrency": "INR",
+            "lowPrice": "0",
+            "highPrice": "44999",
+            "offerCount": "2",
+            "offers": [
+              { "@type": "Offer", "name": "Brand Launchpad (Free)", "price": "0", "priceCurrency": "INR" },
+              { "@type": "Offer", "name": "Brand Enterprise (Annual)", "price": "44999", "priceCurrency": "INR" }
+            ]
+          },
+          "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://creatorbharat.com" },
+              { "@type": "ListItem", "position": 2, "name": "For Brands", "item": "https://creatorbharat.com/brand" }
+            ]
+          }
+        }}
       />
 
       <style>{`

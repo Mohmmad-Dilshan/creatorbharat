@@ -77,7 +77,7 @@ export default function GalleryPage() {
       <SEO 
         title="Ecosystem Gallery | CreatorBharat"
         description="Explore live footage, photos, and news highlights of the CreatorBharat brand networking events, summits, workshops, and node activations across India."
-        schema={schemaData}
+        jsonLd={schemaData}
       />
 
       {/* Hero Header */}

@@ -27,6 +27,21 @@ const THEME = {
 
 const categories = ['Overall', 'Tech', 'Finance', 'Lifestyle', 'Gaming', 'Travel', 'Beauty', 'Fitness', 'Food'];
 
+// Deterministic seeded pseudo-random — same input always gives same output
+// Uses creator ID hash so ER doesn't flicker on re-render
+function seededRandom(seed, min, max, decimals = 1) {
+  // Simple deterministic hash from string/number seed
+  const s = String(seed);
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  const normalized = Math.abs(h % 1000) / 1000; // 0..1
+  const val = min + normalized * (max - min);
+  return parseFloat(val.toFixed(decimals));
+}
+
 // Transform function to normalize API/seed data into leaderboard format:
 function transformToLeaderboard(creators) {
   return creators
@@ -35,10 +50,25 @@ function transformToLeaderboard(creators) {
       const followers = c.followers || 0;
       const niche = Array.isArray(c.niche) ? c.niche[0] : (c.niche || 'Creator');
       const tier = followers >= 1000000 ? 'Mega' : followers >= 100000 ? 'Macro' : 'Micro';
-      
-      // Deterministic primary platform assignment
+
+      // Deterministic platform — prefers actual API field, fallback by idx
       const platformsList = ['Instagram', 'YouTube', 'LinkedIn', 'Twitter'];
       const platform = c.primaryPlatform || c.platform || platformsList[idx % 4];
+
+      // Deterministic ER — from real data if available, else seeded by creator id+score
+      const erSeed = `${c.id || idx}-er`;
+      const erRaw = c.er
+        ? Number(c.er)
+        : seededRandom(erSeed, 2.5, 11.5, 1);
+      const er = `${erRaw.toFixed(1)}%`;
+
+      // Deterministic velocity — based on score + id seed (no random flicker)
+      const velSeed = `${c.id || idx}-vel`;
+      const isUp = score > 75;
+      const velMag = isUp
+        ? seededRandom(velSeed, 0.8, 13.5, 1)
+        : seededRandom(velSeed, 0.3, 4.2, 1);
+      const velocity = isUp ? `+${velMag}%` : `-${velMag}%`;
 
       return {
         id: c.id || c.handle || c.slug,
@@ -48,13 +78,13 @@ function transformToLeaderboard(creators) {
         platform,
         followers: fmt.num(followers),
         followersRaw: followers,
-        er: c.er ? `${Number(c.er).toFixed(1)}%` : `${(Math.random() * 8 + 3).toFixed(1)}%`,
-        erRaw: c.er || (Math.random() * 8 + 3),
+        er,
+        erRaw,
         score,
-        trend: score > 80 ? 'up' : 'down',
+        trend: isUp ? 'up' : 'down',
         location: c.city || c.location || 'India',
         tier,
-        velocity: score > 80 ? `+${(Math.random() * 12 + 1).toFixed(1)}%` : `-${(Math.random() * 3 + 0.5).toFixed(1)}%`,
+        velocity,
         avatar: c.photo || c.image || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name || 'C')}&background=FF9431&color=fff`
       };
     })

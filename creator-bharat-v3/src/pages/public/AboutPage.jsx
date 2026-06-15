@@ -123,6 +123,7 @@ export default function AboutPage() {
 
   const [creators, setCreators] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
+  const [apiError, setApiError] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setMob(window.innerWidth < 768);
@@ -137,8 +138,13 @@ export default function AboutPage() {
         if (!active) return;
         setCreators(creatorsList || []);
         setCampaigns(campaignsList || []);
+        setApiError(false);
       })
       .catch(err => {
+        if (!active) return;
+        setApiError(true);
+        // Auto-dismiss the error indicator after 5 seconds
+        setTimeout(() => setApiError(false), 5000);
         if (import.meta.env.DEV && (err.name === 'TypeError' || err.message?.includes('Failed to fetch') || err.message?.includes('fetch'))) {
           console.warn("AboutPage fetch warning (API sleeping/offline, using seed fallback):", err.message);
         } else {
@@ -191,6 +197,32 @@ export default function AboutPage() {
 
   return (
     <div style={{ background: '#fff', overflowX: 'hidden' }}>
+      {/* API Error Banner — auto-dismiss after 5s, non-blocking */}
+      {apiError && (
+        <div style={{
+          position: 'fixed',
+          top: 70,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 9999,
+          background: '#FFFBEB',
+          border: '1px solid #FCD34D',
+          borderRadius: 100,
+          padding: '10px 24px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          boxShadow: '0 8px 24px rgba(0,0,0,0.06)',
+          fontSize: 13,
+          fontWeight: 700,
+          color: '#92400E',
+          whiteSpace: 'nowrap'
+        }}>
+          <span style={{ fontSize: 16 }}>⚠️</span>
+          Live data unavailable — showing cached stats
+          <button onClick={() => setApiError(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#92400E', fontWeight: 900, fontSize: 16, padding: '0 0 0 8px', lineHeight: 1 }}>×</button>
+        </div>
+      )}
       <Seo 
         title="Our Mission & DNA - Premium Creator Network"
         description="We are building the trust layer and decentralized SaaS matching infrastructure for Bharat's regional creator economy. Discover our story."

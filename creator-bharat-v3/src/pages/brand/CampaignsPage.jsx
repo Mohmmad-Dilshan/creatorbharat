@@ -5,7 +5,7 @@ import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-mo
 import {
   Zap, Search, X, Heart, Bookmark, CheckCircle2, Globe, Users, MapPin, Layers, Calendar,
   Target, Briefcase, TrendingUp, Award, Rocket, BarChart3, Lightbulb, CheckCircle, Star, Sparkles, Send, MessageSquare, Lock,
-  ShieldCheck, ChevronRight
+  ShieldCheck, ChevronRight, LayoutGrid
 } from 'lucide-react';
 
 import { useApp } from '../../core/context';
@@ -97,6 +97,373 @@ CampaignsFloatingIcons.propTypes = {
 };
 
 // ----------------------------------------------------------------------
+// MOCK DATA & COMPONENTS FOR MOBILE GRAPHIC
+// ----------------------------------------------------------------------
+const MOCK_CAMPAIGNS = [
+  {
+    title: 'boAt Airdopes Launch',
+    niche: 'Tech & Lifestyle',
+    payout: '₹1,00,000',
+    slots: 8,
+    imgIdx: 1,
+    brand: 'boAt Lifestyle'
+  },
+  {
+    title: 'Jaipur Heritage Promotion',
+    niche: 'Travel & Food',
+    payout: '₹75,000',
+    slots: 15,
+    imgIdx: 0,
+    brand: 'Rajasthan Tourism'
+  },
+  {
+    title: 'Bastar Handicrafts Campaign',
+    niche: 'Culture & Art',
+    payout: '₹50,000',
+    slots: 20,
+    imgIdx: 2,
+    brand: 'Bastar Crafts'
+  },
+  {
+    title: 'Bharat Mobility Expo',
+    niche: 'Automotive & Tech',
+    payout: '₹1,20,000',
+    slots: 10,
+    imgIdx: 3,
+    brand: 'Bharat Mobility'
+  }
+];
+
+const MobileCampaignDeck = () => {
+  const [deckIdx, setDeckIdx] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setDeckIdx(prev => (prev + 1) % MOCK_CAMPAIGNS.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <AnimatePresence mode="wait">
+        {MOCK_CAMPAIGNS.map((c, i) => {
+          if (i !== deckIdx) return null;
+          const cover = COVERS[c.imgIdx];
+
+          return (
+            <motion.div
+              key={c.title}
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -30, scale: 0.95 }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '20px',
+                padding: '10px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div style={{ position: 'relative', height: '110px', borderRadius: '12px', overflow: 'hidden' }}>
+                <img src={cover} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                <div style={{ position: 'absolute', top: '8px', left: '8px', background: '#FF9431', color: '#fff', padding: '2px 8px', borderRadius: '100px', fontSize: '7px', fontWeight: 900 }}>
+                  {c.niche}
+                </div>
+              </div>
+
+              <div style={{ padding: '4px 2px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{ fontSize: '8px', color: 'rgba(255, 255, 255, 0.5)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{c.brand}</div>
+                <h4 style={{ fontSize: '12px', fontWeight: 950, color: '#fff', marginTop: '2px', marginBottom: '8px', lineHeight: 1.2 }}>{c.title}</h4>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '6px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                    <div style={{ fontSize: '6px', color: 'rgba(255, 255, 255, 0.4)', fontWeight: 900 }}>EST. PAYOUT</div>
+                    <div style={{ fontSize: '10px', fontWeight: 950, color: '#fff' }}>{c.payout}</div>
+                  </div>
+                  <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '6px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                    <div style={{ fontSize: '6px', color: 'rgba(255, 255, 255, 0.4)', fontWeight: 900 }}>AVAILABILITY</div>
+                    <div style={{ fontSize: '10px', fontWeight: 950, color: '#FF9431' }}>{c.slots} SLOTS</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{
+                background: 'linear-gradient(135deg, #FF9431 0%, #ff6b00 100%)',
+                color: '#fff',
+                fontSize: '10px',
+                fontWeight: 950,
+                textAlign: 'center',
+                padding: '8px',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                marginTop: '4px'
+              }}>
+                Apply Now ⚡
+              </div>
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const DesktopCampaignDashboard = () => {
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIdx(prev => (prev + 1) % MOCK_CAMPAIGNS.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div style={{ position: 'relative', width: '100%', maxWidth: '480px', height: '380px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {/* Glow effect behind dashboard */}
+      <div style={{
+        position: 'absolute',
+        top: '10%', right: '-5%',
+        width: '300px', height: '300px',
+        background: 'radial-gradient(circle, rgba(255, 148, 49, 0.15) 0%, transparent 70%)',
+        filter: 'blur(40px)',
+        zIndex: 0,
+      }} />
+
+      {/* Main Dashboard Box */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        style={{
+          width: '100%',
+          height: '100%',
+          background: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(24px)',
+          border: '1.5px solid rgba(255, 255, 255, 0.08)',
+          borderRadius: '24px',
+          boxShadow: '0 40px 80px rgba(0, 0, 0, 0.35)',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          zIndex: 2,
+        }}
+      >
+        {/* Browser Header */}
+        <div style={{
+          padding: '14px 20px',
+          borderBottom: '1.5px solid rgba(255, 255, 255, 0.06)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          background: 'rgba(15, 23, 42, 0.4)',
+        }}>
+          {/* Window control dots */}
+          <div style={{ display: 'flex', gap: '6px' }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444' }} />
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#f59e0b' }} />
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }} />
+          </div>
+          {/* Mock URL bar */}
+          <div style={{
+            flex: 1,
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(255, 255, 255, 0.05)',
+            borderRadius: '100px',
+            padding: '4px 16px',
+            fontSize: '9px',
+            color: 'rgba(255, 255, 255, 0.4)',
+            textAlign: 'left',
+            fontFamily: 'monospace',
+          }}>
+            creatorbharat.com/marketplace
+          </div>
+        </div>
+
+        {/* Dashboard Content */}
+        <div style={{ flex: 1, padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* Metrics Row */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+            {[
+              { label: 'Active Deals', value: '1.2K+', color: '#3B82F6' },
+              { label: 'Escrow Locked', value: '₹15.4L', color: '#10B981' },
+              { label: 'Platform Fee', value: '0%', color: '#FF9431' },
+            ].map(m => (
+              <div key={m.label} style={{
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '1.5px solid rgba(255, 255, 255, 0.04)',
+                borderRadius: '12px',
+                padding: '10px',
+                textAlign: 'left',
+              }}>
+                <div style={{ fontSize: '8px', fontWeight: 900, color: 'rgba(255, 255, 255, 0.4)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{m.label}</div>
+                <div style={{ fontSize: '16px', fontWeight: 950, color: '#fff', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: m.color, display: 'inline-block' }} />
+                  {m.value}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Section title */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '10px', fontWeight: 900, color: 'rgba(255, 255, 255, 0.6)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              Featured Brand Campaigns
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block', animation: 'pulsing-glow 2s infinite' }} />
+              <span style={{ fontSize: '8px', fontWeight: 900, color: '#10b981', textTransform: 'uppercase' }}>Live feed</span>
+            </div>
+          </div>
+
+          {/* List of active deals (interactive carousel) */}
+          <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+            <AnimatePresence mode="wait">
+              {MOCK_CAMPAIGNS.map((c, idx) => {
+                if (idx !== activeIdx) return null;
+                const cover = COVERS[c.imgIdx];
+
+                return (
+                  <motion.div
+                    key={c.title}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.4 }}
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                      borderRadius: '16px',
+                      padding: '12px',
+                      display: 'flex',
+                      gap: '16px',
+                      alignItems: 'center',
+                    }}
+                  >
+                    {/* Campaign Image */}
+                    <div style={{ width: '100px', height: '100px', borderRadius: '10px', overflow: 'hidden', flexShrink: 0 }}>
+                      <img src={cover} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                    </div>
+
+                    {/* Campaign Info */}
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'space-between', textAlign: 'left' }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                          <span style={{ fontSize: '7px', fontWeight: 900, background: 'rgba(255,148,49,0.15)', color: '#FF9431', padding: '2px 6px', borderRadius: '4px' }}>{c.niche}</span>
+                          <span style={{ fontSize: '8px', color: 'rgba(255, 255, 255, 0.4)', fontWeight: 800 }}>{c.brand}</span>
+                        </div>
+                        <h4 style={{ fontSize: '13px', fontWeight: 950, color: '#fff', margin: 0, lineHeight: 1.25 }}>{c.title}</h4>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '12px' }}>
+                        <div>
+                          <div style={{ fontSize: '6px', color: 'rgba(255, 255, 255, 0.4)', fontWeight: 900 }}>EST. PAYOUT</div>
+                          <div style={{ fontSize: '11px', fontWeight: 950, color: '#fff' }}>{c.payout}</div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '6px', color: 'rgba(255, 255, 255, 0.4)', fontWeight: 900 }}>AVAILABILITY</div>
+                          <div style={{ fontSize: '11px', fontWeight: 950, color: '#FF9431' }}>{c.slots} SLOTS</div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Floating Overlapping Badges on Desktop */}
+      <motion.div
+        animate={{ y: [0, -10, 0] }}
+        transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+        style={{
+          position: 'absolute',
+          top: '-24px',
+          right: '-24px',
+          background: '#0f172a',
+          border: '1.5px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.25)',
+          borderRadius: '16px',
+          padding: '12px 18px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          zIndex: 3,
+          minWidth: '160px',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+          <Zap size={10} color="#3B82F6" />
+          <span style={{ fontSize: '8px', fontWeight: 900, color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Live Collaborations</span>
+        </div>
+        <div style={{ fontSize: '18px', fontWeight: 950, color: '#fff' }}>1.2K+ Deals</div>
+      </motion.div>
+
+      <motion.div
+        animate={{ y: [0, 8, 0] }}
+        transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut', delay: 0.5 }}
+        style={{
+          position: 'absolute',
+          bottom: '-16px',
+          left: '-24px',
+          background: '#fff',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 20px 40px rgba(15, 23, 42, 0.06)',
+          borderRadius: '16px',
+          padding: '12px 18px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          zIndex: 3,
+        }}
+      >
+        <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(16,185,129,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <ShieldCheck size={14} color="#10B981" />
+        </div>
+        <div style={{ textAlign: 'left' }}>
+          <div style={{ fontSize: '8px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase' }}>Escrow Protected</div>
+          <div style={{ fontSize: '13px', fontWeight: 950, color: '#0f172a' }}>100% Guaranteed</div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        animate={{ y: [0, -8, 0] }}
+        transition={{ repeat: Infinity, duration: 3.8, ease: 'easeInOut', delay: 1 }}
+        style={{
+          position: 'absolute',
+          bottom: '80px',
+          right: '-20px',
+          background: 'linear-gradient(135deg, #FF9431 0%, #ff6b00 100%)',
+          boxShadow: '0 16px 36px rgba(255,148,49,0.25)',
+          borderRadius: '14px',
+          padding: '10px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          zIndex: 3,
+        }}
+      >
+        <Sparkles size={14} color="#fff" />
+        <div style={{ textAlign: 'left' }}>
+          <div style={{ fontSize: '7px', fontWeight: 900, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase' }}>Avg Creator Payout</div>
+          <div style={{ fontSize: '12px', fontWeight: 950, color: '#fff' }}>₹45K per Deal</div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// ----------------------------------------------------------------------
 // 1. BRAND TOKENS
 // ----------------------------------------------------------------------
 
@@ -126,32 +493,142 @@ const COVERS = [
 // 2. ELITE COMPONENTS
 // ----------------------------------------------------------------------
 
-const MarketplaceStats = ({ isMob }) => (
-  <div style={{ 
-    display: 'grid', 
-    gridTemplateColumns: isMob ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', 
-    gap: isMob ? '12px' : '24px', 
-    marginBottom: isMob ? '32px' : '48px' 
-  }}>
-    {[
-      { l: 'Active Deals', v: '1.2K+', c: '#3B82F6' },
-      { l: 'Avg. Payout', v: '₹45K', c: '#10B981' },
-      { l: 'Top Brands', v: '450+', c: '#6366F1' },
-      { l: 'Success Rate', v: '98%', c: '#F59E0B' }
-    ].map(s => (
-      <div key={s.l} style={{ 
-        background: '#fff', 
-        padding: isMob ? '16px' : '24px', 
-        borderRadius: '16px', 
-        border: '1px solid #e2e8f0', 
-        boxShadow: '0 4px 12px rgba(15, 23, 42, 0.03)' 
-      }}>
-        <div style={{ fontSize: '9px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>{s.l}</div>
-        <div style={{ fontSize: isMob ? '18px' : '24px', fontWeight: 900, color: '#0f172a' }}>{s.v}</div>
-      </div>
-    ))}
-  </div>
-);
+const MarketplaceStats = ({ isMob }) => {
+  const stats = [
+    { 
+      label: 'Active Deals', 
+      value: '1.2K+', 
+      color: '#3B82F6', 
+      icon: Zap, 
+      desc: 'Live verified campaigns' 
+    },
+    { 
+      label: 'Avg. Payout', 
+      value: '₹45K', 
+      color: '#10B981', 
+      icon: TrendingUp, 
+      desc: 'Avg brand contract value' 
+    },
+    { 
+      label: 'Top Brands', 
+      value: '450+', 
+      color: '#FF9431', 
+      icon: Users, 
+      desc: 'Active partners on board' 
+    },
+    { 
+      label: 'Success Rate', 
+      value: '98%', 
+      color: '#8B5CF6', 
+      icon: CheckCircle2, 
+      desc: 'Campaign completion rate' 
+    }
+  ];
+
+  return (
+    <div style={{ 
+      display: 'grid', 
+      gridTemplateColumns: isMob ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', 
+      gap: isMob ? '16px' : '24px', 
+      marginBottom: isMob ? '40px' : '64px',
+      marginTop: isMob ? '16px' : '24px'
+    }}>
+      {stats.map((s, idx) => {
+        const IconComponent = s.icon;
+        return (
+          <motion.div 
+            key={s.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: idx * 0.1 }}
+            whileHover={{ y: -6, scale: 1.02 }}
+            style={{ 
+              background: '#fff', 
+              padding: isMob ? '20px 16px' : '28px 24px', 
+              borderRadius: '24px', 
+              border: '1.5px solid rgba(226, 232, 240, 0.8)', 
+              boxShadow: '0 10px 30px rgba(15, 23, 42, 0.02)',
+              position: 'relative',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              cursor: 'pointer'
+            }}
+          >
+            {/* Ambient background accent */}
+            <div style={{
+              position: 'absolute',
+              top: '-50px',
+              right: '-50px',
+              width: '120px',
+              height: '120px',
+              background: `radial-gradient(circle, ${s.color}0a 0%, transparent 70%)`,
+              borderRadius: '50%',
+              pointerEvents: 'none'
+            }} />
+            
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '16px' }}>
+              <div style={{
+                width: isMob ? '36px' : '44px',
+                height: isMob ? '36px' : '44px',
+                borderRadius: '12px',
+                background: `${s.color}0e`,
+                border: `1px solid ${s.color}20`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <IconComponent size={isMob ? 18 : 22} color={s.color} strokeWidth={2} />
+              </div>
+              
+              <span style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                background: s.color,
+                boxShadow: `0 0 10px ${s.color}`,
+                display: 'inline-block'
+              }} />
+            </div>
+
+            <div>
+              <div style={{ 
+                fontSize: '10px', 
+                fontWeight: 900, 
+                color: '#94a3b8', 
+                textTransform: 'uppercase', 
+                letterSpacing: '1.2px', 
+                marginBottom: '6px' 
+              }}>
+                {s.label}
+              </div>
+              <div style={{ 
+                fontSize: isMob ? '22px' : '32px', 
+                fontWeight: 950, 
+                color: '#0f172a',
+                lineHeight: 1.1,
+                letterSpacing: '-0.02em'
+              }}>
+                {s.value}
+              </div>
+              <div style={{ 
+                fontSize: '10px', 
+                color: '#64748b', 
+                marginTop: '6px',
+                fontWeight: 600,
+                display: isMob ? 'none' : 'block' 
+              }}>
+                {s.desc}
+              </div>
+            </div>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+};
 
 const PublicLandingCard = ({ isMob }) => (
   <motion.div 
@@ -431,45 +908,166 @@ const EliteDealCard = ({ campaign, index, onApply, isMob, onDetails, isGuest, is
 // 3. ELITE SUB-COMPONENTS
 // ----------------------------------------------------------------------
 
-const SearchBar = ({ mob, q, onSearch }) => (
-  <div style={{ width: '100%', flex: 1, display: 'flex', alignItems: 'center', background: '#f8fafc', borderRadius: mob ? '12px' : '16px', padding: mob ? '10px 16px' : '12px 24px', border: '1px solid #e2e8f0' }}>
-    <Search size={18} color={THEME.textSec} style={{ marginRight: '12px' }} />
-    <input 
-      value={q || ''} 
-      onChange={e => onSearch(e.target.value)} 
-      placeholder={mob ? 'Search...' : 'Search campaigns, brands, or niches...'} 
-      style={{ flex: 1, border: 'none', background: 'none', outline: 'none', fontWeight: 600, fontSize: mob ? '14px' : '16px', color: THEME.dark }} 
-    />
-  </div>
-);
+const SearchBar = ({ mob, q, onSearch, onClickPrompt }) => {
+  const [focused, setFocused] = useState(false);
+  const { st } = useApp();
+  const isCreator = st.user && st.role === 'creator';
+
+  return (
+    <div 
+      onClick={(e) => {
+        if (!isCreator) {
+          e.preventDefault();
+          e.stopPropagation();
+          onClickPrompt();
+        }
+      }}
+      style={{ 
+        width: '100%', 
+        flex: 1, 
+        display: 'flex', 
+        alignItems: 'center', 
+        background: focused ? '#fff' : '#f8fafc', 
+        borderRadius: mob ? '14px' : '18px', 
+        padding: mob ? '12px 16px' : '14px 24px', 
+        border: '1.5px solid',
+        borderColor: focused ? '#FF9431' : 'rgba(226, 232, 240, 0.8)',
+        boxShadow: focused ? '0 0 0 3px rgba(255, 148, 49, 0.15)' : 'none',
+        transition: 'all 0.25s ease',
+        cursor: isCreator ? 'text' : 'pointer'
+      }}
+    >
+      <Search size={18} color={focused ? '#FF9431' : '#64748b'} style={{ marginRight: '12px', transition: 'color 0.25s ease' }} />
+      <input 
+        value={q || ''} 
+        onChange={e => onSearch(e.target.value)} 
+        onFocus={(e) => {
+          if (!isCreator) {
+            e.target.blur();
+            onClickPrompt();
+          } else {
+            setFocused(true);
+          }
+        }}
+        onBlur={() => setFocused(false)}
+        placeholder={mob ? 'Search...' : 'Search campaigns, brands, or niches...'} 
+        readOnly={!isCreator}
+        style={{ 
+          flex: 1, 
+          border: 'none', 
+          background: 'none', 
+          outline: 'none', 
+          fontWeight: 600, 
+          fontSize: mob ? '14px' : '16px', 
+          color: '#0f172a',
+          cursor: isCreator ? 'text' : 'pointer'
+        }} 
+      />
+      {q && isCreator && (
+        <button 
+          onClick={() => onSearch('')}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '50%',
+            color: '#94a3b8'
+          }}
+          onMouseEnter={e => e.currentTarget.style.color = '#0f172a'}
+          onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+        >
+          <X size={16} />
+        </button>
+      )}
+    </div>
+  );
+};
 
 const ViewModeToggle = ({ mob, viewMode, setViewMode }) => (
-  <div style={{ width: mob ? '100%' : 'auto', display: 'flex', background: '#f1f5f9', padding: '4px', borderRadius: mob ? '12px' : '14px' }}>
-    {['grid', 'swipe'].map(m => (
-      <button 
-        key={m}
-        onClick={() => setViewMode(m)} 
-        style={{ 
-          flex: mob ? 1 : 'none', padding: mob ? '10px' : '10px 24px', borderRadius: mob ? '10px' : '11px', border: 'none', 
-          background: viewMode === m ? '#fff' : 'transparent', fontWeight: 800, fontSize: '13px', color: THEME.dark, 
-          cursor: 'pointer', transition: '0.3s', boxShadow: viewMode === m ? '0 4px 12px rgba(0,0,0,0.05)' : 'none' 
-        }}
-      >
-        {m.charAt(0).toUpperCase() + m.slice(1)}
-      </button>
-    ))}
+  <div style={{ 
+    width: mob ? '100%' : 'auto', 
+    display: 'flex', 
+    background: 'rgba(241, 245, 249, 0.8)', 
+    padding: '4px', 
+    borderRadius: mob ? '14px' : '16px',
+    border: '1px solid rgba(226, 232, 240, 0.8)',
+    position: 'relative'
+  }}>
+    {['grid', 'swipe'].map(m => {
+      const isActive = viewMode === m;
+      return (
+        <button 
+          key={m}
+          onClick={() => setViewMode(m)} 
+          style={{ 
+            flex: mob ? 1 : 'none', 
+            padding: mob ? '12px' : '10px 24px', 
+            borderRadius: mob ? '10px' : '12px', 
+            border: 'none', 
+            background: 'transparent', 
+            fontWeight: 800, 
+            fontSize: '13px', 
+            color: isActive ? '#fff' : '#475569', 
+            cursor: 'pointer', 
+            transition: 'color 0.3s ease',
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            zIndex: 1
+          }}
+        >
+          {isActive && (
+            <motion.div
+              layoutId="activeViewTab"
+              transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                borderRadius: mob ? '10px' : '12px',
+                boxShadow: '0 4px 12px rgba(15, 23, 42, 0.15)',
+                zIndex: -1
+              }}
+            />
+          )}
+          {m === 'grid' ? <LayoutGrid size={14} color={isActive ? '#fff' : '#64748b'} /> : <Sparkles size={14} color={isActive ? '#fff' : '#64748b'} />}
+          <span>{m.charAt(0).toUpperCase() + m.slice(1)}</span>
+        </button>
+      );
+    })}
   </div>
 );
 
-const FilterBar = ({ mob, cpf, dsp, viewMode, setViewMode }) => (
-  <div style={{ width: '100%', position: 'sticky', top: mob ? '10px' : '24px', zIndex: 1000, padding: mob ? '0 10px' : '0 20px' }}>
+const FilterBar = ({ mob, cpf, dsp, viewMode, setViewMode, onClickPrompt }) => (
+  <div style={{ 
+    width: '100%', 
+    position: 'sticky', 
+    top: mob ? '10px' : '24px', 
+    zIndex: 1000, 
+    padding: mob ? '0 10px' : '0 20px',
+    marginBottom: mob ? '24px' : '40px'
+  }}>
     <div style={{ 
-      maxWidth: '1200px', margin: '0 auto', background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(20px)',
-      borderRadius: mob ? '16px' : '24px', padding: mob ? '8px' : '12px', border: '1px solid #e2e8f0',
-      display: 'flex', gap: mob ? '8px' : '16px', alignItems: 'center', flexDirection: mob ? 'column' : 'row',
-      boxShadow: '0 20px 40px rgba(0,0,0,0.05)'
+      maxWidth: '1200px', 
+      margin: '0 auto', 
+      background: 'rgba(255, 255, 255, 0.85)', 
+      backdropFilter: 'blur(24px)',
+      borderRadius: mob ? '20px' : '24px', 
+      padding: mob ? '10px' : '14px 20px', 
+      border: '1.5px solid rgba(255, 255, 255, 0.6)',
+      display: 'flex', 
+      gap: mob ? '10px' : '20px', 
+      alignItems: 'center', 
+      flexDirection: mob ? 'column' : 'row',
+      boxShadow: '0 25px 60px rgba(15, 23, 42, 0.08)'
     }}>
-       <SearchBar mob={mob} q={cpf.q} onSearch={v => dsp({ t: 'CPF', v: { q: v } })} />
+       <SearchBar mob={mob} q={cpf.q} onSearch={v => dsp({ t: 'CPF', v: { q: v } })} onClickPrompt={onClickPrompt} />
        <ViewModeToggle mob={mob} viewMode={viewMode} setViewMode={setViewMode} />
     </div>
   </div>
@@ -549,6 +1147,51 @@ const CampaignApplyModal = ({ open, isDone, onClose, form, setForm, onSubmit, mo
          <Btn full lg style={{ marginTop: '56px', height: '72px', borderRadius: '24px', fontSize: '18px' }} onClick={onSubmit}>Submit Pitch 🚀</Btn>
       </div>
     )}
+  </Modal>
+);
+
+const CreatorLoginPromptModal = ({ open, onClose, onLogin }) => (
+  <Modal open={open} title='Creator Access Required' onClose={onClose} width={450}>
+    <div style={{ textAlign: 'center', padding: '32px 16px' }}>
+      <div style={{ 
+        width: '80px', 
+        height: '80px', 
+        background: 'rgba(255, 148, 49, 0.1)', 
+        color: '#FF9431', 
+        borderRadius: '50%', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        margin: '0 auto 24px' 
+      }}>
+        <Lock size={36} />
+      </div>
+      <h3 style={{ fontSize: '22px', fontWeight: 950, color: '#0f172a', marginBottom: '12px' }}>
+        Unlock Premium Search
+      </h3>
+      <p style={{ color: '#64748b', fontSize: '14px', lineHeight: 1.6, marginBottom: '32px' }}>
+        Searching and applying to elite brand deals is exclusive to registered creators. Sign in or register to get started!
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <Btn lg full onClick={onLogin} style={{ background: '#FF9431', color: '#fff', fontWeight: 950 }}>
+          Login as Creator 🚀
+        </Btn>
+        <button 
+          onClick={onClose}
+          style={{ 
+            background: 'none', 
+            border: 'none', 
+            color: '#64748b', 
+            fontSize: '13px', 
+            fontWeight: 700, 
+            cursor: 'pointer', 
+            padding: '8px'
+          }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
   </Modal>
 );
 
@@ -645,6 +1288,7 @@ export default function CampaignsPage() {
   const [applyModal, setApplyModal] = useState(null);
   const [isDone, setIsDone] = useState(false);
   const [form, setForm] = useState({ pitch: '', portfolio: '', rate: '' });
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   const { cpf, user } = st;
   const isGuest = !user;
@@ -733,7 +1377,7 @@ export default function CampaignsPage() {
           backgroundImage: 'url(/brand_landing_hero.png)',
           backgroundSize: 'cover',
           backgroundPosition: mob ? 'center top' : 'right center',
-          opacity: mob ? 0.15 : 0.9,
+          opacity: mob ? 0.35 : 0.9,
           zIndex: 0,
         }} />
 
@@ -742,11 +1386,39 @@ export default function CampaignsPage() {
           position: 'absolute',
           inset: 0,
           background: mob
-            ? 'linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.97) 100%)'
+            ? 'linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.96) 100%)'
             : 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.98) 30%, rgba(255,255,255,0.6) 58%, rgba(255,255,255,0) 80%)',
           zIndex: 1,
           pointerEvents: 'none',
         }} />
+
+        {/* Ambient Glowing Blobs on Mobile */}
+        {mob && (
+          <>
+            <div style={{
+              position: 'absolute',
+              top: '-10%',
+              right: '-10%',
+              width: '280px',
+              height: '280px',
+              background: 'radial-gradient(circle, rgba(255, 148, 49, 0.12) 0%, transparent 70%)',
+              filter: 'blur(40px)',
+              zIndex: 1,
+              pointerEvents: 'none'
+            }} />
+            <div style={{
+              position: 'absolute',
+              bottom: '-10%',
+              left: '-10%',
+              width: '280px',
+              height: '280px',
+              background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)',
+              filter: 'blur(40px)',
+              zIndex: 1,
+              pointerEvents: 'none'
+            }} />
+          </>
+        )}
 
         {/* ── Top accent stripe (Tricolor) ── */}
         <div style={{
@@ -767,317 +1439,432 @@ export default function CampaignsPage() {
           zIndex: 5,
           boxSizing: 'border-box',
         }}>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: mob ? 'center' : 'flex-start',
-            maxWidth: mob ? '100%' : '640px',
-            textAlign: mob ? 'center' : 'left',
+          <div className="campaigns-hero-grid" style={{
+            display: 'grid',
+            gridTemplateColumns: mob ? '1fr' : '1.15fr 0.85fr',
+            gap: mob ? '40px' : '48px',
+            alignItems: 'center',
+            width: '100%',
           }}>
-
-            {/* Live badge */}
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '10px',
-                padding: '8px 20px',
-                background: 'rgba(255,148,49,0.06)',
-                border: '1.5px solid rgba(255,148,49,0.15)',
-                borderRadius: '100px',
-                marginBottom: '28px',
-              }}
-            >
-              <span style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', display: 'block' }} />
-                <span className="pulsing-glow" style={{
-                  position: 'absolute',
-                  inset: '-4px',
-                  borderRadius: '50%',
-                  border: '2px solid #10B981',
-                  opacity: 0.5,
-                }} />
-              </span>
-              <span style={{ fontSize: '11px', fontWeight: 950, color: '#FF9431', letterSpacing: '3px', textTransform: 'uppercase' }}>
-                Live Opportunities Hub
-              </span>
-            </motion.div>
-
-            {/* Main Headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              style={{
-                fontSize: mob ? '40px' : '74px',
-                fontWeight: 950,
-                color: '#0f172a',
-                letterSpacing: '-0.05em',
-                lineHeight: 0.94,
-                marginBottom: '28px',
-                fontFamily: "'Outfit', sans-serif",
-              }}
-            >
-              Campaign <br />
-              <span style={{
-                background: 'linear-gradient(135deg, #FF9431 0%, #ff6b00 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}>
-                Marketplace.
-              </span>
-            </motion.h1>
-
-            {/* Subtitle */}
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              style={{
-                fontSize: mob ? '15px' : '18px',
-                color: '#475569',
-                maxWidth: '560px',
-                marginBottom: '40px',
-                fontWeight: 600,
-                lineHeight: 1.65,
-                letterSpacing: '0.01em',
-              }}
-            >
-              The gateway to premium influencer commerce. Access <span style={{ color: '#0f172a', fontWeight: 800 }}>high-ticket collaborations</span>, verified brand deals, and secure escrow contracts with zero middleman fees.
-            </motion.p>
-
-            {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              style={{
-                display: 'flex',
-                gap: '14px',
-                flexDirection: mob ? 'column' : 'row',
-                width: mob ? '100%' : 'auto',
-                marginBottom: '48px',
-              }}
-            >
-              <Btn
-                lg
-                onClick={() => navigate('/brand-register')}
+            {/* Left Column: Hero Text & Actions */}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: mob ? 'center' : 'flex-start',
+              textAlign: mob ? 'center' : 'left',
+              width: '100%',
+            }}>
+              {/* Live badge */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
                 style={{
-                  background: '#FF9431',
-                  color: '#fff',
-                  padding: '16px 32px',
-                  borderRadius: '14px',
-                  fontWeight: 950,
-                  fontSize: '15px',
-                  width: mob ? '100%' : 'auto',
-                  boxShadow: '0 16px 36px rgba(255,148,49,0.18)',
-                  display: 'flex',
+                  display: 'inline-flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                }}
-              >
-                Create Campaign <ChevronRight size={18} />
-              </Btn>
-              <Btn
-                lg
-                onClick={() => navigate('/creators')}
-                style={{
-                  background: '#fff',
-                  color: '#0f172a',
-                  padding: '16px 32px',
-                  borderRadius: '14px',
-                  border: '1.5px solid #e2e8f0',
-                  fontWeight: 950,
-                  fontSize: '15px',
-                  width: mob ? '100%' : 'auto',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                Explore Creators
-              </Btn>
-            </motion.div>
-
-            {/* Trust Badge Row */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.45 }}
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '12px',
-                justifyContent: mob ? 'center' : 'flex-start',
-              }}
-            >
-              {[
-                { icon: <ShieldCheck size={14} />, label: 'Escrow Secured', color: '#10B981' },
-                { icon: <Zap size={14} />, label: 'Direct Apply', color: '#FF9431' },
-                { icon: <CheckCircle size={14} />, label: 'Verified Brands', color: '#3B82F6' },
-                { icon: <Sparkles size={14} />, label: 'Zero Agent Fees', color: '#8B5CF6' },
-              ].map(b => (
-                <div key={b.label} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '7px 14px',
-                  background: '#f8fafc',
-                  border: '1px solid #e2e8f0',
+                  gap: '10px',
+                  padding: '8px 20px',
+                  background: 'rgba(255,148,49,0.06)',
+                  border: '1.5px solid rgba(255,148,49,0.15)',
                   borderRadius: '100px',
-                  fontSize: '12px',
-                  fontWeight: 800,
-                  color: '#475569',
+                  marginBottom: '28px',
+                }}
+              >
+                <span style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', display: 'block' }} />
+                  <span className="pulsing-glow" style={{
+                    position: 'absolute',
+                    inset: '-4px',
+                    borderRadius: '50%',
+                    border: '2px solid #10B981',
+                    opacity: 0.5,
+                  }} />
+                </span>
+                <span style={{ fontSize: '11px', fontWeight: 950, color: '#FF9431', letterSpacing: '3px', textTransform: 'uppercase' }}>
+                  Live Opportunities Hub
+                </span>
+              </motion.div>
+
+              {/* Main Headline */}
+              <motion.h1
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                style={{
+                  fontSize: mob ? '38px' : '74px',
+                  fontWeight: 950,
+                  color: '#0f172a',
+                  letterSpacing: '-0.05em',
+                  lineHeight: 1.0,
+                  marginBottom: '28px',
+                  fontFamily: "'Outfit', sans-serif",
+                }}
+              >
+                Campaign <br />
+                <span style={{
+                  background: 'linear-gradient(135deg, #FF9431 0%, #ff6b00 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  position: 'relative',
+                  display: 'inline-block'
                 }}>
-                  <span style={{ color: b.color }}>{b.icon}</span>
-                  {b.label}
+                  Marketplace.
+                  {mob && (
+                    <span style={{
+                      position: 'absolute',
+                      bottom: '-4px',
+                      left: 0,
+                      width: '100%',
+                      height: '4px',
+                      background: 'linear-gradient(90deg, #FF9431 0%, #10B981 100%)',
+                      borderRadius: '2px'
+                    }} />
+                  )}
+                </span>
+              </motion.h1>
+
+              {/* Subtitle */}
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                style={mob ? {
+                  fontSize: '14px',
+                  color: '#475569',
+                  maxWidth: '560px',
+                  marginBottom: '32px',
+                  fontWeight: 600,
+                  lineHeight: 1.6,
+                  letterSpacing: '0.01em',
+                  background: 'rgba(255, 255, 255, 0.65)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1.5px solid rgba(255, 255, 255, 0.8)',
+                  borderRadius: '20px',
+                  padding: '16px 20px',
+                  textAlign: 'center',
+                  boxShadow: '0 8px 32px rgba(15, 23, 42, 0.03)',
+                  boxSizing: 'border-box'
+                } : {
+                  fontSize: '18px',
+                  color: '#475569',
+                  maxWidth: '560px',
+                  marginBottom: '40px',
+                  fontWeight: 600,
+                  lineHeight: 1.65,
+                  letterSpacing: '0.01em',
+                }}
+              >
+                The gateway to premium influencer commerce. Access{' '}
+                <span style={{ 
+                  background: 'linear-gradient(135deg, #FF9431 0%, #ff7b00 100%)', 
+                  WebkitBackgroundClip: 'text', 
+                  WebkitTextFillColor: 'transparent',
+                  fontWeight: 800 
+                }}>
+                  high-ticket collaborations
+                </span>
+                , verified brand deals, and secure escrow contracts with{' '}
+                <span style={{ 
+                  background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', 
+                  WebkitBackgroundClip: 'text', 
+                  WebkitTextFillColor: 'transparent',
+                  fontWeight: 800 
+                }}>
+                  zero middleman fees
+                </span>
+                .
+              </motion.p>
+
+              {/* CTA Buttons */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                style={{
+                  display: 'flex',
+                  gap: '14px',
+                  flexDirection: mob ? 'column' : 'row',
+                  width: mob ? '100%' : 'auto',
+                  marginBottom: '48px',
+                }}
+              >
+                <Btn
+                  lg
+                  onClick={() => navigate('/brand-register')}
+                  style={{
+                    background: '#FF9431',
+                    color: '#fff',
+                    padding: '16px 32px',
+                    borderRadius: '14px',
+                    fontWeight: 950,
+                    fontSize: '15px',
+                    width: mob ? '100%' : 'auto',
+                    boxShadow: '0 16px 36px rgba(255,148,49,0.18)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  Create Campaign <ChevronRight size={18} />
+                </Btn>
+                <Btn
+                  lg
+                  onClick={() => navigate('/creators')}
+                  style={{
+                    background: '#fff',
+                    color: '#0f172a',
+                    padding: '16px 32px',
+                    borderRadius: '14px',
+                    border: '1.5px solid #e2e8f0',
+                    fontWeight: 950,
+                    fontSize: '15px',
+                    width: mob ? '100%' : 'auto',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  Explore Creators
+                </Btn>
+              </motion.div>
+
+              {/* Trust Badge Row */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.45 }}
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '12px',
+                  justifyContent: mob ? 'center' : 'flex-start',
+                }}
+              >
+                {[
+                  { icon: <ShieldCheck size={14} />, label: 'Escrow Secured', color: '#10B981' },
+                  { icon: <Zap size={14} />, label: 'Direct Apply', color: '#FF9431' },
+                  { icon: <CheckCircle size={14} />, label: 'Verified Brands', color: '#3B82F6' },
+                  { icon: <Sparkles size={14} />, label: 'Zero Agent Fees', color: '#8B5CF6' },
+                ].map(b => (
+                  <div key={b.label} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '7px 14px',
+                    background: '#f8fafc',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '100px',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    color: '#475569',
+                  }}>
+                    <span style={{ color: b.color }}>{b.icon}</span>
+                    {b.label}
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+
+            {/* Right Column: Visual Mockup (Desktop Dashboard or Mobile Smartphone) */}
+            <div style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              position: 'relative',
+              zIndex: 10,
+            }}>
+              {mob ? (
+                /* Mobile only: Advanced Interactive Smartphone UI Mockup with Centered Badges */
+                <div style={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  marginTop: '10px',
+                  position: 'relative',
+                }}>
+                  {/* Glowing ring under phone */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '240px',
+                    height: '240px',
+                    background: 'radial-gradient(circle, rgba(255,148,49,0.15) 0%, transparent 70%)',
+                    filter: 'blur(30px)',
+                    zIndex: 0,
+                    pointerEvents: 'none',
+                  }} />
+
+                  {/* Badge ABOVE Mockup */}
+                  <motion.div
+                    animate={{ y: [0, -6, 0] }}
+                    transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.85)',
+                      backdropFilter: 'blur(16px)',
+                      border: '1.5px solid rgba(255, 255, 255, 0.5)',
+                      boxShadow: '0 8px 20px rgba(15, 23, 42, 0.05)',
+                      borderRadius: '100px',
+                      padding: '6px 14px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      zIndex: 3,
+                      marginBottom: '16px',
+                    }}
+                  >
+                    <ShieldCheck size={12} color="#10B981" />
+                    <span style={{ fontSize: '9px', fontWeight: 950, color: '#0f172a', letterSpacing: '0.5px' }}>Escrow Secured</span>
+                  </motion.div>
+
+                  {/* Smartphone device container */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8 }}
+                    style={{
+                      width: '100%',
+                      maxWidth: '290px',
+                      height: '350px',
+                      background: '#0f172a',
+                      borderRadius: '32px',
+                      border: '4px solid rgba(255, 255, 255, 0.15)',
+                      boxShadow: '0 24px 48px rgba(0, 0, 0, 0.25)',
+                      overflow: 'hidden',
+                      position: 'relative',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      zIndex: 2,
+                    }}
+                  >
+                    {/* iOS style notch/island */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '6px',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: '90px',
+                      height: '16px',
+                      background: '#000',
+                      borderRadius: '100px',
+                      zIndex: 10,
+                    }} />
+
+                    {/* Simulated Screen Header */}
+                    <div style={{
+                      padding: '24px 16px 8px',
+                      borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      background: 'rgba(15, 23, 42, 0.95)',
+                      backdropFilter: 'blur(8px)',
+                    }}>
+                      <span style={{ fontSize: '11px', fontWeight: 950, color: '#fff', letterSpacing: '0.5px' }}>
+                        Creator<span style={{ color: '#FF9431' }}>Bharat</span>
+                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#10b981', display: 'block' }} />
+                        <span style={{ fontSize: '8px', fontWeight: 900, color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Live Hub</span>
+                      </div>
+                    </div>
+
+                    {/* Simulated Categories bar */}
+                    <div style={{
+                      display: 'flex',
+                      gap: '6px',
+                      padding: '8px 12px',
+                      background: 'rgba(15, 23, 42, 0.5)',
+                      overflowX: 'auto',
+                      scrollbarWidth: 'none',
+                    }}>
+                      {['Verified Only', 'High Payout', 'Trending'].map((tabName, index) => (
+                        <div key={tabName} style={{
+                          padding: '4px 10px',
+                          borderRadius: '100px',
+                          fontSize: '8px',
+                          fontWeight: 900,
+                          background: index === 0 ? 'rgba(255, 148, 49, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+                          color: index === 0 ? '#FF9431' : 'rgba(255, 255, 255, 0.5)',
+                          border: index === 0 ? '1px solid rgba(255, 148, 49, 0.3)' : '1px solid rgba(255, 255, 255, 0.05)',
+                          whiteSpace: 'nowrap',
+                        }}>
+                          {tabName}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Simulated sliding deck viewport */}
+                    <div style={{ flex: 1, padding: '8px 12px 16px', position: 'relative', overflow: 'hidden' }}>
+                      <MobileCampaignDeck />
+                    </div>
+                  </motion.div>
+
+                  {/* Badges BELOW Mockup */}
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: '12px',
+                    marginTop: '20px',
+                    width: '100%',
+                    zIndex: 3,
+                  }}>
+                    <motion.div
+                      animate={{ y: [0, 6, 0] }}
+                      transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut', delay: 0.5 }}
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.85)',
+                        backdropFilter: 'blur(16px)',
+                        border: '1.5px solid rgba(255, 255, 255, 0.5)',
+                        boxShadow: '0 8px 20px rgba(15, 23, 42, 0.05)',
+                        borderRadius: '100px',
+                        padding: '6px 12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      <TrendingUp size={12} color="#FF9431" />
+                      <span style={{ fontSize: '9px', fontWeight: 950, color: '#0f172a' }}>₹45K Avg Payout</span>
+                    </motion.div>
+
+                    <motion.div
+                      animate={{ y: [0, -6, 0] }}
+                      transition={{ repeat: Infinity, duration: 3.8, ease: 'easeInOut', delay: 1 }}
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.85)',
+                        backdropFilter: 'blur(16px)',
+                        border: '1.5px solid rgba(255, 255, 255, 0.5)',
+                        boxShadow: '0 8px 20px rgba(15, 23, 42, 0.05)',
+                        borderRadius: '100px',
+                        padding: '6px 12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      <Zap size={12} color="#3B82F6" />
+                      <span style={{ fontSize: '9px', fontWeight: 950, color: '#0f172a' }}>1.2K+ Live Deals</span>
+                    </motion.div>
+                  </div>
                 </div>
-              ))}
-            </motion.div>
+              ) : (
+                /* Desktop only: Advanced Interactive Command Center Mockup Dashboard */
+                <DesktopCampaignDashboard />
+              )}
+            </div>
           </div>
         </div>
-
-        {/* ── Floating live stat cards (desktop only) ── */}
-        {!mob ? (
-          <>
-            {/* Top-right floating card: Active Deals */}
-            <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5, duration: 0.7 }}
-              style={{
-                position: 'absolute',
-                top: '100px',
-                right: '80px',
-                zIndex: 8,
-                background: '#0f172a',
-                borderRadius: '20px',
-                padding: '18px 24px',
-                boxShadow: '0 24px 48px rgba(15,23,42,0.2)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                minWidth: '220px',
-              }}
-            >
-              <div style={{ fontSize: '10px', fontWeight: 900, color: '#FF9431', letterSpacing: '2px', marginBottom: '8px', textTransform: 'uppercase' }}>Live Collaborations</div>
-              <div style={{ fontSize: '32px', fontWeight: 950, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1 }}>1.2K+</div>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', fontWeight: 700, marginTop: '6px' }}>Active Brand Campaigns</div>
-              <div style={{ display: 'flex', gap: '4px', marginTop: '12px' }}>
-                {COVERS.map((cover, i) => (
-                  <div key={cover} style={{
-                    width: '28px',
-                    height: '28px',
-                    borderRadius: '50%',
-                    border: '2px solid #0f172a',
-                    marginLeft: i > 0 ? '-10px' : 0,
-                    backgroundImage: `url(${cover})`,
-                    backgroundSize: 'cover',
-                  }} />
-                ))}
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#FF9431', border: '2px solid #0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: '-10px', fontSize: '9px', fontWeight: 900, color: '#fff' }}>+45</div>
-              </div>
-            </motion.div>
-
-            {/* Mid-right floating card: Escrow Active */}
-            <motion.div
-              animate={{ y: [0, -8, 0] }}
-              transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
-              style={{
-                position: 'absolute',
-                top: '310px',
-                right: '48px',
-                zIndex: 8,
-                background: '#fff',
-                borderRadius: '20px',
-                padding: '16px 22px',
-                boxShadow: '0 20px 40px rgba(15,23,42,0.08)',
-                border: '1px solid #e2e8f0',
-                minWidth: '200px',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(16,185,129,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <ShieldCheck size={16} color="#10B981" />
-                </div>
-                <span style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>Escrow Guarantee</span>
-              </div>
-              <div style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.03em' }}>₹15 Lakhs+</div>
-              <div style={{ fontSize: '11px', color: '#10B981', fontWeight: 800, marginTop: '4px' }}>100% Payout Protection</div>
-            </motion.div>
-
-            {/* Bottom-right floating card: Avg Payout */}
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut', delay: 1 }}
-              style={{
-                position: 'absolute',
-                bottom: '60px',
-                right: '140px',
-                zIndex: 8,
-                background: 'rgba(255,148,49,0.95)',
-                borderRadius: '16px',
-                padding: '14px 20px',
-                boxShadow: '0 16px 36px rgba(255,148,49,0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-              }}
-            >
-              <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Sparkles size={18} color="#fff" />
-              </div>
-              <div>
-                <div style={{ fontSize: '11px', fontWeight: 900, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase', letterSpacing: '1px' }}>Avg Creator Payout</div>
-                <div style={{ fontSize: '20px', fontWeight: 950, color: '#fff', letterSpacing: '-0.02em' }}>₹45K per Deal</div>
-              </div>
-            </motion.div>
-          </>
-        ) : (
-          /* Mobile only: Glassmorphic Campaign Ticket */
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '32px' }}>
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              style={{
-                background: 'rgba(255, 255, 255, 0.85)',
-                backdropFilter: 'blur(16px)',
-                border: '1.5px solid rgba(255, 255, 255, 0.5)',
-                borderRadius: '24px',
-                padding: '16px',
-                width: '100%',
-                maxWidth: '340px',
-                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.05)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '14px',
-                textAlign: 'left',
-              }}
-            >
-              <div style={{ position: 'relative', width: '56px', height: '56px', borderRadius: '14px', overflow: 'hidden' }}>
-                <img src={COVERS[1]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }} />
-                  <span style={{ fontSize: '9px', fontWeight: 900, color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Verified Campaign</span>
-                </div>
-                <div style={{ fontSize: '13px', fontWeight: 950, color: '#0f172a', lineHeight: 1.25, marginBottom: '2px' }}>boAt Airdopes 500 Launch</div>
-                <div style={{ fontSize: '11px', fontWeight: 850, color: '#FF9431' }}>Payout: ₹1,00,000</div>
-              </div>
-            </motion.div>
-          </div>
-        )}
       </section>
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
         <MarketplaceStats isMob={mob} />
       </div>
 
-      <FilterBar mob={mob} cpf={cpf} dsp={dsp} viewMode={viewMode} setViewMode={setViewMode} />
+      <FilterBar mob={mob} cpf={cpf} dsp={dsp} viewMode={viewMode} setViewMode={setViewMode} onClickPrompt={() => setShowLoginPrompt(true)} />
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: mob ? '40px 20px 120px' : '60px 20px 120px', position: 'relative', zIndex: 1 }}>
         {viewMode === 'grid' ? (
@@ -1108,6 +1895,15 @@ export default function CampaignsPage() {
         setForm={setForm}
         onSubmit={() => onSubmit(applyModal)}
         mob={mob}
+      />
+
+      <CreatorLoginPromptModal
+        open={showLoginPrompt}
+        onClose={() => setShowLoginPrompt(false)}
+        onLogin={() => {
+          setShowLoginPrompt(false);
+          navigate('/login');
+        }}
       />
       <style>{`
         .campaigns-hero-grid {
@@ -1165,14 +1961,15 @@ export default function CampaignsPage() {
 
 EliteDealCard.propTypes = { campaign: PropTypes.object, index: PropTypes.number, onApply: PropTypes.func, isMob: PropTypes.bool, onDetails: PropTypes.func, isGuest: PropTypes.bool, isSwipe: PropTypes.bool, onSwipe: PropTypes.func };
 PublicLandingCard.propTypes = { isMob: PropTypes.bool };
-FilterBar.propTypes = { mob: PropTypes.bool, cpf: PropTypes.object, dsp: PropTypes.func, viewMode: PropTypes.string, setViewMode: PropTypes.func };
+FilterBar.propTypes = { mob: PropTypes.bool, cpf: PropTypes.object, dsp: PropTypes.func, viewMode: PropTypes.string, setViewMode: PropTypes.func, onClickPrompt: PropTypes.func };
 CampaignDetailsModal.propTypes = { open: PropTypes.bool, campaign: PropTypes.object, onClose: PropTypes.func, onApply: PropTypes.func, isMob: PropTypes.bool, isGuest: PropTypes.bool };
 CampaignApplyModal.propTypes = { open: PropTypes.bool, isDone: PropTypes.bool, onClose: PropTypes.func, form: PropTypes.object, setForm: PropTypes.func, onSubmit: PropTypes.func, mob: PropTypes.bool };
+CreatorLoginPromptModal.propTypes = { open: PropTypes.bool, onClose: PropTypes.func, onLogin: PropTypes.func };
 FinalDiscoveryCard.propTypes = { isMob: PropTypes.bool };
 CategorySpotlightCard.propTypes = { isMob: PropTypes.bool };
 MarketplaceStats.propTypes = { isMob: PropTypes.bool };
 MarketplaceBenefits.propTypes = { isMob: PropTypes.bool };
-SearchBar.propTypes = { mob: PropTypes.bool, q: PropTypes.string, onSearch: PropTypes.func };
+SearchBar.propTypes = { mob: PropTypes.bool, q: PropTypes.string, onSearch: PropTypes.func, onClickPrompt: PropTypes.func };
 ViewModeToggle.propTypes = { mob: PropTypes.bool, viewMode: PropTypes.string, setViewMode: PropTypes.func };
 DiscoveryGridView.propTypes = { mob: PropTypes.bool, loading: PropTypes.bool, filtered: PropTypes.array, isGuest: PropTypes.bool, onApply: PropTypes.func, setDetailsModal: PropTypes.func };
 DiscoverySwipeView.propTypes = { mob: PropTypes.bool, filtered: PropTypes.array, swipeIdx: PropTypes.number, setSwipeIdx: PropTypes.func, onApply: PropTypes.func, setDetailsModal: PropTypes.func, isGuest: PropTypes.bool };

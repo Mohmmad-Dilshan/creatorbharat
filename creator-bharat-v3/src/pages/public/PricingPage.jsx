@@ -9,11 +9,6 @@ import {
   Sparkles,
   BarChart3,
   Globe,
-  Wallet,
-  X,
-  CreditCard,
-  Lock,
-  ShieldCheck,
   Zap
 } from 'lucide-react';
 import { Btn, Bdg } from '@/components/common/Primitives';
@@ -33,11 +28,9 @@ import {
 
 export default function PricingPage() {
   const navigate = useNavigate();
-  const { st, dsp } = useApp();
+  const { st } = useApp();
   const [tab, setTab] = useState('creator');
   const [duration, setDuration] = useState('1m'); // '1m', '6m', '1y'
-  const [showModal, setShowModal] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [mob, setMob] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
 
   useEffect(() => {
@@ -47,15 +40,16 @@ export default function PricingPage() {
     return () => window.removeEventListener('resize', checkSize);
   }, []);
 
-  const handleProPayment = () => {
-    setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-      setShowModal(false);
-      dsp({ t: 'SET_PRO' });
-      dsp({ t: 'TOAST', d: { type: 'success', msg: '🎉 Payment Successful! Pro Access Activated.' } });
+  // Smart redirect: If logged in → go to dashboard (payment handled there)
+  // If not logged in → go to signup page (creator or brand based on tab)
+  const handleProActivate = () => {
+    if (st.user) {
+      // Already logged in — take them to their dashboard to manage billing
       navigate(st.role === 'brand' ? '/brand-dashboard' : '/creator/dashboard');
-    }, 2000);
+    } else {
+      // Not logged in — send to correct signup flow
+      navigate(tab === 'brand' ? '/brand-register' : '/apply');
+    }
   };
 
   const getCreatorPrice = () => {
@@ -339,79 +333,13 @@ export default function PricingPage() {
                    plan={plan} 
                    delay={0.1 * i} 
                    navigate={navigate}
-                   onProActivate={() => {
-                     if (st.user) {
-                       setShowModal(true);
-                     } else {
-                       navigate('/join');
-                     }
-                   }}
+                   onProActivate={handleProActivate}
                  />
                ))}
             </motion.div>
           </AnimatePresence>
 
-          {/* Payment Modal Overlay */}
-          <AnimatePresence>
-            {showModal && (
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                style={{
-                  position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                  background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(10px)',
-                  zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
-                }}
-              >
-                <motion.div 
-                   initial={{ scale: 0.9, y: 20 }}
-                   animate={{ scale: 1, y: 0 }}
-                   exit={{ scale: 0.9, y: 20 }}
-                   style={{
-                     background: '#fff', borderRadius: '32px', padding: '40px',
-                     width: '100%', maxWidth: '440px', position: 'relative',
-                     boxShadow: '0 40px 80px rgba(0,0,0,0.2)'
-                   }}
-                >
-                  <button 
-                    onClick={() => setShowModal(false)}
-                    style={{ position: 'absolute', top: '24px', right: '24px', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}
-                  >
-                    <X size={24} />
-                  </button>
-                  
-                  <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                    <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#FF943115', color: '#FF9431', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                      <CreditCard size={32} />
-                    </div>
-                    <h2 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', marginBottom: '8px' }}>Complete Payment</h2>
-                    <p style={{ color: '#64748b', fontWeight: 500 }}>You are upgrading to Elite Access.</p>
-                  </div>
 
-                  <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '16px', marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontWeight: 700, color: '#475569' }}>Total Amount</span>
-                    <span style={{ fontSize: '24px', fontWeight: 950, color: '#FF9431' }}>
-                      {tab === 'creator' ? getCreatorPrice().price : getBrandPrice().price}
-                    </span>
-                  </div>
-
-                  <Btn 
-                    full lg 
-                    disabled={isProcessing}
-                    onClick={handleProPayment}
-                    style={{ background: '#FF9431', color: '#fff', borderRadius: '100px', fontSize: '16px' }}
-                  >
-                    {isProcessing ? 'Processing Securely...' : `Pay ${tab === 'creator' ? getCreatorPrice().price : getBrandPrice().price}`}
-                  </Btn>
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '24px', color: '#94a3b8', fontSize: '13px', fontWeight: 600 }}>
-                    <Lock size={14} /> Secured by Escrow Vault
-                  </div>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       </section>
 

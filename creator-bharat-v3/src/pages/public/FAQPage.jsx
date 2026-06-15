@@ -58,7 +58,7 @@ export default function FAQPage() {
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', paddingBottom: '120px' }}>
       <Seo 
-        title="concierge Support Hub & FAQ" 
+        title="Concierge Support Hub & FAQ" 
         description="Have questions about verification ticks, Razorpay Escrows, and payouts? Explore our comprehensive Knowledge Base." 
         keywords="creator faq, escrow questions, creatorbharat help, verification score support"
         jsonLd={faqJsonLd}

@@ -25,12 +25,14 @@ export default function PressPage() {
     setTimeout(() => setCopiedColor(null), 2000);
   };
 
-  const handleDownload = (title) => {
+  const handleDownload = (title, url) => {
     setDownloading(title);
-    setTimeout(() => {
-      setDownloading(null);
-      alert(`Asset "${title}" download started (mock).`);
-    }, 1500);
+    if (url) {
+      // Real asset URL — open directly
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+    // Show download state for 1.5s then reset
+    setTimeout(() => setDownloading(null), 1500);
   };
 
   const handleCopyEmail = () => {
@@ -356,7 +358,7 @@ export default function PressPage() {
                 </div>
               </div>
               <button 
-                onClick={() => handleDownload(asset.title)}
+                onClick={() => handleDownload(asset.title, asset.url)}
                 disabled={downloading === asset.title}
                 style={{
                   width: '48px',
@@ -418,7 +420,14 @@ export default function PressPage() {
                 <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#0f172a', fontFamily: "'Outfit', sans-serif", lineHeight: 1.4 }}>{pr.title}</h3>
                 <p style={{ fontSize: '14px', color: '#475569', lineHeight: 1.6, margin: 0 }}>{pr.excerpt}</p>
                 <button 
-                  onClick={() => alert(`Redirecting to: ${pr.title} (mock)`)}
+                  onClick={() => {
+                    if (pr.url) {
+                      window.open(pr.url, '_blank', 'noopener,noreferrer');
+                    } else {
+                      // No real URL yet — scroll to contact for press inquiries
+                      document.querySelector('[data-press-contact]')?.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
                   style={{
                     background: 'none',
                     border: 'none',
@@ -434,7 +443,7 @@ export default function PressPage() {
                     width: 'fit-content'
                   }}
                 >
-                  Read Release <ChevronRight size={16} />
+                  {pr.url ? 'Read Release' : 'Request Full Release'} <ChevronRight size={16} />
                 </button>
               </motion.div>
             ))}
@@ -443,7 +452,7 @@ export default function PressPage() {
       </section>
 
       {/* Press Contact */}
-      <section style={{ padding: '80px 24px', maxWidth: '800px', margin: '0 auto 100px', textAlign: 'center' }}>
+      <section data-press-contact style={{ padding: '80px 24px', maxWidth: '800px', margin: '0 auto 100px', textAlign: 'center' }}>
         <div style={{
           background: '#ffffff',
           border: '1px solid #e2e8f0',

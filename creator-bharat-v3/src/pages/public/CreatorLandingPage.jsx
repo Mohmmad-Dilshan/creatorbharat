@@ -32,6 +32,35 @@ export default function CreatorLandingPage() {
         title="For Creators — Build Your Legacy"
         description="India's first creator ecosystem for Tier 2 & 3 creators. Verified profiles, direct brand deals, zero commission, physical trophies, and monthly missions."
         keywords="creator platform india, influencer marketing, tier 2 creators, brand deals, creator monetization"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "CreatorBharat — For Creators",
+          "description": "India's first creator ecosystem for Tier 2 & 3 creators with verified profiles, direct brand deals, and zero commission.",
+          "url": "https://creatorbharat.com/creator-hub",
+          "publisher": {
+            "@type": "Organization",
+            "name": "CreatorBharat",
+            "url": "https://creatorbharat.com",
+            "logo": "https://creatorbharat.com/android-chrome-512x512.png"
+          },
+          "offers": {
+            "@type": "Offer",
+            "name": "Creator Pro Membership",
+            "description": "Verified profile, direct brand deals, zero commission on all earnings.",
+            "priceCurrency": "INR",
+            "price": "499",
+            "availability": "https://schema.org/InStock",
+            "url": "https://creatorbharat.com/pricing"
+          },
+          "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://creatorbharat.com" },
+              { "@type": "ListItem", "position": 2, "name": "Creator Hub", "item": "https://creatorbharat.com/creator-hub" }
+            ]
+          }
+        }}
       />
 
       <style>{`
