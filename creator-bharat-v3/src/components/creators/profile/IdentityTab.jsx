@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Card } from '@/components/common/Primitives';
 import { fmt } from '@/utils/helpers';
+import { SocialLinkTree, TrustBadge, TabNavigator } from './ProfileShared';
 
 const EmptyState = ({ title }) => null;
 EmptyState.propTypes = { title: PropTypes.string.isRequired };
@@ -187,13 +188,6 @@ const NationalToLocalBridge = ({ c, mob }) => {
 };
 NationalToLocalBridge.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
 
-const TrustBadge = () => (
-  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '24px', background: '#f8fafc', borderRadius: '24px', border: '1px solid #f1f5f9', marginBottom: '40px' }}>
-     <ShieldCheck size={24} color="#10B981" />
-     <span style={{ fontSize: '14px', fontWeight: 900, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '1px' }}>CreatorBharat Audit Pass • 100% Brand Safe</span>
-  </div>
-);
-
 const TheEliteEdge = ({ c, mob }) => (
   <Card style={{ padding: mob ? '28px' : '48px', borderRadius: '40px', marginBottom: '40px', border: '1.5px solid rgba(226, 232, 240, 0.8)', background: 'linear-gradient(to bottom, #fff, #f8fafc)', boxShadow: '0 20px 40px rgba(15,23,42,0.02)' }}>
      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
@@ -252,98 +246,6 @@ const LocationDominanceVoice = ({ c, mob }) => {
   );
 };
 LocationDominanceVoice.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
-
-const TabNavigator = ({ activeTab, setActiveTab, mob }) => {
-  const TABS = [
-    { id: 'identity', label: 'Identity' },
-    { id: 'story', label: 'My Story' },
-    { id: 'gallery', label: 'Gallery' },
-    { id: 'work', label: 'Pro Work' },
-    { id: 'local', label: 'Local Hub' },
-    { id: 'reviews', label: 'Reviews' },
-    { id: 'packages', label: 'Packages' },
-    { id: 'connect', label: 'Connect' }
-  ];
-  const currentIndex = TABS.findIndex(t => t.id === activeTab);
-  const nextTab = currentIndex < TABS.length - 1 ? TABS[currentIndex + 1] : null;
-
-  return (
-    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '40px' }}>
-       {nextTab && (
-         <button 
-           onClick={() => setActiveTab(nextTab.id)}
-           style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#0073b1', border: 'none', padding: '16px 32px', borderRadius: '100px', cursor: 'pointer', color: '#fff', fontWeight: 800, fontSize: '14px', boxShadow: '0 8px 24px rgba(0,115,177,0.2)', width: mob ? '100%' : 'auto' }}
-         >
-            Next: {nextTab.label} <ArrowRight size={18} />
-         </button>
-       )}
-    </div>
-  );
-};
-TabNavigator.propTypes = { activeTab: PropTypes.string.isRequired, setActiveTab: PropTypes.func.isRequired, mob: PropTypes.bool };
-
-export const SocialLinkTree = ({ links = {}, mob }) => {
-  // Master list of all possible platforms a creator can add
-  const MASTER_PLATFORMS = [
-    { id: 'instagram', l: 'Official Instagram', s: 'Visual Community', i: ImageIcon, c: '#E4405F' },
-    { id: 'youtube', l: 'YouTube Channel', s: 'Video Content & Vlogs', i: Play, c: '#FF0000' },
-    { id: 'linkedin', l: 'Professional LinkedIn', s: 'Brand Collaborations', i: Briefcase, c: '#0077B5' },
-    { id: 'twitter', l: 'Twitter (X)', s: 'Real-time Thoughts', i: Globe, c: '#000' },
-    { id: 'facebook', l: 'Facebook Page', s: 'Community & Groups', i: Globe, c: '#1877F2' },
-    { id: 'snapchat', l: 'Snapchat', s: 'Daily Stories & Filters', i: ImageIcon, c: '#FFFC00' },
-    { id: 'pinterest', l: 'Pinterest', s: 'Moodboards & Ideas', i: ImageIcon, c: '#E60023' },
-    { id: 'twitch', l: 'Twitch', s: 'Live Streaming', i: Play, c: '#9146FF' },
-    { id: 'spotify', l: 'Spotify / Podcasts', s: 'Podcasts & Audio', i: Mic2, c: '#1DB954' },
-    { id: 'discord', l: 'Discord Server', s: 'Exclusive Community', i: Globe, c: '#5865F2' },
-    { id: 'reddit', l: 'Reddit', s: 'Subreddit Discussions', i: Globe, c: '#FF4500' },
-    { id: 'website', l: 'Official Website', s: 'Portfolio & Media Kit', i: Globe, c: '#FF9431' }
-  ];
-
-  // Optional logic: Only show platforms the creator has filled out. 
-  // If no links exist (dummy data phase), show a default set to keep UI intact.
-  const activeLinks = Object.keys(links || {}).length > 0 
-    ? MASTER_PLATFORMS.filter(p => links?.[p.id]) 
-    : MASTER_PLATFORMS.slice(0, 5);
-
-  if (activeLinks.length === 0) return <EmptyState title="Social Platforms" />;
-
-  return (
-    <Card style={{ padding: mob ? '32px 24px' : '48px', borderRadius: '40px', marginBottom: '40px', background: '#fff', border: '1.5px solid #f1f5f9' }}>
-       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <h3 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', marginBottom: '12px' }}>The Digital Ecosystem</h3>
-          <p style={{ fontSize: '14px', color: '#64748b', fontWeight: 600 }}>Connect with me across all professional platforms.</p>
-       </div>
-       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '600px', margin: '0 auto' }}>
-          {activeLinks.map(link => {
-            const url = links?.[link.id] || '#';
-            return (
-              <button 
-                key={link.id}
-                onClick={() => window.open(url, '_blank')}
-                style={{ 
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
-                  padding: '20px 24px', background: '#f8fafc', border: '1.5px solid #f1f5f9', 
-                  borderRadius: '24px', cursor: 'pointer', transition: 'all 0.2s', width: '100%', textAlign: 'left'
-                }}
-              >
-                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{ width: '44px', height: '44px', background: `${link.c}10`, borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                       <link.i size={20} color={link.c} />
-                    </div>
-                    <div>
-                       <div style={{ fontSize: '15px', fontWeight: 900, color: '#0f172a' }}>{link.l}</div>
-                       <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700 }}>{link.s}</div>
-                    </div>
-                 </div>
-                 <ArrowRight size={18} color="#cbd5e1" />
-              </button>
-            );
-          })}
-       </div>
-    </Card>
-  );
-};
-SocialLinkTree.propTypes = { links: PropTypes.object, mob: PropTypes.bool };
 
 // --- MAIN IDENTITY TAB COMPONENT ---
 
