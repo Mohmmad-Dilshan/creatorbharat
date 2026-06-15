@@ -1771,7 +1771,10 @@ const getFallbackCreator = (id) => {
     isVerified: true,
     followers: 130000,
     score: 85,
-    er: 4.8
+    er: 4.8,
+    likes: 1242,
+    connections: '10K+',
+    tagline: 'Expert in Lifestyle & Tech Storytelling | Building authentic brand identities across Bharat.'
   };
 };
 

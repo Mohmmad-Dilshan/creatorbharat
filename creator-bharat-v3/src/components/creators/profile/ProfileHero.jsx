@@ -181,7 +181,7 @@ HeroKeyAchievements.propTypes = {
   onLike: PropTypes.func
 };
 
-const ContactMetadata = ({ c, followers, mob, onContact }) => {
+const ContactMetadata = ({ c, followers, connectionsCount, mob, onContact }) => {
   const fullAddress = c.address || (c.city && c.state ? `${c.city}, ${c.state}, Bharat` : (c.city || 'Bharat'));
   return (
     <>
@@ -195,13 +195,13 @@ const ContactMetadata = ({ c, followers, mob, onContact }) => {
           </button>
        </div>
        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '24px' }}>
-          <div style={{ color: '#0073b1', fontWeight: 700, fontSize: '14px' }}>{fmt.num(followers)} followers • {c.connections || '500+'} connections</div>
+          <div style={{ color: '#0073b1', fontWeight: 700, fontSize: '14px' }}>{fmt.num(followers)} followers • {connectionsCount} connections</div>
           {!mob && <SocialIconsPanel c={c} mob={false} />}
        </div>
     </>
   );
 };
-ContactMetadata.propTypes = { c: PropTypes.object.isRequired, followers: PropTypes.number, mob: PropTypes.bool, onContact: PropTypes.func.isRequired };
+ContactMetadata.propTypes = { c: PropTypes.object.isRequired, followers: PropTypes.number, connectionsCount: PropTypes.string, mob: PropTypes.bool, onContact: PropTypes.func.isRequired };
 
 const IdentityHeader = ({ category, name, mob }) => {
   const catDisplay = Array.isArray(category) ? category.join(' • ') : category;
@@ -265,17 +265,20 @@ const IdentityHeader = ({ category, name, mob }) => {
 };
 IdentityHeader.propTypes = { category: PropTypes.any, name: PropTypes.string.isRequired, mob: PropTypes.bool };
 
-const BadgeRow = ({ score }) => (
+const BadgeRow = ({ score, er }) => (
   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '24px' }}>
      <Bdg color="orange" lg style={{ padding: '8px 20px', borderRadius: '100px', fontSize: '11px', border: '1px solid rgba(255,148,49,0.2)' }}>
-        <Zap size={14} fill="currentColor" /> {score} ELITE SCORE
+        <Zap size={14} fill="currentColor" /> {score} BHARAT SCORE
      </Bdg>
      <Bdg color="green" lg style={{ padding: '8px 20px', borderRadius: '100px', fontSize: '11px' }}>
+        <TrendingUp size={14} /> {er || '4.8'}% ENGAGEMENT
+     </Bdg>
+     <Bdg color="blue" lg style={{ padding: '8px 20px', borderRadius: '100px', fontSize: '11px' }}>
         <ShieldCheck size={14} /> VERIFIED PARTNER
      </Bdg>
   </div>
 );
-BadgeRow.propTypes = { score: PropTypes.number.isRequired };
+BadgeRow.propTypes = { score: PropTypes.number.isRequired, er: PropTypes.number };
 
 const RatingSection = ({ val, total, onRate }) => (
   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
@@ -294,7 +297,7 @@ const RatingSection = ({ val, total, onRate }) => (
 );
 RatingSection.propTypes = { val: PropTypes.number.isRequired, total: PropTypes.number.isRequired, onRate: PropTypes.func.isRequired };
 
-const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDownload, activeUsers, activeViews, likes, isLiked, onLike }) => {
+const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDownload, activeUsers, activeViews, likes, isLiked, onLike, connectionsCount, taglineText }) => {
   let dlIcon;
   if (dlStatus === 'loading') {
     dlIcon = (
@@ -326,15 +329,15 @@ const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDo
     <div style={{ flex: 1 }}>
        <IdentityHeader category={c.category || c.niche} name={c.name} mob={mob} />
        <p style={{ fontSize: mob ? '16px' : '24px', color: '#475569', marginBottom: '16px', fontWeight: 500, lineHeight: 1.5, maxWidth: '850px', letterSpacing: '-0.01em' }}>
-          {c.tagline || `Expert in ${Array.isArray(c.niche) ? c.niche[0] : (c.niche || 'Lifestyle')} Storytelling | Building authentic brand identities across Bharat.`}
+          {taglineText}
        </p>
        {c.bio && (
          <p style={{ fontSize: mob ? '14px' : '16px', color: '#64748b', marginBottom: '24px', lineHeight: 1.6, maxWidth: '850px' }}>
            {c.bio}
          </p>
        )}
-       <ContactMetadata c={c} followers={stats.followers} mob={mob} onContact={onContact} />
-       <BadgeRow score={stats.score || 94} />
+       <ContactMetadata c={c} followers={stats.followers} connectionsCount={connectionsCount} mob={mob} onContact={onContact} />
+       <BadgeRow score={stats.score || 94} er={stats.er} />
        <RatingSection 
           val={Number(averageRating)} 
           total={totalReviews} 
@@ -370,7 +373,9 @@ IdentityDetails.propTypes = {
   activeViews: PropTypes.number,
   likes: PropTypes.number,
   isLiked: PropTypes.bool,
-  onLike: PropTypes.func
+  onLike: PropTypes.func,
+  connectionsCount: PropTypes.string,
+  taglineText: PropTypes.string
 };
 
 const FollowBtn = ({ active, onClick, mob }) => (
@@ -842,10 +847,15 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
   const followed = st?.follows?.includes(c?.id) || false;
   const [dlStatus] = useState('idle');
 
-  const [activeUsers, setActiveUsers] = useState(14);
-  const [activeViews, setActiveViews] = useState(13842);
-  const [likes, setLikes] = useState(c.likes || Math.floor(1200 + Math.random() * 500));
+  const initialViews = c.activeViews || c.views || (stats.followers ? Math.floor(stats.followers * 0.15) : 13842);
+  const stableLikes = c.likes || (stats.followers ? Math.floor(stats.followers * 0.01) : 1242);
+  const [activeUsers, setActiveUsers] = useState(c.activeUsers || 14);
+  const [activeViews, setActiveViews] = useState(initialViews);
+  const [likes, setLikes] = useState(stableLikes);
   const [isLiked, setIsLiked] = useState(false);
+
+  const connectionsCount = c.connections || (stats.followers ? (stats.followers > 1000000 ? '10K+' : (stats.followers > 500000 ? '8K+' : (stats.followers > 100000 ? '5K+' : '500+'))) : '500+');
+  const taglineText = c.tagline || `Expert in ${Array.isArray(c.niche) ? c.niche[0] : (c.niche || 'Lifestyle')} Storytelling | Building authentic brand identities across Bharat.`;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -963,9 +973,16 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
             </div>
           </div>
 
+          {/* Followers & Connections Subheader */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center', marginTop: '12px', fontSize: '13px', color: '#0073b1', fontWeight: 700 }}>
+            <span>{fmt.num(stats.followers)} followers</span>
+            <span>•</span>
+            <span>{connectionsCount} connections</span>
+          </div>
+
           {/* Tagline */}
           <p style={{ fontSize: '15px', color: '#475569', marginTop: '16px', marginBottom: '8px', fontWeight: 600, lineHeight: 1.4, maxWidth: '400px' }}>
-            {c.tagline || `Expert in ${c.niche || 'Lifestyle'} Storytelling | Building authentic brand identities.`}
+            {taglineText}
           </p>
 
           {/* Bio (compact) */}
@@ -1202,7 +1219,7 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
           {/* Profile Likes & Visitors footer */}
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', alignItems: 'center', marginTop: '16px', fontSize: '12px', color: '#64748b', fontWeight: 700 }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }} onClick={handleLike}>
-              <Heart size={14} color="#ef4444" fill={isLiked ? '#ef4444' : 'none'} /> {likes} likes
+              <Heart size={14} color="#ef4444" fill={isLiked ? '#ef4444' : 'none'} /> {fmt.num(likes)} likes
             </span>
             <span>•</span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -1265,7 +1282,7 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
                marginTop: mob ? '0' : '20px'
              }}>
                 <div style={{ flex: 1.6, width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                   <IdentityDetails c={c} stats={stats} mob={mob} onRate={() => handleAction('rate')} onContact={onContact} dsp={dsp} dlStatus={dlStatus} onDownload={handleMediaKit} activeUsers={activeUsers} activeViews={activeViews} likes={likes} isLiked={isLiked} onLike={handleLike} />
+                   <IdentityDetails c={c} stats={stats} mob={mob} onRate={() => handleAction('rate')} onContact={onContact} dsp={dsp} dlStatus={dlStatus} onDownload={handleMediaKit} activeUsers={activeUsers} activeViews={activeViews} likes={likes} isLiked={isLiked} onLike={handleLike} connectionsCount={connectionsCount} taglineText={taglineText} />
                    <div style={{ marginTop: '40px' }}>
                       <ActionButtons 
                 followed={followed} 
