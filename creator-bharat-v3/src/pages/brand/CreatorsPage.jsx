@@ -1136,6 +1136,213 @@ SearchLimitModal.propTypes = {
   usedSearches: PropTypes.number
 };
 
+const SPOTLIGHT_CREATORS = [
+  {
+    name: 'Anjali Sharma',
+    handle: '@anjali_style',
+    niche: 'Fashion & Lifestyle',
+    followers: '840K',
+    engagement: '5.2%',
+    city: 'Mumbai',
+    score: 96,
+    img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=300',
+    color: '#FF9431'
+  },
+  {
+    name: 'Rohan Mehra',
+    handle: '@rohan_tech',
+    niche: 'Tech & Gadgets',
+    followers: '1.2M',
+    engagement: '4.8%',
+    city: 'Delhi',
+    score: 95,
+    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300',
+    color: '#10B981'
+  },
+  {
+    name: 'Kabir Sen',
+    handle: '@kabir_vlogs',
+    niche: 'Travel & Vlogs',
+    followers: '680K',
+    engagement: '6.1%',
+    city: 'Kolkata',
+    score: 92,
+    img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=300',
+    color: '#3B82F6'
+  }
+];
+
+const MobileCreatorDeck = () => {
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIdx(prev => (prev + 1) % SPOTLIGHT_CREATORS.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div style={{
+      width: '280px',
+      height: '380px',
+      position: 'relative',
+      margin: '24px auto 36px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 2,
+    }}>
+      {/* Smartphone Outer Shell Wrapper */}
+      <div style={{
+        width: '100%',
+        height: '100%',
+        background: '#0f172a',
+        borderRadius: '36px',
+        padding: '10px',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 10px rgba(15, 23, 42, 0.95)',
+        border: '2px solid rgba(255, 255, 255, 0.1)',
+        position: 'relative',
+        boxSizing: 'border-box',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
+        {/* Notch */}
+        <div style={{
+          width: '110px',
+          height: '18px',
+          background: '#000',
+          borderRadius: '0 0 14px 14px',
+          position: 'absolute',
+          top: 0,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 10,
+        }} />
+
+        {/* Screen Content */}
+        <div style={{
+          flex: 1,
+          background: '#f8fafc',
+          borderRadius: '28px',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: '24px 14px 14px',
+          position: 'relative',
+        }}>
+          {/* Header */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+            <span style={{ fontSize: '10px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Spotlight</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
+              <span style={{ fontSize: '8px', fontWeight: 900, color: '#10b981', textTransform: 'uppercase' }}>Online</span>
+            </div>
+          </div>
+
+          {/* Cards Stack */}
+          <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+            <AnimatePresence mode="wait">
+              {SPOTLIGHT_CREATORS.map((c, idx) => {
+                if (idx !== activeIdx) return null;
+                return (
+                  <motion.div
+                    key={c.name}
+                    initial={{ opacity: 0, scale: 0.9, y: 15 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -15 }}
+                    transition={{ duration: 0.4 }}
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      background: '#fff',
+                      borderRadius: '20px',
+                      border: '1.5px solid #e2e8f0',
+                      boxShadow: '0 10px 25px rgba(15, 23, 42, 0.05)',
+                      padding: '12px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      boxSizing: 'border-box',
+                    }}
+                  >
+                    {/* Profile Section */}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                      <div style={{
+                        width: '64px',
+                        height: '64px',
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        border: `2.5px solid ${c.color}`,
+                        boxShadow: `0 4px 10px ${c.color}25`,
+                        marginBottom: '8px',
+                      }}>
+                        <img src={c.img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <h4 style={{ fontSize: '13px', fontWeight: 950, color: '#0f172a', margin: 0 }}>{c.name}</h4>
+                        <CheckCircle size={12} color="#fff" fill="#10B981" />
+                      </div>
+                      <span style={{ fontSize: '9px', color: '#64748b', fontWeight: 700, marginTop: '1px' }}>{c.handle}</span>
+                      
+                      {/* Niche Badge */}
+                      <span style={{
+                        fontSize: '8px',
+                        fontWeight: 900,
+                        background: `${c.color}15`,
+                        color: c.color,
+                        padding: '3px 8px',
+                        borderRadius: '100px',
+                        marginTop: '8px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                      }}>
+                        {c.niche}
+                      </span>
+                    </div>
+
+                    {/* Stats Grid */}
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(2, 1fr)', 
+                      gap: '6px',
+                      background: '#f8fafc',
+                      padding: '8px',
+                      borderRadius: '10px',
+                      marginTop: '8px',
+                    }}>
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '7px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase' }}>Followers</div>
+                        <div style={{ fontSize: '11px', fontWeight: 950, color: '#0f172a' }}>{c.followers}</div>
+                      </div>
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '7px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase' }}>Engagement</div>
+                        <div style={{ fontSize: '11px', fontWeight: 950, color: '#10B981' }}>{c.engagement}</div>
+                      </div>
+                    </div>
+
+                    {/* Bharat Score and Location Footer */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '8px', borderTop: '1px solid #f1f5f9', paddingTop: '8px' }}>
+                      <div style={{ textAlign: 'left' }}>
+                        <div style={{ fontSize: '6px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase' }}>Bharat Score</div>
+                        <div style={{ fontSize: '11px', fontWeight: 950, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                          <Sparkles size={10} color="#FF9431" /> {c.score}
+                        </div>
+                      </div>
+                      <span style={{ fontSize: '9px', fontWeight: 800, color: '#475569' }}>{c.city}</span>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function CreatorsPage() {
   const { st, dsp } = useApp();
   const navigate = useNavigate();
@@ -1276,11 +1483,39 @@ export default function CreatorsPage() {
           position: 'absolute',
           inset: 0,
           background: mob
-            ? 'linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.97) 100%)'
+            ? 'linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.96) 100%)'
             : 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.98) 30%, rgba(255,255,255,0.6) 58%, rgba(255,255,255,0) 80%)',
           zIndex: 1,
           pointerEvents: 'none',
         }} />
+
+        {/* Ambient Glowing Blobs on Mobile */}
+        {mob && (
+          <>
+            <div style={{
+              position: 'absolute',
+              top: '-10%',
+              right: '-10%',
+              width: '280px',
+              height: '280px',
+              background: 'radial-gradient(circle, rgba(255, 148, 49, 0.12) 0%, transparent 70%)',
+              filter: 'blur(40px)',
+              zIndex: 1,
+              pointerEvents: 'none'
+            }} />
+            <div style={{
+              position: 'absolute',
+              bottom: '-10%',
+              left: '-10%',
+              width: '280px',
+              height: '280px',
+              background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)',
+              filter: 'blur(40px)',
+              zIndex: 1,
+              pointerEvents: 'none'
+            }} />
+          </>
+        )}
 
         {/* ── Top accent stripe (Tricolor) ── */}
         <div style={{
@@ -1444,6 +1679,9 @@ export default function CreatorsPage() {
                 Post a Campaign
               </Btn>
             </motion.div>
+
+            {/* Mobile-only Graphic: Smartphone verified creators carousel */}
+            {mob && <MobileCreatorDeck />}
 
             {/* Trust Badge Row */}
             <motion.div

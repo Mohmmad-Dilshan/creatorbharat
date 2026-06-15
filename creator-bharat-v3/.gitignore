@@ -45,6 +45,3 @@ scratch/
 temp/
 *.bak
 *.tmp
-
-# Developer Notes
-FIXES.md
