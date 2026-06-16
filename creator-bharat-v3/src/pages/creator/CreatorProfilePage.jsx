@@ -613,116 +613,148 @@ export default function CreatorProfilePage() {
             />
          </AnimatePresence>
         {activeTab === 'identity' && (
-        <section style={{ 
-          marginTop: mob ? '60px' : '100px', 
-          padding: mob ? '40px 16px' : '50px 40px', 
-          background: '#0f172a', 
-          position: 'relative', 
-          overflow: 'hidden',
-          borderTop: '1px solid rgba(255,255,255,0.05)'
-        }}>
-           <div style={{ position: 'absolute', top: '-150px', right: '-150px', width: '350px', height: '350px', background: '#FF9431', borderRadius: '50%', filter: 'blur(130px)', opacity: 0.08, pointerEvents: 'none' }} />
-           <div style={{ 
-             maxWidth: '1200px', 
-             margin: '0 auto', 
-             position: 'relative', 
-             zIndex: 1, 
-             display: 'flex', 
-             flexDirection: mob ? 'column' : 'row', 
-             justifyContent: 'space-between', 
-             alignItems: mob ? 'stretch' : 'center',
-             gap: mob ? '24px' : '48px'
-           }}>
-              <div style={{ flex: 1.2, textAlign: mob ? 'center' : 'left' }}>
-                 <h2 style={{ 
-                   fontSize: mob ? '26px' : '36px', 
-                   fontWeight: 950, 
-                   color: '#fff', 
-                   letterSpacing: '-0.03em', 
-                   marginBottom: '12px',
-                   fontFamily: 'Outfit, sans-serif',
-                   lineHeight: 1.15
-                 }}>
-                   Ready to Scale Your <span style={{ color: '#FF9431' }}>Brand Legacy?</span>
-                 </h2>
-                 <p style={{ 
-                   fontSize: mob ? '13px' : '15px', 
-                   color: '#94a3b8', 
-                   fontWeight: 500, 
-                   margin: 0, 
-                   lineHeight: 1.5,
-                   maxWidth: mob ? '100%' : '560px'
-                 }}>
-                   Join the exclusive circle of Bharat's most influential voices and top-tier brands building the future of digital storytelling.
-                 </p>
-              </div>
+         <section style={{ 
+           marginTop: mob ? '24px' : '100px', 
+           padding: mob ? '24px 16px' : '50px 40px', 
+           background: '#0f172a', 
+           position: 'relative', 
+           overflow: 'hidden',
+           borderTop: '1px solid rgba(255,255,255,0.05)'
+         }}>
+            <div style={{ position: 'absolute', top: '-150px', right: '-150px', width: '350px', height: '350px', background: '#FF9431', borderRadius: '50%', filter: 'blur(130px)', opacity: 0.08, pointerEvents: 'none' }} />
+            <div style={{ 
+              maxWidth: '1200px', 
+              margin: '0 auto', 
+              position: 'relative', 
+              zIndex: 1, 
+              display: 'flex', 
+              flexDirection: mob ? 'column' : 'row', 
+              justifyContent: 'space-between', 
+              alignItems: mob ? 'stretch' : 'center',
+              gap: mob ? '16px' : '48px'
+            }}>
+               <div style={{ flex: 1.2, textAlign: mob ? 'center' : 'left' }}>
+                  <h2 style={{ 
+                    fontSize: mob ? '20px' : '36px', 
+                    fontWeight: 950, 
+                    color: '#fff', 
+                    letterSpacing: '-0.03em', 
+                    marginBottom: mob ? '6px' : '12px',
+                    fontFamily: 'Outfit, sans-serif',
+                    lineHeight: 1.15
+                  }}>
+                    Ready to Scale Your <span style={{ color: '#FF9431' }}>Brand Legacy?</span>
+                  </h2>
+                  <p style={{ 
+                    fontSize: mob ? '12px' : '15px', 
+                    color: '#94a3b8', 
+                    fontWeight: 500, 
+                    margin: 0, 
+                    lineHeight: 1.4,
+                    maxWidth: mob ? '100%' : '560px'
+                  }}>
+                    Join the exclusive circle of Bharat's most influential voices and top-tier brands building the future of digital storytelling.
+                  </p>
+               </div>
 
-              <div style={{ 
-                flex: 1, 
-                display: 'flex', 
-                flexDirection: mob ? 'column' : 'row', 
-                gap: '16px',
-                justifyContent: mob ? 'stretch' : 'flex-end',
-                alignItems: 'stretch'
-              }}>
-                 {/* Brand Action */}
-                 <div style={{ 
-                   background: 'rgba(255,255,255,0.02)', 
-                   border: '1px solid rgba(255,255,255,0.06)', 
-                   padding: '16px 20px', 
-                   borderRadius: '20px', 
-                   flex: 1, 
-                   display: 'flex', 
-                   flexDirection: 'column', 
-                   gap: '10px',
-                   backdropFilter: 'blur(8px)',
-                   textAlign: mob ? 'center' : 'left'
-                 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: mob ? 'center' : 'flex-start' }}>
-                       <Briefcase size={14} color="#FF9431" />
-                       <span style={{ fontSize: '11px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px' }}>For Brands</span>
-                    </div>
-                    <p style={{ fontSize: '12px', color: '#64748b', margin: 0, lineHeight: 1.4 }}>Hire {c?.name?.split(' ')[0] || 'elite creators'} or explore the network.</p>
-                    <Btn 
-                      full 
-                      sm 
-                      style={{ background: '#FF9431', color: '#fff', borderRadius: '100px', padding: '10px 18px', fontSize: '13px', fontWeight: 800, border: 'none', boxShadow: '0 4px 12px rgba(255,148,49,0.15)' }} 
-                      onClick={() => navigate(st?.role === 'brand' ? '/brand-dashboard' : '/creators')}
-                    >
-                      {st?.role === 'brand' ? 'Brand Console' : 'Hire Creators'}
-                    </Btn>
-                 </div>
+               <div style={{ 
+                 flex: 1, 
+                 display: 'flex', 
+                 flexDirection: 'row', 
+                 gap: mob ? '10px' : '16px',
+                 justifyContent: mob ? 'stretch' : 'flex-end',
+                 alignItems: 'stretch',
+                 width: mob ? '100%' : 'auto'
+               }}>
+                  {/* Brand Action */}
+                  <div 
+                    onClick={() => navigate(st?.role === 'brand' ? '/brand-dashboard' : '/creators')}
+                    style={{ 
+                      background: mob ? '#FF9431' : 'rgba(255,255,255,0.02)', 
+                      border: mob ? 'none' : '1px solid rgba(255,255,255,0.06)', 
+                      padding: mob ? '12px 10px' : '16px 20px', 
+                      borderRadius: mob ? '16px' : '20px', 
+                      flex: 1, 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      gap: mob ? '4px' : '10px',
+                      backdropFilter: 'blur(8px)',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      boxShadow: mob ? '0 4px 12px rgba(255,148,49,0.2)' : 'none',
+                      transition: 'all 0.2s ease',
+                      WebkitTapHighlightColor: 'transparent'
+                    }}
+                  >
+                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
+                        <Briefcase size={mob ? 12 : 14} color={mob ? '#fff' : '#FF9431'} />
+                        <span style={{ fontSize: mob ? '9px' : '11px', fontWeight: 900, color: mob ? '#fff' : '#FF9431', textTransform: 'uppercase', letterSpacing: '0.5px', opacity: mob ? 0.9 : 1 }}>For Brands</span>
+                     </div>
+                     {!mob && <p style={{ fontSize: '12px', color: '#64748b', margin: 0, lineHeight: 1.4 }}>Hire {c?.name?.split(' ')[0] || 'elite creators'} or explore the network.</p>}
+                     
+                     {mob ? (
+                       <span style={{ fontSize: '12px', fontWeight: 850, color: '#fff' }}>
+                         {st?.role === 'brand' ? 'Console' : 'Hire Talent'}
+                       </span>
+                     ) : (
+                       <Btn 
+                         full 
+                         sm 
+                         style={{ background: '#FF9431', color: '#fff', borderRadius: '100px', padding: '10px 18px', fontSize: '13px', fontWeight: 800, border: 'none', boxShadow: '0 4px 12px rgba(255,148,49,0.15)' }} 
+                         onClick={(e) => { e.stopPropagation(); navigate(st?.role === 'brand' ? '/brand-dashboard' : '/creators'); }}
+                       >
+                         {st?.role === 'brand' ? 'Brand Console' : 'Hire Creators'}
+                       </Btn>
+                     )}
+                  </div>
 
-                 {/* Creator Action */}
-                 <div style={{ 
-                   background: 'rgba(255,255,255,0.02)', 
-                   border: '1px solid rgba(255,255,255,0.06)', 
-                   padding: '16px 20px', 
-                   borderRadius: '20px', 
-                   flex: 1, 
-                   display: 'flex', 
-                   flexDirection: 'column', 
-                   gap: '10px',
-                   backdropFilter: 'blur(8px)',
-                   textAlign: mob ? 'center' : 'left'
-                 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: mob ? 'center' : 'flex-start' }}>
-                       <Verified size={14} color="#10B981" />
-                       <span style={{ fontSize: '11px', fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1px' }}>For Creators</span>
-                    </div>
-                    <p style={{ fontSize: '12px', color: '#64748b', margin: 0, lineHeight: 1.4 }}>Get verified and scale your profile audits.</p>
-                    <Btn 
-                      full 
-                      sm 
-                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', borderRadius: '100px', padding: '10px 18px', fontSize: '13px', fontWeight: 800 }} 
-                      onClick={() => navigate(st?.role === 'creator' ? '/creator/profile' : '/apply')}
-                    >
-                      {st?.role === 'creator' ? 'Edit Workspace' : 'Get Verified'}
-                    </Btn>
-                 </div>
-              </div>
-           </div>
-        </section>
+                  {/* Creator Action */}
+                  <div 
+                    onClick={() => navigate(st?.role === 'creator' ? '/creator/profile' : '/apply')}
+                    style={{ 
+                      background: mob ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.02)', 
+                      border: mob ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(255,255,255,0.06)', 
+                      padding: mob ? '12px 10px' : '16px 20px', 
+                      borderRadius: mob ? '16px' : '20px', 
+                      flex: 1, 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      gap: mob ? '4px' : '10px',
+                      backdropFilter: 'blur(8px)',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      transition: 'all 0.2s ease',
+                      WebkitTapHighlightColor: 'transparent'
+                    }}
+                  >
+                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
+                        <Verified size={mob ? 12 : 14} color="#10B981" />
+                        <span style={{ fontSize: mob ? '9px' : '11px', fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '0.5px' }}>For Creators</span>
+                     </div>
+                     {!mob && <p style={{ fontSize: '12px', color: '#64748b', margin: 0, lineHeight: 1.4 }}>Get verified and scale your profile audits.</p>}
+                     
+                     {mob ? (
+                       <span style={{ fontSize: '12px', fontWeight: 850, color: '#fff' }}>
+                         {st?.role === 'creator' ? 'Workspace' : 'Get Verified'}
+                       </span>
+                     ) : (
+                       <Btn 
+                         full 
+                         sm 
+                         style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', borderRadius: '100px', padding: '10px 18px', fontSize: '13px', fontWeight: 800 }} 
+                         onClick={(e) => { e.stopPropagation(); navigate(st?.role === 'creator' ? '/creator/profile' : '/apply'); }}
+                       >
+                         {st?.role === 'creator' ? 'Edit Workspace' : 'Get Verified'}
+                       </Btn>
+                     )}
+                  </div>
+               </div>
+            </div>
+         </section>
       )}
       </div>
 
