@@ -14,8 +14,14 @@ export default function PWAInstallPrompt() {
       return;
     }
 
-    // Detect iOS devices
+    // Only show install prompt on mobile devices (width < 768px or mobile user agent)
     const userAgent = window.navigator.userAgent.toLowerCase();
+    const isMobileDevice = /iphone|ipad|ipod|android|webos|blackberry|iemobile|opera mini/.test(userAgent) || window.innerWidth < 768;
+    if (!isMobileDevice) {
+      return;
+    }
+
+    // Detect iOS devices
     const isIos = /iphone|ipad|ipod/.test(userAgent);
     
     // If it's an iOS device, we can't use the standard install prompt.
