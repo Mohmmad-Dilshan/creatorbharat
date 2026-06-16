@@ -504,13 +504,15 @@ export const SocialLinkTree = ({ links = {}, c = {}, mob, compact }) => {
 };
 
 export const TabEmptyState = ({ title, icon: Icon, mob, setActiveTab, tabId }) => (
-  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
       <div style={{ padding: mob ? '40px 20px' : '80px', textAlign: 'center', background: '#f8fafc', borderRadius: '40px', border: '1.5px dashed #cbd5e1', marginBottom: '40px', maxWidth: '800px', margin: '0 auto' }}>
          {Icon && <div style={{ width: '80px', height: '80px', background: '#fff', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', boxShadow: '0 8px 32px rgba(0,0,0,0.03)' }}><Icon size={40} color="#cbd5e1" /></div>}
          <div style={{ fontSize: '24px', fontWeight: 950, color: '#94a3b8', marginBottom: '16px' }}>{title}</div>
          <div style={{ fontSize: '16px', color: '#cbd5e1', fontWeight: 600 }}>The creator hasn't updated this section yet.</div>
       </div>
-      <TabNavigator activeTab={tabId} setActiveTab={setActiveTab} mob={mob} />
+      <div style={{ marginTop: 'auto', width: '100%' }}>
+         <TabNavigator activeTab={tabId} setActiveTab={setActiveTab} mob={mob} />
+      </div>
   </motion.div>
 );
 TabEmptyState.propTypes = {

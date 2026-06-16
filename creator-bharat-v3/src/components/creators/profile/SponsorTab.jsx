@@ -298,7 +298,7 @@ export const SponsorTab = ({ c, mob, setActiveTab }) => {
   })();
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
 
       {/* Section heading */}
       <div style={{ marginBottom: 32 }}>
@@ -394,8 +394,10 @@ export const SponsorTab = ({ c, mob, setActiveTab }) => {
         </div>
       )}
 
-      <TrustBadge />
-      <TabNavigator activeTab="sponsor" setActiveTab={setActiveTab} mob={mob} />
+      <div style={{ marginTop: 'auto', width: '100%' }}>
+         <TrustBadge />
+         <TabNavigator activeTab="sponsor" setActiveTab={setActiveTab} mob={mob} />
+      </div>
     </motion.div>
   );
 };

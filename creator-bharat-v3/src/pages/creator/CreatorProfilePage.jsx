@@ -410,7 +410,7 @@ export default function CreatorProfilePage() {
   const stickyTop = '0px';
 
   return (
-    <div style={{ background: '#fcfcfc', minHeight: '100vh', paddingBottom: '100px', overflow: 'visible' }}>
+    <div style={{ background: '#fcfcfc', minHeight: '100vh', paddingBottom: mob ? '0px' : '80px', overflow: 'visible', display: 'flex', flexDirection: 'column' }}>
       <Seo 
         title={`${c.name} (@${c.handle || 'creator'}) — Verified Profile`}
         description={c.bio || `${c.name} is an elite storytelling content creator specializing in ${Array.isArray(c.niche) ? c.niche.join(', ') : (c.niche || 'Digital Content')} from ${c.city || 'Bharat'}. View portfolio, reach stats & campaign history on CreatorBharat.`}
@@ -596,7 +596,7 @@ export default function CreatorProfilePage() {
         </div>
       </div>
 
-      <div ref={contentRef} id="profile-content-area" style={{ ...W(1200), padding: mob ? (activeTab === 'identity' ? '0 16px 120px' : '0 16px 32px') : '60px 24px' }}>
+      <div ref={contentRef} id="profile-content-area" style={{ ...W(1200), padding: mob ? '0 16px 80px' : '60px 24px', display: 'flex', flexDirection: 'column', flex: 1 }}>
          <AnimatePresence mode="wait">
             <ProfileTabContent 
                activeTab={activeTab}

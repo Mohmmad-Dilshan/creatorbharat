@@ -54,8 +54,8 @@ export const GalleryTab = ({ c, mob, setActiveTab }) => {
   }, [activeIndex, images.length]);
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-       <div style={{ marginBottom: '60px' }}>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+       <div style={{ marginBottom: mob ? '24px' : '60px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
              <h2 style={{ fontSize: '32px', fontWeight: 950, color: '#0f172a' }}>Lifestyle Gallery</h2>
              <div style={{ fontSize: '12px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '2px' }}>The Elite Visual Identity</div>
@@ -66,7 +66,7 @@ export const GalleryTab = ({ c, mob, setActiveTab }) => {
                 <GalleryItem key={img} i={idx + 1} index={idx} src={img} mob={mob} onClick={setActiveIndex} />
              ))}
           </div>
-          <div style={{ marginTop: '48px', textAlign: 'center' }}>
+          <div style={{ marginTop: mob ? '20px' : '48px', textAlign: 'center' }}>
              <Btn lg onClick={() => window.open('https://instagram.com', '_blank', 'noopener,noreferrer')} style={{ borderRadius: '100px', background: 'linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)', gap: '10px' }}>
                 Follow on Instagram <ArrowRight size={20} />
              </Btn>
@@ -211,9 +211,11 @@ export const GalleryTab = ({ c, mob, setActiveTab }) => {
          document.body
        )}
 
-       <TrustBadge />
-       <TabNavigator activeTab="gallery" setActiveTab={setActiveTab} mob={mob} />
-    </motion.div>
+        <div style={{ marginTop: 'auto', width: '100%' }}>
+           <TrustBadge />
+           <TabNavigator activeTab="gallery" setActiveTab={setActiveTab} mob={mob} />
+        </div>
+     </motion.div>
   );
 };
 GalleryTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, setActiveTab: PropTypes.func.isRequired };

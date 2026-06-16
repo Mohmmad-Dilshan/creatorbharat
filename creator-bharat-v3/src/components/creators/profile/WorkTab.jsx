@@ -371,7 +371,7 @@ const InfluenceMedia = ({ c, mob }) => {
 
   return (
     <div style={{ 
-      marginBottom: '60px', 
+      marginBottom: mob ? '24px' : '60px', 
       padding: mob ? '32px 24px' : '48px', 
       background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', 
       borderRadius: '40px', 
@@ -408,11 +408,11 @@ export const WorkTab = ({ c, mob, setActiveTab }) => {
   const hasCaseStudies = c.case_studies && c.case_studies.length > 0;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
       <AchievementWall c={c} mob={mob} />
       
       {hasViral && (
-        <div style={{ marginBottom: '60px' }}>
+        <div style={{ marginBottom: mob ? '24px' : '60px' }}>
            <h3 style={{ fontSize: '26px', fontWeight: 950, marginBottom: '32px', letterSpacing: '-0.02em', textAlign: 'left' }}>Viral Hall of Fame 🔥</h3>
            <div style={{ display: mob ? 'flex' : 'grid', gap: '20px', overflowX: mob ? 'auto' : 'hidden', scrollbarWidth: 'none', msOverflowStyle: 'none', paddingBottom: mob ? '12px' : '0', gridTemplateColumns: mob ? 'none' : 'repeat(3, 1fr)' }}>
               {c.viral_content.map((v, idx) => (
@@ -423,7 +423,7 @@ export const WorkTab = ({ c, mob, setActiveTab }) => {
       )}
 
       {hasCaseStudies && (
-        <div style={{ marginBottom: '60px' }}>
+        <div style={{ marginBottom: mob ? '24px' : '60px' }}>
           <h3 style={{ fontSize: '26px', fontWeight: 950, marginBottom: '32px', letterSpacing: '-0.02em', textAlign: 'left' }}>Successful Brand Collaborations</h3>
           <div style={{ display: mob ? 'flex' : 'grid', gridTemplateColumns: mob ? 'none' : 'repeat(2, 1fr)', gap: '24px', overflowX: mob ? 'auto' : 'hidden', scrollbarWidth: 'none', msOverflowStyle: 'none', paddingBottom: mob ? '12px' : '0' }}>
              {c.case_studies.map((cs, idx) => (
@@ -444,8 +444,10 @@ export const WorkTab = ({ c, mob, setActiveTab }) => {
       )}
 
       <InfluenceMedia c={c} mob={mob} />
-      <TrustBadge />
-      <TabNavigator activeTab="work" setActiveTab={setActiveTab} mob={mob} />
+      <div style={{ marginTop: 'auto', width: '100%' }}>
+         <TrustBadge />
+         <TabNavigator activeTab="work" setActiveTab={setActiveTab} mob={mob} />
+      </div>
     </motion.div>
   );
 };

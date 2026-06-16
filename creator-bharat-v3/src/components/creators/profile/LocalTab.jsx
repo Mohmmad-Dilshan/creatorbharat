@@ -19,7 +19,7 @@ export const LocalCollabHub = ({ c, mob, setActiveTab }) => {
   ];
 
   return (
-  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
     <div style={{ padding: mob ? '32px 24px' : '48px', borderRadius: '40px', marginBottom: '40px', border: '1.5px solid #f1f5f9', background: '#fff', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', top: 0, left: 0, width: '6px', height: '100%', background: '#FF9431' }} />
       <div style={{ position: 'relative', zIndex: 1 }}>
@@ -62,7 +62,7 @@ export const LocalCollabHub = ({ c, mob, setActiveTab }) => {
       </Card>
     </div>
 
-    <div style={{ background: '#fff', padding: mob ? '32px 24px' : '60px', borderRadius: '40px', border: '1.5px solid #f1f5f9', textAlign: 'center', position: 'relative', overflow: 'hidden', marginBottom: '40px' }}>
+    <div style={{ background: '#fff', padding: mob ? '32px 24px' : '60px', borderRadius: '40px', border: '1.5px solid #f1f5f9', textAlign: 'center', position: 'relative', overflow: 'hidden', marginBottom: mob ? '24px' : '40px' }}>
        <div style={{ position: 'absolute', top: 0, left: 0, width: '6px', height: '100%', background: '#FF9431' }} />
        <h3 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', marginBottom: '16px' }}>{c.local_hubs_title || c.localHubsTitle || "My Hyper-Local Impact Hub"}</h3>
        <p style={{ color: '#64748b', fontWeight: 600, marginBottom: '40px', fontSize: '15px' }}>In regions mein mein active audience engagement average se 2x zyada hai.</p>
@@ -76,7 +76,9 @@ export const LocalCollabHub = ({ c, mob, setActiveTab }) => {
           ))}
        </div>
     </div>
-    <TabNavigator activeTab="local" setActiveTab={setActiveTab} mob={mob} />
+    <div style={{ marginTop: 'auto', width: '100%' }}>
+      <TabNavigator activeTab="local" setActiveTab={setActiveTab} mob={mob} />
+    </div>
   </motion.div>
   );
 };

@@ -174,7 +174,7 @@ QuickConnectHub.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.boo
 
 export const ConnectTab = ({ c, mob, dsp, setBriefOpen, setMediaKitOpen, setActiveTab }) => {
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
        <QuickConnectHub 
          c={c} 
          mob={mob} 
@@ -185,8 +185,10 @@ export const ConnectTab = ({ c, mob, dsp, setBriefOpen, setMediaKitOpen, setActi
         <div style={{ marginTop: '40px' }}>
            <SocialLinkTree links={c?.links} c={c} mob={mob} />
         </div>
-       <TrustBadge />
-       <TabNavigator activeTab="connect" setActiveTab={setActiveTab} mob={mob} />
+       <div style={{ marginTop: 'auto', width: '100%' }}>
+          <TrustBadge />
+          <TabNavigator activeTab="connect" setActiveTab={setActiveTab} mob={mob} />
+       </div>
     </motion.div>
   );
 };

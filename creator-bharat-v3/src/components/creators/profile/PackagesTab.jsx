@@ -40,7 +40,7 @@ PackageCard.propTypes = {
 };
 
 const CollabFAQ = ({ mob }) => (
-  <div style={{ marginTop: '80px', background: '#f8fafc', padding: mob ? '32px' : '60px', borderRadius: '40px', border: '1.5px solid #f1f5f9' }}>
+  <div style={{ marginTop: mob ? '32px' : '80px', background: '#f8fafc', padding: mob ? '32px' : '60px', borderRadius: '40px', border: '1.5px solid #f1f5f9' }}>
      <h3 style={{ fontSize: '24px', fontWeight: 950, marginBottom: '40px', textAlign: 'center' }}>Collaboration Intelligence (FAQ)</h3>
      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(2, 1fr)', gap: '24px' }}>
         {[
@@ -78,7 +78,7 @@ export const PackagesTab = ({ c, mob, onSelect, setActiveTab }) => {
   const hasUser = !!st?.user;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
       <div style={{ position: 'relative' }}>
         <div style={{ 
           display: mob ? 'flex' : 'grid', 
@@ -103,8 +103,10 @@ export const PackagesTab = ({ c, mob, onSelect, setActiveTab }) => {
         )}
       </div>
       <CollabFAQ mob={mob} />
-      <TrustBadge />
-      <TabNavigator activeTab="packages" setActiveTab={setActiveTab} mob={mob} />
+      <div style={{ marginTop: 'auto', width: '100%' }}>
+         <TrustBadge />
+         <TabNavigator activeTab="packages" setActiveTab={setActiveTab} mob={mob} />
+      </div>
     </motion.div>
   );
 };

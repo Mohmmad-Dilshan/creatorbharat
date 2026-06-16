@@ -607,7 +607,7 @@ const AwardsSection = ({ awards, mob, awardsLayout, awardsTemplate, awardWidth }
         <h3 style={{ fontSize: '14px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '2.5px', marginBottom: '8px' }}>Key Awards & Recognitions</h3>
         <p style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 600, margin: 0 }}>Validated achievements & industry accreditations</p>
      </div>
-     <div style={{ display: awardsLayout, gridTemplateColumns: awardsTemplate, gap: '24px', marginBottom: '80px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
+     <div style={{ display: awardsLayout, gridTemplateColumns: awardsTemplate, gap: '24px', marginBottom: mob ? '32px' : '80px', overflowX: mob ? 'auto' : 'visible', scrollbarWidth: 'none', paddingBottom: mob ? '12px' : '0' }}>
         {awards.map((a, idx) => (
            <motion.div
              key={a.t + idx}
@@ -886,8 +886,8 @@ export const StoryTab = ({ c, mob, setActiveTab }) => {
   const currentCollabsTemplate = collabs.length < 3 ? `repeat(${collabs.length}, 1fr)` : layout.awardsTemplate;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-      <div style={{ maxWidth: layout.maxWidth, margin: '0 auto', padding: layout.storyPadding }}>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+      <div style={{ maxWidth: layout.maxWidth, margin: '0 auto', padding: layout.storyPadding, display: 'flex', flexDirection: 'column', flex: 1, width: '100%' }}>
          {/* Title Section */}
          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
             <h2 style={{ fontSize: layout.titleSize, fontWeight: 900, color: '#0f172a', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: '20px' }}>
@@ -911,7 +911,7 @@ export const StoryTab = ({ c, mob, setActiveTab }) => {
          />
 
          {/* Spacing */}
-         {(milestones.length > 0 || awards.length > 0 || collabs.length > 0) && <div style={{ height: '70px' }} />}
+         {(milestones.length > 0 || awards.length > 0 || collabs.length > 0) && <div style={{ height: mob ? '32px' : '70px' }} />}
 
          {/* 2. Timeline Chapters */}
          {milestones.length > 0 && (
@@ -920,7 +920,7 @@ export const StoryTab = ({ c, mob, setActiveTab }) => {
                 <h3 style={{ fontSize: '22px', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.02em', marginBottom: '8px' }}>Creator Journey Timeline</h3>
                 <p style={{ fontSize: '14px', color: '#64748b', fontWeight: 500, margin: 0 }}>Chronological roadmap of content growth and impact milestones.</p>
              </div>
-             <div style={{ position: 'relative', marginBottom: '80px' }}>
+             <div style={{ position: 'relative', marginBottom: mob ? '40px' : '80px' }}>
                 <div style={{ 
                   position: 'absolute', 
                   left: layout.timelineLeft, 
@@ -962,9 +962,11 @@ export const StoryTab = ({ c, mob, setActiveTab }) => {
            />
          )}
 
-         <TrustBadge />
-         <TabNavigator activeTab="story" setActiveTab={setActiveTab} mob={mob} />
-      </div>
+          <div style={{ marginTop: 'auto', width: '100%' }}>
+             <TrustBadge />
+             <TabNavigator activeTab="story" setActiveTab={setActiveTab} mob={mob} />
+          </div>
+       </div>
     </motion.div>
   );
 };

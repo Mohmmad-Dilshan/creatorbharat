@@ -18,8 +18,8 @@ export const ReviewsTab = ({ c, mob, navigate, onWriteReview, setActiveTab }) =>
     : '5.0';
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-       <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.2fr 2fr', gap: '40px', marginBottom: '60px' }}>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+       <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.2fr 2fr', gap: '40px', marginBottom: mob ? '24px' : '60px' }}>
           <div>
               <Card style={{ 
                 padding: '40px', 
@@ -71,8 +71,10 @@ export const ReviewsTab = ({ c, mob, navigate, onWriteReview, setActiveTab }) =>
              ))}
           </div>
        </div>
-       <TrustBadge />
-       <TabNavigator activeTab="reviews" setActiveTab={setActiveTab} mob={mob} />
+       <div style={{ marginTop: 'auto', width: '100%' }}>
+          <TrustBadge />
+          <TabNavigator activeTab="reviews" setActiveTab={setActiveTab} mob={mob} />
+       </div>
     </motion.div>
   );
 };

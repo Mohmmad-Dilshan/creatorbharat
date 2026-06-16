@@ -13,7 +13,7 @@ const ServiceCatalog = ({ c, mob }) => {
   ];
 
   return (
-    <div style={{ marginBottom: '60px' }}>
+    <div style={{ marginBottom: mob ? '24px' : '60px' }}>
        <h3 style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', marginBottom: '32px', textAlign: 'center' }}>Professional Service Catalog</h3>
        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '24px' }}>
           {services.map((s, idx) => {
@@ -45,10 +45,12 @@ ServiceCatalog.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool
 
 export const ServicesTab = ({ c, mob, setActiveTab }) => {
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
       <ServiceCatalog c={c} mob={mob} />
-      <TrustBadge />
-      <TabNavigator activeTab="services" setActiveTab={setActiveTab} mob={mob} />
+      <div style={{ marginTop: 'auto', width: '100%' }}>
+         <TrustBadge />
+         <TabNavigator activeTab="services" setActiveTab={setActiveTab} mob={mob} />
+      </div>
     </motion.div>
   );
 };

@@ -255,7 +255,7 @@ LocationDominanceVoice.propTypes = { c: PropTypes.object.isRequired, mob: PropTy
 // --- MAIN IDENTITY TAB COMPONENT ---
 
 export const IdentityTab = ({ c, stats, onRate, mob, setActiveTab }) => (
-  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
     <HumanStory c={c} mob={mob} />
     <AIFitInsight c={c} mob={mob} />
     <ContentPhilosophy c={c} mob={mob} />
@@ -281,8 +281,10 @@ export const IdentityTab = ({ c, stats, onRate, mob, setActiveTab }) => (
     
     <TheEliteEdge c={c} mob={mob} />
     <LocationDominanceVoice c={c} mob={mob} />
-    <SocialLinkTree links={c?.links} c={c} mob={mob} compact={true} />
-    <TabNavigator activeTab="identity" setActiveTab={setActiveTab} mob={mob} />
+    <div style={{ marginTop: 'auto', width: '100%' }}>
+      <SocialLinkTree links={c?.links} c={c} mob={mob} compact={true} />
+      <TabNavigator activeTab="identity" setActiveTab={setActiveTab} mob={mob} />
+    </div>
   </motion.div>
 );
 
