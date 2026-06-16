@@ -424,7 +424,7 @@ export default function CreatorProfilePage() {
       <Seo 
         title={`${c.name} (@${c.handle || 'creator'}) — Verified Profile`}
         description={c.bio || `${c.name} is an elite storytelling content creator specializing in ${Array.isArray(c.niche) ? c.niche.join(', ') : (c.niche || 'Digital Content')} from ${c.city || 'Bharat'}. View portfolio, reach stats & campaign history on CreatorBharat.`}
-        image={c.profile_pic || c.avatarUrl}
+        image={c.photo || c.image || c.profile_pic || c.avatarUrl}
         type="profile"
         jsonLd={profileJsonLd}
       />

@@ -5,6 +5,14 @@
   "outputDirectory": "creator-bharat-v3/dist",
   "rewrites": [
     {
+      "source": "/c/:id",
+      "destination": "/api/profile-preview?id=:id"
+    },
+    {
+      "source": "/creator/:id",
+      "destination": "/api/profile-preview?id=:id"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

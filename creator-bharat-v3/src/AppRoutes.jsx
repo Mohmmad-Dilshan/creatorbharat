@@ -145,6 +145,7 @@ export default function AppRoutes({ location }) {
           <Route path="/cookies" element={<CookiePolicyPage />} />
           <Route path="/refunds" element={<RefundPolicyPage />} />
           <Route path="/creator/:id" element={<CreatorProfilePage />} />
+          <Route path="/c/:id" element={<CreatorProfilePage />} />
         </Route>
 
         {/* Creator Ecosystem Group - Completely Isolated Layout */}

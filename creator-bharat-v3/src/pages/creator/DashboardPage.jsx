@@ -102,6 +102,9 @@ const BentoHero = ({ creator, verificationStatus, score, navigate, isPro, dsp })
   const followers = creator?.followers || 152000;
   const nicheList = Array.isArray(creator?.niche) ? creator.niche : [creator?.niche || 'Digital Creator'];
 
+  const rawProfileId = creator?.handle || creator?.slug || creator?.id || 'elite';
+  const cleanProfileId = rawProfileId.startsWith('@') ? rawProfileId.slice(1) : rawProfileId;
+
   return (
     <BentoCard hover={false} style={{ gridColumn: 'span 12', padding: '24px', background: C.card }}>
       <div className="hero-flex" style={{
@@ -170,7 +173,7 @@ const BentoHero = ({ creator, verificationStatus, score, navigate, isPro, dsp })
         {/* Console Action Pills */}
         <div style={{ display: 'flex', gap: 8 }}>
           <button
-            onClick={() => navigate(`/creator/c/${creator?.id || 'elite'}`)}
+            onClick={() => navigate(`/creator/c/${cleanProfileId}`)}
             style={{
               padding: '8px 14px', borderRadius: 8, background: C.navy,
               border: 'none', color: '#fff', fontSize: 12, fontWeight: 800, cursor: 'pointer',
@@ -191,7 +194,7 @@ const BentoHero = ({ creator, verificationStatus, score, navigate, isPro, dsp })
           </button>
           <button
             onClick={() => {
-              navigator.clipboard.writeText(`https://creatorbharat.com/c/${creator?.id || 'elite'}`);
+              navigator.clipboard.writeText(`https://creatorbharat.com/c/${cleanProfileId}`);
               dsp({ t: 'TOAST', d: { type: 'success', msg: 'Copied Link!' } });
             }}
             style={{
@@ -819,6 +822,9 @@ const OnboardingPanel = ({ hasIdentity, hasSocials, hasStory, hasServices, allCh
 
 // ─── CB Page & Media Kit Download (spans 6 columns) ─────────────────────────────
 const CBAndMediaKitBento = ({ creator, followingCB, onToggleFollow, isLocked, navigate, dsp }) => {
+  const rawProfileId = creator?.handle || creator?.slug || creator?.id || 'elite';
+  const cleanProfileId = rawProfileId.startsWith('@') ? rawProfileId.slice(1) : rawProfileId;
+
   return (
     <BentoCard style={{ gridColumn: 'span 6', padding: '20px', minHeight: 280, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
       <div>
@@ -855,11 +861,11 @@ const CBAndMediaKitBento = ({ creator, followingCB, onToggleFollow, isLocked, na
             margin: '4px 0 0'
           }}>
             <span style={{ fontSize: 10, color: C.slate, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 600 }}>
-              creatorbharat.com/c/{creator?.id || 'elite'}
+              creatorbharat.com/c/{cleanProfileId}
             </span>
             <button
               onClick={() => {
-                navigator.clipboard.writeText(`https://creatorbharat.com/c/${creator?.id || 'elite'}`);
+                navigator.clipboard.writeText(`https://creatorbharat.com/c/${cleanProfileId}`);
                 dsp({ t: 'TOAST', d: { type: 'success', msg: 'Copied profile link!' } });
               }}
               style={{
@@ -1332,10 +1338,27 @@ const getCreatorProfile = st => {
   if (!st.user) return null;
   const allC = LS.get('cb_creators', []);
   const found = st.user?.creatorProfile || st.creatorProfile || allC.find(cr => cr.email === st.user?.email);
-  if (found) return found;
+  
+  const getCleanFallback = (profile) => {
+    const raw = profile?.handle || st.user?.handle || profile?.name?.toLowerCase().replace(/\s+/g, '-') || st.user?.email?.split('@')[0] || 'elite';
+    return raw.startsWith('@') ? raw.slice(1) : raw;
+  };
+
+  if (found) {
+    const cleanHandle = getCleanFallback(found);
+    return {
+      id: found.id || cleanHandle,
+      slug: found.slug || cleanHandle,
+      ...found
+    };
+  }
+
+  const cleanHandle = getCleanFallback();
   return {
+    id: st.user?.id || cleanHandle,
+    slug: st.user?.slug || cleanHandle,
     name: st.user?.name || 'Creator',
-    handle: st.user?.handle || '@creator',
+    handle: st.user?.handle || `@${cleanHandle}`,
     email: st.user?.email || '',
     city: st.user?.city || '',
     state: st.user?.state || '',
