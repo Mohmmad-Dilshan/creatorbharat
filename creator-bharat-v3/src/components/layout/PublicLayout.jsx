@@ -11,6 +11,16 @@ import CompareBar from './CompareBar';
 import DemoModal from './DemoModal';
 import EliteMobileNav from './EliteMobileNav';
 
+const isCreatorProfilePage = (pathname) => {
+  const parts = pathname.split('/').filter(Boolean);
+  if (parts[0] === 'c') return true;
+  if (parts[0] === 'creator') {
+    const knownSubRoutes = ['dashboard', 'onboarding', 'profile', 'public-preview', 'opportunities', 'applications', 'brand-requests', 'community', 'wallet', 'analytics', 'monetization', 'score', 'verification', 'calendar', 'messages', 'saved', 'settings', 'help', 'events', 'achievements', 'blog', 'official-profile', 'verify-guide', 'stories', 'rate-calc', 'leaderboard', 'guidelines', 'pricing', 'about', 'contact', 'faq', 'privacy', 'terms', 'cookies', 'refunds'];
+    return !knownSubRoutes.includes(parts[1]);
+  }
+  return false;
+};
+
 /**
  * PublicLayout: Modernized layout for all public-facing pages.
  * Integrates Lenis smooth scrolling (desktop) and EliteMobileNav (mobile).
@@ -21,6 +31,18 @@ export default function PublicLayout({ children }) {
   const navigate = useNavigate();
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [activeProfileTab, setActiveProfileTab] = useState('identity');
+  const [isAtBottom, setIsAtBottom] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const threshold = 60; // pixels from the bottom
+      const scrolledToBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - threshold);
+      setIsAtBottom(scrolledToBottom);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleTab = (e) => setActiveProfileTab(e.detail);
@@ -66,16 +88,17 @@ export default function PublicLayout({ children }) {
 
   const isModalOpen = st.ui.demoModal || st.ui.mobileMenu;
   const isBlogRoute = location.pathname.startsWith('/blog');
-  const isCreatorProfilePublic = /^\/creator\/[^/]+$/.test(location.pathname);
+  const isCreatorProfilePublic = isCreatorProfilePage(location.pathname);
   const showFooter = (!mob || location.pathname === '/' || isBlogRoute) && (!isCreatorProfilePublic || activeProfileTab === 'identity');
+  const showMobileNav = !isCreatorProfilePublic || (activeProfileTab === 'identity' && isAtBottom);
 
   useEffect(() => {
     const isMobile = globalThis.innerWidth < 768;
     let lenis = null;
 
     // Disable Lenis on creator profile pages — sticky tab bar needs native scroll
-    const isCreatorProfile = location.pathname.startsWith('/creator/');
-    const isCreatorProfilePublic = /^\/creator\/[^/]+$/.test(location.pathname);
+    const isCreatorProfile = location.pathname.startsWith('/creator/') || location.pathname.startsWith('/c/');
+    const isCreatorProfilePublic = isCreatorProfilePage(location.pathname);
 
     if (!isMobile && !isCreatorProfilePublic) {
       lenis = new Lenis({
@@ -131,7 +154,7 @@ export default function PublicLayout({ children }) {
 
       {/* ELITE MOBILE NAV - GLOBAL EXPERIENCE */}
       {mob && !st.ui.hideNav && !isModalOpen && (
-        <EliteMobileNav role={st.user ? st.role : 'public'} user={st.user} />
+        <EliteMobileNav role={st.user ? st.role : 'public'} user={st.user} hide={!showMobileNav} />
       )}
 
       <MobileMenu open={st.ui.mobileMenu} />

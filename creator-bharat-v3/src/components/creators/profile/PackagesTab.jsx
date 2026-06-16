@@ -78,28 +78,30 @@ export const PackagesTab = ({ c, mob, onSelect, setActiveTab }) => {
   const hasUser = !!st?.user;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ position: 'relative' }}>
-      <div style={{ 
-        display: mob ? 'flex' : 'grid', 
-        gridTemplateColumns: mob ? 'none' : 'repeat(3, 1fr)', 
-        gap: '24px', 
-        overflowX: mob ? 'auto' : 'visible', 
-        scrollbarWidth: 'none', 
-        paddingBottom: '20px',
-        filter: hasUser ? 'none' : 'blur(6px) grayscale(20%)',
-        pointerEvents: hasUser ? 'auto' : 'none'
-      }}>
-         {packages.map((p) => (
-           <PackageCard key={p.l} onSelect={onSelect} p={p} />
-         ))}
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+      <div style={{ position: 'relative' }}>
+        <div style={{ 
+          display: mob ? 'flex' : 'grid', 
+          gridTemplateColumns: mob ? 'none' : 'repeat(3, 1fr)', 
+          gap: '24px', 
+          overflowX: mob ? 'auto' : 'visible', 
+          scrollbarWidth: 'none', 
+          paddingBottom: '20px',
+          filter: hasUser ? 'none' : 'blur(6px) grayscale(20%)',
+          pointerEvents: hasUser ? 'auto' : 'none'
+        }}>
+           {packages.map((p) => (
+             <PackageCard key={p.l} onSelect={onSelect} p={p} />
+           ))}
+        </div>
+        {!hasUser && (
+          <GatedOverlay 
+            title="Collaboration Rates Gated" 
+            description="Register as a verified Brand to unlock custom pricing sheets, specific campaign deliverables, and direct secure escrow bookings." 
+            onCtaClick={() => navigate('/login')}
+          />
+        )}
       </div>
-      {!hasUser && (
-        <GatedOverlay 
-          title="Collaboration Rates Gated" 
-          description="Register as a verified Brand to unlock custom pricing sheets, specific campaign deliverables, and direct secure escrow bookings." 
-          onCtaClick={() => navigate('/login')}
-        />
-      )}
       <CollabFAQ mob={mob} />
       <TrustBadge />
       <TabNavigator activeTab="packages" setActiveTab={setActiveTab} mob={mob} />

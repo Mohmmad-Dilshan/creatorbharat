@@ -258,10 +258,6 @@ export default function CreatorProfilePage() {
   useEffect(() => {
     const handleScroll = () => {
       const curY = globalThis.scrollY;
-      const diff = curY - lastY.current;
-      if (curY < 50) setNavVisible(true);
-      else if (diff > 10) setNavVisible(false);
-      else if (diff < -10) setNavVisible(true);
       setTabScrolled(curY > 100);
       lastY.current = curY;
     };
@@ -411,13 +407,7 @@ export default function CreatorProfilePage() {
   // Sticky offset — always account for Navbar height so tab bar hugs just below it
   const NAVBAR_H_DESKTOP = 72;
   const NAVBAR_H_MOBILE = 60;
-  let stickyTop;
-  if (!mob) {
-    stickyTop = navVisible ? `${NAVBAR_H_DESKTOP}px` : '0px';
-  } else {
-    // On mobile the navbar is always visible at the top
-    stickyTop = `${NAVBAR_H_MOBILE}px`;
-  }
+  const stickyTop = '0px';
 
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', paddingBottom: '100px', overflow: 'visible' }}>

@@ -479,6 +479,16 @@ UserActions.propTypes = {
   mob: PropTypes.bool
 };
 
+const isCreatorProfilePage = (pathname) => {
+  const parts = pathname.split('/').filter(Boolean);
+  if (parts[0] === 'c') return true;
+  if (parts[0] === 'creator') {
+    const knownSubRoutes = ['dashboard', 'onboarding', 'profile', 'public-preview', 'opportunities', 'applications', 'brand-requests', 'community', 'wallet', 'analytics', 'monetization', 'score', 'verification', 'calendar', 'messages', 'saved', 'settings', 'help', 'events', 'achievements', 'blog', 'official-profile', 'verify-guide', 'stories', 'rate-calc', 'leaderboard', 'guidelines', 'pricing', 'about', 'contact', 'faq', 'privacy', 'terms', 'cookies', 'refunds'];
+    return !knownSubRoutes.includes(parts[1]);
+  }
+  return false;
+};
+
 export default function Navbar() {
   const { st, dsp } = useApp();
   const navigate = useNavigate();
@@ -488,6 +498,14 @@ export default function Navbar() {
   const lastY = useRef(0);
   const [mob, setMob] = useState(window.innerWidth < 768);
   const [compactNav, setCompactNav] = useState(window.innerWidth < 1180);
+  const pathnameRef = useRef(location.pathname);
+
+  useEffect(() => {
+    pathnameRef.current = location.pathname;
+    if (isCreatorProfilePage(location.pathname)) {
+      setVisible(true);
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -497,6 +515,29 @@ export default function Navbar() {
       setScroll(curY > 20);
       setMob(isMob);
       setCompactNav(isCompact);
+      
+      if (isCreatorProfilePage(pathnameRef.current)) {
+        setVisible(true);
+        lastY.current = curY;
+        return;
+      }
+      
+      if (pathnameRef.current === '/creators') {
+        const heroEl = document.querySelector('section');
+        const heroHeight = heroEl ? heroEl.offsetHeight : 600;
+        const threshold = heroHeight * 0.8;
+
+        if (curY < threshold) {
+          const diff = curY - lastY.current;
+          if (curY < 50) setVisible(true);
+          else if (diff > 10) setVisible(false);
+          else if (diff < -10) setVisible(true);
+        } else {
+          setVisible(false);
+        }
+        lastY.current = curY;
+        return;
+      }
       
       const diff = curY - lastY.current;
       if (curY < 50) setVisible(true);
@@ -668,14 +709,16 @@ export default function Navbar() {
     return scroll ? '16px 40px' : '24px 40px';
   };
 
+  const isProfile = isCreatorProfilePage(location.pathname);
   const navTransform = (!visible || st.ui.hideNav) ? 'translateY(-120%)' : 'none';
 
   return (
     <div style={{
-      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 999995,
+      position: isProfile ? 'absolute' : 'fixed',
+      top: 0, left: 0, right: 0, zIndex: 999995,
       padding: getPadding(),
       transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-      transform: navTransform,
+      transform: isProfile ? 'none' : navTransform,
       pointerEvents: 'none'
     }}>
       <div style={{

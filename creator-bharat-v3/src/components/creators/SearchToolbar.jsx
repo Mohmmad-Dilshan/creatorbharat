@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Search, MapPin, Grid, List, Map as MapIcon, Settings, RefreshCw } from 'lucide-react';
-import { W, ALL_STATES } from '../../utils/helpers';
+import { W, ALL_STATES, INDIA_STATES } from '../../utils/helpers';
 
 const CategorySelect = ({ niches, f, dsp }) => (
   <select
@@ -30,21 +30,28 @@ CategorySelect.propTypes = {
   dsp: PropTypes.func.isRequired
 };
 
-const ViewSwitcher = ({ view, setView, isSticky }) => (
-  <div style={{ display: 'flex', gap: 4, background: '#f1f5f9', padding: 4, borderRadius: 100, height: isSticky ? 48 : 54, alignItems: 'center' }}>
-    <button aria-label="Grid view" onClick={() => setView('grid')} style={{ width: isSticky ? 38 : 44, height: isSticky ? 38 : 44, borderRadius: '50%', border: 'none', background: view === 'grid' ? '#fff' : 'transparent', color: view === 'grid' ? '#111' : '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', boxShadow: view === 'grid' ? '0 4px 12px rgba(0,0,0,0.08)' : 'none' }}>
-      <Grid size={isSticky ? 16 : 18} />
-    </button>
-    <button aria-label="List view" onClick={() => setView('list')} style={{ width: isSticky ? 38 : 44, height: isSticky ? 38 : 44, borderRadius: '50%', border: 'none', background: view === 'list' ? '#fff' : 'transparent', color: view === 'list' ? '#111' : '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', boxShadow: view === 'list' ? '0 4px 12px rgba(0,0,0,0.08)' : 'none' }}>
-      <List size={isSticky ? 16 : 18} />
-    </button>
-  </div>
-);
+const ViewSwitcher = ({ view, setView, isSticky, mob }) => {
+  const btnSize = mob ? (isSticky ? 28 : 34) : (isSticky ? 38 : 44);
+  const containerHeight = mob ? (isSticky ? 36 : 42) : (isSticky ? 48 : 54);
+  const iconSize = mob ? (isSticky ? 13 : 15) : (isSticky ? 16 : 18);
+
+  return (
+    <div style={{ display: 'flex', gap: 4, background: '#f1f5f9', padding: 4, borderRadius: 100, height: containerHeight, alignItems: 'center' }}>
+      <button aria-label="Grid view" onClick={() => setView('grid')} style={{ width: btnSize, height: btnSize, borderRadius: '50%', border: 'none', background: view === 'grid' ? '#fff' : 'transparent', color: view === 'grid' ? '#111' : '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', boxShadow: view === 'grid' ? '0 4px 12px rgba(0,0,0,0.08)' : 'none' }}>
+        <Grid size={iconSize} />
+      </button>
+      <button aria-label="List view" onClick={() => setView('list')} style={{ width: btnSize, height: btnSize, borderRadius: '50%', border: 'none', background: view === 'list' ? '#fff' : 'transparent', color: view === 'list' ? '#111' : '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', boxShadow: view === 'list' ? '0 4px 12px rgba(0,0,0,0.08)' : 'none' }}>
+        <List size={iconSize} />
+      </button>
+    </div>
+  );
+};
 
 ViewSwitcher.propTypes = {
   view: PropTypes.string.isRequired,
   setView: PropTypes.func.isRequired,
-  isSticky: PropTypes.bool
+  isSticky: PropTypes.bool,
+  mob: PropTypes.bool
 };
 
 const MobileQuickChips = ({ f, dsp, niches, clearFilters, hasFilters, setShowFilters }) => (
@@ -102,9 +109,45 @@ LocationSelect.propTypes = {
   isSticky: PropTypes.bool
 };
 
+const DistrictSelect = ({ f, dsp, isSticky }) => {
+  const districts = f.state ? (INDIA_STATES[f.state] || []) : [];
+  
+  return (
+    <div style={{ 
+      display: 'flex', gap: 8, alignItems: 'center', background: '#f8fafc', 
+      padding: '0 16px', borderRadius: 100, border: '1.5px solid rgba(0,0,0,0.04)', 
+      height: isSticky ? 48 : 54,
+      opacity: f.state ? 1 : 0.6,
+      pointerEvents: f.state ? 'auto' : 'none'
+    }}>
+      <MapPin size={16} color="#3B82F6" />
+      <select
+        id="toolbar-district-select"
+        name="district_filter"
+        value={f.district}
+        onChange={e => dsp({ t: 'CF', v: { district: e.target.value } })}
+        disabled={!f.state}
+        style={{
+          background: 'transparent', border: 'none', fontSize: isSticky ? 12 : 13, fontWeight: 700,
+          color: f.district ? '#3B82F6' : '#475569', outline: 'none', cursor: f.state ? 'pointer' : 'not-allowed'
+        }}
+      >
+        <option value="">{f.state ? `All in ${f.state}` : 'Select State'}</option>
+        {districts.map(d => <option key={d} value={d}>{d}</option>)}
+      </select>
+    </div>
+  );
+};
+
+DistrictSelect.propTypes = {
+  f: PropTypes.object.isRequired,
+  dsp: PropTypes.func.isRequired,
+  isSticky: PropTypes.bool
+};
+
 const SearchInput = ({ mob, f, dsp, isSticky }) => (
   <div style={{ 
-    display: 'flex', flex: 1, minWidth: 0, background: '#fff', borderRadius: '24px', 
+    display: 'flex', flex: mob ? 1 : '0 1 380px', minWidth: 0, background: '#fff', borderRadius: '24px', 
     border: '1.5px solid rgba(0,0,0,0.06)', overflow: 'hidden', height: mob ? (isSticky ? 44 : 54) : (isSticky ? 48 : 64),
     alignItems: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
     transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
@@ -320,13 +363,45 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
   const wrapperRef = useRef(null);
   const [isSticky, setIsSticky] = useState(false);
   const [hideForFooter, setHideForFooter] = useState(false);
+  const [navVisible, setNavVisible] = useState(true);
+  const lastScrollY = useRef(0);
+  const navVisibleRef = useRef(true);
+
+  useEffect(() => {
+    navVisibleRef.current = navVisible;
+  }, [navVisible]);
 
   useEffect(() => {
     const handleScroll = () => {
       if (!wrapperRef.current) return;
 
       const rect = wrapperRef.current.getBoundingClientRect();
-      const triggerOffset = 0;
+      const curY = window.scrollY;
+      const diff = curY - lastScrollY.current;
+
+      let nextNavVisible = navVisibleRef.current;
+      const heroEl = document.querySelector('section');
+      const heroHeight = heroEl ? heroEl.offsetHeight : 600;
+      const threshold = heroHeight * 0.8;
+
+      if (curY < threshold) {
+        if (curY < 50) {
+          nextNavVisible = true;
+        } else if (diff > 10) {
+          nextNavVisible = false;
+        } else if (diff < -10) {
+          nextNavVisible = true;
+        }
+      } else {
+        nextNavVisible = false;
+      }
+
+      if (nextNavVisible !== navVisibleRef.current) {
+        setNavVisible(nextNavVisible);
+      }
+      lastScrollY.current = curY;
+
+      const triggerOffset = mob ? (nextNavVisible ? 60 : 0) : (nextNavVisible ? 72 : 0);
 
       if (rect.top <= triggerOffset) {
         setIsSticky(true);
@@ -357,7 +432,7 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
     <div ref={wrapperRef} style={{ minHeight: isSticky ? (mob ? '72px' : '110px') : 'auto', width: '100%' }}>
       <div style={{
         position: isSticky ? 'fixed' : 'relative',
-        top: isSticky ? '0px' : 'auto',
+        top: isSticky ? (mob ? (navVisible ? '60px' : '0px') : (navVisible ? '72px' : '0px')) : 'auto',
         left: 0,
         right: 0,
         zIndex: 1000,
@@ -380,11 +455,12 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
             {!mob && (
               <>
                 <LocationSelect f={f} dsp={dsp} isSticky={isSticky} />
-                <ViewSwitcher view={view} setView={setView} isSticky={isSticky} />
+                <DistrictSelect f={f} dsp={dsp} isSticky={isSticky} />
               </>
             )}
+            <ViewSwitcher view={view} setView={setView} isSticky={isSticky} mob={mob} />
 
-            <div style={{ display: 'flex', gap: mob ? '8px' : '12px', flexShrink: 0 }}>
+            <div style={{ display: 'flex', gap: mob ? '8px' : '12px', flexShrink: 0, marginLeft: mob ? '0' : 'auto' }}>
               <ToolbarButtons
                 mob={mob}
                 showMap={showMap}
@@ -397,7 +473,7 @@ export default function SearchToolbar({ mob, f, dsp, setView, view, setShowMap, 
             </div>
           </div>
 
-          {(!mob || !isSticky) && (
+          {!isSticky && (
             <CategoryChips niches={niches} platforms={platforms} f={f} dsp={dsp} mob={mob} isSticky={isSticky} />
           )}
         </div>

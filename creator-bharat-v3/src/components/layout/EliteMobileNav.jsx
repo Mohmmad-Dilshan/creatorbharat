@@ -43,7 +43,7 @@ const NAV_SETS = {
   ]
 };
 
-export default function EliteMobileNav({ role, user }) {
+export default function EliteMobileNav({ role, user, hide = false }) {
   const { st } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
@@ -82,9 +82,9 @@ export default function EliteMobileNav({ role, user }) {
       <motion.div 
         initial={{ y: 100, x: '-50%', opacity: 0 }}
         animate={{ 
-          y: st.ui.mobileMenu ? 120 : 0, 
+          y: (st.ui.mobileMenu || hide) ? 120 : 0, 
           x: '-50%', 
-          opacity: st.ui.mobileMenu ? 0 : 1 
+          opacity: (st.ui.mobileMenu || hide) ? 0 : 1 
         }}
         className="elite-dock-container"
       >
@@ -244,5 +244,6 @@ export default function EliteMobileNav({ role, user }) {
 
 EliteMobileNav.propTypes = {
   role: PropTypes.oneOf(['public', 'creator', 'brand']).isRequired,
-  user: PropTypes.object
+  user: PropTypes.object,
+  hide: PropTypes.bool
 };
