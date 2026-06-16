@@ -6,6 +6,7 @@ import {
   FileText, Compass, Phone, Users 
 } from 'lucide-react';
 import { InstagramIcon, YoutubeIcon, LinkedinIcon, TwitterIcon, FacebookIcon, GithubIcon } from '../../icons/SocialIcons';
+import { fmt } from '../../../utils/helpers';
 
 export const TAB_LIST = [
   { id: 'identity',  label: 'Identity',   icon: '👤', desc: 'Who they are' },

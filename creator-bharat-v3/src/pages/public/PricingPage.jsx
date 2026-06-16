@@ -9,7 +9,9 @@ import {
   Sparkles,
   BarChart3,
   Globe,
-  Zap
+  Zap,
+  Wallet,
+  ShieldCheck
 } from 'lucide-react';
 import { Btn, Bdg } from '@/components/common/Primitives';
 import { useApp } from '@/core/context';

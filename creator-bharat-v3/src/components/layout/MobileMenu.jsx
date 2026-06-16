@@ -5,7 +5,7 @@ import { useApp } from '@/core/context';
 import { Btn, Logo } from '@/components/common/Primitives';
 import { scrollToTop } from '../../utils/helpers';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Users, Megaphone, BookOpen, Heart, LogOut, LayoutDashboard, Briefcase, Bookmark, Settings, ChevronRight, User, LifeBuoy, MessageSquare, Sparkles, Search, Calculator, Trophy, ShieldCheck, Home, IndianRupee, Bell, Award, Zap, Wallet, BarChart3, Camera } from 'lucide-react';
+import { X, Users, Megaphone, BookOpen, Heart, LogOut, LayoutDashboard, Briefcase, Bookmark, Settings, ChevronRight, User, LifeBuoy, MessageSquare, Sparkles, Search, Calculator, Trophy, ShieldCheck, Home, IndianRupee, Bell, Award, Zap, Wallet, BarChart3, Camera, Target } from 'lucide-react';
 
 export default function MobileMenu({ open }) {
   const { st, dsp } = useApp();
@@ -37,6 +37,8 @@ export default function MobileMenu({ open }) {
     { path: '/', l: 'Home', i: Home },
     { path: '/creators', l: 'Creators', i: Users },
     { path: '/campaigns', l: 'Brand Deals', i: Megaphone },
+    { path: '/brand', l: 'For Brands', i: Target },
+    { path: '/creator-hub', l: 'For Creators', i: Zap },
     { path: '/leaderboard', l: 'Leaderboard', i: Trophy },
     { path: '/rate-calc', l: 'Rate Calculator', i: Calculator },
     { path: '/pricing', l: 'Pricing Plans', i: Sparkles },
@@ -53,6 +55,8 @@ export default function MobileMenu({ open }) {
     { path: '/creator/wallet', l: 'My Wallet', i: Wallet },
     { path: '/creator/monetization', l: 'Monetization', i: IndianRupee },
     { path: '/creator/score', l: 'Creator Score', i: Trophy },
+    { path: '/creator/public-preview', l: 'Public Profile', i: User },
+    { path: '/creator/verification', l: 'Verification Desk', i: ShieldCheck },
     { path: '/creator/community', l: 'Community', i: Megaphone },
     { path: '/creator/events', l: 'Events', i: Award },
     { path: '/creator/messages', l: 'Messages & Alerts', i: Bell },
