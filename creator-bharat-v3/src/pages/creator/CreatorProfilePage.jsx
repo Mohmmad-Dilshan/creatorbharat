@@ -612,43 +612,119 @@ export default function CreatorProfilePage() {
                setActiveTab={handleTabChange}
             />
          </AnimatePresence>
-      </div>
-
-      {activeTab === 'identity' && (
-        <section style={{ marginTop: '100px', padding: mob ? '60px 16px' : '100px 0', background: '#0f172a', position: 'relative', overflow: 'hidden' }}>
-           <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '400px', height: '400px', background: '#FF9431', borderRadius: '50%', filter: 'blur(150px)', opacity: 0.1 }} />
-           <div style={{ ...W(1200), margin: '0 auto', position: 'relative', zIndex: 1, textAlign: 'center' }}>
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
-                 <button onClick={() => navigate(st.user ? (st.role === 'brand' ? '/brand-dashboard' : '/creator/dashboard') : '/')} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', padding: '8px 24px', borderRadius: '100px', fontSize: '12px', fontWeight: 900, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                    Visit Official Platform <ArrowRight size={14} />
-                 </button>
+        {activeTab === 'identity' && (
+        <section style={{ 
+          marginTop: mob ? '60px' : '100px', 
+          padding: mob ? '40px 16px' : '50px 40px', 
+          background: '#0f172a', 
+          position: 'relative', 
+          overflow: 'hidden',
+          borderTop: '1px solid rgba(255,255,255,0.05)'
+        }}>
+           <div style={{ position: 'absolute', top: '-150px', right: '-150px', width: '350px', height: '350px', background: '#FF9431', borderRadius: '50%', filter: 'blur(130px)', opacity: 0.08, pointerEvents: 'none' }} />
+           <div style={{ 
+             maxWidth: '1200px', 
+             margin: '0 auto', 
+             position: 'relative', 
+             zIndex: 1, 
+             display: 'flex', 
+             flexDirection: mob ? 'column' : 'row', 
+             justifyContent: 'space-between', 
+             alignItems: mob ? 'stretch' : 'center',
+             gap: mob ? '24px' : '48px'
+           }}>
+              <div style={{ flex: 1.2, textAlign: mob ? 'center' : 'left' }}>
+                 <h2 style={{ 
+                   fontSize: mob ? '26px' : '36px', 
+                   fontWeight: 950, 
+                   color: '#fff', 
+                   letterSpacing: '-0.03em', 
+                   marginBottom: '12px',
+                   fontFamily: 'Outfit, sans-serif',
+                   lineHeight: 1.15
+                 }}>
+                   Ready to Scale Your <span style={{ color: '#FF9431' }}>Brand Legacy?</span>
+                 </h2>
+                 <p style={{ 
+                   fontSize: mob ? '13px' : '15px', 
+                   color: '#94a3b8', 
+                   fontWeight: 500, 
+                   margin: 0, 
+                   lineHeight: 1.5,
+                   maxWidth: mob ? '100%' : '560px'
+                 }}>
+                   Join the exclusive circle of Bharat's most influential voices and top-tier brands building the future of digital storytelling.
+                 </p>
               </div>
-              <h2 style={{ fontSize: mob ? '32px' : '56px', fontWeight: 950, color: '#fff', letterSpacing: '-0.04em', marginBottom: '24px' }}>Ready to Scale Your <span style={{ color: '#FF9431' }}>Brand Legacy?</span></h2>
-              <p style={{ fontSize: '18px', color: '#94a3b8', fontWeight: 500, maxWidth: '700px', margin: '0 auto 48px' }}>Join the exclusive circle of Bharat's most influential voices and top-tier brands building the future of storytelling.</p>
-              
-              <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: '20px', justifyContent: 'center', alignItems: 'center' }}>
-                 <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '40px', borderRadius: '32px', textAlign: 'center', width: mob ? '100%' : '450px', backdropFilter: 'blur(10px)' }}>
-                    <div style={{ width: '50px', height: '50px', background: '#FF943120', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-                       <Briefcase size={24} color="#FF9431" />
+
+              <div style={{ 
+                flex: 1, 
+                display: 'flex', 
+                flexDirection: mob ? 'column' : 'row', 
+                gap: '16px',
+                justifyContent: mob ? 'stretch' : 'flex-end',
+                alignItems: 'stretch'
+              }}>
+                 {/* Brand Action */}
+                 <div style={{ 
+                   background: 'rgba(255,255,255,0.02)', 
+                   border: '1px solid rgba(255,255,255,0.06)', 
+                   padding: '16px 20px', 
+                   borderRadius: '20px', 
+                   flex: 1, 
+                   display: 'flex', 
+                   flexDirection: 'column', 
+                   gap: '10px',
+                   backdropFilter: 'blur(8px)',
+                   textAlign: mob ? 'center' : 'left'
+                 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: mob ? 'center' : 'flex-start' }}>
+                       <Briefcase size={14} color="#FF9431" />
+                       <span style={{ fontSize: '11px', fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1px' }}>For Brands</span>
                     </div>
-                    <h4 style={{ fontSize: '20px', fontWeight: 900, color: '#fff', marginBottom: '12px' }}>{st?.role === 'brand' ? 'Brand Console' : 'I am a Brand'}</h4>
-                    <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px' }}>Hire {c?.name || 'Elite Creators'} or explore our elite creators network for your next big campaign.</p>
-                    <Btn full lg style={{ background: '#FF9431', borderRadius: '100px' }} onClick={() => navigate(st?.role === 'brand' ? '/brand-dashboard' : '/creators')}>{st?.role === 'brand' ? 'Open Brand Dashboard' : 'Hire Elite Creators'}</Btn>
+                    <p style={{ fontSize: '12px', color: '#64748b', margin: 0, lineHeight: 1.4 }}>Hire {c?.name?.split(' ')[0] || 'elite creators'} or explore the network.</p>
+                    <Btn 
+                      full 
+                      sm 
+                      style={{ background: '#FF9431', color: '#fff', borderRadius: '100px', padding: '10px 18px', fontSize: '13px', fontWeight: 800, border: 'none', boxShadow: '0 4px 12px rgba(255,148,49,0.15)' }} 
+                      onClick={() => navigate(st?.role === 'brand' ? '/brand-dashboard' : '/creators')}
+                    >
+                      {st?.role === 'brand' ? 'Brand Console' : 'Hire Creators'}
+                    </Btn>
                  </div>
 
-                 <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '40px', borderRadius: '32px', textAlign: 'center', width: mob ? '100%' : '450px', backdropFilter: 'blur(10px)' }}>
-                    <div style={{ width: '50px', height: '50px', background: '#10B98120', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-                       <Verified size={24} color="#10B981" />
+                 {/* Creator Action */}
+                 <div style={{ 
+                   background: 'rgba(255,255,255,0.02)', 
+                   border: '1px solid rgba(255,255,255,0.06)', 
+                   padding: '16px 20px', 
+                   borderRadius: '20px', 
+                   flex: 1, 
+                   display: 'flex', 
+                   flexDirection: 'column', 
+                   gap: '10px',
+                   backdropFilter: 'blur(8px)',
+                   textAlign: mob ? 'center' : 'left'
+                 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: mob ? 'center' : 'flex-start' }}>
+                       <Verified size={14} color="#10B981" />
+                       <span style={{ fontSize: '11px', fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1px' }}>For Creators</span>
                     </div>
-                    <h4 style={{ fontSize: '20px', fontWeight: 900, color: '#fff', marginBottom: '12px' }}>{st?.role === 'creator' ? 'Creator Workspace' : 'I am a Creator'}</h4>
-                    <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '24px' }}>{st?.role === 'creator' ? 'Edit your profile builder and keep this public page polished for brands.' : 'Apply for an Elite Audit and get a professional profile like this one.'}</p>
-                    <Btn full lg style={{ background: '#fff', color: '#0f172a', borderRadius: '100px' }} onClick={() => navigate(st?.role === 'creator' ? '/creator/profile' : '/apply')}>{st?.role === 'creator' ? 'Edit My Profile' : 'Get Elite Verified'}</Btn>
+                    <p style={{ fontSize: '12px', color: '#64748b', margin: 0, lineHeight: 1.4 }}>Get verified and scale your profile audits.</p>
+                    <Btn 
+                      full 
+                      sm 
+                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff', borderRadius: '100px', padding: '10px 18px', fontSize: '13px', fontWeight: 800 }} 
+                      onClick={() => navigate(st?.role === 'creator' ? '/creator/profile' : '/apply')}
+                    >
+                      {st?.role === 'creator' ? 'Edit Workspace' : 'Get Verified'}
+                    </Btn>
                  </div>
               </div>
            </div>
         </section>
       )}
-
+      </div>
 
       <RateCreatorModal open={rateOpen} name={c?.name || 'Creator'} dsp={dsp} onSubmit={handleReviewSubmit} user={st?.user} onClose={() => setRateOpen(false)} />
       <CollabBriefModal open={briefOpen} pkg={selectedPkg} creatorName={c?.name || 'Creator'} dsp={dsp} onClose={() => setBriefOpen(false)} />
