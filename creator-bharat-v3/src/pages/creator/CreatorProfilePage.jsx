@@ -596,7 +596,7 @@ export default function CreatorProfilePage() {
         </div>
       </div>
 
-      <div ref={contentRef} id="profile-content-area" style={{ ...W(1200), padding: mob ? '0 16px 120px' : '60px 24px' }}>
+      <div ref={contentRef} id="profile-content-area" style={{ ...W(1200), padding: mob ? (activeTab === 'identity' ? '0 16px 120px' : '0 16px 32px') : '60px 24px' }}>
          <AnimatePresence mode="wait">
             <ProfileTabContent 
                activeTab={activeTab}
