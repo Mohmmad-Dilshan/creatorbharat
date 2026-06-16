@@ -117,6 +117,74 @@ export const fmt = {
         title: `How ${c.name} is Revolutionizing ${n} Content in ${c.city}`,
         p1: `${c.name}, a rising star in the ${n} space from ${c.city}, has been making waves with authentic storytelling. With over ${fmt.num(c.followers)} followers, their journey is an inspiration for creators across ${c.state || 'India'}.`
      }
+  },
+  getPlatformFollowers(c) {
+    if (!c) return { instagram: 0, youtube: 0, linkedin: 0, twitter: 0, facebook: 0, socialLinks: [], total: 0, isLegacy: false };
+    const ig = parseInt(c.instagram_followers ?? c.instagramFollowers) || 0;
+    const yt = parseInt(c.youtube_followers ?? c.youtubeFollowers) || 0;
+    const li = parseInt(c.linkedin_followers ?? c.linkedinFollowers) || 0;
+    const tw = parseInt(c.twitter_followers ?? c.twitterFollowers) || 0;
+    const fb = parseInt(c.facebook_followers ?? c.facebookFollowers) || 0;
+
+    const socialLinks = c.socialLinks || c.social_links || [];
+    let otherTotal = 0;
+    const socialLinksWithFollowers = socialLinks.map(link => {
+      const fCount = parseInt(link.followers) || 0;
+      otherTotal += fCount;
+      return { ...link, followers: fCount };
+    });
+
+    const sum = ig + yt + li + tw + fb + otherTotal;
+
+    if (sum === 0 && c.followers > 0) {
+      const activePrimary = [];
+      if (c.instagram) activePrimary.push('instagram');
+      if (c.youtube) activePrimary.push('youtube');
+      if (c.linkedin) activePrimary.push('linkedin');
+      if (c.twitter) activePrimary.push('twitter');
+      if (c.facebook) activePrimary.push('facebook');
+
+      const activeCount = activePrimary.length + socialLinks.length;
+      if (activeCount > 0) {
+        const weights = { instagram: 50, youtube: 35, linkedin: 15, twitter: 10, facebook: 10 };
+        let totalWeight = 0;
+        activePrimary.forEach(p => { totalWeight += weights[p] || 10; });
+        socialLinks.forEach(() => { totalWeight += 10; });
+
+        if (totalWeight > 0) {
+          const platformCounts = {};
+          activePrimary.forEach(p => {
+            const w = weights[p] || 10;
+            platformCounts[p] = Math.round((c.followers * w) / totalWeight);
+          });
+          const resolvedSocialLinks = socialLinks.map(link => {
+            const count = Math.round((c.followers * 10) / totalWeight);
+            return { ...link, followers: count };
+          });
+          return {
+            instagram: platformCounts.instagram || 0,
+            youtube: platformCounts.youtube || 0,
+            linkedin: platformCounts.linkedin || 0,
+            twitter: platformCounts.twitter || 0,
+            facebook: platformCounts.facebook || 0,
+            socialLinks: resolvedSocialLinks,
+            total: c.followers,
+            isLegacy: true
+          };
+        }
+      }
+    }
+
+    return {
+      instagram: ig,
+      youtube: yt,
+      linkedin: li,
+      twitter: tw,
+      facebook: fb,
+      socialLinks: socialLinksWithFollowers,
+      total: sum || c.followers || 0,
+      isLegacy: false
+    };
   }
 };
 

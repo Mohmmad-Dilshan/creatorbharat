@@ -168,6 +168,14 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
   const freeLimit = 3;
   const linksUsed = F.socialLinks?.filter(l => l.url).length || 0;
 
+  const instagramFollowersInt = parseInt(F.instagramFollowers) || 0;
+  const youtubeFollowersInt = parseInt(F.youtubeFollowers) || 0;
+  const linkedinFollowersInt = parseInt(F.linkedinFollowers) || 0;
+  const twitterFollowersInt = parseInt(F.twitterFollowers) || 0;
+  const facebookFollowersInt = parseInt(F.facebookFollowers) || 0;
+  const customFollowersSum = F.socialLinks?.filter(l => l.url).reduce((sum, l) => sum + (parseInt(l.followers) || 0), 0) || 0;
+  const currentTotalReach = instagramFollowersInt + youtubeFollowersInt + linkedinFollowersInt + twitterFollowersInt + facebookFollowersInt + customFollowersSum;
+
   return (
     <Card className="settings-form-card card-3d-effect">
        <h3 className="db-section-title">Step 2: Social Ecosystem & Gallery</h3>
@@ -177,13 +185,30 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
          {/* Primary Platforms */}
          <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', marginBottom: 16, textTransform: 'uppercase' }}>Primary Platforms & Handles</p>
          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px' }}>
-            <Fld label="Instagram Profile Handle" value={F.instagram} onChange={e => upF('instagram', e.target.value)} placeholder="@username" />
-            <Fld label="YouTube Channel Link" value={F.youtube} onChange={e => upF('youtube', e.target.value)} placeholder="https://youtube.com/c/..." />
-            <Fld label="LinkedIn Profile URL" value={F.linkedin} onChange={e => upF('linkedin', e.target.value)} placeholder="https://linkedin.com/in/username" />
-            <Fld label="Twitter / X Profile URL" value={F.twitter} onChange={e => upF('twitter', e.target.value)} placeholder="https://twitter.com/username" />
-            <Fld label="Facebook Profile URL" value={F.facebook} onChange={e => upF('facebook', e.target.value)} placeholder="https://facebook.com/username" />
+            <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
+              <Fld label="Instagram Profile Handle" value={F.instagram} onChange={e => upF('instagram', e.target.value)} placeholder="@username" />
+              <Fld label="Instagram Followers" type="number" value={F.instagramFollowers} onChange={e => upF('instagramFollowers', e.target.value)} placeholder="e.g. 50000" style={{ marginTop: '8px' }} />
+            </div>
+            <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
+              <Fld label="YouTube Channel Link" value={F.youtube} onChange={e => upF('youtube', e.target.value)} placeholder="https://youtube.com/c/..." />
+              <Fld label="YouTube Subscribers" type="number" value={F.youtubeFollowers} onChange={e => upF('youtubeFollowers', e.target.value)} placeholder="e.g. 120000" style={{ marginTop: '8px' }} />
+            </div>
+            <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
+              <Fld label="LinkedIn Profile URL" value={F.linkedin} onChange={e => upF('linkedin', e.target.value)} placeholder="https://linkedin.com/in/username" />
+              <Fld label="LinkedIn Followers" type="number" value={F.linkedinFollowers} onChange={e => upF('linkedinFollowers', e.target.value)} placeholder="e.g. 15000" style={{ marginTop: '8px' }} />
+            </div>
+            <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
+              <Fld label="Twitter / X Profile URL" value={F.twitter} onChange={e => upF('twitter', e.target.value)} placeholder="https://twitter.com/username" />
+              <Fld label="Twitter / X Followers" type="number" value={F.twitterFollowers} onChange={e => upF('twitterFollowers', e.target.value)} placeholder="e.g. 25000" style={{ marginTop: '8px' }} />
+            </div>
+            <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
+              <Fld label="Facebook Profile URL" value={F.facebook} onChange={e => upF('facebook', e.target.value)} placeholder="https://facebook.com/username" />
+              <Fld label="Facebook Followers" type="number" value={F.facebookFollowers} onChange={e => upF('facebookFollowers', e.target.value)} placeholder="e.g. 8000" style={{ marginTop: '8px' }} />
+            </div>
+            <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #f1f5f9', display: 'flex', alignItems: 'center' }}>
+              <Fld label="Portfolio / Website URL" value={F.portfolio} onChange={e => upF('portfolio', e.target.value)} placeholder="https://mywork.com" style={{ width: '100%' }} />
+            </div>
          </div>
-         <Fld label="Portfolio / Website URL" value={F.portfolio} onChange={e => upF('portfolio', e.target.value)} placeholder="https://mywork.com" />
 
           {/* Additional Social Links — Subscription Gated */}
           <div style={{ marginTop: 32, borderTop: '1px solid #f1f5f9', paddingTop: 32 }}>
@@ -210,7 +235,16 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
              {F.socialLinks?.map((link, idx) => {
                const isLocked = !isPro && idx >= freeLimit;
                return (
-                 <div key={idx} style={{ display: 'grid', gridTemplateColumns: '160px 1fr 40px', gap: 12, marginBottom: 12 }}>
+                 <div key={idx} style={{ 
+                   display: 'grid', 
+                   gridTemplateColumns: mob ? '1fr' : '150px 1.8fr 1.2fr 44px', 
+                   gap: 12, 
+                   marginBottom: 12,
+                   background: mob ? '#f8fafc' : 'transparent',
+                   padding: mob ? '16px' : '0',
+                   borderRadius: mob ? '16px' : '0',
+                   border: mob ? '1px solid #e2e8f0' : 'none'
+                 }}>
                    <select
                      value={link.platform}
                      onChange={e => upSocialLink(idx, 'platform', e.target.value)}
@@ -218,7 +252,7 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
                      style={{
                        padding: '10px 12px', borderRadius: 12, border: '1px solid #e2e8f0',
                        fontSize: 13, fontWeight: 700, color: '#0f172a', background: isLocked ? '#f8fafc' : '#fff',
-                       cursor: isLocked ? 'not-allowed' : 'pointer'
+                       cursor: isLocked ? 'not-allowed' : 'pointer', height: '42px'
                      }}
                    >
                      {PLATFORM_OPTIONS.map(p => <option key={p} value={p}>{p}</option>)}
@@ -234,7 +268,7 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
                          width: '100%', padding: '10px 12px', borderRadius: 12,
                          border: '1px solid #e2e8f0', fontSize: 13, fontWeight: 600,
                          color: '#0f172a', background: isLocked ? '#f8fafc' : '#fff',
-                         boxSizing: 'border-box', cursor: isLocked ? 'not-allowed' : 'text'
+                         boxSizing: 'border-box', cursor: isLocked ? 'not-allowed' : 'text', height: '42px'
                        }}
                      />
                      {isLocked && (
@@ -243,10 +277,25 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
                        </div>
                      )}
                    </div>
+                   <div>
+                     <input
+                       type="number"
+                       value={link.followers || ''}
+                       onChange={e => upSocialLink(idx, 'followers', e.target.value)}
+                       placeholder="Followers"
+                       disabled={isLocked}
+                       style={{
+                         width: '100%', padding: '10px 12px', borderRadius: 12,
+                         border: '1px solid #e2e8f0', fontSize: 13, fontWeight: 600,
+                         color: '#0f172a', background: isLocked ? '#f8fafc' : '#fff',
+                         boxSizing: 'border-box', cursor: isLocked ? 'not-allowed' : 'text', height: '42px'
+                       }}
+                     />
+                   </div>
                    <button onClick={() => removeSocialLink(idx)} style={{
                      background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)',
-                     borderRadius: 10, color: '#EF4444', cursor: 'pointer', display: 'flex',
-                     alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                     borderRadius: 12, color: '#EF4444', cursor: 'pointer', display: 'flex',
+                     alignItems: 'center', justifyContent: 'center', flexShrink: 0, height: '42px', width: '100%'
                    }}>
                      <Trash2 size={14} />
                    </button>
@@ -257,6 +306,34 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
              {!isPro && linksUsed >= freeLimit && (
                <ProLockBanner onUpgrade={() => navigate('/creator/monetization')} />
              )}
+          </div>
+
+          {/* Dynamic dynamic calculated reach card */}
+          <div style={{
+            background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+            borderRadius: 24,
+            padding: '24px',
+            marginTop: 32,
+            color: '#fff',
+            border: '1px solid rgba(255,255,255,0.1)',
+            display: 'flex',
+            flexDirection: mob ? 'column' : 'row',
+            justifyContent: 'space-between',
+            alignItems: mob ? 'flex-start' : 'center',
+            gap: 16,
+            boxShadow: '0 20px 40px rgba(15,23,42,0.15)'
+          }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <Sparkles size={16} color="#FF9431" fill="#FF9431" />
+                <span style={{ fontSize: 11, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px', color: '#FF9431' }}>Dynamically Calculated Reach</span>
+              </div>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', margin: 0, fontWeight: 600 }}>Your profile's verified aggregate audience count across all platforms.</p>
+            </div>
+            <div style={{ textAlign: mob ? 'left' : 'right' }}>
+              <p style={{ fontSize: '32px', fontWeight: 950, color: '#FFF', margin: 0, letterSpacing: '-0.02em' }}>{fmt.num(currentTotalReach)}</p>
+              <span style={{ fontSize: 10, color: '#94a3b8', fontWeight: 800 }}>TOTAL FOLLOWER REACH</span>
+            </div>
           </div>
 
           {/* Contact Details */}
@@ -831,7 +908,11 @@ const getInitialFormState = (c) => {
     { title: '', brand: '', desc: '', link: '', img: '', r1_label: 'Views', r1_val: '', r2_label: 'Shares', r2_val: '' }
   ]).map((cs, idx) => ({ ...cs, id: cs.id || `casestudy-${idx}` }));
 
-  const socialLinks = c?.social_links?.length ? [...c.social_links] : [];
+  const socialLinks = (c?.social_links?.length ? c.social_links : []).map(link => ({
+    platform: link.platform || 'Instagram',
+    url: link.url || '',
+    followers: link.followers || ''
+  }));
   const sponsoredPosts = c?.sponsored_posts?.length ? c.sponsored_posts.map(p => ({
     brand: p.brand || '', campaign: p.campaign || '', platform: p.platform || 'Instagram',
     postUrl: p.postUrl || '', reach: p.reach || '', engagement: p.engagement || '',
@@ -842,6 +923,11 @@ const getInitialFormState = (c) => {
     name: c?.name || '', bio: c?.bio || '', city: c?.city || '', state: c?.state || '',
     photo: c?.photo || '', instagram: c?.instagram || '', youtube: c?.youtube || '',
     linkedin: c?.linkedin || '', twitter: c?.twitter || '', facebook: c?.facebook || '',
+    instagramFollowers: c?.instagram_followers || c?.instagramFollowers || '',
+    youtubeFollowers: c?.youtube_followers || c?.youtubeFollowers || '',
+    linkedinFollowers: c?.linkedin_followers || c?.linkedinFollowers || '',
+    twitterFollowers: c?.twitter_followers || c?.twitterFollowers || '',
+    facebookFollowers: c?.facebook_followers || c?.facebookFollowers || '',
     rateMin: c?.rateMin || '', rateMax: c?.rateMax || '', portfolio: c?.portfolio || '',
     address: c?.address || '', tagline: c?.tagline || '', connections: c?.connections || '500+',
     gallery: [c?.gallery?.[0]||'', c?.gallery?.[1]||'', c?.gallery?.[2]||'', c?.gallery?.[3]||''],
@@ -878,7 +964,9 @@ export default function ProfileBuilderPage() {
     if (c) {
       setF(p => ({
         ...getInitialFormState(c),
-        socialLinks: c?.social_links?.length ? [...c.social_links] : p.socialLinks,
+        socialLinks: c?.social_links?.length 
+          ? c.social_links.map(link => ({ platform: link.platform || 'Instagram', url: link.url || '', followers: link.followers || '' })) 
+          : p.socialLinks,
         sponsoredPosts: c?.sponsored_posts?.length ? c.sponsored_posts.map(sp => ({
           brand: sp.brand || '', campaign: sp.campaign || '', platform: sp.platform || 'Instagram',
           postUrl: sp.postUrl || '', reach: sp.reach || '', engagement: sp.engagement || '',
@@ -905,7 +993,7 @@ export default function ProfileBuilderPage() {
   const upViralContent = (idx, field, val) => setF(p => { const copy = [...p.viralContent]; copy[idx] = { ...copy[idx], [field]: val }; return { ...p, viralContent: copy }; });
   const upCaseStudy = (idx, field, val) => setF(p => { const copy = [...p.caseStudies]; copy[idx] = { ...copy[idx], [field]: val }; return { ...p, caseStudies: copy }; });
   const upSocialLink = (idx, field, val) => setF(p => { const copy = [...p.socialLinks]; copy[idx] = { ...copy[idx], [field]: val }; return { ...p, socialLinks: copy }; });
-  const addSocialLink = () => setF(p => ({ ...p, socialLinks: [...p.socialLinks, { platform: 'Instagram', url: '' }] }));
+  const addSocialLink = () => setF(p => ({ ...p, socialLinks: [...p.socialLinks, { platform: 'Instagram', url: '', followers: '' }] }));
   const removeSocialLink = (idx) => setF(p => ({ ...p, socialLinks: p.socialLinks.filter((_, i) => i !== idx) }));
   const upSponsoredPost = (idx, field, val) => setF(p => { const copy = [...p.sponsoredPosts]; copy[idx] = { ...copy[idx], [field]: val }; return { ...p, sponsoredPosts: copy }; });
 
@@ -935,7 +1023,13 @@ export default function ProfileBuilderPage() {
         views: v.views, img: v.img || '', title: v.title || '', link: v.link || ''
       }));
       const filteredSponsoredPosts = F.sponsoredPosts.filter(p => p.brand && p.campaign);
-      const filteredSocialLinks = F.socialLinks.filter(l => l.url);
+      
+      const filteredSocialLinks = F.socialLinks.filter(l => l.url).map(l => ({
+        platform: l.platform,
+        url: l.url,
+        followers: parseInt(l.followers) || 0
+      }));
+
       const filteredCaseStudies = F.caseStudies.filter(cs => cs.title && cs.brand).map(cs => ({
         title: cs.title, brand: cs.brand,
         desc: cs.desc || '', link: cs.link || '', img: cs.img || '',
@@ -945,12 +1039,31 @@ export default function ProfileBuilderPage() {
         ]
       }));
 
+      const instagramFollowersInt = parseInt(F.instagramFollowers) || 0;
+      const youtubeFollowersInt = parseInt(F.youtubeFollowers) || 0;
+      const linkedinFollowersInt = parseInt(F.linkedinFollowers) || 0;
+      const twitterFollowersInt = parseInt(F.twitterFollowers) || 0;
+      const facebookFollowersInt = parseInt(F.facebookFollowers) || 0;
+      const customFollowersSum = filteredSocialLinks.reduce((sum, l) => sum + (l.followers || 0), 0);
+      const totalReach = instagramFollowersInt + youtubeFollowersInt + linkedinFollowersInt + twitterFollowersInt + facebookFollowersInt + customFollowersSum;
+
       const updatedProfile = { 
         ...c, name: F.name, bio: F.bio, city: F.city, state: F.state,
         instagram: F.instagram, youtube: F.youtube, rateMin: F.rateMin, rateMax: F.rateMax,
         portfolio: F.portfolio, gallery: filteredGallery,
         address: F.address, tagline: F.tagline, connections: F.connections,
         facebook: F.facebook, linkedin: F.linkedin, twitter: F.twitter,
+        instagramFollowers: instagramFollowersInt,
+        youtubeFollowers: youtubeFollowersInt,
+        linkedinFollowers: linkedinFollowersInt,
+        twitterFollowers: twitterFollowersInt,
+        facebookFollowers: facebookFollowersInt,
+        instagram_followers: instagramFollowersInt,
+        youtube_followers: youtubeFollowersInt,
+        linkedin_followers: linkedinFollowersInt,
+        twitter_followers: twitterFollowersInt,
+        facebook_followers: facebookFollowersInt,
+        followers: totalReach,
         photo: F.photo || c.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(F.name || st.user.name)}`,
         fullStory: { p1: F.storyP1, quote: F.storyQuote, p2: F.storyP2, p3: F.storyP3 },
         awards: filteredAwards, collabs: filteredCollabs, milestones: filteredMilestones,

@@ -11,8 +11,10 @@ import {
   Zap,
   Globe,
   ArrowRight,
-  Briefcase
+  Briefcase,
+  Users
 } from 'lucide-react';
+import { InstagramIcon, YoutubeIcon, LinkedinIcon, TwitterIcon, FacebookIcon } from '../../icons/SocialIcons';
 import { Card } from '@/components/common/Primitives';
 import { fmt } from '@/utils/helpers';
 import { SocialLinkTree, TrustBadge, TabNavigator } from './ProfileShared';
@@ -21,6 +23,99 @@ const EmptyState = ({ title }) => null;
 EmptyState.propTypes = { title: PropTypes.string.isRequired };
 
 // --- SUB-COMPONENTS FOR IDENTITY TAB ---
+
+const AudienceFootprint = ({ c, mob }) => {
+  const platformData = fmt.getPlatformFollowers(c);
+  
+  const channels = [
+    { id: 'instagram', label: 'Instagram', val: platformData.instagram, handle: c.instagram, icon: InstagramIcon, color: '#E4405F', bg: 'rgba(228,64,95,0.06)' },
+    { id: 'youtube', label: 'YouTube', val: platformData.youtube, handle: c.youtube, icon: YoutubeIcon, color: '#FF0000', bg: 'rgba(255,0,0,0.06)' },
+    { id: 'linkedin', label: 'LinkedIn', val: platformData.linkedin, handle: c.linkedin, icon: LinkedinIcon, color: '#0077B5', bg: 'rgba(0,119,181,0.06)' },
+    { id: 'twitter', label: 'Twitter / X', val: platformData.twitter, handle: c.twitter, icon: TwitterIcon, color: '#0F172A', bg: 'rgba(15,23,42,0.06)' },
+    { id: 'facebook', label: 'Facebook', val: platformData.facebook, handle: c.facebook, icon: FacebookIcon, color: '#1877F2', bg: 'rgba(24,119,242,0.06)' }
+  ];
+
+  const activePrimaryChannels = channels.filter(ch => ch.val > 0 || ch.handle);
+
+  const customChannels = (platformData.socialLinks || []).map((link, idx) => {
+    let platformName = link.platform || 'Link';
+    let icon = Globe;
+    let color = '#FF9431';
+    let bg = 'rgba(255,148,49,0.06)';
+
+    const pLower = platformName.toLowerCase();
+    if (pLower.includes('instagram')) { icon = InstagramIcon; color = '#E4405F'; bg = 'rgba(228,64,95,0.06)'; }
+    else if (pLower.includes('youtube')) { icon = YoutubeIcon; color = '#FF0000'; bg = 'rgba(255,0,0,0.06)'; }
+    else if (pLower.includes('linkedin')) { icon = LinkedinIcon; color = '#0077B5'; bg = 'rgba(0,119,181,0.06)'; }
+    else if (pLower.includes('twitter') || pLower === 'x') { icon = TwitterIcon; color = '#0F172A'; bg = 'rgba(15,23,42,0.06)'; }
+    else if (pLower.includes('facebook')) { icon = FacebookIcon; color = '#1877F2'; bg = 'rgba(24,119,242,0.06)'; }
+
+    return {
+      id: `custom-${idx}`,
+      label: platformName,
+      val: link.followers || 0,
+      handle: link.url,
+      icon,
+      color,
+      bg
+    };
+  });
+
+  const allActiveChannels = [...activePrimaryChannels, ...customChannels];
+
+  if (allActiveChannels.length === 0) return null;
+
+  return (
+    <Card style={{ padding: mob ? '24px 20px' : '32px 40px', borderRadius: '32px', marginBottom: '40px', border: '1.5px solid #f1f5f9', background: '#fff', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: '0', left: '0', width: '4px', height: '100%', background: '#FF9431' }} />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Users size={22} color="#FF9431" />
+            <h3 style={{ fontSize: mob ? '18px' : '22px', fontWeight: 950, color: '#0f172a', margin: 0 }}>
+               Audience Footprint & Reach
+            </h3>
+         </div>
+         {platformData.isLegacy && (
+           <span style={{ fontSize: '10px', background: '#fef3c7', color: '#d97706', padding: '4px 10px', borderRadius: '100px', fontWeight: 800 }}>
+             Estimated Platform Share (Legacy Creator)
+           </span>
+         )}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px' }}>
+        {allActiveChannels.map(ch => {
+          const IconComp = ch.icon;
+          return (
+            <div key={ch.id} style={{
+              padding: '16px',
+              background: ch.bg,
+              borderRadius: '20px',
+              border: '1px solid rgba(226, 232, 240, 0.4)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              position: 'relative'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: ch.color, boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                  <IconComp size={16} />
+                </div>
+                <span style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{ch.label}</span>
+              </div>
+              <div>
+                <div style={{ fontSize: '18px', fontWeight: 950, color: '#0f172a', lineHeight: 1.2 }}>{fmt.num(ch.val)}</div>
+                <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {ch.handle ? (typeof ch.handle === 'string' && ch.handle.startsWith('http') ? 'Connected' : ch.handle) : 'Not Listed'}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </Card>
+  );
+};
+AudienceFootprint.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
 
 const HumanStory = ({ c, mob }) => {
   const isDummy = c.id === 'fallback';
@@ -256,6 +351,7 @@ LocationDominanceVoice.propTypes = { c: PropTypes.object.isRequired, mob: PropTy
 
 export const IdentityTab = ({ c, stats, onRate, mob, setActiveTab }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+    <AudienceFootprint c={c} mob={mob} />
     <HumanStory c={c} mob={mob} />
     <AIFitInsight c={c} mob={mob} />
     <ContentPhilosophy c={c} mob={mob} />

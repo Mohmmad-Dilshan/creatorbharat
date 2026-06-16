@@ -1,8 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import PropTypes from 'prop-types';
-import { ArrowRight, ShieldCheck, ImageIcon, Play, Briefcase, Globe, Mic2, Lock, Send, FileText, Compass, Phone } from 'lucide-react';
-import { GithubIcon } from '../../icons/SocialIcons';
+import { 
+  ArrowRight, ShieldCheck, ImageIcon, Play, Briefcase, Globe, Mic2, Lock, Send, 
+  FileText, Compass, Phone, Users 
+} from 'lucide-react';
+import { InstagramIcon, YoutubeIcon, LinkedinIcon, TwitterIcon, FacebookIcon, GithubIcon } from '../../icons/SocialIcons';
 
 export const TAB_LIST = [
   { id: 'identity',  label: 'Identity',   icon: '👤', desc: 'Who they are' },
@@ -204,10 +207,10 @@ export const TabNavigator = ({ activeTab, setActiveTab, mob }) => {
 export const SocialLinkTree = ({ links = {}, c = {}, mob, compact }) => {
   // Master list of all possible platforms a creator can add
   const MASTER_PLATFORMS = [
-    { id: 'instagram', l: 'Instagram', s: 'Visual Community & Stories', i: ImageIcon, c: '#E4405F' },
-    { id: 'youtube', l: 'YouTube', s: 'Longform Videos & Vlogs', i: Play, c: '#FF0000' },
-    { id: 'linkedin', l: 'LinkedIn', s: 'Professional Partnerships', i: Briefcase, c: '#0077B5' },
-    { id: 'twitter', l: 'Twitter / X', s: 'Real-time Updates & Thoughts', i: Globe, c: '#000000' },
+    { id: 'instagram', l: 'Instagram', s: 'Visual Community & Stories', i: InstagramIcon, c: '#E4405F' },
+    { id: 'youtube', l: 'YouTube', s: 'Longform Videos & Vlogs', i: YoutubeIcon, c: '#FF0000' },
+    { id: 'linkedin', l: 'LinkedIn', s: 'Professional Partnerships', i: LinkedinIcon, c: '#0077B5' },
+    { id: 'twitter', l: 'Twitter / X', s: 'Real-time Updates & Thoughts', i: TwitterIcon, c: '#000000' },
     { id: 'telegram', l: 'Telegram', s: 'Broadcast Channel & Community', i: Send, c: '#26A5E4' },
     { id: 'whatsapp', l: 'WhatsApp', s: 'Direct Updates & Group Chat', i: Phone, c: '#25D366' },
     { id: 'threads', l: 'Threads', s: 'Text Discussions & Thoughts', i: Globe, c: '#101010' },
@@ -215,7 +218,7 @@ export const SocialLinkTree = ({ links = {}, c = {}, mob, compact }) => {
     { id: 'sharechat', l: 'ShareChat', s: 'Vernacular Community Hub', i: Globe, c: '#0082FF' },
     { id: 'josh', l: 'Josh App', s: 'Regional Short Video Platform', i: Play, c: '#FF2052' },
     { id: 'snapchat', l: 'Snapchat', s: 'Daily Stories & Behind the Scenes', i: ImageIcon, c: '#FFFC00' },
-    { id: 'facebook', l: 'Facebook', s: 'Community Page & Groups', i: Globe, c: '#1877F2' },
+    { id: 'facebook', l: 'Facebook', s: 'Community Page & Groups', i: FacebookIcon, c: '#1877F2' },
     { id: 'pinterest', l: 'Pinterest', s: 'Moodboards & Creative Ideas', i: ImageIcon, c: '#E60023' },
     { id: 'twitch', l: 'Twitch', s: 'Live Streams & Gaming', i: Play, c: '#9146FF' },
     { id: 'spotify', l: 'Spotify / Podcasts', s: 'Audio & Podcast Episodes', i: Mic2, c: '#1DB954' },
@@ -316,6 +319,19 @@ export const SocialLinkTree = ({ links = {}, c = {}, mob, compact }) => {
 
   if (displayLinks.length === 0) return null;
 
+  const platformFollowers = fmt.getPlatformFollowers(sourceCreator);
+
+  const getFollowersForPlatform = (platformId) => {
+    if (platformId === 'instagram') return platformFollowers.instagram;
+    if (platformId === 'youtube') return platformFollowers.youtube;
+    if (platformId === 'linkedin') return platformFollowers.linkedin;
+    if (platformId === 'twitter') return platformFollowers.twitter;
+    if (platformId === 'facebook') return platformFollowers.facebook;
+    
+    const match = platformFollowers.socialLinks?.find(l => l.platform?.toLowerCase() === platformId);
+    return match ? match.followers : 0;
+  };
+
   if (compact) {
     const listToRender = activeLinks.length > 0 ? activeLinks : MASTER_PLATFORMS.slice(0, 6);
     return (
@@ -397,6 +413,7 @@ export const SocialLinkTree = ({ links = {}, c = {}, mob, compact }) => {
        }}>
           {displayLinks.map(link => {
             const url = resolved[link.id] || '#';
+            const followerCount = getFollowersForPlatform(link.id);
             return (
               <motion.button 
                 key={link.id}
@@ -459,7 +476,14 @@ export const SocialLinkTree = ({ links = {}, c = {}, mob, compact }) => {
                        <link.i size={20} color={link.c} />
                     </div>
                     <div>
-                       <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a', marginBottom: '2px' }}>{link.l}</div>
+                       <div style={{ fontSize: '15px', fontWeight: 950, color: '#0f172a', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                         {link.l}
+                         {followerCount > 0 && (
+                           <span style={{ fontSize: '11px', background: `${link.c}15`, color: link.c, padding: '2px 8px', borderRadius: '100px', fontWeight: 900 }}>
+                             {fmt.num(followerCount)}
+                           </span>
+                         )}
+                       </div>
                        <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, letterSpacing: '0.2px' }}>{link.s}</div>
                     </div>
                  </div>
@@ -498,6 +522,78 @@ export const SocialLinkTree = ({ links = {}, c = {}, mob, compact }) => {
               </motion.button>
             );
           })}
+
+          {/* Dynamic dynamic calculated reach card inside the grid tree */}
+          {activeLinks.length > 0 && (
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: mob ? 'row' : 'column',
+              alignItems: mob ? 'center' : 'flex-start', 
+              justifyContent: 'space-between', 
+              padding: '24px', 
+              background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)', 
+              border: '1.5px solid rgba(255,148,49,0.2)', 
+              borderRadius: '28px', 
+              width: '100%', 
+              textAlign: 'left',
+              position: 'relative',
+              overflow: 'hidden',
+              gap: mob ? '16px' : '20px',
+              color: '#fff',
+              boxShadow: '0 8px 30px rgba(15,23,42,0.1)'
+            }}>
+               <div style={{
+                 position: 'absolute',
+                 bottom: '-15px',
+                 right: '-15px',
+                 width: '70px',
+                 height: '70px',
+                 borderRadius: '50%',
+                 background: 'rgba(255,148,49,0.06)',
+                 pointerEvents: 'none'
+               }} />
+
+               <div style={{ 
+                 display: 'flex', 
+                 flexDirection: mob ? 'row' : 'column', 
+                 alignItems: mob ? 'center' : 'flex-start', 
+                 gap: mob ? '16px' : '14px',
+                 width: '100%'
+               }}>
+                  <div style={{ 
+                    width: '46px', 
+                    height: '46px', 
+                    background: 'rgba(255, 148, 49, 0.15)', 
+                    borderRadius: '14px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    flexShrink: 0
+                  }}>
+                     <Users size={20} color="#FF9431" />
+                  </div>
+                  <div>
+                     <div style={{ fontSize: '15px', fontWeight: 950, color: '#fff', marginBottom: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                       Total Reach
+                       <span style={{ fontSize: '10px', background: '#FF9431', color: '#fff', padding: '1px 6px', borderRadius: '100px', fontWeight: 900 }}>
+                         LIVE
+                       </span>
+                     </div>
+                     <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, letterSpacing: '0.2px' }}>Aggregate Verified Audience</div>
+                  </div>
+               </div>
+
+               <div style={{
+                 alignSelf: mob ? 'center' : 'flex-end',
+                 fontSize: '20px',
+                 fontWeight: 950,
+                 color: '#FF9431',
+                 marginTop: mob ? '0' : '8px'
+               }}>
+                 {fmt.num(platformFollowers.total)}
+               </div>
+            </div>
+          )}
        </div>
     </div>
   );

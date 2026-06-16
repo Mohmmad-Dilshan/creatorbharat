@@ -129,6 +129,12 @@ function mergeCreator(seed, remote) {
   merged.localHubsTitle = localHubsTitle;
   merged.local_hubs_title = localHubsTitle;
 
+  merged.instagram_followers = remote.instagram_followers ?? remote.instagramFollowers ?? seed.instagram_followers ?? 0;
+  merged.youtube_followers = remote.youtube_followers ?? remote.youtubeFollowers ?? seed.youtube_followers ?? 0;
+  merged.linkedin_followers = remote.linkedin_followers ?? remote.linkedinFollowers ?? seed.linkedin_followers ?? 0;
+  merged.twitter_followers = remote.twitter_followers ?? remote.twitterFollowers ?? seed.twitter_followers ?? 0;
+  merged.facebook_followers = remote.facebook_followers ?? remote.facebookFollowers ?? seed.facebook_followers ?? 0;
+
   // Other standard fallbacks
   const arrayFields = ['niche', 'platform', 'services', 'languages', 'portfolio', 'gallery', 'packages', 'reviews'];
   arrayFields.forEach(field => {
@@ -432,7 +438,12 @@ export async function updateCreatorProfile(profileData) {
       philosophyTitle: profileData.philosophyTitle || profileData.philosophy_title,
       dominanceTitle: profileData.dominanceTitle || profileData.dominance_title,
       localTitle: profileData.localTitle || profileData.local_title,
-      localHubsTitle: profileData.localHubsTitle || profileData.local_hubs_title
+      localHubsTitle: profileData.localHubsTitle || profileData.local_hubs_title,
+      instagram_followers: parseInt(profileData.instagram_followers || profileData.instagramFollowers) || 0,
+      youtube_followers: parseInt(profileData.youtube_followers || profileData.youtubeFollowers) || 0,
+      linkedin_followers: parseInt(profileData.linkedin_followers || profileData.linkedinFollowers) || 0,
+      twitter_followers: parseInt(profileData.twitter_followers || profileData.twitterFollowers) || 0,
+      facebook_followers: parseInt(profileData.facebook_followers || profileData.facebookFollowers) || 0
     };
 
     const res = await apiCall('/creators/me', {
