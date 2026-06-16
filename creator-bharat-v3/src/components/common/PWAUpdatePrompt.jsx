@@ -108,7 +108,7 @@ export default function PWAUpdatePrompt() {
             position: 'fixed',
             inset: 0,
             backgroundColor: '#090d16',
-            zIndex: 99999,
+            zIndex: 9999999,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
