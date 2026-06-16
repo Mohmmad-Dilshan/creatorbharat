@@ -18,7 +18,7 @@ export const IS = {
   follows: [],        // who this user follows (creator/brand IDs)
   toasts: [],
   ui: { mobileMenu: false, hideNav: false },
-  cf: { q: '', state: '', niche: [], platform: [], sort: 'score', verified: false, minFollowers: '', minER: '', minScore: '' },
+  cf: { q: '', state: '', niche: [], platform: [], sort: 'score', verified: false, minFollowers: '', minER: '', minScore: '', minRating: '' },
   cpf: { q: '', niche: '', urgent: false }
 };
 

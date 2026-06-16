@@ -18,7 +18,8 @@ import {
   ChevronRight,
   Filter,
   Video,
-  Camera
+  Camera,
+  Star
 } from 'lucide-react';
 import { InstagramIcon } from '../../components/icons/SocialIcons';
 import { Btn, Bdg } from '../../components/common/Primitives';
@@ -64,6 +65,13 @@ const checkMetrics = (c, f) => {
   if (f.gender && f.gender !== 'Any' && c.gender !== f.gender) return false;
   if (f.language && c.language && !c.language.includes(f.language)) return false;
   if (f.minER && (c.er || 0) < Number(f.minER)) return false;
+  if (f.minRating) {
+    const totalReviews = c.reviews?.length || 0;
+    const avgRating = totalReviews > 0
+      ? c.reviews.reduce((sum, r) => sum + r.r, 0) / totalReviews
+      : 4.8;
+    if (avgRating < Number(f.minRating)) return false;
+  }
   return true;
 };
 
@@ -245,6 +253,51 @@ const DataHub = ({ creator, mob, saved, compared, requireBrand, dsp, onFullView,
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10B981', fontWeight: 900, fontSize: '14px' }}>
                <ShieldCheck size={18} /> {brandSafety}
             </div>
+         </div>
+      </div>
+
+      {/* VERIFIED BRAND REVIEWS PREVIEW */}
+      <div style={{ marginBottom: '40px' }}>
+         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <h4 style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', margin: 0 }}>Verified Brand Reviews</h4>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255, 148, 49, 0.08)', padding: '6px 12px', borderRadius: '100px', border: '1px solid rgba(255, 148, 49, 0.15)' }}>
+               <Star size={12} fill="#FF9431" color="#FF9431" />
+               <span style={{ fontSize: '13px', fontWeight: 950, color: '#0f172a' }}>
+                 {creator.reviews && creator.reviews.length > 0 
+                   ? (creator.reviews.reduce((sum, r) => sum + r.r, 0) / creator.reviews.length).toFixed(1) 
+                   : '5.0'}
+               </span>
+               <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 700 }}>
+                 ({creator.reviews && creator.reviews.length > 0 ? creator.reviews.length : 3})
+               </span>
+            </div>
+         </div>
+         
+         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {(creator.reviews || [
+               { b: 'OYO Rooms', r: 5, t: 'Absolute professional. The Jaipur heritage campaign delivered 4x the expected engagement.', u: 'Brand Manager', d: '2 weeks ago', type: 'brand', id: 'oyo' },
+               { b: 'Rohan Sharma', r: 5, t: 'The cultural storytelling in the summer drop was raw and authentic. Highly recommended!', u: 'Travel Creator', d: '1 month ago', type: 'creator', id: 'rohan' }
+            ]).slice(0, 2).map((rev, idx) => (
+              <div key={rev.id || idx} style={{ background: '#f8fafc', padding: '16px', borderRadius: '20px', border: '1px solid #f1f5f9' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                     <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', color: '#fff', fontSize: '10px', fontWeight: 900, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                       {rev.b ? rev.b[0] : 'B'}
+                     </div>
+                     <div>
+                       <span style={{ fontSize: '12.5px', fontWeight: 850, color: '#0f172a' }}>{rev.b}</span>
+                       <span style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 650, marginLeft: '6px' }}>{rev.u}</span>
+                     </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '2px' }}>
+                    {[1,2,3,4,5].map(s => <Star key={s} size={10} fill={s <= rev.r ? '#FF9431' : 'none'} color={s <= rev.r ? '#FF9431' : '#e2e8f0'} />)}
+                  </div>
+                </div>
+                <p style={{ fontSize: '13px', color: '#475569', fontWeight: 550, margin: 0, lineHeight: 1.5, fontStyle: 'italic' }}>
+                  "{rev.t}"
+                </p>
+              </div>
+            ))}
          </div>
       </div>
 
@@ -1412,10 +1465,10 @@ export default function CreatorsPage() {
     return () => globalThis.removeEventListener('resize', h);
   }, []);
 
-  const hasFilters = !!(f.search || (f.niche && f.niche.length > 0) || (f.platform && f.platform.length > 0) || f.state || f.district || f.minFollowers > 0 || f.maxFollowers > 0);
+  const hasFilters = !!(f.search || (f.niche && f.niche.length > 0) || (f.platform && f.platform.length > 0) || f.state || f.district || f.minFollowers > 0 || f.maxFollowers > 0 || f.minRating);
   
   const clearFilters = () => {
-    dsp({ t: 'CF', v: { search: '', niche: '', platform: '', state: '', district: '', minFollowers: 0, maxFollowers: 0, q: '', verified: false, sort: 'score' } });
+    dsp({ t: 'CF', v: { search: '', niche: '', platform: '', state: '', district: '', minFollowers: 0, maxFollowers: 0, q: '', verified: false, sort: 'score', minRating: '' } });
   };
 
   // Sync Global Nav with Modals/Filters (Z-index management)

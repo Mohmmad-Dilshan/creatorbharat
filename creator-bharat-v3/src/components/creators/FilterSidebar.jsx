@@ -97,7 +97,7 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches }) {
     t: 'CF', v: {
       q: '', niche: [], state: '', district: '', platform: [],
       verified: false, minFollowers: '', sort: 'score',
-      gender: '', language: '', minER: '', minScore: '',
+      gender: '', language: '', minER: '', minScore: '', minRating: '',
     },
   });
 
@@ -110,6 +110,7 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches }) {
     f.minFollowers,
     f.minER,
     f.minScore,
+    f.minRating,
     f.verified,
   ].filter(Boolean).length;
 
@@ -278,6 +279,19 @@ export default function FilterSidebar({ show, onClose, f, dsp, mob, niches }) {
             </div>
           </div>
 
+          {/* Minimum Rating */}
+          <div>
+            <Label>⭐ Min Rating</Label>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {[{ label: 'Any', value: '' }, { label: '4.0+ ★', value: '4' }, { label: '4.5+ ★', value: '4.5' }, { label: '4.8+ ★', value: '4.8' }].map(opt => (
+                <Chip key={opt.label} label={opt.label} color="#FF9431"
+                  active={(f.minRating || '') === opt.value}
+                  onClick={() => dsp({ t: 'CF', v: { minRating: opt.value } })}
+                />
+              ))}
+            </div>
+          </div>
+
           {/* Verified Toggle — full width */}
           <div style={{
             gridColumn: '1 / -1',
@@ -439,5 +453,6 @@ FilterSidebar.propTypes = {
     language: PropTypes.string,
     minER: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     minScore: PropTypes.string,
+    minRating: PropTypes.string,
   }).isRequired,
 };

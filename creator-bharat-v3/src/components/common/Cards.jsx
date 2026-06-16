@@ -191,15 +191,24 @@ const CreatorBio = ({ c, mob }) => (
         <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')}</span>
       </p>
       
-      {/* Star Rating Info */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-        <Star size={mob ? 9 : 13} fill="#FF9431" color="#FF9431" style={{ flexShrink: 0 }} />
-        <span style={{ fontSize: mob ? 9 : 14, fontWeight: 800, color: '#0F172A' }}>
+      {/* Star Rating Capsule */}
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: mob ? 3 : 5, 
+        background: 'rgba(255, 148, 49, 0.06)', 
+        border: '1.5px solid rgba(255, 148, 49, 0.15)',
+        padding: mob ? '2px 6px' : '4px 10px',
+        borderRadius: '100px',
+        flexShrink: 0
+      }}>
+        <Star size={mob ? 10 : 13} fill="#FF9431" color="#FF9431" style={{ flexShrink: 0 }} />
+        <span style={{ fontSize: mob ? 9 : 12.5, fontWeight: 900, color: '#EA580C', lineHeight: 1 }}>
           {c.reviews && c.reviews.length > 0
             ? (c.reviews.reduce((sum, r) => sum + r.r, 0) / c.reviews.length).toFixed(1)
             : '4.8'}
         </span>
-        <span style={{ fontSize: mob ? 8 : 12, fontWeight: 600, color: '#64748B' }}>
+        <span style={{ fontSize: mob ? 8 : 11, fontWeight: 700, color: '#FF9431', opacity: 0.8, lineHeight: 1 }}>
           ({c.reviews && c.reviews.length > 0 ? c.reviews.length : 3})
         </span>
       </div>
