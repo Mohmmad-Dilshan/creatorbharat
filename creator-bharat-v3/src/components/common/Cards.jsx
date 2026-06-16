@@ -5,7 +5,7 @@ import { useApp } from '../../core/context';
 import { T } from '../../core/theme';
 import { fmt } from '../../utils/helpers';
 import { Card, Bdg, Btn, Bar } from './Primitives';
-import { Heart, MapPin, Camera, Play, Briefcase, Ghost, AtSign, Smartphone, Check, Scale, Zap } from 'lucide-react';
+import { Heart, MapPin, Camera, Play, Briefcase, Ghost, AtSign, Smartphone, Check, Scale, Zap, Star } from 'lucide-react';
 
 const ensureArray = val => {
   if (Array.isArray(val)) return val;
@@ -177,9 +177,9 @@ const CreatorBio = ({ c, mob }) => (
         {c.tagline || (Array.isArray(c.niche) && c.niche.length > 0 ? `${c.niche[0]} Creator` : 'Digital Content Creator')}
       </p>
     )}
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: mob ? 8 : 12, flexWrap: 'wrap' }}>
       <p style={{ 
-        fontSize: mob ? 9 : 15, 
+        fontSize: mob ? 9 : 14, 
         color: '#64748B', 
         fontWeight: 600, 
         display: 'flex', 
@@ -190,6 +190,19 @@ const CreatorBio = ({ c, mob }) => (
         <MapPin size={mob ? 9 : 14} color="#64748B" strokeWidth={2.5} style={{ flexShrink: 0 }} /> 
         <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')}</span>
       </p>
+      
+      {/* Star Rating Info */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+        <Star size={mob ? 9 : 13} fill="#FF9431" color="#FF9431" style={{ flexShrink: 0 }} />
+        <span style={{ fontSize: mob ? 9 : 14, fontWeight: 800, color: '#0F172A' }}>
+          {c.reviews && c.reviews.length > 0
+            ? (c.reviews.reduce((sum, r) => sum + r.r, 0) / c.reviews.length).toFixed(1)
+            : '4.8'}
+        </span>
+        <span style={{ fontSize: mob ? 8 : 12, fontWeight: 600, color: '#64748B' }}>
+          ({c.reviews && c.reviews.length > 0 ? c.reviews.length : 3})
+        </span>
+      </div>
     </div>
   </div>
 );
