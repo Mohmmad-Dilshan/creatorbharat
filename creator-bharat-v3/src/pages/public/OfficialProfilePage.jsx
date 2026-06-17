@@ -41,8 +41,8 @@ export default function OfficialProfilePage() {
         d: { 
           type: currentlyFollowing ? 'info' : 'success', 
           msg: currentlyFollowing 
-            ? 'Unfollowed @CreatorBharat.Official' 
-            : '🎉 Following @CreatorBharat.Official!' 
+            ? 'Unfollowed @creatorbharat' 
+            : '🎉 Following @creatorbharat!' 
         } 
       });
     } else {
@@ -129,7 +129,7 @@ export default function OfficialProfilePage() {
       paddingBottom: '100px', 
       fontFamily: 'Outfit, sans-serif',
       position: 'relative',
-      overflow: 'hidden'
+      overflowX: 'hidden'
     }}>
       <Seo 
         title="Official Identity"

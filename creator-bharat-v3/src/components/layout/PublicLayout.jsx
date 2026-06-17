@@ -96,11 +96,13 @@ export default function PublicLayout({ children }) {
     const isMobile = globalThis.innerWidth < 768;
     let lenis = null;
 
-    // Disable Lenis on creator profile pages — sticky tab bar needs native scroll
+    // Disable Lenis on creator profile pages and official profile — sticky tab bar needs native scroll
     const isCreatorProfile = location.pathname.startsWith('/creator/') || location.pathname.startsWith('/c/');
     const isCreatorProfilePublic = isCreatorProfilePage(location.pathname);
+    const isOfficialProfile = location.pathname.includes('official-profile');
+    const disableLenis = isMobile || isCreatorProfilePublic || isOfficialProfile;
 
-    if (!isMobile && !isCreatorProfilePublic) {
+    if (!disableLenis) {
       lenis = new Lenis({
         duration: 1.2,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),

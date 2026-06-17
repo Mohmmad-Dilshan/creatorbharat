@@ -11,14 +11,14 @@ import {
 
 export const OFFICIAL_DATA = {
   en: {
-    username: 'CreatorBharat.Official',
+    username: 'creatorbharat',
     displayName: 'CreatorBharat.Official',
     category: 'Science & Tech • Protocol Node 001',
     bio: "Building the Mastermind of Bharat's Creator Economy. 🇮🇳\nInfrastructure of Trust for 1.4B Voices.",
     website: 'www.creatorbharat.com',
   },
   hi: {
-    username: 'CreatorBharat.Official',
+    username: 'creatorbharat',
     displayName: 'CreatorBharat.Official',
     category: 'विज्ञान और तकनीक • प्रोटोकॉल नोड 001',
     bio: "भारत की क्रिएटर इकोनॉमी का मास्टरमाइंड बनाना। 🇮🇳\n1.4B आवाजों के लिए विश्वास का बुनियादी ढांचा।",
