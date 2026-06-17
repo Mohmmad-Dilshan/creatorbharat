@@ -41,8 +41,8 @@ export default function OfficialProfilePage() {
         d: { 
           type: currentlyFollowing ? 'info' : 'success', 
           msg: currentlyFollowing 
-            ? 'Unfollowed @CreatorBharat Official' 
-            : '🎉 Following @CreatorBharat Official!' 
+            ? 'Unfollowed @CreatorBharat.Official' 
+            : '🎉 Following @CreatorBharat.Official!' 
         } 
       });
     } else {
@@ -123,9 +123,9 @@ export default function OfficialProfilePage() {
 
   return (
     <div style={{ 
-      background: '#090d16', 
+      background: '#ffffff', 
       minHeight: '100vh', 
-      color: '#cbd5e1', 
+      color: '#475569', 
       paddingBottom: '100px', 
       fontFamily: 'Outfit, sans-serif',
       position: 'relative',
@@ -161,10 +161,10 @@ export default function OfficialProfilePage() {
 
         {/* Mobile Stats Row */}
         {mob && (
-           <div style={{ display: 'flex', justifyContent: 'space-around', borderTop: '1px solid rgba(255, 255, 255, 0.06)', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', padding: '16px 0', marginBottom: '28px', fontSize: '14px', color: '#cbd5e1' }}>
-              <span style={{ textAlign: 'center' }}><strong style={{ color: '#fff', fontSize: '16px' }}>{postsCount}</strong><br/><span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: 650 }}>posts</span></span>
-              <span style={{ textAlign: 'center' }}><strong style={{ color: '#fff', fontSize: '16px' }}>{followersCount.toLocaleString()}</strong><br/><span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: 650 }}>followers</span></span>
-              <span style={{ textAlign: 'center' }}><strong style={{ color: '#fff', fontSize: '16px' }}>{followingCount}</strong><br/><span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: 650 }}>following</span></span>
+           <div style={{ display: 'flex', justifyContent: 'space-around', borderTop: '1px solid rgba(15, 23, 42, 0.06)', borderBottom: '1px solid rgba(15, 23, 42, 0.06)', padding: '16px 0', marginBottom: '28px', fontSize: '14px', color: '#475569' }}>
+              <span style={{ textAlign: 'center' }}><strong style={{ color: '#0f172a', fontSize: '16px' }}>{postsCount}</strong><br/><span style={{ color: '#64748b', fontSize: '12px', fontWeight: 650 }}>posts</span></span>
+              <span style={{ textAlign: 'center' }}><strong style={{ color: '#0f172a', fontSize: '16px' }}>{followersCount.toLocaleString()}</strong><br/><span style={{ color: '#64748b', fontSize: '12px', fontWeight: 650 }}>followers</span></span>
+              <span style={{ textAlign: 'center' }}><strong style={{ color: '#0f172a', fontSize: '16px' }}>{followingCount}</strong><br/><span style={{ color: '#64748b', fontSize: '12px', fontWeight: 650 }}>following</span></span>
            </div>
         )}
 
@@ -178,22 +178,22 @@ export default function OfficialProfilePage() {
                      width: mob ? '64px' : '76px', 
                      height: mob ? '64px' : '76px', 
                      borderRadius: '50%', 
-                     background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.01) 100%)', 
-                     border: '1.5px solid rgba(255, 255, 255, 0.1)', 
+                     background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)', 
+                     border: '1.5px solid #cbd5e1', 
                      padding: '3px',
                      display: 'flex',
                      alignItems: 'center',
                      justifyContent: 'center',
-                     boxShadow: '0 4px 15px rgba(0, 0, 0, 0.15)',
+                     boxShadow: '0 4px 15px rgba(0, 0, 0, 0.05)',
                      transition: 'all 0.22s ease'
                    }}
                    onMouseEnter={(e) => {
                      e.currentTarget.style.borderColor = '#FF9431';
-                     e.currentTarget.style.boxShadow = '0 0 15px rgba(255, 148, 49, 0.35)';
+                     e.currentTarget.style.boxShadow = '0 0 15px rgba(255, 148, 49, 0.2)';
                    }}
                    onMouseLeave={(e) => {
-                     e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                     e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.15)';
+                     e.currentTarget.style.borderColor = '#cbd5e1';
+                     e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.05)';
                    }}
                    >
                       <div style={{ 
@@ -210,7 +210,7 @@ export default function OfficialProfilePage() {
                          <Icon size={20} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.25))' }} />
                       </div>
                    </div>
-                   <span style={{ fontSize: '12px', fontWeight: 700, color: '#cbd5e1', letterSpacing: '0.2px' }}>{highlight.label}</span>
+                   <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569', letterSpacing: '0.2px' }}>{highlight.label}</span>
                 </div>
               );
            })}
@@ -222,11 +222,11 @@ export default function OfficialProfilePage() {
           justifyContent: 'center', 
           margin: '0 auto 40px',
           maxWidth: mob ? '100%' : '560px',
-          background: 'rgba(255, 255, 255, 0.02)', 
+          background: '#f8fafc', 
           padding: '5px', 
           borderRadius: '100px', 
-          border: '1.5px solid rgba(255, 255, 255, 0.06)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+          border: '1.5px solid #cbd5e1',
+          boxShadow: '0 8px 25px rgba(0, 0, 0, 0.04)',
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
           gap: '4px'
@@ -252,23 +252,23 @@ export default function OfficialProfilePage() {
                    alignItems: 'center',
                    justifyContent: 'center',
                    gap: '8px',
-                   color: active ? '#fff' : '#94a3b8',
+                   color: active ? '#fff' : '#64748b',
                    fontSize: '11px',
                    fontWeight: 800,
                    letterSpacing: '1px',
                    cursor: 'pointer',
                    transition: 'all 0.25s ease',
-                   boxShadow: active ? '0 4px 15px rgba(255,148,49,0.3)' : 'none'
+                   boxShadow: active ? '0 4px 15px rgba(255,148,49,0.2)' : 'none'
                  }}
                  onMouseEnter={e => {
                    if (!active) {
-                     e.currentTarget.style.color = '#fff';
-                     e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+                     e.currentTarget.style.color = '#0f172a';
+                     e.currentTarget.style.background = '#e2e8f0';
                    }
                  }}
                  onMouseLeave={e => {
                    if (!active) {
-                     e.currentTarget.style.color = '#94a3b8';
+                     e.currentTarget.style.color = '#64748b';
                      e.currentTarget.style.background = 'transparent';
                    }
                  }}

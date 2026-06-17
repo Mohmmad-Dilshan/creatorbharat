@@ -86,10 +86,10 @@ export default function ReviewSlider({ mob }) {
 
   return (
     <div style={{ 
-      background: 'rgba(255, 255, 255, 0.02)', 
+      background: '#ffffff', 
       borderRadius: '32px', 
       padding: mob ? '32px 24px' : '48px', 
-      border: '1px solid rgba(255, 255, 255, 0.06)',
+      border: '1px solid #e2e8f0',
       marginTop: '40px',
       position: 'relative',
       overflow: 'hidden',
@@ -101,44 +101,44 @@ export default function ReviewSlider({ mob }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Award size={20} color="#FF9431" />
-          <span style={{ fontSize: '13px', fontWeight: 900, color: '#fff', letterSpacing: '1.5px', textTransform: 'uppercase' }}>ECOSYSTEM TRUST REVIEWS</span>
+          <span style={{ fontSize: '13px', fontWeight: 900, color: '#0f172a', letterSpacing: '1.5px', textTransform: 'uppercase' }}>ECOSYSTEM TRUST REVIEWS</span>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <button 
             onClick={handleOpenCompose}
             style={{ 
-              background: 'rgba(255, 255, 255, 0.05)', 
-              border: '1px solid rgba(255, 255, 255, 0.08)', 
+              background: '#ffffff', 
+              border: '1px solid #cbd5e1', 
               borderRadius: '20px', 
               padding: '6px 14px', 
               fontSize: '11px', 
               fontWeight: 800, 
-              color: '#fff',
+              color: '#334155',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
               marginRight: '8px',
-              transition: 'background 0.2s'
+              transition: 'all 0.2s'
             }}
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+            onMouseEnter={e => { e.currentTarget.style.background = '#0f172a'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#0f172a'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.color = '#334155'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
           >
             <Edit3 size={12} /> Leave Review
           </button>
           <button 
             onClick={prev} 
-            style={{ width: '36px', height: '36px', borderRadius: '50%', border: '1px solid rgba(255, 255, 255, 0.08)', background: 'rgba(255, 255, 255, 0.05)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+            style={{ width: '36px', height: '36px', borderRadius: '50%', border: '1px solid #cbd5e1', background: '#ffffff', color: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#0f172a'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#0f172a'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.color = '#334155'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
           >
             ‹
           </button>
           <button 
             onClick={next} 
-            style={{ width: '36px', height: '36px', borderRadius: '50%', border: '1px solid rgba(255, 255, 255, 0.08)', background: 'rgba(255, 255, 255, 0.05)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+            style={{ width: '36px', height: '36px', borderRadius: '50%', border: '1px solid #cbd5e1', background: '#ffffff', color: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#0f172a'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#0f172a'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.color = '#334155'; e.currentTarget.style.borderColor = '#cbd5e1'; }}
           >
             ›
           </button>
@@ -157,14 +157,14 @@ export default function ReviewSlider({ mob }) {
           {/* Star Rating */}
           <div style={{ display: 'flex', gap: '4px' }}>
             {Array.from({ length: 5 }).map((_, i) => (
-              <span key={i} style={{ color: i < current.rating ? '#FF9431' : 'rgba(255, 255, 255, 0.15)', fontSize: '18px' }}>★</span>
+              <span key={i} style={{ color: i < current.rating ? '#FF9431' : 'rgba(15, 23, 42, 0.1)', fontSize: '18px' }}>★</span>
             ))}
           </div>
 
           <p style={{ 
             fontSize: mob ? '16px' : '18px', 
             fontWeight: 600, 
-            color: '#cbd5e1', 
+            color: '#334155', 
             lineHeight: 1.6, 
             fontStyle: 'italic', 
             margin: 0 
@@ -174,8 +174,8 @@ export default function ReviewSlider({ mob }) {
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '12px' }}>
             <div>
-              <div style={{ fontSize: '16px', fontWeight: 900, color: '#fff', fontFamily: 'Outfit, sans-serif' }}>{current.name}</div>
-              <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 500 }}>{current.role}</div>
+              <div style={{ fontSize: '16px', fontWeight: 900, color: '#0f172a', fontFamily: 'Outfit, sans-serif' }}>{current.name}</div>
+              <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 500 }}>{current.role}</div>
             </div>
             <div style={{ 
               background: 'rgba(255, 148, 49, 0.08)', 
@@ -203,28 +203,28 @@ export default function ReviewSlider({ mob }) {
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }} 
               onClick={() => setShowComposeModal(false)} 
-              style={{ position: 'absolute', inset: 0, background: 'rgba(15,23,42,0.95)', backdropFilter: 'blur(16px)' }} 
+              style={{ position: 'absolute', inset: 0, background: 'rgba(15, 23, 42, 0.5)', backdropFilter: 'blur(8px)' }} 
             />
             <motion.div 
               initial={{ scale: 0.95, opacity: 0 }} 
               animate={{ scale: 1, opacity: 1 }} 
               exit={{ scale: 0.95, opacity: 0 }} 
-              style={{ position: 'relative', background: 'rgba(15, 23, 42, 0.95)', border: '1.5px solid rgba(255,255,255,0.1)', padding: '40px 32px', borderRadius: '28px', maxWidth: '480px', width: '100%', boxShadow: '0 25px 50px -12px rgba(255,148,49,0.15)', color: '#fff' }}
+              style={{ position: 'relative', background: '#ffffff', border: '1.5px solid #cbd5e1', padding: '40px 32px', borderRadius: '28px', maxWidth: '480px', width: '100%', boxShadow: '0 25px 50px rgba(0,0,0,0.1)', color: '#0f172a' }}
             >
               <button 
                 onClick={() => setShowComposeModal(false)} 
-                style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', cursor: 'pointer', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ position: 'absolute', top: '20px', right: '20px', background: '#f1f5f9', border: '1px solid #e2e8f0', color: '#0f172a', cursor: 'pointer', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 <X size={16} />
               </button>
 
-              <h3 style={{ fontSize: '22px', fontWeight: 950, marginBottom: '4px', letterSpacing: '-0.02em', fontFamily: 'Outfit, sans-serif' }}>Submit Shard Review</h3>
-              <p style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '24px' }}>Provide verified feedback regarding the CreatorBharat transaction escrow ledger.</p>
+              <h3 style={{ fontSize: '22px', fontWeight: 950, marginBottom: '4px', letterSpacing: '-0.02em', fontFamily: 'Outfit, sans-serif', color: '#0f172a' }}>Submit Shard Review</h3>
+              <p style={{ color: '#475569', fontSize: '13px', marginBottom: '24px' }}>Provide verified feedback regarding the CreatorBharat transaction escrow ledger.</p>
 
               <form onSubmit={handleSubmit}>
                 {/* Clickable Star Rating */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
-                  <label style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>Your Ecosystem Rating</label>
+                  <label style={{ fontSize: '11px', fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px' }}>Your Ecosystem Rating</label>
                   <div style={{ display: 'flex', gap: '6px' }}>
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
@@ -236,7 +236,7 @@ export default function ReviewSlider({ mob }) {
                         <Star 
                           size={24} 
                           fill={star <= newRating ? '#FF9431' : 'none'} 
-                          color={star <= newRating ? '#FF9431' : 'rgba(255,255,255,0.15)'} 
+                          color={star <= newRating ? '#FF9431' : 'rgba(15, 23, 42, 0.1)'} 
                         />
                       </button>
                     ))}
@@ -245,14 +245,14 @@ export default function ReviewSlider({ mob }) {
 
                 {/* Textarea review */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '32px' }}>
-                  <label style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>Your Review Description</label>
+                  <label style={{ fontSize: '11px', fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px' }}>Your Review Description</label>
                   <textarea
                     required
                     placeholder="Enter details about your direct brand campaign experiences..."
                     rows={4}
                     value={newQuote}
                     onChange={(e) => setNewQuote(e.target.value)}
-                    style={{ width: '100%', padding: '14px 18px', borderRadius: '12px', background: 'rgba(9, 13, 22, 0.6)', border: '1.5px solid rgba(255,255,255,0.08)', color: '#fff', outline: 'none', fontSize: '14px', lineHeight: '1.6', resize: 'none', fontFamily: 'inherit' }}
+                    style={{ width: '100%', padding: '14px 18px', borderRadius: '12px', background: '#f8fafc', border: '1.5px solid #e2e8f0', color: '#0f172a', outline: 'none', fontSize: '14px', lineHeight: '1.6', resize: 'none', fontFamily: 'inherit' }}
                   />
                 </div>
 
@@ -260,7 +260,7 @@ export default function ReviewSlider({ mob }) {
                   <button 
                     type="button"
                     onClick={() => setShowComposeModal(false)}
-                    style={{ flex: 1, padding: '14px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: 'none', color: '#fff', fontWeight: 700, cursor: 'pointer', fontSize: '14px' }}
+                    style={{ flex: 1, padding: '14px', borderRadius: '12px', background: '#f1f5f9', border: 'none', color: '#334155', fontWeight: 700, cursor: 'pointer', fontSize: '14px' }}
                   >
                     Cancel
                   </button>

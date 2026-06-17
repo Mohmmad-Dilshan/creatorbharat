@@ -39,9 +39,7 @@ export default function TabContent({ activeTab, mob }) {
                       style={{ 
                         aspectRatio: mob ? 'auto' : '1/1',
                         minHeight: mob ? '140px' : 'auto',
-                        background: isHovered 
-                          ? `linear-gradient(135deg, #0f172a 0%, #1e293b 100%), radial-gradient(circle at top right, ${accentColor}15, transparent 60%)`
-                          : 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', 
+                        background: isHovered ? '#f8fafc' : '#ffffff', 
                         borderRadius: '24px',
                         padding: mob ? '20px' : '28px',
                         display: 'flex', 
@@ -50,10 +48,10 @@ export default function TabContent({ activeTab, mob }) {
                         cursor: 'pointer',
                         position: 'relative',
                         overflow: 'hidden',
-                        border: isHovered ? `1px solid ${accentColor}70` : '1px solid rgba(255,255,255,0.05)',
+                        border: isHovered ? `1px solid ${accentColor}` : '1px solid #e2e8f0',
                         boxShadow: isHovered 
-                          ? `0 12px 35px ${accentColor}15, inset 0 0 12px ${accentColor}10` 
-                          : '0 8px 30px rgba(15,23,42,0.1)',
+                          ? `0 12px 35px ${accentColor}12, inset 0 0 12px ${accentColor}08` 
+                          : '0 8px 30px rgba(0,0,0,0.01)',
                         transform: isHovered ? 'translateY(-6px)' : 'translateY(0)',
                         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
                       }}
@@ -90,12 +88,12 @@ export default function TabContent({ activeTab, mob }) {
                           width: '38px',
                           height: '38px',
                           borderRadius: '50%',
-                          background: isHovered ? `${accentColor}20` : 'rgba(255,255,255,0.05)',
+                          background: isHovered ? `${accentColor}15` : '#f1f5f9',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          color: isHovered ? accentColor : '#fff',
-                          border: isHovered ? `1.5px solid ${accentColor}30` : '1px solid rgba(255,255,255,0.05)',
+                          color: isHovered ? accentColor : '#475569',
+                          border: isHovered ? `1.5px solid ${accentColor}30` : '1px solid #e2e8f0',
                           transform: isHovered ? 'scale(1.15) rotate(12deg)' : 'scale(1) rotate(0)',
                           transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
                         }}>
@@ -106,7 +104,7 @@ export default function TabContent({ activeTab, mob }) {
                       {/* Middle: Title & Brief Description */}
                       <div style={{ marginTop: mob ? '16px' : 'auto', marginBottom: mob ? '8px' : '10px', position: 'relative', zIndex: 1 }}>
                         <h4 style={{ 
-                          color: '#fff', 
+                          color: '#0f172a', 
                           fontSize: mob ? '17px' : '20px', 
                           fontWeight: 950,
                           margin: '0 0 6px 0',
@@ -117,7 +115,7 @@ export default function TabContent({ activeTab, mob }) {
                           {post.title}
                         </h4>
                         <p style={{ 
-                          color: isHovered ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.55)', 
+                          color: isHovered ? '#334155' : '#475569', 
                           fontSize: '12px', 
                           margin: 0,
                           lineHeight: '1.6',
@@ -137,7 +135,7 @@ export default function TabContent({ activeTab, mob }) {
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
-                        color: 'rgba(255,255,255,0.4)',
+                        color: '#64748b',
                         fontSize: '11px',
                         fontWeight: 650,
                         marginTop: mob ? '8px' : '0',
@@ -145,7 +143,7 @@ export default function TabContent({ activeTab, mob }) {
                         zIndex: 1
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Clock size={12} color={isHovered ? accentColor : 'rgba(255,255,255,0.4)'} /> {post.readTime}
+                          <Clock size={12} color={isHovered ? accentColor : '#64748b'} /> {post.readTime}
                         </div>
                         <span style={{ 
                           color: accentColor, 
@@ -164,10 +162,10 @@ export default function TabContent({ activeTab, mob }) {
            )}
            {activeTab === 'mastermind' && (
               <div>
-                 <IntelligenceHub mob={mob} />
-                 <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', margin: '40px 0' }} />
-                 <RoadmapTimeline />
-                 <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', margin: '40px 0' }} />
+                  <IntelligenceHub mob={mob} />
+                  <div style={{ borderTop: '1px solid #e2e8f0', margin: '40px 0' }} />
+                  <RoadmapTimeline />
+                  <div style={{ borderTop: '1px solid #e2e8f0', margin: '40px 0' }} />
                  <MastermindSection mob={mob} />
                  <ReviewSlider mob={mob} />
               </div>
@@ -189,24 +187,24 @@ export default function TabContent({ activeTab, mob }) {
               const parts = cleanedText.split(':');
               if (parts.length > 1) {
                 return (
-                  <div key={idx} style={{ marginBottom: '12px', display: 'flex', gap: '10px', alignItems: 'flex-start', color: '#e2e8f0' }}>
+                  <div key={idx} style={{ marginBottom: '12px', display: 'flex', gap: '10px', alignItems: 'flex-start', color: '#334155' }}>
                     <span style={{ color: accentColor, fontWeight: 900, fontSize: '14px' }}>⚡</span>
                     <span style={{ fontSize: '13px', lineHeight: 1.6 }}>
-                      <strong style={{ color: '#fff', fontFamily: 'monospace', fontWeight: 700 }}>{parts[0]}:</strong>
+                      <strong style={{ color: '#0f172a', fontFamily: 'monospace', fontWeight: 700 }}>{parts[0]}:</strong>
                       {parts.slice(1).join(':')}
                     </span>
                   </div>
                 );
               }
               return (
-                <div key={idx} style={{ marginBottom: '12px', display: 'flex', gap: '10px', alignItems: 'flex-start', color: '#e2e8f0' }}>
+                <div key={idx} style={{ marginBottom: '12px', display: 'flex', gap: '10px', alignItems: 'flex-start', color: '#334155' }}>
                   <span style={{ color: accentColor, fontWeight: 900, fontSize: '14px' }}>⚡</span>
                   <span style={{ fontSize: '13px', lineHeight: 1.6 }}>{cleanedText}</span>
                 </div>
               );
             }
             return (
-              <p key={idx} style={{ margin: '0 0 16px 0', color: 'rgba(255, 255, 255, 0.8)', fontSize: '14px', lineHeight: 1.7, fontWeight: 400 }}>
+              <p key={idx} style={{ margin: '0 0 16px 0', color: '#334155', fontSize: '14px', lineHeight: 1.7, fontWeight: 400 }}>
                 {line}
               </p>
             );
@@ -222,8 +220,8 @@ export default function TabContent({ activeTab, mob }) {
                 position: 'fixed',
                 inset: 0,
                 zIndex: 3000,
-                background: 'rgba(15,23,42,0.9)',
-                backdropFilter: 'blur(16px)',
+                background: 'rgba(255,255,255,0.7)',
+                backdropFilter: 'blur(12px)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -238,13 +236,13 @@ export default function TabContent({ activeTab, mob }) {
                 style={{
                   width: '100%',
                   maxWidth: '650px',
-                  background: 'rgba(15, 23, 42, 0.95)',
-                  border: '1.5px solid rgba(255, 255, 255, 0.1)',
+                  background: '#ffffff',
+                  border: '1px solid #e2e8f0',
                   borderRadius: '32px',
                   padding: mob ? '28px 20px' : '40px',
                   position: 'relative',
-                  boxShadow: `0 25px 50px -12px ${accentColor}20, 0 0 40px ${accentColor}10`,
-                  color: '#f8fafc'
+                  boxShadow: `0 25px 50px -12px rgba(0,0,0,0.1), 0 0 40px rgba(0,0,0,0.03)`,
+                  color: '#0f172a'
                 }}
               >
                 {/* Close Button */}
@@ -254,8 +252,8 @@ export default function TabContent({ activeTab, mob }) {
                     position: 'absolute',
                     top: '20px',
                     right: '20px',
-                    background: 'rgba(255,255,255,0.06)',
-                    border: '1px solid rgba(255,255,255,0.1)',
+                    background: '#f8fafc',
+                    border: '1px solid #e2e8f0',
                     width: '36px',
                     height: '36px',
                     borderRadius: '50%',
@@ -263,16 +261,16 @@ export default function TabContent({ activeTab, mob }) {
                     alignItems: 'center',
                     justifyContent: 'center',
                     cursor: 'pointer',
-                    color: '#94a3b8',
+                    color: '#475569',
                     transition: 'all 0.2s'
                   }}
                   onMouseEnter={e => {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
-                    e.currentTarget.style.color = '#fff';
+                    e.currentTarget.style.background = '#e2e8f0';
+                    e.currentTarget.style.color = '#0f172a';
                   }}
                   onMouseLeave={e => {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
-                    e.currentTarget.style.color = '#94a3b8';
+                    e.currentTarget.style.background = '#f8fafc';
+                    e.currentTarget.style.color = '#475569';
                   }}
                 >
                   <X size={18} />
@@ -299,7 +297,7 @@ export default function TabContent({ activeTab, mob }) {
                 <h3 style={{
                   fontSize: mob ? '22px' : '28px',
                   fontWeight: 950,
-                  color: '#fff',
+                  color: '#0f172a',
                   margin: '0 0 12px 0',
                   letterSpacing: '-0.03em'
                 }}>
@@ -310,10 +308,10 @@ export default function TabContent({ activeTab, mob }) {
                 <div style={{
                   display: 'flex',
                   gap: '16px',
-                  color: '#94a3b8',
+                  color: '#64748b',
                   fontSize: '12px',
                   fontWeight: 650,
-                  borderBottom: '1px solid rgba(255,255,255,0.08)',
+                  borderBottom: '1px solid #e2e8f0',
                   paddingBottom: '20px',
                   marginBottom: '24px'
                 }}>
@@ -331,26 +329,26 @@ export default function TabContent({ activeTab, mob }) {
 
                 {/* Monospace Code-Block Specifications Console */}
                 <div style={{
-                  background: '#090d16',
-                  border: '1.5px solid rgba(255, 255, 255, 0.08)',
+                  background: '#f8fafc',
+                  border: '1.5px solid #e2e8f0',
                   borderRadius: '20px',
                   padding: mob ? '20px 16px' : '24px',
                   fontFamily: 'Consolas, Monaco, "Andale Mono", monospace',
                   fontSize: '13px',
                   maxHeight: mob ? '250px' : '320px',
                   overflowY: 'auto',
-                  color: '#cbd5e1',
+                  color: '#0f172a',
                   position: 'relative',
-                  boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.5)'
+                  boxShadow: 'none'
                 }}>
                   {/* Console Controls Decoration */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px' }}>
                     <div style={{ display: 'flex', gap: '6px' }}>
                       <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ef4444' }} />
                       <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#eab308' }} />
                       <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#22c55e' }} />
                     </div>
-                    <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 800 }}>MANIFEST_SPEC_00{selectedPost.id}</span>
+                    <span style={{ fontSize: '10px', color: '#64748b', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 800 }}>MANIFEST_SPEC_00{selectedPost.id}</span>
                   </div>
                   
                   {/* Formatted Content */}

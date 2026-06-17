@@ -47,24 +47,26 @@ export default function InsightsGrid({ mob }) {
              <div 
                key={s.l} 
                style={{ 
-                 background: 'rgba(255, 255, 255, 0.02)', 
+                 background: '#ffffff', 
                  padding: '24px', 
                  borderRadius: '24px', 
-                 border: '1px solid rgba(255, 255, 255, 0.05)', 
-                 boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                 border: '1px solid #e2e8f0', 
+                 boxShadow: '0 8px 25px rgba(0,0,0,0.02)',
                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                  position: 'relative',
                  overflow: 'hidden'
                }}
                onMouseEnter={(e) => {
                  e.currentTarget.style.transform = 'translateY(-4px)';
-                 e.currentTarget.style.boxShadow = '0 12px 30px rgba(0,0,0,0.25)';
-                 e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)';
+                 e.currentTarget.style.boxShadow = '0 12px 30px rgba(0,0,0,0.04)';
+                 e.currentTarget.style.background = '#f8fafc';
+                 e.currentTarget.style.borderColor = '#cbd5e1';
                }}
                onMouseLeave={(e) => {
                  e.currentTarget.style.transform = 'translateY(0)';
-                 e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
-                 e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)';
+                 e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.02)';
+                 e.currentTarget.style.background = '#ffffff';
+                 e.currentTarget.style.borderColor = '#e2e8f0';
                }}
              >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -72,8 +74,8 @@ export default function InsightsGrid({ mob }) {
                    <div style={{ fontSize: '11px', fontWeight: 850, color: s.c, background: `${s.c}12`, padding: '4px 8px', borderRadius: '6px' }}>{s.t}</div>
                 </div>
                 
-                <div style={{ fontSize: '28px', fontWeight: 950, color: '#fff', fontFamily: 'Outfit, sans-serif' }}>{s.v}</div>
-                <div style={{ fontSize: '12px', fontWeight: 800, color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '16px' }}>{s.l.toUpperCase()}</div>
+                <div style={{ fontSize: '28px', fontWeight: 950, color: '#0f172a', fontFamily: 'Outfit, sans-serif' }}>{s.v}</div>
+                <div style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', letterSpacing: '0.5px', marginBottom: '16px' }}>{s.l.toUpperCase()}</div>
 
                 {/* Interactive Sparkline SVG Graph */}
                 <div style={{ width: '100%', height: '45px', display: 'block' }}>
@@ -103,7 +105,7 @@ export default function InsightsGrid({ mob }) {
                        cy={endY}
                        r="3.5"
                        fill={s.c}
-                       stroke="#090d16"
+                       stroke="#ffffff"
                        strokeWidth="1.5"
                      />
                    </svg>
@@ -114,10 +116,10 @@ export default function InsightsGrid({ mob }) {
       </div>
 
       {/* Regional Performance Panel */}
-      <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '32px', padding: mob ? '24px' : '32px', boxShadow: '0 10px 40px rgba(0,0,0,0.2)' }}>
+      <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '32px', padding: mob ? '24px' : '32px', boxShadow: '0 10px 40px rgba(0,0,0,0.02)' }}>
          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-            <div style={{ fontSize: '16px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px', color: '#fff', fontFamily: 'Outfit, sans-serif' }}><BarChart size={20} color="#3B82F6" /> REGIONAL PERFORMANCE SHARDS</div>
-            <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700 }}>CLICK ROW TO EXPAND</span>
+            <div style={{ fontSize: '16px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px', color: '#0f172a', fontFamily: 'Outfit, sans-serif' }}><BarChart size={20} color="#3B82F6" /> REGIONAL PERFORMANCE SHARDS</div>
+            <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 700 }}>CLICK ROW TO EXPAND</span>
          </div>
          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {OFFICIAL_DATA.analytics.regions.map((reg) => {
@@ -125,7 +127,7 @@ export default function InsightsGrid({ mob }) {
               const details = REGION_DETAILS[reg.name] || [];
 
               return (
-                <div key={reg.name} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)', paddingBottom: '8px' }}>
+                <div key={reg.name} style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>
                   <div 
                     onClick={() => toggleRegion(reg.name)}
                     style={{ 
@@ -135,11 +137,11 @@ export default function InsightsGrid({ mob }) {
                       padding: '16px', 
                       borderRadius: '16px',
                       cursor: 'pointer',
-                      background: isExpanded ? 'rgba(255, 255, 255, 0.04)' : 'transparent',
+                      background: isExpanded ? '#f1f5f9' : 'transparent',
                       transition: 'background 0.2s ease'
                     }}
                     onMouseEnter={(e) => {
-                      if (!isExpanded) e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                      if (!isExpanded) e.currentTarget.style.background = '#f8fafc';
                     }}
                     onMouseLeave={(e) => {
                       if (!isExpanded) e.currentTarget.style.background = 'transparent';
@@ -147,15 +149,15 @@ export default function InsightsGrid({ mob }) {
                   >
                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3B82F6', boxShadow: '0 0 8px #3B82F6' }} />
-                        <div style={{ fontSize: '15px', fontWeight: 700, color: '#fff' }}>{reg.name}</div>
+                        <div style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a' }}>{reg.name}</div>
                      </div>
                      <div style={{ display: 'flex', gap: mob ? '16px' : '32px', alignItems: 'center' }}>
                         <div style={{ textAlign: 'right' }}>
-                           <div style={{ fontSize: '14px', fontWeight: 800, color: '#fff' }}>{reg.count}</div>
-                           <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 700 }}>CREATORS</div>
+                           <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>{reg.count}</div>
+                           <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700 }}>CREATORS</div>
                         </div>
                         <div style={{ color: '#10B981', fontSize: '13px', fontWeight: 800 }}>{reg.trend}</div>
-                        {isExpanded ? <ChevronUp size={18} color="#94a3b8" /> : <ChevronDown size={18} color="#cbd5e1" />}
+                        {isExpanded ? <ChevronUp size={18} color="#64748b" /> : <ChevronDown size={18} color="#64748b" />}
                      </div>
                   </div>
 
@@ -166,19 +168,19 @@ export default function InsightsGrid({ mob }) {
                       display: 'flex', 
                       flexDirection: 'column', 
                       gap: '12px',
-                      background: 'rgba(255, 255, 255, 0.02)',
+                      background: '#f8fafc',
                       borderBottomLeftRadius: '16px',
                       borderBottomRightRadius: '16px',
                       marginTop: '-8px'
                     }}>
-                      <div style={{ fontSize: '11px', fontWeight: 800, color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', letterSpacing: '0.5px', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <Server size={12} /> SYNCED SHARD EDGE DETAILS
                       </div>
                       
                       {details.map(node => (
-                        <div key={node.name} style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', justifyContent: 'space-between', alignItems: mob ? 'flex-start' : 'center', gap: '8px', padding: '10px 12px', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                          <span style={{ fontSize: '12px', fontWeight: 700, color: '#fff' }}>{node.name}</span>
-                          <div style={{ display: 'flex', gap: '16px', fontSize: '11.5px', color: '#cbd5e1', fontWeight: 600 }}>
+                        <div key={node.name} style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', justifyContent: 'space-between', alignItems: mob ? 'flex-start' : 'center', gap: '8px', padding: '10px 12px', background: '#ffffff', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                          <span style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>{node.name}</span>
+                          <div style={{ display: 'flex', gap: '16px', fontSize: '11.5px', color: '#475569', fontWeight: 600 }}>
                             <span>Latency: <strong style={{ color: '#10B981' }}>{node.latency}</strong></span>
                             <span>Load: <strong style={{ color: '#94a3b8' }}>{node.load}</strong></span>
                           </div>

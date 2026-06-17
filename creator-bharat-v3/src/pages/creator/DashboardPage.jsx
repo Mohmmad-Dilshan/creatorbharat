@@ -837,7 +837,7 @@ const CBAndMediaKitBento = ({ creator, followingCB, onToggleFollow, isLocked, na
             <span style={{ fontSize: 16 }}>🇮🇳</span>
           </div>
           <div>
-            <h4 style={{ fontSize: 12, fontWeight: 800, color: C.navy, margin: 0 }}>@CreatorBharat Official</h4>
+            <h4 style={{ fontSize: 12, fontWeight: 800, color: C.navy, margin: 0 }}>@CreatorBharat.Official</h4>
             <p style={{ fontSize: 10, color: C.slateLight, margin: 0, fontWeight: 500 }}>India's elite brand gateway updates</p>
           </div>
         </div>

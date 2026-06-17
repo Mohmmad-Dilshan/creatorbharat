@@ -12,10 +12,10 @@ const liveFeed = [
 export default function LiveTicker() {
   return (
     <div style={{ 
-      background: 'rgba(9, 13, 22, 0.6)', 
+      background: 'rgba(248, 250, 252, 0.8)', 
       backdropFilter: 'blur(8px)',
       WebkitBackdropFilter: 'blur(8px)',
-      borderBottom: '1px solid rgba(255, 255, 255, 0.05)', 
+      borderBottom: '1px solid #e2e8f0', 
       padding: '10px 0', 
       overflow: 'hidden', 
       whiteSpace: 'nowrap', 
@@ -41,7 +41,7 @@ export default function LiveTicker() {
       </div>
       <motion.div animate={{ x: [0, -1000] }} transition={{ repeat: Infinity, duration: 30, ease: "linear" }} style={{ display: 'flex', gap: '40px' }}>
          {liveFeed.concat(liveFeed).map((item, i) => (
-           <span key={`${item}-${i}`} style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 600, letterSpacing: '0.3px' }}>{item}</span>
+            <span key={`${item}-${i}`} style={{ fontSize: '12px', color: '#64748b', fontWeight: 600, letterSpacing: '0.3px' }}>{item}</span>
          ))}
       </motion.div>
     </div>
