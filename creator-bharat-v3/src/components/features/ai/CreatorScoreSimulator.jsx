@@ -277,7 +277,10 @@ export default function CreatorScoreSimulator({ mob }) {
               </p>
             </div>
           </div>
-          {/* RIGHT: Results Panel */}
+        </Card>
+      </motion.div>
+
+      {/* RIGHT: Results Panel */}
       <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}
         style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
