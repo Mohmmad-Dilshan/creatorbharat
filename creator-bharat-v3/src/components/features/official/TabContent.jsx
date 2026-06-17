@@ -165,9 +165,9 @@ export default function TabContent({ activeTab, mob }) {
            {activeTab === 'mastermind' && (
               <div>
                  <IntelligenceHub mob={mob} />
-                 <div style={{ borderTop: '1px solid #f1f5f9', margin: '40px 0' }} />
+                 <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', margin: '40px 0' }} />
                  <RoadmapTimeline />
-                 <div style={{ borderTop: '1px solid #f1f5f9', margin: '40px 0' }} />
+                 <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', margin: '40px 0' }} />
                  <MastermindSection mob={mob} />
                  <ReviewSlider mob={mob} />
               </div>

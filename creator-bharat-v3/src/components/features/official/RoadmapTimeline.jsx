@@ -47,8 +47,8 @@ export default function RoadmapTimeline() {
   return (
     <div style={{ padding: '40px 0', maxWidth: '650px', margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-         <h3 style={{ fontSize: '20px', fontWeight: 900, letterSpacing: '2px', color: '#0f172a' }}>LAUNCH ROADMAP</h3>
-         <p style={{ color: '#64748b', fontSize: '14px', marginTop: '4px' }}>Our technical expansion stages and milestones.</p>
+         <h3 style={{ fontSize: '20px', fontWeight: 900, letterSpacing: '2px', color: '#fff', fontFamily: 'Outfit, sans-serif' }}>LAUNCH ROADMAP</h3>
+         <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '4px' }}>Our technical expansion stages and milestones.</p>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -69,7 +69,7 @@ export default function RoadmapTimeline() {
                    width: '3px', 
                    background: isCompleted 
                      ? `linear-gradient(to bottom, ${item.c}, ${arr[i+1].c}50)` 
-                     : 'linear-gradient(to bottom, #cbd5e1 50%, transparent 50%)',
+                     : 'linear-gradient(to bottom, rgba(255,255,255,0.15) 50%, transparent 50%)',
                    backgroundSize: isCompleted ? 'auto' : '3px 12px', // dashed effect for pending
                    opacity: 0.8,
                    zIndex: 0
@@ -84,7 +84,7 @@ export default function RoadmapTimeline() {
                    width: '46px', 
                    height: '46px', 
                    borderRadius: '14px', 
-                   background: '#fff', 
+                   background: '#090d16', 
                    display: 'flex', 
                    alignItems: 'center', 
                    justifyContent: 'center', 
@@ -104,13 +104,13 @@ export default function RoadmapTimeline() {
                  onMouseLeave={() => setHoveredStepId(null)}
                  style={{
                    flex: 1,
-                   background: '#fff',
-                   border: isHovered ? `1.5px solid ${item.c}85` : '1.5px solid #e2e8f0',
+                   background: 'rgba(255, 255, 255, 0.02)',
+                   border: isHovered ? `1.5px solid ${item.c}85` : '1.5px solid rgba(255,255,255,0.06)',
                    borderRadius: '24px',
                    padding: '24px',
                    boxShadow: isHovered 
-                     ? `0 15px 35px ${item.c}12, 0 5px 15px rgba(0,0,0,0.03)` 
-                     : '0 4px 20px rgba(0,0,0,0.02)',
+                     ? `0 15px 35px ${item.c}12, 0 5px 15px rgba(0,0,0,0.15)` 
+                     : '0 4px 20px rgba(0,0,0,0.05)',
                    transform: isHovered ? 'translateX(6px)' : 'translateX(0)',
                    transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                    position: 'relative',
@@ -141,17 +141,17 @@ export default function RoadmapTimeline() {
                       padding: '4px 10px', 
                       borderRadius: '100px', 
                       letterSpacing: '0.5px' 
-                    }}>
+                     }}>
                       {item.s}
                     </span>
                  </div>
 
                  {/* Card Body */}
                  <div style={{ paddingLeft: '10px' }}>
-                    <h4 style={{ fontSize: '17px', fontWeight: 900, color: '#0f172a', margin: '0 0 6px 0', letterSpacing: '-0.02em' }}>
+                    <h4 style={{ fontSize: '17px', fontWeight: 900, color: '#fff', margin: '0 0 6px 0', letterSpacing: '-0.02em', fontFamily: 'Outfit, sans-serif' }}>
                       {item.t}
                     </h4>
-                    <p style={{ fontSize: '13px', color: '#64748b', margin: 0, lineHeight: 1.6, fontWeight: 550 }}>
+                    <p style={{ fontSize: '13px', color: '#cbd5e1', margin: 0, lineHeight: 1.6, fontWeight: 550 }}>
                       {item.desc}
                     </p>
                  </div>

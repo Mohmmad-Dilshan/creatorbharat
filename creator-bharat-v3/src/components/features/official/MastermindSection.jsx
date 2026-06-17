@@ -168,8 +168,8 @@ export default function MastermindSection({ mob }) {
 
        {/* Core Team Roster Section */}
        <div style={{ marginTop: '60px', marginBottom: '40px', textAlign: 'center' }}>
-          <h3 style={{ fontSize: '22px', fontWeight: 900, letterSpacing: '1px', color: '#0f172a' }}>CORE ARCHITECTS & LEADERS</h3>
-          <p style={{ color: '#64748b', fontSize: '14px', marginTop: '6px' }}>The technical and operational minds directing the CreatorBharat platform.</p>
+          <h3 style={{ fontSize: '22px', fontWeight: 900, letterSpacing: '1px', color: '#fff', fontFamily: 'Outfit, sans-serif' }}>CORE ARCHITECTS & LEADERS</h3>
+          <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '6px' }}>The technical and operational minds directing the CreatorBharat platform.</p>
           
           {/* Roster Category Filter Toggles */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '20px', flexWrap: 'wrap' }}>
@@ -182,16 +182,28 @@ export default function MastermindSection({ mob }) {
                  key={btn.id}
                  onClick={() => setFilter(btn.id)}
                  style={{
-                   background: filter === btn.id ? '#0f172a' : '#f1f5f9',
-                   color: filter === btn.id ? '#fff' : '#475569',
-                   border: 'none',
+                   background: filter === btn.id ? 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)' : 'rgba(255, 255, 255, 0.03)',
+                   color: filter === btn.id ? '#fff' : '#94a3b8',
+                   border: filter === btn.id ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
                    padding: '10px 20px',
                    borderRadius: '100px',
                    fontSize: '12px',
                    fontWeight: 800,
                    cursor: 'pointer',
                    transition: 'all 0.2s ease',
-                   boxShadow: filter === btn.id ? '0 8px 16px rgba(15,23,42,0.15)' : 'none'
+                   boxShadow: filter === btn.id ? '0 4px 15px rgba(255,148,49,0.3)' : 'none'
+                 }}
+                 onMouseEnter={e => {
+                   if (filter !== btn.id) {
+                     e.currentTarget.style.color = '#fff';
+                     e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
+                   }
+                 }}
+                 onMouseLeave={e => {
+                   if (filter !== btn.id) {
+                     e.currentTarget.style.color = '#94a3b8';
+                     e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                   }
                  }}
                >
                  {btn.label}
@@ -207,11 +219,11 @@ export default function MastermindSection({ mob }) {
               key={member.id}
               whileHover={{ y: -4, borderColor: member.category === 'engineering' ? '#3B82F6' : (member.category === 'design' ? '#7C3AED' : '#10B981') }}
               style={{
-                background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.01) 100%)',
                 borderRadius: '24px',
                 padding: '24px',
-                border: '1.5px solid #e2e8f0',
-                boxShadow: '0 8px 30px rgba(0,0,0,0.02)',
+                border: '1.5px solid rgba(255,255,255,0.06)',
+                boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
@@ -220,7 +232,7 @@ export default function MastermindSection({ mob }) {
                 overflow: 'hidden'
               }}
             >
-              {/* Corner accent glow - Fixed pointer events to prevent scroll locks */}
+              {/* Corner accent glow */}
               <div style={{
                 position: 'absolute',
                 top: '-20px',
@@ -229,8 +241,8 @@ export default function MastermindSection({ mob }) {
                 height: '60px',
                 borderRadius: '50%',
                 background: member.category === 'engineering' ? '#3B82F6' : (member.category === 'design' ? '#7C3AED' : '#10B981'),
-                opacity: 0.1,
-                filter: 'blur(10px)',
+                opacity: 0.15,
+                filter: 'blur(12px)',
                 pointerEvents: 'none'
               }} />
 
@@ -245,8 +257,8 @@ export default function MastermindSection({ mob }) {
                         width: '64px',
                         height: '64px',
                         borderRadius: '16px',
-                        border: '2px solid #fff',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                        border: '2px solid rgba(255,255,255,0.1)',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                         objectFit: 'cover'
                       }}
                     />
@@ -258,23 +270,23 @@ export default function MastermindSection({ mob }) {
                       width: '12px',
                       height: '12px',
                       borderRadius: '50%',
-                      border: '2px solid #fff'
+                      border: '2px solid #090d16'
                     }} />
                   </div>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span style={{ fontSize: '16px', fontWeight: 800, color: '#0f172a' }}>{member.name}</span>
+                      <span style={{ fontSize: '16px', fontWeight: 800, color: '#fff' }}>{member.name}</span>
                       {member.verified && <ShieldCheck size={14} color="#3B82F6" fill="#3B82F6" style={{ fill: '#fff' }} />}
                     </div>
-                    <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{member.role}</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#94a3b8', fontSize: '11px', marginTop: '2px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{member.role}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#64748b', fontSize: '11px', marginTop: '2px' }}>
                       <MapPin size={10} /> {member.location}
                     </div>
                   </div>
                 </div>
 
                 {/* Professional Vision Statement */}
-                <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: '1.6', marginBottom: '16px', fontStyle: 'italic', fontWeight: 500 }}>
+                <p style={{ fontSize: '13.5px', color: '#cbd5e1', lineHeight: '1.6', marginBottom: '16px', fontStyle: 'italic', fontWeight: 500 }}>
                   "{member.bio}"
                 </p>
 
@@ -284,8 +296,8 @@ export default function MastermindSection({ mob }) {
                     <span
                       key={skill}
                       style={{
-                        background: '#f1f5f9',
-                        color: '#475569',
+                        background: 'rgba(255,255,255,0.05)',
+                        color: '#94a3b8',
                         padding: '4px 8px',
                         borderRadius: '6px',
                         fontSize: '10.5px',
@@ -299,12 +311,12 @@ export default function MastermindSection({ mob }) {
               </div>
 
               {/* Card Footer: Platform Nodes and Connections */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '16px', marginTop: 'auto' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '16px', marginTop: 'auto' }}>
                 <span style={{
                   fontSize: '10px',
                   fontWeight: 900,
                   color: member.category === 'engineering' ? '#3B82F6' : (member.category === 'design' ? '#7C3AED' : '#10B981'),
-                  background: member.category === 'engineering' ? '#3B82F612' : (member.category === 'design' ? '#7C3AED12' : '#10B98112'),
+                  background: member.category === 'engineering' ? 'rgba(59, 130, 246, 0.12)' : (member.category === 'design' ? 'rgba(124, 58, 237, 0.12)' : 'rgba(16, 185, 129, 0.12)'),
                   padding: '4px 8px',
                   borderRadius: '100px',
                   textTransform: 'uppercase',
@@ -323,14 +335,22 @@ export default function MastermindSection({ mob }) {
                         width: '32px',
                         height: '32px',
                         borderRadius: '50%',
-                        background: '#f8fafc',
-                        border: '1px solid #e2e8f0',
+                        background: 'rgba(255,255,255,0.04)',
+                        border: '1px solid rgba(255,255,255,0.06)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: '#64748b',
+                        color: '#94a3b8',
                         transition: 'all 0.2s',
                         cursor: 'pointer'
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.background = '#3B82F6';
+                        e.currentTarget.style.color = '#fff';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+                        e.currentTarget.style.color = '#94a3b8';
                       }}
                     >
                       <LinkedinIcon size={14} />
@@ -345,14 +365,22 @@ export default function MastermindSection({ mob }) {
                         width: '32px',
                         height: '32px',
                         borderRadius: '50%',
-                        background: '#f8fafc',
-                        border: '1px solid #e2e8f0',
+                        background: 'rgba(255,255,255,0.04)',
+                        border: '1px solid rgba(255,255,255,0.06)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: '#64748b',
+                        color: '#94a3b8',
                         transition: 'all 0.2s',
                         cursor: 'pointer'
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.background = '#000';
+                        e.currentTarget.style.color = '#fff';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+                        e.currentTarget.style.color = '#94a3b8';
                       }}
                     >
                       <GithubIcon size={14} />
@@ -366,15 +394,15 @@ export default function MastermindSection({ mob }) {
 
        {/* Updates Grid */}
        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '20px' }}>
-          <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '24px', border: '1px solid #f1f5f9' }}>
-             <History size={24} color="#64748b" style={{ marginBottom: '16px' }} />
-             <div style={{ fontSize: '14px', fontWeight: 800, marginBottom: '8px' }}>PAST UPDATES</div>
-             <div style={{ fontSize: '12px', color: '#64748b' }}>• Migration to v1.0 (April)<br/>• Security Audit v1.0 (Jan)<br/>• Global Shard Beta (Dec)</div>
+          <div style={{ background: 'rgba(255,255,255,0.02)', padding: '24px', borderRadius: '24px', border: '1.5px solid rgba(255,255,255,0.05)' }}>
+             <History size={24} color="#FF9431" style={{ marginBottom: '16px', filter: 'drop-shadow(0 0 8px rgba(255,148,49,0.3))' }} />
+             <div style={{ fontSize: '14px', fontWeight: 800, marginBottom: '8px', color: '#fff' }}>PAST UPDATES</div>
+             <div style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: 1.6 }}>• Migration to v1.0 (April)<br/>• Security Audit v1.0 (Jan)<br/>• Global Shard Beta (Dec)</div>
           </div>
-          <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '20px', border: '1px solid #f1f5f9' }}>
-             <TrendingUp size={24} color="#3B82F6" style={{ marginBottom: '16px' }} />
-             <div style={{ fontSize: '14px', fontWeight: 800, marginBottom: '8px' }}>FUTURE FEATURES</div>
-             <div style={{ fontSize: '12px', color: '#64748b' }}>• AI Reputation Score<br/>• Real-time Settlement<br/>• Node Marketplace</div>
+          <div style={{ background: 'rgba(255,255,255,0.02)', padding: '24px', borderRadius: '24px', border: '1.5px solid rgba(255,255,255,0.05)' }}>
+             <TrendingUp size={24} color="#3B82F6" style={{ marginBottom: '16px', filter: 'drop-shadow(0 0 8px rgba(59,130,246,0.3))' }} />
+             <div style={{ fontSize: '14px', fontWeight: 800, marginBottom: '8px', color: '#fff' }}>FUTURE FEATURES</div>
+             <div style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: 1.6 }}>• AI Reputation Score<br/>• Real-time Settlement<br/>• Node Marketplace</div>
           </div>
        </div>
     </div>

@@ -122,7 +122,15 @@ export default function OfficialProfilePage() {
   }), []);
 
   return (
-    <div style={{ background: '#fff', minHeight: 'auto', color: '#262626', paddingBottom: '100px', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
+    <div style={{ 
+      background: '#090d16', 
+      minHeight: '100vh', 
+      color: '#cbd5e1', 
+      paddingBottom: '100px', 
+      fontFamily: 'Outfit, sans-serif',
+      position: 'relative',
+      overflow: 'hidden'
+    }}>
       <Seo 
         title="Official Identity"
         description="Claim your verified digital handle on CreatorBharat. The infrastructure of trust for India's premier creator ecosystem."
@@ -130,9 +138,13 @@ export default function OfficialProfilePage() {
         jsonLd={profileJsonLd}
       />
       
+      {/* Background glow meshes */}
+      <div style={{ position: 'absolute', top: '-10%', left: '-15%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(255, 148, 49, 0.08) 0%, transparent 70%)', pointerEvents: 'none', filter: 'blur(50px)', zIndex: 0 }} />
+      <div style={{ position: 'absolute', top: '30%', right: '-15%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, transparent 70%)', pointerEvents: 'none', filter: 'blur(60px)', zIndex: 0 }} />
+      
       <LiveTicker />
 
-      <div style={{ maxWidth: '935px', margin: '0 auto', padding: mob ? '24px 16px' : '60px 20px 0' }}>
+      <div style={{ maxWidth: '935px', margin: '0 auto', padding: mob ? '24px 16px' : '60px 20px 0', position: 'relative', zIndex: 1 }}>
         
         <ProfileHeader 
           mob={mob} 
@@ -149,15 +161,15 @@ export default function OfficialProfilePage() {
 
         {/* Mobile Stats Row */}
         {mob && (
-           <div style={{ display: 'flex', justifyContent: 'space-around', borderTop: '1px solid #efefef', borderBottom: '1px solid #efefef', padding: '12px 0', marginBottom: '28px', fontSize: '14px', color: '#262626' }}>
-              <span style={{ textAlign: 'center' }}><strong>{postsCount}</strong><br/><span style={{ color: '#8e8e8e', fontSize: '12px' }}>posts</span></span>
-              <span style={{ textAlign: 'center' }}><strong>{followersCount.toLocaleString()}</strong><br/><span style={{ color: '#8e8e8e', fontSize: '12px' }}>followers</span></span>
-              <span style={{ textAlign: 'center' }}><strong>{followingCount}</strong><br/><span style={{ color: '#8e8e8e', fontSize: '12px' }}>following</span></span>
+           <div style={{ display: 'flex', justifyContent: 'space-around', borderTop: '1px solid rgba(255, 255, 255, 0.06)', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', padding: '16px 0', marginBottom: '28px', fontSize: '14px', color: '#cbd5e1' }}>
+              <span style={{ textAlign: 'center' }}><strong style={{ color: '#fff', fontSize: '16px' }}>{postsCount}</strong><br/><span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: 650 }}>posts</span></span>
+              <span style={{ textAlign: 'center' }}><strong style={{ color: '#fff', fontSize: '16px' }}>{followersCount.toLocaleString()}</strong><br/><span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: 650 }}>followers</span></span>
+              <span style={{ textAlign: 'center' }}><strong style={{ color: '#fff', fontSize: '16px' }}>{followingCount}</strong><br/><span style={{ color: '#94a3b8', fontSize: '12px', fontWeight: 650 }}>following</span></span>
            </div>
         )}
 
         {/* Highlight Stories */}
-        <div style={{ display: 'flex', gap: mob ? '16px' : '28px', marginBottom: '44px', overflowX: 'auto', paddingBottom: '12px' }}>
+        <div style={{ display: 'flex', gap: mob ? '16px' : '28px', marginBottom: '44px', overflowX: 'auto', paddingBottom: '12px', scrollbarWidth: 'none' }}>
            {OFFICIAL_DATA.highlights.map((highlight) => {
               const Icon = highlight.icon;
               return (
@@ -166,27 +178,39 @@ export default function OfficialProfilePage() {
                      width: mob ? '64px' : '76px', 
                      height: mob ? '64px' : '76px', 
                      borderRadius: '50%', 
-                     border: '2px solid #dbdbdb', 
+                     background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.01) 100%)', 
+                     border: '1.5px solid rgba(255, 255, 255, 0.1)', 
                      padding: '3px',
                      display: 'flex',
                      alignItems: 'center',
                      justifyContent: 'center',
-                     background: '#fff'
-                   }}>
+                     boxShadow: '0 4px 15px rgba(0, 0, 0, 0.15)',
+                     transition: 'all 0.22s ease'
+                   }}
+                   onMouseEnter={(e) => {
+                     e.currentTarget.style.borderColor = '#FF9431';
+                     e.currentTarget.style.boxShadow = '0 0 15px rgba(255, 148, 49, 0.35)';
+                   }}
+                   onMouseLeave={(e) => {
+                     e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                     e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.15)';
+                   }}
+                   >
                       <div style={{ 
                         width: '100%', 
                         height: '100%', 
                         borderRadius: '50%', 
-                        background: highlight.color,
+                        background: `linear-gradient(135deg, ${highlight.color} 0%, rgba(15, 23, 42, 0.9) 100%)`,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: '#fff'
+                        color: '#fff',
+                        boxShadow: 'inset 0 0 10px rgba(0,0,0,0.3)'
                       }}>
-                         <Icon size={24} />
+                         <Icon size={20} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.25))' }} />
                       </div>
                    </div>
-                   <span style={{ fontSize: '12px', fontWeight: 650, color: '#262626' }}>{highlight.label}</span>
+                   <span style={{ fontSize: '12px', fontWeight: 700, color: '#cbd5e1', letterSpacing: '0.2px' }}>{highlight.label}</span>
                 </div>
               );
            })}
@@ -198,11 +222,13 @@ export default function OfficialProfilePage() {
           justifyContent: 'center', 
           margin: '0 auto 40px',
           maxWidth: mob ? '100%' : '560px',
-          background: '#f1f5f9', 
-          padding: '6px', 
+          background: 'rgba(255, 255, 255, 0.02)', 
+          padding: '5px', 
           borderRadius: '100px', 
-          border: '1px solid #e2e8f0',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.02)',
+          border: '1.5px solid rgba(255, 255, 255, 0.06)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           gap: '4px'
         }}>
            {[
@@ -218,7 +244,7 @@ export default function OfficialProfilePage() {
                  onClick={() => setActiveTab(tab.id)}
                  style={{
                    flex: 1,
-                   background: active ? '#0f172a' : 'transparent',
+                   background: active ? 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)' : 'transparent',
                    border: 'none',
                    padding: mob ? '10px 8px' : '12px 20px',
                    borderRadius: '100px',
@@ -226,13 +252,25 @@ export default function OfficialProfilePage() {
                    alignItems: 'center',
                    justifyContent: 'center',
                    gap: '8px',
-                   color: active ? '#fff' : '#64748b',
+                   color: active ? '#fff' : '#94a3b8',
                    fontSize: '11px',
                    fontWeight: 800,
                    letterSpacing: '1px',
                    cursor: 'pointer',
-                   transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                   boxShadow: active ? '0 4px 12px rgba(15,23,42,0.15)' : 'none'
+                   transition: 'all 0.25s ease',
+                   boxShadow: active ? '0 4px 15px rgba(255,148,49,0.3)' : 'none'
+                 }}
+                 onMouseEnter={e => {
+                   if (!active) {
+                     e.currentTarget.style.color = '#fff';
+                     e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+                   }
+                 }}
+                 onMouseLeave={e => {
+                   if (!active) {
+                     e.currentTarget.style.color = '#94a3b8';
+                     e.currentTarget.style.background = 'transparent';
+                   }
                  }}
                >
                  <Icon size={14} />
