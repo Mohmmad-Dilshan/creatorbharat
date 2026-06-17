@@ -93,10 +93,103 @@ export default function BrandLandingPage() {
             opacity: 0.5;
           }
         }
+
+        /* Hero Responsive Classes */
+        .hero-section {
+          padding: 80px 16px 60px !important;
+        }
+        @media (min-width: 768px) {
+          .hero-section {
+            padding: 100px 24px 80px !important;
+          }
+        }
+        @media (min-width: 1024px) {
+          .hero-section {
+            padding: 130px 24px 100px !important;
+          }
+        }
+
+        .hero-left-col {
+          align-items: center !important;
+        }
+        @media (min-width: 1024px) {
+          .hero-left-col {
+            align-items: flex-start !important;
+          }
+        }
+
+        .hero-title {
+          font-size: 36px !important;
+          line-height: 1.1 !important;
+          text-align: center !important;
+        }
+        @media (min-width: 640px) {
+          .hero-title {
+            font-size: 48px !important;
+          }
+        }
+        @media (min-width: 1024px) {
+          .hero-title {
+            font-size: 68px !important;
+            text-align: left !important;
+            line-height: 1.05 !important;
+          }
+        }
+
+        .hero-desc {
+          font-size: 15px !important;
+          text-align: center !important;
+          margin: 0 auto 32px !important;
+        }
+        @media (min-width: 768px) {
+          .hero-desc {
+            font-size: 17px !important;
+          }
+        }
+        @media (min-width: 1024px) {
+          .hero-desc {
+            font-size: 18px !important;
+            text-align: left !important;
+            margin: 0 0 32px 0 !important;
+          }
+        }
+
+        .hero-ctas {
+          justify-content: center !important;
+        }
+        @media (min-width: 1024px) {
+          .hero-ctas {
+            justify-content: flex-start !important;
+          }
+        }
+
+        .hero-stats-grid {
+          grid-template-columns: repeat(2, 1fr) !important;
+          gap: 12px !important;
+          margin-top: 32px !important;
+        }
+        @media (min-width: 640px) {
+          .hero-stats-grid {
+            grid-template-columns: repeat(4, 1fr) !important;
+            margin-top: 48px !important;
+          }
+        }
+
+        .hero-right-col {
+          max-width: 480px !important;
+          width: 100% !important;
+          margin: 0 auto !important;
+        }
+        @media (min-width: 1024px) {
+          .hero-right-col {
+            max-width: none !important;
+            margin: 0 !important;
+          }
+        }
       `}</style>
 
       {/* ── HERO ── */}
-      <section style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', padding: mob ? '90px 20px 60px' : '130px 24px 100px', position: 'relative', overflow: 'hidden', borderBottom: '1px solid #e2e8f0' }}>
+      <section className="hero-section" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', padding: mob ? '90px 20px 60px' : '130px 24px 100px', position: 'relative', overflow: 'hidden', borderBottom: '1px solid #e2e8f0' }}>
         <div style={{ position: 'absolute', top: '-10%', left: '-5%', width: '50%', height: '60%', background: 'radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%)', filter: 'blur(60px)' }} />
         <div style={{ position: 'absolute', bottom: '-10%', right: '-5%', width: '50%', height: '60%', background: 'radial-gradient(circle, rgba(255,148,49,0.04) 0%, transparent 70%)', filter: 'blur(60px)' }} />
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #10B981, #e2e8f0, #FF9431)' }} />
@@ -104,22 +197,22 @@ export default function BrandLandingPage() {
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', zIndex: 2 }}>
           <div className="brand-landing-grid">
             {/* Left Column: Text & Actions */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start' }}>
+            <div className="hero-left-col" style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start' }}>
               <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: 'rgba(16,185,129,0.1)', padding: '10px 20px', borderRadius: 100, marginBottom: 32, border: '1px solid rgba(16,185,129,0.2)' }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px #10B981' }} />
                 <span style={{ fontSize: 12, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Brand Command Center</span>
               </motion.div>
 
-              <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ fontSize: mob ? '40px' : '68px', fontWeight: 950, color: '#0f172a', lineHeight: 1.05, letterSpacing: '-0.04em', marginBottom: 24, textAlign: mob ? 'center' : 'left' }}>
+              <motion.h1 className="hero-title" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ fontSize: mob ? '40px' : '68px', fontWeight: 950, color: '#0f172a', lineHeight: 1.05, letterSpacing: '-0.04em', marginBottom: 24, textAlign: mob ? 'center' : 'left' }}>
                 Scale with <br />
                 <span style={{ background: 'linear-gradient(135deg, #10B981 0%, #0f172a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bharat's Best.</span>
               </motion.h1>
 
-              <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ fontSize: mob ? '15px' : '18px', color: '#475569', maxWidth: 600, margin: mob ? '0 auto 32px' : '0 0 32px 0', lineHeight: 1.6, fontWeight: 500, textAlign: mob ? 'center' : 'left' }}>
+              <motion.p className="hero-desc" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ fontSize: mob ? '15px' : '18px', color: '#475569', maxWidth: 600, margin: mob ? '0 auto 32px' : '0 0 32px 0', lineHeight: 1.6, fontWeight: 500, textAlign: mob ? 'center' : 'left' }}>
                 Scout verified regional creators, launch campaigns with escrow protection, and track ROI in real-time. <span style={{ color: '#0f172a', fontWeight: 700 }}>Zero commission. Zero middlemen.</span>
               </motion.p>
 
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ display: 'flex', gap: 16, justifyContent: mob ? 'center' : 'flex-start', flexWrap: 'wrap', width: '100%' }}>
+              <motion.div className="hero-ctas" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ display: 'flex', gap: 16, justifyContent: mob ? 'center' : 'flex-start', flexWrap: 'wrap', width: '100%' }}>
                 <Btn lg onClick={() => navigate('/brand-register')} style={{ background: '#10B981', color: '#fff', borderRadius: 100, padding: '16px 36px', fontSize: 15, fontWeight: 950, boxShadow: '0 20px 40px rgba(16,185,129,0.25)' }}>
                   Start Scouting Free <ArrowRight size={18} />
                 </Btn>
@@ -129,7 +222,7 @@ export default function BrandLandingPage() {
               </motion.div>
 
               {/* Stats */}
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginTop: 48, width: '100%' }}>
+              <motion.div className="hero-stats-grid" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 12, marginTop: 48, width: '100%' }}>
                 {STATS.map(s => (
                   <div key={s.l} style={{ background: '#ffffff', padding: '14px 10px', borderRadius: 16, border: '1px solid #e2e8f0', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.02)' }}>
                     <div style={{ fontSize: mob ? '18px' : '24px', fontWeight: 950, color: '#10B981', letterSpacing: '-0.03em', lineHeight: 1 }}>{s.v}</div>
@@ -141,6 +234,7 @@ export default function BrandLandingPage() {
 
             {/* Right Column: Visual Poster Card (SaaS Mockup) */}
             <motion.div
+              className="hero-right-col"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
