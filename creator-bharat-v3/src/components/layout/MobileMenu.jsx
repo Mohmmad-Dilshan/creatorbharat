@@ -45,6 +45,7 @@ export default function MobileMenu({ open }) {
     { path: '/verify-guide', l: 'Verification Guide', i: ShieldCheck },
     { path: '/ai-knowledge', l: 'AI Knowledge', i: BookOpen },
     { path: '/official-profile', l: 'Official Profile', i: ShieldCheck },
+    { path: '/notifications', l: 'Official Gazette', i: Bell },
     { path: '/about', l: 'Our Story', i: Heart }
   ];
 

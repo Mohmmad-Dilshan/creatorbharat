@@ -622,7 +622,8 @@ export default function Navbar() {
         { path: '/rate-calc', label: 'Rate Calculator' },
         { path: '/pricing', label: 'Pricing Plans' },
         { path: '/ai-knowledge', label: 'AI Knowledge' },
-        { path: '/official-profile', label: 'Official Profile' }
+        { path: '/official-profile', label: 'Official Profile' },
+        { path: '/notifications', label: 'Official Gazette' }
       ]
     },
     { 
