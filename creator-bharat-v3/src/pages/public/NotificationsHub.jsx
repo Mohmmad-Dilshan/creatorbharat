@@ -130,6 +130,79 @@ export default function NotificationsHub() {
             padding-bottom: 80px;
           }
         }
+        .gazette-modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(15, 23, 42, 0.7);
+          backdrop-filter: blur(4px);
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+          padding: 16px;
+          z-index: 9999;
+          overflow-y: auto;
+        }
+        @media (min-width: 640px) {
+          .gazette-modal-overlay {
+            align-items: center;
+            padding: 30px 20px;
+          }
+        }
+        .gazette-modal-card {
+          background: #faf9f6;
+          border: 2px solid #475569;
+          border-radius: 8px;
+          width: 100%;
+          max-width: 680px;
+          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+          position: relative;
+          overflow: hidden;
+          font-family: "Times New Roman", Times, serif;
+          margin-top: 20px;
+          margin-bottom: 20px;
+        }
+        @media (min-width: 640px) {
+          .gazette-modal-card {
+            margin-top: 0;
+            margin-bottom: 0;
+          }
+        }
+        .gazette-modal-close {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          background: #f1f5f9;
+          border: 1.5px solid #cbd5e1;
+          border-radius: 50%;
+          width: 32px;
+          height: 32px;
+          display: grid;
+          place-items: center;
+          cursor: pointer;
+          color: #475569;
+          z-index: 50;
+          transition: all 0.15s ease;
+        }
+        .gazette-modal-close:hover {
+          background: #fee2e2;
+          color: #dc2626;
+          border-color: #fecaca;
+        }
+        @media (min-width: 640px) {
+          .gazette-modal-close {
+            top: 20px;
+            right: 20px;
+          }
+        }
+        .gazette-modal-body {
+          padding: 48px 16px 28px;
+          box-sizing: border-box;
+        }
+        @media (min-width: 640px) {
+          .gazette-modal-body {
+            padding: 40px;
+          }
+        }
       `}</style>
       <Seo 
         title="Official Gazette - Notification Board" 
@@ -383,32 +456,12 @@ export default function NotificationsHub() {
       {/* Gazette Circular Paper Modal PopUp */}
       <AnimatePresence>
         {selectedCircular && (
-          <div style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(15,23,42,0.6)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px',
-            zIndex: 9999,
-            overflowY: 'auto'
-          }}>
+          <div className="gazette-modal-overlay">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              style={{
-                background: '#faf9f6', // Parchment Paper color
-                border: '2px solid #475569',
-                borderRadius: '8px',
-                width: '100%',
-                maxWidth: '680px',
-                boxShadow: '0 25px 50px rgba(0,0,0,0.3)',
-                position: 'relative',
-                overflow: 'hidden',
-                fontFamily: '"Times New Roman", Times, serif'
-              }}
+              className="gazette-modal-card"
             >
               {/* Paper Top Tricolor Border */}
               <div style={{ height: '4px', background: 'linear-gradient(90deg, #FF9431 33%, #FFFFFF 33%, #FFFFFF 66%, #138808 66%)' }} />
@@ -416,29 +469,13 @@ export default function NotificationsHub() {
               {/* Close Button */}
               <button 
                 onClick={() => setSelectedCircular(null)}
-                style={{
-                  position: 'absolute',
-                  top: '20px',
-                  right: '20px',
-                  background: '#f1f5f9',
-                  border: '1.5px solid #cbd5e1',
-                  borderRadius: '50%',
-                  width: '32px',
-                  height: '32px',
-                  display: 'grid',
-                  placeItems: 'center',
-                  cursor: 'pointer',
-                  color: '#475569',
-                  transition: '0.15s'
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#dc2626'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#475569'; }}
+                className="gazette-modal-close"
               >
                 <X size={16} />
               </button>
 
               {/* Gazette Circular Content */}
-              <div style={{ padding: '40px', boxSizing: 'border-box' }}>
+              <div className="gazette-modal-body">
                 
                 {/* Paper Header */}
                 <div style={{ textAlign: 'center', borderBottom: '2px solid #1e293b', paddingBottom: '20px', marginBottom: '24px' }}>
