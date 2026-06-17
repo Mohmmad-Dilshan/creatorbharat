@@ -6,7 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Grid, 
   Cpu, 
-  BarChart3
+  BarChart3,
+  Compass
 } from 'lucide-react';
 import Seo from '@/components/common/SEO';
 import { useApp } from '@/core/context';
@@ -221,7 +222,7 @@ export default function OfficialProfilePage() {
           display: 'flex', 
           justifyContent: 'center', 
           margin: '0 auto 40px',
-          maxWidth: mob ? '100%' : '560px',
+          maxWidth: mob ? '100%' : '680px',
           background: '#f8fafc', 
           padding: '5px', 
           borderRadius: '100px', 
@@ -233,6 +234,7 @@ export default function OfficialProfilePage() {
         }}>
            {[
              { id: 'posts', label: 'ANNOUNCEMENTS', icon: Grid },
+             { id: 'portals', label: 'PORTALS & TOOLS', icon: Compass },
              { id: 'mastermind', label: 'PLATFORM MASTERMIND', icon: Cpu },
              { id: 'insights', label: 'METRICS & HUBS', icon: BarChart3 }
            ].map(tab => {

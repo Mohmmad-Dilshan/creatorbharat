@@ -47,6 +47,7 @@ export const OFFICIAL_DATA = {
       readTime: '3 min read',
       icon: Code2,
       color: '#0f172a',
+      image: '/official_launch_poster.png',
       summary: 'CreatorBharat v1.0 is officially live! Opening the gateway to direct, commission-free collaborations between brands and regional talent.',
       fullContent: `We are thrilled to announce that CreatorBharat v1.0 is officially live across India. Our mission is to build the trust infrastructure for India's regional creator economy.
       
@@ -64,6 +65,7 @@ export const OFFICIAL_DATA = {
       readTime: '4 min read',
       icon: Activity,
       color: '#7C3AED',
+      image: '/creator_score_poster.png',
       summary: 'How Creator Score V1 computes reputation transparently to help brands discover reliable partners.',
       fullContent: `To build trust in our marketplace, we introduce the algorithmic Creator Score. This metric helps brands identify highly reliable partners instantly.
       
@@ -80,6 +82,7 @@ export const OFFICIAL_DATA = {
       readTime: '3 min read',
       icon: ShieldCheck,
       color: '#10B981',
+      image: '/escrow_secure_poster.png',
       summary: 'Say goodbye to payout delays. Our escrow system secures campaign budgets for complete peace of mind.',
       fullContent: `CreatorBharat's secure escrow ensures campaigns run smoothly for both brands and creators without delays.
       
@@ -96,6 +99,7 @@ export const OFFICIAL_DATA = {
       readTime: '4 min read',
       icon: Globe,
       color: '#3B82F6',
+      image: '/regional_creators_poster.png',
       summary: 'Why influencer marketing is migrating to Tier-2 & Tier-3 Indian cities and regional languages.',
       fullContent: `Metro saturation is real. The next wave of consumer growth in India is driven by regional creators speaking regional languages.
       

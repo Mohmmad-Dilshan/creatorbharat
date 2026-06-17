@@ -8,6 +8,7 @@ import RoadmapTimeline from './RoadmapTimeline';
 import MastermindSection from './MastermindSection';
 import ReviewSlider from './ReviewSlider';
 import InsightsGrid from './InsightsGrid';
+import EcosystemPortals from './EcosystemPortals';
 
 export default function TabContent({ activeTab, mob }) {
   const [selectedPost, setSelectedPost] = useState(null);
@@ -23,143 +24,150 @@ export default function TabContent({ activeTab, mob }) {
           exit={{ opacity: 0 }} 
           transition={{ duration: 0.2 }}
         >
-           {activeTab === 'posts' && (
-             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: mob ? '16px' : '28px' }}>
-                {OFFICIAL_DATA.posts.map(post => {
-                  const Icon = post.icon;
-                  const isHovered = hoveredPostId === post.id;
-                  const accentColor = post.color === '#000' || post.color === '#0f172a' ? '#FF9431' : post.color;
+            {activeTab === 'posts' && (
+              <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: mob ? '16px' : '28px' }}>
+                 {OFFICIAL_DATA.posts.map(post => {
+                   const Icon = post.icon;
+                   const isHovered = hoveredPostId === post.id;
+                   const accentColor = post.color === '#000' || post.color === '#0f172a' ? '#FF9431' : post.color;
 
-                  return (
-                    <div 
-                      key={post.id} 
-                      onClick={() => setSelectedPost(post)}
-                      onMouseEnter={() => setHoveredPostId(post.id)}
-                      onMouseLeave={() => setHoveredPostId(null)}
-                      style={{ 
-                        aspectRatio: mob ? 'auto' : '1/1',
-                        minHeight: mob ? '140px' : 'auto',
-                        background: isHovered ? '#f8fafc' : '#ffffff', 
-                        borderRadius: '24px',
-                        padding: mob ? '20px' : '28px',
-                        display: 'flex', 
-                        flexDirection: 'column', 
-                        justifyContent: 'space-between',
-                        cursor: 'pointer',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        border: isHovered ? `1px solid ${accentColor}` : '1px solid #e2e8f0',
-                        boxShadow: isHovered 
-                          ? `0 12px 35px ${accentColor}12, inset 0 0 12px ${accentColor}08` 
-                          : '0 8px 30px rgba(0,0,0,0.01)',
-                        transform: isHovered ? 'translateY(-6px)' : 'translateY(0)',
-                        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-                      }}
-                    >
-                      {/* Background accent glow orb */}
-                      <div style={{
-                        position: 'absolute',
-                        right: '-30px',
-                        top: '-30px',
-                        width: '100px',
-                        height: '100px',
-                        background: `radial-gradient(circle, ${accentColor}25 0%, transparent 70%)`,
-                        opacity: isHovered ? 1 : 0.4,
-                        transition: 'opacity 0.3s ease',
-                        pointerEvents: 'none'
-                      }} />
+                   return (
+                     <div 
+                       key={post.id} 
+                       onClick={() => setSelectedPost(post)}
+                       onMouseEnter={() => setHoveredPostId(post.id)}
+                       onMouseLeave={() => setHoveredPostId(null)}
+                       style={{ 
+                         background: isHovered ? '#f8fafc' : '#ffffff', 
+                         borderRadius: '24px',
+                         display: 'flex', 
+                         flexDirection: 'column', 
+                         cursor: 'pointer',
+                         position: 'relative',
+                         overflow: 'hidden',
+                         border: isHovered ? `1px solid ${accentColor}` : '1px solid #e2e8f0',
+                         boxShadow: isHovered 
+                           ? `0 12px 35px ${accentColor}12, inset 0 0 12px ${accentColor}08` 
+                           : '0 8px 30px rgba(0,0,0,0.01)',
+                         transform: isHovered ? 'translateY(-6px)' : 'translateY(0)',
+                         transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                       }}
+                     >
+                       {/* Post Cover Image */}
+                       {post.image && (
+                         <div style={{ width: '100%', height: '160px', overflow: 'hidden', position: 'relative' }}>
+                           <img 
+                             src={post.image} 
+                             alt={post.title} 
+                             style={{ 
+                               width: '100%', 
+                               height: '100%', 
+                               objectFit: 'cover',
+                               transition: 'transform 0.5s ease',
+                               transform: isHovered ? 'scale(1.05)' : 'scale(1)'
+                             }} 
+                           />
+                           <div style={{
+                             position: 'absolute',
+                             bottom: 0,
+                             left: 0,
+                             right: 0,
+                             height: '40px',
+                             background: 'linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0))',
+                             opacity: isHovered ? 0 : 1,
+                           }} />
+                         </div>
+                       )}
 
-                      {/* Top Row: Category tag and Icon */}
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%', position: 'relative', zIndex: 1 }}>
-                        <span style={{
-                          fontSize: '10px',
-                          fontWeight: 900,
-                          color: accentColor,
-                          background: `${accentColor}15`,
-                          border: `1.5px solid ${accentColor}25`,
-                          padding: '4px 10px',
-                          borderRadius: '100px',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.8px'
-                        }}>
-                          {post.category}
-                        </span>
-                        <div style={{
-                          width: '38px',
-                          height: '38px',
-                          borderRadius: '50%',
-                          background: isHovered ? `${accentColor}15` : '#f1f5f9',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: isHovered ? accentColor : '#475569',
-                          border: isHovered ? `1.5px solid ${accentColor}30` : '1px solid #e2e8f0',
-                          transform: isHovered ? 'scale(1.15) rotate(12deg)' : 'scale(1) rotate(0)',
-                          transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-                        }}>
-                          <Icon size={18} />
-                        </div>
-                      </div>
+                       {/* Card Text Content Container */}
+                       <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
+                         {/* Category and Icon */}
+                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                           <span style={{
+                             fontSize: '10px',
+                             fontWeight: 900,
+                             color: accentColor,
+                             background: `${accentColor}15`,
+                             border: `1.5px solid ${accentColor}25`,
+                             padding: '4px 10px',
+                             borderRadius: '100px',
+                             textTransform: 'uppercase',
+                             letterSpacing: '0.8px'
+                           }}>
+                             {post.category}
+                           </span>
+                           <div style={{
+                             width: '32px',
+                             height: '32px',
+                             borderRadius: '50%',
+                             background: isHovered ? `${accentColor}15` : '#f1f5f9',
+                             display: 'flex',
+                             alignItems: 'center',
+                             justifyContent: 'center',
+                             color: isHovered ? accentColor : '#475569',
+                             border: isHovered ? `1.5px solid ${accentColor}30` : '1px solid #e2e8f0',
+                             transform: isHovered ? 'scale(1.1) rotate(12deg)' : 'scale(1) rotate(0)',
+                             transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                           }}>
+                             <Icon size={14} />
+                           </div>
+                         </div>
 
-                      {/* Middle: Title & Brief Description */}
-                      <div style={{ marginTop: mob ? '16px' : 'auto', marginBottom: mob ? '8px' : '10px', position: 'relative', zIndex: 1 }}>
-                        <h4 style={{ 
-                          color: '#0f172a', 
-                          fontSize: mob ? '17px' : '20px', 
-                          fontWeight: 950,
-                          margin: '0 0 6px 0',
-                          letterSpacing: '-0.02em',
-                          transform: isHovered ? 'translateX(4px)' : 'translateX(0)',
-                          transition: 'transform 0.3s ease'
-                        }}>
-                          {post.title}
-                        </h4>
-                        <p style={{ 
-                          color: isHovered ? '#334155' : '#475569', 
-                          fontSize: '12px', 
-                          margin: 0,
-                          lineHeight: '1.6',
-                          display: '-webkit-box',
-                          WebkitLineClamp: mob ? 2 : 3,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          fontWeight: 500,
-                          transition: 'color 0.3s ease'
-                        }}>
-                          {post.summary}
-                        </p>
-                      </div>
+                         {/* Title & Description */}
+                         <div style={{ marginBottom: '20px' }}>
+                           <h4 style={{ 
+                             color: '#0f172a', 
+                             fontSize: '18px', 
+                             fontWeight: 950,
+                             margin: '0 0 8px 0',
+                             letterSpacing: '-0.02em',
+                             lineHeight: '1.3'
+                           }}>
+                             {post.title}
+                           </h4>
+                           <p style={{ 
+                             color: '#475569', 
+                             fontSize: '12px', 
+                             margin: 0,
+                             lineHeight: '1.6',
+                             display: '-webkit-box',
+                             WebkitLineClamp: 3,
+                             WebkitBoxOrient: 'vertical',
+                             overflow: 'hidden',
+                             fontWeight: 500
+                           }}>
+                             {post.summary}
+                           </p>
+                         </div>
 
-                      {/* Bottom Row: Read time indicators */}
-                      <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        color: '#64748b',
-                        fontSize: '11px',
-                        fontWeight: 650,
-                        marginTop: mob ? '8px' : '0',
-                        position: 'relative',
-                        zIndex: 1
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Clock size={12} color={isHovered ? accentColor : '#64748b'} /> {post.readTime}
-                        </div>
-                        <span style={{ 
-                          color: accentColor, 
-                          opacity: isHovered ? 1 : 0, 
-                          transform: isHovered ? 'translateX(0)' : 'translateX(-6px)',
-                          transition: 'all 0.3s ease',
-                          fontWeight: 800
-                        }}>
-                          READ PROTOCOL →
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-             </div>
-           )}
+                         {/* Footer: Read time */}
+                         <div style={{
+                           display: 'flex',
+                           justifyContent: 'space-between',
+                           alignItems: 'center',
+                           color: '#64748b',
+                           fontSize: '11px',
+                           fontWeight: 650
+                         }}>
+                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                             <Clock size={12} color={isHovered ? accentColor : '#64748b'} /> {post.readTime}
+                           </div>
+                           <span style={{ 
+                             color: accentColor, 
+                             opacity: isHovered ? 1 : 0, 
+                             transform: isHovered ? 'translateX(0)' : 'translateX(-6px)',
+                             transition: 'all 0.3s ease',
+                             fontWeight: 800
+                           }}>
+                             READ ARTICLE →
+                           </span>
+                         </div>
+                       </div>
+                     </div>
+                   );
+                 })}
+              </div>
+            )}
            {activeTab === 'mastermind' && (
               <div>
                   <IntelligenceHub mob={mob} />
@@ -170,7 +178,8 @@ export default function TabContent({ activeTab, mob }) {
                  <ReviewSlider mob={mob} />
               </div>
            )}
-           {activeTab === 'insights' && <InsightsGrid mob={mob} />}
+            {activeTab === 'insights' && <InsightsGrid mob={mob} />}
+            {activeTab === 'portals' && <EcosystemPortals mob={mob} />}
         </motion.div>
       </AnimatePresence>
 
@@ -298,11 +307,18 @@ export default function TabContent({ activeTab, mob }) {
                   fontSize: mob ? '22px' : '28px',
                   fontWeight: 950,
                   color: '#0f172a',
-                  margin: '0 0 12px 0',
+                  margin: '0 0 16px 0',
                   letterSpacing: '-0.03em'
                 }}>
                   {selectedPost.title}
                 </h3>
+
+                 {/* Cover Image */}
+                 {selectedPost.image && (
+                   <div style={{ width: '100%', height: mob ? '140px' : '240px', borderRadius: '16px', overflow: 'hidden', marginBottom: '24px', border: '1px solid #e2e8f0' }}>
+                     <img src={selectedPost.image} alt={selectedPost.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                   </div>
+                 )}
 
                 {/* Metadata row */}
                 <div style={{
