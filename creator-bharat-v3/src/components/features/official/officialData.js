@@ -13,18 +13,18 @@ export const OFFICIAL_DATA = {
   en: {
     username: 'creatorbharat',
     displayName: 'CreatorBharat.Official',
-    category: 'Science & Tech • Protocol Node 001',
-    bio: "Building the Mastermind of Bharat's Creator Economy. 🇮🇳\nInfrastructure of Trust for 1.4B Voices.",
+    category: 'Ecosystem • Official Platform Handle',
+    bio: "Democratizing India's Creator Economy. 🇮🇳\nConnecting brands with authentic regional creators with 0% middleman fees.",
     website: 'www.creatorbharat.com',
   },
   hi: {
     username: 'creatorbharat',
     displayName: 'CreatorBharat.Official',
-    category: 'विज्ञान और तकनीक • प्रोटोकॉल नोड 001',
-    bio: "भारत की क्रिएटर इकोनॉमी का मास्टरमाइंड बनाना। 🇮🇳\n1.4B आवाजों के लिए विश्वास का बुनियादी ढांचा।",
+    category: 'पारिस्थितिकी तंत्र • आधिकारिक हैंडल',
+    bio: "भारत की क्रिएटर इकोनॉमी का लोकतंत्रीकरण। 🇮🇳\n0% ब्रोकरेज फीस पर ब्रांड्स को क्षेत्रीय क्रिएटर्स से जोड़ना।",
     website: 'www.creatorbharat.com',
   },
-  baseStats: { posts: 1240, followers: '58.4K', following: 128 },
+  baseStats: { posts: 120, followers: '58.4K', following: 128 },
   socialPlatforms: [
     { platform: 'Twitter', url: 'https://twitter.com/creatorbharat', handle: '@CreatorBharat' },
     { platform: 'LinkedIn', url: 'https://linkedin.com/company/creatorbharat', handle: 'company/creatorbharat' },
@@ -33,133 +33,102 @@ export const OFFICIAL_DATA = {
     { platform: 'Discord', url: 'https://discord.gg/creatorbharat', handle: 'CreatorBharat HQ' }
   ],
   highlights: [
-    { id: 'v1', label: 'v1.0 Core', icon: Code2, color: '#0f172a', stories: [{ title: 'The Platform Vision', text: 'Migrating 50,000+ nodes to a decentralized ledger.', date: 'Live' }] },
-    { id: 'updates', label: 'Updates', icon: Zap, color: '#FF9431', stories: [{ title: 'New UI Live', text: 'Brand dashboards feature real-time sentiment analysis.', date: '2h ago' }] },
-    { id: 'roadmap', label: 'Roadmap', icon: Rocket, color: '#3B82F6', stories: [{ title: 'Phase 2', text: 'Onboarding Tier-2 regional aggregators.', date: 'Next' }] },
-    { id: 'founders', label: 'Founders', icon: Users, color: '#10B981', stories: [{ title: 'Leadership', text: 'Mohmmad Dilshan on the future of Bharat.', date: 'Official' }] }
+    { id: 'v1', label: 'v1.0 Launch', icon: Code2, color: '#0f172a', stories: [{ title: 'CreatorBharat v1.0', text: 'Ecosystem launch: Direct matching, secure escrow, and transparent ratings.', date: 'Live' }] },
+    { id: 'updates', label: 'Updates', icon: Zap, color: '#FF9431', stories: [{ title: 'Feature Sync', text: 'Brand consoles now feature direct search filters by city and niche.', date: '2h ago' }] },
+    { id: 'roadmap', label: 'Roadmap', icon: Rocket, color: '#3B82F6', stories: [{ title: 'Creator Success', text: 'Onboarding 20,000+ Tier-2/3 creators in regional languages.', date: 'Next' }] },
+    { id: 'founders', label: 'Our Mission', icon: Users, color: '#10B981', stories: [{ title: 'Why CreatorBharat?', text: 'Removing commission-taking middlemen so creators keep 100% of earnings.', date: 'Official' }] }
   ],
   posts: [
     {
       id: 1,
-      title: 'CORE_PROTOCOL',
-      category: 'Core System',
+      title: 'PLATFORM_LAUNCH_V1',
+      category: 'Announcements',
       date: 'June 10, 2026',
-      readTime: '4 min read',
+      readTime: '3 min read',
       icon: Code2,
       color: '#0f172a',
-      summary: 'Migrating 50,000+ regional nodes to stateful trust architectures and unified brand-creator handshakes.',
-      fullContent: `CreatorBharat has officially deployed the v1.0 Protocol Engine. This upgrade overhauls the sync-frequency model, allowing brand consoles to view real-time creator availability.
+      summary: 'CreatorBharat v1.0 is officially live! Opening the gateway to direct, commission-free collaborations between brands and regional talent.',
+      fullContent: `We are thrilled to announce that CreatorBharat v1.0 is officially live across India. Our mission is to build the trust infrastructure for India's regional creator economy.
       
-      Key Enhancements:
-      • Decentralized Sync Engine: Syncing nodes across state shards has been reduced to 12ms average latency.
-      • State Management: Refined the OAuth key exchange protocol for brand access tokens.
-      • Performance Optimization: Bundled with modern compression standards to reduce client-side footprint by 42%.`
+      Key Features of v1.0:
+      • Direct Creator Scout: Search and filter verified creators by niche, location, and audience demographics.
+      • Secure Escrow Ledger: Campaign payments are held securely and released instantly upon deliverable verification.
+      • Transparent Creator Score: Algorithmic reputation profiles based on campaign fulfillment and brand reviews.
+      • 0% Middleman Fees: Creators keep 100% of their earnings, and brands pay zero agency commissions.`
     },
     {
       id: 2,
-      title: 'ROADMAP_Q3',
-      category: 'Product Path',
-      date: 'June 01, 2026',
-      readTime: '3 min read',
-      icon: Rocket,
-      color: '#FF9431',
-      summary: 'Unveiling the Creator Matching AI and decentralized escrow milestones scheduled for Q3-Q4.',
-      fullContent: `As we cross our core milestones, the next phase of the CreatorBharat roadmap focuses on predictive matchmaking.
-      
-      Roadmap Highlights:
-      • AI Matching Engine (Beta): Automated matching of campaign goals to creator demographics with 95%+ success probability.
-      • Escrow Milestone Ledgers: Integration of dynamic payouts based on visual asset verification checks.
-      • Creator Score V2: Incorporating continuous engagement parameters into the public reputation score.`
-    },
-    {
-      id: 3,
-      title: 'REGION_SYNC',
-      category: 'Infrastructure',
-      date: 'May 24, 2026',
-      readTime: '5 min read',
-      icon: Globe,
-      color: '#3B82F6',
-      summary: 'Deployment of localized edge-sync nodes in Maharashtra, UP, and Karnataka shards.',
-      fullContent: `To achieve our mission of empowering the next billion voices, regional latency must remain sub-50ms. We have launched three new edge nodes.
-      
-      Status updates:
-      • Maharashtra Shard (S1): Fully active with 12.4K verified nodes synced.
-      • Karnataka Shard (S2): Complete synchronization of brand analytics pipelines.
-      • North India Shard (S4): Onboarding 20,000 Tier-2/3 creators in UP and Rajasthan clusters.`
-    },
-    {
-      id: 4,
-      title: 'AUTH_NODE',
-      category: 'Security',
-      date: 'May 15, 2026',
-      readTime: '2 min read',
-      icon: ShieldCheck,
-      color: '#10B981',
-      summary: 'How cryptographically signed handles prevent social spoofing and trust degradation.',
-      fullContent: `Trust is the absolute core of our creator marketplace. Authenticators verify profiles before they gain the verified status badges.
-      
-      Security Features:
-      • Signed Handshakes: Every agreement is signed using decentralized profile keys.
-      • Spoofing Protection: Anti-impersonation checks run hourly against known digital signatures.
-      • OAuth 2.1 Enforcement: Zero storage of third-party login credentials.`
-    },
-    {
-      id: 5,
-      title: 'SCORE_V2',
-      category: 'Algorithms',
-      date: 'May 08, 2026',
+      title: 'CREATOR_SCORE_MATH',
+      category: 'Platform Guide',
+      date: 'June 05, 2026',
       readTime: '4 min read',
       icon: Activity,
       color: '#7C3AED',
-      summary: 'Refactoring the Creator Score equation to value consistency and response times over raw followers.',
-      fullContent: `Follower count is a legacy metric. The new Creator Reputation Score V2 focuses on conversion, campaign fulfillment, and communication efficiency.
+      summary: 'How Creator Score V1 computes reputation transparently to help brands discover reliable partners.',
+      fullContent: `To build trust in our marketplace, we introduce the algorithmic Creator Score. This metric helps brands identify highly reliable partners instantly.
       
       Score Components:
-      • Fulfillment Rate (40%): Successful completion of milestones.
-      • Quality Score (30%): Semantic review feedback from verified brand partners.
-      • Reach & Engagement (30%): Core engagement distribution verified by regional node shards.`
+      • Campaign Fulfillment (45%): Successful delivery of brand assets and timeline compliance.
+      • Brand Reviews (30%): Verified ratings and feedback from brand campaign managers.
+      • Consistency (25%): Organic reach and consistency of uploads across connected social handles.`
     },
     {
-      id: 6,
-      title: 'DATA_LEDGER',
-      category: 'Ledger Tech',
-      date: 'April 28, 2026',
+      id: 3,
+      title: 'SECURE_ESCROW_FLOW',
+      category: 'Security & Trust',
+      date: 'May 28, 2026',
       readTime: '3 min read',
-      icon: Cpu,
-      color: '#000',
-      summary: 'Deploying the transparent escrow ledger for secure, zero-friction brand payouts.',
-      fullContent: `Payment delays damage creator relations. CreatorBharat Escrow Ledgers secure brand budgets and release them to creators instantly upon milestone sign-off.
+      icon: ShieldCheck,
+      color: '#10B981',
+      summary: 'Say goodbye to payout delays. Our escrow system secures campaign budgets for complete peace of mind.',
+      fullContent: `CreatorBharat's secure escrow ensures campaigns run smoothly for both brands and creators without delays.
       
-      Ledger Mechanics:
-      • Safe Hold: Funds are held in audited digital accounts.
-      • Automated Releases: Once deliverables are uploaded and checked, funds release within 5 seconds.
-      • Dispute Resolution: System escrow agents step in if deliverables deviate from the campaign briefs.`
+      How Escrow Works:
+      • Budget Lock: The brand funds the campaign milestones up-front to secure the creator's budget.
+      • Work Verification: The creator uploads deliverables directly to the platform.
+      • Instant Release: Once the deliverables are approved, funds are released to the creator in under 5 seconds.`
+    },
+    {
+      id: 4,
+      title: 'REGIONAL_REACH_BOOM',
+      category: 'Ecosystem Insight',
+      date: 'May 15, 2026',
+      readTime: '4 min read',
+      icon: Globe,
+      color: '#3B82F6',
+      summary: 'Why influencer marketing is migrating to Tier-2 & Tier-3 Indian cities and regional languages.',
+      fullContent: `Metro saturation is real. The next wave of consumer growth in India is driven by regional creators speaking regional languages.
+      
+      Key Drivers:
+      • Hyper-Local Engagement: Regional creators build highly loyal micro-communities with higher trust scores.
+      • Language Focus: Content in Hindi, Marathi, Tamil, Telugu, and Punjabi sees 3x higher relative engagement.
+      • High ROI: Cost-effective marketing targeting specific demographics directly without agency overhead.`
     }
   ],
   liveFeed: [
-    "Node 102 synced in Maharashtra",
-    "Protocol v1.0 deployment started",
-    "Security audit 100% completed",
-    "New brand cluster synced in Delhi",
-    "Regional shard update: UP-Node active"
+    "New brand onboarded from Bangalore",
+    "CreatorBharat v1.0 active in 28 states",
+    "Escrow campaign ₹1.5L settled successfully",
+    "Creator Score V1.0 analytics updated",
+    "Regional creator meetups planned in Rajasthan"
   ],
   founder: {
     name: 'Mohmmad Dilshan',
-    role: 'Founder & Chief Architect',
+    role: 'Founder & CEO',
     location: 'Bhilwara, Rajasthan',
-    vision: 'Democratizing the digital economy for the next billion users through decentralized intelligence.',
-    achievements: ['50K+ Nodes Scaled', 'Creator Economy Pioneer', 'Bharat Protocol Visionary']
+    vision: 'Building the infrastructure of trust and growth for India\'s regional creator economy.',
+    achievements: ['Creator Economy Pioneer', '0% Broker Fee Advocate', 'Empowering Bharat\'s Voice']
   },
   team: [
     {
       id: 'dilshan',
       name: 'Mohmmad Dilshan',
-      role: 'Founder & Chief Architect',
+      role: 'Founder & CEO',
       category: 'leadership',
       location: 'Bhilwara, Rajasthan',
       avatar: 'https://ui-avatars.com/api/?name=Mohmmad+Dilshan&background=0f172a&color=fff&size=256',
-      bio: 'Democratizing the digital economy for the next billion users through decentralized intelligence and protocol sharding.',
-      skills: ['System Architecture', 'Decentralized Networks', 'Product Strategy', 'Go/Rust'],
+      bio: 'On a mission to democratize the creator marketplace across India, providing secure direct collaborations and fair payouts.',
+      skills: ['Ecosystem Vision', 'Product Strategy', 'Business Operations', 'Community Relations'],
       linkedin: 'https://linkedin.com/in/mohmmad-dilshan',
       github: 'https://github.com/mohmmad-dilshan',
       verified: true
@@ -167,12 +136,12 @@ export const OFFICIAL_DATA = {
     {
       id: 'divyansh',
       name: 'Divyansh Sharma',
-      role: 'Head of Engineering / Lead Architect',
+      role: 'Head of Engineering',
       category: 'engineering',
       location: 'Jaipur, Rajasthan',
       avatar: 'https://ui-avatars.com/api/?name=Divyansh+Sharma&background=3B82F6&color=fff&size=256',
-      bio: 'Leading developer relations and building high-performance sync engines, real-time analytics pipelines, and trust consensus.',
-      skills: ['React/Vite', 'NodeJS/Express', 'PostgreSQL', 'Redis', 'WebSockets'],
+      bio: 'Leading backend scaling, discovery search optimizations, real-time analytics, and escrow integration.',
+      skills: ['System Architecture', 'NodeJS/Express', 'React/Vite', 'PostgreSQL', 'Redis'],
       linkedin: 'https://linkedin.com/in/divyansh-sharma',
       github: 'https://github.com/divyansh-sharma',
       verified: true
@@ -180,12 +149,12 @@ export const OFFICIAL_DATA = {
     {
       id: 'ritesh',
       name: 'Ritesh Verma',
-      role: 'Lead Product Designer',
+      role: 'Lead UX/UI Designer',
       category: 'design',
       location: 'Delhi NCR',
       avatar: 'https://ui-avatars.com/api/?name=Ritesh+Verma&background=7C3AED&color=fff&size=256',
-      bio: 'Creating immersive, high-fidelity user experiences and modular CSS systems for brand console dashboards.',
-      skills: ['Figma', 'CSS/Animations', 'Design Systems', 'Framer Motion', 'Prototyping'],
+      bio: 'Crafting responsive, premium-grade dashboard designs and animations for creators and brand partners.',
+      skills: ['Figma', 'UI/UX Design', 'CSS Systems', 'Framer Motion', 'Interactive Prototypes'],
       linkedin: 'https://linkedin.com/in/ritesh-verma',
       github: 'https://github.com/ritesh-verma',
       verified: true
@@ -193,42 +162,29 @@ export const OFFICIAL_DATA = {
     {
       id: 'priya',
       name: 'Priya Nair',
-      role: 'Head of Creator Relations',
+      role: 'Head of Creator Success',
       category: 'operations',
       location: 'Bangalore, Karnataka',
       avatar: 'https://ui-avatars.com/api/?name=Priya+Nair&background=10B981&color=fff&size=256',
-      bio: 'Managing community onboarding, event campaigns, and influencer-brand escrow operations across India.',
-      skills: ['Creator Partnerships', 'Event Execution', 'Public Relations', 'Escrow Management'],
+      bio: 'Managing talent onboarding, campaign coordination, and dispute settlements in the ecosystem.',
+      skills: ['Campaign Management', 'Talent Relations', 'Public Relations', 'Operations Strategy'],
       linkedin: 'https://linkedin.com/in/priya-nair',
       github: '#',
-      verified: true
-    },
-    {
-      id: 'aarav',
-      name: 'Aarav Singhal',
-      role: 'Lead Trust & Security Architect',
-      category: 'engineering',
-      location: 'Bhilwara, Rajasthan',
-      avatar: 'https://ui-avatars.com/api/?name=Aarav+Singhal&background=FF9431&color=fff&size=256',
-      bio: 'Auditing secure escrow systems, decentralized key management, and brand authentication protocols.',
-      skills: ['Cybersecurity', 'API Security', 'Smart Contracts', 'OAuth Nodes', 'Risk Audit'],
-      linkedin: 'https://linkedin.com/in/aarav-singhal',
-      github: 'https://github.com/aarav-singhal',
       verified: true
     }
   ],
   shards: [
-    { id: 'S1', region: 'North Shard', status: 'Active', latency: '12ms', load: '64%' },
-    { id: 'S2', region: 'South Shard', status: 'Syncing', latency: '45ms', load: '12%' },
-    { id: 'S3', region: 'West Shard', status: 'Active', latency: '18ms', load: '82%' },
-    { id: 'S4', region: 'East Shard', status: 'Active', latency: '22ms', load: '41%' }
+    { id: 'H1', region: 'North Hub (Delhi/Jaipur)', status: 'Active', latency: '4.5K+ Creators', load: '85%' },
+    { id: 'H2', region: 'West Hub (Mumbai/Pune)', status: 'Active', latency: '5.8K+ Creators', load: '92%' },
+    { id: 'H3', region: 'South Hub (Bangalore/Chennai)', status: 'Active', latency: '3.9K+ Creators', load: '78%' },
+    { id: 'H4', region: 'East Hub (Kolkata/Guwahati)', status: 'Active', latency: '2.2K+ Creators', load: '64%' }
   ],
   analytics: {
     growth: [45, 52, 48, 70, 65, 85, 92],
     regions: [
-      { name: 'Maharashtra', count: '12.4K', trend: '+12%' },
-      { name: 'Delhi NCR', count: '8.9K', trend: '+8%' },
-      { name: 'Karnataka', count: '7.5K', trend: '+15%' }
+      { name: 'Maharashtra', count: '5.8K', trend: '+12%' },
+      { name: 'Delhi NCR', count: '4.5K', trend: '+8%' },
+      { name: 'Karnataka', count: '3.9K', trend: '+15%' }
     ]
   }
 };

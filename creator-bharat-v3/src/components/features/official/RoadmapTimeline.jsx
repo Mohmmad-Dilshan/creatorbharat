@@ -8,39 +8,39 @@ export default function RoadmapTimeline() {
   const roadmapSteps = [
     { 
       id: 'v1', 
-      t: 'v1.0 Core Sync', 
+      t: 'v1.0 Platform Launch', 
       d: 'Q2 2026', 
       s: 'COMPLETE', 
       c: '#10B981', 
       icon: Code2,
-      desc: 'Core synchronization protocols launched successfully. Over 50,000+ verified creator profiles synced with sub-12ms transaction verification.'
+      desc: 'Ecosystem launch: Direct brand-creator matching engine, secure escrow payment systems, and verified analytics live across India.'
     },
     { 
       id: 'ai', 
-      t: 'AI Matching Engine', 
+      t: 'AI Discovery V2', 
       d: 'Q3 2026', 
       s: 'BETA', 
       c: '#FF9431', 
       icon: Cpu,
-      desc: 'Next-gen cognitive matchmaking model matching brands to target demographics with 95%+ conversion efficiency.'
+      desc: 'Advanced matching engine matching brands to target demographics with semantic search and predictive conversion metrics.'
     },
     { 
       id: 'sync', 
-      t: 'Global Sync Node', 
+      t: 'Regional Hub Expansion', 
       d: 'Q4 2026', 
       s: 'PENDING', 
       c: '#3B82F6', 
       icon: Globe,
-      desc: 'Edge server routing expansions in tier-2/3 regions. Launching localized cache replication nodes in Maharashtra and UP shards.'
+      desc: 'Expanding regional hubs in Tier-2/3 cities. Localized creator communities and brand meetups in Maharashtra, UP, and Karnataka.'
     },
     { 
       id: 'v2', 
-      t: 'Protocol v2.0 Launch', 
+      t: 'Escrow Dispute Courts', 
       d: '2027', 
       s: 'PLANNED', 
       c: '#7C3AED', 
       icon: Rocket,
-      desc: 'Consensus layer evolution introducing decentralized escrow dispute courts and automated trust-score token smart contracts.'
+      desc: 'Automated contract resolutions, community dispute boards, and instant payouts based on automated performance metrics.'
     }
   ];
 

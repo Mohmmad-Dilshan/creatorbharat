@@ -8,17 +8,17 @@ export default function IntelligenceHub({ mob }) {
   return (
     <div style={{ padding: '40px 0' }}>
        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <h3 style={{ fontSize: '20px', fontWeight: 900, letterSpacing: '2px', color: '#0f172a', fontFamily: 'Outfit, sans-serif' }}>PROTOCOL ARCHITECTURE</h3>
-          <p style={{ color: '#475569', fontSize: '14px', marginTop: '4px' }}>Decentralized node distribution & regional sharding status.</p>
+          <h3 style={{ fontSize: '20px', fontWeight: 900, letterSpacing: '2px', color: '#0f172a', fontFamily: 'Outfit, sans-serif' }}>REGIONAL CREATOR HUBS</h3>
+          <p style={{ color: '#475569', fontSize: '14px', marginTop: '4px' }}>Active creator hubs and platform performance directory.</p>
        </div>
        
        {/* Shard Directory */}
        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '32px', padding: mob ? '20px' : '32px', marginBottom: '32px', boxShadow: '0 10px 30px rgba(0,0,0,0.02)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', padding: '0 8px' }}>
              <div style={{ fontSize: '14px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px', color: '#0f172a' }}>
-               <Server size={18} color="#3B82F6" /> ACTIVE SHARD DIRECTORY
+               <Server size={18} color="#3B82F6" /> ACTIVE CREATOR HUBS
              </div>
-             <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 700, letterSpacing: '0.5px' }}>REFRESHING IN 12s...</div>
+             <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 700, letterSpacing: '0.5px' }}>SYNCED REAL-TIME</div>
           </div>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -67,7 +67,7 @@ export default function IntelligenceHub({ mob }) {
                        </div>
                        <div>
                           <div style={{ fontSize: '15px', fontWeight: 850, color: '#0f172a' }}>{shard.region}</div>
-                          <div style={{ fontSize: '11px', color: '#64748b', fontFamily: 'monospace' }}>Node ID: {shard.id}_PROT_001</div>
+                          <div style={{ fontSize: '11px', color: '#64748b', fontFamily: 'monospace' }}>Hub ID: {shard.id}_CB_001</div>
                        </div>
                     </div>
 
@@ -90,7 +90,7 @@ export default function IntelligenceHub({ mob }) {
                             <div style={{ fontSize: '12.5px', fontWeight: 900, color: isActive ? '#10B981' : '#FF9431' }}>
                               {shard.status.toUpperCase()}
                             </div>
-                            <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>Latency: {shard.latency}</div>
+                            <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>Reach: {shard.latency}</div>
                           </div>
                        </div>
                     </div>
@@ -98,7 +98,7 @@ export default function IntelligenceHub({ mob }) {
                     {/* Load & Capacity Meter */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1.8 }}>
                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                         <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', letterSpacing: '0.5px' }}>CAPACITY LOAD</span>
+                         <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', letterSpacing: '0.5px' }}>HUB ENGAGEMENT</span>
                          <span style={{ fontSize: '11.5px', fontFamily: 'monospace', fontWeight: 800, color: barColor }}>{shard.load}</span>
                        </div>
                        <div style={{ width: '100%', height: '8px', background: '#e2e8f0', borderRadius: '100px', overflow: 'hidden' }}>
@@ -141,8 +141,8 @@ export default function IntelligenceHub({ mob }) {
        {/* Protocol CTA */}
        <div style={{ background: 'linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%)', border: '1px solid #e2e8f0', borderRadius: '28px', padding: mob ? '24px' : '32px 40px', display: 'flex', flexDirection: mob ? 'column' : 'row', justifyContent: 'space-between', alignItems: 'center', gap: '20px', boxShadow: '0 10px 25px rgba(0,0,0,0.02)' }}>
           <div>
-             <div style={{ color: '#0f172a', fontSize: '18px', fontWeight: 900, letterSpacing: '-0.02em', fontFamily: 'Outfit, sans-serif' }}>Protocol v1.0 Technical Whitepaper</div>
-             <div style={{ color: '#475569', fontSize: '13px', marginTop: '4px', fontWeight: 550 }}>Explore the consensus logic and trust-score algorithms.</div>
+             <div style={{ color: '#0f172a', fontSize: '18px', fontWeight: 900, letterSpacing: '-0.02em', fontFamily: 'Outfit, sans-serif' }}>CreatorBharat v1.0 Ecosystem Guidelines</div>
+             <div style={{ color: '#475569', fontSize: '13px', marginTop: '4px', fontWeight: 550 }}>Explore direct campaign matching and creator success protocols.</div>
           </div>
           <button style={{ 
             background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)', 
@@ -163,7 +163,7 @@ export default function IntelligenceHub({ mob }) {
           onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
           onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
           >
-             VIEW DOCS <ExternalLink size={15} />
+             VIEW GUIDELINES <ExternalLink size={15} />
           </button>
        </div>
     </div>

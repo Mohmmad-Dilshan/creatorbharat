@@ -232,9 +232,9 @@ export default function OfficialProfilePage() {
           gap: '4px'
         }}>
            {[
-             { id: 'posts', label: 'POSTS & PROTOCOLS', icon: Grid },
-             { id: 'mastermind', label: 'MASTERMIND NODE', icon: Cpu },
-             { id: 'insights', label: 'METRICS & SHARDS', icon: BarChart3 }
+             { id: 'posts', label: 'ANNOUNCEMENTS', icon: Grid },
+             { id: 'mastermind', label: 'PLATFORM MASTERMIND', icon: Cpu },
+             { id: 'insights', label: 'METRICS & HUBS', icon: BarChart3 }
            ].map(tab => {
              const Icon = tab.icon;
              const active = activeTab === tab.id;

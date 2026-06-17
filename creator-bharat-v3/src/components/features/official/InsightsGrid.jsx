@@ -5,19 +5,19 @@ import { OFFICIAL_DATA } from './officialData';
 
 const REGION_DETAILS = {
   'Maharashtra': [
-    { name: 'Mumbai Primary Shard (MH_01)', latency: '8ms', load: '92%' },
-    { name: 'Pune Edge Sync Node (MH_02)', latency: '14ms', load: '78%' },
-    { name: 'Nagpur Cache Shard (MH_03)', latency: '22ms', load: '45%' }
+    { name: 'Mumbai Entertainment & Tech Hub', latency: '3.4K+ Creators', load: '98%' },
+    { name: 'Pune Lifestyle & Fashion Hub', latency: '1.6K+ Creators', load: '90%' },
+    { name: 'Nagpur Micro-Influencer Circle', latency: '0.8K+ Creators', load: '75%' }
   ],
   'Delhi NCR': [
-    { name: 'New Delhi HQ Core (DL_01)', latency: '6ms', load: '95%' },
-    { name: 'Gurugram Brand Sync (DL_02)', latency: '11ms', load: '82%' },
-    { name: 'Noida Escrow Ledger (DL_03)', latency: '15ms', load: '60%' }
+    { name: 'Delhi Lifestyle & Food Hub', latency: '2.5K+ Creators', load: '95%' },
+    { name: 'Gurugram Corporate & Tech Hub', latency: '1.2K+ Creators', load: '88%' },
+    { name: 'Noida Fashion & Creative Circle', latency: '0.8K+ Creators', load: '80%' }
   ],
   'Karnataka': [
-    { name: 'Bengaluru Core Cluster (KA_01)', latency: '5ms', load: '98%' },
-    { name: 'Mysuru Regional Node (KA_02)', latency: '18ms', load: '40%' },
-    { name: 'Mangaluru Cache Edge (KA_03)', latency: '24ms', load: '52%' }
+    { name: 'Bengaluru Tech & Gaming Hub', latency: '2.8K+ Creators', load: '97%' },
+    { name: 'Mysuru Regional Content Circle', latency: '0.7K+ Creators', load: '70%' },
+    { name: 'Mangaluru Micro-Influencer Circle', latency: '0.4K+ Creators', load: '65%' }
   ]
 };
 
@@ -34,8 +34,8 @@ export default function InsightsGrid({ mob }) {
       <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '24px', marginBottom: '40px' }}>
          {[
            { l: 'Network Reach', v: '85.4M', i: Globe, c: '#3B82F6', t: '+4.2%', d: [25, 45, 30, 60, 50, 70, 65, 85, 75, 92] },
-           { l: 'Trust Handshakes', v: '12.4M', i: Shield, c: '#10B981', t: '+12.1%', d: [15, 30, 20, 50, 40, 65, 60, 78, 70, 95] },
-           { l: 'Protocol Revenue', v: '₹4.8Cr', i: Zap, c: '#FF9431', t: '+8.4%', d: [35, 40, 32, 58, 48, 72, 60, 80, 75, 88] }
+           { l: 'Campaigns Run', v: '1,200+', i: Shield, c: '#10B981', t: '+12.1%', d: [15, 30, 20, 50, 40, 65, 60, 78, 70, 95] },
+           { l: 'Escrow Settled', v: '₹2.5Cr', i: Zap, c: '#FF9431', t: '+8.4%', d: [35, 40, 32, 58, 48, 72, 60, 80, 75, 88] }
          ].map((s) => {
            const id = s.l.replace(/\s+/g, '');
            const dataPoints = s.d;
@@ -118,7 +118,7 @@ export default function InsightsGrid({ mob }) {
       {/* Regional Performance Panel */}
       <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '32px', padding: mob ? '24px' : '32px', boxShadow: '0 10px 40px rgba(0,0,0,0.02)' }}>
          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-            <div style={{ fontSize: '16px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px', color: '#0f172a', fontFamily: 'Outfit, sans-serif' }}><BarChart size={20} color="#3B82F6" /> REGIONAL PERFORMANCE SHARDS</div>
+            <div style={{ fontSize: '16px', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px', color: '#0f172a', fontFamily: 'Outfit, sans-serif' }}><BarChart size={20} color="#3B82F6" /> REGIONAL PERFORMANCE HUBS</div>
             <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 700 }}>CLICK ROW TO EXPAND</span>
          </div>
          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -174,15 +174,15 @@ export default function InsightsGrid({ mob }) {
                       marginTop: '-8px'
                     }}>
                       <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', letterSpacing: '0.5px', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Server size={12} /> SYNCED SHARD EDGE DETAILS
+                        <Server size={12} /> REGIONAL CREATOR DENSITY
                       </div>
                       
                       {details.map(node => (
                         <div key={node.name} style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', justifyContent: 'space-between', alignItems: mob ? 'flex-start' : 'center', gap: '8px', padding: '10px 12px', background: '#ffffff', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
                           <span style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>{node.name}</span>
                           <div style={{ display: 'flex', gap: '16px', fontSize: '11.5px', color: '#475569', fontWeight: 600 }}>
-                            <span>Latency: <strong style={{ color: '#10B981' }}>{node.latency}</strong></span>
-                            <span>Load: <strong style={{ color: '#94a3b8' }}>{node.load}</strong></span>
+                            <span>Creators: <strong style={{ color: '#10B981' }}>{node.latency}</strong></span>
+                            <span>Active: <strong style={{ color: '#3B82F6' }}>{node.load}</strong></span>
                           </div>
                         </div>
                       ))}

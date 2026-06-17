@@ -99,13 +99,12 @@ export default function MastermindSection({ mob }) {
                    "{OFFICIAL_DATA.founder.vision}"
                 </p>
                 
-                {/* Tech Commits & Node Stats Sub-Grid */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '24px', maxWidth: '500px' }}>
-                  {[
-                    { l: 'Node Shard', v: 'MH_001_HQ', i: Server, c: '#3B82F6' },
-                    { l: 'Verified Commits', v: '184 Commits', i: Terminal, c: '#FF9431' },
-                    { l: 'Consensus Weight', v: '99.8%', i: Cpu, c: '#10B981' }
-                  ].map(stat => (
+                   {[
+                     { l: 'Ecosystem Hub', v: 'Rajasthan HQ', i: Server, c: '#3B82F6' },
+                     { l: 'Campaigns Run', v: '1,200+ Campaigns', i: TrendingUp, c: '#FF9431' },
+                     { l: 'Network Reach', v: '15K+ Creators', i: Cpu, c: '#10B981' }
+                   ].map(stat => (
                     <div key={stat.l} style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '10px 12px', textAlign: mob ? 'center' : 'left' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: mob ? 'center' : 'flex-start', gap: '6px', marginBottom: '4px' }}>
                         <stat.i size={12} color={stat.c} />
@@ -157,11 +156,11 @@ export default function MastermindSection({ mob }) {
               transition={{ duration: 0.3 }}
               style={{ background: '#0f172a', borderRadius: '16px', padding: '20px', marginTop: '32px', fontFamily: 'monospace', fontSize: '11px', color: '#a7f3d0', border: '1px solid rgba(16,185,129,0.2)', textAlign: 'left', overflow: 'hidden' }}
             >
-              <div style={{ color: '#64748b', marginBottom: '8px' }}>// CB NODE HQ SYSTEM COMIMIT LOGS</div>
-              <div>&gt; [2026-06-14 06:12:04] COMMIT: Refactored stats pipeline to pull live creator cache endpoints. (Verified)</div>
-              <div>&gt; [2026-06-13 19:42:01] COMMIT: Syncing Western edge cluster nodes. Average latency 12ms. (Passed)</div>
-              <div>&gt; [2026-06-11 11:23:44] COMMIT: Hardening OAuth 2.1 token validations across brand shards. (Audited)</div>
-              <div style={{ color: '#10b981', marginTop: '8px', fontWeight: 'bold' }}>&gt; Node Status: 100% Operational. Consensus established.</div>
+               <div style={{ color: '#64748b', marginBottom: '8px' }}>// OFFICIAL CREATORBHARAT LOGS</div>
+               <div>&gt; [2026-06-14] UPDATE: Platform v1.0 launched successfully. (Verified)</div>
+               <div>&gt; [2026-06-13] SYSTEM: Escrow payment gateway verified and active. (Passed)</div>
+               <div>&gt; [2026-06-11] UPDATE: Dynamic Creator Score system synchronized with user database. (Active)</div>
+               <div style={{ color: '#10b981', marginTop: '8px', fontWeight: 'bold' }}>&gt; System Status: 100% Operational. All systems synced.</div>
             </motion.div>
           )}
        </motion.div>
@@ -322,7 +321,7 @@ export default function MastermindSection({ mob }) {
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px'
                 }}>
-                  {member.category} Node
+                  {member.category} Team
                 </span>
                 
                 <div style={{ display: 'flex', gap: '8px' }}>
