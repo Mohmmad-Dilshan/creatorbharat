@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FileText, 
@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Seo from '@/components/common/SEO';
+import { useApp } from '@/core/context';
 
 const GOVT_CIRCULARS = [
   {
@@ -82,10 +83,22 @@ const GOVT_CIRCULARS = [
 
 export default function NotificationsHub() {
   const navigate = useNavigate();
+  const { dsp } = useApp();
   const [circulars, setCirculars] = useState(GOVT_CIRCULARS);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeDept, setActiveDept] = useState('all');
   const [selectedCircular, setSelectedCircular] = useState(null);
+
+  useEffect(() => {
+    if (selectedCircular) {
+      dsp({ t: 'UI', v: { hideNav: true } });
+    } else {
+      dsp({ t: 'UI', v: { hideNav: false } });
+    }
+    return () => {
+      dsp({ t: 'UI', v: { hideNav: false } });
+    };
+  }, [selectedCircular, dsp]);
 
   const filteredCirculars = useMemo(() => {
     return circulars.filter(c => {

@@ -82,9 +82,9 @@ export default function EliteMobileNav({ role, user, hide = false }) {
       <motion.div 
         initial={{ y: 100, x: '-50%', opacity: 0 }}
         animate={{ 
-          y: (st.ui.mobileMenu || hide) ? 120 : 0, 
+          y: (st.ui.mobileMenu || hide || st.ui.hideNav) ? 120 : 0, 
           x: '-50%', 
-          opacity: (st.ui.mobileMenu || hide) ? 0 : 1 
+          opacity: (st.ui.mobileMenu || hide || st.ui.hideNav) ? 0 : 1 
         }}
         className="elite-dock-container"
       >
