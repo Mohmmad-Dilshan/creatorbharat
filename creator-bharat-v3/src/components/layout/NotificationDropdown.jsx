@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, CheckCircle2, Briefcase, Star, Wallet, ShieldCheck, X, Trash2 } from 'lucide-react';
+import { Bell, CheckCircle2, Briefcase, Star, Wallet, ShieldCheck, X, Trash2, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { LS } from '@/utils/helpers';
 import { useApp } from '@/core/context';
 
@@ -69,6 +70,7 @@ const colorMap = {
 
 export default function NotificationDropdown() {
   const { st } = useApp();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const ref = useRef(null);
@@ -185,6 +187,36 @@ export default function NotificationDropdown() {
                   );
                 })
               )}
+            </div>
+
+            {/* Footer to View All */}
+            <div style={{ padding: '12px', borderTop: '1px solid #f1f5f9', background: '#f8fafc', textAlign: 'center' }}>
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  if (st.role === 'creator') {
+                    navigate('/creator/notifications');
+                  } else if (st.role === 'brand') {
+                    navigate('/brand/notifications');
+                  } else {
+                    navigate('/notifications');
+                  }
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#FF9431',
+                  fontSize: '12.5px',
+                  fontWeight: 900,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4
+                }}
+              >
+                <span>View All Alerts</span>
+                <ChevronRight size={14} />
+              </button>
             </div>
           </motion.div>
         )}

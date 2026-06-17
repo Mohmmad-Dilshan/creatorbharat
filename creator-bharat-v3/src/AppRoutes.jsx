@@ -31,6 +31,10 @@ const AmbassadorPage = lazy(() => import('./pages/public/AmbassadorPage'));
 const PressPage = lazy(() => import('./pages/public/PressPage'));
 const GalleryPage = lazy(() => import('./pages/public/GalleryPage'));
 
+// Role-based Notifications Pages
+const CreatorNotificationsPage = lazy(() => import('./pages/creator/NotificationsPage'));
+const BrandNotificationsPage = lazy(() => import('./pages/brand/NotificationsPage'));
+
 // Brand/Marketplace Pages
 const CreatorsPage = lazy(() => import('./pages/brand/CreatorsPage'));
 const CampaignsPage = lazy(() => import('./pages/brand/CampaignsPage'));
@@ -164,6 +168,7 @@ export default function AppRoutes({ location }) {
           <Route path="/creator/monetization" element={<MonetizationPage />} />
           <Route path="/creator/score" element={<CreatorScorePage />} />
           <Route path="/creator/verification" element={<CreatorVerificationPage />} />
+          <Route path="/creator/notifications" element={<CreatorNotificationsPage />} />
           <Route path="/creator/calendar" element={<CreatorCalendarPage />} />
           <Route path="/creator/messages" element={<MessagesPage />} />
           <Route path="/creator/saved" element={<SavedPage />} />
@@ -208,6 +213,7 @@ export default function AppRoutes({ location }) {
           <Route path="/brand-applications" element={<BrandApplicationsPage />} />
           <Route path="/brand-analytics" element={<BrandAnalyticsPage />} />
           <Route path="/campaign-builder" element={<CampaignBuilderPage />} />
+          <Route path="/brand/notifications" element={<BrandNotificationsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
 
