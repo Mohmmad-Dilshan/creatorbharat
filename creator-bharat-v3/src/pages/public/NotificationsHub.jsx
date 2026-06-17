@@ -102,14 +102,22 @@ export default function NotificationsHub() {
   }, [circulars, searchTerm, activeDept]);
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#f1f5f9',
-      paddingTop: '110px',
-      paddingBottom: '80px',
-      fontFamily: '"Times New Roman", Times, serif', // Gazette Serif Look
-      color: '#1e293b'
-    }}>
+    <div className="gazette-wrapper">
+      <style>{`
+        .gazette-wrapper {
+          min-height: 100vh;
+          background: #f1f5f9;
+          padding-top: 110px;
+          padding-bottom: 130px; /* Clears floating mobile dock navigation */
+          font-family: "Times New Roman", Times, serif;
+          color: #1e293b;
+        }
+        @media (min-width: 768px) {
+          .gazette-wrapper {
+            padding-bottom: 80px;
+          }
+        }
+      `}</style>
       <Seo 
         title="Official Gazette - Notification Board" 
         description="Official circulars, notifications, and gazette orders from the Creator State Authority of Bharat."
