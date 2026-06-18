@@ -306,6 +306,8 @@ export function CreatorCard({ creator: c, onView }) {
   
   const cp = ensureArray(c.platform);
   const cn = ensureArray(c.niche);
+  const rawLangs = c.languages || c.regional_dialects || 'Hindi';
+  const cl = Array.isArray(rawLangs) ? rawLangs : (typeof rawLangs === 'string' ? rawLangs.split(',').map(x => x.trim()).filter(Boolean) : []);
 
   return (
     <Card 
@@ -345,6 +347,11 @@ export function CreatorCard({ creator: c, onView }) {
            {cn.slice(0, mob ? 1 : 2).map(n => (
              <div key={n} style={{ background: '#FFF7ED', border: '1px solid #FFEDD5', color: '#EA580C', padding: mob ? '1px 5px' : '4px 10px', borderRadius: 100, fontSize: mob ? 8 : 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: mob ? '50px' : 'none' }}>
                {n}
+             </div>
+           ))}
+           {cl.slice(0, mob ? 1 : 2).map(l => (
+             <div key={l} style={{ background: 'rgba(79, 70, 229, 0.05)', border: '1px solid rgba(79, 70, 229, 0.15)', color: '#4f46e5', padding: mob ? '1px 5px' : '4px 10px', borderRadius: 100, fontSize: mob ? 8 : 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: mob ? '50px' : 'none' }}>
+               🗣️ {l}
              </div>
            ))}
         </div>
