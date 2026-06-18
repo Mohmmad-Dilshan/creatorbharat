@@ -204,48 +204,74 @@ const ContactMetadata = ({ c, followers, connectionsCount, mob, onContact }) => 
 };
 ContactMetadata.propTypes = { c: PropTypes.object.isRequired, followers: PropTypes.number, connectionsCount: PropTypes.string, mob: PropTypes.bool, onContact: PropTypes.func.isRequired };
 
-const IdentityHeader = ({ category, name, mob }) => {
-  const catDisplay = Array.isArray(category) ? category.join(' • ') : category;
+const IdentityHeader = ({ category, languages, name, mob }) => {
+  const niches = Array.isArray(category) ? category : (category ? [category] : ['Lifestyle']);
+  const langs = Array.isArray(languages) ? languages : (languages ? [languages] : ['Hindi']);
+
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
-          <div style={{ 
-            background: 'linear-gradient(135deg, #FF9431 0%, #f97316 100%)', 
-            color: '#fff', 
-            padding: '6px 16px', 
-            borderRadius: '100px', 
-            fontSize: '11px', 
-            fontWeight: 950, 
-            textTransform: 'uppercase', 
-            letterSpacing: '1.2px',
-            boxShadow: '0 4px 12px rgba(255,148,49,0.2)'
-          }}>
-            {catDisplay || 'Lifestyle & Culture'}
-          </div>
-          {!mob && (
-            <div style={{ 
-              background: 'rgba(79, 70, 229, 0.05)', 
-              color: '#4f46e5', 
-              padding: '6px 16px', 
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
+          {niches.map(n => (
+            <div key={n} style={{ 
+              background: 'linear-gradient(135deg, #FF9431 0%, #f97316 100%)', 
+              color: '#fff', 
+              padding: '6px 14px', 
               borderRadius: '100px', 
-              fontSize: '11px', 
+              fontSize: '10px', 
               fontWeight: 950, 
               textTransform: 'uppercase', 
-              letterSpacing: '1.2px',
+              letterSpacing: '1px',
+              boxShadow: '0 4px 10px rgba(255,148,49,0.15)'
+            }}>
+              {n}
+            </div>
+          ))}
+
+          {langs.map(l => (
+            <div key={l} style={{ 
+              background: 'rgba(79, 70, 229, 0.08)', 
+              color: '#4f46e5', 
+              padding: '5px 13px', 
+              borderRadius: '100px', 
+              fontSize: '10px', 
+              fontWeight: 950, 
+              textTransform: 'uppercase', 
+              letterSpacing: '1px',
               border: '1px solid rgba(79, 70, 229, 0.2)'
             }}>
-              ELITE PARTNER
+              🗣️ {l}
+            </div>
+          ))}
+          
+          {!mob && (
+            <div style={{ 
+              background: '#ecfdf5', 
+              color: '#059669', 
+              padding: '6px 14px', 
+              borderRadius: '100px', 
+              fontSize: '10px', 
+              fontWeight: 950, 
+              textTransform: 'uppercase', 
+              letterSpacing: '1px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '4px',
+              border: '1px solid rgba(16, 185, 129, 0.2)'
+            }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
+              ELITE CREATOR
             </div>
           )}
+          
           <div style={{ 
             background: '#ecfdf5', 
             color: '#059669', 
-            padding: '6px 16px', 
+            padding: '6px 14px', 
             borderRadius: '100px', 
-            fontSize: '11px', 
+            fontSize: '10px', 
             fontWeight: 950, 
             textTransform: 'uppercase', 
-            letterSpacing: '1.2px', 
+            letterSpacing: '1px', 
             display: 'flex', 
             alignItems: 'center', 
             gap: '8px', 
@@ -255,16 +281,16 @@ const IdentityHeader = ({ category, name, mob }) => {
             Available Now
           </div>
        </div>
-     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-        <h1 style={{ fontSize: mob ? '32px' : '52px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.05em', lineHeight: 1 }}>{name}</h1>
-        <div style={{ background: '#0073b1', borderRadius: '50%', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0,115,177,0.3)' }}>
-          <Verified size={mob ? 20 : 28} color="#fff" fill="currentColor" />
-        </div>
-     </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+         <h1 style={{ fontSize: mob ? '32px' : '52px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.05em', lineHeight: 1 }}>{name}</h1>
+         <div style={{ background: '#0073b1', borderRadius: '50%', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0,115,177,0.3)' }}>
+           <Verified size={mob ? 20 : 28} color="#fff" fill="currentColor" />
+         </div>
+      </div>
   </>
   );
 };
-IdentityHeader.propTypes = { category: PropTypes.any, name: PropTypes.string.isRequired, mob: PropTypes.bool };
+IdentityHeader.propTypes = { category: PropTypes.any, languages: PropTypes.any, name: PropTypes.string.isRequired, mob: PropTypes.bool };
 
 const BadgeRow = ({ score, er }) => (
   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '24px' }}>
@@ -328,7 +354,7 @@ const IdentityDetails = ({ c, stats, mob, onRate, onContact, dsp, dlStatus, onDo
 
   return (
     <div style={{ flex: 1 }}>
-       <IdentityHeader category={c.category || c.niche} name={c.name} mob={mob} />
+       <IdentityHeader category={c.category || c.niche} languages={c.languages} name={c.name} mob={mob} />
        <p style={{ fontSize: mob ? '16px' : '24px', color: '#475569', marginBottom: '16px', fontWeight: 500, lineHeight: 1.5, maxWidth: '850px', letterSpacing: '-0.01em' }}>
           {taglineText}
        </p>
@@ -1197,25 +1223,6 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
             <div style={{ background: '#0073b1', borderRadius: '50%', padding: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(0,115,177,0.2)' }}>
               <Verified size={16} color="#fff" fill="currentColor" />
             </div>
-          </div>
-
-          {/* Niche Tagline & Location */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', justifyContent: 'center', marginTop: '8px' }}>
-            <span style={{ 
-              background: 'linear-gradient(135deg, #FF9431 0%, #f97316 100%)', 
-              color: '#fff', 
-              padding: '4px 12px', 
-              borderRadius: '100px', 
-              fontSize: '10px', 
-              fontWeight: 900, 
-              textTransform: 'uppercase', 
-              letterSpacing: '1px'
-            }}>
-              {c.category || c.niche || 'Lifestyle'}
-            </span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#64748b', fontWeight: 700 }}>
-              <MapPin size={14} color="#94a3b8" /> {c.city || 'Bharat'}
-            </div>
             {/* Status dot */}
             <div style={{ 
               background: '#ecfdf5', 
@@ -1233,6 +1240,42 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
             }}>
               <div style={{ width: '6px', height: '6px', background: '#10B981', borderRadius: '50%', boxShadow: '0 0 6px #10B981', animation: 'pulse 2s infinite' }} /> 
               Active
+            </div>
+          </div>
+
+          {/* Niche Tagline & Location */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', justifyContent: 'center', marginTop: '12px' }}>
+            {(Array.isArray(c.niche) ? c.niche : (c.niche ? [c.niche] : ['Lifestyle'])).map(n => (
+              <span key={n} style={{ 
+                background: 'linear-gradient(135deg, #FF9431 0%, #f97316 100%)', 
+                color: '#fff', 
+                padding: '4px 12px', 
+                borderRadius: '100px', 
+                fontSize: '10px', 
+                fontWeight: 900, 
+                textTransform: 'uppercase', 
+                letterSpacing: '1px'
+              }}>
+                {n}
+              </span>
+            ))}
+            {(Array.isArray(c.languages) ? c.languages : (c.languages ? [c.languages] : ['Hindi'])).map(l => (
+              <span key={l} style={{ 
+                background: 'rgba(79, 70, 229, 0.08)', 
+                color: '#4f46e5', 
+                padding: '3px 10px', 
+                borderRadius: '100px', 
+                fontSize: '10px', 
+                fontWeight: 900, 
+                textTransform: 'uppercase', 
+                letterSpacing: '1px',
+                border: '1px solid rgba(79, 70, 229, 0.2)'
+              }}>
+                🗣️ {l}
+              </span>
+            ))}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#64748b', fontWeight: 700 }}>
+              <MapPin size={14} color="#94a3b8" /> {c.city || 'Bharat'}
             </div>
           </div>
 
