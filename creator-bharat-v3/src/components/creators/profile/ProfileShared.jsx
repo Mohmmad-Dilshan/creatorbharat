@@ -316,7 +316,36 @@ export const SocialLinkTree = ({ links = {}, c = {}, mob, compact }) => {
     });
   }
 
-  const activeLinks = MASTER_PLATFORMS.filter(p => resolved[p.id]);
+  const customActiveLinks = [];
+  const standardIds = new Set(MASTER_PLATFORMS.map(p => p.id));
+  if (Array.isArray(arr)) {
+    arr.forEach(item => {
+      if (item && item.platform && item.url) {
+        const normId = item.platform.toLowerCase()
+          .replace('twitter / x', 'twitter')
+          .replace('x', 'twitter')
+          .replace('spotify / podcasts', 'spotify')
+          .replace('whatsapp channel', 'whatsapp')
+          .replace('whatsapp / phone', 'whatsapp');
+        if (!standardIds.has(normId)) {
+          if (!customActiveLinks.some(l => l.id === normId)) {
+            customActiveLinks.push({
+              id: normId,
+              l: item.platform,
+              s: `${item.platform} Profile`,
+              i: Globe,
+              c: '#FF9431'
+            });
+          }
+        }
+      }
+    });
+  }
+
+  const activeLinks = [
+    ...MASTER_PLATFORMS.filter(p => resolved[p.id]),
+    ...customActiveLinks
+  ];
   const displayLinks = activeLinks.length > 0 ? activeLinks : MASTER_PLATFORMS.slice(0, 6);
 
   if (displayLinks.length === 0) return null;

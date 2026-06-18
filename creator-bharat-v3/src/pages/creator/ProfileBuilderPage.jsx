@@ -165,7 +165,7 @@ IdentityTabContent.propTypes = {
 
 // ─── Tab 2: Social Ecosystem ──────────────────────────────────────────────────
 const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink, removeSocialLink, saveProfile, setTab, isPro, navigate }) => {
-  const freeLimit = 3;
+  const freeLimit = 5;
   const linksUsed = F.socialLinks?.filter(l => l.url).length || 0;
 
   const instagramFollowersInt = parseInt(F.instagramFollowers) || 0;
@@ -235,28 +235,53 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
              {F.socialLinks?.map((link, idx) => {
                const isLocked = !isPro && idx >= freeLimit;
                return (
-                 <div key={idx} style={{ 
-                   display: 'grid', 
-                   gridTemplateColumns: mob ? '1fr' : '150px 1.8fr 1.2fr 44px', 
-                   gap: 12, 
-                   marginBottom: 12,
-                   background: mob ? '#f8fafc' : 'transparent',
-                   padding: mob ? '16px' : '0',
-                   borderRadius: mob ? '16px' : '0',
-                   border: mob ? '1px solid #e2e8f0' : 'none'
-                 }}>
-                   <select
-                     value={link.platform}
-                     onChange={e => upSocialLink(idx, 'platform', e.target.value)}
-                     disabled={isLocked}
-                     style={{
-                       padding: '10px 12px', borderRadius: 12, border: '1px solid #e2e8f0',
-                       fontSize: 13, fontWeight: 700, color: '#0f172a', background: isLocked ? '#f8fafc' : '#fff',
-                       cursor: isLocked ? 'not-allowed' : 'pointer', height: '42px'
-                     }}
-                   >
-                     {PLATFORM_OPTIONS.map(p => <option key={p} value={p}>{p}</option>)}
-                   </select>
+                  <div key={idx} style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: mob ? '1fr' : '180px 1.8fr 1.2fr 44px', 
+                    gap: 12, 
+                    marginBottom: 12,
+                    background: mob ? '#f8fafc' : 'transparent',
+                    padding: mob ? '16px' : '0',
+                    borderRadius: mob ? '16px' : '0',
+                    border: mob ? '1px solid #e2e8f0' : 'none',
+                    alignItems: 'flex-start'
+                  }}>
+                    {link.platform === 'Custom Link' || !PLATFORM_OPTIONS.includes(link.platform) ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
+                        <input
+                          type="text"
+                          value={link.platform === 'Custom Link' ? '' : link.platform}
+                          onChange={e => upSocialLink(idx, 'platform', e.target.value || 'Custom Link')}
+                          placeholder="Platform (e.g. Substack)"
+                          disabled={isLocked}
+                          style={{
+                            width: '100%', padding: '10px 12px', borderRadius: 12, border: '1px solid #e2e8f0',
+                            fontSize: 13, fontWeight: 700, color: '#0f172a', background: isLocked ? '#f8fafc' : '#fff',
+                            height: '42px', boxSizing: 'border-box'
+                          }}
+                        />
+                        <button 
+                          onClick={() => upSocialLink(idx, 'platform', 'Instagram')}
+                          style={{ fontSize: 10, color: '#FF9431', border: 'none', background: 'none', textAlign: 'left', cursor: 'pointer', padding: 0, fontWeight: 700 }}
+                        >
+                          ← Standard
+                        </button>
+                      </div>
+                    ) : (
+                      <select
+                        value={link.platform}
+                        onChange={e => upSocialLink(idx, 'platform', e.target.value)}
+                        disabled={isLocked}
+                        style={{
+                          width: '100%', padding: '10px 12px', borderRadius: 12, border: '1px solid #e2e8f0',
+                          fontSize: 13, fontWeight: 700, color: '#0f172a', background: isLocked ? '#f8fafc' : '#fff',
+                          cursor: isLocked ? 'not-allowed' : 'pointer', height: '42px'
+                        }}
+                      >
+                        {PLATFORM_OPTIONS.map(p => <option key={p} value={p}>{p}</option>)}
+                        <option value="Custom Link">+ Custom Link / Other</option>
+                      </select>
+                    )}
                    <div style={{ position: 'relative' }}>
                      <input
                        type="text"
