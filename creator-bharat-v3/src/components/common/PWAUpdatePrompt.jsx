@@ -5,6 +5,7 @@ import { useRegisterSW } from 'virtual:pwa-register/react';
 
 export default function PWAUpdatePrompt() {
   const [isMobile, setIsMobile] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState('Downloading updates...');
@@ -18,7 +19,14 @@ export default function PWAUpdatePrompt() {
       setIsMobile(isMobileDevice);
     };
 
+    // Detect if running in standalone mode (PWA installed as app)
+    const checkStandalone = () => {
+      const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      setIsStandalone(isStandaloneMode);
+    };
+
     checkMobile();
+    checkStandalone();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
@@ -44,23 +52,23 @@ export default function PWAUpdatePrompt() {
     },
   });
 
-  // Lock body scroll when needRefresh is active on mobile (blocks interactions)
+  // Lock body scroll when needRefresh is active in PWA standalone mode
   useEffect(() => {
-    if (needRefresh && isMobile) {
+    if (needRefresh && isMobile && isStandalone) {
       const originalOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
       return () => {
         document.body.style.overflow = originalOverflow;
       };
     }
-  }, [needRefresh, isMobile]);
+  }, [needRefresh, isMobile, isStandalone]);
 
-  // Auto-update on desktop/web without showing any toast/prompt
+  // Auto-update silently if NOT in PWA standalone mode (regular desktop or mobile browser)
   useEffect(() => {
-    if (needRefresh && !isMobile) {
+    if (needRefresh && !isStandalone) {
       updateServiceWorker(true);
     }
-  }, [needRefresh, isMobile, updateServiceWorker]);
+  }, [needRefresh, isStandalone, updateServiceWorker]);
 
   const handleUpdate = () => {
     setIsUpdating(true);
@@ -100,7 +108,7 @@ export default function PWAUpdatePrompt() {
     };
   }, []);
 
-  if (!needRefresh) {
+  if (!needRefresh || !isStandalone) {
     return null;
   }
 
