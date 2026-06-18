@@ -24,7 +24,8 @@ import {
   MapPin,
   Megaphone,
   Verified,
-  Activity
+  Activity,
+  Share2
 } from 'lucide-react';
 
 // Tab component imports
@@ -78,6 +79,16 @@ const ProfileTabContent = ({
   switch (activeTab) {
     case 'identity':
       return <IdentityTab key="tab-identity" c={c} stats={stats} onRate={onRateClick} mob={mob} setActiveTab={setActiveTab} />;
+    case 'social':
+      return (
+        <motion.div key="tab-social" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+           <SocialLinkTree links={c?.links} c={c} mob={mob} />
+           <div style={{ marginTop: 'auto', width: '100%' }}>
+              <TrustBadge />
+              <TabNavigator activeTab="social" setActiveTab={setActiveTab} mob={mob} />
+           </div>
+        </motion.div>
+      );
     case 'story':
       return <StoryTab key="tab-story" c={c} mob={mob} setActiveTab={setActiveTab} />;
     case 'gallery':
@@ -470,6 +481,7 @@ export default function CreatorProfilePage() {
         >
           {[
             { id: 'identity',  label: 'Identity',    icon: Activity,      group: 'main' },
+            { id: 'social',    label: 'Socials',     icon: Share2,        group: 'main' },
             { id: 'story',     label: 'Story',       icon: Globe,         group: 'main' },
             { id: 'gallery',   label: 'Gallery',     icon: ImageIcon,     group: 'main' },
             { id: 'work',      label: 'Work',        icon: Briefcase,     group: 'main' },

@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../../../core/context';
 import { Card } from '../../common/Primitives';
-import { GatedOverlay, SocialLinkTree, TrustBadge, TabNavigator } from './ProfileShared';
+import { GatedOverlay, TrustBadge, TabNavigator } from './ProfileShared';
 
 export const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
   const { st } = useApp();
@@ -182,9 +182,6 @@ export const ConnectTab = ({ c, mob, dsp, setBriefOpen, setMediaKitOpen, setActi
          onBrief={() => setBriefOpen(true)} 
          onMediaKit={() => setMediaKitOpen(true)} 
        />
-        <div style={{ marginTop: '40px' }}>
-           <SocialLinkTree links={c?.links} c={c} mob={mob} />
-        </div>
        <div style={{ marginTop: 'auto', width: '100%' }}>
           <TrustBadge />
           <TabNavigator activeTab="connect" setActiveTab={setActiveTab} mob={mob} />

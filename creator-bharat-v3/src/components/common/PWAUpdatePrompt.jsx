@@ -55,6 +55,13 @@ export default function PWAUpdatePrompt() {
     }
   }, [needRefresh, isMobile]);
 
+  // Auto-update on desktop/web without showing any toast/prompt
+  useEffect(() => {
+    if (needRefresh && !isMobile) {
+      updateServiceWorker(true);
+    }
+  }, [needRefresh, isMobile, updateServiceWorker]);
+
   const handleUpdate = () => {
     setIsUpdating(true);
     let currentProgress = 0;
@@ -222,105 +229,6 @@ export default function PWAUpdatePrompt() {
     );
   }
 
-  // 2. Desktop Viewport: Elegant non-blocking bottom toast notice
-  return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ y: 110, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 110, opacity: 0 }}
-        style={{
-          position: 'fixed',
-          left: 24,
-          bottom: 24,
-          zIndex: 10000,
-          width: 380,
-          padding: 16,
-          borderRadius: 20,
-          background: '#ffffff',
-          border: '1px solid rgba(15,23,42,0.08)',
-          boxShadow: '0 20px 50px rgba(15,23,42,0.15)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 14,
-          fontFamily: 'Outfit, sans-serif'
-        }}
-        role="status"
-        aria-live="polite"
-      >
-        <div
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: 14,
-            background: 'rgba(255,148,49,0.08)',
-            color: '#FF9431',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-          }}
-        >
-          <motion.div
-            animate={isUpdating ? { rotate: 360 } : {}}
-            transition={isUpdating ? { repeat: Infinity, duration: 2, ease: 'linear' } : {}}
-            style={{ display: 'flex' }}
-          >
-            <RefreshCw size={20} />
-          </motion.div>
-        </div>
-
-        <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ fontSize: 14, fontWeight: 900, color: '#0f172a', lineHeight: 1.25 }}>
-            Update Available
-          </div>
-          <div style={{ marginTop: 3, fontSize: 12, fontWeight: 600, color: '#64748b', lineHeight: 1.3 }}>
-            {isUpdating ? 'Installing latest files...' : 'A new web version is ready.'}
-          </div>
-        </div>
-
-        {!isUpdating ? (
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <button
-              type="button"
-              onClick={handleUpdate}
-              style={{
-                border: 'none',
-                borderRadius: 100,
-                background: '#FF9431',
-                color: '#fff',
-                fontSize: 12,
-                fontWeight: 900,
-                padding: '8px 16px',
-                cursor: 'pointer',
-                flexShrink: 0,
-                boxShadow: '0 4px 10px rgba(255,148,49,0.15)'
-              }}
-            >
-              Update
-            </button>
-            <button
-              type="button"
-              onClick={() => setNeedRefresh(false)}
-              style={{
-                border: 'none',
-                background: 'transparent',
-                color: '#94a3b8',
-                cursor: 'pointer',
-                padding: 4,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}
-            >
-              <X size={16} />
-            </button>
-          </div>
-        ) : (
-          <span style={{ fontSize: '13px', fontWeight: 800, color: '#FF9431' }}>{progress}%</span>
-        )}
-      </motion.div>
-    </AnimatePresence>
-  );
+  // 2. Desktop Viewport: Do not render anything (handled automatically in the background)
+  return null;
 }

@@ -10,6 +10,7 @@ import { fmt } from '../../../utils/helpers';
 
 export const TAB_LIST = [
   { id: 'identity',  label: 'Identity',   icon: '👤', desc: 'Who they are' },
+  { id: 'social',    label: 'Socials',    icon: '🌐', desc: 'Digital footprint' },
   { id: 'story',     label: 'My Story',   icon: '📖', desc: 'Creator journey' },
   { id: 'gallery',   label: 'Gallery',    icon: '🖼️', desc: 'Visual portfolio' },
   { id: 'work',      label: 'Pro Work',   icon: '💼', desc: 'Achievements' },
