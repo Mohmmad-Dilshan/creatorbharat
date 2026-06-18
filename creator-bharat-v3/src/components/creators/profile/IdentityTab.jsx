@@ -59,12 +59,16 @@ const AIFitInsight = ({ c, mob }) => {
        <p style={{ fontSize: mob ? '15px' : '17px', color: '#475569', lineHeight: 1.8, fontWeight: 500, marginBottom: '32px', maxWidth: '850px' }}>
           Our Elite Analysis engine confirms a <strong style={{ color: '#FF9431' }}>{match} match</strong> for brands seeking <strong style={{ color: '#0f172a' }}>{summary}</strong>
        </p>
-       <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+       <div style={{ 
+         display: 'grid', 
+         gridTemplateColumns: mob ? 'repeat(auto-fit, minmax(110px, 1fr))' : 'repeat(3, 1fr)', 
+         gap: '20px' 
+       }}>
           {stats.map(i => (
-            <div key={i.l} style={{ padding: '16px 24px', background: '#f8fafc', borderRadius: '20px', border: '1px solid #f1f5f9', minWidth: '140px' }}>
-               <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 900, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.5px' }}>{i.l}</div>
-               <div style={{ fontSize: '20px', fontWeight: 950, color: '#0f172a' }}>{i.v}</div>
-            </div>
+             <div key={i.l} style={{ padding: '16px 24px', background: '#f8fafc', borderRadius: '20px', border: '1px solid #f1f5f9' }}>
+                <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 900, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.5px' }}>{i.l}</div>
+                <div style={{ fontSize: '20px', fontWeight: 950, color: '#0f172a' }}>{i.v}</div>
+             </div>
           ))}
        </div>
     </Card>

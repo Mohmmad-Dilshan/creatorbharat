@@ -129,6 +129,20 @@ export const SEED_CREATORS = [
       'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&q=80&w=400',
       'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=400',
       'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&q=80&w=400'
+    ],
+    stories: [
+      {
+        id: 'st-arjun-1',
+        url: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=1080',
+        caption: 'Behind the scenes: Shooting the new BMW X5 campaign in Mumbai! 📸🔥',
+        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+      },
+      {
+        id: 'st-arjun-2',
+        url: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=1080',
+        caption: 'Color grading the anamorphic shots. OnePlus launch review coming next week! 🚀💻',
+        createdAt: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString()
+      }
     ]
   },
   {

@@ -115,68 +115,77 @@ const ServiceCatalog = ({ c, mob }) => {
                    background: `${color}04`,
                    pointerEvents: 'none'
                  }} />
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                     {/* Icon container */}
+                     <div style={{ 
+                       width: '48px', 
+                       height: '48px', 
+                       background: `${color}10`, 
+                       borderRadius: '14px', 
+                       display: 'flex', 
+                       alignItems: 'center', 
+                       justifyContent: 'center',
+                       flexShrink: 0
+                     }}>
+                        <Icon size={22} color={color} />
+                     </div>
 
-                 <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                    {/* Icon container */}
-                    <div style={{ 
-                      width: '48px', 
-                      height: '48px', 
-                      background: `${color}10`, 
-                      borderRadius: '14px', 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'center',
-                      flexShrink: 0
-                    }}>
-                       <Icon size={22} color={color} />
-                    </div>
+                     <div style={{ flex: 1 }}>
+                        <h4 style={{ fontSize: '16px', fontWeight: 950, color: '#0f172a', margin: '0 0 8px 0', lineHeight: 1.3 }}>
+                          {s.t}
+                        </h4>
+                        <p style={{ 
+                          fontSize: '13px', 
+                          color: '#64748b', 
+                          lineHeight: 1.6, 
+                          fontWeight: 500, 
+                          margin: 0 
+                        }}>
+                          {s.d}
+                        </p>
+                     </div>
+                  </div>
 
-                    <div style={{ flex: 1 }}>
-                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: mob ? 'wrap' : 'nowrap', marginBottom: 8 }}>
-                          <h4 style={{ fontSize: '16px', fontWeight: 950, color: '#0f172a', margin: 0, lineHeight: 1.3 }}>
-                            {s.t}
-                          </h4>
-                          
-                          {s.rate ? (
-                            <div style={{ 
-                              background: `${color}10`, 
-                              color: color, 
-                              padding: '4px 12px', 
-                              borderRadius: '100px', 
-                              fontSize: '13px', 
-                              fontWeight: 950,
-                              whiteSpace: 'nowrap'
-                            }}>
-                              ₹{Number(s.rate).toLocaleString('en-IN')}
-                            </div>
-                          ) : (
-                            <div style={{ 
-                              background: '#f1f5f9', 
-                              color: '#64748b', 
-                              padding: '4px 12px', 
-                              borderRadius: '100px', 
-                              fontSize: '11px', 
-                              fontWeight: 800,
-                              textTransform: 'uppercase',
-                              letterSpacing: '0.5px',
-                              whiteSpace: 'nowrap'
-                            }}>
-                              Custom Quote
-                            </div>
-                          )}
-                       </div>
-                       
-                       <p style={{ 
-                         fontSize: '13px', 
-                         color: '#64748b', 
-                         lineHeight: 1.6, 
-                         fontWeight: 500, 
-                         margin: 0 
+                  {/* Commercials / Rate Row */}
+                  <div style={{
+                    borderTop: '1px solid rgba(226, 232, 240, 0.8)',
+                    paddingTop: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginTop: 'auto'
+                  }}>
+                     <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                       Commercials
+                     </span>
+                     {s.rate ? (
+                       <div style={{ 
+                         background: `${color}10`, 
+                         color: color, 
+                         padding: '6px 14px', 
+                         borderRadius: '100px', 
+                         fontSize: '14px', 
+                         fontWeight: 950,
+                         whiteSpace: 'nowrap'
                        }}>
-                         {s.d}
-                       </p>
-                    </div>
-                 </div>
+                         ₹{Number(s.rate).toLocaleString('en-IN')}
+                       </div>
+                     ) : (
+                       <div style={{ 
+                         background: '#f1f5f9', 
+                         color: '#64748b', 
+                         padding: '6px 14px', 
+                         borderRadius: '100px', 
+                         fontSize: '11px', 
+                         fontWeight: 800,
+                         textTransform: 'uppercase',
+                         letterSpacing: '0.5px',
+                         whiteSpace: 'nowrap'
+                       }}>
+                         Custom Quote
+                       </div>
+                     )}
+                  </div>
               </motion.div>
             );
           })}

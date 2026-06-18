@@ -88,75 +88,191 @@ const PLATFORM_ICONS = {
   'LinkedIn': Link2, 'Website': Link2
 };
 
+const NICHES = ['Influencer', 'YouTuber', 'Lifestyle', 'Tech', 'Fashion', 'Beauty', 'Gaming', 'Finance', 'Travel', 'Comedy', 'Educational', 'Fitness', 'Food'];
+const LANGUAGES = [
+  'Hindi', 'English', 'Bengali', 'Marathi', 'Telugu', 'Tamil', 'Gujarati', 'Urdu',
+  'Kannada', 'Odia', 'Malayalam', 'Punjabi', 'Assamese', 'Maithili', 'Bhojpuri',
+  'Rajasthani', 'Haryanvi', 'Tulu', 'Awadhi', 'Other',
+];
+
+const getActiveStories = (stories) => {
+  if (!Array.isArray(stories)) return [];
+  const FORTY_EIGHT_HOURS = 48 * 60 * 60 * 1000;
+  return stories.filter(story => {
+    if (!story || !story.createdAt) return false;
+    const age = Date.now() - new Date(story.createdAt).getTime();
+    return age < FORTY_EIGHT_HOURS;
+  });
+};
+
+const getMonthlyStoriesCount = (stories) => {
+  if (!Array.isArray(stories)) return 0;
+  const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+  return stories.filter(s => {
+    if (!s || !s.createdAt) return false;
+    const age = Date.now() - new Date(s.createdAt).getTime();
+    return age < THIRTY_DAYS;
+  }).length;
+};
+
 
 // ─── Tab 1: Identity ──────────────────────────────────────────────────────────
-const IdentityTabContent = ({ F, c, st, mob, upF, saveProfile, saving }) => (
-  <Card className="settings-form-card card-3d-effect">
-     <h3 className="db-section-title">Step 1: Personal Identity</h3>
-     
-     <div className="profile-visual-box">
-        <div className="avatar-preview-wrap">
-           <img src={F.photo || c?.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name)}`} alt="" />
-        </div>
-        <div className="visual-actions">
-           <input type="file" id="creator-photo-upload" accept="image/jpeg,image/png,image/webp"
-             style={{ display: 'none' }}
-             onChange={(e) => {
-               const file = e.target.files?.[0];
-               if (!file) return;
-               if (file.size > 2 * 1024 * 1024) { alert('Image 2MB se badi nahi honi chahiye'); return; }
-               const reader = new FileReader();
-               reader.onload = (ev) => upF('photo', ev.target.result);
-               reader.readAsDataURL(file);
-             }}
-           />
-           <button className="btn-primary-pill" onClick={() => document.getElementById('creator-photo-upload').click()}>
-              <Camera size={14} /> Update Photo
-           </button>
-           <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '8px', fontWeight: 600 }}>JPEG/PNG up to 2MB</p>
-        </div>
-     </div>
+const IdentityTabContent = ({ F, c, st, mob, upF, saveProfile, saving }) => {
+  const toggleNiche = (n) => {
+    const current = F.niche || [];
+    if (current.includes(n)) {
+      upF('niche', current.filter(x => x !== n));
+    } else {
+      if (current.length >= 3) {
+        alert('You can select up to 3 categories.');
+        return;
+      }
+      upF('niche', [...current, n]);
+    }
+  };
 
-     <div className="form-stack">
-        <Fld label="Full Name" value={F.name} onChange={e => upF('name', e.target.value)} placeholder="Amit Sharma" />
-        <div style={{ position: 'relative' }}>
-           <Fld label="Cinematic Bio (150 chars)" value={F.bio} onChange={e => upF('bio', e.target.value.slice(0, 150))} rows={4} placeholder="I create high-impact tech reviews for regional India..." />
-           <span style={{ position: 'absolute', bottom: 12, right: 16, fontSize: 11, color: (F.bio?.length || 0) >= 150 ? '#EF4444' : '#94a3b8', fontWeight: 600 }}>{F.bio?.length || 0}/150</span>
-        </div>
-        <Fld label="Professional Tagline / Headline (e.g. Gym Creator, YouTube Vlogger, Food Storyteller)" value={F.tagline} onChange={e => upF('tagline', e.target.value)} placeholder="Expert in FoodCulture Storytelling | Building authentic brand identities across Bharat." />
-        <Fld label="Full Address (Real Address)" value={F.address} onChange={e => upF('address', e.target.value)} placeholder="123 Street Name, Neighborhood, District, Jaipur, Rajasthan, 302001" />
-        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr 1fr', gap: '24px' }}>
-           <Fld label="Base City" value={F.city} onChange={e => upF('city', e.target.value)} placeholder="Jaipur" />
-           <Fld label="State / Region" value={F.state} onChange={e => upF('state', e.target.value)} placeholder="Rajasthan" />
-           <Fld label="Connections / Reach count (e.g. 500+)" value={F.connections} onChange={e => upF('connections', e.target.value)} placeholder="500+ connections" />
-        </div>
-        
-        <div style={{ marginTop: '24px', borderTop: '1px solid #e2e8f0', paddingTop: '24px' }}>
-           <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', marginBottom: 16, textTransform: 'uppercase' }}>Content Philosophy & Brand-Fit Intel</p>
-           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px', marginBottom: '16px' }}>
-              <Fld label="Content Philosophy Heading (e.g. My Content Vision)" value={F.philosophyTitle} onChange={e => upF('philosophyTitle', e.target.value)} placeholder="My Content Philosophy (The 'Why')" />
-              <Fld label="Regional Dominance Heading (e.g. Heartland Core Reach)" value={F.dominanceTitle} onChange={e => upF('dominanceTitle', e.target.value)} placeholder="My Regional Dominance" />
-           </div>
-           <Fld label="Mera Content Philosophy (The 'Why')" value={F.philosophy} onChange={e => upF('philosophy', e.target.value)} rows={3} placeholder="Content creation isn't just about demonstrating silicon specifications..." />
-           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px', marginTop: '16px' }}>
-              <Fld label="AI Brand-Fit Match %" value={F.aiMatch} onChange={e => upF('aiMatch', e.target.value)} placeholder="98%" />
-              <Fld label="Why You Fit Brands" value={F.aiSummary} onChange={e => upF('aiSummary', e.target.value)} placeholder="Vibrant Cinematic Editing, High Conversion ROI" />
-           </div>
-           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '16px', marginTop: '16px' }}>
-              <Fld label="Brand Safety" value={F.aiSafety} onChange={e => upF('aiSafety', e.target.value)} placeholder="99% Secure" />
-              <Fld label="Retention Score" value={F.aiRetention} onChange={e => upF('aiRetention', e.target.value)} placeholder="Excellent" />
-              <Fld label="ROI Potential" value={F.aiRoi} onChange={e => upF('aiRoi', e.target.value)} placeholder="5.2x" />
-           </div>
-        </div>
-     </div>
+  const toggleLanguage = (lang) => {
+    const current = F.languages || [];
+    if (current.includes(lang)) {
+      upF('languages', current.filter(x => x !== lang));
+    } else {
+      upF('languages', [...current, lang]);
+    }
+  };
 
-     <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'flex-end' }}>
-        <Btn lg className="btn-primary-pill" style={{ height: 'auto', padding: '16px 48px', display: 'flex', gap: 8 }} onClick={saveProfile} disabled={saving}>
-           {saving ? <Loader2 className="spin" size={18} /> : 'Save Identity →'}
-        </Btn>
-     </div>
-  </Card>
-);
+  return (
+    <Card className="settings-form-card card-3d-effect">
+       <h3 className="db-section-title">Step 1: Personal Identity</h3>
+       
+       <div className="profile-visual-box">
+          <div className="avatar-preview-wrap">
+             <img src={F.photo || c?.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name)}`} alt="" />
+          </div>
+          <div className="visual-actions">
+             <input type="file" id="creator-photo-upload" accept="image/jpeg,image/png,image/webp"
+               style={{ display: 'none' }}
+               onChange={(e) => {
+                 const file = e.target.files?.[0];
+                 if (!file) return;
+                 if (file.size > 2 * 1024 * 1024) { alert('Image 2MB se badi nahi honi chahiye'); return; }
+                 const reader = new FileReader();
+                 reader.onload = (ev) => upF('photo', ev.target.result);
+                 reader.readAsDataURL(file);
+               }}
+             />
+             <button className="btn-primary-pill" onClick={() => document.getElementById('creator-photo-upload').click()}>
+                <Camera size={14} /> Update Photo
+             </button>
+             <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '8px', fontWeight: 600 }}>JPEG/PNG up to 2MB</p>
+          </div>
+       </div>
+
+       <div className="form-stack">
+          <Fld label="Full Name" value={F.name} onChange={e => upF('name', e.target.value)} placeholder="Amit Sharma" />
+          <div style={{ position: 'relative' }}>
+             <Fld label="Cinematic Bio (150 chars)" value={F.bio} onChange={e => upF('bio', e.target.value.slice(0, 150))} rows={4} placeholder="I create high-impact tech reviews for regional India..." />
+             <span style={{ position: 'absolute', bottom: 12, right: 16, fontSize: 11, color: (F.bio?.length || 0) >= 150 ? '#EF4444' : '#94a3b8', fontWeight: 600 }}>{F.bio?.length || 0}/150</span>
+          </div>
+          <Fld label="Professional Tagline / Headline (e.g. Gym Creator, YouTube Vlogger, Food Storyteller)" value={F.tagline} onChange={e => upF('tagline', e.target.value)} placeholder="Expert in FoodCulture Storytelling | Building authentic brand identities across Bharat." />
+          
+          {/* Categories / Niches */}
+          <div style={{ marginBottom: '24px' }}>
+             <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px', display: 'block' }}>
+                Content Categories / Niches (Select up to 3)
+             </label>
+             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
+                {NICHES.map(n => {
+                  const isSel = (F.niche || []).includes(n);
+                  return (
+                    <button
+                      key={n}
+                      type="button"
+                      onClick={() => toggleNiche(n)}
+                      style={{
+                        padding: '8px 16px',
+                        borderRadius: '100px',
+                        border: '1.5px solid ' + (isSel ? '#FF9431' : '#e2e8f0'),
+                        background: isSel ? 'rgba(255, 148, 49, 0.08)' : '#fff',
+                        color: isSel ? '#FF9431' : '#475569',
+                        fontSize: '12px',
+                        fontWeight: 750,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      {n}
+                    </button>
+                  );
+                })}
+             </div>
+          </div>
+
+          {/* Content Languages */}
+          <div style={{ marginBottom: '24px' }}>
+             <label style={{ fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px', display: 'block' }}>
+                Languages you make content in
+             </label>
+             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
+                {LANGUAGES.map(lang => {
+                  const isSel = (F.languages || []).includes(lang);
+                  return (
+                    <button
+                      key={lang}
+                      type="button"
+                      onClick={() => toggleLanguage(lang)}
+                      style={{
+                        padding: '8px 16px',
+                        borderRadius: '100px',
+                        border: '1.5px solid ' + (isSel ? '#FF9431' : '#e2e8f0'),
+                        background: isSel ? 'rgba(255, 148, 49, 0.08)' : '#fff',
+                        color: isSel ? '#FF9431' : '#475569',
+                        fontSize: '12px',
+                        fontWeight: 750,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      {lang}
+                    </button>
+                  );
+                })}
+             </div>
+          </div>
+
+          <Fld label="Full Address (Real Address)" value={F.address} onChange={e => upF('address', e.target.value)} placeholder="123 Street Name, Neighborhood, District, Jaipur, Rajasthan, 302001" />
+          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr 1fr', gap: '24px' }}>
+             <Fld label="Base City" value={F.city} onChange={e => upF('city', e.target.value)} placeholder="Jaipur" />
+             <Fld label="State / Region" value={F.state} onChange={e => upF('state', e.target.value)} placeholder="Rajasthan" />
+             <Fld label="Connections / Reach count (e.g. 500+)" value={F.connections} onChange={e => upF('connections', e.target.value)} placeholder="500+ connections" />
+          </div>
+          
+          <div style={{ marginTop: '24px', borderTop: '1px solid #e2e8f0', paddingTop: '24px' }}>
+             <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', marginBottom: 16, textTransform: 'uppercase' }}>Content Philosophy & Brand-Fit Intel</p>
+             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px', marginBottom: '16px' }}>
+                <Fld label="Content Philosophy Heading (e.g. My Content Vision)" value={F.philosophyTitle} onChange={e => upF('philosophyTitle', e.target.value)} placeholder="My Content Philosophy (The 'Why')" />
+                <Fld label="Regional Dominance Heading (e.g. Heartland Core Reach)" value={F.dominanceTitle} onChange={e => upF('dominanceTitle', e.target.value)} placeholder="My Regional Dominance" />
+             </div>
+             <Fld label="Mera Content Philosophy (The 'Why')" value={F.philosophy} onChange={e => upF('philosophy', e.target.value)} rows={3} placeholder="Content creation isn't just about demonstrating silicon specifications..." />
+             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px', marginTop: '16px' }}>
+                <Fld label="AI Brand-Fit Match %" value={F.aiMatch} onChange={e => upF('aiMatch', e.target.value)} placeholder="98%" />
+                <Fld label="Why You Fit Brands" value={F.aiSummary} onChange={e => upF('aiSummary', e.target.value)} placeholder="Vibrant Cinematic Editing, High Conversion ROI" />
+             </div>
+             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: '16px', marginTop: '16px' }}>
+                <Fld label="Brand Safety" value={F.aiSafety} onChange={e => upF('aiSafety', e.target.value)} placeholder="99% Secure" />
+                <Fld label="Retention Score" value={F.aiRetention} onChange={e => upF('aiRetention', e.target.value)} placeholder="Excellent" />
+                <Fld label="ROI Potential" value={F.aiRoi} onChange={e => upF('aiRoi', e.target.value)} placeholder="5.2x" />
+             </div>
+          </div>
+       </div>
+
+       <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'flex-end' }}>
+          <Btn lg className="btn-primary-pill" style={{ height: 'auto', padding: '16px 48px', display: 'flex', gap: 8 }} onClick={saveProfile} disabled={saving}>
+             {saving ? <Loader2 className="spin" size={18} /> : 'Save Identity →'}
+          </Btn>
+       </div>
+    </Card>
+  );
+};
 
 IdentityTabContent.propTypes = {
   F: PropTypes.object.isRequired, c: PropTypes.object.isRequired, st: PropTypes.object.isRequired,
@@ -397,11 +513,48 @@ SocialTabContent.propTypes = {
 };
 
 // ─── Tab 3: Gallery Portfolio ──────────────────────────────────────────────────
-const GalleryTabContent = ({ F, mob, upGallery, saveProfile, setTab, isPro, navigate }) => {
+const GalleryTabContent = ({ F, mob, upF, upGallery, saveProfile, setTab, isPro, navigate }) => {
+  const [newUrl, setNewUrl] = useState('');
+  const [newCaption, setNewCaption] = useState('');
+
+  const addStory = () => {
+    if (!newUrl.trim()) return;
+    
+    const storiesList = F.stories || [];
+    const monthlyLimit = isPro ? 10 : 3;
+    
+    const monthlyCount = getMonthlyStoriesCount(storiesList);
+    if (monthlyCount >= monthlyLimit) {
+      alert(`Monthly limit reached! You can share up to ${monthlyLimit} stories per month.`);
+      return;
+    }
+    
+    const newStory = {
+      id: `story-${Date.now()}`,
+      url: newUrl.trim(),
+      caption: newCaption.trim(),
+      createdAt: new Date().toISOString()
+    };
+    
+    upF('stories', [newStory, ...storiesList]);
+    setNewUrl('');
+    setNewCaption('');
+  };
+
+  const removeStory = (id) => {
+    const storiesList = F.stories || [];
+    upF('stories', storiesList.filter(s => s.id !== id));
+  };
+
+  const activeStories = getActiveStories(F.stories || []);
+  const expiredStories = (F.stories || []).filter(s => !activeStories.some(a => a.id === s.id));
+  const monthlyCount = getMonthlyStoriesCount(F.stories || []);
+  const monthlyLimit = isPro ? 10 : 3;
+
   return (
     <Card className="settings-form-card card-3d-effect">
-       <h3 className="db-section-title">Step 3: Gallery Portfolio</h3>
-       <p className="db-sub-text" style={{ marginBottom: 40 }}>Showcase your visual portfolio by adding image URLs (Unsplash, Imgur, etc.).</p>
+       <h3 className="db-section-title">Step 3: Gallery Portfolio & Creator Stories</h3>
+       <p className="db-sub-text" style={{ marginBottom: 40 }}>Showcase your visual portfolio by adding image URLs and share temporary Creator Stories.</p>
        
        <div className="form-stack">
           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
@@ -425,18 +578,127 @@ const GalleryTabContent = ({ F, mob, upGallery, saveProfile, setTab, isPro, navi
               </p>
             </div>
           )}
+
+          {/* Stories Management Section */}
+          <div style={{ marginTop: '40px', borderTop: '1px solid #f1f5f9', paddingTop: '32px' }}>
+             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <h4 style={{ fontSize: '16px', fontWeight: 950, color: '#0f172a', margin: 0 }}>📸 Interactive Creator Stories</h4>
+                <span style={{ fontSize: '12px', fontWeight: 800, color: '#FF9431', background: 'rgba(255,148,49,0.08)', padding: '4px 12px', borderRadius: '100px' }}>
+                   {monthlyCount} / {monthlyLimit} Shared This Month
+                </span>
+             </div>
+             <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '24px', fontWeight: 500 }}>
+                Upload stories that will be viewable when users click your profile picture. Stories automatically expire after 48 hours.
+             </p>
+
+             {/* Add New Story Form */}
+             <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '24px', border: '1px solid #e2e8f0', marginBottom: '24px' }}>
+                <div style={{ fontSize: '13px', fontWeight: 900, color: '#FF9431', marginBottom: '16px', textTransform: 'uppercase' }}>Add New Story</div>
+                <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1.5fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                   <Fld 
+                     label="Story Image URL" 
+                     value={newUrl} 
+                     onChange={e => setNewUrl(e.target.value)} 
+                     placeholder="https://images.unsplash.com/photo-..." 
+                   />
+                   <Fld 
+                     label="Story Caption (Optional)" 
+                     value={newCaption} 
+                     onChange={e => setNewCaption(e.target.value)} 
+                     placeholder="Behind the scenes shoot today! 🎬" 
+                   />
+                </div>
+                <button 
+                   type="button"
+                   onClick={addStory}
+                   disabled={!newUrl.trim() || monthlyCount >= monthlyLimit}
+                   style={{
+                     background: (!newUrl.trim() || monthlyCount >= monthlyLimit) ? '#cbd5e1' : 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)',
+                     color: '#fff',
+                     border: 'none',
+                     padding: '12px 24px',
+                     borderRadius: '100px',
+                     fontSize: '13px',
+                     fontWeight: 800,
+                     cursor: (!newUrl.trim() || monthlyCount >= monthlyLimit) ? 'not-allowed' : 'pointer',
+                     display: 'flex',
+                     alignItems: 'center',
+                     gap: '8px'
+                   }}
+                >
+                   Upload & Publish Story 🚀
+                </button>
+                {!isPro && monthlyCount >= monthlyLimit && (
+                  <div style={{ marginTop: '12px', fontSize: '12px', color: '#EF4444', fontWeight: 650 }}>
+                     🔒 Free tier limit of 3 monthly stories reached. <span onClick={() => navigate('/creator/monetization')} style={{ textDecoration: 'underline', cursor: 'pointer', color: '#FF9431' }}>Upgrade to Pro</span> for 10 stories.
+                  </div>
+                )}
+             </div>
+
+             {/* Active Stories Grid */}
+             {activeStories.length > 0 && (
+               <div style={{ marginBottom: '24px' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 900, color: '#10B981', marginBottom: '12px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                     <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', display: 'inline-block' }} /> Active Stories (Expires in 48h)
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '16px' }}>
+                     {activeStories.map(s => {
+                       const timeLeftMs = 48 * 60 * 60 * 1000 - (Date.now() - new Date(s.createdAt).getTime());
+                       const timeLeftHrs = Math.max(0, Math.round(timeLeftMs / (60 * 60 * 1000)));
+                       return (
+                         <div key={s.id} style={{ position: 'relative', aspectRatio: '9/16', borderRadius: '16px', overflow: 'hidden', border: '1.5px solid #10B981' }}>
+                            <img src={s.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', padding: '8px', color: '#fff', fontSize: '11px' }}>
+                               <div style={{ fontWeight: 800 }}>{timeLeftHrs} hrs left</div>
+                               {s.caption && <div style={{ fontSize: '9px', opacity: 0.8, textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>{s.caption}</div>}
+                            </div>
+                            <button 
+                               type="button"
+                               onClick={() => removeStory(s.id)}
+                               style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(239,68,68,0.9)', color: '#fff', border: 'none', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}
+                            >
+                               ✕
+                            </button>
+                         </div>
+                       );
+                     })}
+                  </div>
+               </div>
+             )}
+
+             {/* Expired Stories Archive */}
+             {expiredStories.length > 0 && (
+               <div>
+                  <div style={{ fontSize: '12px', fontWeight: 900, color: '#64748b', marginBottom: '12px', textTransform: 'uppercase' }}>Expired Stories (Archive)</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(3, 1fr)' : 'repeat(6, 1fr)', gap: '12px' }}>
+                     {expiredStories.map(s => (
+                        <div key={s.id} style={{ position: 'relative', aspectRatio: '9/16', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0', opacity: 0.5 }}>
+                           <img src={s.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                           <button 
+                              type="button"
+                              onClick={() => removeStory(s.id)}
+                              style={{ position: 'absolute', top: '6px', right: '6px', background: 'rgba(239,68,68,0.9)', color: '#fff', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px' }}
+                           >
+                              ✕
+                           </button>
+                        </div>
+                     ))}
+                  </div>
+               </div>
+             )}
+          </div>
        </div>
 
        <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <button onClick={() => setTab('social')} className="btn-text-slate">← Previous</button>
-          <Btn lg className="btn-primary-pill" style={{ height: 'auto', padding: '16px 48px' }} onClick={saveProfile}>Sync Gallery →</Btn>
+          <Btn lg className="btn-primary-pill" style={{ height: 'auto', padding: '16px 48px' }} onClick={saveProfile}>Sync Gallery & Stories →</Btn>
        </div>
     </Card>
   );
 };
 
 GalleryTabContent.propTypes = {
-  F: PropTypes.object.isRequired, mob: PropTypes.bool.isRequired,
+  F: PropTypes.object.isRequired, mob: PropTypes.bool.isRequired, upF: PropTypes.func.isRequired,
   upGallery: PropTypes.func.isRequired, saveProfile: PropTypes.func.isRequired,
   setTab: PropTypes.func.isRequired, isPro: PropTypes.bool, navigate: PropTypes.func.isRequired
 };
@@ -506,7 +768,7 @@ const StoryTabContent = ({ F, mob, upF, upAward, upCollab, upMilestone, saveProf
            <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', marginBottom: 16, textTransform: 'uppercase' }}>📅 Creator Journey Timeline (4 Milestones)</p>
            {F.milestones.map((m, idx) => (
               <div key={m.id} style={{ padding: 20, background: '#f8fafc', borderRadius: 16, border: '1px solid #f1f5f9', marginBottom: 16 }}>
-                 <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: 16, marginBottom: 12 }}>
+                 <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '100px 1fr', gap: 16, marginBottom: 12 }}>
                     <Fld label="Year" value={m.y} onChange={e => upMilestone(idx, 'y', e.target.value)} placeholder="2022" />
                     <Fld label="Chapter Title" value={m.t} onChange={e => upMilestone(idx, 't', e.target.value)} placeholder="First Viral Short" />
                  </div>
@@ -584,7 +846,24 @@ const PackagesTabContent = ({ F, mob, upF, upService, addService, removeService,
                         <Lock size={16} color="#FF9431" />
                       </div>
                     )}
-                    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 180px 44px', gap: 16, marginBottom: 12, alignItems: 'flex-start' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                       <span style={{ fontSize: 13, fontWeight: 900, color: '#475569' }}>Service #{idx + 1}</span>
+                       {!isLocked && (
+                          <button 
+                            type="button"
+                            onClick={() => removeService(idx)} 
+                            style={{
+                              background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)',
+                              borderRadius: '8px', color: '#EF4444', cursor: 'pointer', 
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                              height: '32px', padding: '0 12px', gap: '6px', fontSize: '11px', fontWeight: 800
+                            }}
+                          >
+                            <Trash2 size={12} /> Remove
+                          </button>
+                       )}
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 180px', gap: 16, marginBottom: 12, alignItems: 'flex-start' }}>
                        <Fld 
                          label="Service Title" 
                          value={s.t} 
@@ -600,18 +879,6 @@ const PackagesTabContent = ({ F, mob, upF, upService, addService, removeService,
                          placeholder="12000" 
                          disabled={isLocked}
                        />
-                       <button 
-                         onClick={() => removeService(idx)} 
-                         disabled={isLocked}
-                         style={{
-                           background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)',
-                           borderRadius: 12, color: '#EF4444', cursor: isLocked ? 'not-allowed' : 'pointer', 
-                           display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                           flexShrink: 0, height: '42px', width: '42px', marginTop: '24px'
-                         }}
-                       >
-                         <Trash2 size={14} />
-                       </button>
                     </div>
                     <Fld 
                       label="Service Description & Details" 
@@ -1054,6 +1321,9 @@ const getInitialFormState = (c) => {
     localVoice: c?.local_voice || '', localPenetration: c?.local_penetration || '',
     regionalDialects: c?.regional_dialects || '', localHubs, awards, collabs, milestones,
     services, viralContent, caseStudies, socialLinks, sponsoredPosts,
+    niche: Array.isArray(c?.niche) ? [...c.niche] : (c?.niche ? [c.niche] : []),
+    languages: Array.isArray(c?.languages) ? [...c.languages] : (c?.languages ? [c.languages] : ['Hindi']),
+    stories: c?.stories ? [...c.stories] : [],
     philosophyTitle: c?.philosophy_title || c?.philosophyTitle || '',
     dominanceTitle: c?.dominance_title || c?.dominanceTitle || '',
     localTitle: c?.local_title || c?.localTitle || '',
@@ -1166,6 +1436,9 @@ export default function ProfileBuilderPage() {
 
       const updatedProfile = { 
         ...c, name: F.name, bio: F.bio, city: F.city, state: F.state,
+        niche: F.niche || [],
+        languages: F.languages || [],
+        stories: F.stories || [],
         instagram: F.instagram, youtube: F.youtube, rateMin: F.rateMin, rateMax: F.rateMax,
         portfolio: F.portfolio, gallery: filteredGallery,
         address: F.address, tagline: F.tagline, connections: F.connections,
@@ -1249,7 +1522,12 @@ export default function ProfileBuilderPage() {
                     <IdentityTabContent F={F} c={c} st={st} mob={mob} upF={upF} saveProfile={saveProfile} saving={saving} />
                  </motion.div>
                )}
-               {tab === 'social' && (
+                {tab === 'gallery' && (
+                  <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="gallery">
+                     <GalleryTabContent F={F} mob={mob} upF={upF} upGallery={upGallery} saveProfile={saveProfile} setTab={setTab} isPro={isPro} navigate={navigate} />
+                  </motion.div>
+                )}
+                {tab === 'social' && (
                  <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="social">
                     <SocialTabContent F={F} mob={mob} upF={upF} upGallery={upGallery} upSocialLink={upSocialLink} addSocialLink={addSocialLink} removeSocialLink={removeSocialLink} saveProfile={saveProfile} setTab={setTab} isPro={isPro} navigate={navigate} />
                  </motion.div>

@@ -56,8 +56,15 @@ export const GalleryTab = ({ c, mob, setActiveTab }) => {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
        <div style={{ marginBottom: mob ? '24px' : '60px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
-             <h2 style={{ fontSize: '32px', fontWeight: 950, color: '#0f172a' }}>Lifestyle Gallery</h2>
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: mob ? 'column' : 'row', 
+            alignItems: mob ? 'flex-start' : 'center', 
+            justifyContent: 'space-between', 
+            gap: mob ? '8px' : '20px',
+            marginBottom: '32px' 
+          }}>
+             <h2 style={{ fontSize: mob ? '26px' : '32px', fontWeight: 950, color: '#0f172a', margin: 0 }}>Lifestyle Gallery</h2>
              <div style={{ fontSize: '12px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '2px' }}>The Elite Visual Identity</div>
           </div>
           

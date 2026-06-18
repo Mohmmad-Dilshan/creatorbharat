@@ -136,7 +136,7 @@ function mergeCreator(seed, remote) {
   merged.facebook_followers = remote.facebook_followers ?? remote.facebookFollowers ?? seed.facebook_followers ?? 0;
 
   // Other standard fallbacks
-  const arrayFields = ['niche', 'platform', 'services', 'languages', 'portfolio', 'gallery', 'packages', 'reviews'];
+  const arrayFields = ['niche', 'platform', 'services', 'languages', 'portfolio', 'gallery', 'packages', 'reviews', 'stories'];
   arrayFields.forEach(field => {
     if (!hasValue(remote[field])) {
       merged[field] = seed[field];
@@ -435,6 +435,7 @@ export async function updateCreatorProfile(profileData) {
       caseStudies: profileData.caseStudies || profileData.case_studies,
       sponsoredPosts: profileData.sponsoredPosts || profileData.sponsored_posts,
       socialLinks: profileData.socialLinks || profileData.social_links,
+      stories: profileData.stories || [],
       philosophyTitle: profileData.philosophyTitle || profileData.philosophy_title,
       dominanceTitle: profileData.dominanceTitle || profileData.dominance_title,
       localTitle: profileData.localTitle || profileData.local_title,

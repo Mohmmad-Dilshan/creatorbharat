@@ -7,8 +7,19 @@ import { useApp } from '../../../core/context';
 import { Card } from '../../common/Primitives';
 import { TrustBadge, TabNavigator, TabEmptyState, GatedOverlay } from './ProfileShared';
 
-const PackageCard = ({ p, onSelect }) => (
-  <Card style={{ padding: '32px', borderRadius: '40px', border: p.pop ? '2px solid #FF9431' : '1.5px solid #f1f5f9', position: 'relative', display: 'flex', flexDirection: 'column', background: '#fff', boxShadow: p.pop ? '0 20px 40px rgba(255,148,49,0.1)' : 'none' }}>
+const PackageCard = ({ p, onSelect, mob }) => (
+  <Card style={{ 
+    padding: mob ? '24px' : '32px', 
+    borderRadius: '40px', 
+    border: p.pop ? '2px solid #FF9431' : '1.5px solid #f1f5f9', 
+    position: 'relative', 
+    display: 'flex', 
+    flexDirection: 'column', 
+    background: '#fff', 
+    boxShadow: p.pop ? '0 20px 40px rgba(255,148,49,0.1)' : 'none',
+    width: mob ? '290px' : '100%',
+    flexShrink: mob ? 0 : 1
+  }}>
     {p.pop && <div style={{ position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)', background: '#FF9431', color: '#fff', padding: '4px 16px', borderRadius: '100px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>Most Popular</div>}
     <div style={{ marginBottom: '24px' }}>
       <div style={{ fontSize: '14px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>{p.l}</div>
@@ -91,7 +102,7 @@ export const PackagesTab = ({ c, mob, onSelect, setActiveTab }) => {
           pointerEvents: hasUser ? 'auto' : 'none'
         }}>
            {packages.map((p) => (
-             <PackageCard key={p.l} onSelect={onSelect} p={p} />
+             <PackageCard key={p.l} onSelect={onSelect} p={p} mob={mob} />
            ))}
         </div>
         {!hasUser && (

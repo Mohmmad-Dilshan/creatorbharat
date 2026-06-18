@@ -72,23 +72,25 @@ export const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
                 "Professional collaborations start with a conversation. Main typically <b>24 ghanton</b> ke andar reply karta hoon professional inquiries ke liye."
              </p>
              
-             <div style={{ position: 'relative' }}>
+             <div>
                 <textarea 
                    value={msg}
                    onChange={e => setMsg(e.target.value)}
                    placeholder="Hi, I'm interested in collaborating on..." 
-                   style={{ width: '100%', height: '180px', padding: '24px', borderRadius: '24px', border: '1.5px solid #e2e8f0', background: '#f8fafc', fontSize: '15px', outline: 'none', resize: 'none', color: '#1e293b', fontWeight: 500, transition: 'border-color 0.2s' }} 
+                   style={{ width: '100%', height: '140px', padding: '20px 24px', borderRadius: '24px', border: '1.5px solid #e2e8f0', background: '#f8fafc', fontSize: '15px', outline: 'none', resize: 'none', color: '#1e293b', fontWeight: 500, transition: 'border-color 0.2s', marginBottom: '16px' }} 
                 />
-                <div style={{ position: 'absolute', bottom: '16px', left: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                   <div style={{ width: '8px', height: '8px', background: '#10B981', borderRadius: '50%' }} />
-                   <span style={{ fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase' }}>Available Now</span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: '8px', height: '8px', background: '#10B981', borderRadius: '50%' }} />
+                      <span style={{ fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase' }}>Available Now</span>
+                   </div>
+                   <button 
+                      onClick={handleSend}
+                      style={{ background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)', color: '#fff', border: 'none', padding: '12px 28px', borderRadius: '100px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 8px 24px rgba(234, 88, 12, 0.25)' }}
+                   >
+                      Send Message <Send size={16} />
+                   </button>
                 </div>
-                <button 
-                   onClick={handleSend}
-                   style={{ position: 'absolute', bottom: '16px', right: '16px', background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)', color: '#fff', border: 'none', padding: '12px 28px', borderRadius: '100px', fontSize: '14px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 8px 24px rgba(234, 88, 12, 0.25)' }}
-                >
-                   Send Message <Send size={16} />
-                </button>
              </div>
 
              <div style={{ marginTop: '32px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>

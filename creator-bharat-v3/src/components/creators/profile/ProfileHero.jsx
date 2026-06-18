@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { 
@@ -486,6 +487,248 @@ const ActionButtons = ({ followed, onAction, mob, dsp, dlStatus, onDownload }) =
 };
 ActionButtons.propTypes = { followed: PropTypes.bool, onAction: PropTypes.func.isRequired, mob: PropTypes.bool, dsp: PropTypes.func.isRequired, dlStatus: PropTypes.string, onDownload: PropTypes.func };
 
+const getActiveStories = (stories) => {
+  if (!Array.isArray(stories)) return [];
+  const FORTY_EIGHT_HOURS = 48 * 60 * 60 * 1000;
+  return stories.filter(story => {
+    if (!story || !story.createdAt) return false;
+    const age = Date.now() - new Date(story.createdAt).getTime();
+    return age < FORTY_EIGHT_HOURS;
+  });
+};
+
+const StoriesViewer = ({ stories, onClose, name, avatar, mob }) => {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [progress, setProgress] = useState(0);
+  
+  const currentStory = stories[currentIdx];
+  const duration = 5000; // 5 seconds per story
+  
+  useEffect(() => {
+    setProgress(0);
+  }, [currentIdx]);
+  
+  useEffect(() => {
+    const intervalTime = 50; // Update progress every 50ms
+    const totalSteps = duration / intervalTime;
+    
+    const timer = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(timer);
+          handleNext();
+          return 0;
+        }
+        return prev + (100 / totalSteps);
+      });
+    }, intervalTime);
+    
+    return () => clearInterval(timer);
+  }, [currentIdx, stories.length]);
+  
+  const handleNext = () => {
+    if (currentIdx < stories.length - 1) {
+      setCurrentIdx(prev => prev + 1);
+    } else {
+      onClose();
+    }
+  };
+  
+  const handlePrev = () => {
+    if (currentIdx > 0) {
+      setCurrentIdx(prev => prev - 1);
+    }
+  };
+  
+  if (!currentStory) return null;
+  
+  const getRelativeTime = (dateStr) => {
+    try {
+      const diffMs = Date.now() - new Date(dateStr).getTime();
+      const diffHrs = Math.floor(diffMs / (60 * 60 * 1000));
+      if (diffHrs < 1) {
+        const diffMins = Math.floor(diffMs / (60 * 1000));
+        return `${diffMins}m ago`;
+      }
+      return `${diffHrs}h ago`;
+    } catch (e) {
+      return '';
+    }
+  };
+
+  return createPortal(
+    <div 
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(10, 10, 10, 0.98)',
+        backdropFilter: 'blur(25px)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 999999,
+        padding: mob ? '0' : '24px',
+        color: '#fff',
+        userSelect: 'none'
+      }}
+      onClick={onClose}
+    >
+      <div 
+        style={{
+          position: 'relative',
+          width: '100%',
+          maxWidth: mob ? '100%' : '440px',
+          height: mob ? '100dvh' : '80vh',
+          background: '#000',
+          borderRadius: mob ? '0' : '32px',
+          overflow: 'hidden',
+          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Progress Bars */}
+        <div style={{
+          position: 'absolute',
+          top: mob ? 'calc(16px + env(safe-area-inset-top, 0px))' : '16px',
+          left: '16px',
+          right: '16px',
+          display: 'flex',
+          gap: '4px',
+          zIndex: 20
+        }}>
+          {stories.map((s, idx) => {
+            let widthVal = '0%';
+            if (idx < currentIdx) widthVal = '100%';
+            else if (idx === currentIdx) widthVal = `${progress}%`;
+            
+            return (
+              <div 
+                key={s.id || idx} 
+                style={{
+                  height: '3px',
+                  flex: 1,
+                  background: 'rgba(255,255,255,0.3)',
+                  borderRadius: '100px',
+                  overflow: 'hidden'
+                }}
+              >
+                <div style={{
+                  height: '100%',
+                  width: widthVal,
+                  background: '#fff',
+                  borderRadius: '100px',
+                  transition: idx === currentIdx ? 'none' : 'width 0.1s linear'
+                }} />
+              </div>
+            );
+          })}
+        </div>
+
+        {/* User Info Header */}
+        <div style={{
+          position: 'absolute',
+          top: mob ? 'calc(28px + env(safe-area-inset-top, 0px))' : '28px',
+          left: '16px',
+          right: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          zIndex: 20,
+          textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <img 
+              src={avatar} 
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                border: '2px solid #fff',
+                objectFit: 'cover'
+              }} 
+              alt="avatar" 
+            />
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: 800, color: '#fff' }}>{name}</div>
+              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>
+                {getRelativeTime(currentStory.createdAt)}
+              </div>
+            </div>
+          </div>
+          
+          <button 
+            onClick={onClose}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#fff',
+              fontSize: '20px',
+              cursor: 'pointer',
+              outline: 'none',
+              padding: '8px'
+            }}
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Navigation tap areas */}
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', zIndex: 10 }}>
+          <div 
+            onClick={handlePrev} 
+            style={{ flex: 1, cursor: 'w-resize' }} 
+          />
+          <div 
+            onClick={handleNext} 
+            style={{ flex: 1, cursor: 'e-resize' }} 
+          />
+        </div>
+
+        {/* Main Image */}
+        <img 
+          src={currentStory.url} 
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover'
+          }} 
+          alt="story content" 
+        />
+
+        {/* Story Caption / Footer */}
+        {currentStory.caption && (
+          <div style={{
+            position: 'absolute',
+            bottom: '0',
+            left: '0',
+            right: '0',
+            background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 70%, transparent 100%)',
+            padding: mob ? '40px 24px calc(24px + env(safe-area-inset-bottom, 0px))' : '40px 24px 24px',
+            zIndex: 15,
+            textAlign: 'center',
+            backdropFilter: 'blur(5px)'
+          }}>
+            <p style={{
+              fontSize: '14px',
+              fontWeight: 600,
+              color: '#fff',
+              lineHeight: 1.5,
+              margin: 0,
+              textShadow: '0 1px 2px rgba(0,0,0,0.5)'
+            }}>
+              {currentStory.caption}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>,
+    document.body
+  );
+};
+
 const HeroBanner = ({ banner, mob, onBack, onShare }) => (
   <div style={{ height: mob ? '180px' : '300px', background: '#0f172a', position: 'relative', overflow: 'hidden' }}>
      <img src={banner} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.75 }} alt="banner" />
@@ -504,36 +747,53 @@ const HeroBanner = ({ banner, mob, onBack, onShare }) => (
 );
 HeroBanner.propTypes = { banner: PropTypes.string.isRequired, mob: PropTypes.bool, onBack: PropTypes.func.isRequired, onShare: PropTypes.func.isRequired };
 
-const ProfileImage = ({ src, mob }) => (
-  <div style={{ 
-    position: 'relative', 
-    width: mob ? '120px' : '220px', 
-    height: mob ? '120px' : '220px', 
-    borderRadius: '50%', 
-    padding: mob ? '4px' : '8px',
-    background: 'linear-gradient(135deg, #FF9431 0%, #0073b1 100%)',
-    boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
-    flexShrink: 0,
-    zIndex: 10
-  }}>
-     <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', background: '#fff', border: mob ? '3px solid #fff' : '6px solid #fff' }}>
-        <img src={src} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="profile" />
-     </div>
-     <div style={{ 
-       position: 'absolute', 
-       bottom: mob ? '12px' : '24px', 
-       right: mob ? '12px' : '24px', 
-       width: mob ? '20px' : '32px', 
-       height: mob ? '20px' : '32px', 
-       background: '#10B981', 
-       border: mob ? '3px solid #fff' : '5px solid #fff', 
-       borderRadius: '50%', 
-       zIndex: 15, 
-       boxShadow: '0 0 15px rgba(16,185,129,0.5)' 
-     }} />
-  </div>
-);
-ProfileImage.propTypes = { src: PropTypes.string.isRequired, mob: PropTypes.bool };
+const ProfileImage = ({ src, mob, stories, onClick }) => {
+  const activeStories = getActiveStories(stories);
+  const hasStories = activeStories.length > 0;
+  
+  return (
+    <div 
+      onClick={hasStories ? onClick : undefined}
+      style={{ 
+        position: 'relative', 
+        width: mob ? '120px' : '220px', 
+        height: mob ? '120px' : '220px', 
+        borderRadius: '50%', 
+        padding: mob ? '4px' : '8px',
+        background: hasStories 
+          ? 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)' 
+          : 'linear-gradient(135deg, #FF9431 0%, #0073b1 100%)',
+        boxShadow: hasStories 
+          ? '0 0 25px rgba(220,39,67,0.4), 0 20px 60px rgba(0,0,0,0.2)' 
+          : '0 20px 60px rgba(0,0,0,0.2)',
+        flexShrink: 0,
+        zIndex: 10,
+        cursor: hasStories ? 'pointer' : 'default',
+        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+        transform: hasStories ? 'scale(1.02)' : 'none'
+      }}
+      onMouseEnter={(e) => { if (hasStories) e.currentTarget.style.transform = 'scale(1.05) rotate(2deg)'; }}
+      onMouseLeave={(e) => { if (hasStories) e.currentTarget.style.transform = 'scale(1.02) rotate(0deg)'; }}
+    >
+       <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', background: '#fff', border: mob ? '3px solid #fff' : '6px solid #fff' }}>
+          <img src={src} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="profile" />
+       </div>
+       <div style={{ 
+         position: 'absolute', 
+         bottom: mob ? '12px' : '24px', 
+         right: mob ? '12px' : '24px', 
+         width: mob ? '20px' : '32px', 
+         height: mob ? '20px' : '32px', 
+         background: '#10B981', 
+         border: mob ? '3px solid #fff' : '5px solid #fff', 
+         borderRadius: '50%', 
+         zIndex: 15, 
+         boxShadow: '0 0 15px rgba(16,185,129,0.5)' 
+       }} />
+    </div>
+  );
+};
+ProfileImage.propTypes = { src: PropTypes.string.isRequired, mob: PropTypes.bool, stories: PropTypes.array, onClick: PropTypes.func };
 
 const ConstellationCanvas = ({ hovered }) => {
   const canvasRef = useRef(null);
@@ -843,6 +1103,9 @@ CreatorHonestReviewCard.propTypes = {
 // --- MAIN HERO ---
 
 export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContact, onMediaKit, navVisible = true, onBrief }) => {
+  const [showStories, setShowStories] = useState(false);
+  const activeStories = getActiveStories(c?.stories);
+
   // Follow state from context (persists across pages)
   const followed = st?.follows?.includes(c?.id) || false;
   const [dlStatus] = useState('idle');
@@ -921,7 +1184,7 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
         <div style={{ padding: '0 20px 32px', marginTop: '-60px', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
           
           {/* Centered Display Picture (DP) */}
-          <ProfileImage src={dpImg} mob={true} />
+          <ProfileImage src={dpImg} mob={true} stories={c?.stories} onClick={() => setShowStories(true)} />
 
           {/* Social Icons Panel directly under DP */}
           <SocialIconsPanel c={c} mob={true} />
@@ -1231,19 +1494,27 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
               {activeUsers} active
             </span>
           </div>
-
+          {showStories && activeStories.length > 0 && (
+            <StoriesViewer 
+              stories={activeStories} 
+              onClose={() => setShowStories(false)} 
+              name={c.name} 
+              avatar={dpImg} 
+              mob={true} 
+            />
+          )}
         </div>
       </section>
     );
   }
 
   return (
-    <section style={{ background: '#fff', borderBottom: '1px solid #e5e7eb', position: 'relative' }}>
+<section style={{ background: '#fff', borderBottom: '1px solid #e5e7eb', position: 'relative' }}>
        <HeroBanner banner={bannerImg} mob={mob} onBack={() => navigate('/creators')} onShare={handleShare} />
        <div style={{ ...W(1150), margin: mob ? '-60px auto 0' : '-100px auto 0', padding: mob ? '0 16px 32px' : '0 20px 60px', position: 'relative' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: mob ? 'center' : 'flex-start', textAlign: mob ? 'center' : 'left' }}>
              <div style={{ display: 'flex', alignItems: mob ? 'center' : 'flex-end', gap: '24px', flexDirection: mob ? 'column' : 'row', marginBottom: '12px' }}>
-                <ProfileImage src={dpImg} mob={mob} />
+                <ProfileImage src={dpImg} mob={mob} stories={c?.stories} onClick={() => setShowStories(true)} />
                 {mob && <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}><SocialIconsPanel c={c} mob={true} /></div>}
                 {!mob && (
                   <motion.div 
@@ -1300,8 +1571,17 @@ export const ProfileHero = ({ c, stats, navigate, st, dsp, mob, onRate, onContac
                 </div>
              </div>
           </div>
-       </div>
-    </section>
+        </div>
+        {showStories && activeStories.length > 0 && (
+          <StoriesViewer 
+            stories={activeStories} 
+            onClose={() => setShowStories(false)} 
+            name={c.name} 
+            avatar={dpImg} 
+            mob={mob} 
+          />
+        )}
+     </section>
   );
 };
 
