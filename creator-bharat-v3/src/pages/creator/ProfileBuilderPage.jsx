@@ -538,7 +538,7 @@ StoryTabContent.propTypes = {
 };
 
 // ─── Tab 4: Packages ──────────────────────────────────────────────────────────
-const PackagesTabContent = ({ F, mob, upF, upService, upViralContent, upCaseStudy, saveProfile, setTab }) => (
+const PackagesTabContent = ({ F, mob, upF, upService, addService, removeService, upViralContent, upCaseStudy, saveProfile, setTab, isPro, navigate }) => (
   <Card className="settings-form-card card-3d-effect">
      <h3 className="db-section-title">Step 4: Commercial Deliverables & Pro Work</h3>
      <p className="db-sub-text" style={{ marginBottom: 40 }}>Define your rate range, service packages, viral hits, and case studies for brand discovery.</p>
@@ -550,17 +550,90 @@ const PackagesTabContent = ({ F, mob, upF, upService, upViralContent, upCaseStud
         </div>
 
         {/* Services */}
-        <div>
-           <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', marginBottom: 16, textTransform: 'uppercase' }}>⚡ Service Packages (3 Tiers)</p>
-           {F.services.map((s, idx) => (
-              <div key={s.id} style={{ padding: 20, background: '#f8fafc', borderRadius: 16, border: '1px solid #f1f5f9', marginBottom: 16 }}>
-                 <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 150px', gap: 16, marginBottom: 12 }}>
-                    <Fld label="Package Title" value={s.t} onChange={e => upService(idx, 't', e.target.value)} placeholder="Cinematic Storytelling" />
-                    <Fld label="Rate (₹)" type="number" value={s.rate} onChange={e => upService(idx, 'rate', e.target.value)} placeholder="12000" />
-                 </div>
-                 <Fld label="Package Description & Inclusions" value={s.d} onChange={e => upService(idx, 'd', e.target.value)} placeholder="4K dynamic reel editing, color grading, and native scripting." />
+        <div style={{ marginTop: 24, borderTop: '1px solid #f1f5f9', paddingTop: 24 }}>
+           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <div>
+                <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', margin: 0 }}>💼 Professional Service Catalog</p>
+                <p style={{ fontSize: 12, color: '#94a3b8', margin: '4px 0 0', fontWeight: 600 }}>
+                  {isPro ? 'Unlimited Services (Pro)' : `${F.services.length}/3 Services (Free) — Upgrade for unlimited`}
+                </p>
               </div>
-           ))}
+              {(isPro || F.services.length < 3) && (
+                 <button onClick={addService} style={{
+                   display: 'flex', alignItems: 'center', gap: 6,
+                   background: 'rgba(255,148,49,0.1)', border: '1px solid rgba(255,148,49,0.3)',
+                   color: '#FF9431', borderRadius: 100, padding: '8px 16px', fontSize: 12, fontWeight: 800, cursor: 'pointer'
+                 }}>
+                   <Plus size={14} /> Add Service
+                 </button>
+              )}
+           </div>
+           {F.services.map((s, idx) => {
+              const isLocked = !isPro && idx >= 3;
+              return (
+                 <div key={s.id || idx} style={{ 
+                   padding: 20, 
+                   background: '#f8fafc', 
+                   borderRadius: 16, 
+                   border: '1px solid #f1f5f9', 
+                   marginBottom: 16,
+                   position: 'relative'
+                 }}>
+                    {isLocked && (
+                      <div style={{ position: 'absolute', top: 12, right: 12 }}>
+                        <Lock size={16} color="#FF9431" />
+                      </div>
+                    )}
+                    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 180px 44px', gap: 16, marginBottom: 12, alignItems: 'flex-start' }}>
+                       <Fld 
+                         label="Service Title" 
+                         value={s.t} 
+                         onChange={e => upService(idx, 't', e.target.value)} 
+                         placeholder="Cinematic Reel Editing" 
+                         disabled={isLocked}
+                       />
+                       <Fld 
+                         label="Rate (₹, optional)" 
+                         type="number" 
+                         value={s.rate || ''} 
+                         onChange={e => upService(idx, 'rate', e.target.value)} 
+                         placeholder="12000" 
+                         disabled={isLocked}
+                       />
+                       <button 
+                         onClick={() => removeService(idx)} 
+                         disabled={isLocked}
+                         style={{
+                           background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)',
+                           borderRadius: 12, color: '#EF4444', cursor: isLocked ? 'not-allowed' : 'pointer', 
+                           display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                           flexShrink: 0, height: '42px', width: '42px', marginTop: '24px'
+                         }}
+                       >
+                         <Trash2 size={14} />
+                       </button>
+                    </div>
+                    <Fld 
+                      label="Service Description & Details" 
+                      value={s.d} 
+                      onChange={e => upService(idx, 'd', e.target.value)} 
+                      placeholder="Includes high-end color grading, drone shots, and native Hinglish scripting with 3 revisions." 
+                      rows={2}
+                      disabled={isLocked}
+                    />
+                 </div>
+              );
+           })}
+           {!isPro && F.services.length >= 3 && (
+             <div style={{ marginTop: 12, padding: '10px 16px', background: '#f8fafc', borderRadius: 12, border: '1px dashed #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+               <p style={{ fontSize: 12, color: '#94a3b8', margin: 0, fontWeight: 600 }}>
+                 🔒 Upgrade to Pro to add unlimited services (currently max 3)
+               </p>
+               <button onClick={() => navigate('/creator/monetization')} style={{ background: 'none', border: 'none', color: '#FF9431', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}>
+                 Upgrade Now →
+               </button>
+             </div>
+           )}
         </div>
 
         {/* Viral Content */}
@@ -615,8 +688,10 @@ const PackagesTabContent = ({ F, mob, upF, upService, upViralContent, upCaseStud
 
 PackagesTabContent.propTypes = {
   F: PropTypes.object.isRequired, mob: PropTypes.bool.isRequired, upF: PropTypes.func.isRequired,
-  upService: PropTypes.func.isRequired, upViralContent: PropTypes.func.isRequired,
-  upCaseStudy: PropTypes.func.isRequired, saveProfile: PropTypes.func.isRequired, setTab: PropTypes.func.isRequired
+  upService: PropTypes.func.isRequired, addService: PropTypes.func.isRequired, removeService: PropTypes.func.isRequired,
+  upViralContent: PropTypes.func.isRequired, upCaseStudy: PropTypes.func.isRequired,
+  saveProfile: PropTypes.func.isRequired, setTab: PropTypes.func.isRequired,
+  isPro: PropTypes.bool, navigate: PropTypes.func.isRequired
 };
 
 // ─── Tab 5: Local Hub ─────────────────────────────────────────────────────────
@@ -1035,6 +1110,8 @@ export default function ProfileBuilderPage() {
   const upSocialLink = (idx, field, val) => setF(p => { const copy = [...p.socialLinks]; copy[idx] = { ...copy[idx], [field]: val }; return { ...p, socialLinks: copy }; });
   const addSocialLink = () => setF(p => ({ ...p, socialLinks: [...p.socialLinks, { platform: 'Instagram', url: '', followers: '' }] }));
   const removeSocialLink = (idx) => setF(p => ({ ...p, socialLinks: p.socialLinks.filter((_, i) => i !== idx) }));
+  const addService = () => setF(p => ({ ...p, services: [...p.services, { id: `service-${Date.now()}`, t: '', d: '', rate: '' }] }));
+  const removeService = (idx) => setF(p => ({ ...p, services: p.services.filter((_, i) => i !== idx) }));
   const upSponsoredPost = (idx, field, val) => setF(p => { const copy = [...p.sponsoredPosts]; copy[idx] = { ...copy[idx], [field]: val }; return { ...p, sponsoredPosts: copy }; });
 
   const toast = (msg, type) => dsp({ t: 'TOAST', d: { type, msg } });
@@ -1049,7 +1126,7 @@ export default function ProfileBuilderPage() {
         y: m.y, t: m.t, d: m.d,
         category: m.category || '', metric: m.metric || '', img: m.img || '', link: m.link || ''
       }));
-      const filteredServices = F.services.filter(s => s.t && s.rate);
+      const filteredServices = F.services.filter(s => s.t);
       const filteredAwards = F.awards.filter(a => a.t && a.y);
       const filteredCollabs = F.collabs.filter(col => col.p && col.l).map(col => ({
         p: col.p, l: col.l, d: col.d,
@@ -1184,7 +1261,7 @@ export default function ProfileBuilderPage() {
                )}
                {tab === 'packages' && (
                  <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="packages">
-                    <PackagesTabContent F={F} mob={mob} upF={upF} upService={upService} upViralContent={upViralContent} upCaseStudy={upCaseStudy} saveProfile={saveProfile} setTab={setTab} />
+                    <PackagesTabContent F={F} mob={mob} upF={upF} upService={upService} addService={addService} removeService={removeService} upViralContent={upViralContent} upCaseStudy={upCaseStudy} saveProfile={saveProfile} setTab={setTab} isPro={isPro} navigate={navigate} />
                  </motion.div>
                )}
                {tab === 'local' && (
