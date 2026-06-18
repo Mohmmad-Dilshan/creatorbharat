@@ -123,6 +123,9 @@ const DataHub = ({ creator, mob, saved, compared, requireBrand, dsp, onFullView,
   const bioText = creator.bio || `An elite storyteller, digital creator dedicated to high-impact content and cultural narratives across Bharat.`;
   const aiSummary = creator.ai_intel?.summary || creator.aiIntel?.summary || `Best suited for ${nicheLabel} brands. High conversion potential for product launches in ${cityLabel} cities.`;
   
+  const rawLangs = creator.languages || creator.regional_dialects || 'Hindi';
+  const cl = Array.isArray(rawLangs) ? rawLangs : (typeof rawLangs === 'string' ? rawLangs.split(',').map(x => x.trim()).filter(Boolean) : []);
+
   const audienceHubs = creator.audience_hubs || creator.audienceHubs || [
     { l: 'Fashion', p: 45 }, { l: 'Luxury', p: 30 }, 
     { l: 'Tech', p: 15 }, { l: 'Travel', p: 10 }
@@ -203,19 +206,38 @@ const DataHub = ({ creator, mob, saved, compared, requireBrand, dsp, onFullView,
          </div>
       </div>
 
-      {/* AUDIENCE INTERESTS */}
-      <div style={{ marginBottom: '40px' }}>
-         <h4 style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '16px' }}>Audience Hub breakdown</h4>
-         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {audienceHubs.map(i => (
-              <div key={i.l} style={{ 
-                padding: '8px 16px', background: '#fff', border: '1.5px solid #f1f5f9', 
-                borderRadius: '100px', display: 'flex', alignItems: 'center', gap: '8px'
-              }}>
-                 <span style={{ fontSize: '13px', fontWeight: 850, color: '#0f172a' }}>{i.l}</span>
-                 <span style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431' }}>{i.p}%</span>
-              </div>
-            ))}
+      {/* LANGUAGES & AUDIENCE INTERESTS */}
+      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px', marginBottom: '40px' }}>
+         <div>
+            <h4 style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '16px' }}>Languages Spoken</h4>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+               {cl.length > 0 ? cl.map(l => (
+                 <div key={l} style={{ 
+                   padding: '8px 16px', background: 'rgba(79, 70, 229, 0.05)', border: '1.5px solid rgba(79, 70, 229, 0.15)', 
+                   borderRadius: '100px', fontSize: '13px', fontWeight: 800, color: '#4f46e5'
+                 }}>
+                   🗣️ {l}
+                 </div>
+               )) : (
+                 <div style={{ padding: '8px 16px', background: '#f8fafc', border: '1.5px solid #f1f5f9', borderRadius: '100px', fontSize: '13px', color: '#64748b', fontWeight: 650 }}>
+                   Hindi
+                 </div>
+               )}
+            </div>
+         </div>
+         <div>
+            <h4 style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '16px' }}>Audience Hub breakdown</h4>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+               {audienceHubs.map(i => (
+                 <div key={i.l} style={{ 
+                   padding: '8px 16px', background: '#fff', border: '1.5px solid #f1f5f9', 
+                   borderRadius: '100px', display: 'flex', alignItems: 'center', gap: '8px'
+                 }}>
+                    <span style={{ fontSize: '13px', fontWeight: 850, color: '#0f172a' }}>{i.l}</span>
+                    <span style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431' }}>{i.p}%</span>
+                 </div>
+               ))}
+            </div>
          </div>
       </div>
 
