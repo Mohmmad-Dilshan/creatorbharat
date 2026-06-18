@@ -22,6 +22,19 @@ export const SEED_CREATORS = [
     linkedin: 'arjun-kapoor-elite',
     twitter: 'arjun_kapoor_elite',
     facebook: 'arjun-kapoor-official',
+    instagram_followers: 550000,
+    youtube_followers: 450000,
+    linkedin_followers: 120000,
+    twitter_followers: 60000,
+    facebook_followers: 20000,
+    social_links: [
+      { platform: 'Snapchat', url: 'https://snapchat.com/add/arjun_snap', followers: 80000 },
+      { platform: 'Spotify', url: 'https://open.spotify.com/user/arjun_podcast', followers: 20000 }
+    ],
+    sponsored_posts: [
+      { id: 'sp-arjun-1', type: 'banner', title: 'BMW India Winter Drive Experience', description: 'Experience the extreme control of the intelligent BMW xDrive at our exclusive snow event in Gulmarg.', link: 'https://bmw.in/experience', ctaText: 'Register Now', imageUrl: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=600', date: '15 Dec 2025' },
+      { id: 'sp-arjun-2', type: 'link', title: 'OnePlus 12 Special Early Access Offer', description: 'Grab the latest OnePlus flagship with extra brand launch benefits and free premium exchange plans.', link: 'https://oneplus.in/12-launch', ctaText: 'Claim Offer', imageUrl: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=600', date: '25 Jan 2026' }
+    ],
     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400',
     photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400',
     bio: 'An elite storyteller, lifestyle connoisseur, and automotive reviewer crafting cinematic narratives at the intersection of future technology and daily premium lifestyle across Bharat.',

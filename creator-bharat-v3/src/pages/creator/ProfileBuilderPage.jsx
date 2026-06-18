@@ -6,7 +6,7 @@ import { LS, fmt } from '../../utils/helpers';
 import { Btn, Card, Fld, Bdg, Ring, Bar } from '../../components/common/Primitives';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  User, Globe, Camera, CheckCircle2, ChevronRight, Sparkles,
+  User, Globe, Camera, Image as ImageIcon, CheckCircle2, ChevronRight, Sparkles,
   BookOpen, Layers, MapPin, Plus, Trash2, Loader2, ExternalLink,
   Shield, Megaphone, Lock, Link2, Phone, MessageCircle, Star,
   AtSign, Video, MessageSquare
@@ -353,39 +353,6 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
                 </div>
              </div>
           </div>
-
-          {/* Gallery */}
-          <div style={{ marginTop: 32, borderTop: '1px solid #f1f5f9', paddingTop: 32 }}>
-             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-               <div>
-                 <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', margin: 0 }}>Gallery Portfolio Images</p>
-                 <p style={{ fontSize: 12, color: '#94a3b8', margin: '4px 0 0', fontWeight: 600 }}>
-                   {isPro ? 'Unlimited (Pro) — Add image URLs' : 'Up to 4 images (Free) — Upgrade for unlimited'}
-                 </p>
-               </div>
-             </div>
-             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
-                {(isPro ? [...F.gallery, '', '', ''].slice(0, Math.max(F.gallery.length + 1, 4)) : F.gallery).map((imgUrl, idx) => {
-                  const isLocked = !isPro && idx >= 4;
-                  return !isLocked ? (
-                    <Fld 
-                      key={idx}
-                      label={`Gallery Image ${idx + 1}`} 
-                      value={imgUrl} 
-                      onChange={e => upGallery(idx, e.target.value)} 
-                      placeholder="https://images.unsplash.com/..." 
-                    />
-                  ) : null;
-                })}
-             </div>
-             {!isPro && (
-               <div style={{ marginTop: 12, padding: '10px 16px', background: '#f8fafc', borderRadius: 12, border: '1px dashed #e2e8f0' }}>
-                 <p style={{ fontSize: 12, color: '#94a3b8', margin: 0, fontWeight: 600 }}>
-                   🔒 Upgrade to Pro for unlimited gallery images (currently max 4)
-                 </p>
-               </div>
-             )}
-          </div>
        </div>
 
        <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -398,13 +365,58 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
 
 SocialTabContent.propTypes = {
   F: PropTypes.object.isRequired, mob: PropTypes.bool.isRequired, upF: PropTypes.func.isRequired,
-  upGallery: PropTypes.func.isRequired, upSocialLink: PropTypes.func.isRequired,
+  upSocialLink: PropTypes.func.isRequired,
   addSocialLink: PropTypes.func.isRequired, removeSocialLink: PropTypes.func.isRequired,
   saveProfile: PropTypes.func.isRequired, setTab: PropTypes.func.isRequired,
   isPro: PropTypes.bool, navigate: PropTypes.func.isRequired
 };
 
-// ─── Tab 3: Story ─────────────────────────────────────────────────────────────
+// ─── Tab 3: Gallery Portfolio ──────────────────────────────────────────────────
+const GalleryTabContent = ({ F, mob, upGallery, saveProfile, setTab, isPro, navigate }) => {
+  return (
+    <Card className="settings-form-card card-3d-effect">
+       <h3 className="db-section-title">Step 3: Gallery Portfolio</h3>
+       <p className="db-sub-text" style={{ marginBottom: 40 }}>Showcase your visual portfolio by adding image URLs (Unsplash, Imgur, etc.).</p>
+       
+       <div className="form-stack">
+          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
+             {(isPro ? [...F.gallery, '', '', ''].slice(0, Math.max(F.gallery.length + 1, 4)) : F.gallery).map((imgUrl, idx) => {
+               const isLocked = !isPro && idx >= 4;
+               return !isLocked ? (
+                 <Fld 
+                   key={idx}
+                   label={`Gallery Image ${idx + 1}`} 
+                   value={imgUrl} 
+                   onChange={e => upGallery(idx, e.target.value)} 
+                   placeholder="https://images.unsplash.com/..." 
+                 />
+               ) : null;
+             })}
+          </div>
+          {!isPro && (
+            <div style={{ marginTop: 12, padding: '10px 16px', background: '#f8fafc', borderRadius: 12, border: '1px dashed #e2e8f0' }}>
+              <p style={{ fontSize: 12, color: '#94a3b8', margin: 0, fontWeight: 600 }}>
+                🔒 Upgrade to Pro for unlimited gallery images (currently max 4)
+              </p>
+            </div>
+          )}
+       </div>
+
+       <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <button onClick={() => setTab('social')} className="btn-text-slate">← Previous</button>
+          <Btn lg className="btn-primary-pill" style={{ height: 'auto', padding: '16px 48px' }} onClick={saveProfile}>Sync Gallery →</Btn>
+       </div>
+    </Card>
+  );
+};
+
+GalleryTabContent.propTypes = {
+  F: PropTypes.object.isRequired, mob: PropTypes.bool.isRequired,
+  upGallery: PropTypes.func.isRequired, saveProfile: PropTypes.func.isRequired,
+  setTab: PropTypes.func.isRequired, isPro: PropTypes.bool, navigate: PropTypes.func.isRequired
+};
+
+// ─── Tab 4: Story ─────────────────────────────────────────────────────────────
 const StoryTabContent = ({ F, mob, upF, upAward, upCollab, upMilestone, saveProfile, setTab }) => (
   <Card className="settings-form-card card-3d-effect">
      <h3 className="db-section-title">Step 3: Journey Milestones & Bio</h3>
@@ -714,7 +726,8 @@ SponsoredTabContent.propTypes = {
 // ─── Completion Logic ──────────────────────────────────────────────────────────
 const checkTabComplete = (tabName, F) => {
   if (tabName === 'identity')  return !!(F.name && F.bio);
-  if (tabName === 'social')    return !!(F.instagram || F.youtube || F.gallery.some(Boolean));
+  if (tabName === 'social')    return !!(F.instagram || F.youtube || F.socialLinks?.some(l => l.url));
+  if (tabName === 'gallery')   return !!(F.gallery.some(Boolean));
   if (tabName === 'story')     return !!(F.storyP1 && F.milestones.some(m => m.t));
   if (tabName === 'packages')  return !!(F.rateMin && F.services.some(s => s.t));
   if (tabName === 'local')     return !!(F.localVoice || F.localHubs?.some(h => h.l));
@@ -734,6 +747,7 @@ const getTabStyle = (tabId, currentTab) => ({
 const SIDEBAR_STEPS = [
   { id: 'identity',  label: 'Basic Identity',      icon: User },
   { id: 'social',    label: 'Social & Links',       icon: Globe },
+  { id: 'gallery',   label: 'Gallery Portfolio',    icon: ImageIcon },
   { id: 'story',     label: 'Journey & Awards',     icon: BookOpen },
   { id: 'packages',  label: 'Services & Rates',     icon: Layers },
   { id: 'local',     label: 'Local Hub',            icon: MapPin },
@@ -743,6 +757,7 @@ const SIDEBAR_STEPS = [
 const MOBILE_TABS = [
   { id: 'identity',  label: 'Identity' },
   { id: 'social',    label: 'Socials' },
+  { id: 'gallery',   label: 'Gallery' },
   { id: 'story',     label: 'Story' },
   { id: 'packages',  label: 'Packages' },
   { id: 'local',     label: 'Local Hub' },
@@ -786,7 +801,7 @@ const SettingsSidebar = ({ score, comp, tab, setTab, F }) => (
            <span style={{ fontSize: '14px', fontWeight: 900, textTransform: 'uppercase' }}>Pro Checklist</span>
         </div>
         <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, margin: '0 0 16px' }}>
-          Fill all 6 tabs including Sponsored Posts to unlock "Submit to Admin" and get <strong style={{ color: '#FF9431' }}>+15 CB Score bonus</strong>!
+          Fill all 7 tabs including Sponsored Posts to unlock "Submit to Admin" and get <strong style={{ color: '#FF9431' }}>+15 CB Score bonus</strong>!
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {SIDEBAR_STEPS.map(step => (
@@ -1115,7 +1130,7 @@ export default function ProfileBuilderPage() {
            <Shield size={14} fill="#FF9431" /> CREATOR IDENTITY
         </div>
         <h1 className="page-title">Profile Builder</h1>
-        <p className="db-sub-text">Build your 6-tab digital portfolio and unlock verified admin vetting status. Complete all tabs to maximize your CB Score.</p>
+        <p className="db-sub-text">Build your 7-tab digital portfolio and unlock verified admin vetting status. Complete all tabs to maximize your CB Score.</p>
       </div>
 
       <div className="db-main-grid">
