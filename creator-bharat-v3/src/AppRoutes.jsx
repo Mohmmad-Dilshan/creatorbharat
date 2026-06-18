@@ -19,6 +19,7 @@ const FAQPage = lazy(() => import('./pages/public/FAQPage'));
 const RateCalcPage = lazy(() => import('./pages/public/RateCalcPage'));
 const LeaderboardPage = lazy(() => import('./pages/public/LeaderboardPage'));
 const OfficialProfilePage = lazy(() => import('./pages/public/OfficialProfilePage'));
+const CreatorDensityPage = lazy(() => import('./pages/public/CreatorDensityPage'));
 const ServerErrorPage = lazy(() => import('./pages/public/ServerErrorPage'));
 const NotificationsHub = lazy(() => import('./pages/public/NotificationsHub'));
 const SuccessStoriesPage = lazy(() => import('./pages/public/SuccessStoriesPage'));
@@ -132,6 +133,7 @@ export default function AppRoutes({ location }) {
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/official-profile" element={<OfficialProfilePage />} />
+          <Route path="/creator-density" element={<CreatorDensityPage />} />
           <Route path="/notifications" element={<NotificationsHub />} />
           <Route path="/stories" element={<SuccessStoriesPage />} />
           <Route path="/brand" element={<BrandLandingPage />} />
@@ -180,6 +182,7 @@ export default function AppRoutes({ location }) {
           <Route path="/creator/blog" element={<BlogPage />} />
           <Route path="/creator/blog/:slug" element={<BlogArticlePage />} />
           <Route path="/creator/official-profile" element={<OfficialProfilePage />} />
+          <Route path="/creator/creator-density" element={<CreatorDensityPage />} />
           <Route path="/creator/verify-guide" element={<VerificationGuidePage />} />
           <Route path="/creator/stories" element={<SuccessStoriesPage />} />
           <Route path="/creator/gallery" element={<GalleryPage />} />
@@ -214,6 +217,7 @@ export default function AppRoutes({ location }) {
           <Route path="/brand-analytics" element={<BrandAnalyticsPage />} />
           <Route path="/campaign-builder" element={<CampaignBuilderPage />} />
           <Route path="/brand/notifications" element={<BrandNotificationsPage />} />
+          <Route path="/brand/creator-density" element={<CreatorDensityPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
 

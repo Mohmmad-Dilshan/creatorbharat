@@ -15,6 +15,7 @@ import {
 } from '@/components/icons/SocialIcons';
 import HslBadge from './HslBadge';
 import { OFFICIAL_DATA } from './officialData';
+import { Logo } from '@/components/common/Logo';
 
 export default function ProfileHeader({ 
   mob, 
@@ -37,30 +38,55 @@ export default function ProfileHeader({
       textAlign: mob ? 'center' : 'left',
       marginBottom: mob ? '40px' : '44px' 
     }}>
-      <div style={{ flexShrink: 0 }}>
-         <div style={{ 
-            width: mob ? '120px' : '150px', 
-            height: mob ? '120px' : '150px', 
-            borderRadius: '50%', 
-            background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)', 
+      <div style={{ flexShrink: 0, position: 'relative' }}>
+         <div style={{
+            borderRadius: '50%',
             padding: '3px',
-            boxShadow: '0 0 30px rgba(255, 148, 49, 0.35)'
+            background: 'linear-gradient(135deg, #FF9431 0%, #128807 100%)',
+            boxShadow: '0 12px 36px rgba(255, 148, 49, 0.25)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+            cursor: 'pointer'
+         }}
+         onMouseEnter={(e) => {
+           e.currentTarget.style.transform = 'scale(1.05) rotate(4deg)';
+           e.currentTarget.style.boxShadow = '0 20px 48px rgba(255, 148, 49, 0.4)';
+         }}
+         onMouseLeave={(e) => {
+           e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
+           e.currentTarget.style.boxShadow = '0 12px 36px rgba(255, 148, 49, 0.25)';
+         }}
+         >
+            <Logo size={mob ? 116 : 142} iconOnly={true} />
+         </div>
+         {/* Small official shield check badge in the corner of avatar */}
+         <div style={{
+           position: 'absolute',
+           bottom: mob ? '2px' : '4px',
+           right: mob ? '2px' : '4px',
+           background: '#ffffff',
+           borderRadius: '50%',
+           padding: '3px',
+           boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
+           display: 'flex',
+           alignItems: 'center',
+           justifyContent: 'center',
+           zIndex: 2
          }}>
-            <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#ffffff', padding: '4px' }}>
-               <div style={{ 
-                 width: '100%', 
-                 height: '100%', 
-                 borderRadius: '50%', 
-                 background: '#f8fafc', 
-                 border: '2.5px solid rgba(255, 148, 49, 0.2)', 
-                 display: 'flex', 
-                 alignItems: 'center', 
-                 justifyContent: 'center',
-                 boxShadow: 'inset 0 0 15px rgba(255, 148, 49, 0.1)'
-               }}>
-                  <ShieldCheck size={mob ? 54 : 70} color="#FF9431" style={{ filter: 'drop-shadow(0 0 8px rgba(255, 148, 49, 0.4))' }} />
-               </div>
-            </div>
+           <div style={{
+             background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+             borderRadius: '50%',
+             width: mob ? '28px' : '34px',
+             height: mob ? '28px' : '34px',
+             display: 'flex',
+             alignItems: 'center',
+             justifyContent: 'center',
+             color: '#ffffff'
+           }}>
+             <ShieldCheck size={mob ? 16 : 20} fill="#ffffff" color="#0369a1" style={{ color: '#fff' }} />
+           </div>
          </div>
       </div>
       <div style={{ flex: 1, width: mob ? '100%' : 'auto' }}>
@@ -86,17 +112,29 @@ export default function ProfileHeader({
                     fontSize: '13px', 
                     fontWeight: 800, 
                     cursor: 'pointer', 
-                    boxShadow: isFollowing ? 'none' : '0 4px 15px rgba(255, 148, 49, 0.25)',
-                    transition: 'all 0.2s ease',
+                    boxShadow: isFollowing ? 'none' : '0 4px 15px rgba(255, 148, 49, 0.2)',
+                    transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                     backdropFilter: 'blur(4px)'
                   }}
                   onMouseEnter={(e) => {
-                    if (isFollowing) e.currentTarget.style.background = '#e2e8f0';
-                    else e.currentTarget.style.filter = 'brightness(1.1)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    if (isFollowing) {
+                      e.currentTarget.style.background = '#e2e8f0';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.05)';
+                    } else {
+                      e.currentTarget.style.filter = 'brightness(1.05)';
+                      e.currentTarget.style.boxShadow = '0 8px 20px rgba(255, 148, 49, 0.35)';
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    if (isFollowing) e.currentTarget.style.background = '#f1f5f9';
-                    else e.currentTarget.style.filter = 'brightness(1)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    if (isFollowing) {
+                      e.currentTarget.style.background = '#f1f5f9';
+                      e.currentTarget.style.boxShadow = 'none';
+                    } else {
+                      e.currentTarget.style.filter = 'brightness(1)';
+                      e.currentTarget.style.boxShadow = '0 4px 15px rgba(255, 148, 49, 0.2)';
+                    }
                   }}
                >
                   {isFollowing ? 'Following' : 'Follow'}
@@ -113,16 +151,23 @@ export default function ProfileHeader({
                     fontSize: '13px', 
                     fontWeight: 800, 
                     cursor: 'pointer',
-                    transition: 'all 0.2s ease',
+                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.02)',
+                    transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                     backdropFilter: 'blur(4px)'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#f1f5f9';
+                    e.currentTarget.style.background = '#f8fafc';
                     e.currentTarget.style.color = '#0f172a';
+                    e.currentTarget.style.borderColor = '#94a3b8';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.06)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = '#ffffff';
                     e.currentTarget.style.color = '#334155';
+                    e.currentTarget.style.borderColor = '#cbd5e1';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.02)';
                   }}
                >
                   Message
@@ -141,16 +186,23 @@ export default function ProfileHeader({
                    gap: '4px',
                    fontSize: '13px',
                    fontWeight: 800,
-                   transition: 'all 0.2s ease',
+                   boxShadow: '0 2px 6px rgba(0, 0, 0, 0.02)',
+                   transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                    backdropFilter: 'blur(4px)'
                  }}
                  onMouseEnter={(e) => {
-                   e.currentTarget.style.background = '#f1f5f9';
-                   e.currentTarget.style.color = '#0f172a';
+                    e.currentTarget.style.background = '#f8fafc';
+                    e.currentTarget.style.color = '#0f172a';
+                    e.currentTarget.style.borderColor = '#94a3b8';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.06)';
                  }}
                  onMouseLeave={(e) => {
-                   e.currentTarget.style.background = '#ffffff';
-                   e.currentTarget.style.color = '#334155';
+                    e.currentTarget.style.background = '#ffffff';
+                    e.currentTarget.style.color = '#334155';
+                    e.currentTarget.style.borderColor = '#cbd5e1';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.02)';
                  }}
                >
                  <Languages size={15} /> {lang.toUpperCase()}

@@ -18,7 +18,7 @@ import {
 } from '@/components/icons/SocialIcons';
 import { OFFICIAL_DATA } from './officialData';
 
-const DilshanImg = "https://ui-avatars.com/api/?name=Mohmmad+Dilshan&background=0f172a&color=fff&size=512";
+const DilshanImg = "/team_dilshan.jpg";
 
 export default function MastermindSection({ mob }) {
   const [filter, setFilter] = useState('all');

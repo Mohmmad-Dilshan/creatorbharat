@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Globe, Shield, Zap, BarChart, ChevronDown, ChevronUp, Server } from 'lucide-react';
 import { OFFICIAL_DATA } from './officialData';
@@ -21,8 +21,69 @@ const REGION_DETAILS = {
   ]
 };
 
-export default function InsightsGrid({ mob }) {
+export default function InsightsGrid({ mob, creators = [] }) {
   const [expandedRegion, setExpandedRegion] = useState(null);
+
+  const regionStats = useMemo(() => {
+    const counts = {
+      'Maharashtra': 0,
+      'Delhi NCR': 0,
+      'Karnataka': 0
+    };
+
+    const subCounts = {
+      'Mumbai Entertainment & Tech Hub': 0,
+      'Pune Lifestyle & Fashion Hub': 0,
+      'Nagpur Micro-Influencer Circle': 0,
+      'Delhi Lifestyle & Food Hub': 0,
+      'Gurugram Corporate & Tech Hub': 0,
+      'Noida Fashion & Creative Circle': 0,
+      'Bengaluru Tech & Gaming Hub': 0,
+      'Mysuru Regional Content Circle': 0,
+      'Mangaluru Micro-Influencer Circle': 0
+    };
+
+    creators.forEach(c => {
+      const state = (c.state || '').toLowerCase().trim();
+      const city = (c.city || '').toLowerCase().trim();
+
+      // Maharashtra
+      if (state === 'maharashtra' || ['mumbai', 'bombay', 'pune', 'nagpur'].includes(city)) {
+        counts['Maharashtra'] += 1;
+        if (city === 'mumbai' || city === 'bombay') {
+          subCounts['Mumbai Entertainment & Tech Hub'] += 1;
+        } else if (city === 'pune') {
+          subCounts['Pune Lifestyle & Fashion Hub'] += 1;
+        } else if (city === 'nagpur') {
+          subCounts['Nagpur Micro-Influencer Circle'] += 1;
+        }
+      }
+      // Delhi NCR
+      else if (['delhi', 'delhi ncr', 'ncr'].includes(state) || ['delhi', 'new delhi', 'gurugram', 'gurgaon', 'noida'].includes(city)) {
+        counts['Delhi NCR'] += 1;
+        if (city === 'delhi' || city === 'new delhi') {
+          subCounts['Delhi Lifestyle & Food Hub'] += 1;
+        } else if (city === 'gurugram' || city === 'gurgaon') {
+          subCounts['Gurugram Corporate & Tech Hub'] += 1;
+        } else if (city === 'noida') {
+          subCounts['Noida Fashion & Creative Circle'] += 1;
+        }
+      }
+      // Karnataka
+      else if (state === 'karnataka' || ['bangalore', 'bengaluru', 'mysuru', 'mysore', 'mangaluru', 'mangalore'].includes(city)) {
+        counts['Karnataka'] += 1;
+        if (city === 'bangalore' || city === 'bengaluru') {
+          subCounts['Bengaluru Tech & Gaming Hub'] += 1;
+        } else if (city === 'mysuru' || city === 'mysore') {
+          subCounts['Mysuru Regional Content Circle'] += 1;
+        } else if (city === 'mangaluru' || city === 'mangalore') {
+          subCounts['Mangaluru Micro-Influencer Circle'] += 1;
+        }
+      }
+    });
+
+    return { counts, subCounts };
+  }, [creators]);
 
   const toggleRegion = (regionName) => {
     setExpandedRegion(prev => prev === regionName ? null : regionName);
@@ -153,7 +214,14 @@ export default function InsightsGrid({ mob }) {
                      </div>
                      <div style={{ display: 'flex', gap: mob ? '16px' : '32px', alignItems: 'center' }}>
                         <div style={{ textAlign: 'right' }}>
-                           <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>{reg.count}</div>
+                           {(() => {
+                             const baseCountMap = { 'Maharashtra': 5800, 'Delhi NCR': 4500, 'Karnataka': 3900 };
+                             const totalCount = baseCountMap[reg.name] + (regionStats.counts[reg.name] || 0);
+                             const displayCount = (totalCount / 1000).toFixed(1) + 'K';
+                             return (
+                               <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>{displayCount}</div>
+                             );
+                           })()}
                            <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 700 }}>CREATORS</div>
                         </div>
                         <div style={{ color: '#10B981', fontSize: '13px', fontWeight: 800 }}>{reg.trend}</div>
@@ -177,15 +245,31 @@ export default function InsightsGrid({ mob }) {
                         <Server size={12} /> REGIONAL CREATOR DENSITY
                       </div>
                       
-                      {details.map(node => (
-                        <div key={node.name} style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', justifyContent: 'space-between', alignItems: mob ? 'flex-start' : 'center', gap: '8px', padding: '10px 12px', background: '#ffffff', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-                          <span style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>{node.name}</span>
-                          <div style={{ display: 'flex', gap: '16px', fontSize: '11.5px', color: '#475569', fontWeight: 600 }}>
-                            <span>Creators: <strong style={{ color: '#10B981' }}>{node.latency}</strong></span>
-                            <span>Active: <strong style={{ color: '#3B82F6' }}>{node.load}</strong></span>
+                      {details.map(node => {
+                        const baseSubMap = {
+                          'Mumbai Entertainment & Tech Hub': 3400,
+                          'Pune Lifestyle & Fashion Hub': 1600,
+                          'Nagpur Micro-Influencer Circle': 800,
+                          'Delhi Lifestyle & Food Hub': 2500,
+                          'Gurugram Corporate & Tech Hub': 1200,
+                          'Noida Fashion & Creative Circle': 800,
+                          'Bengaluru Tech & Gaming Hub': 2800,
+                          'Mysuru Regional Content Circle': 700,
+                          'Mangaluru Micro-Influencer Circle': 400
+                        };
+                        const totalSubCount = baseSubMap[node.name] + (regionStats.subCounts[node.name] || 0);
+                        const displaySubReach = (totalSubCount / 1000).toFixed(1) + 'K+';
+
+                        return (
+                          <div key={node.name} style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', justifyContent: 'space-between', alignItems: mob ? 'flex-start' : 'center', gap: '8px', padding: '10px 12px', background: '#ffffff', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                            <span style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>{node.name}</span>
+                            <div style={{ display: 'flex', gap: '16px', fontSize: '11.5px', color: '#475569', fontWeight: 600 }}>
+                              <span>Creators: <strong style={{ color: '#10B981' }}>{displaySubReach}</strong></span>
+                              <span>Active: <strong style={{ color: '#3B82F6' }}>{node.load}</strong></span>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -198,5 +282,6 @@ export default function InsightsGrid({ mob }) {
 }
 
 InsightsGrid.propTypes = {
-  mob: PropTypes.bool.isRequired
+  mob: PropTypes.bool.isRequired,
+  creators: PropTypes.array
 };

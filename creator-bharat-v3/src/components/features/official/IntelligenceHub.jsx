@@ -1,10 +1,44 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { Database, Server, ExternalLink } from 'lucide-react';
 import { OFFICIAL_DATA } from './officialData';
 
-export default function IntelligenceHub({ mob }) {
+export default function IntelligenceHub({ mob, creators = [] }) {
+  const regionCounts = useMemo(() => {
+    const counts = { H1: 0, H2: 0, H3: 0, H4: 0 };
+    creators.forEach(c => {
+      const state = (c.state || '').toLowerCase().trim();
+      const city = (c.city || '').toLowerCase().trim();
+
+      // West (H2)
+      if (
+        ['maharashtra', 'gujarat', 'goa'].includes(state) ||
+        ['mumbai', 'bombay', 'pune', 'nagpur', 'ahmedabad', 'surat'].includes(city)
+      ) {
+        counts.H2 += 1;
+      }
+      // South (H3)
+      else if (
+        ['karnataka', 'tamil nadu', 'tamilnadu', 'andhra pradesh', 'telangana', 'kerala'].includes(state) ||
+        ['bangalore', 'bengaluru', 'chennai', 'hyderabad', 'kochi', 'mysuru', 'mysore', 'mangaluru', 'mangalore'].includes(city)
+      ) {
+        counts.H3 += 1;
+      }
+      // East (H4)
+      else if (
+        ['west bengal', 'westbengal', 'wb', 'assam', 'bihar', 'odisha', 'orissa', 'jharkhand', 'sikkim', 'meghalaya', 'tripura', 'mizoram', 'manipur', 'nagaland', 'arunachal pradesh'].includes(state) ||
+        ['kolkata', 'calcutta', 'guwahati', 'patna', 'bhubaneswar'].includes(city)
+      ) {
+        counts.H4 += 1;
+      }
+      // North (H1) - default / fallback
+      else {
+        counts.H1 += 1;
+      }
+    });
+    return counts;
+  }, [creators]);
   return (
     <div style={{ padding: '40px 0' }}>
        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
@@ -87,10 +121,18 @@ export default function IntelligenceHub({ mob }) {
                             }}
                           />
                           <div>
-                            <div style={{ fontSize: '12.5px', fontWeight: 900, color: isActive ? '#10B981' : '#FF9431' }}>
-                              {shard.status.toUpperCase()}
-                            </div>
-                            <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>Reach: {shard.latency}</div>
+                             <div style={{ fontSize: '12.5px', fontWeight: 900, color: isActive ? '#10B981' : '#FF9431' }}>
+                               {shard.status.toUpperCase()}
+                             </div>
+                             {(() => {
+                               const baseReachMap = { H1: 4500, H2: 5800, H3: 3900, H4: 2200 };
+                               const dynamicReach = baseReachMap[shard.id] + (regionCounts[shard.id] || 0);
+                               return (
+                                 <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>
+                                   Reach: {dynamicReach.toLocaleString()}+ Creators
+                                 </div>
+                               );
+                             })()}
                           </div>
                        </div>
                     </div>
@@ -171,5 +213,6 @@ export default function IntelligenceHub({ mob }) {
 }
 
 IntelligenceHub.propTypes = {
-  mob: PropTypes.bool.isRequired
+  mob: PropTypes.bool.isRequired,
+  creators: PropTypes.array
 };

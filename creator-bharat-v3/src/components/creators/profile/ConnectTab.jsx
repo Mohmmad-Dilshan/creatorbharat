@@ -12,7 +12,9 @@ import {
   Verified, 
   MapPin, 
   ShieldCheck, 
-  UserCheck 
+  UserCheck,
+  Globe,
+  ArrowRight
 } from 'lucide-react';
 import { useApp } from '../../../core/context';
 import { Card } from '../../common/Primitives';
@@ -23,6 +25,14 @@ export const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
   const navigate = useNavigate();
   const [msg, setMsg] = useState('');
   const [dlStatus, setDlStatus] = useState('idle'); // idle, loading, done
+
+  React.useEffect(() => {
+    const draft = localStorage.getItem(`draft_campaign_${c.id}`);
+    if (draft) {
+      setMsg(draft);
+      localStorage.removeItem(`draft_campaign_${c.id}`);
+    }
+  }, [c.id]);
 
   const handleSend = () => {
     if(!msg.trim()) return;
@@ -68,11 +78,48 @@ export const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
                 </div>
                 <h3 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a' }}>Direct Line to {c.name}</h3>
              </div>
-             <p style={{ fontSize: '15px', color: '#64748b', marginBottom: '32px', fontWeight: 500, lineHeight: 1.6 }}>
+              <p style={{ fontSize: '15px', color: '#64748b', marginBottom: '32px', fontWeight: 500, lineHeight: 1.6 }}>
                 "Professional collaborations start with a conversation. Main typically <b>24 ghanton</b> ke andar reply karta hoon professional inquiries ke liye."
              </p>
              
              <div>
+                <div style={{ marginBottom: '16px' }}>
+                   <div style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.5px', textAlign: 'left' }}>
+                      Select Campaign Template (Tap to Fill)
+                   </div>
+                   <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none', paddingBottom: '4px' }}>
+                      {[
+                        { label: '📦 Product Review', text: (name) => `Hi ${name}, we love your content and would like to send you our latest product for a cinematic unboxing and review reel. Let us know if you accept barter/paid campaigns!` },
+                        { label: '🎥 Reels Integration', text: (name) => `Hi ${name}, we are planning a dedicated brand integration in one of your upcoming Reels. We want to highlight our key features in your signature storytelling style.` },
+                        { label: '📍 Store Launch/Visit', text: (name) => `Hi ${name}, we are hosting a launch event for our new store in your city and would love to invite you for an offline visit and social coverage.` },
+                        { label: '📢 Social Shoutout', text: (name) => `Hi ${name}, we want to sponsor a quick shoutout post or story highlight promoting our upcoming summer drop/discount code.` }
+                      ].map(t => (
+                         <button
+                            key={t.label}
+                            type="button"
+                            onClick={() => setMsg(t.text(c.name || 'Creator'))}
+                            style={{
+                               padding: '8px 16px',
+                               background: '#f1f5f9',
+                               border: '1px solid #e2e8f0',
+                               borderRadius: '100px',
+                               fontSize: '12px',
+                               fontWeight: 700,
+                               color: '#475569',
+                               cursor: 'pointer',
+                               whiteSpace: 'nowrap',
+                               transition: 'all 0.2s',
+                               outline: 'none'
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.background = '#e2e8f0'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = '#f1f5f9'; }}
+                         >
+                            {t.label}
+                         </button>
+                      ))}
+                   </div>
+                </div>
+
                 <textarea 
                    value={msg}
                    onChange={e => setMsg(e.target.value)}
@@ -95,10 +142,10 @@ export const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
 
              <div style={{ marginTop: '32px', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
                 {[{ l: 'Response Rate', v: '98%' }, { l: 'Avg Time', v: '4h' }, { l: 'Verified', v: 'Yes' }].map(i => (
-                  <div key={i.l}>
-                     <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>{i.l}</div>
-                     <div style={{ fontSize: '16px', fontWeight: 950, color: '#0f172a' }}>{i.v}</div>
-                  </div>
+                   <div key={i.l}>
+                      <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>{i.l}</div>
+                      <div style={{ fontSize: '16px', fontWeight: 950, color: '#0f172a' }}>{i.v}</div>
+                   </div>
                 ))}
              </div>
           </Card>
@@ -133,6 +180,7 @@ export const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
                 </div>
              </Card>
 
+             {/* Regional Identity */}
              <div style={{ padding: '32px', background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', borderRadius: '32px', color: '#0f172a', border: '1.5px solid rgba(226, 232, 240, 0.8)', boxShadow: '0 20px 40px rgba(15,23,42,0.03)', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: '-10px', right: '-10px', opacity: 0.05 }}><MapPin size={100} color="#FF9431" /></div>
                 <div style={{ fontSize: '11px', fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -140,6 +188,32 @@ export const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
                 </div>
                 <div style={{ fontSize: '18px', fontWeight: 950, color: '#0f172a', marginBottom: '4px' }}>{c?.city || 'Bengaluru'}</div>
                 <div style={{ fontSize: '13px', color: '#64748b', fontWeight: 650 }}>Active in South & West Bharat Hubs</div>
+             </div>
+
+             {/* Global Compatibility */}
+             <div style={{ padding: '32px', background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', borderRadius: '32px', color: '#0f172a', border: '1.5px solid rgba(226, 232, 240, 0.8)', boxShadow: '0 20px 40px rgba(15,23,42,0.03)', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', top: '-10px', right: '-10px', opacity: 0.05 }}><Globe size={100} color="#3b82f6" /></div>
+                <div style={{ fontSize: '11px', fontWeight: 950, color: '#3b82f6', textTransform: 'uppercase', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                   <Globe size={14} /> Global Capability
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div>
+                    <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>Timezone</div>
+                    <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>India (IST — UTC+5:30)</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>Invoicing & Payments</div>
+                    <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>PayPal, Stripe, SWIFT Accepted</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>Logistics support</div>
+                    <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>DHL & FedEx International Shipping</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>Remote Meetings</div>
+                    <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>Google Meet, Zoom, Slack</div>
+                  </div>
+                </div>
              </div>
           </div>
        </div>

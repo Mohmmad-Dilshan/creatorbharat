@@ -38,6 +38,7 @@ const NAV_COLS = [
     links: [
       { label: 'About Us', path: '/about' },
       { label: 'Official Profile', path: '/official-profile' },
+      { label: 'Creator Density Map', path: '/creator-density' },
       { label: 'Pricing', path: '/pricing' },
       { label: 'Campus Ambassador', path: '/ambassador' },
       { label: 'Press & Media Kit', path: '/press' },

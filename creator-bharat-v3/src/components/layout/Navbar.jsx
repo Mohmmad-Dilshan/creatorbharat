@@ -483,7 +483,7 @@ const isCreatorProfilePage = (pathname) => {
   const parts = pathname.split('/').filter(Boolean);
   if (parts[0] === 'c') return true;
   if (parts[0] === 'creator') {
-    const knownSubRoutes = ['dashboard', 'onboarding', 'profile', 'public-preview', 'opportunities', 'applications', 'brand-requests', 'community', 'wallet', 'analytics', 'monetization', 'score', 'verification', 'calendar', 'messages', 'saved', 'settings', 'help', 'events', 'achievements', 'blog', 'official-profile', 'verify-guide', 'stories', 'rate-calc', 'leaderboard', 'guidelines', 'pricing', 'about', 'contact', 'faq', 'privacy', 'terms', 'cookies', 'refunds'];
+    const knownSubRoutes = ['dashboard', 'onboarding', 'profile', 'public-preview', 'opportunities', 'applications', 'brand-requests', 'community', 'wallet', 'analytics', 'monetization', 'score', 'verification', 'calendar', 'messages', 'saved', 'settings', 'help', 'events', 'achievements', 'blog', 'official-profile', 'creator-density', 'verify-guide', 'stories', 'rate-calc', 'leaderboard', 'guidelines', 'pricing', 'about', 'contact', 'faq', 'privacy', 'terms', 'cookies', 'refunds'];
     return !knownSubRoutes.includes(parts[1]);
   }
   return false;
@@ -588,7 +588,7 @@ export default function Navbar() {
         const creatorProfileMatch = path.match(/^\/creator\/([^/]+)$/);
         if (creatorProfileMatch) {
           const id = creatorProfileMatch[1];
-          const knownSubRoutes = ['dashboard', 'onboarding', 'profile', 'public-preview', 'opportunities', 'applications', 'brand-requests', 'community', 'wallet', 'analytics', 'monetization', 'score', 'verification', 'calendar', 'messages', 'saved', 'settings', 'help', 'events', 'achievements', 'blog', 'official-profile', 'verify-guide', 'stories', 'rate-calc', 'leaderboard', 'guidelines', 'pricing', 'about', 'contact', 'faq', 'privacy', 'terms', 'cookies', 'refunds'];
+          const knownSubRoutes = ['dashboard', 'onboarding', 'profile', 'public-preview', 'opportunities', 'applications', 'brand-requests', 'community', 'wallet', 'analytics', 'monetization', 'score', 'verification', 'calendar', 'messages', 'saved', 'settings', 'help', 'events', 'achievements', 'blog', 'official-profile', 'creator-density', 'verify-guide', 'stories', 'rate-calc', 'leaderboard', 'guidelines', 'pricing', 'about', 'contact', 'faq', 'privacy', 'terms', 'cookies', 'refunds'];
           if (!knownSubRoutes.includes(id)) {
             navigate(`/creator/c/${id}`);
           } else {
@@ -623,6 +623,7 @@ export default function Navbar() {
         { path: '/pricing', label: 'Pricing Plans' },
         { path: '/ai-knowledge', label: 'AI Knowledge' },
         { path: '/official-profile', label: 'Official Profile' },
+        { path: '/creator-density', label: 'Creator Density Map' },
         { path: '/notifications', label: 'Official Gazette' }
       ]
     },
@@ -656,7 +657,8 @@ export default function Navbar() {
         { path: '/creator/community', label: 'Community' },
         { path: '/creator/events', label: 'Events' },
         { path: '/creator/messages', label: 'Messages & Alerts' },
-        { path: '/creator/official-profile', label: 'Official Profile' }
+        { path: '/creator/official-profile', label: 'Official Profile' },
+        { path: '/creator/creator-density', label: 'Creator Density Map' }
       ]
     },
     {
@@ -680,6 +682,7 @@ export default function Navbar() {
         { path: '/brand-applications', label: 'Applicants' },
         { path: '/compare', label: 'Compare Tool' },
         { path: '/brand-analytics', label: 'Analytics' },
+        { path: '/brand/creator-density', label: 'Creator Density Map' },
         { path: '/official-profile', label: 'Official Profile' }
       ]
     },

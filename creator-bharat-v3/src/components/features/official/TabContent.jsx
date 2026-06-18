@@ -10,7 +10,7 @@ import ReviewSlider from './ReviewSlider';
 import InsightsGrid from './InsightsGrid';
 import EcosystemPortals from './EcosystemPortals';
 
-export default function TabContent({ activeTab, mob }) {
+export default function TabContent({ activeTab, mob, creators = [] }) {
   const [selectedPost, setSelectedPost] = useState(null);
   const [hoveredPostId, setHoveredPostId] = useState(null);
 
@@ -170,7 +170,7 @@ export default function TabContent({ activeTab, mob }) {
             )}
            {activeTab === 'mastermind' && (
               <div>
-                  <IntelligenceHub mob={mob} />
+                  <IntelligenceHub mob={mob} creators={creators} />
                   <div style={{ borderTop: '1px solid #e2e8f0', margin: '40px 0' }} />
                   <RoadmapTimeline />
                   <div style={{ borderTop: '1px solid #e2e8f0', margin: '40px 0' }} />
@@ -178,7 +178,7 @@ export default function TabContent({ activeTab, mob }) {
                  <ReviewSlider mob={mob} />
               </div>
            )}
-            {activeTab === 'insights' && <InsightsGrid mob={mob} />}
+            {activeTab === 'insights' && <InsightsGrid mob={mob} creators={creators} />}
             {activeTab === 'portals' && <EcosystemPortals mob={mob} />}
         </motion.div>
       </AnimatePresence>
@@ -409,5 +409,6 @@ export default function TabContent({ activeTab, mob }) {
 
 TabContent.propTypes = {
   activeTab: PropTypes.string.isRequired,
-  mob: PropTypes.bool.isRequired
+  mob: PropTypes.bool.isRequired,
+  creators: PropTypes.array
 };

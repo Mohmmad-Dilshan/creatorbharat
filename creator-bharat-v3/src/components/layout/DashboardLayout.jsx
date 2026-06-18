@@ -26,6 +26,7 @@ import {
   Activity,
   Zap,
   BookOpen,
+  Map,
   ShieldCheck as Shield
 } from 'lucide-react';
 import { Logo } from '@/components/common';
@@ -123,6 +124,7 @@ export default function DashboardLayout({ children }) {
     { label: 'Applications', icon: Briefcase, path: '/brand-applications' },
     { label: 'Missions', icon: Megaphone, path: '/campaigns' },
     { label: 'Discovery', icon: Search, path: '/creators' },
+    { label: 'Density Map', icon: Map, path: '/brand/creator-density' },
     { label: 'Trends', icon: BarChart3, path: '/brand-analytics' },
     { label: 'Guidelines', icon: Shield, path: '/brand-guidelines' },
     { label: 'Settings', icon: Settings, path: '/settings' }

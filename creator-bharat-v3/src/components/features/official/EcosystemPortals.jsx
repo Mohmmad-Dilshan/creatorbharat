@@ -168,7 +168,7 @@ export default function EcosystemPortals({ mob }) {
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
                 style={{
-                  background: portal.gradient,
+                  background: isHovered ? '#f8fafc' : '#ffffff',
                   border: isHovered ? `1.5px solid ${portal.color}` : '1.5px solid #e2e8f0',
                   borderRadius: '24px',
                   padding: '28px',
@@ -179,7 +179,7 @@ export default function EcosystemPortals({ mob }) {
                   flexDirection: 'column',
                   justifyContent: 'space-between',
                   minHeight: '220px',
-                  boxShadow: isHovered ? `0 15px 35px ${portal.glow}` : '0 4px 20px rgba(0, 0, 0, 0.01)',
+                  boxShadow: isHovered ? `0 15px 35px ${portal.glow}` : '0 4px 20px rgba(0, 0, 0, 0.015)',
                   transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
                   transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)'
                 }}

@@ -74,7 +74,8 @@ const getFallbackCreator = (id) => {
 };
 
 const ProfileTabContent = ({ 
-  activeTab, c, stats, mob, onRateClick, navigate, onPackageSelect, dsp, setBriefOpen, setMediaKitOpen, setActiveTab 
+  activeTab, c, stats, mob, onRateClick, navigate, onPackageSelect, dsp, setBriefOpen, setMediaKitOpen, setActiveTab,
+  currency, setCurrency
 }) => {
   switch (activeTab) {
     case 'identity':
@@ -96,13 +97,13 @@ const ProfileTabContent = ({
     case 'work':
       return <WorkTab key="tab-work" c={c} mob={mob} setActiveTab={setActiveTab} />;
     case 'services':
-      return <ServicesTab key="tab-services" c={c} mob={mob} setActiveTab={setActiveTab} />;
+      return <ServicesTab key="tab-services" c={c} mob={mob} setActiveTab={setActiveTab} currency={currency} setCurrency={setCurrency} />;
     case 'local':
       return <LocalCollabHub key="tab-local" c={c} mob={mob} setActiveTab={setActiveTab} />;
     case 'reviews':
       return <ReviewsTab key="tab-reviews" c={c} mob={mob} navigate={navigate} onWriteReview={onRateClick} setActiveTab={setActiveTab} />;
     case 'packages':
-      return <PackagesTab key="tab-packages" c={c} mob={mob} onSelect={onPackageSelect} setActiveTab={setActiveTab} />;
+      return <PackagesTab key="tab-packages" c={c} mob={mob} onSelect={onPackageSelect} setActiveTab={setActiveTab} currency={currency} setCurrency={setCurrency} />;
     case 'sponsor':
       return <SponsorTab key="tab-sponsor" c={c} mob={mob} st={dsp} setActiveTab={setActiveTab} />;
     case 'connect':
@@ -122,7 +123,9 @@ ProfileTabContent.propTypes = {
   dsp: PropTypes.func.isRequired,
   setBriefOpen: PropTypes.func.isRequired,
   setMediaKitOpen: PropTypes.func.isRequired,
-  setActiveTab: PropTypes.func.isRequired
+  setActiveTab: PropTypes.func.isRequired,
+  currency: PropTypes.string.isRequired,
+  setCurrency: PropTypes.func.isRequired
 };
 
 const ProfileSkeleton = ({ id, mob }) => {
@@ -251,6 +254,7 @@ export default function CreatorProfilePage() {
   const [selectedPkg, setSelectedPkg] = useState(null);
   const [navVisible, setNavVisible] = useState(true);
   const [tabScrolled, setTabScrolled] = useState(false);
+  const [currency, setCurrency] = useState('INR');
   const lastY = useRef(0);
 
   useEffect(() => {
@@ -622,6 +626,8 @@ export default function CreatorProfilePage() {
                setBriefOpen={setBriefOpen}
                setMediaKitOpen={handleMediaKitOpen}
                setActiveTab={handleTabChange}
+               currency={currency}
+               setCurrency={setCurrency}
             />
          </AnimatePresence>
         {activeTab === 'identity' && (

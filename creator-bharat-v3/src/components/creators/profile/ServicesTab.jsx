@@ -45,7 +45,7 @@ const getServiceMeta = (title, index) => {
   return { Icon, color };
 };
 
-const ServiceCatalog = ({ c, mob }) => {
+const ServiceCatalog = ({ c, mob, currency, setCurrency }) => {
   const services = (c.services && c.services.length > 0) ? c.services : [
     { t: 'Cinematic Storytelling Video', d: '4K Cinematic Reels with professional color grading, native scripting, and brand integration hooks.', rate: '12000' },
     { t: 'Regional Brand Strategy Session', d: '1-on-1 strategic consultation on how to target regional Indian audiences and tier-2 city buyers.', rate: '6000' },
@@ -69,6 +69,39 @@ const ServiceCatalog = ({ c, mob }) => {
           <p style={{ fontSize: '14px', color: '#64748b', fontWeight: 600, margin: 0 }}>
              Transparent commercials and professional campaign deliverables.
           </p>
+       </div>
+
+       {/* Currency Switcher */}
+       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ fontSize: '13px', fontWeight: 650, color: '#64748b' }}>
+            * Rates are shown in {currency === 'INR' ? 'Indian Rupees (INR)' : 'US Dollars (USD)'} {currency === 'USD' && '(1 USD ≈ ₹83)'}
+          </div>
+          <div style={{ display: 'flex', background: '#f1f5f9', padding: '4px', borderRadius: '100px', border: '1px solid #e2e8f0', marginLeft: 'auto' }}>
+             <button 
+               onClick={() => setCurrency('INR')} 
+               style={{
+                 padding: '6px 14px', borderRadius: '100px', border: 'none', fontSize: '11px', fontWeight: 800, cursor: 'pointer',
+                 background: currency === 'INR' ? '#fff' : 'transparent',
+                 color: currency === 'INR' ? '#0f172a' : '#64748b',
+                 boxShadow: currency === 'INR' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none',
+                 transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '4px'
+               }}
+             >
+               🇮🇳 INR (₹)
+             </button>
+             <button 
+               onClick={() => setCurrency('USD')} 
+               style={{
+                 padding: '6px 14px', borderRadius: '100px', border: 'none', fontSize: '11px', fontWeight: 800, cursor: 'pointer',
+                 background: currency === 'USD' ? '#fff' : 'transparent',
+                 color: currency === 'USD' ? '#0f172a' : '#64748b',
+                 boxShadow: currency === 'USD' ? '0 2px 6px rgba(0,0,0,0.08)' : 'none',
+                 transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '4px'
+               }}
+             >
+               🇺🇸 USD ($)
+             </button>
+          </div>
        </div>
        
        <div style={{ 
@@ -132,7 +165,7 @@ const ServiceCatalog = ({ c, mob }) => {
 
                      <div style={{ flex: 1 }}>
                         <h4 style={{ fontSize: '16px', fontWeight: 950, color: '#0f172a', margin: '0 0 8px 0', lineHeight: 1.3 }}>
-                          {s.t}
+                           {s.t}
                         </h4>
                         <p style={{ 
                           fontSize: '13px', 
@@ -141,7 +174,7 @@ const ServiceCatalog = ({ c, mob }) => {
                           fontWeight: 500, 
                           margin: 0 
                         }}>
-                          {s.d}
+                           {s.d}
                         </p>
                      </div>
                   </div>
@@ -168,7 +201,10 @@ const ServiceCatalog = ({ c, mob }) => {
                          fontWeight: 950,
                          whiteSpace: 'nowrap'
                        }}>
-                         ₹{Number(s.rate).toLocaleString('en-IN')}
+                         {currency === 'INR' 
+                           ? `₹${Number(s.rate).toLocaleString('en-IN')}`
+                           : `$${Math.round(Number(s.rate) / 83).toLocaleString('en-US')} USD`
+                         }
                        </div>
                      ) : (
                        <div style={{ 
@@ -193,12 +229,17 @@ const ServiceCatalog = ({ c, mob }) => {
     </div>
   );
 };
-ServiceCatalog.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool };
+ServiceCatalog.propTypes = { 
+  c: PropTypes.object.isRequired, 
+  mob: PropTypes.bool,
+  currency: PropTypes.string.isRequired,
+  setCurrency: PropTypes.func.isRequired
+};
 
-export const ServicesTab = ({ c, mob, setActiveTab }) => {
+export const ServicesTab = ({ c, mob, setActiveTab, currency, setCurrency }) => {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-      <ServiceCatalog c={c} mob={mob} />
+      <ServiceCatalog c={c} mob={mob} currency={currency} setCurrency={setCurrency} />
       <div style={{ marginTop: 'auto', width: '100%' }}>
          <TrustBadge />
          <TabNavigator activeTab="services" setActiveTab={setActiveTab} mob={mob} />
@@ -206,4 +247,10 @@ export const ServicesTab = ({ c, mob, setActiveTab }) => {
     </motion.div>
   );
 };
-ServicesTab.propTypes = { c: PropTypes.object.isRequired, mob: PropTypes.bool, setActiveTab: PropTypes.func.isRequired };
+ServicesTab.propTypes = { 
+  c: PropTypes.object.isRequired, 
+  mob: PropTypes.bool, 
+  setActiveTab: PropTypes.func.isRequired,
+  currency: PropTypes.string.isRequired,
+  setCurrency: PropTypes.func.isRequired
+};

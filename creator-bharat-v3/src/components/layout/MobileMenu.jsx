@@ -5,7 +5,7 @@ import { useApp } from '@/core/context';
 import { Btn, Logo } from '@/components/common/Primitives';
 import { scrollToTop } from '../../utils/helpers';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Users, Megaphone, BookOpen, Heart, LogOut, LayoutDashboard, Briefcase, Bookmark, Settings, ChevronRight, User, LifeBuoy, MessageSquare, Sparkles, Search, Calculator, Trophy, ShieldCheck, Home, IndianRupee, Bell, Award, Zap, Wallet, BarChart3, Camera, Target } from 'lucide-react';
+import { X, Users, Megaphone, BookOpen, Heart, LogOut, LayoutDashboard, Briefcase, Bookmark, Settings, ChevronRight, User, LifeBuoy, MessageSquare, Sparkles, Search, Calculator, Trophy, ShieldCheck, Home, IndianRupee, Bell, Award, Zap, Wallet, BarChart3, Camera, Target, Map } from 'lucide-react';
 
 export default function MobileMenu({ open }) {
   const { st, dsp } = useApp();
@@ -45,6 +45,7 @@ export default function MobileMenu({ open }) {
     { path: '/verify-guide', l: 'Verification Guide', i: ShieldCheck },
     { path: '/ai-knowledge', l: 'AI Knowledge', i: BookOpen },
     { path: '/official-profile', l: 'Official Profile', i: ShieldCheck },
+    { path: '/creator-density', l: 'Creator Density', i: Map },
     { path: '/notifications', l: 'Official Gazette', i: Bell },
     { path: '/about', l: 'Our Story', i: Heart }
   ];
@@ -62,6 +63,7 @@ export default function MobileMenu({ open }) {
     { path: '/creator/events', l: 'Events', i: Award },
     { path: '/creator/messages', l: 'Messages & Alerts', i: Bell },
     { path: '/creator/official-profile', l: 'Official Profile', i: ShieldCheck },
+    { path: '/creator/creator-density', l: 'Creator Density', i: Map },
     { path: '/creator/settings', l: 'Settings', i: Settings }
   ];
 
@@ -73,6 +75,7 @@ export default function MobileMenu({ open }) {
     { path: '/compare', l: 'Compare Tool', i: Users },
     { path: '/brand-analytics', l: 'Analytics', i: BarChart3 },
     { path: '/official-profile', l: 'Official Profile', i: ShieldCheck },
+    { path: '/brand/creator-density', l: 'Creator Density', i: Map },
     { path: '/settings', l: 'Settings', i: Settings }
   ];
 

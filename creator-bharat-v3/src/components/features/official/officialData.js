@@ -41,7 +41,7 @@ export const OFFICIAL_DATA = {
   posts: [
     {
       id: 1,
-      title: 'PLATFORM_LAUNCH_V1',
+      title: 'CreatorBharat v1.0 Platform Launch',
       category: 'Announcements',
       date: 'June 10, 2026',
       readTime: '3 min read',
@@ -59,7 +59,7 @@ export const OFFICIAL_DATA = {
     },
     {
       id: 2,
-      title: 'CREATOR_SCORE_MATH',
+      title: 'Creator Score Algorithmic Formulation',
       category: 'Platform Guide',
       date: 'June 05, 2026',
       readTime: '4 min read',
@@ -76,7 +76,7 @@ export const OFFICIAL_DATA = {
     },
     {
       id: 3,
-      title: 'SECURE_ESCROW_FLOW',
+      title: 'Secure Escrow & Payout System',
       category: 'Security & Trust',
       date: 'May 28, 2026',
       readTime: '3 min read',
@@ -93,7 +93,7 @@ export const OFFICIAL_DATA = {
     },
     {
       id: 4,
-      title: 'REGIONAL_REACH_BOOM',
+      title: 'Regional Creators Reach & Growth',
       category: 'Ecosystem Insight',
       date: 'May 15, 2026',
       readTime: '4 min read',
@@ -130,7 +130,7 @@ export const OFFICIAL_DATA = {
       role: 'Founder & CEO',
       category: 'leadership',
       location: 'Bhilwara, Rajasthan',
-      avatar: 'https://ui-avatars.com/api/?name=Mohmmad+Dilshan&background=0f172a&color=fff&size=256',
+      avatar: '/team_dilshan.jpg',
       bio: 'On a mission to democratize the creator marketplace across India, providing secure direct collaborations and fair payouts.',
       skills: ['Ecosystem Vision', 'Product Strategy', 'Business Operations', 'Community Relations'],
       linkedin: 'https://linkedin.com/in/mohmmad-dilshan',

@@ -30,6 +30,7 @@ export default function OfficialProfilePage() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [lang, setLang] = useState('en');
   const [creatorsCount, setCreatorsCount] = useState(0);
+  const [creatorsList, setCreatorsList] = useState([]);
 
   const isFollowing = st?.follows?.includes('creatorbharat-official');
 
@@ -80,6 +81,7 @@ export default function OfficialProfilePage() {
         const list = await fetchCreators();
         if (list) {
           setCreatorsCount(list.length);
+          setCreatorsList(list);
         }
       } catch (e) {
         console.warn('Failed to load creators list for dynamic stats:', e);
@@ -93,9 +95,9 @@ export default function OfficialProfilePage() {
   const content = OFFICIAL_DATA[lang];
 
   // Dynamic statistics calculations
-  const postsCount = OFFICIAL_DATA.posts.length;
+  const postsCount = OFFICIAL_DATA.baseStats.posts + OFFICIAL_DATA.posts.length;
   const followersCount = 58420 + (isFollowing ? 1 : 0);
-  const followingCount = 120 + creatorsCount;
+  const followingCount = OFFICIAL_DATA.baseStats.following + creatorsCount;
 
   const profileJsonLd = useMemo(() => ({
     "@context": "https://schema.org",
@@ -170,7 +172,7 @@ export default function OfficialProfilePage() {
         )}
 
         {/* Highlight Stories */}
-        <div style={{ display: 'flex', gap: mob ? '16px' : '28px', marginBottom: '44px', overflowX: 'auto', paddingBottom: '12px', scrollbarWidth: 'none' }}>
+        <div style={{ display: 'flex', gap: mob ? '16px' : '24px', marginBottom: '44px', overflowX: 'auto', paddingBottom: '12px', scrollbarWidth: 'none' }}>
            {OFFICIAL_DATA.highlights.map((highlight) => {
               const Icon = highlight.icon;
               return (
@@ -179,39 +181,49 @@ export default function OfficialProfilePage() {
                      width: mob ? '64px' : '76px', 
                      height: mob ? '64px' : '76px', 
                      borderRadius: '50%', 
-                     background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)', 
-                     border: '1.5px solid #cbd5e1', 
-                     padding: '3px',
+                     background: 'linear-gradient(135deg, #FF9431 0%, #128807 100%)', 
+                     padding: '2.5px',
                      display: 'flex',
                      alignItems: 'center',
                      justifyContent: 'center',
-                     boxShadow: '0 4px 15px rgba(0, 0, 0, 0.05)',
-                     transition: 'all 0.22s ease'
+                     boxShadow: '0 8px 20px rgba(255, 148, 49, 0.15)',
+                     transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
                    }}
                    onMouseEnter={(e) => {
-                     e.currentTarget.style.borderColor = '#FF9431';
-                     e.currentTarget.style.boxShadow = '0 0 15px rgba(255, 148, 49, 0.2)';
+                     e.currentTarget.style.transform = 'scale(1.08) rotate(4deg)';
+                     e.currentTarget.style.boxShadow = '0 12px 28px rgba(255, 148, 49, 0.3)';
                    }}
                    onMouseLeave={(e) => {
-                     e.currentTarget.style.borderColor = '#cbd5e1';
-                     e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.05)';
+                     e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
+                     e.currentTarget.style.boxShadow = '0 8px 20px rgba(255, 148, 49, 0.15)';
                    }}
                    >
-                      <div style={{ 
-                        width: '100%', 
-                        height: '100%', 
-                        borderRadius: '50%', 
-                        background: `linear-gradient(135deg, ${highlight.color} 0%, rgba(15, 23, 42, 0.9) 100%)`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#fff',
-                        boxShadow: 'inset 0 0 10px rgba(0,0,0,0.3)'
-                      }}>
-                         <Icon size={20} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.25))' }} />
-                      </div>
+                     <div style={{
+                       width: '100%',
+                       height: '100%',
+                       borderRadius: '50%',
+                       background: '#ffffff',
+                       padding: '2.5px',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center'
+                     }}>
+                       <div style={{ 
+                         width: '100%', 
+                         height: '100%', 
+                         borderRadius: '50%', 
+                         background: `linear-gradient(135deg, ${highlight.color} 0%, rgba(15, 23, 42, 0.95) 100%)`,
+                         display: 'flex',
+                         alignItems: 'center',
+                         justifyContent: 'center',
+                         color: '#fff',
+                         boxShadow: 'inset 0 0 10px rgba(0,0,0,0.3)'
+                       }}>
+                          <Icon size={mob ? 18 : 22} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }} />
+                       </div>
+                     </div>
                    </div>
-                   <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569', letterSpacing: '0.2px' }}>{highlight.label}</span>
+                   <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569', letterSpacing: '0.2px' }}>{highlight.label}</span>
                 </div>
               );
            })}
@@ -283,7 +295,7 @@ export default function OfficialProfilePage() {
         </div>
 
         {/* Main Tab Content */}
-        <TabContent activeTab={activeTab} mob={mob} />
+        <TabContent activeTab={activeTab} mob={mob} creators={creatorsList} />
 
       </div>
 

@@ -15,7 +15,7 @@ const MAJOR_STATES = [
   "Odisha", "Jharkhand", "Assam", "Uttarakhand", "Himachal Pradesh"
 ];
 
-export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
+export default function IndiaMap3D({ mob, onSelectState, stateCounts = {}, simple = false }) {
   const svgRef  = useRef(null);
   const wrapRef = useRef(null);
   const [selectedState, setSelectedState] = useState(null);
@@ -104,12 +104,14 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
   return (
     <section ref={wrapRef} className={styles.mapSection} style={{ position: 'relative' }}>
       <motion.div style={{ scale, opacity, position: 'relative' }} className={styles.contentWrap}>
-        <div className={styles.header}>
-          <span className={styles.tag}>Network</span>
-          <h2 className={styles.title}>The Heart of <span className={styles.accent}>Bharat</span></h2>
-          <p className={styles.sub}>Connecting 28 States & 8 Union Territories</p>
-          <div className={styles.flagLine} />
-        </div>
+        {!simple && (
+          <div className={styles.header}>
+            <span className={styles.tag}>Network</span>
+            <h2 className={styles.title}>The Heart of <span className={styles.accent}>Bharat</span></h2>
+            <p className={styles.sub}>Connecting 28 States & 8 Union Territories</p>
+            <div className={styles.flagLine} />
+          </div>
+        )}
 
         <div className={styles.svgWrap} style={{ height: mob ? '380px' : '640px', position: 'relative' }}>
           {loading && (
@@ -153,7 +155,7 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
           )}
 
           {/* Rajasthan Custom Message (Desktop Only) */}
-          {!mob && (
+          {!simple && !mob && (
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -193,7 +195,7 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
           )}
 
           {/* Right Annotation (Talent Mission) */}
-          {!mob && (
+          {!simple && !mob && (
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -207,7 +209,7 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
           )}
 
           {/* Floating Motive Tags (Desktop only) */}
-          {!mob && (
+          {!simple && !mob && (
             <>
               <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className={`${styles.floatingTag} ${styles.topRight}`}>
                 Digital Identity for every Indian Creator
@@ -238,5 +240,6 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {} }) {
 IndiaMap3D.propTypes = {
   mob: PropTypes.bool,
   onSelectState: PropTypes.func,
-  stateCounts: PropTypes.object
+  stateCounts: PropTypes.object,
+  simple: PropTypes.bool
 };
