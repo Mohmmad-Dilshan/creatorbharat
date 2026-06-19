@@ -16,11 +16,12 @@ import {
 const CITIES_LIST = ['Jaipur', 'Mumbai', 'Lucknow', 'Indore', 'Bhopal', 'Surat', 'Bhilwara', 'Patna', 'Kochi'];
 
 const MARKETING_POSTERS = [
-  { id: 'p1', src: '/cb_v12_real_final.png', title: 'CreatorBharat Dashboard' },
-  { id: 'p2', src: '/success_stories_hero.png', title: 'Creator Success Stories' },
-  { id: 'p3', src: '/escrow_secure_poster.png', title: 'Secure Escrow Payments' },
-  { id: 'p4', src: '/creator_score_poster.png', title: 'Creator Trust Score' }
+  { id: 'p1', src: '/regional_creators_poster.png', title: 'India\'s Creator Network — Mapped' },
+  { id: 'p2', src: '/official_launch_poster.png', title: 'CreatorBharat — Empowering Indian Creators' },
+  { id: 'p3', src: '/success_stories_hero.png', title: 'Verified Creators from Bharat' },
+  { id: 'p4', src: '/platform_milestone_bharat.png', title: 'India-Wide Verification Network' },
 ];
+
 
 const HeroValueProps = memo(({ mob }) => {
   const [cityIdx, setCityIdx] = useState(0);

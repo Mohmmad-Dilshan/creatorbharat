@@ -3,18 +3,50 @@
   "installCommand": "cd creator-bharat-v3 && npm install",
   "buildCommand": "cd creator-bharat-v3 && npm run build",
   "outputDirectory": "creator-bharat-v3/dist",
+
   "rewrites": [
     {
       "source": "/c/:id",
       "destination": "/api/profile-preview?id=:id"
     },
     {
-      "source": "/creator/:id",
+      "source": "/creator/:id((?!dashboard|profile|wallet|onboarding|applications|brand-requests|community|analytics|monetization|score|verification|notifications|calendar|messages|saved|settings|help|events|achievements|blog|official-profile|creator-density|verify-guide|stories|gallery|rate-calc|leaderboard|guidelines|pricing|about|contact|faq|privacy|terms|cookies|refunds|public-preview|opportunities|c).*)",
       "destination": "/api/profile-preview?id=:id"
     },
     {
       "source": "/(.*)",
       "destination": "/index.html"
+    }
+  ],
+
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options",  "value": "nosniff" },
+        { "key": "X-Frame-Options",          "value": "SAMEORIGIN" },
+        { "key": "X-XSS-Protection",         "value": "1; mode=block" },
+        { "key": "Referrer-Policy",          "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy",        "value": "camera=(), microphone=(), geolocation=()" }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/(.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.webp|.*\\.svg|.*\\.ico)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=3600" }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=300, stale-while-revalidate=60" }
+      ]
     }
   ]
 }
