@@ -16,7 +16,7 @@ import { Helmet } from 'react-helmet-async';
 const SEO = ({ title, description, keywords, image, url, type, jsonLd }) => {
   const SITE_NAME   = 'CreatorBharat';
   const SITE_HANDLE = '@CreatorBharat';
-  const SITE_URL    = 'https://creatorbharat.in';
+  const SITE_URL    = 'https://creatorbharat.com';
   const OG_IMAGE    = `${SITE_URL}/og-image.jpg`;
 
   const fullTitle    = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} — India Ka Creator Platform`;
