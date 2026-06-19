@@ -559,29 +559,67 @@ const HeroHeader = memo(({ mob }) => (
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       className="au" 
-      style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: mob ? '10px 20px' : '14px 36px', borderRadius: 100, background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(20px)', border: '1px solid rgba(0,0,0,0.06)', marginBottom: 48, boxShadow: '0 20px 40px rgba(0,0,0,0.03)', position: 'relative' }}
+      style={{ 
+        display: 'inline-flex', 
+        alignItems: 'center', 
+        gap: 12, 
+        padding: mob ? '8px 16px' : '14px 36px', 
+        borderRadius: 100, 
+        background: 'rgba(255,255,255,0.8)', 
+        backdropFilter: 'blur(20px)', 
+        border: '1px solid rgba(0,0,0,0.06)', 
+        marginBottom: mob ? 32 : 48, 
+        boxShadow: '0 20px 40px rgba(0,0,0,0.03)', 
+        position: 'relative' 
+      }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-        <div style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', padding: '6px 14px', borderRadius: 100, fontSize: 11, fontWeight: 950, textTransform: 'uppercase', letterSpacing: '1.5px' }}>ELITE</div>
-        <span style={{ fontSize: mob ? 12 : 14, fontWeight: 900, color: '#0f172a', letterSpacing: '0.2px' }}>Empowering Bharat&apos;s Next 100M Creators</span>
-        <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.1)' }} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 12px #10B981', animation: 'pulse-green 2s infinite' }} />
-          <span style={{ fontSize: 11, fontWeight: 950, color: '#10B981', textTransform: 'uppercase' }}>National Pulse</span>
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: mob ? 8 : 14 }}>
+        <div style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', padding: mob ? '4px 10px' : '6px 14px', borderRadius: 100, fontSize: mob ? 9 : 11, fontWeight: 950, textTransform: 'uppercase', letterSpacing: '1.5px' }}>ELITE</div>
+        <span style={{ fontSize: mob ? 11 : 14, fontWeight: 900, color: '#0f172a', letterSpacing: '0.2px' }}>
+          {mob ? "Bharat's Next 100M Creators" : "Empowering Bharat's Next 100M Creators"}
+        </span>
+        {!mob && <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.1)' }} />}
+        {!mob && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 12px #10B981', animation: 'pulse-green 2s infinite' }} />
+            <span style={{ fontSize: 11, fontWeight: 950, color: '#10B981', textTransform: 'uppercase' }}>National Pulse</span>
+          </div>
+        )}
       </div>
     </motion.div>
 
-    <h1 className="au d1" style={{ fontSize: mob ? 'clamp(32px, 9vw, 42px)' : 'clamp(80px, 10vw, 110px)', fontWeight: 950, color: '#0f172a', lineHeight: 0.95, marginBottom: mob ? 24 : 40, letterSpacing: '-0.06em', maxWidth: '100%', textAlign: 'center' }}>
+    <h1 className="au d1" style={{ fontSize: mob ? 'clamp(32px, 8.5vw, 42px)' : 'clamp(80px, 10vw, 110px)', fontWeight: 950, color: '#0f172a', lineHeight: 0.95, marginBottom: mob ? 20 : 40, letterSpacing: '-0.06em', maxWidth: '100%', textAlign: 'center' }}>
       Your Digital <Typewriter /> <br />
       Built for <span style={{ background: 'linear-gradient(90deg, #FF9431, #128807)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: mob ? 5 : 15 }}>Bharat.</span>
     </h1>
-    <p className="au d2" style={{ fontSize: mob ? 16 : 24, color: '#475569', lineHeight: 1.6, marginTop: 0, marginRight: 'auto', marginBottom: mob ? 24 : 48, marginLeft: 'auto', fontWeight: 600, maxWidth: 800 }}>
-      India&apos;s all-in-one platform helping Tier 2 & 3 creators build a professional identity, access regional missions, and grow nationally.
-      <br />
-      <span style={{ color: '#64748b', fontWeight: 500 }}>Verified creator profiles, paid brand campaigns, and real visibility for talent beyond the metros.</span>
-      <br />
-      <span style={{ display: 'block', width: 'fit-content', margin: '10px auto 0', fontSize: mob ? 13 : 15, fontWeight: 950, textTransform: 'uppercase', letterSpacing: '1.8px', background: 'linear-gradient(90deg, #FF9431 0%, #1A3A8A 48%, #138808 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Built in Bharat. Ready for India.</span>
+    <p className="au d2" style={{ 
+      fontSize: mob ? 14 : 22, 
+      color: '#475569', 
+      lineHeight: mob ? 1.5 : 1.6, 
+      marginTop: 0, 
+      marginRight: 'auto', 
+      marginBottom: mob ? 24 : 48, 
+      marginLeft: 'auto', 
+      fontWeight: 600, 
+      maxWidth: mob ? '90%' : 800,
+      padding: mob ? '0 10px' : 0
+    }}>
+      {mob ? (
+        <>
+          India's premier ecosystem helping Tier 2 & 3 creators build a professional identity, access regional campaigns, and grow nationally.
+          <span style={{ display: 'block', marginTop: 12, fontSize: 12, fontWeight: 950, textTransform: 'uppercase', letterSpacing: '1.5px', background: 'linear-gradient(90deg, #FF9431 0%, #1A3A8A 48%, #138808 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            Built in Bharat. Ready for India.
+          </span>
+        </>
+      ) : (
+        <>
+          India&apos;s all-in-one platform helping Tier 2 & 3 creators build a professional identity, access regional missions, and grow nationally.
+          <br />
+          <span style={{ color: '#64748b', fontWeight: 500, fontSize: 18 }}>Verified creator profiles, paid brand campaigns, and real visibility for talent beyond the metros.</span>
+          <br />
+          <span style={{ display: 'block', width: 'fit-content', margin: '10px auto 0', fontSize: 15, fontWeight: 950, textTransform: 'uppercase', letterSpacing: '1.8px', background: 'linear-gradient(90deg, #FF9431 0%, #1A3A8A 48%, #138808 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Built in Bharat. Ready for India.</span>
+        </>
+      )}
     </p>
   </div>
 ));
@@ -619,13 +657,53 @@ TourBadge.propTypes = {
 };
 
 const PrimaryButtons = memo(({ mob, go }) => (
-  <div className="au d3" style={{ display: 'flex', flexDirection: 'row', gap: mob ? 12 : 20, marginBottom: mob ? 16 : 20, justifyContent: 'center', width: mob ? '100%' : 'auto', maxWidth: mob ? 480 : 'none', padding: mob ? '0 16px' : 0, boxSizing: 'border-box', alignItems: 'center' }}>
-    <Btn lg full={false} onClick={() => go('/join')} style={{ flex: mob ? 1 : 'initial', padding: mob ? '18px 14px' : '28px 64px', fontSize: mob ? 15 : 20, minWidth: mob ? 0 : 'auto', background: '#0f172a', color: '#fff', borderRadius: 100, fontWeight: 950, border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-      <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: mob ? 6 : 12 }}>🚀 Join as Creator</span>
+  <div className="au d3" style={{ 
+    display: 'flex', 
+    flexDirection: mob ? 'column' : 'row', 
+    gap: mob ? 12 : 20, 
+    marginBottom: mob ? 20 : 20, 
+    justifyContent: 'center', 
+    width: '100%', 
+    maxWidth: mob ? 320 : 'none', 
+    padding: mob ? '0 16px' : 0, 
+    boxSizing: 'border-box', 
+    alignItems: 'center' 
+  }}>
+    <Btn lg full={mob} onClick={() => go('/join')} style={{ 
+      width: '100%',
+      flex: mob ? 'none' : 'initial', 
+      padding: mob ? '16px 20px' : '28px 64px', 
+      fontSize: mob ? 16 : 20, 
+      minWidth: mob ? 0 : 'auto', 
+      background: '#0f172a', 
+      color: '#fff', 
+      borderRadius: 100, 
+      fontWeight: 950, 
+      border: 'none', 
+      boxShadow: '0 12px 30px rgba(15,23,42,0.25)', 
+      position: 'relative', 
+      overflow: 'hidden', 
+      whiteSpace: 'nowrap' 
+    }}>
+      <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>🚀 Join as Creator</span>
       <div style={{ position: 'absolute', top: 0, left: '-100%', width: '50%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)', animation: 'shimmer 3s infinite', transform: 'skewX(-20deg)' }} />
     </Btn>
-    <Btn lg variant="ghost" full={false} onClick={() => go('/creators')} style={{ flex: mob ? 1 : 'initial', padding: mob ? '18px 14px' : '26px 56px', fontSize: mob ? 15 : 18, minWidth: mob ? 0 : 'auto', background: 'rgba(255,255,255,0.8)', color: '#0f172a', borderRadius: 100, fontWeight: 950, border: '1.5px solid #f1f5f9', backdropFilter: 'blur(20px)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)', whiteSpace: 'nowrap' }}>
-      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: mob ? 6 : 12 }}>💼 Hire Talent</span>
+    <Btn lg variant="ghost" full={mob} onClick={() => go('/creators')} style={{ 
+      width: '100%',
+      flex: mob ? 'none' : 'initial', 
+      padding: mob ? '16px 20px' : '26px 56px', 
+      fontSize: mob ? 16 : 18, 
+      minWidth: mob ? 0 : 'auto', 
+      background: 'rgba(255,255,255,0.8)', 
+      color: '#0f172a', 
+      borderRadius: 100, 
+      fontWeight: 950, 
+      border: '1.5px solid #e2e8f0', 
+      backdropFilter: 'blur(20px)', 
+      boxShadow: '0 8px 24px rgba(0,0,0,0.02)', 
+      whiteSpace: 'nowrap' 
+    }}>
+      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>💼 Hire Talent</span>
     </Btn>
   </div>
 ));
@@ -690,9 +768,20 @@ const SearchSugs = memo(({ sugs, go }) => (
 SearchSugs.propTypes = { sugs: PropTypes.array.isRequired, go: PropTypes.func.isRequired };
 
 const SearchInput = memo(({ mob, q, dsp, onKeyDown, sugs, go }) => (
-  <div style={{ flex: 1.2, position: 'relative', padding: mob ? '16px 24px' : '0 48px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderRight: mob ? 'none' : '1.5px solid #f1f5f9', borderBottom: mob ? '1.5px solid #f1f5f9' : 'none' }}>
+  <div style={{ 
+    flex: 1.2, 
+    position: 'relative', 
+    padding: mob ? '16px 20px 12px' : '0 48px', 
+    display: 'flex', 
+    flexDirection: 'column', 
+    alignItems: 'flex-start', 
+    borderRight: mob ? 'none' : '1.5px solid #f1f5f9', 
+    borderBottom: mob ? '1.5px solid #f1f5f9' : 'none',
+    width: '100%',
+    boxSizing: 'border-box'
+  }}>
     <label htmlFor="hero-search-input" style={{ fontSize: 10, fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 6 }}>Who are you looking for?</label>
-    <input id="hero-search-input" name="search" value={q || ''} onKeyDown={onKeyDown} onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} placeholder="Name, niche or city..." style={{ width: '100%', border: 'none', background: 'none', fontSize: mob ? 17 : 20, outline: 'none', fontWeight: 900, color: '#0f172a' }} />
+    <input id="hero-search-input" name="search" value={q || ''} onKeyDown={onKeyDown} onChange={e => dsp({ t: 'CF', v: { q: e.target.value } })} placeholder="Name, niche or city..." style={{ width: '100%', border: 'none', background: 'none', fontSize: mob ? 16 : 20, outline: 'none', fontWeight: 900, color: '#0f172a' }} />
     {sugs.length > 0 && <SearchSugs sugs={sugs} go={go} />}
   </div>
 ));
@@ -700,9 +789,15 @@ const SearchInput = memo(({ mob, q, dsp, onKeyDown, sugs, go }) => (
 SearchInput.propTypes = { mob: PropTypes.bool, q: PropTypes.string, dsp: PropTypes.func.isRequired, onKeyDown: PropTypes.func, sugs: PropTypes.array, go: PropTypes.func.isRequired };
 
 const LocationPicker = memo(({ mob, state }) => (
-  <div style={{ flex: 0.8, padding: mob ? '16px 24px' : '0 48px', textAlign: 'left', width: '100%' }}>
+  <div style={{ 
+    flex: 0.8, 
+    padding: mob ? '12px 20px 16px' : '0 48px', 
+    textAlign: 'left', 
+    width: '100%',
+    boxSizing: 'border-box'
+  }}>
     <span style={{ fontSize: 10, fontWeight: 950, color: '#10B981', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 6, display: 'block' }}>Location</span>
-    <div id="hero-location-display" style={{ fontSize: mob ? 16 : 18, fontWeight: 900, color: '#0f172a', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+    <div id="hero-location-display" style={{ fontSize: mob ? 15 : 18, fontWeight: 900, color: '#0f172a', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
        <MapPin size={16} color="#10B981" /> {state || 'All over Bharat'}
     </div>
   </div>
@@ -742,15 +837,27 @@ const EcosystemHeader = memo(({ mob }) => (
 EcosystemHeader.propTypes = { mob: PropTypes.bool };
 
 const SupportCard = memo(({ p, mob }) => (
-  <div className="elite-support-card au d4" style={{ background: '#fff', borderRadius: mob ? 24 : 32, padding: mob ? 24 : 40, border: '1px solid rgba(0,0,0,0.05)', textAlign: 'left', transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 20 }}>
+  <div className="elite-support-card au d4" style={{ 
+    background: '#fff', 
+    borderRadius: mob ? 20 : 32, 
+    padding: mob ? '20px 24px' : '40px', 
+    border: '1px solid rgba(0,0,0,0.05)', 
+    textAlign: 'left', 
+    transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)', 
+    position: 'relative', 
+    overflow: 'hidden', 
+    display: 'flex', 
+    flexDirection: 'column', 
+    gap: mob ? 12 : 20 
+  }}>
     <div className="card-hover-bg" style={{ position: 'absolute', inset: 0, background: `linear-gradient(135deg, ${p.bg} 0%, transparent 100%)`, opacity: 0, transition: 'opacity 0.6s' }} />
-    <div style={{ width: mob ? 48 : 64, height: mob ? 48 : 64, borderRadius: 20, background: p.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
-      <p.i size={mob ? 24 : 32} color={p.c} strokeWidth={2.5} />
+    <div style={{ width: mob ? 40 : 64, height: mob ? 40 : 64, borderRadius: mob ? 14 : 20, background: p.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
+      <p.i size={mob ? 20 : 32} color={p.c} strokeWidth={2.5} />
     </div>
     <div style={{ position: 'relative', zIndex: 1 }}>
-      <div style={{ fontSize: 12, fontWeight: 900, color: p.c, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8 }}>{p.t}</div>
-      <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 18 : 24, fontWeight: 900, color: '#111', marginBottom: 12 }}>{p.h}</h3>
-      <p style={{ fontSize: mob ? 14 : 16, color: 'rgba(0,0,0,0.5)', lineHeight: 1.6, fontWeight: 500 }}>{p.d}</p>
+      <div style={{ fontSize: 11, fontWeight: 900, color: p.c, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8 }}>{p.t}</div>
+      <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 18 : 24, fontWeight: 900, color: '#111', marginBottom: 8 }}>{p.h}</h3>
+      <p style={{ fontSize: mob ? 13 : 16, color: 'rgba(0,0,0,0.5)', lineHeight: 1.5, fontWeight: 500 }}>{p.d}</p>
     </div>
     <div className="card-accent-line" style={{ position: 'absolute', bottom: 0, left: 0, height: 4, width: 0, background: p.c, transition: 'width 0.6s' }} />
   </div>
@@ -1164,7 +1271,7 @@ export default function Hero({ mob, st, dsp, go }) {
         <HeroValueProps mob={mob} />
         <SearchBar mob={mob} st={st} dsp={dsp} go={go} sugs={sugs} onKeyDown={handleKeyDown} />
         <EcosystemHeader mob={mob} />
-        <div style={{ width: '100%', maxWidth: 1200, display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(320px, 1fr))', gap: mob ? 12 : 32, padding: mob ? '0 16px' : 0, boxSizing: 'border-box' }}>
+        <div style={{ width: '100%', maxWidth: 1200, display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(auto-fit, minmax(320px, 1fr))', gap: mob ? 16 : 32, padding: mob ? '0 16px' : 0, boxSizing: 'border-box' }}>
           {supportFeatures.map((p) => <SupportCard key={p.h} p={p} mob={mob} />)}
         </div>
         <style>{`
