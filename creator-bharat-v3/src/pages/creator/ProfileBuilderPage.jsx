@@ -1313,7 +1313,9 @@ const getDefaultSponsoredPosts = () => [
 ];
 
 const getInitialFormState = (c) => {
-  const localHubs = c?.local_impact_hubs?.length ? [...c.local_impact_hubs] : [
+  const localHubs = (c?.local_impact_hubs?.length || c?.local_hubs?.length || c?.localHubs?.length)
+    ? [...(c.local_impact_hubs || c.local_hubs || c.localHubs)]
+    : [
     { l: 'Indore', v: '85%' }, { l: 'Bhopal', v: '72%' }, { l: 'Ujjain', v: '64%' }
   ];
   const awards = c?.awards?.length ? [...c.awards] : [
@@ -1355,31 +1357,47 @@ const getInitialFormState = (c) => {
     { t: 'Product Placement', d: 'Seamless product placement in community posts.', rate: '6000' },
     { t: 'Full YouTube Review', d: 'Dedicated 5-minute product breakdown.', rate: '25000' }
   ]).map((s, idx) => ({ ...s, id: s.id || `service-${idx}` }));
-  const viralContent = (c?.viral_content?.length 
-    ? c.viral_content.map(v => typeof v === 'object' ? { views: v.views || '', img: v.img || '', title: v.title || '', link: v.link || '' } : { views: `${v}M`, img: '', title: '', link: '' }) 
+
+  // viral_content — read both snake_case and camelCase
+  const rawViral = c?.viral_content || c?.viralContent || [];
+  const viralContent = (rawViral.length 
+    ? rawViral.map(v => typeof v === 'object' ? { views: v.views || '', img: v.img || '', title: v.title || '', link: v.link || '' } : { views: `${v}M`, img: '', title: '', link: '' }) 
     : [{ views: '1.2M', img: '', title: '', link: '' }, { views: '3.5M', img: '', title: '', link: '' }, { views: '5.8M', img: '', title: '', link: '' }]
   ).map((v, idx) => ({ ...v, id: `viral-${idx}` }));
-  const caseStudies = (c?.case_studies?.length ? c.case_studies.map(cs => ({
+
+  // case_studies — read both snake_case and camelCase
+  const rawCS = c?.case_studies || c?.caseStudies || [];
+  const caseStudies = (rawCS.length ? rawCS.map(cs => ({
     title: cs.title || '', brand: cs.brand || '',
     desc: cs.desc || '', link: cs.link || '', img: cs.img || '',
-    r1_label: cs.results?.[0]?.l || 'Reach', r1_val: cs.results?.[0]?.v || '',
-    r2_label: cs.results?.[1]?.l || 'ROI', r2_val: cs.results?.[1]?.v || ''
+    r1_label: cs.results?.[0]?.l || cs.r1_label || 'Reach', r1_val: cs.results?.[0]?.v || cs.r1_val || '',
+    r2_label: cs.results?.[1]?.l || cs.r2_label || 'ROI', r2_val: cs.results?.[1]?.v || cs.r2_val || ''
   })) : [
     { title: '', brand: '', desc: '', link: '', img: '', r1_label: 'Reach', r1_val: '', r2_label: 'ROI', r2_val: '' },
     { title: '', brand: '', desc: '', link: '', img: '', r1_label: 'Sales', r1_val: '', r2_label: 'Clicks', r2_val: '' },
     { title: '', brand: '', desc: '', link: '', img: '', r1_label: 'Views', r1_val: '', r2_label: 'Shares', r2_val: '' }
   ]).map((cs, idx) => ({ ...cs, id: cs.id || `casestudy-${idx}` }));
 
-  const socialLinks = (c?.social_links?.length ? c.social_links : []).map(link => ({
+  // social_links — read both snake_case and camelCase
+  const socialLinks = (c?.social_links || c?.socialLinks || []).map(link => ({
     platform: link.platform || 'Instagram',
     url: link.url || '',
     followers: link.followers || ''
   }));
-  const sponsoredPosts = c?.sponsored_posts?.length ? c.sponsored_posts.map(p => ({
+
+  // sponsored_posts — read both snake_case and camelCase
+  const rawSponsored = c?.sponsored_posts || c?.sponsoredPosts || [];
+  const sponsoredPosts = rawSponsored.length ? rawSponsored.map(p => ({
     brand: p.brand || '', campaign: p.campaign || '', platform: p.platform || 'Instagram',
     postUrl: p.postUrl || '', reach: p.reach || '', engagement: p.engagement || '',
     month: p.month || '', thumbnail: p.thumbnail || ''
   })) : getDefaultSponsoredPosts();
+
+  // full_story — read both snake_case and camelCase
+  const story = c?.full_story || c?.fullStory || {};
+
+  // ai_intel — read nested object first, then flat fields
+  const aiIntel = c?.ai_intel || {};
 
   return {
     name: c?.name || '', bio: c?.bio || '', city: c?.city || '', state: c?.state || '',
@@ -1394,22 +1412,31 @@ const getInitialFormState = (c) => {
     rateMin: c?.rateMin || '', rateMax: c?.rateMax || '', portfolio: c?.portfolio || '',
     address: c?.address || '', tagline: c?.tagline || '', connections: c?.connections || '500+',
     gallery: [c?.gallery?.[0]||'', c?.gallery?.[1]||'', c?.gallery?.[2]||'', c?.gallery?.[3]||''],
-    storyP1: c?.full_story?.p1 || '', storyQuote: c?.full_story?.quote || '',
-    storyP2: c?.full_story?.p2 || '', storyP3: c?.full_story?.p3 || '',
-    philosophy: c?.philosophy || '', aiMatch: c?.ai_intel?.match || '',
-    aiSummary: c?.ai_intel?.summary || '', aiSafety: c?.ai_intel?.stats?.[0]?.v || '',
-    aiRetention: c?.ai_intel?.stats?.[1]?.v || '', aiRoi: c?.ai_intel?.stats?.[2]?.v || '',
-    localVoice: c?.local_voice || '', localPenetration: c?.local_penetration || '',
-    regionalDialects: c?.regional_dialects || '', localHubs, awards, collabs, milestones,
+    // Full Story — read from snake_case first
+    storyP1: story.p1 || '', storyQuote: story.quote || '',
+    storyP2: story.p2 || '', storyP3: story.p3 || '',
+    philosophy: c?.philosophy || '',
+    philosophyTitle: c?.philosophy_title || c?.philosophyTitle || '',
+    dominanceTitle: c?.dominance_title || c?.dominanceTitle || '',
+    // AI Intel — nested object first, then flat keys
+    aiMatch: aiIntel.match || c?.aiMatch || '',
+    aiSummary: aiIntel.summary || c?.aiSummary || '',
+    aiSafety: aiIntel.stats?.[0]?.v || c?.aiSafety || '',
+    aiRetention: aiIntel.stats?.[1]?.v || c?.aiRetention || '',
+    aiRoi: aiIntel.stats?.[2]?.v || c?.aiRoi || '',
+    // Local Hub — read all key variants
+    localVoice: c?.local_voice || c?.localVoice || '',
+    localPenetration: c?.local_penetration || c?.localPenetration || '',
+    regionalDialects: c?.regional_dialects || c?.regionalDialects || '',
+    localTitle: c?.local_title || c?.localTitle || '',
+    localHubsTitle: c?.local_hubs_title || c?.localHubsTitle || '',
+    localHubs, awards, collabs, milestones,
     services, viralContent, caseStudies, socialLinks, sponsoredPosts,
     niche: Array.isArray(c?.niche) ? [...c.niche] : (c?.niche ? [c.niche] : []),
     languages: Array.isArray(c?.languages) ? [...c.languages] : (c?.languages ? [c.languages] : ['Hindi']),
     stories: c?.stories ? [...c.stories] : [],
-    philosophyTitle: c?.philosophy_title || c?.philosophyTitle || '',
-    dominanceTitle: c?.dominance_title || c?.dominanceTitle || '',
-    localTitle: c?.local_title || c?.localTitle || '',
-    localHubsTitle: c?.local_hubs_title || c?.localHubsTitle || '',
-    contactPhone: c?.contact_phone || '', contactMethod: c?.contact_method || 'whatsapp'
+    contactPhone: c?.contact_phone || c?.contactPhone || '',
+    contactMethod: c?.contact_method || c?.contactMethod || 'whatsapp'
   };
 };
 
@@ -1560,14 +1587,16 @@ export default function ProfileBuilderPage() {
     if (c) {
       setF(p => ({
         ...getInitialFormState(c),
-        socialLinks: c?.social_links?.length 
-          ? c.social_links.map(link => ({ platform: link.platform || 'Instagram', url: link.url || '', followers: link.followers || '' })) 
+        socialLinks: (c?.social_links || c?.socialLinks || []).length 
+          ? (c.social_links || c.socialLinks).map(link => ({ platform: link.platform || 'Instagram', url: link.url || '', followers: link.followers || '' })) 
           : p.socialLinks,
-        sponsoredPosts: c?.sponsored_posts?.length ? c.sponsored_posts.map(sp => ({
-          brand: sp.brand || '', campaign: sp.campaign || '', platform: sp.platform || 'Instagram',
-          postUrl: sp.postUrl || '', reach: sp.reach || '', engagement: sp.engagement || '',
-          month: sp.month || '', thumbnail: sp.thumbnail || ''
-        })) : p.sponsoredPosts
+        sponsoredPosts: (c?.sponsored_posts || c?.sponsoredPosts || []).length 
+          ? (c.sponsored_posts || c.sponsoredPosts).map(sp => ({
+            brand: sp.brand || '', campaign: sp.campaign || '', platform: sp.platform || 'Instagram',
+            postUrl: sp.postUrl || '', reach: sp.reach || '', engagement: sp.engagement || '',
+            month: sp.month || '', thumbnail: sp.thumbnail || ''
+          })) 
+          : p.sponsoredPosts
       }));
     }
   }, [st.user?.creatorProfile]);
@@ -1645,15 +1674,35 @@ export default function ProfileBuilderPage() {
       const customFollowersSum = filteredSocialLinks.reduce((sum, l) => sum + (l.followers || 0), 0);
       const totalReach = instagramFollowersInt + youtubeFollowersInt + linkedinFollowersInt + twitterFollowersInt + facebookFollowersInt + customFollowersSum;
 
+      // Build nested ai_intel object that IdentityTab reads
+      const ai_intel = {
+        match: F.aiMatch || '',
+        summary: F.aiSummary || '',
+        stats: [
+          { l: 'Brand Safety', v: F.aiSafety || '' },
+          { l: 'Retention', v: F.aiRetention || '' },
+          { l: 'ROI Potential', v: F.aiRoi || '' }
+        ]
+      };
+
       const updatedProfile = { 
-        ...c, name: F.name, bio: F.bio, city: F.city, state: F.state,
+        ...c,
+        // ── Core Identity ──
+        name: F.name, bio: F.bio, city: F.city, state: F.state,
         niche: F.niche || [],
         languages: F.languages || [],
         stories: F.stories || [],
-        instagram: F.instagram, youtube: F.youtube, rateMin: F.rateMin, rateMax: F.rateMax,
-        portfolio: F.portfolio, gallery: filteredGallery,
-        address: F.address, tagline: F.tagline, connections: F.connections,
+        tagline: F.tagline,
+        address: F.address,
+        connections: F.connections,
+        portfolio: F.portfolio,
+        gallery: filteredGallery,
+
+        // ── Social Handles ──
+        instagram: F.instagram, youtube: F.youtube,
         facebook: F.facebook, linkedin: F.linkedin, twitter: F.twitter,
+
+        // ── Follower Counts (both camelCase + snake_case for compatibility) ──
         instagramFollowers: instagramFollowersInt,
         youtubeFollowers: youtubeFollowersInt,
         linkedinFollowers: linkedinFollowersInt,
@@ -1665,31 +1714,78 @@ export default function ProfileBuilderPage() {
         twitter_followers: twitterFollowersInt,
         facebook_followers: facebookFollowersInt,
         followers: totalReach,
+
+        // ── Rate Card ──
+        rateMin: F.rateMin, rateMax: F.rateMax,
+
+        // ── Profile Images (all 3 keys for Hero compatibility) ──
         photo: F.photo || c.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(F.name || st.user.name)}`,
         cover_image: F.coverImage || c.cover_image || `https://picsum.photos/seed/${c.id || 'cover'}/1600/500`,
         banner_image: F.coverImage || c.banner_image || `https://picsum.photos/seed/${c.id || 'cover'}/1600/500`,
         coverUrl: F.coverImage || c.coverUrl || `https://picsum.photos/seed/${c.id || 'cover'}/1600/500`,
-        fullStory: { p1: F.storyP1, quote: F.storyQuote, p2: F.storyP2, p3: F.storyP3 },
-        awards: filteredAwards, collabs: filteredCollabs, milestones: filteredMilestones,
-        services: filteredServices, viralContent: filteredViral, caseStudies: filteredCaseStudies,
+
+        // ── Full Story (both keys — StoryTab reads either) ──
+        full_story: { p1: F.storyP1, quote: F.storyQuote, p2: F.storyP2, p3: F.storyP3 },
+        fullStory:  { p1: F.storyP1, quote: F.storyQuote, p2: F.storyP2, p3: F.storyP3 },
+
+        // ── Content Philosophy ──
         philosophy: F.philosophy,
+        philosophy_title: F.philosophyTitle,
+        philosophyTitle: F.philosophyTitle,
+        dominance_title: F.dominanceTitle,
+        dominanceTitle: F.dominanceTitle,
+
+        // ── AI Intel (nested object + flat keys) ──
+        ai_intel,
         aiMatch: F.aiMatch,
         aiSummary: F.aiSummary,
         aiSafety: F.aiSafety,
         aiRetention: F.aiRetention,
         aiRoi: F.aiRoi,
+
+        // ── Awards, Collabs, Milestones, Services ──
+        awards: filteredAwards,
+        collabs: filteredCollabs,
+        milestones: filteredMilestones,
+        services: filteredServices,
+
+        // ── Viral Content (both keys) ──
+        viral_content: filteredViral,
+        viralContent: filteredViral,
+
+        // ── Case Studies (both keys) ──
+        case_studies: filteredCaseStudies,
+        caseStudies: filteredCaseStudies,
+
+        // ── Local Hub (all keys IdentityTab reads) ──
+        local_voice: F.localVoice,
         localVoice: F.localVoice,
+        local_penetration: F.localPenetration,
         localPenetration: F.localPenetration,
+        regional_dialects: F.regionalDialects,
         regionalDialects: F.regionalDialects,
+        local_impact_hubs: filteredLocalHubs,
         localHubs: filteredLocalHubs,
-        sponsoredPosts: filteredSponsoredPosts,
-        socialLinks: filteredSocialLinks,
-        philosophyTitle: F.philosophyTitle,
-        dominanceTitle: F.dominanceTitle,
+        local_hubs: filteredLocalHubs,
+        local_title: F.localTitle,
         localTitle: F.localTitle,
+        local_hubs_title: F.localHubsTitle,
         localHubsTitle: F.localHubsTitle,
+
+        // ── Social Links (both keys) ──
+        social_links: filteredSocialLinks,
+        socialLinks: filteredSocialLinks,
+
+        // ── Sponsored Posts (both keys) ──
+        sponsored_posts: filteredSponsoredPosts,
+        sponsoredPosts: filteredSponsoredPosts,
+
+        // ── Contact ──
+        contact_phone: F.contactPhone,
         contactPhone: F.contactPhone,
+        contact_method: F.contactMethod,
         contactMethod: F.contactMethod,
+
         email: st.user?.email
       };
 
