@@ -728,14 +728,39 @@ const SearchBar = memo(({ mob, st, dsp, go, sugs, onKeyDown }) => (
 SearchBar.propTypes = { mob: PropTypes.bool, st: PropTypes.object.isRequired, dsp: PropTypes.func.isRequired, go: PropTypes.func.isRequired, sugs: PropTypes.array, onKeyDown: PropTypes.func };
 
 const EcosystemHeader = memo(({ mob }) => (
-  <div style={{ textAlign: 'center', marginBottom: mob ? 48 : 80, marginTop: 40 }}>
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: '10px 24px', background: '#fff', border: '1.5px solid #f1f5f9', borderRadius: 100, marginBottom: 24, boxShadow: '0 10px 20px rgba(0,0,0,0.02)' }}>
-      <Globe size={16} color="#3B82F6" />
-      <span style={{ fontSize: 13, fontWeight: 950, color: '#3B82F6', textTransform: 'uppercase', letterSpacing: '4px' }}>Support Infrastructure</span>
+  <div style={{ textAlign: 'center', marginBottom: mob ? 40 : 64, marginTop: 40 }}>
+    <div style={{ 
+      display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', 
+      background: 'rgba(59, 130, 246, 0.06)', border: '1px solid rgba(59, 130, 246, 0.2)', 
+      borderRadius: 100, marginBottom: 20, boxShadow: '0 4px 12px rgba(59, 130, 246, 0.03)'
+    }}>
+      <Globe size={12} color="#3B82F6" />
+      <span style={{ fontSize: 10, fontWeight: 900, color: '#3B82F6', textTransform: 'uppercase', letterSpacing: '2.5px' }}>Support Infrastructure</span>
     </div>
-    <h2 style={{ fontSize: mob ? 40 : 64, fontWeight: 950, color: '#0f172a', lineHeight: 1.05, letterSpacing: '-0.04em', marginBottom: 24 }}>
-      Empowering the <br /> <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #10B981 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: '10px' }}>Voice of Bharat.</span>
+    
+    <h2 style={{ 
+      fontFamily: "'Outfit', sans-serif",
+      fontSize: mob ? 32 : 56, 
+      fontWeight: 950, 
+      color: '#0f172a', 
+      lineHeight: 1.1, 
+      letterSpacing: '-0.03em', 
+      marginBottom: 16
+    }}>
+      Empowering the {mob && <br />}
+      <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #138808 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Voice of Bharat.</span>
     </h2>
+
+    <p style={{ 
+      fontSize: mob ? 14 : 16, 
+      fontWeight: 600, 
+      color: '#64748b', 
+      maxWidth: 600, 
+      margin: '0 auto', 
+      lineHeight: 1.6 
+    }}>
+      A robust trust infrastructure offering secure escrow settlements, contract protection, and creator spotlight events to build a stable creator career.
+    </p>
   </div>
 ));
 

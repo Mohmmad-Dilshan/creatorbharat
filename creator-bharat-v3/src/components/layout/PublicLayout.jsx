@@ -95,6 +95,7 @@ export default function PublicLayout({ children }) {
   useEffect(() => {
     const isMobile = globalThis.innerWidth < 768;
     let lenis = null;
+    let rafId = null;
 
     // Disable Lenis on creator profile pages and official profile — sticky tab bar needs native scroll
     const isCreatorProfile = location.pathname.startsWith('/creator/') || location.pathname.startsWith('/c/');
@@ -118,17 +119,23 @@ export default function PublicLayout({ children }) {
       function raf(time) {
         if (lenis) {
           lenis.raf(time);
-          requestAnimationFrame(raf);
+          rafId = requestAnimationFrame(raf);
         }
       }
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
 
     const h = () => setMob(globalThis.innerWidth < 768);
     globalThis.addEventListener('resize', h);
     return () => {
       globalThis.removeEventListener('resize', h);
-      if (lenis) lenis.destroy();
+      if (lenis) {
+        lenis.destroy();
+        lenis = null;
+      }
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
     };
   }, [location.pathname]);
 

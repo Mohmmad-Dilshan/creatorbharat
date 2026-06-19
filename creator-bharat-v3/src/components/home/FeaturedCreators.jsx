@@ -204,9 +204,9 @@ function SectionHeader({ loading, isFallback, listCount, mob, go, displayList, s
 
           <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 26 : 40, fontWeight: 900, color: '#0f172a', margin: '0 0 10px 0', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
             {mob ? (
-              <>Creators You'll <br /><span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #EF4444 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Love to Work With</span></>
+              <>Collaborate with <br /><span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #EF4444 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Verified Bharat Talent</span></>
             ) : (
-              <>Creators You'll <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #EF4444 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Love to Work With</span></>
+              <>Collaborate with <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #EF4444 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Verified Bharat Talent</span></>
             )}
           </h2>
 

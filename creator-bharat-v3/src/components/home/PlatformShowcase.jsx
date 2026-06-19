@@ -236,7 +236,7 @@ export default function PlatformShowcase({ mob }) {
   const [hovered, setHovered] = useState(null);
 
   return (
-    <section style={{ padding: mob ? '48px 16px' : '80px 24px 96px', background: '#F8FAFC', position: 'relative', overflow: 'hidden' }}>
+    <section style={{ padding: mob ? '48px 16px 20px' : '80px 24px 40px', background: '#F8FAFC', position: 'relative', overflow: 'hidden' }}>
 
       {/* Ghost watermark */}
       <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', fontSize: mob ? 80 : 200, fontWeight: 900, color: 'rgba(0,0,0,0.018)', letterSpacing: '-0.05em', whiteSpace: 'nowrap', pointerEvents: 'none', userSelect: 'none', zIndex: 0 }}>
@@ -253,9 +253,9 @@ export default function PlatformShowcase({ mob }) {
           </div>
 
           <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 28 : 52, fontWeight: 900, color: '#0f172a', lineHeight: 1.1, letterSpacing: '-0.03em', marginBottom: 14 }}>
-            Our Core{' '}
+            Three Pillars of{' '}
             <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #8B5CF6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Commitment.
+              Creator Trust.
             </span>
           </h2>
           <p style={{ fontSize: mob ? 13 : 17, color: '#64748b', maxWidth: 480, margin: '0 auto', lineHeight: 1.7 }}>

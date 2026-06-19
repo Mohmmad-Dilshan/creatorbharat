@@ -49,7 +49,7 @@ export default function PlayButtonsShowcase({ mob }) {
     }
   };
   return (
-    <section style={{ padding: mob ? '60px 20px' : '100px 24px', background: '#fff', position: 'relative', overflow: 'hidden' }}>
+    <section style={{ padding: mob ? '32px 20px 60px' : '48px 24px 100px', background: '#fff', position: 'relative', overflow: 'hidden' }}>
       <div style={{ ...W(), maxWidth: 1200, position: 'relative', zIndex: 1, boxSizing: 'border-box' }}>
         <div style={{ textAlign: 'center', marginBottom: mob ? 40 : 64 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', background: '#FFF7ED', border: '1px solid #FFEDD5', borderRadius: 100, marginBottom: 16 }}>

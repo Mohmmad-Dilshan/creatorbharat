@@ -18,13 +18,12 @@ import ImpactStats from '../../components/home/ImpactStats';
 import IndiaMap3D from '../../components/IndiaMap3D/IndiaMap3D';
 import CommunityPulse from '../../components/home/CommunityPulse';
 import PlatformShowcase from '../../components/home/PlatformShowcase';
+import MediaKitShowcase from '../../components/home/MediaKitShowcase';
 import Manifesto from '../../components/home/Manifesto';
 import Testimonials from '../../components/home/Testimonials';
 import Faq from '../../components/home/Faq';
 import Cta from '../../components/home/Cta';
 import PlayButtonsShowcase from '../../components/home/PlayButtonsShowcase';
-import CreatorUnionAlert from '../../components/home/CreatorUnionAlert';
-import CoCreationBundles from '../../components/home/CoCreationBundles';
 import Seo from '@/components/common/SEO';
 
 const PAGE_BG_ICONS = [
@@ -133,8 +132,8 @@ export default function HomePage() {
         });
       },
       {
-        threshold: 0.05,
-        rootMargin: '0px 0px -60px 0px',
+        threshold: 0.01,
+        rootMargin: '0px 0px 50px 0px',
       }
     );
 
@@ -149,7 +148,7 @@ export default function HomePage() {
       clearTimeout(timer);
       observer.disconnect();
     };
-  }, []);
+  }, [loading]);
 
   const go = (path, sel) => {
     // Standardize path with leading slash if it's a direct route
@@ -179,9 +178,8 @@ export default function HomePage() {
     { id: 'impact',    comp: <ImpactStats mob={mob} /> },
     { id: 'map',       comp: <IndiaMap3D mob={mob} stateCounts={stateCounts} onSelectState={s => { navigate(st.role === 'brand' ? '/brand/creator-density' : '/creator-density', { state: { state: s } }); }} /> },
     { id: 'roadmap',   comp: <CommunityPulse mob={mob} go={go} /> },
-    { id: 'union',     comp: <CreatorUnionAlert mob={mob} /> },
-    { id: 'bundles',   comp: <CoCreationBundles mob={mob} /> },
     { id: 'showcase',  comp: <PlatformShowcase mob={mob} /> },
+    { id: 'mediakit',  comp: <MediaKitShowcase mob={mob} go={go} /> },
     { id: 'manifesto', comp: <Manifesto mob={mob} /> },
     { id: 'blueprint', comp: <Testimonials mob={mob} /> },
     { id: 'faq',       comp: <Faq mob={mob} /> },

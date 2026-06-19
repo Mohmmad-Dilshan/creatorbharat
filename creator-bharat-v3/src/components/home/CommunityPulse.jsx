@@ -81,7 +81,7 @@ export default function CommunityPulse({ mob, go }) {
   };
 
   return (
-    <section style={{ padding: mob ? '48px 16px' : '96px 24px', background: '#fff', position: 'relative', overflow: 'hidden' }}>
+    <section style={{ padding: mob ? '24px 16px 32px' : '48px 24px 64px', background: '#fff', position: 'relative', overflow: 'hidden' }}>
 
       {/* Subtle dot-grid background */}
       <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px)', backgroundSize: '28px 28px', zIndex: 0 }} />

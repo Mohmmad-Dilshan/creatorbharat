@@ -45,7 +45,7 @@ export default function CoCreationBundles({ mob }) {
             <Layers size={14} /> Co-Creation Bundles
           </div>
           <h2 style={{ fontSize: mob ? '32px' : '48px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', marginBottom: '16px' }}>
-            Buy <span style={{ color: '#8B5CF6' }}>Creator Squads</span> with one click.
+            Deploy <span style={{ color: '#8B5CF6' }}>Creator Squads</span> with One Click.
           </h2>
           <p style={{ fontSize: '18px', color: '#64748b', maxWidth: '600px', margin: '0 auto', fontWeight: 500, lineHeight: 1.6 }}>
             Don't waste time negotiating with 10 different creators. Our pre-packaged bundles deliver guaranteed ROI and massive reach instantly.

@@ -32,45 +32,93 @@ export default function Cta({ mob, go }) {
              zIndex: 0
            }} />
 
-           <div style={{ 
-              position: 'relative', 
-              zIndex: 1, 
-              background: '#fff', 
-              borderRadius: 47, 
-              padding: mob ? '60px 24px' : '100px 60px', 
-              textAlign: 'center' 
-           }}>
+            <div style={{ 
+               position: 'relative', 
+               zIndex: 1, 
+               background: '#fff', 
+               borderRadius: 47, 
+               padding: mob ? '48px 20px' : '80px 60px', 
+               textAlign: mob ? 'center' : 'left',
+               display: 'grid',
+               gridTemplateColumns: mob ? '1fr' : '1.15fr 0.85fr',
+               gap: mob ? 40 : 48,
+               alignItems: 'center',
+               overflow: 'hidden'
+            }}>
               {/* Abstract Glow Background */}
-              <div style={{ position: 'absolute', top: '-20%', left: '-20%', width: '140%', height: '140%', background: 'radial-gradient(circle at center, rgba(255,148,49,0.05) 0%, transparent 70%)', zIndex: 0 }} />
+              <div style={{ position: 'absolute', top: '-20%', left: '-20%', width: '140%', height: '140%', background: 'radial-gradient(circle at center, rgba(255,148,49,0.04) 0%, transparent 70%)', zIndex: 0 }} />
 
-              <div style={{ position: 'relative', zIndex: 1 }}>
+              {/* Left Column: Copy, bullets, and action buttons */}
+              <div style={{ 
+                position: 'relative', 
+                zIndex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: mob ? 'center' : 'flex-start'
+              }}>
                 <div style={{ 
                   display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 20px', 
-                  background: 'rgba(0,0,0,0.03)', borderRadius: 100, marginBottom: 32 
+                  background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.25)', 
+                  borderRadius: 100, marginBottom: 28 
                 }}>
                   <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', animation: 'pulse-dot 1.5s infinite' }} />
-                  <span style={{ fontSize: 11, fontWeight: 900, color: '#111', textTransform: 'uppercase', letterSpacing: '3px' }}>The Final Step</span>
+                  <span style={{ fontSize: 11, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '3px' }}>The Final Step</span>
                 </div>
 
                 <h2 style={{ 
                   fontFamily: "'Outfit', sans-serif", 
-                  fontSize: mob ? 36 : 72, 
-                  fontWeight: 900, 
-                  color: '#111', 
-                  lineHeight: 1, 
-                  letterSpacing: '-0.04em',
-                  marginBottom: 32
+                  fontSize: mob ? 32 : 56, 
+                  fontWeight: 950, 
+                  color: '#0f172a', 
+                  lineHeight: 1.15, 
+                  letterSpacing: '-0.03em',
+                  marginBottom: 24,
+                  textAlign: mob ? 'center' : 'left'
                 }}>
                   Ready to Claim your <br />
                   <span style={{ background: 'linear-gradient(90deg, #FF9431, #138808)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>National Identity?</span>
                 </h2>
 
-                <p style={{ fontSize: 18, color: 'rgba(0,0,0,0.5)', marginBottom: 56, maxWidth: 650, margin: '0 auto 56px', fontWeight: 600 }}>
-                   Join 10,000+ elite creators who are building the new digital Bharat. No middlemen, no hidden costs. Just pure growth.
+                <p style={{ 
+                  fontSize: mob ? 15 : 18, 
+                  color: '#475569', 
+                  marginBottom: 28, 
+                  maxWidth: 580, 
+                  fontWeight: 600,
+                  lineHeight: 1.6,
+                  textAlign: mob ? 'center' : 'left'
+                }}>
+                   Join over 10,000+ elite creators building their independent brand. Get verified, secure your escrow, and work directly with global companies—zero agency cuts.
                 </p>
 
+                {/* Small Bullet List for value density */}
+                <div style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: 12, 
+                  marginBottom: 36,
+                  textAlign: 'left'
+                }}>
+                  {[
+                    "Lifetime free verified creator profile & media kit",
+                    "0% platform commission on all campaigns",
+                    "Full dispute mediation through Creator Union membership"
+                  ].map((text, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF9431', flexShrink: 0 }} />
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#334155' }}>{text}</span>
+                    </div>
+                  ))}
+                </div>
+
                 {/* ACTION BUTTONS */}
-                <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: 20, justifyContent: 'center' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  flexDirection: mob ? 'column' : 'row', 
+                  gap: 16, 
+                  width: mob ? '100%' : 'auto',
+                  justifyContent: mob ? 'center' : 'flex-start'
+                }}>
                    <button 
                      onClick={() => go('apply')}
                      onMouseOver={handleHoverStart}
@@ -78,12 +126,20 @@ export default function Cta({ mob, go }) {
                      onFocus={handleHoverStart}
                      onBlur={handleHoverEnd}
                      style={{ 
-                       padding: '20px 48px', fontSize: 16, fontWeight: 900, borderRadius: 100, 
-                       background: '#111', color: '#fff', border: 'none', cursor: 'pointer',
-                       boxShadow: '0 10px 30px rgba(0,0,0,0.1)', transition: 'all 0.3s'
+                       padding: mob ? '16px 32px' : '20px 48px', 
+                       fontSize: 16, 
+                       fontWeight: 950, 
+                       borderRadius: 100, 
+                       background: 'linear-gradient(90deg, #FF9431, #EA580C)', 
+                       color: '#fff', 
+                       border: 'none', 
+                       cursor: 'pointer',
+                       boxShadow: '0 12px 24px rgba(255,148,49,0.2)', 
+                       transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                       fontFamily: "'Outfit', sans-serif"
                      }}
                    >
-                     Launch My Portfolio
+                     Launch My Portfolio ⚡
                    </button>
                    <button 
                      onClick={() => go('creators')}
@@ -92,30 +148,159 @@ export default function Cta({ mob, go }) {
                      onFocus={handleHoverStart}
                      onBlur={handleHoverEnd}
                      style={{ 
-                       padding: '20px 48px', fontSize: 16, fontWeight: 900, borderRadius: 100, 
-                       background: 'transparent', color: '#111', border: '1.5px solid rgba(0,0,0,0.1)', 
-                       cursor: 'pointer', transition: 'all 0.3s'
+                       padding: mob ? '16px 32px' : '20px 48px', 
+                       fontSize: 16, 
+                       fontWeight: 950, 
+                       borderRadius: 100, 
+                       background: '#0f172a', 
+                       color: '#fff', 
+                       border: 'none', 
+                       cursor: 'pointer', 
+                       transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                       fontFamily: "'Outfit', sans-serif"
                      }}
                    >
-                     Explore Discovery
+                     Explore Creators
                    </button>
                 </div>
+              </div>
 
-                {/* CREATOR AVATAR STACK */}
-                <div style={{ marginTop: 64, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-                   <div style={{ display: 'flex', marginLeft: 15 }}>
-                      {[1,2,3,4,5].map(i => (
-                        <div key={`avatar-${i}`} style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid #fff', marginLeft: -12, overflow: 'hidden', background: '#f0f0f0' }}>
-                          <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 10}`} style={{ width: '100%', height: '100%' }} alt="" />
-                        </div>
-                      ))}
-                      <div style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid #fff', marginLeft: -12, background: '#FF9431', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 900, color: '#fff' }}>+10k</div>
-                   </div>
-                   <span style={{ fontSize: 12, fontWeight: 800, color: 'rgba(0,0,0,0.3)', textTransform: 'uppercase', letterSpacing: '1px' }}>Trusted by creators nationwide</span>
+              {/* Right Column: Interactive 3D Creator ID Card Showcase */}
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                position: 'relative',
+                zIndex: 1,
+                minHeight: mob ? 280 : 340
+              }}>
+                {/* Ambient Background Glow behind Card */}
+                <div style={{
+                  position: 'absolute',
+                  width: 250,
+                  height: 250,
+                  background: 'radial-gradient(circle, rgba(255, 148, 49, 0.15) 0%, transparent 70%)',
+                  filter: 'blur(40px)',
+                  pointerEvents: 'none',
+                  zIndex: 0
+                }} />
+                
+                {/* The Glassmorphic Creator ID Card */}
+                <div style={{
+                  position: 'relative',
+                  width: mob ? 290 : 350,
+                  height: mob ? 180 : 210,
+                  borderRadius: 24,
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.85) 100%)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1.5px solid rgba(255, 255, 255, 0.4)',
+                  boxShadow: '0 30px 60px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255,255,255,0.6)',
+                  padding: mob ? 18 : 24,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  textAlign: 'left',
+                  transform: mob ? 'rotate(0deg)' : 'rotate(-4deg) translateY(0px)',
+                  transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                  zIndex: 2,
+                  cursor: 'pointer',
+                  overflow: 'hidden'
+                }}
+                className="interactive-creator-id-card"
+                >
+                  {/* Saffron-White-Green Tricolor Strip */}
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: 4,
+                    background: 'linear-gradient(90deg, #FF9431 0%, #F8FAFC 50%, #138808 100%)'
+                  }} />
+
+                  {/* Card Header */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 10, fontWeight: 900, color: '#FF9431', letterSpacing: '1.5px', textTransform: 'uppercase', fontFamily: "'Outfit', sans-serif" }}>Bharat Creator ID</span>
+                    <span style={{ fontSize: 9, fontWeight: 900, background: 'rgba(16, 185, 129, 0.08)', color: '#10B981', padding: '3px 8px', borderRadius: 100, border: '1px solid rgba(16, 185, 129, 0.15)', fontFamily: "'Outfit', sans-serif" }}>Verified Partner</span>
+                  </div>
+
+                  {/* Avatar + Info */}
+                  <div style={{ display: 'flex', gap: 14, marginTop: 8, alignItems: 'center' }}>
+                    <div style={{ width: 52, height: 52, borderRadius: 14, overflow: 'hidden', border: '1.5px solid #FF9431', background: '#F8FAFC', flexShrink: 0 }}>
+                      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Amit" style={{ width: '100%', height: '100%' }} alt="Avatar" />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <div style={{ fontSize: 15, fontWeight: 950, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 4, fontFamily: "'Outfit', sans-serif" }}>
+                        Amit Sharma
+                        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: '#FF9431' }}>
+                          <span style={{ fontSize: 8, color: '#fff', fontWeight: 900, marginTop: -1 }}>✓</span>
+                        </span>
+                      </div>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B' }}>@amit_vlogs • Tech & Travel</div>
+                      <div style={{ fontSize: 10, fontWeight: 800, color: '#10B981', marginTop: 2, fontFamily: "'Outfit', sans-serif" }}>CB Score: 92 (Top 1%)</div>
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 8, borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: 10 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <span style={{ fontSize: 8, fontWeight: 900, color: '#94A3B8', textTransform: 'uppercase', fontFamily: "'Outfit', sans-serif" }}>Location</span>
+                      <span style={{ fontSize: 10, fontWeight: 800, color: '#334155', fontFamily: "'Outfit', sans-serif" }}>Jaipur, RJ</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                      <svg width="24" height="24" viewBox="0 0 32 32" style={{ opacity: 0.85 }}>
+                        <path d="M0 0h10v10H0zm2 2v6h6V2zm10 0h10v10H12zm2 2v6h6V2zm0 10h10v10H12zm2 2v6h6v-6zm-14 0h10v10H0zm2 2v6h6v-6z" fill="#0f172a" />
+                      </svg>
+                      <span style={{ fontSize: 7, fontWeight: 800, color: '#64748B', fontFamily: "'Outfit', sans-serif" }}>ID: CB-98745</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating Badge 1: Saffron Tier */}
+                <div style={{
+                  position: 'absolute',
+                  top: mob ? '5%' : '15%',
+                  right: mob ? '5%' : '8%',
+                  background: 'rgba(255, 255, 255, 0.95)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1.5px solid #FF9431',
+                  borderRadius: 14,
+                  padding: '6px 12px',
+                  boxShadow: '0 10px 25px rgba(255,148,49,0.12)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  zIndex: 3,
+                  transform: 'rotate(6deg)'
+                }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF9431' }} />
+                  <span style={{ fontSize: 9, fontWeight: 900, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Saffron Tier</span>
+                </div>
+
+                {/* Floating Badge 2: 0% Commission */}
+                <div style={{
+                  position: 'absolute',
+                  bottom: mob ? '5%' : '15%',
+                  left: mob ? '5%' : '8%',
+                  background: 'rgba(255, 255, 255, 0.95)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1.5px solid #10B981',
+                  borderRadius: 14,
+                  padding: '6px 12px',
+                  boxShadow: '0 10px 25px rgba(16,185,129,0.12)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  zIndex: 3,
+                  transform: 'rotate(-4deg)'
+                }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
+                  <span style={{ fontSize: 9, fontWeight: 900, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.5px' }}>0% Commission</span>
                 </div>
               </div>
-           </div>
-        </div>
+            </div>
+         </div>
 
       </div>
 
@@ -128,6 +313,10 @@ export default function Cta({ mob, go }) {
         @keyframes spinBorder {
           from { transform: translate(-50%, -50%) rotate(0deg); }
           to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        .interactive-creator-id-card:hover {
+          transform: rotate(-1deg) translateY(-6px) scale(1.02) !important;
+          box-shadow: 0 40px 80px rgba(15, 23, 42, 0.15), inset 0 1px 0 rgba(255,255,255,0.8) !important;
         }
       `}</style>
     </section>
