@@ -189,7 +189,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div style={{ background: '#fff', position: 'relative' }}>
+    <div style={{ background: '#fff', position: 'relative', overflowX: 'hidden' }}>
       <Seo 
         title="India's Premier Creator Ecosystem"
         description="Discover and collaborate with Bharat's top content creators. 2,400+ verified creators from Jaipur, Mumbai, Delhi & beyond. Connect your brand with authentic Indian talent."

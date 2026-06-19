@@ -217,6 +217,7 @@
     height: auto;
     padding: 30px 20px;
     min-height: auto;
+    overflow: hidden;
   }
   .svgWrap {
     transform: perspective(1000px) rotateX(20deg) rotateZ(-2deg);

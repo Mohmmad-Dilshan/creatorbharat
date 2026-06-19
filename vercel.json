@@ -10,7 +10,11 @@
       "destination": "/api/profile-preview?id=:id"
     },
     {
-      "source": "/creator/:id((?!dashboard|profile|wallet|onboarding|applications|brand-requests|community|analytics|monetization|score|verification|notifications|calendar|messages|saved|settings|help|events|achievements|blog|official-profile|creator-density|verify-guide|stories|gallery|rate-calc|leaderboard|guidelines|pricing|about|contact|faq|privacy|terms|cookies|refunds|public-preview|opportunities|c).*)",
+      "source": "/creator/(dashboard|onboarding|profile|public-preview|opportunities|applications|brand-requests|community|wallet|analytics|monetization|score|verification|notifications|calendar|messages|saved|settings|help|events|achievements|blog|official-profile|creator-density|verify-guide|stories|gallery|rate-calc|leaderboard|guidelines|pricing|about|contact|faq|privacy|terms|cookies|refunds|c)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/creator/:id",
       "destination": "/api/profile-preview?id=:id"
     },
     {
