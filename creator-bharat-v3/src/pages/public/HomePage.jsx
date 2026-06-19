@@ -177,7 +177,7 @@ export default function HomePage() {
     { id: 'creators',  comp: <FeaturedCreators mob={mob} creators={creators} go={go} loading={loading} /> },
     { id: 'trophies',  comp: <PlayButtonsShowcase mob={mob} /> },
     { id: 'impact',    comp: <ImpactStats mob={mob} /> },
-    { id: 'map',       comp: <IndiaMap3D mob={mob} stateCounts={stateCounts} onSelectState={s => { dsp({ t: 'CF', v: { state: s, district: '' } }); go('creators'); }} /> },
+    { id: 'map',       comp: <IndiaMap3D mob={mob} stateCounts={stateCounts} onSelectState={s => { navigate(st.role === 'brand' ? '/brand/creator-density' : '/creator-density', { state: { state: s } }); }} /> },
     { id: 'roadmap',   comp: <CommunityPulse mob={mob} go={go} /> },
     { id: 'union',     comp: <CreatorUnionAlert mob={mob} /> },
     { id: 'bundles',   comp: <CoCreationBundles mob={mob} /> },

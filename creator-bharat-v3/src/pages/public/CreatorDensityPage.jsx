@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   MapPin, 
@@ -23,11 +23,12 @@ import { useStateCreatorCounts } from '../../hooks/useStateCreatorCounts';
 
 export default function CreatorDensityPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { st, dsp } = useApp();
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [creatorsList, setCreatorsList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedState, setSelectedState] = useState(null);
+  const [selectedState, setSelectedState] = useState(location.state?.state || null);
   const [selectedCity, setSelectedCity] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedNiche, setSelectedNiche] = useState('All');
