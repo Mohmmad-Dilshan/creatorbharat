@@ -338,22 +338,16 @@ h1, h2, h3, h4, .font-outfit {
 .d4 { animation-delay: .2s; }
 .d5 { animation-delay: .25s; }
 
-/* Scrollbar */
+/* Scrollbar - Hidden globally for modern app-like UI */
 ::-webkit-scrollbar {
-  width: 8px;
+  display: none;
+  width: 0;
+  height: 0;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--cb-slate-400);
-  border-radius: 100px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--cb-orange);
+html, body {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 /* --- About Page Specifics --- */
