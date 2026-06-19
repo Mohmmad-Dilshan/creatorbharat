@@ -144,26 +144,53 @@ const IdentityTabContent = ({ F, c, st, mob, upF, saveProfile, saving }) => {
     <Card className="settings-form-card card-3d-effect">
        <h3 className="db-section-title">Step 1: Personal Identity</h3>
        
-       <div className="profile-visual-box">
-          <div className="avatar-preview-wrap">
-             <img src={F.photo || c?.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name)}`} alt="" />
+       <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: '24px', marginBottom: '24px' }}>
+          {/* Avatar Photo */}
+          <div className="profile-visual-box" style={{ flex: 1, margin: 0 }}>
+             <div className="avatar-preview-wrap">
+                <img src={F.photo || c?.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user.name)}`} alt="" />
+             </div>
+             <div className="visual-actions">
+                <input type="file" id="creator-photo-upload" accept="image/jpeg,image/png,image/webp"
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    if (file.size > 2 * 1024 * 1024) { alert('Image 2MB se badi nahi honi chahiye'); return; }
+                    const reader = new FileReader();
+                    reader.onload = (ev) => upF('photo', ev.target.result);
+                    reader.readAsDataURL(file);
+                  }}
+                />
+                <button type="button" className="btn-primary-pill" onClick={() => document.getElementById('creator-photo-upload').click()}>
+                   <Camera size={14} /> Profile Photo
+                </button>
+                <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '6px', fontWeight: 600 }}>Avatar (up to 2MB)</p>
+             </div>
           </div>
-          <div className="visual-actions">
-             <input type="file" id="creator-photo-upload" accept="image/jpeg,image/png,image/webp"
-               style={{ display: 'none' }}
-               onChange={(e) => {
-                 const file = e.target.files?.[0];
-                 if (!file) return;
-                 if (file.size > 2 * 1024 * 1024) { alert('Image 2MB se badi nahi honi chahiye'); return; }
-                 const reader = new FileReader();
-                 reader.onload = (ev) => upF('photo', ev.target.result);
-                 reader.readAsDataURL(file);
-               }}
-             />
-             <button className="btn-primary-pill" onClick={() => document.getElementById('creator-photo-upload').click()}>
-                <Camera size={14} /> Update Photo
-             </button>
-             <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '8px', fontWeight: 600 }}>JPEG/PNG up to 2MB</p>
+
+          {/* Cover Photo */}
+          <div className="profile-visual-box" style={{ flex: 2, margin: 0, padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+             <div style={{ width: '100%', height: '80px', borderRadius: '12px', overflow: 'hidden', background: '#f8fafc', border: '1px solid #e2e8f0', marginBottom: '12px' }}>
+                <img src={F.coverImage || c?.cover_image || c?.banner_image || c?.coverUrl || `https://picsum.photos/seed/cover/1600/500`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="cover banner" />
+             </div>
+             <div className="visual-actions" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <input type="file" id="creator-cover-upload" accept="image/jpeg,image/png,image/webp"
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    if (file.size > 3 * 1024 * 1024) { alert('Cover Image 3MB se badi nahi honi chahiye'); return; }
+                    const reader = new FileReader();
+                    reader.onload = (ev) => upF('coverImage', ev.target.result);
+                    reader.readAsDataURL(file);
+                  }}
+                />
+                <button type="button" className="btn-primary-pill" onClick={() => document.getElementById('creator-cover-upload').click()}>
+                   <Camera size={14} /> Cover Banner
+                </button>
+                <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '6px', fontWeight: 600 }}>Horizontal (up to 3MB)</p>
+             </div>
           </div>
        </div>
 
@@ -1356,7 +1383,8 @@ const getInitialFormState = (c) => {
 
   return {
     name: c?.name || '', bio: c?.bio || '', city: c?.city || '', state: c?.state || '',
-    photo: c?.photo || '', instagram: c?.instagram || '', youtube: c?.youtube || '',
+    photo: c?.photo || '', coverImage: c?.cover_image || c?.banner_image || c?.coverUrl || '',
+    instagram: c?.instagram || '', youtube: c?.youtube || '',
     linkedin: c?.linkedin || '', twitter: c?.twitter || '', facebook: c?.facebook || '',
     instagramFollowers: c?.instagram_followers || c?.instagramFollowers || '',
     youtubeFollowers: c?.youtube_followers || c?.youtubeFollowers || '',
@@ -1638,6 +1666,9 @@ export default function ProfileBuilderPage() {
         facebook_followers: facebookFollowersInt,
         followers: totalReach,
         photo: F.photo || c.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(F.name || st.user.name)}`,
+        cover_image: F.coverImage || c.cover_image || `https://picsum.photos/seed/${c.id || 'cover'}/1600/500`,
+        banner_image: F.coverImage || c.banner_image || `https://picsum.photos/seed/${c.id || 'cover'}/1600/500`,
+        coverUrl: F.coverImage || c.coverUrl || `https://picsum.photos/seed/${c.id || 'cover'}/1600/500`,
         fullStory: { p1: F.storyP1, quote: F.storyQuote, p2: F.storyP2, p3: F.storyP3 },
         awards: filteredAwards, collabs: filteredCollabs, milestones: filteredMilestones,
         services: filteredServices, viralContent: filteredViral, caseStudies: filteredCaseStudies,
