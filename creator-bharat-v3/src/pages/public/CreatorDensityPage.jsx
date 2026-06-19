@@ -34,7 +34,8 @@ export default function CreatorDensityPage() {
   const [selectedReach, setSelectedReach] = useState('All');
   const [selectedPlatform, setSelectedPlatform] = useState('All');
 
-  const hasAccess = st.role === 'brand' && st.isPro;
+  const isDemoState = selectedState === 'Rajasthan';
+  const hasAccess = (st.role === 'brand' && st.isPro) || isDemoState;
 
   const toast = (msg, type = 'success') => {
     dsp({ t: 'TOAST', d: { type, msg } });
@@ -605,6 +606,9 @@ export default function CreatorDensityPage() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                           <span style={{ fontSize: '11px', fontWeight: 900, color: '#94a3b8', width: '20px' }}>#{idx + 1}</span>
                           <span style={{ fontSize: '13.5px', fontWeight: 800, color: '#0f172a' }}>{stObj.name}</span>
+                          {stObj.name === 'Rajasthan' && (
+                            <span style={{ fontSize: '9px', fontWeight: 900, color: '#10B981', background: 'rgba(16, 185, 129, 0.1)', padding: '2px 6px', borderRadius: '4px', marginLeft: '4px' }}>FREE PREVIEW</span>
+                          )}
                         </div>
                         <span style={{ fontSize: '12.5px', fontWeight: 900, color: '#3B82F6', background: 'rgba(59, 130, 246, 0.08)', padding: '4px 8px', borderRadius: '6px' }}>
                           {stObj.count.toLocaleString()}
@@ -702,10 +706,25 @@ export default function CreatorDensityPage() {
                   <ChevronLeft size={16} /> NATIONAL MAP OVERVIEW
                 </button>
 
-                {/* State Title */}
-                <h2 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
-                  📍 {selectedState.toUpperCase()} HUB
-                </h2>
+                 {/* State Title */}
+                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                   <h2 style={{ fontSize: '24px', fontWeight: 950, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
+                     📍 {selectedState.toUpperCase()} HUB
+                   </h2>
+                   {isDemoState && (
+                     <span style={{
+                       fontSize: '10px',
+                       fontWeight: 900,
+                       background: 'rgba(16, 185, 129, 0.12)',
+                       color: '#10B981',
+                       padding: '4px 12px',
+                       borderRadius: '100px',
+                       letterSpacing: '0.5px'
+                     }}>
+                       FREE PREVIEW MODE
+                     </span>
+                   )}
+                 </div>
               </div>
 
               {/* State Stats Strip */}

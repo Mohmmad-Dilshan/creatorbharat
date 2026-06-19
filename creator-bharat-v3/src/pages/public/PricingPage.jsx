@@ -28,6 +28,267 @@ import {
   BRAND_PRICING 
 } from '@/data/pricingData';
 
+function CampaignRateCalculator({ mob }) {
+  const [tier, setTier] = useState('mid');
+  const [reels, setReels] = useState(1);
+  const [stories, setStories] = useState(2);
+  const [youtube, setYoutube] = useState(0);
+
+  const TIER_RATES = {
+    micro: { name: 'Micro (10K - 100K)', reel: 12000, story: 4000, youtube: 25000, avgReach: 15000, avgER: 5.4 },
+    mid: { name: 'Mid-Tier (100K - 500K)', reel: 38000, story: 12000, youtube: 80000, avgReach: 68000, avgER: 4.2 },
+    macro: { name: 'Macro (500K - 1M)', reel: 110000, story: 35000, youtube: 220000, avgReach: 220000, avgER: 3.6 },
+    mega: { name: 'Mega (1M+)', reel: 320000, story: 95000, youtube: 650000, avgReach: 800000, avgER: 2.9 }
+  };
+
+  const currentRate = TIER_RATES[tier];
+  const totalCost = (reels * currentRate.reel) + (stories * currentRate.story) + (youtube * currentRate.youtube);
+  const agencyCommission = Math.round(totalCost * 0.15);
+  
+  const estReach = Math.round(
+    (reels * currentRate.avgReach * 1.1) + 
+    (stories * currentRate.avgReach * 0.35) + 
+    (youtube * currentRate.avgReach * 1.6)
+  );
+  
+  const estEngagements = Math.round(estReach * (currentRate.avgER / 100));
+  const estConversions = Math.round(estReach * 0.016);
+
+  return (
+    <div style={{
+      background: '#ffffff',
+      border: '1px solid #e2e8f0',
+      borderRadius: '40px',
+      padding: mob ? '24px' : '40px',
+      boxShadow: '0 25px 60px rgba(15,23,42,0.03)',
+      maxWidth: '1000px',
+      margin: '0 auto'
+    }}>
+      <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+        <span style={{
+          fontSize: '11px',
+          fontWeight: 900,
+          color: '#3b82f6',
+          background: 'rgba(59, 130, 246, 0.08)',
+          padding: '6px 16px',
+          borderRadius: '100px',
+          letterSpacing: '1px',
+          textTransform: 'uppercase',
+          display: 'inline-block',
+          marginBottom: '10px'
+        }}>
+          💡 Live Campaign Cost & ROI Estimator
+        </span>
+        <h3 style={{ fontSize: mob ? '22px' : '30px', fontWeight: 950, color: '#0f172a', margin: '0 0 8px 0', letterSpacing: '-0.02em' }}>
+          Estimate Campaign Rates & ROI
+        </h3>
+        <p style={{ color: '#64748b', fontSize: '14px', maxWidth: '600px', margin: '0 auto', fontWeight: 500 }}>
+          Adjust deliverables and creator tiers dynamically to calculate standard market campaign rates and expected engagement performance metrics.
+        </p>
+      </div>
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: mob ? '1fr' : '1.1fr 0.9fr',
+        gap: '40px',
+        alignItems: 'start'
+      }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <label style={{ fontSize: '12px', fontWeight: 900, color: '#475569', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+              Select Creator Tier
+            </label>
+            <select
+              value={tier}
+              onChange={e => setTier(e.target.value)}
+              style={{
+                width: '100%',
+                background: '#ffffff',
+                border: '1.5px solid #cbd5e1',
+                borderRadius: '16px',
+                padding: '14px 20px',
+                fontSize: '14px',
+                fontWeight: 700,
+                color: '#0f172a',
+                outline: 'none',
+                cursor: 'pointer',
+                appearance: 'none',
+                backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 20px center',
+                backgroundSize: '16px'
+              }}
+            >
+              <option value="micro">Micro (10K - 100K followers)</option>
+              <option value="mid">Mid-Tier (100K - 500K followers)</option>
+              <option value="macro">Macro (500K - 1M followers)</option>
+              <option value="mega">Mega (1M+ followers)</option>
+            </select>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a' }}>INSTAGRAM REELS</span>
+              <span style={{ fontSize: '13px', fontWeight: 900, color: '#FF9431', background: 'rgba(255, 148, 49, 0.08)', padding: '2px 10px', borderRadius: '8px' }}>
+                {reels} Video{reels !== 1 ? 's' : ''}
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="10"
+              value={reels}
+              onChange={e => setReels(parseInt(e.target.value))}
+              style={{
+                width: '100%',
+                height: '6px',
+                background: '#e2e8f0',
+                borderRadius: '10px',
+                outline: 'none',
+                accentColor: '#FF9431',
+                cursor: 'pointer'
+              }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a' }}>INSTAGRAM STORIES</span>
+              <span style={{ fontSize: '13px', fontWeight: 900, color: '#FF9431', background: 'rgba(255, 148, 49, 0.08)', padding: '2px 10px', borderRadius: '8px' }}>
+                {stories} Story{stories !== 1 ? 'ies' : ''}
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="10"
+              value={stories}
+              onChange={e => setStories(parseInt(e.target.value))}
+              style={{
+                width: '100%',
+                height: '6px',
+                background: '#e2e8f0',
+                borderRadius: '10px',
+                outline: 'none',
+                accentColor: '#FF9431',
+                cursor: 'pointer'
+              }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a' }}>YOUTUBE DEDICATED VIDEOS</span>
+              <span style={{ fontSize: '13px', fontWeight: 900, color: '#FF9431', background: 'rgba(255, 148, 49, 0.08)', padding: '2px 10px', borderRadius: '8px' }}>
+                {youtube} Video{youtube !== 1 ? 's' : ''}
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="5"
+              value={youtube}
+              onChange={e => setYoutube(parseInt(e.target.value))}
+              style={{
+                width: '100%',
+                height: '6px',
+                background: '#e2e8f0',
+                borderRadius: '10px',
+                outline: 'none',
+                accentColor: '#FF9431',
+                cursor: 'pointer'
+              }}
+            />
+          </div>
+        </div>
+
+        <div style={{
+          background: '#f8fafc',
+          border: '1px solid #e2e8f0',
+          borderRadius: '30px',
+          padding: '28px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '24px'
+        }}>
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+              Estimated Campaign Cost
+            </div>
+            <div style={{ fontSize: '32px', fontWeight: 950, color: '#0f172a', marginTop: '4px' }}>
+              ₹{totalCost.toLocaleString()}
+            </div>
+            <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px', fontWeight: 550 }}>
+              *Standard industry base rates (0% CreatorBharat commission)
+            </div>
+          </div>
+
+          <div style={{ borderBottom: '1px solid #e2e8f0' }} />
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <div>
+              <div style={{ fontSize: '10px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.2px' }}>
+                Expected Reach
+              </div>
+              <div style={{ fontSize: '18px', fontWeight: 900, color: '#3b82f6', marginTop: '2px' }}>
+                {estReach >= 100000 ? `${(estReach / 100000).toFixed(1)}L+` : estReach.toLocaleString()}
+              </div>
+              <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '1px' }}>Est. Views/Impressions</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '10px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.2px' }}>
+                Expected Clicks
+              </div>
+              <div style={{ fontSize: '18px', fontWeight: 900, color: '#10b981', marginTop: '2px' }}>
+                {estConversions.toLocaleString()}+
+              </div>
+              <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '1px' }}>At avg 1.6% CTR</div>
+            </div>
+          </div>
+
+          <div style={{ borderBottom: '1px solid #e2e8f0' }} />
+
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(255, 148, 49, 0.08) 0%, rgba(234, 88, 12, 0.04) 100%)',
+            border: '1.5px dashed rgba(255, 148, 49, 0.35)',
+            borderRadius: '20px',
+            padding: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '16px'
+          }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '12px',
+              background: '#FF9431',
+              color: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '20px',
+              flexShrink: 0
+            }}>
+              🎉
+            </div>
+            <div>
+              <div style={{ fontSize: '11.5px', fontWeight: 900, color: '#ea580c', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                CreatorBharat Advantage
+              </div>
+              <div style={{ fontSize: '14.5px', fontWeight: 900, color: '#0f172a', marginTop: '2px' }}>
+                Saved ₹{agencyCommission.toLocaleString()} in Agency Fees!
+              </div>
+              <p style={{ fontSize: '11px', color: '#64748b', margin: '2px 0 0 0', lineHeight: 1.4, fontWeight: 550 }}>
+                Traditional agencies charge 15% commission markups. CreatorBharat connects you directly for <b>Free</b>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function PricingPage() {
   const navigate = useNavigate();
   const { st } = useApp();
@@ -343,6 +604,11 @@ export default function PricingPage() {
 
 
         </div>
+      </section>
+
+      {/* Interactive Campaign ROI/Rate Calculator */}
+      <section style={{ padding: '40px 24px 80px', position: 'relative', zIndex: 2 }}>
+        <CampaignRateCalculator mob={mob} />
       </section>
 
       {/* DETAILED COMPARISON TABLE */}
