@@ -1246,17 +1246,17 @@ const DevBar = ({ profileCompleted, verificationStatus, updateProfileComplete, u
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.96 }}
             style={{
-              width: 280, background: 'rgba(15, 23, 42, 0.96)', backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: 12,
-              padding: 14, boxShadow: '0 15px 30px rgba(0,0,0,0.3)', color: '#fff'
+              width: 280, background: 'rgba(255, 255, 255, 0.96)', backdropFilter: 'blur(12px)',
+              border: '1.5px solid rgba(255, 122, 0, 0.25)', borderRadius: 12,
+              padding: 14, boxShadow: '0 15px 40px rgba(255, 122, 0, 0.12)', color: '#0F172A'
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                 <Settings size={12} color={C.saffron} />
-                <span style={{ fontSize: 11, fontWeight: 800, color: '#fff' }}>Developer Tools</span>
+                <span style={{ fontSize: 11, fontWeight: 800, color: '#0F172A' }}>Developer Tools</span>
               </div>
-              <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}>✕</button>
+              <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', color: '#64748B', cursor: 'pointer' }}>✕</button>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 10 }}>
@@ -1272,15 +1272,15 @@ const DevBar = ({ profileCompleted, verificationStatus, updateProfileComplete, u
                   style={{
                     display: 'flex', alignItems: 'center',
                     padding: '6px 8px', borderRadius: 6,
-                    background: st.active ? 'rgba(255,148,49,0.12)' : 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${st.active ? C.saffron : 'rgba(255,255,255,0.05)'}`,
-                    color: st.active ? C.saffron : 'rgba(255,255,255,0.8)',
+                    background: st.active ? 'rgba(255,122,0,0.08)' : '#F8FAFC',
+                    border: `1px solid ${st.active ? C.saffron : '#E2E8F0'}`,
+                    color: st.active ? C.saffron : '#334155',
                     cursor: 'pointer', textAlign: 'left', width: '100%'
                   }}
                 >
                   <div style={{ flex: 1 }}>
                     <span style={{ fontSize: 9, fontWeight: 800, display: 'block' }}>{st.label}</span>
-                    <span style={{ fontSize: 7, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>{st.desc}</span>
+                    <span style={{ fontSize: 7, color: '#64748B', fontWeight: 500 }}>{st.desc}</span>
                   </div>
                   {st.active && <div style={{ width: 4, height: 4, borderRadius: '50%', background: C.saffron }} />}
                 </button>
@@ -1289,18 +1289,18 @@ const DevBar = ({ profileCompleted, verificationStatus, updateProfileComplete, u
 
             {/* Pro Upgrade Toggle */}
             <div style={{
-              padding: '8px', borderRadius: 6, background: isPro ? 'rgba(16,185,129,0.1)' : 'rgba(255,255,255,0.03)',
-              border: `1px solid ${isPro ? C.green : 'rgba(255,255,255,0.05)'}`, marginBottom: 10,
+              padding: '8px', borderRadius: 6, background: isPro ? 'rgba(16,185,129,0.08)' : '#F8FAFC',
+              border: `1px solid ${isPro ? C.green : '#E2E8F0'}`, marginBottom: 10,
               display: 'flex', justifyContent: 'space-between', alignItems: 'center'
             }}>
               <div>
-                <span style={{ fontSize: 9, fontWeight: 800, color: isPro ? C.green : '#fff' }}>Pro Elite Lifetime</span>
-                <span style={{ fontSize: 7, display: 'block', color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>Toggle views/sparklines gate</span>
+                <span style={{ fontSize: 9, fontWeight: 800, color: isPro ? C.green : '#0F172A' }}>Pro Elite Lifetime</span>
+                <span style={{ fontSize: 7, display: 'block', color: '#64748B', fontWeight: 500 }}>Toggle views/sparklines gate</span>
               </div>
               <button
                 onClick={() => { dsp({ t: 'SET_PRO' }); toast(isPro ? 'Revoked Pro' : 'Granted Pro Elite!', isPro ? 'info' : 'success'); }}
                 style={{
-                  padding: '3px 6px', borderRadius: 4, background: isPro ? C.green : 'rgba(255,255,255,0.1)',
+                  padding: '3px 6px', borderRadius: 4, background: isPro ? C.green : '#0F172A',
                   border: 'none', color: '#fff', fontSize: 8, fontWeight: 800, cursor: 'pointer'
                 }}
               >
@@ -1308,11 +1308,11 @@ const DevBar = ({ profileCompleted, verificationStatus, updateProfileComplete, u
               </button>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 8 }}>
-              <span style={{ fontSize: 7, color: 'rgba(255,255,255,0.3)', fontWeight: 800, textTransform: 'uppercase' }}>Database sandbox</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #E2E8F0', paddingTop: 8 }}>
+              <span style={{ fontSize: 7, color: '#94A3B8', fontWeight: 800, textTransform: 'uppercase' }}>Database sandbox</span>
               <button onClick={handleResetAll} style={{
                 padding: '3px 6px', borderRadius: 4, background: 'rgba(239,68,68,0.15)',
-                border: 'none', color: '#FCA5A5', fontSize: 8, fontWeight: 800, cursor: 'pointer'
+                border: 'none', color: '#EF4444', fontSize: 8, fontWeight: 800, cursor: 'pointer'
               }}>Reset</button>
             </div>
           </motion.div>

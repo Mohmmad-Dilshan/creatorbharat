@@ -59,7 +59,7 @@ const STEPS = [
     icon: Image,
     color: '#7C3AED',
     required: true,
-    check: (c) => !!(c?.full_story?.p1 && c?.milestones?.length > 0),
+    check: (c) => !!((c?.full_story?.p1 || c?.fullStory?.p1) && (c?.milestones?.length > 0 || c?.awards?.length > 0)),
   },
   {
     id: 'packages',
@@ -69,7 +69,7 @@ const STEPS = [
     icon: BriefcaseBusiness,
     color: '#10B981',
     required: true,
-    check: (c) => !!(c?.rateMin && c?.services?.length > 0),
+    check: (c) => !!((c?.rateMin || c?.rate_min) && (c?.services?.length > 0 || c?.packages?.length > 0)),
   },
   {
     id: 'local',
@@ -79,7 +79,7 @@ const STEPS = [
     icon: MapPin,
     color: '#F59E0B',
     required: false,
-    check: (c) => !!(c?.local_voice || c?.local_impact_hubs?.length > 0),
+    check: (c) => !!(c?.local_voice || c?.localVoice || (c?.local_impact_hubs?.length > 0 || c?.localHubs?.length > 0 || c?.local_hubs?.length > 0) || c?.regionalDialects || c?.regional_dialects),
   },
   {
     id: 'verification',
@@ -95,7 +95,7 @@ const STEPS = [
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
-  const { st } = useApp();
+  const { st, dsp } = useApp();
   const [expanded, setExpanded] = useState(null);
   const [mob, setMob] = useState(() => globalThis.innerWidth < 768);
 
@@ -168,27 +168,27 @@ export default function OnboardingPage() {
           {/* COLUMN 1: Progress Summary Widget */}
           <motion.div {...fadeUp(0.05)}>
             <div style={{
-              background: 'linear-gradient(135deg, #090d16 0%, #111827 100%)',
+              background: 'linear-gradient(135deg, #FFF8F0 0%, #FFF1E5 100%)',
               borderRadius: 24,
               padding: '28px 24px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              boxShadow: '0 25px 50px -12px rgba(15,23,42,0.45), inset 0 1px 1px rgba(255,255,255,0.1)',
-              color: '#fff',
+              border: '1.5px solid rgba(255,148,49,0.2)',
+              boxShadow: '0 20px 40px rgba(255,148,49,0.05)',
+              color: '#0F172A',
               position: 'sticky',
               top: 24,
               textAlign: 'center'
             }}>
               {/* Glow effects */}
-              <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255, 148, 49, 0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255, 148, 49, 0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
               
-              <p style={{ fontSize: 11, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 20px' }}>
+              <p style={{ fontSize: 11, fontWeight: 900, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 20px' }}>
                 Overall Completion
               </p>
 
               {/* Radial Progress Ring */}
               <div style={{ position: 'relative', width: 140, height: 140, margin: '0 auto 24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <svg width={140} height={140} style={{ transform: 'rotate(-90deg)' }}>
-                  <circle cx={70} cy={70} r={radius} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={strokeWidth} />
+                  <circle cx={70} cy={70} r={radius} fill="none" stroke="rgba(15,23,42,0.05)" strokeWidth={strokeWidth} />
                   <motion.circle
                     cx={70}
                     cy={70}
@@ -204,10 +204,10 @@ export default function OnboardingPage() {
                   />
                 </svg>
                 <div style={{ position: 'absolute', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: 28, fontWeight: 950, color: '#fff', letterSpacing: '-0.02em', fontFamily: 'Outfit, sans-serif' }}>
+                  <span style={{ fontSize: 28, fontWeight: 950, color: '#0F172A', letterSpacing: '-0.02em', fontFamily: 'Outfit, sans-serif' }}>
                     {comp.pct}%
                   </span>
-                  <span style={{ fontSize: 9, color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.02em', marginTop: -2 }}>
+                  <span style={{ fontSize: 9, color: '#475569', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.02em', marginTop: -2 }}>
                     Finished
                   </span>
                 </div>
@@ -215,10 +215,10 @@ export default function OnboardingPage() {
 
               {/* Status Details */}
               <div style={{ marginBottom: 24 }}>
-                <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', margin: '0 0 6px', fontFamily: 'Outfit, sans-serif' }}>
+                <h3 style={{ fontSize: 18, fontWeight: 900, color: '#0F172A', margin: '0 0 6px', fontFamily: 'Outfit, sans-serif' }}>
                   {completedCount} of {STEPS.length} Completed
                 </h3>
-                <p style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600, margin: '0 0 16px', lineHeight: 1.5 }}>
+                <p style={{ fontSize: 12, color: '#475569', fontWeight: 600, margin: '0 0 16px', lineHeight: 1.5 }}>
                   {requiredDone ? 'Excellent work! All required sections are complete.' : 'Complete all mandatory sections to submit for admin review.'}
                 </p>
                 
@@ -240,7 +240,14 @@ export default function OnboardingPage() {
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  onClick={() => navigate('/creator/dashboard')}
+                  onClick={() => {
+                    localStorage.setItem('cb_verification_status', 'PENDING_APPROVAL');
+                    localStorage.setItem('cb_profile_completed', 'true');
+                    if (dsp) {
+                      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Profile submitted for approval! 🎉' } });
+                    }
+                    navigate('/creator/verification');
+                  }}
                   style={{
                     width: '100%',
                     padding: '14px',

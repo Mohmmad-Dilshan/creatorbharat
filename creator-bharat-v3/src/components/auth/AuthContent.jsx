@@ -91,7 +91,14 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
         followers: mergedProfile.followers || 0,
         score: mergedProfile.score || 85,
         niche: mergedProfile.niche || ['Digital Creator'],
-        bio: mergedProfile.bio || '',
+        bio: (() => {
+          const pb = localStorage.getItem('cb_pending_bio');
+          if (pb) {
+            localStorage.removeItem('cb_pending_bio');
+            return pb;
+          }
+          return mergedProfile.bio || '';
+        })(),
         gallery: mergedProfile.gallery || [],
         full_story: mergedProfile.full_story || mergedProfile.fullStory || { p1: '', quote: '', p2: '', p3: '' },
         milestones: mergedProfile.milestones || [],

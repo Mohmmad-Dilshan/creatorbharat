@@ -32,12 +32,40 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
     city: 'Mumbai',
     state: 'Maharashtra',
     phone: '',
-    otp: ''
+    otp: '',
+    bio: ''
   });
   const [otpSent, setOtpSent] = useState(false);
   const [verified, setVerified] = useState(false);
   const [errors, setErrors] = useState({});
   const { timer, startTimer } = useOtpTimer(30);
+  const [showAi, setShowAi] = useState(false);
+  const [aiNiche, setAiNiche] = useState('');
+  const [generatingAi, setGeneratingAi] = useState(false);
+
+  const generateAiBio = () => {
+    if (!aiNiche.trim()) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: 'Please enter a niche (e.g. travel, food)' } });
+      return;
+    }
+    setGeneratingAi(true);
+    setTimeout(() => {
+      const niche = aiNiche.toLowerCase();
+      let gen = `Hey there! I'm ${F.name || 'a creator'}, passionate about creating content in the ${niche} space. Connect with me to launch authentic regional campaigns!`;
+      if (niche.includes('travel')) {
+        gen = `Namaste! I'm ${F.name || 'a vlogger'}, exploring Bharat's hidden gems. Specializing in offbeat travel stories, local culture, and high-impact regional tourism campaigns.`;
+      } else if (niche.includes('food')) {
+        gen = `Hey foodies! I'm ${F.name || 'a food explorer'}, uncovering the rich street food and culinary legacy of Bharat. Sharing raw, authentic taste reviews and local recipes.`;
+      } else if (niche.includes('tech') || niche.includes('gadget')) {
+        gen = `Tech explorer here! I'm ${F.name || 'a reviewer'}, breaking down gadgets, smartphones, and software hacks. Making tech simple and accessible in regional dialects.`;
+      } else if (niche.includes('fashion') || niche.includes('beauty')) {
+        gen = `Hi gorgeous! I'm ${F.name || 'a stylist'}, sharing realistic beauty tips, ethnic wear, and budget styling hacks. Connecting brands with authentic Tier-2 audiences.`;
+      }
+      upF('bio', gen);
+      setGeneratingAi(false);
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'AI Biography starter generated!' } });
+    }, 800);
+  };
 
   const upF = (key, value) => {
     setF(prev => {
@@ -119,6 +147,9 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
     if (!validate()) return;
     setLoading(true);
     try {
+      if (F.bio) {
+        localStorage.setItem('cb_pending_bio', F.bio);
+      }
       const { user, token } = await registerCreator(F);
       dsp({ t: 'TOAST', d: { type: 'success', msg: 'Welcome to CreatorBharat!' } });
       onSuccess(user, token, F.phone);
@@ -266,6 +297,62 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
             <Fld label="State" value={F.state} onChange={e => upF('state', e.target.value)} options={INDIAN_STATES} required />
             <Fld label="City / District" value={F.city} icon={MapPin} onChange={e => upF('city', e.target.value)} options={STATE_CITY_MAP[F.state] || MAJOR_CITIES} required />
           </div>
+        </div>
+
+        {/* AI Bio Drawer */}
+        <div style={{ marginTop: 12, border: '1px solid #E2E8F0', borderRadius: 16, overflow: 'hidden' }}>
+          <button
+            type="button"
+            onClick={() => setShowAi(!showAi)}
+            style={{
+              width: '100%', padding: '12px 16px', background: '#F8FAFC',
+              border: 'none', display: 'flex', justifyContent: 'space-between',
+              alignItems: 'center', cursor: 'pointer', fontSize: 13,
+              fontWeight: 800, color: '#0F172A', outline: 'none'
+            }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Sparkles size={14} color="#FF9431" fill="#FF9431" fillOpacity={0.2} />
+              AI Bio Assistant (Optional)
+            </span>
+            <span style={{ fontSize: 11, color: '#64748B' }}>{showAi ? 'Collapse ▲' : 'Expand ▼'}</span>
+          </button>
+          
+          {showAi && (
+            <div style={{ padding: '16px', background: '#fff', borderTop: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div>
+                <label style={{ fontSize: 11, fontWeight: 900, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: 6 }}>Your Niche / Content Vibe</label>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. travel, street food, tech reviews" 
+                    value={aiNiche} 
+                    onChange={e => setAiNiche(e.target.value)}
+                    style={{ flex: 1, padding: '10px 14px', border: '1px solid #E2E8F0', borderRadius: 10, fontSize: 13, fontWeight: 600, outline: 'none' }}
+                  />
+                  <Btn 
+                    type="button" 
+                    onClick={generateAiBio}
+                    loading={generatingAi}
+                    style={{ background: '#FF9431', color: '#fff', padding: '10px 14px', borderRadius: 10, fontSize: 12, fontWeight: 800, border: 'none' }}
+                  >
+                    Draft ⚡
+                  </Btn>
+                </div>
+              </div>
+
+              {F.bio && (
+                <div>
+                  <label style={{ fontSize: 11, fontWeight: 900, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: 6 }}>Drafted Bio Preview</label>
+                  <textarea 
+                    value={F.bio} 
+                    onChange={e => upF('bio', e.target.value)}
+                    style={{ width: '100%', minHeight: 70, padding: '10px 12px', border: '1px solid #E2E8F0', borderRadius: 10, fontSize: 13, fontWeight: 650, color: '#475569', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5, boxSizing: 'border-box' }}
+                  />
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div style={{ marginTop: 20, padding: '14px 18px', background: 'rgba(255,148,49,0.05)', borderRadius: 16, border: '1px solid rgba(255,148,49,0.1)' }}>

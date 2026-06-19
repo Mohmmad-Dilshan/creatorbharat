@@ -471,6 +471,42 @@ export async function updateCreatorProfile(profileData) {
 
     return getEnrichedCreator(res);
   } catch (err) {
+    const isNetworkError =
+      err.name === 'TypeError' ||
+      err.message?.includes('Failed to fetch') ||
+      err.message?.includes('fetch') ||
+      err.status === 404 ||
+      err.status === 500 ||
+      !navigator.onLine;
+
+    if (isNetworkError) {
+      console.warn('updateCreatorProfile: API offline/sleeping. Using local storage fallback.');
+      
+      const fallbackRes = {
+        ...profileData,
+        id: profileData.id || 'c-local-1',
+        email: profileData.email || 'local-creator@creatorbharat.com'
+      };
+
+      if (_cache.creators) {
+        const idx = _cache.creators.findIndex(x => x.email === fallbackRes.email || x.id === fallbackRes.id);
+        if (idx !== -1) {
+          _cache.creators[idx] = getEnrichedCreator(fallbackRes);
+        } else {
+          _cache.creators.push(getEnrichedCreator(fallbackRes));
+        }
+      }
+      const local = LS.get('cb_creators', []);
+      const lIdx = local.findIndex(x => x.email === fallbackRes.email || x.id === fallbackRes.id);
+      if (lIdx !== -1) {
+        local[lIdx] = fallbackRes;
+      } else {
+        local.push(fallbackRes);
+      }
+      LS.set('cb_creators', local);
+
+      return getEnrichedCreator(fallbackRes);
+    }
     console.error('updateCreatorProfile failed:', err.message);
     throw err;
   }

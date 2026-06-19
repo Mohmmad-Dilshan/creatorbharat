@@ -199,7 +199,7 @@ export default function CalendarPage() {
                     fontWeight: isToday || isSelected ? 950 : 700,
                     color: isSelected ? '#ffffff' : isToday ? T.saffron : T.navy,
                     background: isSelected 
-                      ? 'linear-gradient(135deg, #0F172A, #1E293B)'
+                      ? 'linear-gradient(135deg, #FF9431, #EA580C)'
                       : isToday 
                       ? 'rgba(255,148,49,0.08)' 
                       : 'rgba(255,255,255,0.7)',
@@ -208,7 +208,7 @@ export default function CalendarPage() {
                       : isToday 
                       ? `1.5px solid ${T.saffron}40` 
                       : '1.5px solid #F1F5F9',
-                    boxShadow: isSelected ? '0 10px 20px rgba(15,23,42,0.15)' : 'none',
+                    boxShadow: isSelected ? '0 10px 20px rgba(255,148,49,0.3)' : 'none',
                     position: 'relative',
                     cursor: 'pointer',
                     minHeight: 56,

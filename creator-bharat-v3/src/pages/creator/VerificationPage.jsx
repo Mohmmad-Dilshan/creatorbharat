@@ -31,14 +31,22 @@ export default function VerificationPage() {
     return () => globalThis.removeEventListener('resize', h);
   }, []);
 
-  const verificationStatus = localStorage.getItem('cb_verification_status') || 'DRAFT';
+  const [status, setStatus] = useState(() => localStorage.getItem('cb_verification_status') || 'DRAFT');
   const profileCompleted = localStorage.getItem('cb_profile_completed') === 'true';
-  const currentStep = getStepIndex(verificationStatus);
+  const currentStep = getStepIndex(status);
 
   // Check profile completeness
   const allC = LS.get('cb_creators', []);
   const c = st.user?.creatorProfile || allC.find(cr => cr.email === st.user?.email) || {};
   const comp = fmt.completeness(c);
+
+  const handleSubmitReview = () => {
+    localStorage.setItem('cb_verification_status', 'PENDING_APPROVAL');
+    setStatus('PENDING_APPROVAL');
+    if (dsp) {
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Profile submitted for review! Admin team will verify soon.' } });
+    }
+  };
 
   return (
     <div className="dashboard-page-container">
@@ -54,14 +62,14 @@ export default function VerificationPage() {
         {/* Left: Status Timeline */}
         <Card style={{ padding: mob ? 28 : 40 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 14, background: verificationStatus === 'APPROVED' ? '#10B98112' : '#FF943112', color: verificationStatus === 'APPROVED' ? '#10B981' : '#FF9431', display: 'grid', placeItems: 'center' }}>
+            <div style={{ width: 44, height: 44, borderRadius: 14, background: status === 'APPROVED' ? '#10B98112' : '#FF943112', color: status === 'APPROVED' ? '#10B981' : '#FF9431', display: 'grid', placeItems: 'center' }}>
               <ShieldCheck size={22} />
             </div>
             <div>
               <h3 style={{ fontSize: 18, fontWeight: 900, color: '#0f172a', margin: 0 }}>Verification Pipeline</h3>
               <p style={{ fontSize: 13, color: '#64748b', fontWeight: 600, margin: 0 }}>
-                {verificationStatus === 'APPROVED' ? 'Your profile is verified and live!' : 
-                 verificationStatus === 'PENDING_APPROVAL' ? 'Under admin review...' : 
+                {status === 'APPROVED' ? 'Your profile is verified and live!' : 
+                 status === 'PENDING_APPROVAL' ? 'Under admin review...' : 
                  'Complete your profile to begin'}
               </p>
             </div>
@@ -112,17 +120,17 @@ export default function VerificationPage() {
           </div>
 
           {/* Action Button */}
-          {verificationStatus === 'DRAFT' && !profileCompleted && (
+          {status === 'DRAFT' && !profileCompleted && (
             <Btn full lg onClick={() => navigate('/creator/profile')} style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', border: 'none', borderRadius: 16, marginTop: 16 }}>
               Complete Profile Builder <ArrowRight size={18} />
             </Btn>
           )}
-          {verificationStatus === 'DRAFT' && profileCompleted && (
-            <Btn full lg onClick={() => navigate('/creator/dashboard')} style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', border: 'none', borderRadius: 16, marginTop: 16 }}>
+          {status === 'DRAFT' && profileCompleted && (
+            <Btn full lg onClick={handleSubmitReview} style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', border: 'none', borderRadius: 16, marginTop: 16 }}>
               Submit for Verification <ArrowRight size={18} />
             </Btn>
           )}
-          {verificationStatus === 'APPROVED' && (
+          {status === 'APPROVED' && (
             <Btn full lg onClick={() => navigate(`/creator/${c.handle || c.id || 'elite'}`)} style={{ background: 'linear-gradient(90deg, #10B981, #059669)', color: '#fff', border: 'none', borderRadius: 16, marginTop: 16 }}>
               View Live Public Profile <ArrowRight size={18} />
             </Btn>

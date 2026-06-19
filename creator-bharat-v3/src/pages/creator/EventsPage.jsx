@@ -356,14 +356,14 @@ export default function EventsPage() {
       />
 
       {/* CB Score info banner */}
-      <div style={{ padding: '16px 20px', background: 'linear-gradient(135deg, #0f172a, #1e293b)', borderRadius: 20, marginBottom: 32, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+      <div style={{ padding: '16px 20px', background: 'linear-gradient(135deg, #FFF8F0 0%, #FFF1E5 100%)', borderRadius: 20, marginBottom: 32, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, border: '1.5px solid rgba(255,148,49,0.2)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 14, background: 'rgba(255,148,49,0.15)', display: 'grid', placeItems: 'center', color: '#FF9431' }}>
+          <div style={{ width: 48, height: 48, borderRadius: 14, background: 'rgba(255,148,49,0.12)', display: 'grid', placeItems: 'center', color: '#FF9431' }}>
             <Trophy size={24} />
           </div>
           <div>
-            <div style={{ fontSize: 12, fontWeight: 800, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '1px' }}>Your CB Score</div>
-            <div style={{ fontSize: 24, fontWeight: 950, color: '#FF9431' }}>{creatorScore}<span style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', fontWeight: 600 }}>/100</span></div>
+            <div style={{ fontSize: 12, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px' }}>Your CB Score</div>
+            <div style={{ fontSize: 24, fontWeight: 950, color: '#EA580C' }}>{creatorScore}<span style={{ fontSize: 14, color: '#94A3B8', fontWeight: 600 }}>/100</span></div>
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -372,8 +372,8 @@ export default function EventsPage() {
             { label: 'Summit eligible', score: 60, color: '#FF9431' },
             { label: 'Awards eligible', score: 80, color: '#7C3AED' },
           ].map(tier => (
-            <div key={tier.label} style={{ padding: '6px 14px', borderRadius: 100, background: creatorScore >= tier.score ? `${tier.color}20` : 'rgba(255,255,255,0.05)', border: `1px solid ${creatorScore >= tier.score ? `${tier.color}40` : 'rgba(255,255,255,0.1)'}` }}>
-              <span style={{ fontSize: 11, fontWeight: 800, color: creatorScore >= tier.score ? tier.color : 'rgba(255,255,255,0.3)' }}>
+            <div key={tier.label} style={{ padding: '6px 14px', borderRadius: 100, background: creatorScore >= tier.score ? `${tier.color}15` : '#F1F5F9', border: `1px solid ${creatorScore >= tier.score ? `${tier.color}30` : '#E2E8F0'}` }}>
+              <span style={{ fontSize: 11, fontWeight: 800, color: creatorScore >= tier.score ? tier.color : '#94A3B8' }}>
                 {creatorScore >= tier.score ? '✓' : `${tier.score}+`} {tier.label}
               </span>
             </div>

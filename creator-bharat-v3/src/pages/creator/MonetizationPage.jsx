@@ -287,22 +287,22 @@ export default function MonetizationPage() {
               </div>
 
               {/* Pro Plan */}
-              <div style={{ background: 'linear-gradient(135deg, #0F172A 0%, #1e1b4b 100%)', borderRadius: 24, padding: '28px', border: '1.5px solid rgba(139,92,246,0.3)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ background: 'linear-gradient(135deg, #FFF8F0 0%, #FFF1E5 100%)', borderRadius: 24, padding: '28px', border: '2.5px solid #FF9431', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: 20, right: 20, padding: '4px 12px', background: 'linear-gradient(90deg, #FF9431, #EA580C)', borderRadius: 100, fontSize: 10, fontWeight: 900, color: '#fff', letterSpacing: '0.05em' }}>
                   MOST POPULAR
                 </div>
                 <div style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 14, fontWeight: 900, color: '#c4b5fd', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>PRO PLAN</div>
+                  <div style={{ fontSize: 14, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>PRO PLAN</div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                    <span style={{ fontSize: 36, fontWeight: 950, color: '#fff' }}>₹{pricingPlan === 'yearly' ? '41' : '49'}</span>
-                    <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>/month</span>
+                    <span style={{ fontSize: 36, fontWeight: 950, color: '#0F172A' }}>₹{pricingPlan === 'yearly' ? '41' : '49'}</span>
+                    <span style={{ fontSize: 14, color: '#64748B', fontWeight: 600 }}>/month</span>
                   </div>
-                  {pricingPlan === 'yearly' && <div style={{ fontSize: 12, color: '#a78bfa', fontWeight: 700 }}>₹499/year · Save ₹89</div>}
+                  {pricingPlan === 'yearly' && <div style={{ fontSize: 12, color: '#D97706', fontWeight: 700 }}>₹499/year · Save ₹89</div>}
                 </div>
                 {['Unlimited campaign applications', 'Unlimited social links', 'Unlimited gallery photos', 'Unlimited messages', 'Full analytics + demographics', 'Top priority search ranking', 'Verified badge ✅', 'Media kit PDF download', 'Priority support'].map(f => (
-                  <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                    <span style={{ fontSize: 14, color: '#FF9431' }}>✓</span>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.8)' }}>{f}</span>
+                  <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', borderBottom: '1px solid rgba(255,148,49,0.15)' }}>
+                    <span style={{ fontSize: 14, color: '#10B981' }}>✓</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#475569' }}>{f}</span>
                   </div>
                 ))}
                 <button
@@ -310,7 +310,7 @@ export default function MonetizationPage() {
                   disabled={processingPayment === 'pro'}
                   style={{
                     marginTop: 20, width: '100%', padding: '14px 20px', borderRadius: 14,
-                    background: processingPayment === 'pro' ? 'rgba(255,255,255,0.2)' : 'linear-gradient(135deg, #FF9431, #EA580C)',
+                    background: processingPayment === 'pro' ? '#94a3b8' : 'linear-gradient(135deg, #FF9431, #EA580C)',
                     border: 'none', color: '#fff', fontSize: 14, fontWeight: 900, cursor: processingPayment === 'pro' ? 'not-allowed' : 'pointer'
                   }}
                 >

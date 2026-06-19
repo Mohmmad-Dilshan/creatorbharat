@@ -239,17 +239,17 @@ const SummitInvitation = ({ cbScore }) => {
       animate={{ opacity: 1, y: 0 }}
       style={{
         background: qualifies 
-          ? 'linear-gradient(135deg, #0F172A 0%, #1e1b4b 100%)'
+          ? 'linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%)'
           : 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
         borderRadius: 28, padding: '32px',
-        border: qualifies ? '1.5px solid rgba(139,92,246,0.3)' : '1.5px solid #e2e8f0',
+        border: qualifies ? '1.5px solid rgba(147, 51, 234, 0.25)' : '1.5px solid #e2e8f0',
         position: 'relative', overflow: 'hidden'
       }}
     >
       {qualifies && (
         <>
-          <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, background: 'radial-gradient(circle, rgba(139,92,246,0.3), transparent)', borderRadius: '50%', pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', bottom: -20, left: -20, width: 80, height: 80, background: 'radial-gradient(circle, rgba(255,148,49,0.2), transparent)', borderRadius: '50%', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, background: 'radial-gradient(circle, rgba(147, 51, 234, 0.15), transparent)', borderRadius: '50%', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: -20, left: -20, width: 80, height: 80, background: 'radial-gradient(circle, rgba(255, 148, 49, 0.15), transparent)', borderRadius: '50%', pointerEvents: 'none' }} />
         </>
       )}
       
@@ -257,23 +257,23 @@ const SummitInvitation = ({ cbScore }) => {
         <div style={{ fontSize: 48, lineHeight: 1 }}>🎪</div>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-            <h3 style={{ fontSize: 20, fontWeight: 950, color: qualifies ? '#fff' : '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
+            <h3 style={{ fontSize: 20, fontWeight: 950, color: qualifies ? '#581C87' : '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
               Jaipur Creator Summit 2027
             </h3>
             {qualifies && (
-              <span style={{ padding: '4px 12px', borderRadius: 100, background: 'rgba(139,92,246,0.3)', color: '#c4b5fd', fontSize: 10, fontWeight: 900, letterSpacing: '0.06em' }}>
+              <span style={{ padding: '4px 12px', borderRadius: 100, background: 'rgba(147, 51, 234, 0.1)', color: '#9333EA', fontSize: 10, fontWeight: 900, letterSpacing: '0.06em' }}>
                 INVITED ✓
               </span>
             )}
           </div>
-          <p style={{ fontSize: 14, color: qualifies ? 'rgba(255,255,255,0.7)' : '#64748b', fontWeight: 600, lineHeight: 1.6, marginBottom: 16 }}>
-            India's biggest creator gathering — Top 50 creators (by CB Score) get <strong style={{ color: qualifies ? '#FF9431' : '#0f172a' }}>free travel + stay + live Play Button ceremony</strong>. Brand speed-networking sessions included.
+          <p style={{ fontSize: 14, color: qualifies ? '#6B21A8' : '#64748b', fontWeight: 600, lineHeight: 1.6, marginBottom: 16 }}>
+            India's biggest creator gathering — Top 50 creators (by CB Score) get <strong style={{ color: qualifies ? '#EA580C' : '#0f172a' }}>free travel + stay + live Play Button ceremony</strong>. Brand speed-networking sessions included.
           </p>
           
           {qualifies ? (
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               {['✈️ Free Travel', '🏨 Premium Stay', '🏆 Live Trophy', '🤝 Brand Meets'].map(perk => (
-                <span key={perk} style={{ padding: '6px 14px', borderRadius: 100, background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.9)', fontSize: 12, fontWeight: 700, border: '1px solid rgba(255,255,255,0.15)' }}>
+                <span key={perk} style={{ padding: '6px 14px', borderRadius: 100, background: 'rgba(255,255,255,0.6)', color: '#581C87', fontSize: 12, fontWeight: 700, border: '1px solid rgba(147, 51, 234, 0.15)' }}>
                   {perk}
                 </span>
               ))}

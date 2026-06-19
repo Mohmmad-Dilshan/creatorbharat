@@ -170,7 +170,18 @@ const IdentityTabContent = ({ F, c, st, mob, upF, saveProfile, saving }) => {
        <div className="form-stack">
           <Fld label="Full Name" value={F.name} onChange={e => upF('name', e.target.value)} placeholder="Amit Sharma" />
           <div style={{ position: 'relative' }}>
-             <Fld label="Cinematic Bio (150 chars)" value={F.bio} onChange={e => upF('bio', e.target.value.slice(0, 150))} rows={4} placeholder="I create high-impact tech reviews for regional India..." />
+             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <label style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>Cinematic Bio (150 chars)</label>
+                <button
+                  type="button"
+                  onClick={() => openAiWriter('bio', 150)}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'rgba(255,148,49,0.08)', border: '1px solid rgba(255,148,49,0.2)', borderRadius: 100, padding: '4px 10px', fontSize: 11, fontWeight: 800, color: '#FF9431', cursor: 'pointer', outline: 'none' }}
+                >
+                  <Sparkles size={11} fill="#FF9431" fillOpacity={0.2} />
+                  Write with AI
+                </button>
+             </div>
+             <Fld value={F.bio} onChange={e => upF('bio', e.target.value.slice(0, 150))} rows={4} placeholder="I create high-impact tech reviews for regional India..." />
              <span style={{ position: 'absolute', bottom: 12, right: 16, fontSize: 11, color: (F.bio?.length || 0) >= 150 ? '#EF4444' : '#94a3b8', fontWeight: 600 }}>{F.bio?.length || 0}/150</span>
           </div>
           <Fld label="Professional Tagline / Headline (e.g. Gym Creator, YouTube Vlogger, Food Storyteller)" value={F.tagline} onChange={e => upF('tagline', e.target.value)} placeholder="Expert in FoodCulture Storytelling | Building authentic brand identities across Bharat." />
@@ -451,29 +462,29 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
 
           {/* Dynamic dynamic calculated reach card */}
           <div style={{
-            background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+            background: 'linear-gradient(135deg, #FFF8F0 0%, #FFF1E5 100%)',
             borderRadius: 24,
             padding: '24px',
             marginTop: 32,
-            color: '#fff',
-            border: '1px solid rgba(255,255,255,0.1)',
+            color: '#0F172A',
+            border: '1.5px solid rgba(255,148,49,0.2)',
             display: 'flex',
             flexDirection: mob ? 'column' : 'row',
             justifyContent: 'space-between',
             alignItems: mob ? 'flex-start' : 'center',
             gap: 16,
-            boxShadow: '0 20px 40px rgba(15,23,42,0.15)'
+            boxShadow: '0 10px 30px rgba(255,148,49,0.05)'
           }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <Sparkles size={16} color="#FF9431" fill="#FF9431" />
-                <span style={{ fontSize: 11, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px', color: '#FF9431' }}>Dynamically Calculated Reach</span>
+                <Sparkles size={16} color="#FF9431" fill="#FF9431" fillOpacity={0.2} />
+                <span style={{ fontSize: 11, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px', color: '#EA580C' }}>Dynamically Calculated Reach</span>
               </div>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', margin: 0, fontWeight: 600 }}>Your profile's verified aggregate audience count across all platforms.</p>
+              <p style={{ fontSize: 13, color: '#475569', margin: 0, fontWeight: 600 }}>Your profile's verified aggregate audience count across all platforms.</p>
             </div>
             <div style={{ textAlign: mob ? 'left' : 'right' }}>
-              <p style={{ fontSize: '32px', fontWeight: 950, color: '#FFF', margin: 0, letterSpacing: '-0.02em' }}>{fmt.num(currentTotalReach)}</p>
-              <span style={{ fontSize: 10, color: '#94a3b8', fontWeight: 800 }}>TOTAL FOLLOWER REACH</span>
+              <p style={{ fontSize: '32px', fontWeight: 950, color: '#0F172A', margin: 0, letterSpacing: '-0.02em' }}>{fmt.num(currentTotalReach)}</p>
+              <span style={{ fontSize: 10, color: '#64748B', fontWeight: 800 }}>TOTAL FOLLOWER REACH</span>
             </div>
           </div>
 
@@ -704,17 +715,59 @@ GalleryTabContent.propTypes = {
 };
 
 // ─── Tab 4: Story ─────────────────────────────────────────────────────────────
-const StoryTabContent = ({ F, mob, upF, upAward, upCollab, upMilestone, saveProfile, setTab }) => (
+const StoryTabContent = ({ F, mob, upF, upAward, upCollab, upMilestone, saveProfile, setTab, openAiWriter }) => (
   <Card className="settings-form-card card-3d-effect">
      <h3 className="db-section-title">Step 3: Journey Milestones & Bio</h3>
      <p className="db-sub-text" style={{ marginBottom: 40 }}>Write your rich biography and declare historical milestones to construct your My Story tab.</p>
      
      <div className="form-stack">
-        <Fld label="Biography Intro Paragraph" value={F.storyP1} onChange={e => upF('storyP1', e.target.value)} rows={3} placeholder="Mera safar Hapur ki galiyon se shuru hua jahan..." />
+        <div>
+           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <label style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>Biography Intro Paragraph</label>
+              <button
+                type="button"
+                onClick={() => openAiWriter('storyP1')}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'rgba(255,148,49,0.08)', border: '1px solid rgba(255,148,49,0.2)', borderRadius: 100, padding: '4px 10px', fontSize: 11, fontWeight: 800, color: '#FF9431', cursor: 'pointer', outline: 'none' }}
+              >
+                <Sparkles size={11} fill="#FF9431" fillOpacity={0.2} />
+                Write with AI
+              </button>
+           </div>
+           <Fld value={F.storyP1} onChange={e => upF('storyP1', e.target.value)} rows={3} placeholder="Mera safar Hapur ki galiyon se shuru hua jahan..." />
+        </div>
+
         <Fld label="Featured Dynamic Quote" value={F.storyQuote} onChange={e => upF('storyQuote', e.target.value)} placeholder="Content is a connection that touches hearts." />
+        
         <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px' }}>
-           <Fld label="Biography Middle Paragraph" value={F.storyP2} onChange={e => upF('storyP2', e.target.value)} rows={3} placeholder="Shuruat mein mere paas sirf ek camera aur sapna tha..." />
-           <Fld label="Biography Conclusion Paragraph" value={F.storyP3} onChange={e => upF('storyP3', e.target.value)} rows={3} placeholder="Aaj scale karte hue, Bharat ki regional voice banana agla aim hai..." />
+           <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                 <label style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>Biography Middle Paragraph</label>
+                 <button
+                   type="button"
+                   onClick={() => openAiWriter('storyP2')}
+                   style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'rgba(255,148,49,0.08)', border: '1px solid rgba(255,148,49,0.2)', borderRadius: 100, padding: '4px 10px', fontSize: 11, fontWeight: 800, color: '#FF9431', cursor: 'pointer', outline: 'none' }}
+                 >
+                   <Sparkles size={11} fill="#FF9431" fillOpacity={0.2} />
+                   Write with AI
+                 </button>
+              </div>
+              <Fld value={F.storyP2} onChange={e => upF('storyP2', e.target.value)} rows={3} placeholder="Shuruat mein mere paas sirf ek camera aur sapna tha..." />
+           </div>
+
+           <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                 <label style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>Biography Conclusion Paragraph</label>
+                 <button
+                   type="button"
+                   onClick={() => openAiWriter('storyP3')}
+                   style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'rgba(255,148,49,0.08)', border: '1px solid rgba(255,148,49,0.2)', borderRadius: 100, padding: '4px 10px', fontSize: 11, fontWeight: 800, color: '#FF9431', cursor: 'pointer', outline: 'none' }}
+                 >
+                   <Sparkles size={11} fill="#FF9431" fillOpacity={0.2} />
+                   Write with AI
+                 </button>
+              </div>
+              <Fld value={F.storyP3} onChange={e => upF('storyP3', e.target.value)} rows={3} placeholder="Aaj scale karte hue, Bharat ki regional voice banana agla aim hai..." />
+           </div>
         </div>
 
         {/* Awards */}
@@ -796,7 +849,7 @@ const StoryTabContent = ({ F, mob, upF, upAward, upCollab, upMilestone, saveProf
 StoryTabContent.propTypes = {
   F: PropTypes.object.isRequired, mob: PropTypes.bool.isRequired, upF: PropTypes.func.isRequired,
   upAward: PropTypes.func.isRequired, upCollab: PropTypes.func.isRequired, upMilestone: PropTypes.func.isRequired,
-  saveProfile: PropTypes.func.isRequired, setTab: PropTypes.func.isRequired
+  saveProfile: PropTypes.func.isRequired, setTab: PropTypes.func.isRequired, openAiWriter: PropTypes.func.isRequired
 };
 
 // ─── Tab 4: Packages ──────────────────────────────────────────────────────────
@@ -1340,6 +1393,136 @@ export default function ProfileBuilderPage() {
   const [tab, setTab] = useState('identity');
   const [saving, setSaving] = useState(false);
 
+  // AI Co-Writer State variables
+  const [aiModalOpen, setAiModalOpen] = useState(false);
+  const [aiTargetField, setAiTargetField] = useState(''); // 'bio', 'storyP1', 'storyP2', 'storyP3'
+  const [aiTargetLimit, setAiTargetLimit] = useState(0); 
+  const [aiTone, setAiTone] = useState('hinglish');
+  const [aiKeywords, setAiKeywords] = useState('');
+  const [generatingAi, setGeneratingAi] = useState(false);
+
+  const openAiWriter = (field, limit = 0) => {
+    setAiTargetField(field);
+    setAiTargetLimit(limit);
+    setAiModalOpen(true);
+  };
+
+  const handleAiWrite = () => {
+    if (!aiKeywords.trim()) {
+      alert('Please enter some keywords about your style or niche!');
+      return;
+    }
+    setGeneratingAi(true);
+    setTimeout(() => {
+      const keys = aiKeywords.toLowerCase();
+      let res = '';
+      
+      if (aiTone === 'en') {
+        res = `Content creator specialized in ${keys}. Delivering highly engaging storytelling and raw reviews to build authentic brand connections across India.`;
+      } else if (aiTone === 'hi') {
+        res = `${keys} के क्षेत्र में सक्रिय कंटेंट क्रिएटर। प्रामाणिक अनुभवों और उत्कृष्ट वीडियो के माध्यम से भारत की जनता को सीधे ब्रांड्स से जोड़ता हूँ।`;
+      } else if (aiTone === 'hinglish') {
+        res = `Hey! I'm a digital creator doing ${keys}. Making highly engaging videos that regional audiences connect with instantly. Let's collaborate!`;
+      } else if (aiTone === 'haryanvi') {
+        res = `राम राम जी! ${keys} का एकदम ढाकड़ कंटेंट बनाऊँ हूँ। हरियाणवी बोली में ठेठ रिव्यूज और देसी अंदाज में ऑडियंस तक ब्रांड्स का संदेश पहुँचाऊँ हूँ।`;
+      } else if (aiTone === 'rajasthani') {
+        res = `खम्मा घणी सा! म्हारो नाम ${F.name || 'क्रिएटर'} है और मैं ${keys} को कंटेंट बणाऊँ। राजस्थानी मिठास और प्रामाणिक अंदाज में ब्रांड्स को प्रमोट करूं।`;
+      } else if (aiTone === 'bhojpuri') {
+        res = `प्रणाम! ${keys} के क्षेत्र में एकदम गर्दा वीडियो बनावेली। भोजपुरी बोली और ऊर्जायुक्त अंदाज से हमनी के ऑडियंस ब्रांड्स से सीधे जुड़ जाला।`;
+      } else if (aiTone === 'marathi') {
+        res = `नमस्कार! मी ${keys} या विषयात अस्सल मराठी भाषेत कंटेंट बनवतो. अस्सल प्रादेशिक संस्कृती आणि विश्वासाची जोड देऊन ब्रँड्सना लोकांपर्यंत पोहोचवतो.`;
+      }
+
+      if (aiTargetLimit > 0) {
+        res = res.slice(0, aiTargetLimit);
+      }
+
+      upF(aiTargetField, res);
+      setGeneratingAi(false);
+      setAiModalOpen(false);
+      setAiKeywords('');
+    }, 1000);
+  };
+
+  const renderAiModal = () => {
+    if (!aiModalOpen) return null;
+    return (
+      <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.4)', backdropFilter: 'blur(8px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+        <div style={{ background: '#fff', borderRadius: 28, border: '1.5px solid #F1F5F9', padding: '32px', maxWidth: 450, width: '100%', boxShadow: '0 30px 60px rgba(15,23,42,0.15)', boxSizing: 'border-box' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+            <div style={{ width: 44, height: 44, borderRadius: 14, background: 'rgba(255,148,49,0.12)', color: '#FF9431', display: 'grid', placeItems: 'center' }}>
+              <Sparkles size={20} fill="#FF9431" fillOpacity={0.2} />
+            </div>
+            <div>
+              <h3 style={{ fontSize: 18, fontWeight: 950, color: '#0F172A', margin: 0, fontFamily: "'Outfit', sans-serif" }}>AI Co-Writer Node</h3>
+              <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>Draft premium localized bios in seconds</p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            
+            {/* Tone Selector */}
+            <div>
+              <label style={{ fontSize: 11, fontWeight: 900, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: 8 }}>Select Tone / Localized Dialect</label>
+              <select 
+                value={aiTone}
+                onChange={e => setAiTone(e.target.value)}
+                style={{ width: '100%', padding: '12px 14px', border: '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, fontWeight: 700, color: '#0F172A', background: '#F8FAFC', outline: 'none' }}
+              >
+                <option value="en">🇺🇸 Standard English</option>
+                <option value="hi">🇮🇳 Professional Hindi (शुद्ध हिंदी)</option>
+                <option value="hinglish">🇮🇳 Hinglish (City Smart / Mix)</option>
+                <option value="haryanvi">🌾 Haryanvi Flavor (देसी / ढाकड़)</option>
+                <option value="rajasthani">👑 Rajasthani Accent (खम्मा घणी / रजवाड़ी)</option>
+                <option value="bhojpuri">🔥 Bhojpuri Fusion (ऊर्जायुक्त / गर्दा)</option>
+                <option value="marathi">🚩 Marathi Pride (अस्सल प्रादेशिक)</option>
+              </select>
+            </div>
+
+            {/* Keywords */}
+            <div>
+              <label style={{ fontSize: 11, fontWeight: 900, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: 8 }}>Niche / Style Keywords</label>
+              <input 
+                type="text"
+                placeholder="e.g. fashion styling, budget food walks, tech reviews"
+                value={aiKeywords}
+                onChange={e => setAiKeywords(e.target.value)}
+                style={{ width: '100%', padding: '12px 14px', border: '1.5px solid #E2E8F0', borderRadius: 12, fontSize: 14, fontWeight: 650, color: '#0F172A', outline: 'none', boxSizing: 'border-box' }}
+              />
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: 'flex', gap: 12, marginTop: 10 }}>
+              <button
+                type="button"
+                onClick={() => setAiModalOpen(false)}
+                style={{ flex: 1, padding: '14px', background: '#F1F5F9', border: 'none', borderRadius: 12, fontSize: 13, fontWeight: 800, color: '#475569', cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleAiWrite}
+                disabled={generatingAi}
+                style={{ flex: 1, padding: '14px', background: '#0F172A', border: 'none', borderRadius: 12, fontSize: 13, fontWeight: 900, color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+              >
+                {generatingAi ? (
+                  <>Generating...</>
+                ) : (
+                  <>
+                    <Sparkles size={14} />
+                    Write Bio
+                  </>
+                )}
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const isPro = st.isPro || localStorage.getItem('cb_is_pro') === 'true';
   const allC = LS.get('cb_creators', []);
   const c = getDefaultCreator(st, allC);
@@ -1534,7 +1717,7 @@ export default function ProfileBuilderPage() {
                )}
                {tab === 'story' && (
                  <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="story">
-                    <StoryTabContent F={F} mob={mob} upF={upF} upAward={upAward} upCollab={upCollab} upMilestone={upMilestone} saveProfile={saveProfile} setTab={setTab} />
+                    <StoryTabContent F={F} mob={mob} upF={upF} upAward={upAward} upCollab={upCollab} upMilestone={upMilestone} saveProfile={saveProfile} setTab={setTab} openAiWriter={openAiWriter} />
                  </motion.div>
                )}
                {tab === 'packages' && (
@@ -1555,6 +1738,7 @@ export default function ProfileBuilderPage() {
             </AnimatePresence>
          </div>
       </div>
+      {renderAiModal()}
     </div>
   );
 }
