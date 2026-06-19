@@ -880,7 +880,18 @@ StoryTabContent.propTypes = {
 };
 
 // ─── Tab 4: Packages ──────────────────────────────────────────────────────────
-const PackagesTabContent = ({ F, mob, upF, upService, addService, removeService, upViralContent, upCaseStudy, saveProfile, setTab, isPro, navigate }) => (
+const PackagesTabContent = ({ F, mob, upF, upService, addService, removeService, upViralContent, upCaseStudy, saveProfile, setTab, isPro, navigate }) => {
+  const totalFollowers = (parseInt(F.instagramFollowers)||0)+(parseInt(F.youtubeFollowers)||0)+(parseInt(F.linkedinFollowers)||0)+(parseInt(F.twitterFollowers)||0)+(parseInt(F.facebookFollowers)||0);
+  const suggestRates = () => {
+    let min=3000,max=10000;
+    if(totalFollowers>=1000000){min=80000;max=300000;}
+    else if(totalFollowers>=500000){min=40000;max=150000;}
+    else if(totalFollowers>=100000){min=15000;max=60000;}
+    else if(totalFollowers>=50000){min=8000;max=30000;}
+    else if(totalFollowers>=10000){min=3000;max=12000;}
+    upF('rateMin',String(min)); upF('rateMax',String(max));
+  };
+  return (
   <Card className="settings-form-card card-3d-effect">
      <h3 className="db-section-title">Step 4: Commercial Deliverables & Pro Work</h3>
      <p className="db-sub-text" style={{ marginBottom: 40 }}>Define your rate range, service packages, viral hits, and case studies for brand discovery.</p>
@@ -1042,7 +1053,7 @@ PackagesTabContent.propTypes = {
 };
 
 // ─── Tab 5: Local Hub ─────────────────────────────────────────────────────────
-const LocalTabContent = ({ F, mob, upF, upLocalHub, saveProfile, setTab }) => (
+const LocalTabContent = ({ F, mob, upF, upLocalHub, saveProfile, setTab, openAiWriter }) => (
   <Card className="settings-form-card card-3d-effect">
      <h3 className="db-section-title">Step 5: Local Collab Hub</h3>
      <p className="db-sub-text" style={{ marginBottom: 40 }}>Define your regional reach and attract hyper-local sponsorships from Tier-2 city brands.</p>
@@ -1057,7 +1068,13 @@ const LocalTabContent = ({ F, mob, upF, upLocalHub, saveProfile, setTab }) => (
            <Fld label="Local Market Penetration %" value={F.localPenetration} onChange={e => upF('localPenetration', e.target.value)} placeholder="85%" />
         </div>
 
-        <Fld label="Vocal for Local / Regional Voice Statement" value={F.localVoice} onChange={e => upF('localVoice', e.target.value)} rows={3} placeholder="Main local brands aur startups ko support karne ke liye hamesha ready hoon..." />
+        <div>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
+            <label style={{ fontSize:13, fontWeight:700, color:'#0f172a' }}>Vocal for Local / Regional Voice Statement</label>
+            <AiBtn onClick={() => openAiWriter('localVoice')} />
+          </div>
+          <Fld value={F.localVoice} onChange={e => upF('localVoice', e.target.value)} rows={3} placeholder="Main local brands aur startups ko support karne ke liye hamesha ready hoon..." />
+        </div>
 
         <div style={{ marginTop: 32 }}>
            <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', marginBottom: 16, textTransform: 'uppercase' }}>📍 Active Local Hubs (Up to 3 Cities)</p>
@@ -1456,6 +1473,50 @@ export default function ProfileBuilderPage() {
   const [aiKeywords, setAiKeywords] = useState('');
   const [generatingAi, setGeneratingAi] = useState(false);
 
+  const [qbOpen, setQbOpen] = useState(false);
+  const [qbBuilding, setQbBuilding] = useState(false);
+  const [qbNiche, setQbNiche] = useState('');
+  const [qbCity, setQbCity] = useState('');
+  const [qbFollowers, setQbFollowers] = useState('');
+  const [qbTone, setQbTone] = useState('hinglish');
+
+  const handleQuickBuild = () => {
+    setQbBuilding(true);
+    setTimeout(() => {
+      const n = qbNiche || (Array.isArray(F.niche)?F.niche.join(', '):F.niche) || 'Content';
+      const city = qbCity || F.city || 'Bharat';
+      const followers = parseInt(qbFollowers)||0;
+      const texts = {
+        en:       { bio:`${n} creator from ${city} | Authentic storytelling for real Bharat | Creating premium content that connects brands with regional audiences.`,
+                    tagline:`${n} Creator | Real Stories, Real Impact | Turning views into brand value`,
+                    philosophy:`My content philosophy: every video should build a genuine connection. I create ${n} content resonating with ${city}'s audience driving real brand ROI.`,
+                    localVoice:`I actively support local businesses and homegrown brands in ${city}. My audience is deeply rooted in regional culture.`,
+                    aiSummary:`${n} — High Authenticity, Regional Authority, Strong Engagement & Conversion ROI` },
+        hinglish: { bio:`${city} se ${n} creator hoon! Authentic stories banata hoon jo real Bharat se connect karti hain. 🔥`,
+                    tagline:`${n} Creator from ${city} | Real stories, real impact | Let's collab! 🚀`,
+                    philosophy:`Content sirf views ke liye nahi hota — real impact ke liye. ${n} mein mera kaam ${city} ki audience ke saath authentic connection banana hai.`,
+                    localVoice:`Main ${city} ke local brands aur startups ko promote karne ke liye hamesha ready hoon. Local ke liye vocal, always! 🙌`,
+                    aiSummary:`${n} — Authentic Regional Voice, High Engagement & Trusted Brand Partner` },
+        hi:       { bio:`${n} के क्षेत्र में ${city} से सक्रिय कंटेंट क्रिएटर। प्रामाणिक वीडियो के माध्यम से भारत की जनता को ब्रांड्स से जोड़ता हूँ।`,
+                    tagline:`${n} क्रिएटर | प्रामाणिक भारतीय कंटेंट | ब्रांड्स को जनता से जोड़ता हूँ`,
+                    philosophy:`मेरी फिलॉसफी — कंटेंट सिर्फ स्क्रॉल नहीं, सच्चा जुड़ाव। मैं ${n} में ऐसा कंटेंट बनाता हूँ जो ${city} की जनता को छूता है।`,
+                    localVoice:`मैं ${city} के स्थानीय व्यापारियों का हमेशा समर्थन करता हूँ।`,
+                    aiSummary:`${n} — उच्च प्रामाणिकता, क्षेत्रीय अधिकार और मजबूत ROI` },
+      };
+      const t = texts[qbTone]||texts.hinglish;
+      let rateMin='3000',rateMax='10000';
+      if(followers>=1000000){rateMin='80000';rateMax='300000';}
+      else if(followers>=500000){rateMin='40000';rateMax='150000';}
+      else if(followers>=100000){rateMin='15000';rateMax='60000';}
+      else if(followers>=50000){rateMin='8000';rateMax='30000';}
+      else if(followers>=10000){rateMin='3000';rateMax='12000';}
+      setF(p=>({...p, bio:t.bio.slice(0,150), tagline:t.tagline, philosophy:t.philosophy, localVoice:t.localVoice,
+        aiSummary:t.aiSummary, aiMatch:'94%', aiSafety:'99% Safe', aiRetention:'Excellent',
+        aiRoi:followers>=100000?'5.8x':'3.2x', rateMin, rateMax, city:qbCity||p.city }));
+      setQbBuilding(false); setQbOpen(false);
+    }, 1200);
+  };
+
   const openAiWriter = (field, limit = 0) => {
     setAiTargetField(field);
     setAiTargetLimit(limit);
@@ -1497,6 +1558,51 @@ export default function ProfileBuilderPage() {
       setAiModalOpen(false);
       setAiKeywords('');
     }, 1000);
+  };
+
+  const renderQuickBuildModal = () => {
+    if(!qbOpen) return null;
+    return (
+      <div style={{ position:'fixed', inset:0, background:'rgba(15,23,42,0.45)', backdropFilter:'blur(10px)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center', padding:20 }}>
+        <div style={{ background:'#fff', borderRadius:28, border:'1.5px solid #F1F5F9', padding:'32px', maxWidth:460, width:'100%', boxShadow:'0 30px 60px rgba(15,23,42,0.15)', boxSizing:'border-box' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:20 }}>
+            <div style={{ width:48, height:48, borderRadius:16, background:'rgba(255,148,49,0.12)', display:'grid', placeItems:'center' }}><Sparkles size={22} color="#FF9431" fill="#FF9431" /></div>
+            <div>
+              <h3 style={{ fontSize:18, fontWeight:950, color:'#0F172A', margin:0 }}>🚀 AI Quick Build</h3>
+              <p style={{ fontSize:12, color:'#64748B', margin:'2px 0 0' }}>10+ fields auto-fill in 5 seconds</p>
+            </div>
+          </div>
+          <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+            <div>
+              <label style={{ fontSize:11, fontWeight:900, color:'#64748B', textTransform:'uppercase', letterSpacing:'0.5px', display:'block', marginBottom:6 }}>Aapka Niche (e.g. Food, Tech, Fashion)</label>
+              <input value={qbNiche} onChange={e=>setQbNiche(e.target.value)} placeholder="Food Vlogging, Tech Reviews, Fitness..." style={{ width:'100%', padding:'11px 14px', border:'1.5px solid #E2E8F0', borderRadius:12, fontSize:13, fontWeight:650, outline:'none', boxSizing:'border-box' }} />
+            </div>
+            <div>
+              <label style={{ fontSize:11, fontWeight:900, color:'#64748B', textTransform:'uppercase', letterSpacing:'0.5px', display:'block', marginBottom:6 }}>Aapka City</label>
+              <input value={qbCity} onChange={e=>setQbCity(e.target.value)} placeholder="Jaipur, Indore, Mumbai..." style={{ width:'100%', padding:'11px 14px', border:'1.5px solid #E2E8F0', borderRadius:12, fontSize:13, fontWeight:650, outline:'none', boxSizing:'border-box' }} />
+            </div>
+            <div>
+              <label style={{ fontSize:11, fontWeight:900, color:'#64748B', textTransform:'uppercase', letterSpacing:'0.5px', display:'block', marginBottom:6 }}>Total Followers (for rate calculation)</label>
+              <input type="number" value={qbFollowers} onChange={e=>setQbFollowers(e.target.value)} placeholder="e.g. 150000" style={{ width:'100%', padding:'11px 14px', border:'1.5px solid #E2E8F0', borderRadius:12, fontSize:13, fontWeight:650, outline:'none', boxSizing:'border-box' }} />
+            </div>
+            <div>
+              <label style={{ fontSize:11, fontWeight:900, color:'#64748B', textTransform:'uppercase', letterSpacing:'0.5px', display:'block', marginBottom:6 }}>Language / Tone</label>
+              <select value={qbTone} onChange={e=>setQbTone(e.target.value)} style={{ width:'100%', padding:'11px 14px', border:'1.5px solid #E2E8F0', borderRadius:12, fontSize:13, fontWeight:700, color:'#0F172A', background:'#F8FAFC', outline:'none' }}>
+                <option value="hinglish">🇮🇳 Hinglish (City Smart)</option>
+                <option value="en">🇺🇸 English</option>
+                <option value="hi">🇮🇳 Hindi</option>
+              </select>
+            </div>
+            <div style={{ display:'flex', gap:10, marginTop:6 }}>
+              <button type="button" onClick={()=>setQbOpen(false)} style={{ flex:1, padding:'13px', background:'#F1F5F9', border:'none', borderRadius:12, fontSize:13, fontWeight:800, color:'#475569', cursor:'pointer' }}>Cancel</button>
+              <button type="button" onClick={handleQuickBuild} disabled={qbBuilding} style={{ flex:2, padding:'13px', background:'linear-gradient(90deg,#FF9431,#EA580C)', border:'none', borderRadius:12, fontSize:13, fontWeight:900, color:'#fff', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:6 }}>
+                {qbBuilding ? <><Loader2 size={16} className="spin" /> Building...</> : <><Sparkles size={16} /> AI Quick Build karo!</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const renderAiModal = () => {
@@ -1865,6 +1971,7 @@ export default function ProfileBuilderPage() {
             </AnimatePresence>
          </div>
       </div>
+      {renderQuickBuildModal()}
       {renderAiModal()}
     </div>
   );
