@@ -47,7 +47,7 @@ function AvatarWithGradient({ c, go, mob }) {
       <div style={{ padding: 2, background: '#fff', borderRadius: '50%' }}>
         <div style={{ width: mob ? 68 : 80, height: mob ? 68 : 80, borderRadius: '50%', overflow: 'hidden', background: '#F1F5F9' }}>
           <img
-            src={c.profile_pic || c.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(c.name || 'CB')}&backgroundColor=FF9431&textColor=ffffff`}
+            src={c.photo || c.image || c.profile_pic || c.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(c.name || 'CB')}&backgroundColor=FF9431&textColor=ffffff`}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             alt={c.name}
             onError={e => { e.target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(c.name || 'CB')}&backgroundColor=0f172a&textColor=ffffff`; }}
@@ -173,7 +173,9 @@ CreatorCard.propTypes = {
     followers: PropTypes.number,
     er: PropTypes.number,
     profile_pic: PropTypes.string,
-    avatarUrl: PropTypes.string
+    avatarUrl: PropTypes.string,
+    photo: PropTypes.string,
+    image: PropTypes.string
   }).isRequired,
   go: PropTypes.func.isRequired,
   mob: PropTypes.bool
@@ -213,7 +215,7 @@ function SectionHeader({ loading, isFallback, listCount, mob, go, displayList, s
               {displayList.slice(0, 4).map((c, i) => (
                 <div key={`mini-${c.id || i}`} style={{ width: 28, height: 28, borderRadius: '50%', overflow: 'hidden', border: '2px solid #fff', marginLeft: i === 0 ? 0 : -8, background: '#F1F5F9', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>
                   <img
-                    src={c.profile_pic || c.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(c.name || 'C')}&backgroundColor=FF9431&textColor=ffffff`}
+                    src={c.photo || c.image || c.profile_pic || c.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(c.name || 'C')}&backgroundColor=FF9431&textColor=ffffff`}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     alt={c.name || 'Creator avatar'}
                     onError={e => { e.target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${i}&backgroundColor=0f172a&textColor=ffffff`; }}

@@ -278,15 +278,15 @@ export default function Faq({ mob }) {
   };
 
   return (
-    <section style={{ padding: mob ? '60px 20px' : '100px 20px', background: '#fdfdfd', position: 'relative', overflow: 'hidden' }}>
+    <section style={{ padding: mob ? '60px 20px' : '120px 20px', background: '#fdfdfd', position: 'relative', overflow: 'hidden' }}>
       
       <div style={{ position: 'absolute', top: '10%', left: '-10%', width: 500, height: 500, background: 'rgba(239, 68, 68, 0.04)', filter: 'blur(100px)', borderRadius: '50%' }} />
       <div style={{ position: 'absolute', bottom: '10%', right: '-10%', width: 500, height: 500, background: 'rgba(16, 185, 129, 0.04)', filter: 'blur(100px)', borderRadius: '50%' }} />
 
-      <div style={{ ...W(1300), position: 'relative', zIndex: 1 }}>
+      <div style={{ ...W(1200), position: 'relative', zIndex: 1 }}>
         
         {/* Section Header */}
-        <div style={{ textAlign: 'center', marginBottom: mob ? 48 : 72 }}>
+        <div style={{ textAlign: 'center', marginBottom: mob ? 36 : 56 }}>
           <div style={{ 
             display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 20px', 
             background: DATA[current].tagBg, border: `1px solid ${DATA[current].borderColor}`, borderRadius: 100, marginBottom: 24,
@@ -300,8 +300,8 @@ export default function Faq({ mob }) {
           
           <h2 style={{ 
             fontFamily: "'Outfit', sans-serif", 
-            fontSize: mob ? 34 : 68, 
-            fontWeight: 900, 
+            fontSize: mob ? 30 : 56, 
+            fontWeight: 950, 
             color: '#0f172a', 
             lineHeight: 1.1, 
             letterSpacing: '-0.04em',
@@ -315,43 +315,52 @@ export default function Faq({ mob }) {
             </span>
           </h2>
 
-          <p style={{ fontSize: mob ? 15 : 18, color: '#64748b', fontWeight: 500, maxWidth: 600, margin: '0 auto' }}>
-            Ek problem, 4 solutions — CreatorBharat ke har feature ko dekho jo industry ko badal raha hai.
+          <p style={{ fontSize: mob ? 14 : 16, color: '#64748b', fontWeight: 500, maxWidth: 600, margin: '0 auto', lineHeight: 1.6 }}>
+            Explore how CreatorBharat resolves critical ecosystem pain points directly without middleman interference.
           </p>
 
-          {/* Progress steps — desktop only */}
+          {/* Premium Pill Tabs Navigation — desktop only */}
           {!mob && (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginTop: 40 }}>
-              {DATA.map((d, i) => (
-                <React.Fragment key={d.id}>
+            <div style={{ 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              gap: 10, 
+              marginTop: 40,
+              background: '#f1f5f9',
+              padding: 6,
+              borderRadius: 100,
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
+            }}>
+              {DATA.map((d, i) => {
+                const Icon = d.icon;
+                const isSelected = i === current;
+                const label = i === 0 ? 'Problem' : d.tag.split('—')[1]?.trim() || d.tag;
+                return (
                   <button
+                    key={d.id}
                     onClick={() => goTo(i, i > current ? 'next' : 'prev')}
                     style={{
-                      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-                      background: 'none', border: 'none', cursor: 'pointer', padding: '0 16px'
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      padding: '12px 24px',
+                      borderRadius: 100,
+                      background: isSelected ? '#fff' : 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: 13,
+                      fontWeight: 800,
+                      color: isSelected ? d.tagColor : '#64748b',
+                      boxShadow: isSelected ? '0 10px 20px rgba(0,0,0,0.04)' : 'none',
+                      transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                     }}
                   >
-                    <div style={{
-                      width: 36, height: 36, borderRadius: '50%',
-                      background: i === current ? d.tagColor : i < current ? '#e2e8f0' : '#f1f5f9',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: 13, fontWeight: 900,
-                      color: i === current ? '#fff' : i < current ? '#94a3b8' : '#cbd5e1',
-                      border: i === current ? `2px solid ${d.tagColor}` : '2px solid transparent',
-                      boxShadow: i === current ? `0 0 16px ${d.tagColor}50` : 'none',
-                      transition: 'all 0.3s'
-                    }}>
-                      {i === 0 ? '!' : `F${i}`}
-                    </div>
-                    <span style={{ fontSize: 10, fontWeight: 800, color: i === current ? d.tagColor : '#94a3b8', whiteSpace: 'nowrap', letterSpacing: '0.5px' }}>
-                      {i === 0 ? 'PROBLEM' : d.tag.split('—')[1]?.trim() || d.tag}
-                    </span>
+                    <Icon size={16} strokeWidth={2.5} />
+                    <span>{label}</span>
                   </button>
-                  {i < DATA.length - 1 && (
-                    <div style={{ width: 40, height: 2, background: i < current ? '#10B981' : '#f1f5f9', transition: 'background 0.3s', flexShrink: 0 }} />
-                  )}
-                </React.Fragment>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

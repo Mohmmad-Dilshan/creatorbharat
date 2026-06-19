@@ -15,8 +15,24 @@ import {
 
 const CITIES_LIST = ['Jaipur', 'Mumbai', 'Lucknow', 'Indore', 'Bhopal', 'Surat', 'Bhilwara', 'Patna', 'Kochi'];
 
+const MARKETING_POSTERS = [
+  { id: 'p1', src: '/cb_v12_real_final.png', title: 'CreatorBharat Dashboard' },
+  { id: 'p2', src: '/success_stories_hero.png', title: 'Creator Success Stories' },
+  { id: 'p3', src: '/escrow_secure_poster.png', title: 'Secure Escrow Payments' },
+  { id: 'p4', src: '/creator_score_poster.png', title: 'Creator Trust Score' }
+];
+
 const HeroValueProps = memo(({ mob }) => {
   const [cityIdx, setCityIdx] = useState(0);
+  const [posterIdx, setPosterIdx] = useState(0);
+  const timerRef = React.useRef(null);
+
+  const resetTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setPosterIdx(prev => (prev + 1) % MARKETING_POSTERS.length);
+    }, 5000);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -25,74 +41,262 @@ const HeroValueProps = memo(({ mob }) => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    resetTimer();
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [resetTimer]);
+
+  const [activeSrc, setActiveSrc] = useState(MARKETING_POSTERS[0].src);
+  const [activeTitle, setActiveTitle] = useState(MARKETING_POSTERS[0].title);
+  const [fade, setFade] = useState(true);
+
+  useEffect(() => {
+    setFade(false);
+    const timeout = setTimeout(() => {
+      setActiveSrc(MARKETING_POSTERS[posterIdx].src);
+      setActiveTitle(MARKETING_POSTERS[posterIdx].title);
+      setFade(true);
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [posterIdx]);
+
+  const STATS = [
+    { value: '2.5L+', label: 'Verified Creators' },
+    { value: '450+', label: 'Cities Covered' },
+    { value: '12K+', label: 'Brand Deals' },
+  ];
+
+  const FEATURES = [
+    { icon: '🪪', label: 'Unique Digital ID' },
+    { icon: '📊', label: 'CB Trust Score' },
+    { icon: '💰', label: '0% Commission' },
+    { icon: '🔒', label: 'Escrow Secured' },
+  ];
+
   return (
-    <div className="au d3" style={{ 
-      width: '100%', 
-      maxWidth: 1200, 
+    <div className="au d3" style={{
+      width: '100%',
+      maxWidth: 1200,
       marginBottom: mob ? 60 : 100,
       padding: mob ? '0 16px' : '0 40px',
       boxSizing: 'border-box',
-      position: 'relative'
+      position: 'relative',
     }}>
-      <div style={{ 
-        background: '#fff',
-        padding: mob ? '40px 24px' : '80px 64px',
+      <div style={{
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #0f172a 100%)',
         borderRadius: mob ? 32 : 48,
-        border: '1.5px solid rgba(0,0,0,0.05)',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.03)',
-        display: 'flex',
-        flexDirection: mob ? 'column' : 'row',
-        alignItems: 'center',
-        gap: mob ? 32 : 80,
-        textAlign: mob ? 'center' : 'left'
+        overflow: 'visible',
+        position: 'relative',
+        border: '1px solid rgba(255,255,255,0.08)',
+        boxShadow: '0 40px 80px rgba(0,0,0,0.25)',
       }}>
-        <div style={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 20px', background: 'rgba(255,148,49,0.08)', borderRadius: 100, marginBottom: mob ? 16 : 24, margin: mob ? '0 auto 16px' : '0 0 24px 0' }}>
-            <Globe size={14} color="#FF9431" />
-            <span style={{ fontSize: 11, fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '3px' }}>The Bharat Narrative</span>
-          </div>
-          <h2 style={{ fontSize: mob ? 28 : 56, fontWeight: 950, color: '#0f172a', lineHeight: 1.1, letterSpacing: '-0.04em', margin: 0 }}>
-            Find Every <br />
-            <span style={{ color: '#FF9431' }}>Tier City</span> <br />
-            Creator.
-          </h2>
-        </div>
+        {/* Glow orbs */}
+        <div style={{ position: 'absolute', top: -80, right: -60, width: 340, height: 340, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,148,49,0.2) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
+        <div style={{ position: 'absolute', bottom: -50, left: '25%', width: 260, height: 260, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
 
-        <div style={{ flex: 1.2, width: '100%', display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start' }}>
-          <p style={{ 
-            fontSize: mob ? 16 : 24, 
-            color: '#475569', 
-            fontWeight: 600, 
-            lineHeight: mob ? 1.5 : 1.6, 
-            margin: 0,
-            fontFamily: "'Outfit', sans-serif"
+        <div style={{
+          display: 'flex',
+          flexDirection: mob ? 'column' : 'row',
+          alignItems: mob ? 'flex-start' : 'center',
+          gap: mob ? 40 : 0,
+          padding: mob ? '48px 28px 64px' : '72px 64px 72px',
+          position: 'relative',
+          zIndex: 1,
+        }}>
+
+          {/* ── LEFT COLUMN ── */}
+          <div style={{
+            flex: 1,
+            display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
+            paddingRight: mob ? 0 : 60,
           }}>
-            At CreatorBharat, we are mapping the heartbeat of India’s talent. From hidden gems in{' '}
-            <span style={{ 
-              display: 'inline-flex', 
-              position: 'relative', 
-              overflow: 'hidden', 
-              height: mob ? '24px' : '34px', 
-              verticalAlign: 'middle', 
-              padding: '0 4px' 
+            {/* Pill badge */}
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '7px 18px',
+              background: 'rgba(255,148,49,0.15)',
+              border: '1px solid rgba(255,148,49,0.3)',
+              borderRadius: 100, marginBottom: 24,
             }}>
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={CITIES_LIST[cityIdx]}
-                  initial={{ y: mob ? 12 : 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: mob ? -12 : -20, opacity: 0 }}
-                  transition={{ duration: 0.35, ease: 'easeOut' }}
-                  style={{ color: '#FF9431', fontWeight: 900, display: 'inline-block' }}
-                >
-                  {CITIES_LIST[cityIdx]}
-                </motion.span>
-              </AnimatePresence>
-            </span>
-            {' '}to bustling metros, we find and verify every creator to provide them with a <span style={{ color: '#0f172a', fontWeight: 900 }}>Unique Digital ID</span>. 
-            <br /><br />
-            Dive into their raw journeys through <span style={{ color: '#0f172a', fontWeight: 900 }}>Articles & Podcasts</span>, and join the mission by <span style={{ color: '#138808', fontWeight: 900 }}>Supporting & Rating</span> your favorite stars. This is where Bharat’s voice find its home.
-          </p>
+              <Globe size={13} color="#FF9431" />
+              <span style={{ fontSize: 10, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '3px', fontFamily: "'Outfit',sans-serif" }}>
+                The Bharat Narrative
+              </span>
+            </div>
+
+            {/* Headline */}
+            <h2 style={{
+              fontSize: mob ? 34 : 60, fontWeight: 950, color: '#fff',
+              lineHeight: 1.05, letterSpacing: '-0.04em', margin: '0 0 6px 0',
+              fontFamily: "'Outfit',sans-serif",
+            }}>
+              Find Every<br />
+              <span style={{ background: 'linear-gradient(90deg,#FF9431,#FF6B35)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                Tier City
+              </span><br />
+              Creator.
+            </h2>
+
+            {/* Animated city ticker */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 28, marginTop: 10 }}>
+              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', fontWeight: 600, fontFamily: "'Outfit',sans-serif" }}>Now mapping creators in</span>
+              <span style={{ fontSize: 14, fontWeight: 900, color: '#FF9431', fontFamily: "'Outfit',sans-serif", minWidth: 90, display: 'inline-block' }}>
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={CITIES_LIST[cityIdx]}
+                    initial={{ y: 8, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -8, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                    style={{ display: 'inline-block' }}
+                  >
+                    {CITIES_LIST[cityIdx]} →
+                  </motion.span>
+                </AnimatePresence>
+              </span>
+            </div>
+
+            {/* Description */}
+            <p style={{
+              fontSize: mob ? 14 : 15, color: 'rgba(255,255,255,0.55)', fontWeight: 500,
+              lineHeight: 1.75, margin: '0 0 32px 0', fontFamily: "'Outfit',sans-serif", maxWidth: 400,
+            }}>
+              India&apos;s largest verified creator database. Every creator gets a{' '}
+              <span style={{ color: '#fff', fontWeight: 800 }}>Unique Digital ID</span> and a{' '}
+              <span style={{ color: '#FF9431', fontWeight: 800 }}>CB Trust Score</span> — from Bhilwara to Bengaluru.
+            </p>
+
+            {/* Feature chips */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 36 }}>
+              {FEATURES.map(f => (
+                <div key={f.label} style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  padding: '8px 16px',
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.11)',
+                  borderRadius: 100, backdropFilter: 'blur(10px)',
+                }}>
+                  <span style={{ fontSize: 13 }}>{f.icon}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.82)', fontFamily: "'Outfit',sans-serif", whiteSpace: 'nowrap' }}>{f.label}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Stats */}
+            <div style={{ display: 'flex', gap: mob ? 20 : 32, flexWrap: 'wrap' }}>
+              {STATS.map((s, i) => (
+                <div key={i} style={{
+                  display: 'flex', flexDirection: 'column', gap: 2,
+                  paddingRight: i < STATS.length - 1 ? (mob ? 20 : 32) : 0,
+                  borderRight: i < STATS.length - 1 ? '1px solid rgba(255,255,255,0.1)' : 'none',
+                }}>
+                  <span style={{ fontSize: mob ? 24 : 30, fontWeight: 950, color: '#fff', fontFamily: "'Outfit',sans-serif", letterSpacing: '-0.03em' }}>{s.value}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1.5px', fontFamily: "'Outfit',sans-serif" }}>{s.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── RIGHT COLUMN – Slider ── */}
+          <div style={{
+            flex: mob ? 'none' : '0 0 400px',
+            width: mob ? '100%' : 400,
+            position: 'relative',
+            marginTop: mob ? 0 : 0,
+            paddingBottom: 24,
+          }}>
+            {/* Floating verified badge top-left */}
+            <div style={{
+              position: 'absolute', top: -18, left: mob ? 8 : -18, zIndex: 10,
+              background: 'linear-gradient(135deg,#FF9431,#FF6B35)',
+              borderRadius: 14, padding: '10px 16px',
+              display: 'flex', alignItems: 'center', gap: 8,
+              boxShadow: '0 8px 28px rgba(255,148,49,0.45)',
+              border: '2px solid rgba(255,255,255,0.18)',
+            }}>
+              <span style={{ fontSize: 16 }}>✅</span>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 900, color: '#fff', fontFamily: "'Outfit',sans-serif" }}>Verified in Bharat</div>
+                <div style={{ fontSize: 9, fontWeight: 600, color: 'rgba(255,255,255,0.75)', fontFamily: "'Outfit',sans-serif" }}>Unique Digital ID</div>
+              </div>
+            </div>
+
+            {/* Main image card */}
+            <div style={{
+              width: '100%', aspectRatio: '1/1',
+              borderRadius: 28, overflow: 'hidden', position: 'relative',
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              boxShadow: '0 30px 70px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07)',
+              marginTop: 12,
+            }}>
+              <img
+                src={activeSrc}
+                alt={activeTitle}
+                style={{
+                  width: '100%', height: '100%', objectFit: 'cover', display: 'block',
+                  opacity: fade ? 1 : 0,
+                  transform: fade ? 'scale(1)' : 'scale(1.04)',
+                  transition: 'opacity 0.35s ease, transform 0.35s ease',
+                }}
+              />
+              {/* Gradient overlay with title */}
+              <div style={{
+                position: 'absolute', bottom: 0, left: 0, right: 0,
+                background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)',
+                padding: '48px 18px 14px',
+              }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.92)', fontFamily: "'Outfit',sans-serif", opacity: fade ? 1 : 0, transition: 'opacity 0.35s ease', display: 'block' }}>
+                  {activeTitle}
+                </span>
+              </div>
+
+              {/* Pill dot indicators */}
+              <div style={{ position: 'absolute', bottom: 14, right: 14, display: 'flex', gap: 6, zIndex: 10 }}>
+                {MARKETING_POSTERS.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => { setPosterIdx(idx); resetTimer(); }}
+                    style={{
+                      width: posterIdx === idx ? 22 : 6, height: 6, borderRadius: 3,
+                      background: posterIdx === idx ? '#FF9431' : 'rgba(255,255,255,0.35)',
+                      border: 'none', cursor: 'pointer', padding: 0,
+                      transition: 'all 0.35s ease',
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Floating live count card bottom-right */}
+            <div style={{
+              position: 'absolute', bottom: 0, right: mob ? 8 : -18, zIndex: 10,
+              background: 'rgba(15,23,42,0.92)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 16, padding: '12px 16px',
+              display: 'flex', alignItems: 'center', gap: 10,
+              boxShadow: '0 16px 40px rgba(0,0,0,0.4)',
+              minWidth: 185,
+            }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                background: 'linear-gradient(135deg,#22c55e,#16a34a)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18,
+              }}>📈</div>
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 900, color: '#fff', fontFamily: "'Outfit',sans-serif" }}>
+                  +1,240 <span style={{ fontSize: 11, fontWeight: 700, color: '#22c55e' }}>↑ Today</span>
+                </div>
+                <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.4)', fontFamily: "'Outfit',sans-serif" }}>
+                  New creators joined
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -100,6 +304,7 @@ const HeroValueProps = memo(({ mob }) => {
 });
 
 HeroValueProps.propTypes = { mob: PropTypes.bool };
+
 
 
 const TYPEWRITER_WORDS = ['Identity', 'Portfolio', 'Empire', 'Legacy'];
@@ -443,7 +648,7 @@ const SearchSugs = memo(({ sugs, go }) => (
         onMouseEnter={e => e.currentTarget.style.background = '#F8FAFC'} 
         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
       >
-        <img src={s.photo || s.avatarUrl} alt={s.name} style={{ width: 40, height: 40, borderRadius: 12, objectFit: 'cover', border: '1px solid #f1f5f9' }} />
+        <img src={s.photo || s.image || s.profile_pic || s.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name || 'C')}&background=FF9431&color=fff`} alt={s.name} style={{ width: 40, height: 40, borderRadius: 12, objectFit: 'cover', border: '1px solid #f1f5f9' }} />
         <div>
           <div style={{ fontSize: 15, fontWeight: 900, color: '#0f172a' }}>{s.name}</div>
           <div style={{ fontSize: 12, color: '#94a3b8', fontWeight: 700 }}>{s.niche} • {s.city}</div>

@@ -299,7 +299,7 @@ export function CreatorCard({ creator: c, onView }) {
   const compared = st.compared?.includes(c.id) || false;
   const score = c.score || fmt.score(c);
   const tier = fmt.tier(score);
-  const img = c.photo || c.image || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name || 'C')}&background=FF9431&color=fff&size=200`;
+  const img = c.photo || c.image || c.profile_pic || c.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name || 'C')}&background=FF9431&color=fff&size=200`;
   const isBrowser = globalThis.window !== undefined;
   const mob = isBrowser && globalThis.window.innerWidth < 768;
   const isMega = (c.followers || 0) >= 100000;
