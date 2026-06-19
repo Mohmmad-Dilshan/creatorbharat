@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
+// ── Seed creators (public data only — no secrets) ─────────────
 const SEED_CREATORS = [
   {
     id: 'arjun-kapoor',
@@ -31,97 +32,135 @@ const SEED_CREATORS = [
   }
 ];
 
-// Helper to robustly replace meta tags with custom content in index.html
+// ── Security: sanitize any user-supplied string for HTML output ─
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// ── Security: validate handle — only safe chars allowed ────────
+function isValidHandle(handle) {
+  return /^[a-zA-Z0-9_.-]{1,80}$/.test(handle);
+}
+
+// ── Helper: replace meta tag attribute value in HTML ──────────
 function replaceTag(html, attr, attrVal, valueAttr, newVal) {
-  const cleanNewVal = newVal ? newVal.replace(/"/g, '&quot;') : '';
-  
-  // Try matching <meta property="og:title" content="..." /> or similar
+  const cleanNewVal = escapeHtml(newVal);
+
+  // Match: <meta property="og:title" content="..." />
   const regex1 = new RegExp(`<meta\\s+[^>]*${attr}\\s*=\\s*["']${attrVal}["'][^>]*${valueAttr}\\s*=\\s*["'].*?["'][^>]*>`, 'i');
   if (regex1.test(html)) {
-    return html.replace(regex1, (match) => match.replace(new RegExp(`${valueAttr}\\s*=\\s*["'].*?["']`, 'i'), `${valueAttr}="${cleanNewVal}"`));
+    return html.replace(regex1, (match) =>
+      match.replace(new RegExp(`${valueAttr}\\s*=\\s*["'].*?["']`, 'i'), `${valueAttr}="${cleanNewVal}"`)
+    );
   }
-  
-  // Try matching with attributes in reverse order: <meta content="..." property="og:title" />
+
+  // Match reversed attribute order: <meta content="..." property="og:title" />
   const regex2 = new RegExp(`<meta\\s+[^>]*${valueAttr}\\s*=\\s*["'].*?["'][^>]*${attr}\\s*=\\s*["']${attrVal}["'][^>]*>`, 'i');
   if (regex2.test(html)) {
-    return html.replace(regex2, (match) => match.replace(new RegExp(`${valueAttr}\\s*=\\s*["'].*?["']`, 'i'), `${valueAttr}="${cleanNewVal}"`));
+    return html.replace(regex2, (match) =>
+      match.replace(new RegExp(`${valueAttr}\\s*=\\s*["'].*?["']`, 'i'), `${valueAttr}="${cleanNewVal}"`)
+    );
   }
-  
+
   return html;
 }
 
+// ── Serverless handler ────────────────────────────────────────
 module.exports = async (req, res) => {
+  // Only allow GET requests
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   const { id } = req.query;
+
   if (!id) {
     return res.status(400).send('Creator ID is required.');
   }
 
-  // Clean the handle/ID (remove leading '@')
+  // Sanitize: strip leading '@' and validate handle
   const cleanId = id.startsWith('@') ? id.slice(1) : id;
+
+  if (!isValidHandle(cleanId)) {
+    return res.status(400).send('Invalid creator handle.');
+  }
+
   let creator = null;
 
-  // 1. Try to fetch from remote API
-  const apiUrl = process.env.VITE_API_URL || 'https://creatorbharat-backend.vercel.app';
+  // 1. Try to fetch from remote API (public endpoint — no secrets used here)
+  const apiUrl = process.env.VITE_API_URL || 'https://creatorbharat-backend.onrender.com';
   try {
-    const apiRes = await fetch(`${apiUrl}/creators/${cleanId}`);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000); // 4s timeout
+    const apiRes = await fetch(`${apiUrl}/api/creators/${encodeURIComponent(cleanId)}`, {
+      signal: controller.signal,
+      headers: { 'Accept': 'application/json' }
+    });
+    clearTimeout(timeout);
     if (apiRes.ok) {
       const data = await apiRes.json();
       creator = data.creator || data;
     }
   } catch (err) {
-    // Silent ignore: fallback to seed/local
+    // Silent ignore — fallback to seed data
   }
 
-  // 2. Try to find in seed creators
+  // 2. Fallback: seed creators
   if (!creator) {
     creator = SEED_CREATORS.find(c => c.id === cleanId || c.handle === cleanId);
   }
 
-  // 3. Fallback to basic template if creator not found at all
-  const name = creator ? creator.name : cleanId.charAt(0).toUpperCase() + cleanId.slice(1);
-  const city = creator ? (creator.city || 'Bharat') : 'Bharat';
-  const niches = creator ? (Array.isArray(creator.niche) ? creator.niche.join(', ') : (creator.niche || 'Digital Creator')) : 'Digital Creator';
-  const bio = creator ? (creator.bio || `${name} is an elite verified creator on CreatorBharat.`) : `${name} is a content creator from ${city}.`;
-  
-  const descText = `${name} is an elite verified content creator specializing in ${niches} from ${city}. View portfolio, reach stats & campaign history on CreatorBharat.`;
-  const dpUrl = creator ? (creator.photo || creator.image || creator.profile_pic || creator.avatarUrl) : `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=FF9431&color=fff&size=200`;
+  // 3. Build meta content (safely escaped)
+  const name     = escapeHtml(creator?.name || (cleanId.charAt(0).toUpperCase() + cleanId.slice(1)));
+  const city     = escapeHtml(creator?.city || 'Bharat');
+  const niches   = escapeHtml(Array.isArray(creator?.niche) ? creator.niche.join(', ') : (creator?.niche || 'Digital Creator'));
+  const bio      = escapeHtml(creator?.bio || `${name} is a content creator from ${city}.`);
+  const descText = `${name} is a verified content creator specializing in ${niches} from ${city}. View portfolio, reach stats & campaign history on CreatorBharat.`;
+  const dpUrl    = creator?.photo || creator?.image || creator?.profile_pic || creator?.avatarUrl
+    || `https://ui-avatars.com/api/?name=${encodeURIComponent(creator?.name || cleanId)}&background=FF9431&color=fff&size=200`;
+  const profileUrl = `https://creatorbharat.in/c/${encodeURIComponent(cleanId)}`;
 
-  // Read index.html from dist (production) or root (development)
+  // 4. Read index.html template
   const htmlPath = path.join(process.cwd(), 'creator-bharat-v3/dist/index.html');
   let html = '';
-  
+
   try {
     html = fs.readFileSync(htmlPath, 'utf8');
   } catch (err) {
-    const altHtmlPath = path.join(process.cwd(), 'creator-bharat-v3/index.html');
     try {
-      html = fs.readFileSync(altHtmlPath, 'utf8');
+      html = fs.readFileSync(path.join(process.cwd(), 'creator-bharat-v3/index.html'), 'utf8');
     } catch (e) {
-      return res.status(500).send('Template index.html not found.');
+      return res.status(500).send('Template not found.');
     }
   }
 
-  // Inject Meta Tags Dynamically
-  html = html.replace(/<title>.*?<\/title>/g, `<title>${name} (@${cleanId}) — Verified Profile | CreatorBharat</title>`);
-  
-  // Replace description tag
+  // 5. Inject meta tags
+  const pageTitle = `${name} (@${cleanId}) — Verified Profile | CreatorBharat`;
+
+  html = html.replace(/<title>.*?<\/title>/g, `<title>${pageTitle}</title>`);
+
   const descRegex = /<meta\s+name="description"\s+content=".*?"\s*\/?>/i;
   if (descRegex.test(html)) {
-    html = html.replace(descRegex, `<meta name="description" content="${descText.replace(/"/g, '&quot;')}" />`);
+    html = html.replace(descRegex, `<meta name="description" content="${escapeHtml(descText)}" />`);
   }
 
-  // Replace Open Graph Meta Tags
-  html = replaceTag(html, 'property', 'og:title', 'content', `${name} (@${cleanId}) — Verified Profile | CreatorBharat`);
+  html = replaceTag(html, 'property', 'og:title',       'content', pageTitle);
   html = replaceTag(html, 'property', 'og:description', 'content', descText);
-  html = replaceTag(html, 'property', 'og:image', 'content', dpUrl);
-  html = replaceTag(html, 'property', 'og:url', 'content', `https://creatorbharat.com/c/${cleanId}`);
-  html = replaceTag(html, 'property', 'og:image:alt', 'content', `${name} (@${cleanId}) — Profile Picture`);
+  html = replaceTag(html, 'property', 'og:image',       'content', dpUrl);
+  html = replaceTag(html, 'property', 'og:url',         'content', profileUrl);
+  html = replaceTag(html, 'property', 'og:image:alt',   'content', `${name} — Profile Picture`);
+  html = replaceTag(html, 'name',     'twitter:title',       'content', pageTitle);
+  html = replaceTag(html, 'name',     'twitter:description', 'content', descText);
+  html = replaceTag(html, 'name',     'twitter:image',       'content', dpUrl);
 
-  // Replace Twitter Meta Tags
-  html = replaceTag(html, 'name', 'twitter:title', 'content', `${name} (@${cleanId}) — Verified Profile | CreatorBharat`);
-  html = replaceTag(html, 'name', 'twitter:description', 'content', descText);
-  html = replaceTag(html, 'name', 'twitter:image', 'content', dpUrl);
-
-  res.setHeader('Content-Type', 'text/html');
+  // 6. Set cache headers (cache for 5 min, revalidate after)
+  res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=60');
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
   return res.status(200).send(html);
 };
