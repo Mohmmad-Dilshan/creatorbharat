@@ -1,7 +1,7 @@
 {
   "framework": "vite",
-  "installCommand": "cd creator-bharat-v3 && npm install --legacy-peer-deps",
-  "buildCommand": "cd creator-bharat-v3 && npm run build",
+  "installCommand": "if [ -d \"creator-bharat-v3\" ]; then cd creator-bharat-v3 && npm install --legacy-peer-deps; else npm install --legacy-peer-deps; fi",
+  "buildCommand": "if [ -d \"creator-bharat-v3\" ]; then cd creator-bharat-v3 && npm run build; else npm run build; fi",
   "outputDirectory": "creator-bharat-v3/dist",
 
   "rewrites": [
