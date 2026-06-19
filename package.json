@@ -4,14 +4,13 @@
   "description": "Infrastructure of Trust for India's Digital Creator Economy (Monorepo)",
   "private": true,
   "scripts": {
-    "build": "cd creator-bharat-v3 && npm run build",
-    "dev": "cd creator-bharat-v3 && npm run dev",
+    "build":       "cd creator-bharat-v3 && npm run build",
+    "dev":         "cd creator-bharat-v3 && npm run dev",
     "dev:backend": "cd creatorbharat-backend && npm run dev",
-    "dev:all": "concurrently \"npm run dev --prefix creator-bharat-v3\" \"npm run dev --prefix creatorbharat-backend\"",
-    "preview": "cd creator-bharat-v3 && npm run preview"
+    "dev:all":     "concurrently \"npm run dev --prefix creator-bharat-v3\" \"npm run dev --prefix creatorbharat-backend\"",
+    "preview":     "cd creator-bharat-v3 && npm run preview"
   },
   "dependencies": {
-    "@sentry/react": "^10.53.1",
     "concurrently": "^8.2.2"
   }
 }
