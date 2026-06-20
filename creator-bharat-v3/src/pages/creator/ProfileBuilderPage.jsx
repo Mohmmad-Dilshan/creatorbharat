@@ -1042,7 +1042,8 @@ const PackagesTabContent = ({ F, mob, upF, upService, addService, removeService,
         <Btn lg className="btn-primary-pill" style={{ height: 'auto', padding: '16px 48px' }} onClick={saveProfile}>Sync Deliverables →</Btn>
      </div>
   </Card>
-);
+  );
+};
 
 PackagesTabContent.propTypes = {
   F: PropTypes.object.isRequired, mob: PropTypes.bool.isRequired, upF: PropTypes.func.isRequired,
