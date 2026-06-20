@@ -39,7 +39,7 @@ Thumbs.db
 *.sw?
 
 # Project specific
-docs/
+# docs/ (tracked for developer collaboration)
 backups/
 scratch/
 temp/
