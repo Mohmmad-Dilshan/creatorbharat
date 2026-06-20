@@ -5,6 +5,12 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { rateLimit } from 'express-rate-limit';
 
+// Route Imports
+import authRouter from './routes/auth.js';
+import creatorsRouter from './routes/creators.js';
+import campaignsRouter from './routes/campaigns.js';
+import adminRouter from './routes/admin.js';
+
 dotenv.config();
 
 const app = express();
@@ -37,20 +43,11 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Auth Routes (Sign Up, Login, OTP Validation)
-app.use('/api/auth', (req, res) => {
-  res.status(501).json({ message: 'Auth endpoints template initialized. Implement auth.js routes.' });
-});
-
-// Creator Routes (Profiles, Rate cards, Verification)
-app.use('/api/creators', (req, res) => {
-  res.status(501).json({ message: 'Creator endpoints template initialized. Implement creators.js routes.' });
-});
-
-// Campaign Routes (Listing, Application submissions)
-app.use('/api/campaigns', (req, res) => {
-  res.status(501).json({ message: 'Campaign endpoints template initialized. Implement campaigns.js routes.' });
-});
+// App Router Registry
+app.use('/api/auth', authRouter);
+app.use('/api/creators', creatorsRouter);
+app.use('/api/campaigns', campaignsRouter);
+app.use('/api/admin', adminRouter);
 
 // Global 404 Error handler
 app.use((req, res) => {
@@ -59,7 +56,7 @@ app.use((req, res) => {
 
 // Global Exception handler
 app.use((err, req, res, next) => {
-  console.error('[Error Handler]:', err.stack);
+  console.error('[Error Handler]:', err.stack || err.message || err);
   res.status(500).json({ error: 'Internal Server Error.' });
 });
 
