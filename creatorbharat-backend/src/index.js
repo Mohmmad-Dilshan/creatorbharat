@@ -10,6 +10,11 @@ import authRouter from './routes/auth.js';
 import creatorsRouter from './routes/creators.js';
 import campaignsRouter from './routes/campaigns.js';
 import adminRouter from './routes/admin.js';
+import applicationsRouter from './routes/applications.js';
+import paymentsRouter from './routes/payments.js';
+import reviewsRouter from './routes/reviews.js';
+import messagesRouter from './routes/messages.js';
+import blogRouter from './routes/blog.js';
 
 dotenv.config();
 
@@ -27,7 +32,7 @@ app.use(express.json());
 // Global Rate Limiter to prevent brute-force attacks
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 200, // Limit each IP to 200 requests per windowMs
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests, please try again later.' }
@@ -48,6 +53,11 @@ app.use('/api/auth', authRouter);
 app.use('/api/creators', creatorsRouter);
 app.use('/api/campaigns', campaignsRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/applications', applicationsRouter);
+app.use('/api/payments', paymentsRouter);
+app.use('/api/reviews', reviewsRouter);
+app.use('/api/messages', messagesRouter);
+app.use('/api/blog', blogRouter);
 
 // Global 404 Error handler
 app.use((req, res) => {

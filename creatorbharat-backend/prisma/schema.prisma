@@ -29,25 +29,29 @@ enum Role {
 }
 
 model Creator {
-  id             String   @id @default(cuid())
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         String   @unique
-  handle         String   @unique
+  id             String        @id @default(cuid())
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String        @unique
+  handle         String        @unique
   name           String
   bio            String?
   city           String?
   state          String?
   niche          String[]
   platform       String[]
-  followers      Int      @default(0)
-  engagementRate Float    @default(0.0)
-  rateMin        Int      @default(0)
-  rateMax        Int      @default(0)
-  isVerified     Boolean  @default(false)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  followers      Int           @default(0)
+  engagementRate Float         @default(0.0)
+  rateMin        Int           @default(0)
+  rateMax        Int           @default(0)
+  isVerified     Boolean       @default(false)
+  isPro          Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   applications   Application[]
+  reviews        Review[]
+  payments       Payment[]
+  podcasts       Podcast[]
 }
 
 model Brand {
@@ -61,6 +65,8 @@ model Brand {
   updatedAt   DateTime @updatedAt
 
   campaigns   Campaign[]
+  reviews     Review[]
+  payments    Payment[]
 }
 
 model Campaign {
@@ -91,4 +97,115 @@ model Application {
   updatedAt   DateTime @updatedAt
 
   @@unique([campaignId, creatorId])
+}
+
+model Review {
+  id           String   @id @default(cuid())
+  creator      Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId    String
+  brand        Brand?   @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  brandId      String?
+  reviewerName String
+  text         String
+  rating       Int      @default(5)
+  createdAt    DateTime @default(now())
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  brandId   String
+  creatorId String
+  text      String
+  fromBrand Boolean  @default(true)
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Blog {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  title         String
+  excerpt       String?
+  body          String
+  category      String
+  author        String
+  image         String?
+  tags          String[]
+  featured      Boolean   @default(false)
+  published     Boolean   @default(false)
+  views         Int       @default(0)
+  likes         Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  comments      Comment[]
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  blog      Blog      @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  blogId    String
+  name      String
+  email     String?
+  text      String
+  likes     Int       @default(0)
+  parentId  String?
+  createdAt DateTime  @default(now())
+
+  parent    Comment?  @relation("Replies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("Replies")
+}
+
+model Payment {
+  id              String    @id @default(cuid())
+  creator         Creator?  @relation(fields: [creatorId], references: [id], onDelete: SetNull)
+  creatorId       String?
+  brand           Brand?    @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  brandId         String?
+  amount          Int
+  currency        String    @default("INR")
+  type            PayType
+  status          PayStatus @default(PENDING)
+  razorpayOrderId String?
+  razorpayId      String?   @unique
+  createdAt       DateTime  @default(now())
+}
+
+enum PayType {
+  PRO_LISTING
+  CAMPAIGN_BOOST
+  FEATURED_SLOT
+}
+
+enum PayStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model Podcast {
+  id        String   @id @default(cuid())
+  creator   Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId String
+  title     String
+  duration  String
+  thumbnail String?
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
