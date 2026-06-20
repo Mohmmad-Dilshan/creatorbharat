@@ -1,0 +1,94 @@
+// 🇮🇳 CreatorBharat SaaS Prisma Database Schema
+// Database: PostgreSQL (Neon / Supabase)
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(CREATOR)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  creator   Creator?
+  brand     Brand?
+}
+
+enum Role {
+  CREATOR
+  BRAND
+  ADMIN
+}
+
+model Creator {
+  id             String   @id @default(cuid())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String   @unique
+  handle         String   @unique
+  name           String
+  bio            String?
+  city           String?
+  state          String?
+  niche          String[]
+  platform       String[]
+  followers      Int      @default(0)
+  engagementRate Float    @default(0.0)
+  rateMin        Int      @default(0)
+  rateMax        Int      @default(0)
+  isVerified     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  applications   Application[]
+}
+
+model Brand {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String   @unique
+  companyName String
+  industry    String?
+  website     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  campaigns   Campaign[]
+}
+
+model Campaign {
+  id          String   @id @default(cuid())
+  brand       Brand    @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  brandId     String
+  title       String
+  description String
+  budget      Int      @default(0)
+  niche       String[]
+  platform    String[]
+  status      String   @default("ACTIVE") // ACTIVE, COMPLETED, PAUSED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  applications Application[]
+}
+
+model Application {
+  id          String   @id @default(cuid())
+  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId  String
+  creator     Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId   String
+  pitch       String?
+  status      String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([campaignId, creatorId])
+}

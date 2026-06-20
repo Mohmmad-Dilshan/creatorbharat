@@ -1,0 +1,19 @@
+# 🇮🇳 CreatorBharat Admin .gitignore
+
+# Dependencies
+node_modules/
+
+# Production output
+dist/
+dist-ssr/
+
+# Local Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+
+# OS Files
+.DS_Store
+Thumbs.db

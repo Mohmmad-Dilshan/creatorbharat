@@ -1,0 +1,19 @@
+# 🇮🇳 CreatorBharat Backend .gitignore
+
+# Dependencies
+node_modules/
+
+# Local Environment Variables
+.env
+.env.local
+.env.production
+.env.development
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db

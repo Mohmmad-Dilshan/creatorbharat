@@ -19,9 +19,7 @@ yarn-error.log*
 **/.env.*
 **/.env.local
 
-# ── SECURITY: Backend folder (has real secrets) ──────────────
-creatorbharat-backend/
-creatorbharat-admin/
+# ── SECURITY: Backend folder (source code tracked; .env files are globally ignored below) ──
 
 # ── SECURITY: Never push any .env file from anywhere ─────────
 **/*.env
