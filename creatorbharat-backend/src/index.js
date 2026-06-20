@@ -48,6 +48,10 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+app.get('/api', (req, res) => {
+  res.json({ message: 'CreatorBharat SaaS REST API Engine is active 🚀' });
+});
+
 // App Router Registry
 app.use('/api/auth', authRouter);
 app.use('/api/creators', creatorsRouter);
