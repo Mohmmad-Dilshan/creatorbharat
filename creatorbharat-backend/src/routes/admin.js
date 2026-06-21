@@ -890,7 +890,8 @@ router.get('/platform/stats/deep', async (req, res) => {
       totalSubscribers,
       unreadContacts,
       totalReviews,
-      pendingVerifications
+      pendingVerifications,
+      totalGallery
     ] = await Promise.all([
       prisma.creator.count(),
       prisma.creator.count({ where: { isVerified: true } }),
@@ -904,7 +905,8 @@ router.get('/platform/stats/deep', async (req, res) => {
       prisma.newsletter.count(),
       prisma.contactMessage.count({ where: { read: false } }),
       prisma.review.count(),
-      prisma.creator.count({ where: { isVerified: false } })
+      prisma.creator.count({ where: { isVerified: false } }),
+      prisma.galleryItem.count()
     ]);
 
     const escrowTotal = await prisma.payment.aggregate({
@@ -917,7 +919,7 @@ router.get('/platform/stats/deep', async (req, res) => {
       brands: { total: totalBrands },
       campaigns: { total: totalCampaigns, active: activeCampaigns },
       applications: { total: totalApplications, accepted: acceptedApplications },
-      content: { blogs: totalBlogs, published: publishedBlogs },
+      content: { blogs: totalBlogs, published: publishedBlogs, gallery: totalGallery },
       marketing: { subscribers: totalSubscribers, unreadContacts },
       reviews: { total: totalReviews },
       finance: { escrowHeld: escrowTotal._sum.amount || 0 }
@@ -925,6 +927,96 @@ router.get('/platform/stats/deep', async (req, res) => {
   } catch (err) {
     console.error('[GET /api/admin/platform/stats/deep] Error:', err.message);
     res.status(500).json({ error: 'Failed to retrieve deep platform stats.' });
+  }
+});
+
+// GET /api/admin/gallery — fetch all gallery items
+router.get('/gallery', async (req, res) => {
+  try {
+    const items = await prisma.galleryItem.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(items);
+  } catch (err) {
+    console.error('[GET /api/admin/gallery] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve gallery items.' });
+  }
+});
+
+// POST /api/admin/gallery — create gallery item
+router.post('/gallery', async (req, res) => {
+  try {
+    const { title, description, category, type, date, location, thumbnail, videoUrl, duration, tags } = req.body;
+    if (!title || !category || !type || !thumbnail) {
+      return res.status(400).json({ error: 'Title, Category, Type, and Thumbnail are required.' });
+    }
+
+    const item = await prisma.galleryItem.create({
+      data: {
+        title,
+        description: description || '',
+        category,
+        type,
+        date: date || new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+        location: location || '',
+        thumbnail,
+        videoUrl: videoUrl || null,
+        duration: duration || null,
+        tags: Array.isArray(tags) ? tags : []
+      }
+    });
+
+    res.status(201).json(item);
+  } catch (err) {
+    console.error('[POST /api/admin/gallery] Error:', err.message);
+    res.status(500).json({ error: 'Failed to create gallery item.' });
+  }
+});
+
+// PUT /api/admin/gallery/:id — update gallery item
+router.put('/gallery/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, category, type, date, location, thumbnail, videoUrl, duration, tags } = req.body;
+
+    const existing = await prisma.galleryItem.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ error: 'Gallery item not found.' });
+
+    const updated = await prisma.galleryItem.update({
+      where: { id },
+      data: {
+        title: title !== undefined ? title : existing.title,
+        description: description !== undefined ? description : existing.description,
+        category: category !== undefined ? category : existing.category,
+        type: type !== undefined ? type : existing.type,
+        date: date !== undefined ? date : existing.date,
+        location: location !== undefined ? location : existing.location,
+        thumbnail: thumbnail !== undefined ? thumbnail : existing.thumbnail,
+        videoUrl: videoUrl !== undefined ? videoUrl : existing.videoUrl,
+        duration: duration !== undefined ? duration : existing.duration,
+        tags: Array.isArray(tags) ? tags : existing.tags
+      }
+    });
+
+    res.json(updated);
+  } catch (err) {
+    console.error('[PUT /api/admin/gallery/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to update gallery item.' });
+  }
+});
+
+// DELETE /api/admin/gallery/:id — delete gallery item
+router.delete('/gallery/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const existing = await prisma.galleryItem.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ error: 'Gallery item not found.' });
+
+    await prisma.galleryItem.delete({ where: { id } });
+    res.json({ message: 'Gallery item successfully deleted.' });
+  } catch (err) {
+    console.error('[DELETE /api/admin/gallery/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to delete gallery item.' });
   }
 });
 

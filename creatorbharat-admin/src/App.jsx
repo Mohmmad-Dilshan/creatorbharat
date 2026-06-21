@@ -6,7 +6,7 @@ import {
   BarChart3, Wallet, Trophy, Zap, Globe, Bell, Calendar, Activity, Award, Layers,
   RefreshCw, ExternalLink, Crown, Target, ChevronDown, ChevronUp, Copy, Download,
   Flame, BookOpen, Headphones, AtSign, Phone, MapPin, Hash, ShieldAlert, UserCheck,
-  UserX, PieChart, TrendingDown, Package, Cpu, Database, Shield
+  UserX, PieChart, TrendingDown, Package, Cpu, Database, Shield, Image
 } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
@@ -197,6 +197,7 @@ const NAV_SECTIONS = (counts) => [
       { id: 'comments', label: 'Comment Moderation', icon: MessageSquare, badge: counts.comments },
       { id: 'newsletters', label: 'Newsletter Subs', icon: Mail, badge: counts.newsletters },
       { id: 'contacts', label: 'Contact Inbox', icon: Bell, badge: counts.unreadContacts },
+      { id: 'gallery', label: 'Gallery Manager', icon: Image, badge: counts.gallery },
     ]
   },
   {
@@ -230,6 +231,7 @@ const TAB_META = {
   comments: { title: 'Comment Moderation', sub: 'Remove spam or offensive blog comments' },
   newsletters: { title: 'Newsletter Subscribers', sub: 'View and manage email list' },
   contacts: { title: 'Contact Inbox', sub: 'Reply to or delete user contact messages' },
+  gallery: { title: 'Gallery Manager', sub: 'Manage CreatorBharat Ecosystem Gallery items' },
   settings: { title: 'System Settings', sub: 'Configure platform-wide settings and toggles' },
   danger: { title: '⚠️ Danger Zone', sub: 'Irreversible platform-wide operations' },
 };
@@ -271,6 +273,22 @@ export default function App() {
   const [podcasts, setPodcasts] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [comments, setComments] = useState([]);
+  const [gallery, setGallery] = useState([]);
+
+  // ── Gallery Editor States
+  const [gallerySearch, setGallerySearch] = useState('');
+  const [galleryModalOpen, setGalleryModalOpen] = useState(false);
+  const [editingGallery, setEditingGallery] = useState(null);
+  const [galTitle, setGalTitle] = useState('');
+  const [galDesc, setGalDesc] = useState('');
+  const [galCategory, setGalCategory] = useState('Summits');
+  const [galType, setGalType] = useState('photo');
+  const [galDate, setGalDate] = useState('');
+  const [galLocation, setGalLocation] = useState('');
+  const [galThumbnail, setGalThumbnail] = useState('');
+  const [galVideoUrl, setGalVideoUrl] = useState('');
+  const [galDuration, setGalDuration] = useState('');
+  const [galTags, setGalTags] = useState('');
 
   // ── New Data
   const [allApplications, setAllApplications] = useState([]);
@@ -418,13 +436,14 @@ export default function App() {
         fetch(`${API_BASE}/admin/brand-analytics`, { headers: H() }),
         fetch(`${API_BASE}/admin/platform/activity`, { headers: H() }),
         fetch(`${API_BASE}/admin/platform/stats/deep`, { headers: H() }),
+        fetch(`${API_BASE}/admin/gallery`, { headers: H() }),
       ];
 
       const results = await Promise.allSettled(fetches);
       const safeJson = async (r) => { try { const d = await r.json(); return d; } catch { return null; } };
 
       const [rVer, rCre, rBr, rCam, rPay, rSt, rBlog, rNews, rCont, rPod, rRev, rComm,
-        rApps, rLead, rBrandAna, rAct, rDeepSt] = await Promise.all(results.map(r => r.status === 'fulfilled' ? safeJson(r.value) : null));
+        rApps, rLead, rBrandAna, rAct, rDeepSt, rGal] = await Promise.all(results.map(r => r.status === 'fulfilled' ? safeJson(r.value) : null));
 
       if (rVer) setVerifications(Array.isArray(rVer) ? rVer : []);
       if (rCre) setCreators(rCre.creators || (Array.isArray(rCre) ? rCre : []));
@@ -443,6 +462,7 @@ export default function App() {
       if (rBrandAna) setBrandAnalytics(Array.isArray(rBrandAna) ? rBrandAna : []);
       if (rAct) setActivityLog(Array.isArray(rAct) ? rAct : []);
       if (rDeepSt) setDeepStats(rDeepSt);
+      if (rGal) setGallery(Array.isArray(rGal) ? rGal : []);
 
     } catch (err) {
       console.error('Fetch error:', err);
@@ -581,6 +601,66 @@ export default function App() {
     setBlogModalOpen(true);
   };
 
+  const handleDeleteGallery = async (id) => {
+    if (!window.confirm('Delete this gallery item permanently?')) return;
+    try {
+      const res = await fetch(`${API_BASE}/admin/gallery/${id}`, { method: 'DELETE', headers: H() });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      toast('Gallery item deleted successfully', 'success');
+      fetchData();
+    } catch (err) { toast(err.message, 'error'); }
+  };
+
+  const handleSaveGallery = async (e) => {
+    e.preventDefault();
+    if (!galTitle || !galCategory || !galType || !galThumbnail) {
+      return toast('Title, Category, Type, and Thumbnail are required', 'error');
+    }
+    try {
+      const payload = {
+        title: galTitle.trim(),
+        description: galDesc.trim(),
+        category: galCategory,
+        type: galType,
+        date: galDate.trim() || new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+        location: galLocation.trim(),
+        thumbnail: galThumbnail.trim(),
+        videoUrl: galVideoUrl.trim() || null,
+        duration: galDuration.trim() || null,
+        tags: galTags.split(',').map(t => t.trim()).filter(Boolean)
+      };
+      const url = editingGallery ? `${API_BASE}/admin/gallery/${editingGallery.id}` : `${API_BASE}/admin/gallery`;
+      const method = editingGallery ? 'PUT' : 'POST';
+      const res = await fetch(url, { method, headers: H(), body: JSON.stringify(payload) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      toast(editingGallery ? 'Gallery item updated!' : 'Gallery item created!', 'success');
+      setGalleryModalOpen(false); setEditingGallery(null); clearGalleryForm(); fetchData();
+    } catch (err) { toast(err.message, 'error'); }
+  };
+
+  const clearGalleryForm = () => {
+    setGalTitle(''); setGalDesc(''); setGalCategory('Summits'); setGalType('photo');
+    setGalDate(''); setGalLocation(''); setGalThumbnail(''); setGalVideoUrl('');
+    setGalDuration(''); setGalTags('');
+  };
+
+  const openEditGallery = (item) => {
+    setEditingGallery(item);
+    setGalTitle(item.title);
+    setGalDesc(item.description || '');
+    setGalCategory(item.category);
+    setGalType(item.type);
+    setGalDate(item.date || '');
+    setGalLocation(item.location || '');
+    setGalThumbnail(item.thumbnail);
+    setGalVideoUrl(item.videoUrl || '');
+    setGalDuration(item.duration || '');
+    setGalTags(item.tags?.join(', ') || '');
+    setGalleryModalOpen(true);
+  };
+
   const handleDeleteComment = async (id) => {
     if (!window.confirm('Delete this comment?')) return;
     try {
@@ -686,7 +766,12 @@ export default function App() {
     podcasts: podcasts.length,
     applications: allApplications.length,
     unreadContacts: contacts.filter(c => !c.read).length,
-  }), [creators, brands, campaigns, payments, verifications, blogs, newsletters, reviews, comments, podcasts, allApplications, contacts]);
+    gallery: gallery.length,
+  }), [creators, brands, campaigns, payments, verifications, blogs, newsletters, reviews, comments, podcasts, allApplications, contacts, gallery]);
+
+  const filteredGallery = useMemo(() => gallery.filter(g =>
+    `${g.title} ${g.category} ${g.location || ''} ${(g.tags || []).join(' ')}`.toLowerCase().includes(gallerySearch.toLowerCase())
+  ), [gallery, gallerySearch]);
 
   // ─── Filter Helpers ───────────────────────────────────────────────────────────
   const filteredCreators = useMemo(() => creators.filter(c =>
@@ -1645,6 +1730,44 @@ export default function App() {
             </div>
           )}
 
+          {/* ══ GALLERY ════════════════════════════════════════════════════ */}
+          {activeTab === 'gallery' && (
+            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
+              <SectionHeader title="Gallery Manager" badge={gallery.length} sub="Manage images, video clips, workshops, and ecosystem highlights"
+                action={<button onClick={() => { clearGalleryForm(); setEditingGallery(null); setGalleryModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ New Item</button>}
+              />
+              <SearchBar value={gallerySearch} onChange={setGallerySearch} placeholder="Search title, category, tags, or location..." />
+              <Table cols={['Thumbnail', 'Title', 'Category', 'Type', 'Location', 'Date', { label: 'Actions', align: 'right' }]}>
+                {filteredGallery.map(g => (
+                  <tr key={g.id} style={{ borderBottom: `1px solid ${T.border}` }}>
+                    <Td>
+                      <img src={g.thumbnail} alt={g.title} style={{ width: 50, height: 35, borderRadius: 6, objectFit: 'cover', border: `1px solid ${T.border}` }} />
+                    </Td>
+                    <Td bold>
+                      <span style={{ maxWidth: 200, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{g.title}</span>
+                    </Td>
+                    <Td><Badge color={T.purple}>{g.category}</Badge></Td>
+                    <Td><Badge color={g.type === 'video' ? T.orange : T.blue}>{g.type}</Badge></Td>
+                    <Td muted>{g.location || '—'}</Td>
+                    <Td muted>{g.date}</Td>
+                    <Td right>
+                      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                        {g.videoUrl && (
+                          <a href={g.videoUrl} target="_blank" rel="noopener noreferrer" style={{ padding: '5px 10px', background: T.orangeLight, color: T.orange, borderRadius: 7, fontSize: 11, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                            <PlayCircle size={10} /> Video
+                          </a>
+                        )}
+                        <ActionBtn small onClick={() => openEditGallery(g)}>✎ Edit</ActionBtn>
+                        <DangerBtn small onClick={() => handleDeleteGallery(g.id)}><Trash2 size={11} /></DangerBtn>
+                      </div>
+                    </Td>
+                  </tr>
+                ))}
+              </Table>
+              {filteredGallery.length === 0 && <EmptyState icon="🖼️" msg="No gallery items found" />}
+            </div>
+          )}
+
           {/* ══ SETTINGS ═══════════════════════════════════════════════════ */}
           {activeTab === 'settings' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -1906,6 +2029,59 @@ export default function App() {
                   {editingBlog ? 'Update Article' : 'Publish Article'}
                 </button>
                 <button type="button" onClick={() => { setBlogModalOpen(false); setEditingBlog(null); clearBlogForm(); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ══ GALLERY EDITOR MODAL ════════════════════════════════════════════ */}
+      {galleryModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
+          <div style={{ width: '100%', maxWidth: 650, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
+            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>{editingGallery ? 'Edit Gallery Item' : 'Add New Gallery Item'}</h3>
+              <button onClick={() => { setGalleryModalOpen(false); setEditingGallery(null); clearGalleryForm(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
+            </div>
+            <form onSubmit={handleSaveGallery} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {[
+                { label: 'Title', value: galTitle, setter: setGalTitle, placeholder: 'Event or highlight title...' },
+                { label: 'Location', value: galLocation, setter: setGalLocation, placeholder: 'e.g. Jaipur, Rajasthan' },
+                { label: 'Date', value: galDate, setter: setGalDate, placeholder: 'e.g. March 14, 2026' },
+                { label: 'Thumbnail Image URL', value: galThumbnail, setter: setGalThumbnail, placeholder: 'https://images.unsplash.com/...' },
+                { label: 'Video URL (Optional)', value: galVideoUrl, setter: setGalVideoUrl, placeholder: 'https://...' },
+                { label: 'Video Duration (Optional)', value: galDuration, setter: setGalDuration, placeholder: 'e.g. 2:45' },
+                { label: 'Tags (comma separated)', value: galTags, setter: setGalTags, placeholder: 'e.g. Fashion, Summit, Regional' },
+              ].map((f, i) => (
+                <div key={i}>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>{f.label}</label>
+                  <input value={f.value} onChange={e => f.setter(e.target.value)} placeholder={f.placeholder} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              ))}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Category</label>
+                  <select value={galCategory} onChange={e => setGalCategory(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
+                    {['Summits', 'Collaborations', 'Workshops', 'Media'].map(c => <option key={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Media Type</label>
+                  <select value={galType} onChange={e => setGalType(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
+                    <option value="photo">Photo</option>
+                    <option value="video">Video</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Description / Highlights</label>
+                <textarea value={galDesc} onChange={e => setGalDesc(e.target.value)} rows={3} placeholder="Provide details about the summit, workshop, or collaboration..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, resize: 'none', outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
+                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>
+                  {editingGallery ? 'Update Gallery Item' : 'Add Gallery Item'}
+                </button>
+                <button type="button" onClick={() => { setGalleryModalOpen(false); setEditingGallery(null); clearGalleryForm(); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
               </div>
             </form>
           </div>

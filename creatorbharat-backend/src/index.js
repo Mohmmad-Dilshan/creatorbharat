@@ -23,6 +23,7 @@ import blogRouter from './routes/blog.js';
 import uploadsRouter from './routes/uploads.js';
 import newsletterRouter from './routes/newsletter.js';
 import contactsRouter from './routes/contacts.js';
+import galleryRouter from './routes/gallery.js';
 
 dotenv.config();
 
@@ -109,6 +110,7 @@ app.use('/api/blog', blogRouter);
 app.use('/api/uploads', uploadsRouter);
 app.use('/api/newsletter', newsletterRouter);
 app.use('/api/contacts', contactsRouter);
+app.use('/api/gallery', galleryRouter);
 
 // Global 404 Error handler
 app.use((req, res) => {
@@ -258,6 +260,79 @@ io.on('connection', (socket) => {
       console.log(`[Database Seeder]: Default admin user created successfully (${adminEmail}).`);
     } else {
       console.log(`[Database Seeder]: Admin account verified.`);
+    }
+
+    // Seed Gallery Items if empty
+    const galleryCount = await prisma.galleryItem.count();
+    if (galleryCount === 0) {
+      const defaultGallery = [
+        {
+          title: 'Jaipur Heritage Fashion Summit',
+          description: 'A grand celebration linking traditional Rajasthani weavers with modern Gen-Z digital creators. Highlighted live styling workshops and brand matchmaking.',
+          category: 'Summits',
+          type: 'video',
+          date: 'March 14, 2026',
+          location: 'Jaipur, Rajasthan',
+          thumbnail: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
+          videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+          duration: '2:45',
+          tags: ['Fashion', 'Brand Deals', 'Weavers']
+        },
+        {
+          title: 'Bastar Art & Craft Exhibition',
+          description: 'Showcasing the premium terracotta and brass craft collections of Bastar artisans through visual storytelling campaigns shot by regional travel vloggers.',
+          category: 'Collaborations',
+          type: 'photo',
+          date: 'April 22, 2026',
+          location: 'Jagdalpur, Chhattisgarh',
+          thumbnail: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80',
+          tags: ['Artisans', 'Exhibition', 'Regional']
+        },
+        {
+          title: 'Creator Node Bangalore Meetup',
+          description: 'An exclusive networking event for tech and lifestyle influencers. Discussed monetization algorithms and brand campaign optimizations.',
+          category: 'Summits',
+          type: 'photo',
+          date: 'May 05, 2026',
+          location: 'Bangalore, Karnataka',
+          thumbnail: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80',
+          tags: ['Networking', 'Tech', 'Lifestyle']
+        },
+        {
+          title: 'Delhi Influencer Brand Conclave',
+          description: 'Corporate brand managers and elite creators discussing escrow escrow metrics on CreatorBharat.',
+          category: 'Collaborations',
+          type: 'video',
+          date: 'May 18, 2026',
+          location: 'New Delhi',
+          thumbnail: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=800&q=80',
+          videoUrl: 'https://www.w3schools.com/html/movie.mp4',
+          duration: '1:30',
+          tags: ['Brand Deals', 'Escrow', 'Conclave']
+        },
+        {
+          title: 'Mobile Videography & Editing Boot Camp',
+          description: 'A hands-on workshop guiding nano and micro creators on high-fidelity color grading and sound design for vertical mobile content.',
+          category: 'Workshops',
+          type: 'photo',
+          date: 'June 01, 2026',
+          location: 'Pune, Maharashtra',
+          thumbnail: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=800&q=80',
+          tags: ['Videography', 'Workshops', 'Mobile']
+        },
+        {
+          title: 'Mumbai Creator Studio Hub Launch',
+          description: 'Grand opening of the CreatorBharat flagship streaming facility, equipped with 4K cameras, acoustic chambers, and podcast setups for verified members.',
+          category: 'Media',
+          type: 'photo',
+          date: 'June 10, 2026',
+          location: 'Mumbai, Maharashtra',
+          thumbnail: 'https://images.unsplash.com/photo-1590608897129-79da98d15969?auto=format&fit=crop&w=800&q=80',
+          tags: ['Studio', 'Podcasting', 'Launch']
+        }
+      ];
+      await prisma.galleryItem.createMany({ data: defaultGallery });
+      console.log(`[Database Seeder]: ${defaultGallery.length} default gallery items seeded successfully.`);
     }
   } catch (err) {
     console.error('[Database Seeder Error]:', err.message);
