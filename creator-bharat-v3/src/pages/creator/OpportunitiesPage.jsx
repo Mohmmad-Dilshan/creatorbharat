@@ -129,6 +129,7 @@ export default function OpportunitiesPage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [pitchText, setPitchText] = useState('');
+  const [pitchDialect, setPitchDialect] = useState('English');
   const [aiPitchLoading, setAiPitchLoading] = useState(false);
   const [completedMissions, setCompletedMissions] = useState(() => 
     JSON.parse(localStorage.getItem('cb_completed_missions') || '[]')
@@ -174,7 +175,8 @@ export default function OpportunitiesPage() {
           creatorNiches: st.user?.creator?.niche?.join(', ') || 'Lifestyle',
           brandName: selectedCampaign.brand,
           campaignTitle: selectedCampaign.title,
-          campaignBrief: selectedCampaign.desc || selectedCampaign.description || 'Brand collaboration'
+          campaignBrief: selectedCampaign.desc || selectedCampaign.description || 'Brand collaboration',
+          dialect: pitchDialect
         }
       });
       setPitchText(data.pitch || '');
@@ -382,8 +384,31 @@ export default function OpportunitiesPage() {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <label style={{ fontSize: '11px', fontWeight: 900, color: '#475569', textTransform: 'uppercase' }}>Your Pitch Proposal</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, gap: 12, flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <label style={{ fontSize: '11px', fontWeight: 900, color: '#475569', textTransform: 'uppercase', margin: 0 }}>Your Pitch Proposal</label>
+                      <select
+                        value={pitchDialect}
+                        onChange={e => setPitchDialect(e.target.value)}
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: 800,
+                          color: '#475569',
+                          border: '1.5px solid #e2e8f0',
+                          borderRadius: '8px',
+                          padding: '4px 8px',
+                          background: '#fff',
+                          outline: 'none',
+                          cursor: 'pointer',
+                          fontFamily: 'inherit'
+                        }}
+                      >
+                        <option value="English">English</option>
+                        <option value="Hinglish">Hinglish</option>
+                        <option value="Hindi">Hindi (नमस्ते)</option>
+                        <option value="Rajasthani">Rajasthani (खम्मा घणी)</option>
+                      </select>
+                    </div>
                     <button
                       type="button"
                       onClick={handleAiPitch}

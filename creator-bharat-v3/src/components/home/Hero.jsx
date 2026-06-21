@@ -12,6 +12,8 @@ import {
   InstagramIcon, YoutubeIcon, LinkedinIcon, TwitterIcon, FacebookIcon, 
   GithubIcon, TwitchIcon 
 } from '../icons/SocialIcons';
+import { useTranslation } from 'react-i18next';
+
 
 const CITIES_LIST = ['Jaipur', 'Mumbai', 'Lucknow', 'Indore', 'Bhopal', 'Surat', 'Bhilwara', 'Patna', 'Kochi'];
 
@@ -24,6 +26,7 @@ const MARKETING_POSTERS = [
 
 
 const HeroValueProps = memo(({ mob }) => {
+  const { t } = useTranslation();
   const [cityIdx, setCityIdx] = useState(0);
   const [posterIdx, setPosterIdx] = useState(0);
   const timerRef = React.useRef(null);
@@ -64,16 +67,16 @@ const HeroValueProps = memo(({ mob }) => {
   }, [posterIdx]);
 
   const STATS = [
-    { value: '2.5L+', label: 'Verified Creators' },
-    { value: '450+', label: 'Cities Covered' },
-    { value: '12K+', label: 'Brand Deals' },
+    { value: '2.5L+', label: t('stats.creators', 'Verified Creators') },
+    { value: '450+', label: t('stats.cities', 'Cities Covered') },
+    { value: '12K+', label: t('stats.deals', 'Brand Deals') },
   ];
 
   const FEATURES = [
-    { icon: '🪪', label: 'Unique Digital ID' },
-    { icon: '📊', label: 'CB Trust Score' },
-    { icon: '💰', label: '0% Commission' },
-    { icon: '🔒', label: 'Escrow Secured' },
+    { icon: '🪪', label: t('features.digitalId', 'Unique Digital ID') },
+    { icon: '📊', label: t('features.trustScore', 'CB Trust Score') },
+    { icon: '💰', label: t('features.commission', '0% Commission') },
+    { icon: '🔒', label: t('features.escrow', 'Escrow Secured') },
   ];
 
   return (
@@ -123,7 +126,7 @@ const HeroValueProps = memo(({ mob }) => {
           }}>
             <Globe size={13} color="#FF9431" />
             <span style={{ fontSize: 10, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '3px', fontFamily: "'Outfit',sans-serif" }}>
-              The Bharat Narrative
+              {t('hero.narrativeBadge', 'The Bharat Narrative')}
             </span>
           </div>
 
@@ -133,16 +136,16 @@ const HeroValueProps = memo(({ mob }) => {
             lineHeight: 1.05, letterSpacing: '-0.04em', margin: '0 0 10px 0',
             fontFamily: "'Outfit',sans-serif",
           }}>
-            Find Every<br />
+            {t('hero.findEvery', 'Find Every')}<br />
             <span style={{ background: 'linear-gradient(90deg,#FF9431,#FF6B35)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Tier City
+              {t('hero.tierCity', 'Tier City')}
             </span><br />
-            Creator.
+            {t('hero.creator', 'Creator.')}
           </h2>
 
           {/* City ticker */}
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 24, marginTop: 8 }}>
-            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', fontWeight: 600, fontFamily: "'Outfit',sans-serif" }}>Now mapping →</span>
+            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', fontWeight: 600, fontFamily: "'Outfit',sans-serif" }}>{t('hero.nowMapping', 'Now mapping')} →</span>
             <span style={{ fontSize: 14, fontWeight: 900, color: '#FF9431', fontFamily: "'Outfit',sans-serif", minWidth: 80, display: 'inline-block' }}>
               <AnimatePresence mode="wait">
                 <motion.span
@@ -165,9 +168,9 @@ const HeroValueProps = memo(({ mob }) => {
             lineHeight: 1.8, margin: '0 0 28px 0', fontFamily: "'Outfit',sans-serif",
             maxWidth: 380,
           }}>
-            India&apos;s largest verified creator database. Every creator gets a{' '}
-            <span style={{ color: '#fff', fontWeight: 800 }}>Unique Digital ID</span> and a{' '}
-            <span style={{ color: '#FF9431', fontWeight: 800 }}>CB Trust Score</span> — from Bhilwara to Bengaluru.
+            {t('hero.descPart1', "India's largest verified creator database. Every creator gets a ")}{' '}
+            <span style={{ color: '#fff', fontWeight: 800 }}>{t('hero.descDigitalId', 'Unique Digital ID')}</span>{t('hero.descPart2', ' and a ')}{' '}
+            <span style={{ color: '#FF9431', fontWeight: 800 }}>{t('hero.descTrustScore', 'CB Trust Score')}</span>{t('hero.descPart3', ' — from Bhilwara to Bengaluru.')}
           </p>
 
           {/* Feature chips */}
@@ -553,82 +556,91 @@ const FloatingCreatorIcons = memo(({ mob }) => {
 
 FloatingCreatorIcons.propTypes = { mob: PropTypes.bool };
 
-const HeroHeader = memo(({ mob }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: 1100 }}>
-    <motion.div 
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="au" 
-      style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: mob ? '10px 20px' : '14px 36px', borderRadius: 100, background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(20px)', border: '1px solid rgba(0,0,0,0.06)', marginBottom: 48, boxShadow: '0 20px 40px rgba(0,0,0,0.03)', position: 'relative' }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-        <div style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', padding: '6px 14px', borderRadius: 100, fontSize: 11, fontWeight: 950, textTransform: 'uppercase', letterSpacing: '1.5px' }}>ELITE</div>
-        <span style={{ fontSize: mob ? 12 : 14, fontWeight: 900, color: '#0f172a', letterSpacing: '0.2px' }}>Empowering Bharat&apos;s Next 100M Creators</span>
-        <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.1)' }} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 12px #10B981', animation: 'pulse-green 2s infinite' }} />
-          <span style={{ fontSize: 11, fontWeight: 950, color: '#10B981', textTransform: 'uppercase' }}>National Pulse</span>
+const HeroHeader = memo(({ mob }) => {
+  const { t } = useTranslation();
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: 1100 }}>
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="au" 
+        style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: mob ? '10px 20px' : '14px 36px', borderRadius: 100, background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(20px)', border: '1px solid rgba(0,0,0,0.06)', marginBottom: 48, boxShadow: '0 20px 40px rgba(0,0,0,0.03)', position: 'relative' }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', padding: '6px 14px', borderRadius: 100, fontSize: 11, fontWeight: 950, textTransform: 'uppercase', letterSpacing: '1.5px' }}>ELITE</div>
+          <span style={{ fontSize: mob ? 12 : 14, fontWeight: 900, color: '#0f172a', letterSpacing: '0.2px' }}>{t('hero.eliteLabel', "Empowering Bharat's Next 100M Creators")}</span>
+          <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.1)' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 12px #10B981', animation: 'pulse-green 2s infinite' }} />
+            <span style={{ fontSize: 11, fontWeight: 950, color: '#10B981', textTransform: 'uppercase' }}>{t('hero.pulseLabel', 'National Pulse')}</span>
+          </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
 
-    <h1 className="au d1" style={{ fontSize: mob ? 'clamp(32px, 9vw, 42px)' : 'clamp(80px, 10vw, 110px)', fontWeight: 950, color: '#0f172a', lineHeight: 0.95, marginBottom: mob ? 24 : 40, letterSpacing: '-0.06em', maxWidth: '100%', textAlign: 'center' }}>
-      Your Digital <Typewriter /> <br />
-      Built for <span style={{ background: 'linear-gradient(90deg, #FF9431, #128807)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: mob ? 5 : 15 }}>Bharat.</span>
-    </h1>
-    <p className="au d2" style={{ fontSize: mob ? 16 : 24, color: '#475569', lineHeight: 1.6, marginTop: 0, marginRight: 'auto', marginBottom: mob ? 24 : 48, marginLeft: 'auto', fontWeight: 600, maxWidth: 800 }}>
-      India&apos;s all-in-one platform helping Tier 2 & 3 creators build a professional identity, access regional missions, and grow nationally.
-      <br />
-      <span style={{ color: '#64748b', fontWeight: 500 }}>Verified creator profiles, paid brand campaigns, and real visibility for talent beyond the metros.</span>
-      <br />
-      <span style={{ display: 'block', width: 'fit-content', margin: '10px auto 0', fontSize: mob ? 13 : 15, fontWeight: 950, textTransform: 'uppercase', letterSpacing: '1.8px', background: 'linear-gradient(90deg, #FF9431 0%, #1A3A8A 48%, #138808 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Built in Bharat. Ready for India.</span>
-    </p>
-  </div>
-));
+      <h1 className="au d1" style={{ fontSize: mob ? 'clamp(32px, 9vw, 42px)' : 'clamp(80px, 10vw, 110px)', fontWeight: 950, color: '#0f172a', lineHeight: 0.95, marginBottom: mob ? 24 : 40, letterSpacing: '-0.06em', maxWidth: '100%', textAlign: 'center' }}>
+        {t('hero.yourDigital', 'Your Digital')} <Typewriter /> <br />
+        {t('hero.builtFor', 'Built for')} <span style={{ background: 'linear-gradient(90deg, #FF9431, #128807)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: mob ? 5 : 15 }}>{t('hero.bharatText', 'Bharat.')}</span>
+      </h1>
+      <p className="au d2" style={{ fontSize: mob ? 16 : 24, color: '#475569', lineHeight: 1.6, marginTop: 0, marginRight: 'auto', marginBottom: mob ? 24 : 48, marginLeft: 'auto', fontWeight: 600, maxWidth: 800 }}>
+        {t('heroSubtitle', "India's all-in-one platform helping Tier 2 & 3 creators build a professional identity, access regional missions, and grow nationally.")}
+        <br />
+        <span style={{ color: '#64748b', fontWeight: 500 }}>{t('heroSubtitleDetail', 'Verified creator profiles, paid brand campaigns, and real visibility for talent beyond the metros.')}</span>
+        <br />
+        <span style={{ display: 'block', width: 'fit-content', margin: '10px auto 0', fontSize: mob ? 13 : 15, fontWeight: 950, textTransform: 'uppercase', letterSpacing: '1.8px', background: 'linear-gradient(90deg, #FF9431 0%, #1A3A8A 48%, #138808 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t('heroTirangaTag', 'Built in Bharat. Ready for India.')}</span>
+      </p>
+    </div>
+  );
+});
 
 HeroHeader.propTypes = { mob: PropTypes.bool };
 
-const TourBadge = memo(({ mob, onClick }) => (
-  <button 
-    type="button" 
-    onClick={onClick} 
-    style={{
-      background: 'rgba(255,148,49,0.08)',
-      color: '#FF9431',
-      border: '1px dashed rgba(255,148,49,0.3)',
-      borderRadius: 100,
-      padding: '8px 18px',
-      fontSize: 12,
-      fontWeight: 800,
-      cursor: 'pointer',
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: 6,
-      marginBottom: mob ? 12 : 40,
-      transition: 'all 0.2s ease',
-    }}
-    className="interactive-tour-badge"
-  >
-    <span>👁️ Take 1-Minute Interactive Tour</span>
-  </button>
-));
+const TourBadge = memo(({ mob, onClick }) => {
+  const { t } = useTranslation();
+  return (
+    <button 
+      type="button" 
+      onClick={onClick} 
+      style={{
+        background: 'rgba(255,148,49,0.08)',
+        color: '#FF9431',
+        border: '1px dashed rgba(255,148,49,0.3)',
+        borderRadius: 100,
+        padding: '8px 18px',
+        fontSize: 12,
+        fontWeight: 800,
+        cursor: 'pointer',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 6,
+        marginBottom: mob ? 12 : 40,
+        transition: 'all 0.2s ease',
+      }}
+      className="interactive-tour-badge"
+    >
+      <span>👁️ {t('hero.tourBadge', 'Take 1-Minute Interactive Tour')}</span>
+    </button>
+  );
+});
 
 TourBadge.propTypes = {
   mob: PropTypes.bool,
   onClick: PropTypes.func.isRequired
 };
 
-const PrimaryButtons = memo(({ mob, go }) => (
-  <div className="au d3" style={{ display: 'flex', flexDirection: 'row', gap: mob ? 12 : 20, marginBottom: mob ? 16 : 20, justifyContent: 'center', width: mob ? '100%' : 'auto', maxWidth: mob ? 480 : 'none', padding: mob ? '0 16px' : 0, boxSizing: 'border-box', alignItems: 'center' }}>
-    <Btn lg full={false} onClick={() => go('/join')} style={{ flex: mob ? 1 : 'initial', padding: mob ? '18px 14px' : '28px 64px', fontSize: mob ? 15 : 20, minWidth: mob ? 0 : 'auto', background: '#0f172a', color: '#fff', borderRadius: 100, fontWeight: 950, border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-      <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: mob ? 6 : 12 }}>🚀 Join as Creator</span>
-      <div style={{ position: 'absolute', top: 0, left: '-100%', width: '50%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)', animation: 'shimmer 3s infinite', transform: 'skewX(-20deg)' }} />
-    </Btn>
-    <Btn lg variant="ghost" full={false} onClick={() => go('/creators')} style={{ flex: mob ? 1 : 'initial', padding: mob ? '18px 14px' : '26px 56px', fontSize: mob ? 15 : 18, minWidth: mob ? 0 : 'auto', background: 'rgba(255,255,255,0.8)', color: '#0f172a', borderRadius: 100, fontWeight: 950, border: '1.5px solid #f1f5f9', backdropFilter: 'blur(20px)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)', whiteSpace: 'nowrap' }}>
-      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: mob ? 6 : 12 }}>💼 Hire Talent</span>
-    </Btn>
-  </div>
-));
+const PrimaryButtons = memo(({ mob, go }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="au d3" style={{ display: 'flex', flexDirection: 'row', gap: mob ? 12 : 20, marginBottom: mob ? 16 : 20, justifyContent: 'center', width: mob ? '100%' : 'auto', maxWidth: mob ? 480 : 'none', padding: mob ? '0 16px' : 0, boxSizing: 'border-box', alignItems: 'center' }}>
+      <Btn lg full={false} onClick={() => go('/join')} style={{ flex: mob ? 1 : 'initial', padding: mob ? '18px 14px' : '28px 64px', fontSize: mob ? 15 : 20, minWidth: mob ? 0 : 'auto', background: '#0f172a', color: '#fff', borderRadius: 100, fontWeight: 950, border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+        <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: mob ? 6 : 12 }}>🚀 {t('btnCreatorApply', 'Join as Creator')}</span>
+        <div style={{ position: 'absolute', top: 0, left: '-100%', width: '50%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)', animation: 'shimmer 3s infinite', transform: 'skewX(-20deg)' }} />
+      </Btn>
+      <Btn lg variant="ghost" full={false} onClick={() => go('/creators')} style={{ flex: mob ? 1 : 'initial', padding: mob ? '18px 14px' : '26px 56px', fontSize: mob ? 15 : 18, minWidth: mob ? 0 : 'auto', background: 'rgba(255,255,255,0.8)', color: '#0f172a', borderRadius: 100, fontWeight: 950, border: '1.5px solid #f1f5f9', backdropFilter: 'blur(20px)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)', whiteSpace: 'nowrap' }}>
+        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: mob ? 6 : 12 }}>💼 {t('btnFindCreators', 'Hire Talent')}</span>
+      </Btn>
+    </div>
+  );
+});
 
 PrimaryButtons.propTypes = {
   mob: PropTypes.bool,

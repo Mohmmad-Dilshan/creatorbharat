@@ -85,10 +85,21 @@ Do NOT include any markdown code blocks, backticks, or text other than the JSON 
 
 // ─── 2. AI CREATOR PITCH ASSISTANT ───────────────────────────────────────────
 router.post('/pitch-assistant', authMiddleware, async (req, res) => {
-  const { creatorName, creatorNiches, brandName, campaignTitle, campaignBrief } = req.body;
+  const { creatorName, creatorNiches, brandName, campaignTitle, campaignBrief, dialect } = req.body;
 
   if (!creatorName || !brandName || !campaignTitle) {
     return res.status(400).json({ error: 'Creator Name, Brand Name, and Campaign Title are required' });
+  }
+
+  let dialectPromptRule = '';
+  if (dialect === 'Hinglish') {
+    dialectPromptRule = `Write the pitch in conversational Hinglish (a casual blend of Hindi written in Latin/English script and English, like 'Aapki campaign bohot acchi lagi'). Make it sound natural, energetic, and culturally resonant.`;
+  } else if (dialect === 'Hindi') {
+    dialectPromptRule = `Write the pitch in clean, professional Hindi language (using Devanagari script). Use warm and polite Indian greetings (like 'नमस्ते').`;
+  } else if (dialect === 'Rajasthani') {
+    dialectPromptRule = `Write the pitch in warm Rajasthani style (using Devanagari script, incorporating classic Rajasthani greetings like 'खम्मा घणी सा' and terms of respect).`;
+  } else {
+    dialectPromptRule = `Write the pitch in professional, high-standard English.`;
   }
 
   const prompt = `Write a personalized, high-converting brand collaboration pitch email from creator "${creatorName}" to brand "${brandName}".
@@ -98,6 +109,9 @@ Creator Details:
 Campaign Details:
 - Campaign: "${campaignTitle}"
 - Brief Context: "${campaignBrief || 'Direct collaboration campaign'}"
+
+Language & Dialect Rule:
+${dialectPromptRule}
 
 Format it as a professional pitch message. Keep it to 2-3 short paragraphs. Highlight audience alignment, storytelling capability, and propose a collaboration to create high-quality content. Do not include subject lines or placeholders.`;
 

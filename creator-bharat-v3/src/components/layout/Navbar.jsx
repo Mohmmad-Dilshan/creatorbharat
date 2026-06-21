@@ -6,6 +6,8 @@ import { Logo, Btn } from '@/components/common/Primitives';
 import { T } from '@/core/theme';
 import { Menu, X, ChevronDown, Languages, LogOut, LayoutDashboard, Settings, Bookmark, Zap, Briefcase, User, Wallet, Trophy, Calendar, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+
 
 const NavDropdown = ({ label, items, go, location }) => {
   const [open, setOpen] = useState(false);
@@ -210,6 +212,7 @@ NavLinks.propTypes = {
 };
 
 const UserActions = ({ st, dsp, go, mob }) => {
+  const { t, i18n } = useTranslation();
   const [lang, setLang] = useState('EN');
   const [langOpen, setLangOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -218,40 +221,15 @@ const UserActions = ({ st, dsp, go, mob }) => {
 
   const LANGS = [
     { code: 'EN', id: 'en', label: 'English' },
-    { code: 'HI', id: 'hi', label: 'Hindi' },
-    { code: 'MR', id: 'mr', label: 'Marathi' },
-    { code: 'TE', id: 'te', label: 'Telugu' },
-    { code: 'TA', id: 'ta', label: 'Tamil' },
-    { code: 'BN', id: 'bn', label: 'Bengali' },
-    { code: 'GU', id: 'gu', label: 'Gujarati' },
-    { code: 'KN', id: 'kn', label: 'Kannada' },
-    { code: 'ML', id: 'ml', label: 'Malayalam' },
-    { code: 'PA', id: 'pa', label: 'Punjabi' },
-    { code: 'OR', id: 'or', label: 'Odia' }
+    { code: 'HI', id: 'hi', label: 'हिन्दी (Hindi)' },
+    { code: 'RJ', id: 'rj', label: 'राजस्थानी (Rajasthani)' }
   ];
 
   const handleLangChange = (l) => {
     setLang(l.code);
     setLangOpen(false);
-    
-    // Set cookies first as a backup and for persistence
-    document.cookie = `googtrans=/en/${l.id}; path=/`;
-    document.cookie = `googtrans=/en/${l.id}; path=/; domain=${window.location.hostname}`;
-    
-    // Attempt to trigger the hidden Google Translate dropdown directly
-    const gtCombo = document.querySelector('.goog-te-combo');
-    if (gtCombo) {
-      gtCombo.value = l.id;
-      // Google translate requires a bubbling event
-      gtCombo.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
-      dsp({ t: 'TOAST', d: { type: 'success', msg: `Translating to ${l.label}...` } });
-    } else {
-      // Fallback if the element hasn't loaded
-      dsp({ t: 'TOAST', d: { type: 'success', msg: `Language changed to ${l.label}. Reloading...` } });
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
-    }
+    i18n.changeLanguage(l.id);
+    dsp({ t: 'TOAST', d: { type: 'success', msg: `Language changed to ${l.label}` } });
   };
 
   useEffect(() => {
@@ -265,15 +243,13 @@ const UserActions = ({ st, dsp, go, mob }) => {
     };
     document.addEventListener('mousedown', handleOutsideClick);
     
-    // Check active language on load
-    const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
-    if (match && match[1]) {
-      const found = LANGS.find(l => l.id === match[1]);
+    if (i18n.language) {
+      const found = LANGS.find(l => l.id === i18n.language.substring(0, 2));
       if (found) setLang(found.code);
     }
     
     return () => document.removeEventListener('mousedown', handleOutsideClick);
-  }, []);
+  }, [i18n.language]);
 
   const handleLogout = () => {
     setProfileOpen(false);
@@ -323,7 +299,7 @@ const UserActions = ({ st, dsp, go, mob }) => {
                   cursor: 'pointer', textAlign: 'left', whiteSpace: 'nowrap'
                 }}
               >
-                {l.label} ({l.code})
+                {l.label}
               </button>
             ))}
           </motion.div>
@@ -490,6 +466,7 @@ const isCreatorProfilePage = (pathname) => {
 };
 
 export default function Navbar() {
+  const { t } = useTranslation();
   const { st, dsp } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
@@ -610,90 +587,90 @@ export default function Navbar() {
   };
 
   const linksPublic = [
-    { path: '/creators', label: 'Creators' },
-    { path: '/campaigns', label: 'Campaigns' },
+    { path: '/creators', label: t('nav.creators', 'Creators') },
+    { path: '/campaigns', label: t('nav.campaigns', 'Campaigns') },
     { 
-      label: 'Explore', 
+      label: t('nav.explore', 'Explore'), 
       items: [
-        { path: '/brand', label: 'For Brands' },
-        { path: '/creator-hub', label: 'For Creators' },
-        { path: '/verify-guide', label: 'Verification Guide' },
-        { path: '/leaderboard', label: 'Leaderboard' },
-        { path: '/rate-calc', label: 'Rate Calculator' },
-        { path: '/pricing', label: 'Pricing Plans' },
-        { path: '/ai-knowledge', label: 'AI Knowledge' },
-        { path: '/official-profile', label: 'Official Profile' },
-        { path: '/creator-density', label: 'Creator Density Map' },
-        { path: '/notifications', label: 'Official Gazette' }
+        { path: '/brand', label: t('nav.forBrands', 'For Brands') },
+        { path: '/creator-hub', label: t('nav.forCreators', 'For Creators') },
+        { path: '/verify-guide', label: t('nav.verifyGuide', 'Verification Guide') },
+        { path: '/leaderboard', label: t('nav.leaderboard', 'Leaderboard') },
+        { path: '/rate-calc', label: t('nav.rateCalc', 'Rate Calculator') },
+        { path: '/pricing', label: t('nav.pricingPlans', 'Pricing Plans') },
+        { path: '/ai-knowledge', label: t('nav.aiKnowledge', 'AI Knowledge') },
+        { path: '/official-profile', label: t('nav.officialProfile', 'Official Profile') },
+        { path: '/creator-density', label: t('nav.creatorDensity', 'Creator Density Map') },
+        { path: '/notifications', label: t('nav.gazette', 'Official Gazette') }
       ]
     },
     { 
-      label: 'Resources', 
+      label: t('nav.resources', 'Resources'), 
       items: [
-        { path: '/gallery', label: 'Ecosystem Gallery' },
-        { path: '/stories', label: 'Success Stories' },
-        { path: '/blog', label: 'Creator Hub' },
-        { path: '/ambassador', label: 'Campus Ambassador' },
-        { path: '/press', label: 'Press Kit' },
-        { path: '/faq', label: 'Help & FAQ' },
-        { path: '/contact', label: 'Contact Us' }
+        { path: '/gallery', label: t('nav.gallery', 'Ecosystem Gallery') },
+        { path: '/stories', label: t('nav.stories', 'Success Stories') },
+        { path: '/blog', label: t('nav.creatorHub', 'Creator Hub') },
+        { path: '/ambassador', label: t('nav.ambassador', 'Campus Ambassador') },
+        { path: '/press', label: t('nav.press', 'Press Kit') },
+        { path: '/faq', label: t('nav.faq', 'Help & FAQ') },
+        { path: '/contact', label: t('nav.contactUs', 'Contact Us') }
       ]
     },
-    { path: '/about', label: 'About' }
+    { path: '/about', label: t('nav.about', 'About') }
   ];
 
   const linksCreator = [
-    { path: '/creator/dashboard', label: 'Dashboard' },
-    { path: '/creator/opportunities', label: 'Opportunities' },
-    { path: '/creator/applications', label: 'Applications' },
-    { path: '/creator/monetization', label: 'Monetization' },
+    { path: '/creator/dashboard', label: t('nav.dashboard', 'Dashboard') },
+    { path: '/creator/opportunities', label: t('nav.opportunities', 'Opportunities') },
+    { path: '/creator/applications', label: t('nav.applications', 'Applications') },
+    { path: '/creator/monetization', label: t('nav.monetization', 'Monetization') },
     {
-      label: 'Ecosystem',
+      label: t('nav.ecosystem', 'Ecosystem'),
       items: [
-        { path: '/creator/wallet', label: 'Wallet' },
-        { path: '/creator/score', label: 'Creator Score' },
-        { path: '/creator/public-preview', label: 'Public Profile' },
-        { path: '/creator/verification', label: 'Verification Desk' },
-        { path: '/creator/community', label: 'Community' },
-        { path: '/creator/events', label: 'Events' },
-        { path: '/creator/messages', label: 'Messages & Alerts' },
-        { path: '/creator/official-profile', label: 'Official Profile' },
-        { path: '/creator/creator-density', label: 'Creator Density Map' }
+        { path: '/creator/wallet', label: t('nav.wallet', 'Wallet') },
+        { path: '/creator/score', label: t('nav.creatorScore', 'Creator Score') },
+        { path: '/creator/public-preview', label: t('nav.publicProfile', 'Public Profile') },
+        { path: '/creator/verification', label: t('nav.verificationDesk', 'Verification Desk') },
+        { path: '/creator/community', label: t('nav.community', 'Community') },
+        { path: '/creator/events', label: t('nav.events', 'Events') },
+        { path: '/creator/messages', label: t('nav.messagesAlerts', 'Messages & Alerts') },
+        { path: '/creator/official-profile', label: t('nav.officialProfile', 'Official Profile') },
+        { path: '/creator/creator-density', label: t('nav.creatorDensity', 'Creator Density Map') }
       ]
     },
     {
-      label: 'Resources',
+      label: t('nav.resources', 'Resources'),
       items: [
-        { path: '/creator/gallery', label: 'Ecosystem Gallery' },
-        { path: '/creator/stories', label: 'Success Stories' },
-        { path: '/creator/blog', label: 'Platform Blog' },
-        { path: '/creator/help', label: 'Support & Help' }
+        { path: '/creator/gallery', label: t('nav.gallery', 'Ecosystem Gallery') },
+        { path: '/creator/stories', label: t('nav.stories', 'Success Stories') },
+        { path: '/creator/blog', label: t('nav.platformBlog', 'Platform Blog') },
+        { path: '/creator/help', label: t('nav.supportHelp', 'Support & Help') }
       ]
     }
   ];
 
   const linksBrand = [
-    { path: '/brand-dashboard', label: 'Dashboard' },
-    { path: '/campaign-builder', label: 'Post Campaign' },
-    { path: '/creators', label: 'Scout Creators' },
+    { path: '/brand-dashboard', label: t('nav.dashboard', 'Dashboard') },
+    { path: '/campaign-builder', label: t('nav.postCampaign', 'Post Campaign') },
+    { path: '/creators', label: t('nav.scoutCreators', 'Scout Creators') },
     {
-      label: 'Manage',
+      label: t('nav.manage', 'Manage'),
       items: [
-        { path: '/brand-applications', label: 'Applicants' },
-        { path: '/compare', label: 'Compare Tool' },
-        { path: '/brand-analytics', label: 'Analytics' },
-        { path: '/brand/creator-density', label: 'Creator Density Map' },
-        { path: '/official-profile', label: 'Official Profile' }
+        { path: '/brand-applications', label: t('nav.applicants', 'Applicants') },
+        { path: '/compare', label: t('nav.compareTool', 'Compare Tool') },
+        { path: '/brand-analytics', label: t('nav.analytics', 'Analytics') },
+        { path: '/brand/creator-density', label: t('nav.creatorDensity', 'Creator Density Map') },
+        { path: '/official-profile', label: t('nav.officialProfile', 'Official Profile') }
       ]
     },
     {
-      label: 'Resources',
+      label: t('nav.resources', 'Resources'),
       items: [
-        { path: '/gallery', label: 'Ecosystem Gallery' },
-        { path: '/stories', label: 'Success Stories' },
-        { path: '/blog', label: 'Platform Blog' },
-        { path: '/brand-guidelines', label: 'Brand Guidelines' },
-        { path: '/faq', label: 'Help & FAQ' }
+        { path: '/gallery', label: t('nav.gallery', 'Ecosystem Gallery') },
+        { path: '/stories', label: t('nav.stories', 'Success Stories') },
+        { path: '/blog', label: t('nav.platformBlog', 'Platform Blog') },
+        { path: '/brand-guidelines', label: t('nav.brandGuidelines', 'Brand Guidelines') },
+        { path: '/faq', label: t('nav.faq', 'Help & FAQ') }
       ]
     }
   ];

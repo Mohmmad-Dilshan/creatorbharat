@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { 
   ShieldCheck, 
   Download, 
@@ -44,6 +45,7 @@ const SectionTitle = ({ children, icon: Icon }) => (
 SectionTitle.propTypes = { children: PropTypes.node.isRequired, icon: PropTypes.elementType.isRequired };
 
 export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
+  const { t } = useTranslation();
   const [step, setStep] = useState(0); 
   const wrapperRef = useRef(null);
   const [scale, setScale] = useState(1);
@@ -404,7 +406,7 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                             <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                <div style={{ maxWidth: '500px' }}>
                                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', background: 'rgba(255,148,49,0.12)', borderRadius: '100px', color: '#FF9431', fontSize: '14px', fontWeight: 950, marginBottom: '32px', border: '1px solid rgba(255,148,49,0.3)', letterSpacing: '1px' }}>
-                                     <Star size={16} fill="#FF9431" /> ELITE AUDITED RESUME
+                                     <Star size={16} fill="#FF9431" /> {t('mediakit.eliteResume', 'ELITE AUDITED RESUME')}
                                   </div>
                                   <h1 style={{ fontSize: '72px', fontWeight: 950, letterSpacing: '-0.05em', lineHeight: 0.85, marginBottom: '24px', color: '#0f172a' }}>{creator.name}</h1>
                                   <div style={{ display: 'flex', gap: '10px', marginBottom: '24px', flexWrap: 'wrap' }}>
@@ -413,7 +415,7 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                                      ))}
                                   </div>
                                   <p style={{ fontSize: '20px', color: '#475569', fontWeight: 500, lineHeight: 1.5 }}>
-                                     {creator.bio || 'Elite storyteller and digital architect dedicated to crafting high-impact narratives for global brands.'}
+                                     {creator.bio || t('mediakit.defaultBio', 'Elite storyteller and digital architect dedicated to crafting high-impact narratives for global brands.')}
                                   </p>
                                 </div>
                                 <div style={{ width: '220px', height: '220px', borderRadius: '50px', border: '8px solid #ffffff', overflow: 'hidden', transform: 'rotate(4deg)', boxShadow: '0 20px 40px rgba(15,23,42,0.08)', background: '#f1f5f9' }}>
@@ -434,15 +436,15 @@ export const MediaKitPreview = ({ open, onClose, creator, stats }) => {
                                
                                {/* CORE METRICS */}
                                <div className="printable-section print-col-left" style={{ position: 'relative', zIndex: 2 }}>
-                                  <SectionTitle icon={TrendingUp}>Performance Audit</SectionTitle>
+                                  <SectionTitle icon={TrendingUp}>{t('mediakit.performanceAudit', 'Performance Audit')}</SectionTitle>
                                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '60px' }}>
-                                     <StatBox label="Total Reach" value={fmt.num(stats.followers)} icon={Globe} color="#3b82f6" />
-                                     <StatBox label="Engagements" value={fmt.num(Math.round(stats.followers * ((stats.er || 4.8) / 100)))} icon={Zap} color="#FF9431" />
-                                     <StatBox label="Audience Trust" value={`${stats.authenticity || 98.2}%`} icon={ShieldCheck} color="#10B981" />
-                                     <StatBox label="Conversion Potential" value={creator.ai_intel?.stats?.find(s => s.l.includes('ROI'))?.v || (creator.score ? (creator.score / 16.3).toFixed(1) + 'x' : '5.2x')} icon={TrendingUp} color="#8b5cf6" />
+                                     <StatBox label={t('mediakit.totalReach', 'Total Reach')} value={fmt.num(stats.followers)} icon={Globe} color="#3b82f6" />
+                                     <StatBox label={t('mediakit.engagements', 'Engagements')} value={fmt.num(Math.round(stats.followers * ((stats.er || 4.8) / 100)))} icon={Zap} color="#FF9431" />
+                                     <StatBox label={t('mediakit.audienceTrust', 'Audience Trust')} value={`${stats.authenticity || 98.2}%`} icon={ShieldCheck} color="#10B981" />
+                                     <StatBox label={t('mediakit.conversion', 'Conversion Potential')} value={creator.ai_intel?.stats?.find(s => s.l.includes('ROI'))?.v || (creator.score ? (creator.score / 16.3).toFixed(1) + 'x' : '5.2x')} icon={TrendingUp} color="#8b5cf6" />
                                   </div>
 
-                                  <SectionTitle icon={Star}>Past Collaborations</SectionTitle>
+                                  <SectionTitle icon={Star}>{t('mediakit.pastCollabs', 'Past Collaborations')}</SectionTitle>
                                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '60px' }}>
                                      {pastBrands.slice(0, 6).map(brand => (
                                         <div key={brand} style={{ padding: '16px', background: 'rgba(248,250,252,0.92)', borderRadius: '16px', border: '1.5px solid #f1f5f9', textAlign: 'center', fontSize: '13px', fontWeight: 900, color: '#64748b', backdropFilter: 'blur(8px)', position: 'relative', zIndex: 2 }}>

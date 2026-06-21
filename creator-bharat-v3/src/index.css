@@ -3949,4 +3949,57 @@ html, body {
   letter-spacing: 0;
 }
 
+/* High-Fidelity PDF Media Kit Print Overrides */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+  
+  #root,
+  .db-sidebar,
+  .db-header,
+  .db-main-content,
+  .db-page-header,
+  .no-print,
+  #media-kit-modal-overlay > div:first-child,
+  button,
+  footer {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  #media-kit-modal-overlay,
+  #media-kit-export-container,
+  #media-kit-export-container * {
+    visibility: visible !important;
+  }
+
+  #media-kit-modal-overlay {
+    position: absolute !important;
+    inset: 0 !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+  }
+
+  #media-kit-export-container {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  .printable-section {
+    page-break-inside: avoid !important;
+  }
+}
+
 /* End of File Cleanup */
