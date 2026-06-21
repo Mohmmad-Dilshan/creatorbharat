@@ -51,6 +51,7 @@ router.get('/brands', async (req, res) => {
 router.get('/payments', async (req, res) => {
   try {
     const payments = await prisma.payment.findMany({
+      take: 1000,
       include: {
         creator: true,
         brand: true
@@ -271,12 +272,23 @@ router.get('/stats', async (req, res) => {
       _sum: { amount: true }
     });
 
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+    sixMonthsAgo.setDate(1);
+    sixMonthsAgo.setHours(0, 0, 0, 0);
+
     const payments = await prisma.payment.findMany({
-      where: { status: { in: ['PAID', 'RELEASED'] } },
+      where: { 
+        status: { in: ['PAID', 'RELEASED'] },
+        createdAt: { gte: sixMonthsAgo }
+      },
       select: { amount: true, createdAt: true }
     });
 
     const users = await prisma.user.findMany({
+      where: {
+        createdAt: { gte: sixMonthsAgo }
+      },
       select: { createdAt: true }
     });
 
@@ -485,6 +497,7 @@ router.delete('/blogs/:id', async (req, res) => {
 router.get('/newsletters', async (req, res) => {
   try {
     const subscribers = await prisma.newsletter.findMany({
+      take: 1000,
       orderBy: { createdAt: 'desc' }
     });
     res.json(subscribers);
