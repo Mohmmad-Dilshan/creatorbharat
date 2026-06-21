@@ -4,6 +4,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 RUN npm ci
+ENV DATABASE_URL="postgresql://mockuser:mockpass@localhost:5432/mockdb"
 RUN npx prisma generate
 
 # Stage 2: Production runtime image

@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+import { logger } from './utils/logger.js';
 import { rateLimit } from 'express-rate-limit';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -65,6 +66,35 @@ const io = new Server(server, {
 app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json());
+
+// XSS Input Sanitizer middleware to protect from cross-site scripting
+function sanitizeInput(obj) {
+  if (typeof obj === 'string') {
+    return obj
+      .replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, '')
+      .replace(/on\w+="[^"]*"/g, '')
+      .replace(/javascript:[^"]*/g, '');
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(sanitizeInput);
+  }
+  if (obj !== null && typeof obj === 'object') {
+    const sanitized = {};
+    for (const key in obj) {
+      sanitized[key] = sanitizeInput(obj[key]);
+    }
+    return sanitized;
+  }
+  return obj;
+}
+
+app.use((req, res, next) => {
+  if (req.body) {
+    req.body = sanitizeInput(req.body);
+  }
+  next();
+});
+
 app.use('/uploads', express.static('public/uploads'));
 
 // Global Rate Limiter to prevent brute-force attacks
@@ -126,7 +156,7 @@ app.use((req, res) => {
 
 // Global Exception handler
 app.use((err, req, res, next) => {
-  console.error('[Error Handler]:', err.stack || err.message || err);
+  logger.error('Unhandled request exception', err, { path: req.path, method: req.method });
   res.status(500).json({ error: 'Internal Server Error.' });
 });
 
@@ -627,5 +657,5 @@ io.on('connection', (socket) => {
 
 // Start Server
 server.listen(PORT, () => {
-  console.log(`🚀 CreatorBharat SaaS API Server running on port ${PORT}`);
+  logger.info(`CreatorBharat SaaS API Server running on port ${PORT}`, { port: PORT });
 });
