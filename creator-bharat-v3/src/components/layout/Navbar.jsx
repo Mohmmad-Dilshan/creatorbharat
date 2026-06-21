@@ -222,8 +222,8 @@ const UserActions = ({ st, dsp, go, mob }) => {
 
   const LANGS = [
     { code: 'EN', id: 'en', label: 'English', isGoogle: false },
-    { code: 'HI', id: 'hi', label: 'हिन्दी (Hindi)', isGoogle: false },
-    { code: 'RJ', id: 'rj', label: 'राजस्थानी (Rajasthani)', isGoogle: false },
+    { code: 'HI', id: 'hi', label: 'हिन्दी (Hindi)', isGoogle: true },
+    { code: 'RJ', id: 'mwr', label: 'राजस्थानी (Rajasthani)', isGoogle: true },
     { code: 'AS', id: 'as', label: 'অসমীয়া (Assamese)', isGoogle: true },
     { code: 'BN', id: 'bn', label: 'বাংলা (Bengali)', isGoogle: true },
     { code: 'BRX', id: 'brx', label: 'बोडो (Bodo)', isGoogle: true },
