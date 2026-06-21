@@ -67,6 +67,10 @@ model Creator {
   reviews        Review[]
   payments       Payment[]
   podcasts       Podcast[]
+
+  @@index([status])
+  @@index([city, state])
+  @@index([followers])
 }
 
 model Brand {
@@ -98,6 +102,9 @@ model Campaign {
   updatedAt   DateTime @updatedAt
 
   applications Application[]
+
+  @@index([status])
+  @@index([budget])
 }
 
 model Application {
@@ -134,6 +141,9 @@ model Message {
   fromBrand Boolean  @default(true)
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
+
+  @@index([brandId, creatorId])
+  @@index([createdAt])
 }
 
 model Blog {
@@ -185,6 +195,10 @@ model Payment {
   razorpayOrderId    String?
   razorpayId         String?   @unique
   createdAt          DateTime  @default(now())
+
+  @@index([creatorId])
+  @@index([brandId])
+  @@index([campaignId])
 }
 
 enum PayType {
