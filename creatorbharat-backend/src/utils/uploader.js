@@ -32,6 +32,24 @@ export const upload = multer({
   }
 });
 
+export const uploadVideo = multer({
+  storage,
+  limits: {
+    fileSize: 50 * 1024 * 1024 // Limit files to 50MB max for video
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /mp4|mov|avi|mkv|webm|jpeg|jpg|png|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+
+    if (extname && mimetype) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Only video (MP4, MOV, AVI, MKV, WEBM) and image files are allowed!'));
+    }
+  }
+});
+
 /**
  * Uploads a file buffer directly to Cloudinary.
  * Falls back to local disk storage if Cloudinary fails or credentials are missing.

@@ -410,6 +410,35 @@ export default function App() {
     toast('Temporary server memory and state cache cleared successfully.', 'success');
   };
 
+  const handleUploadFile = async (e, type = 'image', callback) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Check file size (e.g. 50MB max for video, 5MB for image)
+    const maxSize = type === 'video' ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      return toast(`File is too large. Maximum size allowed is ${type === 'video' ? '50MB' : '5MB'}`, 'error');
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    toast('Uploading file...', 'info');
+    try {
+      const res = await fetch(`${API_BASE}/uploads/${type}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
+      toast('Upload completed successfully!', 'success');
+      callback(data.url);
+    } catch (err) {
+      toast(err.message || 'File upload failed', 'error');
+    }
+  };
+
   // ─── Auth Headers Helper ────────────────────────────────────────────────────
   const H = () => ({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
 
@@ -1987,18 +2016,42 @@ export default function App() {
               <button onClick={() => { setBlogModalOpen(false); setEditingBlog(null); clearBlogForm(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
             </div>
             <form onSubmit={handleSaveBlog} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {[
-                { label: 'Title', value: blogTitle, setter: setBlogTitle, placeholder: 'Article title...' },
-                { label: 'URL Slug', value: blogSlug, setter: setBlogSlug, placeholder: 'url-slug-here' },
-                { label: 'Author', value: blogAuthor, setter: setBlogAuthor, placeholder: 'Author name' },
-                { label: 'Image URL', value: blogImage, setter: setBlogImage, placeholder: 'https://...' },
-                { label: 'Tags (comma separated)', value: blogTags, setter: setBlogTags, placeholder: 'tag1, tag2, tag3' },
-              ].map((f, i) => (
-                <div key={i}>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>{f.label}</label>
-                  <input value={f.value} onChange={e => f.setter(e.target.value)} placeholder={f.placeholder} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Title</label>
+                  <input value={blogTitle} onChange={e => { setBlogTitle(e.target.value); if(!editingBlog) setBlogSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')); }} placeholder="Article title..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
                 </div>
-              ))}
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>URL Slug</label>
+                  <input value={blogSlug} onChange={e => setBlogSlug(e.target.value)} placeholder="url-slug-here" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Author</label>
+                  <input value={blogAuthor} onChange={e => setBlogAuthor(e.target.value)} placeholder="Author name" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Tags (comma separated)</label>
+                  <input value={blogTags} onChange={e => setBlogTags(e.target.value)} placeholder="tag1, tag2, tag3" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Cover Image</label>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <input value={blogImage} onChange={e => setBlogImage(e.target.value)} placeholder="https://... or upload file" style={{ flex: 1, padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                  <label style={{ padding: '10px 16px', background: T.orangeLight, color: T.orange, border: `1px solid ${T.orangeBorder}`, borderRadius: 10, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+                    <Download size={14} /> Upload Cover
+                    <input type="file" accept="image/*" onChange={e => handleUploadFile(e, 'image', setBlogImage)} style={{ display: 'none' }} />
+                  </label>
+                </div>
+                {blogImage && (
+                  <div style={{ marginTop: 8, position: 'relative', width: 'fit-content' }}>
+                    <img src={blogImage} alt="Cover Preview" style={{ maxHeight: 90, borderRadius: 10, border: `1px solid ${T.border}`, objectFit: 'cover' }} />
+                    <button type="button" onClick={() => setBlogImage('')} style={{ position: 'absolute', top: -6, right: -6, background: T.red, color: '#fff', border: 'none', borderRadius: '50%', width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 10 }}>×</button>
+                  </div>
+                )}
+              </div>
               <div>
                 <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Category</label>
                 <select value={blogCategory} onChange={e => setBlogCategory(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
@@ -2044,26 +2097,10 @@ export default function App() {
               <button onClick={() => { setGalleryModalOpen(false); setEditingGallery(null); clearGalleryForm(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
             </div>
             <form onSubmit={handleSaveGallery} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {[
-                { label: 'Title', value: galTitle, setter: setGalTitle, placeholder: 'Event or highlight title...' },
-                { label: 'Location', value: galLocation, setter: setGalLocation, placeholder: 'e.g. Jaipur, Rajasthan' },
-                { label: 'Date', value: galDate, setter: setGalDate, placeholder: 'e.g. March 14, 2026' },
-                { label: 'Thumbnail Image URL', value: galThumbnail, setter: setGalThumbnail, placeholder: 'https://images.unsplash.com/...' },
-                { label: 'Video URL (Optional)', value: galVideoUrl, setter: setGalVideoUrl, placeholder: 'https://...' },
-                { label: 'Video Duration (Optional)', value: galDuration, setter: setGalDuration, placeholder: 'e.g. 2:45' },
-                { label: 'Tags (comma separated)', value: galTags, setter: setGalTags, placeholder: 'e.g. Fashion, Summit, Regional' },
-              ].map((f, i) => (
-                <div key={i}>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>{f.label}</label>
-                  <input value={f.value} onChange={e => f.setter(e.target.value)} placeholder={f.placeholder} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                </div>
-              ))}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Category</label>
-                  <select value={galCategory} onChange={e => setGalCategory(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
-                    {['Summits', 'Collaborations', 'Workshops', 'Media'].map(c => <option key={c}>{c}</option>)}
-                  </select>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Title</label>
+                  <input value={galTitle} onChange={e => setGalTitle(e.target.value)} placeholder="Event or highlight title..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Media Type</label>
@@ -2073,6 +2110,65 @@ export default function App() {
                   </select>
                 </div>
               </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Location</label>
+                  <input value={galLocation} onChange={e => setGalLocation(e.target.value)} placeholder="e.g. Jaipur, Rajasthan" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Date</label>
+                  <input value={galDate} onChange={e => setGalDate(e.target.value)} placeholder="e.g. March 14, 2026" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Category</label>
+                  <select value={galCategory} onChange={e => setGalCategory(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
+                    {['Summits', 'Collaborations', 'Workshops', 'Media'].map(c => <option key={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Tags (comma separated)</label>
+                  <input value={galTags} onChange={e => setGalTags(e.target.value)} placeholder="e.g. Fashion, Summit, Regional" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+              
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Thumbnail Image</label>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <input value={galThumbnail} onChange={e => setGalThumbnail(e.target.value)} placeholder="https://... or upload file" style={{ flex: 1, padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                  <label style={{ padding: '10px 16px', background: T.orangeLight, color: T.orange, border: `1px solid ${T.orangeBorder}`, borderRadius: 10, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+                    <Download size={14} /> Upload Thumbnail
+                    <input type="file" accept="image/*" onChange={e => handleUploadFile(e, 'image', setGalThumbnail)} style={{ display: 'none' }} />
+                  </label>
+                </div>
+                {galThumbnail && (
+                  <div style={{ marginTop: 8, position: 'relative', width: 'fit-content' }}>
+                    <img src={galThumbnail} alt="Thumbnail Preview" style={{ maxHeight: 70, borderRadius: 8, border: `1px solid ${T.border}`, objectFit: 'cover' }} />
+                    <button type="button" onClick={() => setGalThumbnail('')} style={{ position: 'absolute', top: -6, right: -6, background: T.red, color: '#fff', border: 'none', borderRadius: '50%', width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 10 }}>×</button>
+                  </div>
+                )}
+              </div>
+
+              {galType === 'video' && (
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Video File / Link</label>
+                    <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                      <input value={galVideoUrl} onChange={e => setGalVideoUrl(e.target.value)} placeholder="https://... or upload video" style={{ flex: 1, padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                      <label style={{ padding: '10px 16px', background: T.orangeLight, color: T.orange, border: `1px solid ${T.orangeBorder}`, borderRadius: 10, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+                        <Download size={14} /> Upload Video
+                        <input type="file" accept="video/*" onChange={e => handleUploadFile(e, 'video', setGalVideoUrl)} style={{ display: 'none' }} />
+                      </label>
+                    </div>
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Duration</label>
+                    <input value={galDuration} onChange={e => setGalDuration(e.target.value)} placeholder="e.g. 2:45" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Description / Highlights</label>
                 <textarea value={galDesc} onChange={e => setGalDesc(e.target.value)} rows={3} placeholder="Provide details about the summit, workshop, or collaboration..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, resize: 'none', outline: 'none', boxSizing: 'border-box' }} />
