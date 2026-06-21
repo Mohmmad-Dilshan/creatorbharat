@@ -274,6 +274,7 @@ io.on('connection', (socket) => {
 
 // Seed Admin Account and Sample Data on Server Startup
 (async () => {
+  if (process.env.NODE_ENV === 'test') return;
   try {
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@creatorbharat.com';
     const adminPassword = process.env.ADMIN_PASSWORD || 'change-this-strong-password';
@@ -656,6 +657,10 @@ io.on('connection', (socket) => {
 })();
 
 // Start Server
-server.listen(PORT, () => {
-  logger.info(`CreatorBharat SaaS API Server running on port ${PORT}`, { port: PORT });
-});
+if (process.env.NODE_ENV !== 'test') {
+  server.listen(PORT, () => {
+    logger.info(`CreatorBharat SaaS API Server running on port ${PORT}`, { port: PORT });
+  });
+}
+
+export { app, server };
