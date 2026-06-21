@@ -3,8 +3,8 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
-RUN npm ci --legacy-peer-deps
 ENV DATABASE_URL="postgresql://mockuser:mockpass@localhost:5432/mockdb"
+RUN npm ci --legacy-peer-deps
 RUN npx prisma generate
 
 # Stage 2: Production runtime image
