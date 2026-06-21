@@ -27,7 +27,13 @@ const T = {
   yellow: '#f59e0b', yellowLight: 'rgba(245,158,11,0.08)',
   teal: '#14b8a6', tealLight: 'rgba(20,184,166,0.08)',
   navy: '#0f172a', slate: '#475569', muted: '#64748b', border: '#e2e8f0',
-  bg: '#f8fafc', card: '#ffffff'
+  bg: '#f1f5f9', card: '#ffffff',
+  // Sidebar dark theme
+  sidebarBg: '#0f172a',
+  sidebarBorder: 'rgba(255,255,255,0.06)',
+  sidebarText: 'rgba(255,255,255,0.65)',
+  sidebarTextActive: '#ffffff',
+  sidebarActiveGlow: 'rgba(249,115,22,0.15)',
 };
 
 // ─── Reusable Components ──────────────────────────────────────────────────────
@@ -49,23 +55,28 @@ const Badge = ({ color = T.orange, children, size = 'sm' }) => (
   }}>{children}</span>
 );
 
-const StatCard = ({ label, value, sub, icon: Icon, color, onClick }) => (
+const StatCard = ({ label, value, sub, icon: Icon, color, onClick, trend, trendUp }) => (
   <div onClick={onClick} style={{
-    background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 24,
-    display: 'flex', alignItems: 'center', gap: 20, boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-    cursor: onClick ? 'pointer' : 'default', transition: 'all 0.2s',
+    background: T.card, border: `1px solid ${T.border}`, borderRadius: 18, padding: '20px 22px',
+    display: 'flex', flexDirection: 'column', gap: 14, boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+    cursor: onClick ? 'pointer' : 'default', transition: 'all 0.22s', position: 'relative', overflow: 'hidden'
   }}
-    onMouseEnter={e => onClick && (e.currentTarget.style.borderColor = color + '40')}
-    onMouseLeave={e => onClick && (e.currentTarget.style.borderColor = T.border)}
+    onMouseEnter={e => { if(onClick){ e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow=`0 8px 24px ${color}18`; e.currentTarget.style.borderColor=color+'35'; } }}
+    onMouseLeave={e => { if(onClick){ e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow='0 1px 4px rgba(0,0,0,0.04)'; e.currentTarget.style.borderColor=T.border; } }}
   >
-    <div style={{
-      width: 52, height: 52, borderRadius: 14, background: color + '12', color,
-      display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${color}20`, flexShrink: 0
-    }}><Icon size={24} /></div>
+    <div style={{ position: 'absolute', top: -20, right: -20, width: 80, height: 80, borderRadius: '50%', background: color + '08' }} />
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <div style={{ width: 44, height: 44, borderRadius: 12, background: color + '12', color, display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${color}18` }}><Icon size={20} /></div>
+      {trend && (
+        <span style={{ fontSize: 11, fontWeight: 800, color: trendUp ? T.green : T.red, background: (trendUp ? T.green : T.red)+'12', padding: '3px 8px', borderRadius: 20 }}>
+          {trendUp ? '↑' : '↓'} {trend}
+        </span>
+      )}
+    </div>
     <div>
-      <h4 style={{ margin: '0 0 2px', fontSize: 26, fontWeight: 800, color: T.navy, fontFamily: 'system-ui' }}>{value}</h4>
-      <span style={{ display: 'block', fontSize: 13, color: T.slate, fontWeight: 700 }}>{label}</span>
-      {sub && <span style={{ display: 'block', fontSize: 10, color: T.muted, marginTop: 3, fontWeight: 500 }}>{sub}</span>}
+      <div style={{ fontSize: 28, fontWeight: 900, color: T.navy, lineHeight: 1, marginBottom: 4, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
+      <div style={{ fontSize: 12, color: T.slate, fontWeight: 700 }}>{label}</div>
+      {sub && <div style={{ fontSize: 10, color: T.muted, marginTop: 4, fontWeight: 500, lineHeight: 1.4 }}>{sub}</div>}
     </div>
   </div>
 );
@@ -784,39 +795,56 @@ export default function App() {
       </div>
 
       {/* ── SIDEBAR ────────────────────────────────────────────────────────── */}
-      <aside className="no-scrollbar" style={{ width: 268, background: T.card, borderRight: `1px solid ${T.border}`, display: 'flex', flexDirection: 'column', padding: '24px 16px', flexShrink: 0, position: 'sticky', top: 0, height: '100vh', overflowY: 'auto' }}>
-        {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32, padding: '0 8px' }}>
-          <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg, #f97316, #ea580c)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 18, color: '#fff', boxShadow: '0 4px 12px rgba(249,115,22,0.25)', flexShrink: 0 }}>CB</div>
-          <div>
-            <div style={{ fontSize: 15, fontWeight: 900, color: T.navy, lineHeight: 1.2 }}>CreatorBharat</div>
-            <div style={{ fontSize: 9, color: T.muted, textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 800 }}>Admin Console</div>
+      <aside className="no-scrollbar" style={{ width: 256, background: T.sidebarBg, display: 'flex', flexDirection: 'column', padding: '0', flexShrink: 0, position: 'sticky', top: 0, height: '100vh', overflowY: 'auto', boxShadow: '4px 0 24px rgba(0,0,0,0.18)' }}>
+
+        {/* Logo Section */}
+        <div style={{ padding: '22px 18px 18px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 42, height: 42, borderRadius: 14, background: 'linear-gradient(135deg, #f97316, #dc2626)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 17, color: '#fff', boxShadow: '0 4px 16px rgba(249,115,22,0.35)', flexShrink: 0, letterSpacing: -0.5 }}>CB</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 14, fontWeight: 900, color: '#fff', lineHeight: 1.2, letterSpacing: -0.3 }}>CreatorBharat</div>
+              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: 2, fontWeight: 700, marginTop: 2 }}>Admin Console</div>
+            </div>
+            {dataLoading && <RefreshCw size={13} style={{ color: T.orange, animation: 'spin 1s linear infinite', flexShrink: 0 }} />}
           </div>
-          {dataLoading && <RefreshCw size={14} style={{ color: T.orange, animation: 'spin 1s linear infinite', marginLeft: 'auto' }} />}
+          {/* Online dot */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 14, padding: '7px 12px', background: 'rgba(34,197,94,0.08)', borderRadius: 10, border: '1px solid rgba(34,197,94,0.12)' }}>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.green, boxShadow: '0 0 6px rgba(34,197,94,0.9)', flexShrink: 0 }} />
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontWeight: 600 }}>Live · Neon DB Connected</span>
+          </div>
         </div>
 
         {/* Nav */}
-        <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <nav style={{ flex: 1, padding: '14px 10px', display: 'flex', flexDirection: 'column', gap: 20, overflowY: 'auto' }}>
           {NAV_SECTIONS(counts).map((section, si) => (
             <div key={si}>
-              <div style={{ fontSize: 9, color: T.muted, textTransform: 'uppercase', letterSpacing: 1.2, fontWeight: 900, padding: '0 12px', marginBottom: 6 }}>{section.title}</div>
+              <div style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.22)', textTransform: 'uppercase', letterSpacing: 1.8, fontWeight: 900, padding: '0 8px', marginBottom: 5, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.05)' }} />
+                {section.title.split(' ').slice(1).join(' ')}
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.05)' }} />
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {section.items.map(item => {
                   const Icon = item.icon;
                   const active = activeTab === item.id;
                   return (
                     <button key={item.id} onClick={() => setActiveTab(item.id)} style={{
-                      display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',
-                      borderRadius: 10, border: 'none',
-                      background: active ? T.orange + '12' : 'transparent',
-                      color: active ? T.orange : T.slate,
-                      fontSize: 13, fontWeight: active ? 800 : 600, cursor: 'pointer', textAlign: 'left',
+                      display: 'flex', alignItems: 'center', gap: 9, padding: '8px 10px',
+                      borderRadius: 10, border: active ? '1px solid rgba(249,115,22,0.22)' : '1px solid transparent',
+                      background: active ? 'rgba(249,115,22,0.14)' : 'transparent',
+                      color: active ? '#fff' : 'rgba(255,255,255,0.55)',
+                      fontSize: 12.5, fontWeight: active ? 700 : 500, cursor: 'pointer', textAlign: 'left',
                       transition: 'all 0.15s', width: '100%'
-                    }}>
-                      <Icon size={15} style={{ flexShrink: 0 }} />
-                      <span style={{ flex: 1, fontSize: 12.5 }}>{item.label}</span>
+                    }}
+                      onMouseEnter={e => { if (!active) { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = '#fff'; } }}
+                      onMouseLeave={e => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.55)'; } }}
+                    >
+                      <div style={{ width: 28, height: 28, borderRadius: 8, background: active ? 'rgba(249,115,22,0.22)' : 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.15s' }}>
+                        <Icon size={14} style={{ color: active ? T.orange : 'inherit' }} />
+                      </div>
+                      <span style={{ flex: 1 }}>{item.label}</span>
                       {item.badge !== undefined && item.badge > 0 && (
-                        <span style={{ padding: '1px 7px', borderRadius: 20, background: active ? T.orange : '#e2e8f0', color: active ? '#fff' : T.slate, fontSize: 10, fontWeight: 800 }}>{item.badge}</span>
+                        <span style={{ padding: '2px 7px', borderRadius: 20, background: active ? T.orange : 'rgba(255,255,255,0.1)', color: active ? '#fff' : 'rgba(255,255,255,0.65)', fontSize: 9.5, fontWeight: 800, minWidth: 18, textAlign: 'center' }}>{item.badge > 99 ? '99+' : item.badge}</span>
                       )}
                     </button>
                   );
@@ -827,12 +855,18 @@ export default function App() {
         </nav>
 
         {/* Bottom Actions */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
-          <button onClick={fetchData} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px', borderRadius: 10, border: `1px solid ${T.border}`, background: T.bg, color: T.slate, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
-            <RefreshCw size={14} /> Refresh Data
+        <div style={{ padding: '14px 10px', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <button onClick={fetchData} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '9px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'}
+          >
+            <RefreshCw size={13} /> Sync Data
           </button>
-          <button onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px', borderRadius: 10, border: '1px solid #fee2e2', background: '#fef2f2', color: T.red, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
-            <LogOut size={14} /> Logout Session
+          <button onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '9px', borderRadius: 10, border: '1px solid rgba(239,68,68,0.18)', background: 'rgba(239,68,68,0.06)', color: '#f87171', fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.12)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'rgba(239,68,68,0.06)'}
+          >
+            <LogOut size={13} /> Sign Out
           </button>
         </div>
       </aside>
