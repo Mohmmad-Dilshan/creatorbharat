@@ -44,6 +44,34 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
     return () => globalThis.removeEventListener('resize', handleResize);
   }, []);
 
+  // Intercept Google OAuth callback redirect tokens
+  useEffect(() => {
+    const params = new URLSearchParams(globalThis.location.search);
+    const urlToken = params.get('token');
+    
+    if (urlToken) {
+      globalThis.history.replaceState({}, document.title, globalThis.location.pathname);
+      setLoading(true);
+      
+      localStorage.setItem('cb_token', urlToken);
+      
+      import('../../utils/authService').then(({ getCurrentUser }) => {
+        getCurrentUser()
+          .then(({ user }) => {
+            onAuthSuccess(user, urlToken);
+            dsp({ t: 'TOAST', d: { type: 'success', msg: 'Signed in with Google successfully!' } });
+          })
+          .catch(err => {
+            localStorage.removeItem('cb_token');
+            dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Google Auth verification failed.' } });
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      });
+    }
+  }, [navigate, dsp]);
+
   const handleSetView = (v) => {
     if (isPage) {
       if (v === 'register') { navigate('/apply'); return; }

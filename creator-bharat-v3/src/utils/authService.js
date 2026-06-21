@@ -330,3 +330,17 @@ export function mergeRegistrationProfile(serverResponse, formData, priorProfile 
     email:  serverProfile.email  || formData.email  || priorProfile.email  || '',
   };
 }
+
+/**
+ * Fetch the logged-in user profile details using the active JWT token.
+ * GET /auth/me
+ */
+export async function getCurrentUser() {
+  if (isDemoAuthMode()) {
+    await wait(200);
+    const savedUser = localStorage.getItem('cb_user');
+    if (!savedUser) throw demoError('No active session.');
+    return { user: JSON.parse(savedUser) };
+  }
+  return normalizeAuthResponse(await apiCall('/auth/me'));
+}

@@ -446,9 +446,133 @@ router.post('/reset-password', async (req, res) => {
     resetStore.delete(token);
 
     res.json({ success: true, message: 'Your password has been reset successfully.' });
+// Google OAuth Redirect
+router.get('/google', (req, res) => {
+  const role = req.query.role || 'creator';
+  
+  if (!process.env.GOOGLE_CLIENT_ID) {
+    console.error('[Google OAuth]: Missing GOOGLE_CLIENT_ID in server environment.');
+    return res.status(500).send('Google Authentication is not configured on this server. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.');
+  }
+
+  const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/auth/google/callback`;
+  const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=email%20profile&state=${role}`;
+  
+  res.redirect(googleAuthUrl);
+});
+
+// Google OAuth Callback
+router.get('/google/callback', async (req, res) => {
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+  try {
+    const { code, state } = req.query; // state represents the role: creator or brand
+    const role = state === 'brand' ? 'BRAND' : 'CREATOR';
+
+    if (!code) {
+      return res.redirect(`${frontendUrl}/login?error=auth_failed`);
+    }
+
+    const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/auth/google/callback`;
+    
+    // Exchange Auth Code for Access and ID Tokens
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code,
+        client_id: process.env.GOOGLE_CLIENT_ID || '',
+        client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
+        redirect_uri: redirectUri,
+        grant_type: 'authorization_code'
+      })
+    });
+
+    const tokens = await tokenResponse.json();
+    if (tokens.error) {
+      console.error('[Google OAuth Token Error]:', tokens.error_description || tokens.error);
+      return res.redirect(`${frontendUrl}/login?error=token_failed`);
+    }
+
+    // Retrieve User Profile using Access Token
+    const profileResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${tokens.access_token}` }
+    });
+    
+    const profile = await profileResponse.json();
+    if (!profile.email) {
+      console.error('[Google OAuth Profile Error]: Missing email in profile payload.');
+      return res.redirect(`${frontendUrl}/login?error=profile_failed`);
+    }
+
+    const emailLower = profile.email.toLowerCase().trim();
+
+    // Check if user already exists
+    let user = await prisma.user.findUnique({
+      where: { email: emailLower },
+      include: { creator: true, brand: true }
+    });
+
+    if (!user) {
+      // If user does not exist, create a new one with a dummy password
+      const dummyPassword = crypto.randomBytes(16).toString('hex');
+      const hashedPassword = await bcrypt.hash(dummyPassword, 10);
+      
+      if (role === 'CREATOR') {
+        const baseHandle = emailLower.split('@')[0].replace(/[^a-zA-Z0-9]/g, '').slice(0, 20);
+        let handle = baseHandle;
+        
+        // Ensure handle uniqueness
+        let handleCount = 0;
+        let handleExists = await prisma.creator.findUnique({ where: { handle } });
+        while (handleExists) {
+          handleCount++;
+          handle = `${baseHandle}${handleCount}`;
+          handleExists = await prisma.creator.findUnique({ where: { handle } });
+        }
+
+        user = await prisma.user.create({
+          data: {
+            email: emailLower,
+            password: hashedPassword,
+            role: 'CREATOR',
+            creator: {
+              create: {
+                handle,
+                name: profile.name || 'Bharat Creator',
+                photo: profile.picture || null
+              }
+            }
+          },
+          include: { creator: true }
+        });
+      } else {
+        user = await prisma.user.create({
+          data: {
+            email: emailLower,
+            password: hashedPassword,
+            role: 'BRAND',
+            brand: {
+              create: {
+                companyName: profile.name || 'Bharat Brand Partner'
+              }
+            }
+          },
+          include: { brand: true }
+        });
+      }
+    }
+
+    if (user.isSuspended) {
+      return res.redirect(`${frontendUrl}/login?error=suspended`);
+    }
+
+    const token = signToken(user.id);
+    
+    // Redirect user back to the frontend with the active session token
+    res.redirect(`${frontendUrl}/login?token=${token}`);
   } catch (err) {
-    console.error('[reset-password] Error:', err.message);
-    res.status(500).json({ error: 'Failed to reset password. Please try again.' });
+    console.error('[Google OAuth Callback Exception]:', err.message);
+    res.redirect(`${frontendUrl}/login?error=server_error`);
   }
 });
 

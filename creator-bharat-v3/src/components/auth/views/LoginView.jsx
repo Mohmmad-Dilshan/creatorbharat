@@ -23,13 +23,8 @@ const LoginView = ({ role, setRole, onLogin, onAuthSuccess, loading, setView }) 
   const { timer, startTimer, isActive: timerActive } = useOtpTimer(30);
 
   const onGoogle = () => {
-    dsp({ 
-      t: 'TOAST', 
-      d: { 
-        type: 'info', 
-        msg: 'Google Authentication is currently disabled. Please log in with your email and password.' 
-      } 
-    });
+    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+    globalThis.location.href = `${apiBase}/auth/google?role=${role}`;
   };
 
   const handleSendOtp = async () => {
