@@ -80,3 +80,6 @@ temp/
 *.PROJECT_CONTEX.md
 PROJECT_CONTEX.md
 PROJECT_CONTEX
+
+# ── Credentials & Services Guides ─────────────────────────────
+docs/services/
