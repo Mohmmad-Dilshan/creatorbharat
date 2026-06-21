@@ -318,6 +318,8 @@ export default function BlogPage() {
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [activeTab, setActiveTab] = useState('All');
   const [search, setSearch] = useState('');
+  const [dbBlogs, setDbBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const link = document.createElement('link');
@@ -326,12 +328,47 @@ export default function BlogPage() {
     document.head.appendChild(link);
     const h = () => setMob(globalThis.innerWidth < 768);
     globalThis.addEventListener('resize', h);
+
+    const fetchBlogs = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/blog`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            setDbBlogs(data);
+          }
+        }
+      } catch (err) {
+        console.warn('Ecosystem Blog API offline, falling back to local dataset.', err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBlogs();
+
     return () => globalThis.removeEventListener('resize', h);
   }, []);
 
-  const featured = blogData.find(b => b.featured);
-  const remaining = blogData.filter(b => !b.featured);
-  const filtered = blogData.filter(b => (activeTab === 'All' || b.category === activeTab) && (b.title.toLowerCase().includes(search.toLowerCase()) || b.excerpt.toLowerCase().includes(search.toLowerCase())));
+  const blogsList = dbBlogs.length > 0 ? dbBlogs.map(b => ({
+    ...b,
+    image: b.image || 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200',
+    date: new Date(b.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }),
+    readTime: `${Math.ceil((b.body || '').split(' ').length / 200) || 5} min`,
+    author: {
+      name: b.author || 'CreatorBharat',
+      role: 'Editorial Team',
+      bio: 'Official editorial voice of CreatorBharat.',
+      avatar: (b.author || 'CB').slice(0, 2).toUpperCase()
+    }
+  })) : blogData;
+
+  const featured = blogsList.find(b => b.featured) || blogsList[0];
+  const remaining = blogsList.filter(b => b.id !== featured?.id);
+  const filtered = blogsList.filter(b => 
+    (activeTab === 'All' || b.category === activeTab) && 
+    (b.title.toLowerCase().includes(search.toLowerCase()) || 
+     (b.excerpt || '').toLowerCase().includes(search.toLowerCase()))
+  );
 
   return (
     <div style={{ background: '#fff', minHeight: '100vh', padding: mob ? '20px 0 0 0' : '40px 0' }}>

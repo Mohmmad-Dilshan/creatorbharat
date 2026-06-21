@@ -6,6 +6,7 @@ import { useApp } from '../../core/context';
 import { W, scrollToTop, LS, fmt } from '../../utils/helpers';
 import { Fld, Card, Empty, Btn } from '../../components/common/Primitives';
 import { CampCard } from '../../components/common/Cards';
+import { apiCall } from '../../utils/api';
 import { 
   Rocket, 
   Target, 
@@ -61,10 +62,10 @@ StepIndicator.propTypes = {
 };
 
 const SuccessView = ({ title, onReset, onGoDashboard }) => (
-  <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fcfcfc', padding: '20px' }}>
+  <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyIntent: 'center', background: '#fcfcfc', padding: '20px' }}>
      <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} style={{ maxWidth: '600px', width: '100%', textAlign: 'center' }}>
         <Card style={{ padding: '80px 40px', borderRadius: '40px', background: '#fff' }}>
-           <div style={{ width: '100px', height: '100px', background: 'rgba(16, 185, 129, 0.1)', color: '#10B981', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 32px' }}>
+           <div style={{ width: '100px', height: '100px', background: 'rgba(16, 185, 129, 0.1)', color: '#10B981', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyIntent: 'center', margin: '0 auto 32px' }}>
               <CheckCircle2 size={50} />
            </div>
            <h2 style={{ fontSize: '32px', fontWeight: 950, marginBottom: '16px' }}>Mission Deployed!</h2>
@@ -92,6 +93,7 @@ export default function CampaignBuilderPage() {
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [F, setF] = useState({ 
     title: '', 
@@ -127,6 +129,40 @@ export default function CampaignBuilderPage() {
   const upF = (k, v) => setF(p => ({ ...p, [k]: v }));
   const toast = (msg, type) => dsp({ t: 'TOAST', d: { type, msg } });
   const go = (p) => { dsp({ t: 'GO', p }); navigate(`/${p}`); scrollToTop(); };
+
+  const handleAiGenerate = async () => {
+    if (!F.title) {
+      toast('Please enter a Campaign Title first (e.g. sunscreen launch) so the AI knows what to write!', 'error');
+      return;
+    }
+    setAiLoading(true);
+    try {
+      const data = await apiCall('/ai/brief-assistant', {
+        method: 'POST',
+        body: {
+          brandName: st.user?.companyName || st.user?.name || 'Partner Brand',
+          productName: F.title,
+          niche: F.niche || 'Lifestyle',
+          targetAudience: 'Indian youth and young adults in Tier 2/3 cities',
+          goal: 'Raise product awareness and drive direct creator collaborations'
+        }
+      });
+
+      setF(prev => ({
+        ...prev,
+        title: data.title || prev.title,
+        desc: data.description || prev.desc,
+        niche: data.niches || prev.niche,
+        budgetMin: data.budget || prev.budgetMin,
+        platform: data.platforms || prev.platform
+      }));
+      toast('AI Campaign Brief generated successfully! ✨', 'success');
+    } catch (err) {
+      toast(err.message || 'AI Generation failed. Please try again.', 'error');
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   if (!st.user || st.role !== 'brand') return (
     <div style={{ ...W(), padding: '120px 20px', textAlign: 'center' }}>
@@ -229,7 +265,34 @@ export default function CampaignBuilderPage() {
                <AnimatePresence mode="wait">
                   {step === 1 && (
                     <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                       <h3 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '32px' }}>Step 1: Mission Profile</h3>
+                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+                          <h3 style={{ fontSize: '24px', fontWeight: 900, margin: 0 }}>Step 1: Mission Profile</h3>
+                          <button
+                            type="button"
+                            onClick={handleAiGenerate}
+                            disabled={aiLoading}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              background: 'rgba(255, 148, 49, 0.08)',
+                              color: '#FF9431',
+                              border: 'none',
+                              borderRadius: '12px',
+                              padding: '8px 16px',
+                              fontSize: '11px',
+                              fontWeight: 900,
+                              cursor: 'pointer',
+                              transition: 'all 0.2s',
+                              boxShadow: '0 4px 12px rgba(255, 148, 49, 0.05)'
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.background = '#FF9431'; e.currentTarget.style.color = '#fff'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 148, 49, 0.08)'; e.currentTarget.style.color = '#FF9431'; }}
+                          >
+                            <Sparkles size={12} fill="currentColor" />
+                            {aiLoading ? 'Writing...' : 'AI Auto-Fill'}
+                          </button>
+                       </div>
                        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                           <Fld label="Campaign Title" value={F.title} onChange={e => upF('title', e.target.value)} placeholder="Summer Essentials 2026" />
                           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px' }}>

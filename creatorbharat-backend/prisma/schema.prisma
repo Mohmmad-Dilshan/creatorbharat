@@ -203,14 +203,17 @@ enum PayStatus {
 }
 
 model Podcast {
-  id        String   @id @default(cuid())
-  creator   Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  creatorId String
-  title     String
-  duration  String
-  thumbnail String?
-  published Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  creator     Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId   String
+  title       String
+  description String?
+  duration    String
+  thumbnail   String?
+  audioUrl    String?
+  videoUrl    String?
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
 }
 
 model Newsletter {

@@ -6,7 +6,7 @@ import {
   BarChart3, Wallet, Trophy, Zap, Globe, Bell, Calendar, Activity, Award, Layers,
   RefreshCw, ExternalLink, Crown, Target, ChevronDown, ChevronUp, Copy, Download,
   Flame, BookOpen, Headphones, AtSign, Phone, MapPin, Hash, ShieldAlert, UserCheck,
-  UserX, PieChart, TrendingDown, Package, Cpu, Database, Shield, Image
+  UserX, PieChart, TrendingDown, Package, Cpu, Database, Shield, Image, FolderOpen
 } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
@@ -198,6 +198,7 @@ const NAV_SECTIONS = (counts) => [
       { id: 'newsletters', label: 'Newsletter Subs', icon: Mail, badge: counts.newsletters },
       { id: 'contacts', label: 'Contact Inbox', icon: Bell, badge: counts.unreadContacts },
       { id: 'gallery', label: 'Gallery Manager', icon: Image, badge: counts.gallery },
+      { id: 'media-library', label: 'Media Library', icon: FolderOpen, badge: counts.uploads },
     ]
   },
   {
@@ -232,6 +233,7 @@ const TAB_META = {
   newsletters: { title: 'Newsletter Subscribers', sub: 'View and manage email list' },
   contacts: { title: 'Contact Inbox', sub: 'Reply to or delete user contact messages' },
   gallery: { title: 'Gallery Manager', sub: 'Manage CreatorBharat Ecosystem Gallery items' },
+  'media-library': { title: 'Media Library', sub: 'Upload files and copy their URLs for use across the platform' },
   settings: { title: 'System Settings', sub: 'Configure platform-wide settings and toggles' },
   danger: { title: '⚠️ Danger Zone', sub: 'Irreversible platform-wide operations' },
 };
@@ -242,6 +244,138 @@ const STATUS_COLOR = {
   ACCEPTED: T.green, SHORTLISTED: T.purple, PAID: T.green, RELEASED: T.blue,
   REFUNDED: T.orange, ESCROW: T.yellow, CAMPAIGN_ESCROW: T.yellow,
   published: T.green, draft: T.muted
+};
+
+// ─── Reusable Component: PremiumMediaUpload ─────────────────────────────────
+const PremiumMediaUpload = ({ label, value, onChange, type = 'image', onUploadFile }) => {
+  const [dragActive, setDragActive] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState('upload'); // 'upload' or 'url'
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      await uploadMediaFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleChange = async (e) => {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      await uploadMediaFile(e.target.files[0]);
+    }
+  };
+
+  const uploadMediaFile = async (file) => {
+    setLoading(true);
+    try {
+      const url = await onUploadFile(file, type);
+      onChange(url);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+        <label style={{ fontSize: 11, fontWeight: 700, color: T.slate, textTransform: 'uppercase', letterSpacing: 0.5 }}>{label}</label>
+        <button
+          type="button"
+          onClick={() => setMode(mode === 'upload' ? 'url' : 'upload')}
+          style={{ background: 'none', border: 'none', color: T.orange, fontSize: 11, fontWeight: 700, cursor: 'pointer', padding: 0 }}
+        >
+          {mode === 'upload' ? '✍️ Paste URL Link' : '📁 Upload Local File'}
+        </button>
+      </div>
+
+      {mode === 'url' ? (
+        <input
+          value={value || ''}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={`https://... enter direct ${type} URL`}
+          style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }}
+        />
+      ) : (
+        <div
+          onDragEnter={handleDrag}
+          onDragOver={handleDrag}
+          onDragLeave={handleDrag}
+          onDrop={handleDrop}
+          style={{
+            border: `2px dashed ${dragActive ? T.orange : T.border}`,
+            borderRadius: 12,
+            padding: '24px 20px',
+            textAlign: 'center',
+            background: dragActive ? T.orangeLight : T.bg,
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            position: 'relative'
+          }}
+          onClick={() => document.getElementById(`file-upload-${label.replace(/[^a-zA-Z]/g, '')}`).click()}
+        >
+          <input
+            type="file"
+            id={`file-upload-${label.replace(/[^a-zA-Z]/g, '')}`}
+            accept={type === 'video' ? 'video/*' : 'image/*'}
+            style={{ display: 'none' }}
+            onChange={handleChange}
+          />
+          
+          {loading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+              <RefreshCw size={24} className="spin" style={{ color: T.orange }} />
+              <span style={{ fontSize: 12, color: T.muted, fontWeight: 600 }}>Uploading media to Cloudinary...</span>
+            </div>
+          ) : value ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }} onClick={(e) => e.stopPropagation()}>
+              {type === 'video' ? (
+                <video src={value} controls style={{ maxWidth: '100%', maxHeight: 150, borderRadius: 8, border: `1px solid ${T.border}` }} />
+              ) : (
+                <img src={value} alt="Preview" style={{ maxWidth: '100%', maxHeight: 120, borderRadius: 8, border: `1px solid ${T.border}`, objectFit: 'contain' }} />
+              )}
+              <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+                <button
+                  type="button"
+                  onClick={() => document.getElementById(`file-upload-${label.replace(/[^a-zA-Z]/g, '')}`).click()}
+                  style={{ padding: '6px 12px', background: T.orangeLight, border: `1px solid ${T.orangeBorder}`, borderRadius: 6, fontSize: 11, color: T.orange, fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Change File
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onChange('')}
+                  style={{ padding: '6px 12px', background: T.redLight, border: `1px solid ${T.red}25`, borderRadius: 6, fontSize: 11, color: T.red, fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+              <Download size={24} style={{ color: T.muted }} />
+              <span style={{ fontSize: 13, color: T.navy, fontWeight: 700 }}>Drag & drop file here, or <span style={{ color: T.orange }}>browse</span></span>
+              <span style={{ fontSize: 10, color: T.muted }}>Supports {type === 'video' ? 'MP4, WebM (Max 50MB)' : 'PNG, JPG, WebP (Max 5MB)'}</span>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -274,6 +408,20 @@ export default function App() {
   const [reviews, setReviews] = useState([]);
   const [comments, setComments] = useState([]);
   const [gallery, setGallery] = useState([]);
+  const [uploads, setUploads] = useState([]);
+  const [mediaSearch, setMediaSearch] = useState('');
+
+  // ── Podcast Editor States
+  const [podcastModalOpen, setPodcastModalOpen] = useState(false);
+  const [editingPodcast, setEditingPodcast] = useState(null);
+  const [podCreatorId, setPodCreatorId] = useState('');
+  const [podTitle, setPodTitle] = useState('');
+  const [podDesc, setPodDesc] = useState('');
+  const [podDuration, setPodDuration] = useState('');
+  const [podThumbnail, setPodThumbnail] = useState('');
+  const [podAudioUrl, setPodAudioUrl] = useState('');
+  const [podVideoUrl, setPodVideoUrl] = useState('');
+  const [podPublished, setPodPublished] = useState(false);
 
   // ── Gallery Editor States
   const [gallerySearch, setGallerySearch] = useState('');
@@ -359,6 +507,48 @@ export default function App() {
   const [featCommunity, setFeatCommunity] = useState(true);
   const [featWallet, setFeatWallet] = useState(true);
 
+  // ── Creator Profile Editor
+  const [editCreatorModalOpen, setEditCreatorModalOpen] = useState(false);
+  const [editingCreator, setEditingCreator] = useState(null);
+  const [editCreName, setEditCreName] = useState('');
+  const [editCreHandle, setEditCreHandle] = useState('');
+  const [editCreBio, setEditCreBio] = useState('');
+  const [editCreCity, setEditCreCity] = useState('');
+  const [editCreState, setEditCreState] = useState('');
+  const [editCreFollowers, setEditCreFollowers] = useState(0);
+  const [editCreEngagementRate, setEditCreEngagementRate] = useState(0);
+  const [editCreRateMin, setEditCreRateMin] = useState(0);
+  const [editCreRateMax, setEditCreRateMax] = useState(0);
+  const [editCrePhoto, setEditCrePhoto] = useState('');
+  const [editCreCoverImage, setEditCreCoverImage] = useState('');
+  const [editCreNiche, setEditCreNiche] = useState('');
+  const [editCrePlatform, setEditCrePlatform] = useState('');
+  const [editCreStatus, setEditCreStatus] = useState('DRAFT');
+  const [editCreIsVerified, setEditCreIsVerified] = useState(false);
+  const [editCreIsPro, setEditCreIsPro] = useState(false);
+  const [editCreAadhaarUrl, setEditCreAadhaarUrl] = useState('');
+  const [editCrePanUrl, setEditCrePanUrl] = useState('');
+
+  // ── Brand Profile Editor
+  const [editBrandModalOpen, setEditBrandModalOpen] = useState(false);
+  const [editingBrand, setEditingBrand] = useState(null);
+  const [editBrandName, setEditBrandName] = useState('');
+  const [editBrandIndustry, setEditBrandIndustry] = useState('');
+  const [editBrandWebsite, setEditBrandWebsite] = useState('');
+
+  // ── Campaign Editor
+  const [editCampaignModalOpen, setEditCampaignModalOpen] = useState(false);
+  const [editingCampaign, setEditingCampaign] = useState(null);
+  const [editCampTitle, setEditCampTitle] = useState('');
+  const [editCampDesc, setEditCampDesc] = useState('');
+  const [editCampBudget, setEditCampBudget] = useState(0);
+  const [editCampPlatform, setEditCampPlatform] = useState('');
+  const [editCampNiche, setEditCampNiche] = useState('');
+  const [editCampStatus, setEditCampStatus] = useState('ACTIVE');
+
+  // ── SVG Chart Tooltip State
+  const [hoveredPoint, setHoveredPoint] = useState(null);
+
   // ── UI
   const [dataLoading, setDataLoading] = useState(false);
   const [toasts, setToasts] = useState([]);
@@ -439,6 +629,123 @@ export default function App() {
     }
   };
 
+  const handleUploadMedia = async (file, type = 'image') => {
+    // Check file size (e.g. 50MB max for video, 5MB for image)
+    const maxSize = type === 'video' ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast(`File is too large. Maximum size allowed is ${type === 'video' ? '50MB' : '5MB'}`, 'error');
+      throw new Error('File too large');
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    toast('Uploading media file...', 'info');
+    const res = await fetch(`${API_BASE}/uploads/${type}`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Upload failed');
+    toast('Upload completed successfully!', 'success');
+    return data.url;
+  };
+
+  const handleSaveCreator = async (e) => {
+    e.preventDefault();
+    if (!editingCreator) return;
+    try {
+      const nicheArr = editCreNiche.split(',').map(n => n.trim()).filter(Boolean);
+      const platArr = editCrePlatform.split(',').map(p => p.trim()).filter(Boolean);
+      const res = await fetch(`${API_BASE}/admin/creators/${editingCreator.id}`, {
+        method: 'PUT',
+        headers: H(),
+        body: JSON.stringify({
+          name: editCreName,
+          handle: editCreHandle,
+          bio: editCreBio,
+          city: editCreCity,
+          state: editCreState,
+          followers: parseInt(editCreFollowers) || 0,
+          engagementRate: parseFloat(editCreEngagementRate) || 0,
+          rateMin: parseInt(editCreRateMin) || 0,
+          rateMax: parseInt(editCreRateMax) || 0,
+          photo: editCrePhoto,
+          coverImage: editCreCoverImage,
+          niche: nicheArr,
+          platform: platArr,
+          status: editCreStatus,
+          isVerified: editCreIsVerified,
+          isPro: editCreIsPro,
+          aadhaarUrl: editCreAadhaarUrl || null,
+          panUrl: editCrePanUrl || null
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update creator profile');
+      toast('Creator profile updated successfully!', 'success');
+      setEditCreatorModalOpen(false);
+      setEditingCreator(null);
+      fetchData();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  };
+
+  const handleSaveBrand = async (e) => {
+    e.preventDefault();
+    if (!editingBrand) return;
+    try {
+      const res = await fetch(`${API_BASE}/admin/brands/${editingBrand.id}`, {
+        method: 'PUT',
+        headers: H(),
+        body: JSON.stringify({
+          companyName: editBrandName,
+          industry: editBrandIndustry,
+          website: editBrandWebsite
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update brand profile');
+      toast('Brand profile updated successfully!', 'success');
+      setEditBrandModalOpen(false);
+      setEditingBrand(null);
+      fetchData();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  };
+
+  const handleSaveCampaign = async (e) => {
+    e.preventDefault();
+    if (!editingCampaign) return;
+    try {
+      const nicheArr = editCampNiche.split(',').map(n => n.trim()).filter(Boolean);
+      const platArr = editCampPlatform.split(',').map(p => p.trim()).filter(Boolean);
+      const res = await fetch(`${API_BASE}/admin/campaigns/${editingCampaign.id}`, {
+        method: 'PUT',
+        headers: H(),
+        body: JSON.stringify({
+          title: editCampTitle,
+          description: editCampDesc,
+          budget: parseInt(editCampBudget) || 0,
+          niche: nicheArr,
+          platform: platArr,
+          status: editCampStatus
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update campaign details');
+      toast('Campaign updated successfully!', 'success');
+      setEditCampaignModalOpen(false);
+      setEditingCampaign(null);
+      fetchData();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  };
+
   // ─── Auth Headers Helper ────────────────────────────────────────────────────
   const H = () => ({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
 
@@ -466,13 +773,14 @@ export default function App() {
         fetch(`${API_BASE}/admin/platform/activity`, { headers: H() }),
         fetch(`${API_BASE}/admin/platform/stats/deep`, { headers: H() }),
         fetch(`${API_BASE}/admin/gallery`, { headers: H() }),
+        fetch(`${API_BASE}/uploads`, { headers: H() }),
       ];
 
       const results = await Promise.allSettled(fetches);
       const safeJson = async (r) => { try { const d = await r.json(); return d; } catch { return null; } };
 
       const [rVer, rCre, rBr, rCam, rPay, rSt, rBlog, rNews, rCont, rPod, rRev, rComm,
-        rApps, rLead, rBrandAna, rAct, rDeepSt, rGal] = await Promise.all(results.map(r => r.status === 'fulfilled' ? safeJson(r.value) : null));
+        rApps, rLead, rBrandAna, rAct, rDeepSt, rGal, rUp] = await Promise.all(results.map(r => r.status === 'fulfilled' ? safeJson(r.value) : null));
 
       if (rVer) setVerifications(Array.isArray(rVer) ? rVer : []);
       if (rCre) setCreators(rCre.creators || (Array.isArray(rCre) ? rCre : []));
@@ -492,6 +800,7 @@ export default function App() {
       if (rAct) setActivityLog(Array.isArray(rAct) ? rAct : []);
       if (rDeepSt) setDeepStats(rDeepSt);
       if (rGal) setGallery(Array.isArray(rGal) ? rGal : []);
+      if (rUp) setUploads(Array.isArray(rUp) ? rUp : []);
 
     } catch (err) {
       console.error('Fetch error:', err);
@@ -690,6 +999,84 @@ export default function App() {
     setGalleryModalOpen(true);
   };
 
+  const handleDeleteUpload = async (filename) => {
+    if (!window.confirm(`Delete this file permanently? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`${API_BASE}/uploads/${filename}`, {
+        method: 'DELETE',
+        headers: H()
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete file');
+      toast('File deleted successfully', 'success');
+      fetchData();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  };
+
+  const handleSavePodcast = async (e) => {
+    e.preventDefault();
+    if (!podCreatorId || !podTitle || !podDuration) {
+      return toast('Creator, Title, and Duration are required', 'error');
+    }
+    try {
+      const payload = {
+        creatorId: podCreatorId,
+        title: podTitle.trim(),
+        description: podDesc.trim() || null,
+        duration: podDuration.trim(),
+        thumbnail: podThumbnail.trim() || null,
+        audioUrl: podAudioUrl.trim() || null,
+        videoUrl: podVideoUrl.trim() || null,
+        published: podPublished
+      };
+
+      const url = editingPodcast ? `${API_BASE}/admin/podcasts/${editingPodcast.id}` : `${API_BASE}/admin/podcasts`;
+      const method = editingPodcast ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
+        headers: H(),
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      toast(editingPodcast ? 'Podcast episode updated!' : 'Podcast episode created!', 'success');
+      setPodcastModalOpen(false);
+      setEditingPodcast(null);
+      clearPodcastForm();
+      fetchData();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  };
+
+  const clearPodcastForm = () => {
+    setPodCreatorId('');
+    setPodTitle('');
+    setPodDesc('');
+    setPodDuration('');
+    setPodThumbnail('');
+    setPodAudioUrl('');
+    setPodVideoUrl('');
+    setPodPublished(false);
+  };
+
+  const openEditPodcast = (pod) => {
+    setEditingPodcast(pod);
+    setPodCreatorId(pod.creatorId);
+    setPodTitle(pod.title);
+    setPodDesc(pod.description || '');
+    setPodDuration(pod.duration);
+    setPodThumbnail(pod.thumbnail || '');
+    setPodAudioUrl(pod.audioUrl || '');
+    setPodVideoUrl(pod.videoUrl || '');
+    setPodPublished(pod.published);
+    setPodcastModalOpen(true);
+  };
+
   const handleDeleteComment = async (id) => {
     if (!window.confirm('Delete this comment?')) return;
     try {
@@ -796,11 +1183,16 @@ export default function App() {
     applications: allApplications.length,
     unreadContacts: contacts.filter(c => !c.read).length,
     gallery: gallery.length,
-  }), [creators, brands, campaigns, payments, verifications, blogs, newsletters, reviews, comments, podcasts, allApplications, contacts, gallery]);
+    uploads: uploads.length,
+  }), [creators, brands, campaigns, payments, verifications, blogs, newsletters, reviews, comments, podcasts, allApplications, contacts, gallery, uploads]);
 
   const filteredGallery = useMemo(() => gallery.filter(g =>
     `${g.title} ${g.category} ${g.location || ''} ${(g.tags || []).join(' ')}`.toLowerCase().includes(gallerySearch.toLowerCase())
   ), [gallery, gallerySearch]);
+
+  const filteredUploads = useMemo(() => uploads.filter(u =>
+    `${u.name}`.toLowerCase().includes(mediaSearch.toLowerCase())
+  ), [uploads, mediaSearch]);
 
   // ─── Filter Helpers ───────────────────────────────────────────────────────────
   const filteredCreators = useMemo(() => creators.filter(c =>
@@ -921,56 +1313,197 @@ export default function App() {
       </div>
 
       {/* ── SIDEBAR ────────────────────────────────────────────────────────── */}
-      <aside className="no-scrollbar" style={{ width: 256, background: T.sidebarBg, display: 'flex', flexDirection: 'column', padding: '0', flexShrink: 0, position: 'sticky', top: 0, height: '100vh', overflowY: 'auto', boxShadow: '4px 0 24px rgba(0,0,0,0.18)' }}>
+      <aside className="no-scrollbar" style={{ 
+        width: 260, 
+        background: 'linear-gradient(180deg, #070a13 0%, #0d111d 100%)', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        padding: '0', 
+        flexShrink: 0, 
+        position: 'sticky', 
+        top: 0, 
+        height: '100vh', 
+        overflowY: 'auto', 
+        boxShadow: '8px 0 32px rgba(0,0,0,0.22)',
+        borderRight: '1px solid rgba(255,255,255,0.06)',
+        transition: 'all 0.3s ease'
+      }}>
 
         {/* Logo Section */}
-        <div style={{ padding: '22px 18px 18px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 42, height: 42, borderRadius: 14, background: 'linear-gradient(135deg, #f97316, #dc2626)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 17, color: '#fff', boxShadow: '0 4px 16px rgba(249,115,22,0.35)', flexShrink: 0, letterSpacing: -0.5 }}>CB</div>
+        <div style={{ padding: '24px 20px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ 
+              width: 44, 
+              height: 44, 
+              borderRadius: 12, 
+              background: 'linear-gradient(135deg, #f97316 0%, #dc2626 100%)', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              fontWeight: 950, 
+              fontSize: 18, 
+              color: '#fff', 
+              boxShadow: '0 8px 20px rgba(249,115,22,0.3)', 
+              flexShrink: 0, 
+              letterSpacing: -1,
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 100%)' }} />
+              CB
+            </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 14, fontWeight: 900, color: '#fff', lineHeight: 1.2, letterSpacing: -0.3 }}>CreatorBharat</div>
-              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: 2, fontWeight: 700, marginTop: 2 }}>Admin Console</div>
+              <div style={{ fontSize: 16, fontWeight: 900, color: '#fff', lineHeight: 1.1, letterSpacing: -0.4 }}>
+                Creator<span style={{ color: '#f97316' }}>Bharat</span>
+              </div>
+              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: 2.2, fontWeight: 800, marginTop: 4 }}>
+                Admin Portal
+              </div>
             </div>
             {dataLoading && <RefreshCw size={13} style={{ color: T.orange, animation: 'spin 1s linear infinite', flexShrink: 0 }} />}
           </div>
-          {/* Online dot */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 14, padding: '7px 12px', background: 'rgba(34,197,94,0.08)', borderRadius: 10, border: '1px solid rgba(34,197,94,0.12)' }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: T.green, boxShadow: '0 0 6px rgba(34,197,94,0.9)', flexShrink: 0 }} />
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontWeight: 600 }}>Live · Neon DB Connected</span>
+          
+          {/* Online status badge */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 8, 
+            marginTop: 16, 
+            padding: '8px 12px', 
+            background: 'rgba(34,197,94,0.06)', 
+            borderRadius: 10, 
+            border: '1px solid rgba(34,197,94,0.09)' 
+          }}>
+            <div className="pulse-dot" style={{ 
+              width: 7, 
+              height: 7, 
+              borderRadius: '50%', 
+              background: '#22c55e', 
+              flexShrink: 0 
+            }} />
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>
+              Neon DB · Active Session
+            </span>
           </div>
         </div>
 
         {/* Nav */}
-        <nav style={{ flex: 1, padding: '14px 10px', display: 'flex', flexDirection: 'column', gap: 20, overflowY: 'auto' }}>
+        <nav className="no-scrollbar" style={{ flex: 1, padding: '16px 0', display: 'flex', flexDirection: 'column', gap: 24, overflowY: 'auto' }}>
           {NAV_SECTIONS(counts).map((section, si) => (
-            <div key={si}>
-              <div style={{ fontSize: 8.5, color: 'rgba(255,255,255,0.22)', textTransform: 'uppercase', letterSpacing: 1.8, fontWeight: 900, padding: '0 8px', marginBottom: 5, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.05)' }} />
-                {section.title.split(' ').slice(1).join(' ')}
-                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.05)' }} />
+            <div key={si} style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ 
+                fontSize: 9, 
+                color: 'rgba(255,255,255,0.3)', 
+                textTransform: 'uppercase', 
+                letterSpacing: '0.15em', 
+                fontWeight: 800, 
+                padding: '0 18px', 
+                marginBottom: 8, 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 8 
+              }}>
+                <span style={{ color: section.color || T.orange, opacity: 0.8 }}>{section.title.split(' ')[0]}</span>
+                <span>{section.title.split(' ').slice(1).join(' ')}</span>
+                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.04)' }} />
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {section.items.map(item => {
                   const Icon = item.icon;
                   const active = activeTab === item.id;
                   return (
-                    <button key={item.id} onClick={() => setActiveTab(item.id)} style={{
-                      display: 'flex', alignItems: 'center', gap: 9, padding: '8px 10px',
-                      borderRadius: 10, border: active ? '1px solid rgba(249,115,22,0.22)' : '1px solid transparent',
-                      background: active ? 'rgba(249,115,22,0.14)' : 'transparent',
-                      color: active ? '#fff' : 'rgba(255,255,255,0.55)',
-                      fontSize: 12.5, fontWeight: active ? 700 : 500, cursor: 'pointer', textAlign: 'left',
-                      transition: 'all 0.15s', width: '100%'
-                    }}
-                      onMouseEnter={e => { if (!active) { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = '#fff'; } }}
-                      onMouseLeave={e => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.55)'; } }}
+                    <button 
+                      key={item.id} 
+                      onClick={() => setActiveTab(item.id)} 
+                      style={{
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: 10, 
+                        padding: '8px 12px',
+                        margin: '1px 10px',
+                        borderRadius: 8, 
+                        border: active ? '1px solid rgba(249,115,22,0.22)' : '1px solid transparent',
+                        background: active ? 'linear-gradient(135deg, rgba(249,115,22,0.12) 0%, rgba(239,68,68,0.03) 100%)' : 'transparent',
+                        color: active ? '#fff' : 'rgba(255,255,255,0.55)',
+                        fontSize: 12.5, 
+                        fontWeight: active ? 700 : 500, 
+                        cursor: 'pointer', 
+                        textAlign: 'left',
+                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)', 
+                        width: 'calc(100% - 20px)',
+                        boxShadow: active ? '0 4px 12px rgba(249,115,22,0.05)' : 'none',
+                        position: 'relative',
+                        paddingLeft: active ? 12 : 12
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.color = '#fff';
+                        e.currentTarget.style.transform = 'translateX(4px)';
+                        if (!active) {
+                          e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+                        }
+                        const iconCont = e.currentTarget.querySelector('.icon-container');
+                        if (iconCont) {
+                          iconCont.style.background = active ? 'rgba(249,115,22,0.25)' : 'rgba(255,255,255,0.08)';
+                          iconCont.style.transform = 'scale(1.05)';
+                        }
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.color = active ? '#fff' : 'rgba(255,255,255,0.55)';
+                        e.currentTarget.style.transform = 'none';
+                        if (!active) {
+                          e.currentTarget.style.background = 'transparent';
+                        }
+                        const iconCont = e.currentTarget.querySelector('.icon-container');
+                        if (iconCont) {
+                          iconCont.style.background = active ? 'rgba(249,115,22,0.18)' : 'rgba(255,255,255,0.03)';
+                          iconCont.style.transform = 'none';
+                        }
+                      }}
                     >
-                      <div style={{ width: 28, height: 28, borderRadius: 8, background: active ? 'rgba(249,115,22,0.22)' : 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.15s' }}>
-                        <Icon size={14} style={{ color: active ? T.orange : 'inherit' }} />
+                      {active && (
+                        <div style={{
+                          position: 'absolute',
+                          left: 0,
+                          top: '25%',
+                          height: '50%',
+                          width: 3,
+                          background: '#f97316',
+                          borderRadius: '0 4px 4px 0',
+                          boxShadow: '0 0 8px #f97316'
+                        }} />
+                      )}
+                      <div className="icon-container" style={{ 
+                        width: 26, 
+                        height: 26, 
+                        borderRadius: 6, 
+                        background: active ? 'rgba(249,115,22,0.18)' : 'rgba(255,255,255,0.03)', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        flexShrink: 0, 
+                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                        border: active ? '1px solid rgba(249,115,22,0.15)' : '1px solid transparent'
+                      }}>
+                        <Icon size={13.5} style={{ 
+                          color: active ? '#f97316' : 'inherit',
+                          filter: active ? 'drop-shadow(0 0 3px rgba(249,115,22,0.3))' : 'none'
+                        }} />
                       </div>
                       <span style={{ flex: 1 }}>{item.label}</span>
                       {item.badge !== undefined && item.badge > 0 && (
-                        <span style={{ padding: '2px 7px', borderRadius: 20, background: active ? T.orange : 'rgba(255,255,255,0.1)', color: active ? '#fff' : 'rgba(255,255,255,0.65)', fontSize: 9.5, fontWeight: 800, minWidth: 18, textAlign: 'center' }}>{item.badge > 99 ? '99+' : item.badge}</span>
+                        <span style={{ 
+                          padding: '2px 6px', 
+                          borderRadius: 6, 
+                          background: active ? T.orange : 'rgba(255,255,255,0.08)', 
+                          color: active ? '#fff' : 'rgba(255,255,255,0.45)', 
+                          fontSize: 9.5, 
+                          fontWeight: 800, 
+                          minWidth: 18, 
+                          textAlign: 'center',
+                          border: active ? 'none' : '1px solid rgba(255,255,255,0.05)'
+                        }}>
+                          {item.badge > 99 ? '99+' : item.badge}
+                        </span>
                       )}
                     </button>
                   );
@@ -981,18 +1514,46 @@ export default function App() {
         </nav>
 
         {/* Bottom Actions */}
-        <div style={{ padding: '14px 10px', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <button onClick={fetchData} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '9px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'}
+        <div style={{ padding: '16px 14px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <button onClick={fetchData} style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            gap: 8, 
+            padding: '10px', 
+            borderRadius: 8, 
+            border: '1px solid rgba(255,255,255,0.08)', 
+            background: 'rgba(255,255,255,0.03)', 
+            color: 'rgba(255,255,255,0.6)', 
+            fontSize: 12, 
+            fontWeight: 600, 
+            cursor: 'pointer', 
+            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)' 
+          }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; }}
           >
-            <RefreshCw size={13} /> Sync Data
+            <RefreshCw size={13.5} style={{ animation: dataLoading ? 'spin 1s linear infinite' : 'none' }} /> Sync Data
           </button>
-          <button onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '9px', borderRadius: 10, border: '1px solid rgba(239,68,68,0.18)', background: 'rgba(239,68,68,0.06)', color: '#f87171', fontSize: 12, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.12)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'rgba(239,68,68,0.06)'}
+          <button onClick={handleLogout} style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            gap: 8, 
+            padding: '10px', 
+            borderRadius: 8, 
+            border: '1px solid rgba(239,68,68,0.15)', 
+            background: 'rgba(239,68,68,0.05)', 
+            color: '#f87171', 
+            fontSize: 12, 
+            fontWeight: 600, 
+            cursor: 'pointer', 
+            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)' 
+          }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.12)'; e.currentTarget.style.color = '#ff9999'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.05)'; e.currentTarget.style.color = '#f87171'; }}
           >
-            <LogOut size={13} /> Sign Out
+            <LogOut size={13.5} /> Sign Out
           </button>
         </div>
       </aside>
@@ -1101,40 +1662,81 @@ export default function App() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 20 }}>
                   {[
                     { key: 'userCount', label: 'User Signups (6 Months)', color: T.blue, max: maxUser },
-                    { key: 'escrowVolume', label: 'Escrow Volume (6 Months)', color: T.orange, max: maxEscrow }
+                    { key: 'escrowVolume', label: 'Escrow Volume (6 Months)', color: T.green, max: maxEscrow }
                   ].map((chart, ci) => (
-                    <div key={ci} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 24 }}>
+                    <div key={ci} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 24, position: 'relative' }}>
                       <h4 style={{ margin: '0 0 16px', fontSize: 13, fontWeight: 800, color: T.slate, textTransform: 'uppercase', letterSpacing: 0.5 }}>{chart.label}</h4>
-                      <svg viewBox="0 0 400 160" style={{ width: '100%', height: 140 }}>
+                      <svg viewBox="0 0 400 160" style={{ width: '100%', height: 140, overflow: 'visible' }}>
                         <defs>
                           <linearGradient id={`grad${ci}`} x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor={chart.color} stopOpacity="0.15" />
+                            <stop offset="0%" stopColor={chart.color} stopOpacity="0.18" />
                             <stop offset="100%" stopColor={chart.color} stopOpacity="0" />
                           </linearGradient>
+                          <filter id={`glow${ci}`} x="-20%" y="-20%" width="140%" height="140%">
+                            <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor={chart.color} floodOpacity="0.25" />
+                          </filter>
                         </defs>
                         {/* Horizontal gridlines */}
-                        <line x1="0" y1="38" x2="400" y2="38" stroke="rgba(0,0,0,0.03)" strokeDasharray="4 4" />
-                        <line x1="0" y1="76" x2="400" y2="76" stroke="rgba(0,0,0,0.03)" strokeDasharray="4 4" />
-                        <line x1="0" y1="114" x2="400" y2="114" stroke="rgba(0,0,0,0.03)" strokeDasharray="4 4" />
+                        <line x1="0" y1="38" x2="400" y2="38" stroke="rgba(0,0,0,0.04)" strokeDasharray="4 4" />
+                        <line x1="0" y1="76" x2="400" y2="76" stroke="rgba(0,0,0,0.04)" strokeDasharray="4 4" />
+                        <line x1="0" y1="114" x2="400" y2="114" stroke="rgba(0,0,0,0.04)" strokeDasharray="4 4" />
+                        
+                        {/* Hover vertical line */}
+                        {hoveredPoint && hoveredPoint.chartIndex === ci && (
+                          <line x1={hoveredPoint.x} y1="10" x2={hoveredPoint.x} y2="150" stroke={chart.color} strokeWidth="1.2" strokeDasharray="3 3" opacity="0.5" style={{ transition: 'all 0.1s' }} />
+                        )}
                         
                         <path d={`M 0,160 L ${genPoints(chartData, chart.key, chart.max, 400, 160)} L 400,160 Z`} fill={`url(#grad${ci})`} />
-                        <polyline fill="none" stroke={chart.color} strokeWidth="2.5" points={genPoints(chartData, chart.key, chart.max, 400, 160)} />
+                        <polyline fill="none" stroke={chart.color} strokeWidth="3" filter={`url(#glow${ci})`} points={genPoints(chartData, chart.key, chart.max, 400, 160)} />
                         {chartData.map((d, i) => {
                           const x = i * (400 / Math.max(chartData.length - 1, 1));
                           const y = 160 - ((d[chart.key] || 0) / chart.max) * 140 - 10;
                           const rawVal = d[chart.key] || 0;
                           const formattedVal = chart.key === 'escrowVolume' ? `₹${(rawVal/1000).toFixed(0)}k` : rawVal;
+                          const isHovered = hoveredPoint?.chartIndex === ci && hoveredPoint?.pointIndex === i;
                           return (
                             <g key={i}>
-                              <circle cx={x} cy={y} r="3.5" fill={chart.color} stroke="#fff" strokeWidth="2" />
-                              <text x={x} y={y - 8} textAnchor="middle" fill={T.navy} fontSize="8.5" fontWeight="800" style={{ pointerEvents: 'none' }}>
-                                {formattedVal}
-                              </text>
+                              <circle 
+                                cx={x} 
+                                cy={y} 
+                                r={isHovered ? "6" : "4"} 
+                                fill={chart.color} 
+                                stroke="#fff" 
+                                strokeWidth="2.5" 
+                                style={{ cursor: 'pointer', transition: 'all 0.15s' }}
+                                onMouseEnter={() => setHoveredPoint({ chartIndex: ci, pointIndex: i, x, y, value: formattedVal, label: d.month })}
+                                onMouseLeave={() => setHoveredPoint(null)}
+                              />
                             </g>
                           );
                         })}
+
+                        {/* Interactive Floating Tooltip Card */}
+                        {hoveredPoint && hoveredPoint.chartIndex === ci && (
+                          <g style={{ pointerEvents: 'none' }}>
+                            <rect 
+                              x={Math.max(10, Math.min(310, hoveredPoint.x - 45))} 
+                              y={Math.max(5, hoveredPoint.y - 38)} 
+                              width="90" 
+                              height="30" 
+                              rx="6" 
+                              fill={T.navy} 
+                              opacity="0.95" 
+                            />
+                            <text 
+                              x={Math.max(55, Math.min(355, hoveredPoint.x))} 
+                              y={Math.max(24, hoveredPoint.y - 19)} 
+                              textAnchor="middle" 
+                              fill="#fff" 
+                              fontSize="10" 
+                              fontWeight="800"
+                            >
+                              {hoveredPoint.label}: {hoveredPoint.value}
+                            </text>
+                          </g>
+                        )}
                       </svg>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 700, color: T.muted, marginTop: 6 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 800, color: T.muted, marginTop: 6 }}>
                         {chartData.map((d, i) => <span key={i}>{d.month}</span>)}
                       </div>
                     </div>
@@ -1256,6 +1858,28 @@ export default function App() {
                         <a href={`${FRONTEND_URL}/creator/${cr.id}`} target="_blank" rel="noopener noreferrer" style={{ padding: '5px 10px', background: T.blueLight, color: T.blue, borderRadius: 7, fontSize: 11, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                           <ExternalLink size={10} /> Profile
                         </a>
+                        <ActionBtn small onClick={() => {
+                          setEditingCreator(cr);
+                          setEditCreName(cr.name || '');
+                          setEditCreHandle(cr.handle || '');
+                          setEditCreBio(cr.bio || '');
+                          setEditCreCity(cr.city || '');
+                          setEditCreState(cr.state || '');
+                          setEditCreFollowers(cr.followers || 0);
+                          setEditCreEngagementRate(cr.engagementRate || 0);
+                          setEditCreRateMin(cr.rateMin || 0);
+                          setEditCreRateMax(cr.rateMax || 0);
+                          setEditCrePhoto(cr.photo || '');
+                          setEditCreCoverImage(cr.coverImage || '');
+                          setEditCreNiche((cr.niche || []).join(', '));
+                          setEditCrePlatform((cr.platform || []).join(', '));
+                          setEditCreStatus(cr.status || 'DRAFT');
+                          setEditCreIsVerified(cr.isVerified || false);
+                          setEditCreIsPro(cr.isPro || false);
+                          setEditCreAadhaarUrl(cr.aadhaarUrl || '');
+                          setEditCrePanUrl(cr.panUrl || '');
+                          setEditCreatorModalOpen(true);
+                        }} style={{ background: T.orangeLight, color: T.orange }}>✏️ Edit</ActionBtn>
                         <ActionBtn small onClick={() => handleFetchWallet(cr)}><Wallet size={11} /> Wallet</ActionBtn>
                         <ActionBtn small onClick={() => { setScoreModal({ creator: cr }); setScoreInput(cr.score || 0); }}><Trophy size={11} /> Score</ActionBtn>
                         <DangerBtn small onClick={() => handleToggleSuspension(cr.user?.id)}>
@@ -1424,17 +2048,29 @@ export default function App() {
           {/* ══ PODCASTS ═══════════════════════════════════════════════════ */}
           {activeTab === 'podcasts' && (
             <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader title="Podcast Manager" badge={podcasts.length} sub="Control podcast episode visibility and cleanup" />
+              <SectionHeader 
+                title="Podcast Manager" 
+                badge={podcasts.length} 
+                sub="Publish, edit or create podcast episodes for verified creators" 
+                action={<button onClick={() => { clearPodcastForm(); setEditingPodcast(null); setPodcastModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ New Episode</button>}
+              />
               {podcasts.length === 0 ? <EmptyState icon="🎙️" msg="No podcasts available" /> : (
-                <Table cols={['Episode', 'Creator', 'Status', 'Date', { label: 'Actions', align: 'right' }]}>
+                <Table cols={['Thumbnail', 'Episode', 'Creator', 'Duration', 'Status', 'Date', { label: 'Actions', align: 'right' }]}>
                   {podcasts.map(pod => (
                     <tr key={pod.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                      <Td bold>{pod.title}</Td>
+                      <Td>
+                        <img src={pod.thumbnail || 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=100'} alt={pod.title} style={{ width: 45, height: 45, borderRadius: 8, objectFit: 'cover', border: `1px solid ${T.border}` }} />
+                      </Td>
+                      <Td bold>
+                        <span style={{ maxWidth: 220, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{pod.title}</span>
+                      </Td>
                       <Td>{pod.creator?.name || '—'}</Td>
+                      <Td muted>{pod.duration}</Td>
                       <Td><Badge color={pod.published ? T.green : T.muted}>{pod.published ? 'Published' : 'Draft'}</Badge></Td>
                       <Td muted>{fmtDate(pod.createdAt)}</Td>
                       <Td right>
                         <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                          <ActionBtn small onClick={() => openEditPodcast(pod)}>✎ Edit</ActionBtn>
                           <ActionBtn small onClick={() => handleTogglePodcast(pod.id)}>
                             {pod.published ? '⏸ Unpublish' : '▶ Publish'}
                           </ActionBtn>
@@ -1502,6 +2138,13 @@ export default function App() {
                         <a href={`${FRONTEND_URL}/brand/dashboard`} target="_blank" rel="noopener noreferrer" style={{ padding: '5px 10px', background: T.blueLight, color: T.blue, borderRadius: 7, fontSize: 11, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                           <ExternalLink size={10} /> Dashboard
                         </a>
+                        <ActionBtn small onClick={() => {
+                          setEditingBrand(br);
+                          setEditBrandName(br.companyName || '');
+                          setEditBrandIndustry(br.industry || '');
+                          setEditBrandWebsite(br.website || '');
+                          setEditBrandModalOpen(true);
+                        }} style={{ background: T.orangeLight, color: T.orange }}>✏️ Edit</ActionBtn>
                         <ActionBtn small onClick={() => { setSelectedBrand(br); setBrandDrawerOpen(true); }}><Eye size={11} /> View</ActionBtn>
                         <DangerBtn small onClick={() => handleToggleSuspension(br.user?.id, false)}>
                           {br.user?.isSuspended ? <UserCheck size={11} /> : <UserX size={11} />}
@@ -1536,6 +2179,17 @@ export default function App() {
                         {c.budget && <Badge color={T.green}>₹{fmtNum(c.budget)}</Badge>}
                         <span style={{ fontSize: 11, color: T.orange, fontWeight: 700 }}>Applications ↕</span>
                         {expandedCampaignId === c.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                        <ActionBtn small onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingCampaign(c);
+                          setEditCampTitle(c.title || '');
+                          setEditCampDesc(c.description || '');
+                          setEditCampBudget(c.budget || 0);
+                          setEditCampPlatform((c.platform || []).join(', '));
+                          setEditCampNiche((c.niche || []).join(', '));
+                          setEditCampStatus(c.status || 'ACTIVE');
+                          setEditCampaignModalOpen(true);
+                        }} style={{ background: T.orangeLight, color: T.orange, padding: '4px 8px', borderRadius: 7 }}>✏️ Edit</ActionBtn>
                         <DangerBtn small onClick={(e) => { e.stopPropagation(); handleDeleteCampaign(c.id); }}><Trash2 size={11} /></DangerBtn>
                       </div>
                     </div>
@@ -1687,6 +2341,209 @@ export default function App() {
                 ))}
               </Table>
               {filteredBlogs.length === 0 && <EmptyState icon="📝" msg="No blog articles found" />}
+            </div>
+          )}
+
+          {/* ══ MEDIA LIBRARY ══════════════════════════════════════════════ */}
+          {activeTab === 'media-library' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
+                <SectionHeader 
+                  title="Ecosystem Media Library" 
+                  badge={uploads.length} 
+                  sub="Upload files to copy their absolute links for insertion in blogs, campaigns, or portfolios"
+                  action={
+                    <div style={{ display: 'flex', gap: 10 }}>
+                      <button 
+                        onClick={() => document.getElementById('media-library-file-input').click()}
+                        style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}
+                      >
+                        + Upload File
+                      </button>
+                      <input 
+                        type="file" 
+                        id="media-library-file-input" 
+                        style={{ display: 'none' }}
+                        onChange={async (e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            const file = e.target.files[0];
+                            const type = file.type.startsWith('video/') ? 'video' : 'image';
+                            try {
+                              toast('Uploading file to system...', 'info');
+                              const url = await handleUploadMedia(file, type);
+                              if (url) {
+                                toast('File uploaded successfully!', 'success');
+                                fetchData();
+                              }
+                            } catch (err) {
+                              toast(err.message || 'Upload failed', 'error');
+                            }
+                          }
+                        }}
+                      />
+                    </div>
+                  }
+                />
+                
+                {/* Search & Drag Drop Zone */}
+                <SearchBar value={mediaSearch} onChange={setMediaSearch} placeholder="Search files by name..." />
+                
+                <div 
+                  onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = T.orange; }}
+                  onDragLeave={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = T.border; }}
+                  onDrop={async (e) => {
+                    e.preventDefault();
+                    e.currentTarget.style.borderColor = T.border;
+                    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                      const file = e.dataTransfer.files[0];
+                      const type = file.type.startsWith('video/') ? 'video' : 'image';
+                      try {
+                        toast('Uploading dropped file...', 'info');
+                        const url = await handleUploadMedia(file, type);
+                        if (url) {
+                          toast('File uploaded successfully!', 'success');
+                          fetchData();
+                        }
+                      } catch (err) {
+                        toast(err.message || 'Upload failed', 'error');
+                      }
+                    }
+                  }}
+                  style={{
+                    border: `2px dashed ${T.border}`,
+                    borderRadius: 16,
+                    padding: '30px 20px',
+                    textAlign: 'center',
+                    background: T.bg,
+                    marginBottom: 24,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onClick={() => document.getElementById('media-library-file-input').click()}
+                >
+                  <span style={{ fontSize: 24, display: 'block', marginBottom: 8 }}>📁</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: T.slate }}>Drag & Drop any image/video file here, or click to browse</span>
+                  <span style={{ display: 'block', fontSize: 11, color: T.muted, marginTop: 4 }}>Maximum size: Image 5MB / Video 50MB</span>
+                </div>
+
+                {/* Uploads Grid */}
+                {filteredUploads.length === 0 ? (
+                  <EmptyState icon="📁" msg="No media files found" />
+                ) : (
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+                    gap: 20
+                  }}>
+                    {filteredUploads.map((u, i) => {
+                      const isVid = u.type?.startsWith('video/') || u.name?.endsWith('.mp4') || u.name?.endsWith('.mov') || u.name?.endsWith('.avi');
+                      const friendlySize = u.size ? (u.size > 1024 * 1024 ? `${(u.size / (1024 * 1024)).toFixed(1)} MB` : `${Math.round(u.size / 1024)} KB`) : '—';
+                      return (
+                        <div key={i} style={{
+                          background: T.bg,
+                          border: `1px solid ${T.border}`,
+                          borderRadius: 16,
+                          overflow: 'hidden',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          boxShadow: '0 4px 10px rgba(15,23,42,0.02)',
+                          transition: 'transform 0.2s',
+                          position: 'relative'
+                        }} className="media-card">
+                          {/* Preview container */}
+                          <div style={{
+                            height: 125,
+                            background: '#070a13',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            overflow: 'hidden',
+                            position: 'relative',
+                            borderBottom: `1px solid ${T.border}`
+                          }}>
+                            {isVid ? (
+                              <video src={u.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                              <img src={u.url} alt={u.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            )}
+                            <span 
+                              style={{ position: 'absolute', top: 8, left: 8, zIndex: 5, padding: '2px 8px', background: 'rgba(15,23,42,0.6)', backdropFilter: 'blur(4px)', color: '#fff', borderRadius: 20, fontSize: 9, fontWeight: 800, textTransform: 'uppercase' }}
+                            >
+                              {isVid ? 'Video' : 'Image'}
+                            </span>
+                          </div>
+
+                          {/* File Details */}
+                          <div style={{ padding: 14, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                            <div style={{ marginBottom: 12 }}>
+                              <h5 style={{
+                                margin: '0 0 4px 0',
+                                fontSize: 13,
+                                fontWeight: 800,
+                                color: T.navy,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap'
+                              }} title={u.name}>
+                                {u.name}
+                              </h5>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: T.muted, fontWeight: 600 }}>
+                                <span>{friendlySize}</span>
+                                <span>{fmtDate(u.createdAt)}</span>
+                              </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div style={{ display: 'flex', gap: 6 }}>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  navigator.clipboard.writeText(u.url);
+                                  toast('Copied direct link to clipboard!', 'success');
+                                }}
+                                style={{
+                                  flex: 1,
+                                  padding: '8px 0',
+                                  background: T.orangeLight,
+                                  color: T.orange,
+                                  border: `1px dashed ${T.orangeBorder}`,
+                                  borderRadius: 8,
+                                  fontSize: 12,
+                                  fontWeight: 800,
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  gap: 4
+                                }}
+                              >
+                                <Copy size={11} /> Copy Link
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteUpload(u.name)}
+                                style={{
+                                  padding: '8px 10px',
+                                  background: T.redLight,
+                                  color: T.red,
+                                  border: `1px solid ${T.red}15`,
+                                  borderRadius: 8,
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center'
+                                }}
+                              >
+                                <Trash2 size={12} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -2036,22 +2893,13 @@ export default function App() {
                   <input value={blogTags} onChange={e => setBlogTags(e.target.value)} placeholder="tag1, tag2, tag3" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
                 </div>
               </div>
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Cover Image</label>
-                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                  <input value={blogImage} onChange={e => setBlogImage(e.target.value)} placeholder="https://... or upload file" style={{ flex: 1, padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                  <label style={{ padding: '10px 16px', background: T.orangeLight, color: T.orange, border: `1px solid ${T.orangeBorder}`, borderRadius: 10, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
-                    <Download size={14} /> Upload Cover
-                    <input type="file" accept="image/*" onChange={e => handleUploadFile(e, 'image', setBlogImage)} style={{ display: 'none' }} />
-                  </label>
-                </div>
-                {blogImage && (
-                  <div style={{ marginTop: 8, position: 'relative', width: 'fit-content' }}>
-                    <img src={blogImage} alt="Cover Preview" style={{ maxHeight: 90, borderRadius: 10, border: `1px solid ${T.border}`, objectFit: 'cover' }} />
-                    <button type="button" onClick={() => setBlogImage('')} style={{ position: 'absolute', top: -6, right: -6, background: T.red, color: '#fff', border: 'none', borderRadius: '50%', width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 10 }}>×</button>
-                  </div>
-                )}
-              </div>
+              <PremiumMediaUpload
+                label="Cover Image"
+                value={blogImage}
+                onChange={setBlogImage}
+                type="image"
+                onUploadFile={handleUploadMedia}
+              />
               <div>
                 <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Category</label>
                 <select value={blogCategory} onChange={e => setBlogCategory(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
@@ -2133,35 +2981,23 @@ export default function App() {
                 </div>
               </div>
               
-              <div>
-                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Thumbnail Image</label>
-                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                  <input value={galThumbnail} onChange={e => setGalThumbnail(e.target.value)} placeholder="https://... or upload file" style={{ flex: 1, padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                  <label style={{ padding: '10px 16px', background: T.orangeLight, color: T.orange, border: `1px solid ${T.orangeBorder}`, borderRadius: 10, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
-                    <Download size={14} /> Upload Thumbnail
-                    <input type="file" accept="image/*" onChange={e => handleUploadFile(e, 'image', setGalThumbnail)} style={{ display: 'none' }} />
-                  </label>
-                </div>
-                {galThumbnail && (
-                  <div style={{ marginTop: 8, position: 'relative', width: 'fit-content' }}>
-                    <img src={galThumbnail} alt="Thumbnail Preview" style={{ maxHeight: 70, borderRadius: 8, border: `1px solid ${T.border}`, objectFit: 'cover' }} />
-                    <button type="button" onClick={() => setGalThumbnail('')} style={{ position: 'absolute', top: -6, right: -6, background: T.red, color: '#fff', border: 'none', borderRadius: '50%', width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 10 }}>×</button>
-                  </div>
-                )}
-              </div>
+              <PremiumMediaUpload
+                label="Thumbnail Image"
+                value={galThumbnail}
+                onChange={setGalThumbnail}
+                type="image"
+                onUploadFile={handleUploadMedia}
+              />
 
               {galType === 'video' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Video File / Link</label>
-                    <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                      <input value={galVideoUrl} onChange={e => setGalVideoUrl(e.target.value)} placeholder="https://... or upload video" style={{ flex: 1, padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
-                      <label style={{ padding: '10px 16px', background: T.orangeLight, color: T.orange, border: `1px solid ${T.orangeBorder}`, borderRadius: 10, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
-                        <Download size={14} /> Upload Video
-                        <input type="file" accept="video/*" onChange={e => handleUploadFile(e, 'video', setGalVideoUrl)} style={{ display: 'none' }} />
-                      </label>
-                    </div>
-                  </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 1fr', gap: 16 }}>
+                  <PremiumMediaUpload
+                    label="Video File / Link"
+                    value={galVideoUrl}
+                    onChange={setGalVideoUrl}
+                    type="video"
+                    onUploadFile={handleUploadMedia}
+                  />
                   <div>
                     <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Duration</label>
                     <input value={galDuration} onChange={e => setGalDuration(e.target.value)} placeholder="e.g. 2:45" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
@@ -2178,6 +3014,293 @@ export default function App() {
                   {editingGallery ? 'Update Gallery Item' : 'Add Gallery Item'}
                 </button>
                 <button type="button" onClick={() => { setGalleryModalOpen(false); setEditingGallery(null); clearGalleryForm(); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+
+      {/* ══ PODCAST EDITOR MODAL ════════════════════════════════════ */}
+      {podcastModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
+          <div style={{ width: '100%', maxWidth: 650, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
+            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>{editingPodcast ? 'Edit Podcast Episode' : 'Create New Podcast Episode'}</h3>
+              <button onClick={() => { setPodcastModalOpen(false); setEditingPodcast(null); clearPodcastForm(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
+            </div>
+            <form onSubmit={handleSavePodcast} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Host / Creator</label>
+                <select value={podCreatorId} onChange={e => setPodCreatorId(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
+                  <option value="">Select a host creator...</option>
+                  {creators.map(c => (
+                    <option key={c.id} value={c.id}>{c.name} (@{c.handle})</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Episode Title</label>
+                <input value={podTitle} onChange={e => setPodTitle(e.target.value)} required placeholder="e.g. Building Creators in India" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Description / Show Notes</label>
+                <textarea value={podDesc} onChange={e => setPodDesc(e.target.value)} rows={3} placeholder="What is this episode about?" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Duration (e.g. 12:34)</label>
+                  <input value={podDuration} onChange={e => setPodDuration(e.target.value)} required placeholder="e.g. 45:10" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <PremiumMediaUpload
+                    label="Cover Image / Thumbnail"
+                    value={podThumbnail}
+                    onChange={setPodThumbnail}
+                    type="image"
+                    onUploadFile={handleUploadMedia}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <PremiumMediaUpload
+                  label="Audio File (MP3)"
+                  value={podAudioUrl}
+                  onChange={setPodAudioUrl}
+                  type="audio"
+                  onUploadFile={handleUploadMedia}
+                />
+                <PremiumMediaUpload
+                  label="Video File (MP4) - Optional"
+                  value={podVideoUrl}
+                  onChange={setPodVideoUrl}
+                  type="video"
+                  onUploadFile={handleUploadMedia}
+                />
+              </div>
+
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700, color: T.navy, cursor: 'pointer', marginTop: 8 }}>
+                <input type="checkbox" checked={podPublished} onChange={e => setPodPublished(e.target.checked)} style={{ width: 16, height: 16 }} />
+                ✓ Publish Episode immediately
+              </label>
+
+              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
+                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>
+                  {editingPodcast ? 'Update Episode' : 'Publish Episode'}
+                </button>
+                <button type="button" onClick={() => { setPodcastModalOpen(false); setEditingPodcast(null); clearPodcastForm(); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ══ EDIT CREATOR PROFILE MODAL ════════════════════════════════ */}
+      {editCreatorModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
+          <div style={{ width: '100%', maxWidth: 700, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
+            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>Edit Creator Profile</h3>
+              <button onClick={() => { setEditCreatorModalOpen(false); setEditingCreator(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
+            </div>
+            <form onSubmit={handleSaveCreator} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Full Name</label>
+                  <input value={editCreName} onChange={e => setEditCreName(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Handle</label>
+                  <input value={editCreHandle} onChange={e => setEditCreHandle(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Bio / Tagline</label>
+                <textarea value={editCreBio} onChange={e => setEditCreBio(e.target.value)} rows={2} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'none' }} />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>City</label>
+                  <input value={editCreCity} onChange={e => setEditCreCity(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>State</label>
+                  <input value={editCreState} onChange={e => setEditCreState(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Followers</label>
+                  <input type="number" value={editCreFollowers} onChange={e => setEditCreFollowers(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Min Rate (INR)</label>
+                  <input type="number" value={editCreRateMin} onChange={e => setEditCreRateMin(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Max Rate (INR)</label>
+                  <input type="number" value={editCreRateMax} onChange={e => setEditCreRateMax(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Niches (comma separated)</label>
+                  <input value={editCreNiche} onChange={e => setEditCreNiche(e.target.value)} placeholder="Fashion, Tech, Lifestyle" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Platforms (comma separated)</label>
+                  <input value={editCrePlatform} onChange={e => setEditCrePlatform(e.target.value)} placeholder="Instagram, YouTube" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <PremiumMediaUpload
+                  label="Profile Avatar Photo"
+                  value={editCrePhoto}
+                  onChange={setEditCrePhoto}
+                  type="image"
+                  onUploadFile={handleUploadMedia}
+                />
+                <PremiumMediaUpload
+                  label="Profile Cover Banner"
+                  value={editCreCoverImage}
+                  onChange={setEditCreCoverImage}
+                  type="image"
+                  onUploadFile={handleUploadMedia}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <PremiumMediaUpload
+                  label="Aadhaar ID Card (PDF/Image)"
+                  value={editCreAadhaarUrl}
+                  onChange={setEditCreAadhaarUrl}
+                  type="image"
+                  onUploadFile={handleUploadMedia}
+                />
+                <PremiumMediaUpload
+                  label="PAN Card (PDF/Image)"
+                  value={editCrePanUrl}
+                  onChange={setEditCrePanUrl}
+                  type="image"
+                  onUploadFile={handleUploadMedia}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, alignItems: 'center' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Account Status</label>
+                  <select value={editCreStatus} onChange={e => setEditCreStatus(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
+                    <option value="DRAFT">DRAFT</option>
+                    <option value="SUBMITTED">SUBMITTED</option>
+                    <option value="VERIFIED">VERIFIED</option>
+                  </select>
+                </div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700, color: T.navy, cursor: 'pointer', marginTop: 16 }}>
+                  <input type="checkbox" checked={editCreIsVerified} onChange={e => setEditCreIsVerified(e.target.checked)} style={{ width: 16, height: 16 }} />
+                  ✓ Verified Badge
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700, color: T.navy, cursor: 'pointer', marginTop: 16 }}>
+                  <input type="checkbox" checked={editCreIsPro} onChange={e => setEditCreIsPro(e.target.checked)} style={{ width: 16, height: 16 }} />
+                  ⚡ Pro Tier Member
+                </label>
+              </div>
+
+              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
+                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>Update Creator Profile</button>
+                <button type="button" onClick={() => { setEditCreatorModalOpen(false); setEditingCreator(null); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ══ EDIT BRAND PROFILE MODAL ══════════════════════════════════ */}
+      {editBrandModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
+          <div style={{ width: '100%', maxWidth: 550, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
+            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>Edit Brand Profile</h3>
+              <button onClick={() => { setEditBrandModalOpen(false); setEditingBrand(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
+            </div>
+            <form onSubmit={handleSaveBrand} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Company Name</label>
+                <input value={editBrandName} onChange={e => setEditBrandName(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Industry</label>
+                  <input value={editBrandIndustry} onChange={e => setEditBrandIndustry(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Website</label>
+                  <input value={editBrandWebsite} onChange={e => setEditBrandWebsite(e.target.value)} placeholder="https://..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
+                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>Update Brand Profile</button>
+                <button type="button" onClick={() => { setEditBrandModalOpen(false); setEditingBrand(null); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ══ EDIT CAMPAIGN MODAL ══════════════════════════════════════ */}
+      {editCampaignModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
+          <div style={{ width: '100%', maxWidth: 600, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
+            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>Edit Campaign</h3>
+              <button onClick={() => { setEditCampaignModalOpen(false); setEditingCampaign(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
+            </div>
+            <form onSubmit={handleSaveCampaign} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Campaign Title</label>
+                  <input value={editCampTitle} onChange={e => setEditCampTitle(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Budget (INR)</label>
+                  <input type="number" value={editCampBudget} onChange={e => setEditCampBudget(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Description / Brief</label>
+                <textarea value={editCampDesc} onChange={e => setEditCampDesc(e.target.value)} rows={4} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Target Platforms (comma separated)</label>
+                  <input value={editCampPlatform} onChange={e => setEditCampPlatform(e.target.value)} placeholder="Instagram, YouTube" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Target Niches (comma separated)</label>
+                  <input value={editCampNiche} onChange={e => setEditCampNiche(e.target.value)} placeholder="Fashion, Tech" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Campaign Status</label>
+                <select value={editCampStatus} onChange={e => setEditCampStatus(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
+                  <option value="ACTIVE">ACTIVE</option>
+                  <option value="COMPLETED">COMPLETED</option>
+                  <option value="PAUSED">PAUSED</option>
+                </select>
+              </div>
+              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
+                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>Update Campaign Details</button>
+                <button type="button" onClick={() => { setEditCampaignModalOpen(false); setEditingCampaign(null); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
               </div>
             </form>
           </div>

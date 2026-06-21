@@ -156,6 +156,107 @@ router.delete('/campaigns/:campaignId', async (req, res) => {
   }
 });
 
+// PUT /api/admin/creators/:id — administrative update creator profile details
+router.put('/creators/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      name, handle, bio, city, state, niche, platform, followers,
+      engagementRate, rateMin, rateMax, photo, coverImage, status, isVerified, isPro,
+      aadhaarUrl, panUrl
+    } = req.body;
+
+    if (handle) {
+      const existing = await prisma.creator.findFirst({
+        where: {
+          handle: handle.toLowerCase().trim(),
+          NOT: { id }
+        }
+      });
+      if (existing) {
+        return res.status(400).json({ error: 'This handle is already taken.' });
+      }
+    }
+
+    const updated = await prisma.creator.update({
+      where: { id },
+      data: {
+        name,
+        handle: handle ? handle.toLowerCase().trim() : undefined,
+        bio,
+        city,
+        state,
+        niche: Array.isArray(niche) ? niche : undefined,
+        platform: Array.isArray(platform) ? platform : undefined,
+        followers: followers !== undefined ? parseInt(followers) : undefined,
+        engagementRate: engagementRate !== undefined ? parseFloat(engagementRate) : undefined,
+        rateMin: rateMin !== undefined ? parseInt(rateMin) : undefined,
+        rateMax: rateMax !== undefined ? parseInt(rateMax) : undefined,
+        photo,
+        coverImage,
+        status,
+        isVerified: isVerified !== undefined ? isVerified : undefined,
+        isPro: isPro !== undefined ? isPro : undefined,
+        aadhaarUrl: aadhaarUrl !== undefined ? aadhaarUrl : undefined,
+        panUrl: panUrl !== undefined ? panUrl : undefined
+      }
+    });
+
+    res.json(updated);
+  } catch (err) {
+    console.error('[PUT /api/admin/creators/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to update creator profile.' });
+  }
+});
+
+// PUT /api/admin/brands/:id — administrative update brand profile details
+router.put('/brands/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { companyName, industry, website } = req.body;
+
+    const updated = await prisma.brand.update({
+      where: { id },
+      data: {
+        companyName,
+        industry,
+        website
+      }
+    });
+
+    res.json(updated);
+  } catch (err) {
+    console.error('[PUT /api/admin/brands/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to update brand profile.' });
+  }
+});
+
+// PUT /api/admin/campaigns/:id — administrative update campaign details
+router.put('/campaigns/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, budget, platform, niche, status } = req.body;
+
+    const updated = await prisma.campaign.update({
+      where: { id },
+      data: {
+        title,
+        description,
+        budget: budget !== undefined ? parseInt(budget) : undefined,
+        platform: Array.isArray(platform) ? platform : undefined,
+        niche: Array.isArray(niche) ? niche : undefined,
+        status
+      }
+    });
+
+    res.json(updated);
+  } catch (err) {
+    console.error('[PUT /api/admin/campaigns/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to update campaign details.' });
+  }
+});
+
+
 // GET /api/admin/stats — aggregate live dashboard counts and trends
 router.get('/stats', async (req, res) => {
   try {
@@ -489,6 +590,74 @@ router.delete('/podcasts/:id', async (req, res) => {
   } catch (err) {
     console.error('[DELETE /api/admin/podcasts/:id] Error:', err.message);
     res.status(500).json({ error: 'Failed to delete podcast episode.' });
+  }
+});
+
+// POST /api/admin/podcasts — create new podcast
+router.post('/podcasts', async (req, res) => {
+  try {
+    const { creatorId, title, description, duration, thumbnail, audioUrl, videoUrl, published } = req.body;
+    if (!creatorId || !title || !duration) {
+      return res.status(400).json({ error: 'Creator ID, Title, and Duration are required.' });
+    }
+
+    const creator = await prisma.creator.findUnique({ where: { id: creatorId } });
+    if (!creator) return res.status(404).json({ error: 'Creator not found.' });
+
+    const podcast = await prisma.podcast.create({
+      data: {
+        creatorId,
+        title,
+        description: description || null,
+        duration,
+        thumbnail: thumbnail || null,
+        audioUrl: audioUrl || null,
+        videoUrl: videoUrl || null,
+        published: published ?? false
+      },
+      include: { creator: true }
+    });
+
+    res.status(201).json({ message: 'Podcast episode created successfully.', podcast });
+  } catch (err) {
+    console.error('[POST /api/admin/podcasts] Error:', err.message);
+    res.status(500).json({ error: 'Failed to create podcast episode.' });
+  }
+});
+
+// PUT /api/admin/podcasts/:id — update existing podcast
+router.put('/podcasts/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { creatorId, title, description, duration, thumbnail, audioUrl, videoUrl, published } = req.body;
+
+    const existing = await prisma.podcast.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ error: 'Podcast episode not found.' });
+
+    if (creatorId) {
+      const creator = await prisma.creator.findUnique({ where: { id: creatorId } });
+      if (!creator) return res.status(404).json({ error: 'Creator not found.' });
+    }
+
+    const updated = await prisma.podcast.update({
+      where: { id },
+      data: {
+        creatorId: creatorId || undefined,
+        title: title || undefined,
+        description: description !== undefined ? description : undefined,
+        duration: duration || undefined,
+        thumbnail: thumbnail !== undefined ? thumbnail : undefined,
+        audioUrl: audioUrl !== undefined ? audioUrl : undefined,
+        videoUrl: videoUrl !== undefined ? videoUrl : undefined,
+        published: published !== undefined ? published : undefined
+      },
+      include: { creator: true }
+    });
+
+    res.json({ message: 'Podcast episode updated successfully.', podcast: updated });
+  } catch (err) {
+    console.error('[PUT /api/admin/podcasts/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to update podcast episode.' });
   }
 });
 

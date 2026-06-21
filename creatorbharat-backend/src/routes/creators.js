@@ -82,6 +82,15 @@ router.get('/:idOrHandle', async (req, res) => {
           { id: idOrHandle },
           { handle: idOrHandle.toLowerCase() }
         ]
+      },
+      include: {
+        podcasts: {
+          where: { published: true },
+          orderBy: { createdAt: 'desc' }
+        },
+        reviews: {
+          orderBy: { createdAt: 'desc' }
+        }
       }
     });
 

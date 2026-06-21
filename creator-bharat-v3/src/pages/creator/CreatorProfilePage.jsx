@@ -25,7 +25,8 @@ import {
   Megaphone,
   Verified,
   Activity,
-  Share2
+  Share2,
+  Headphones
 } from 'lucide-react';
 
 // Tab component imports
@@ -38,6 +39,7 @@ import { ReviewsTab } from '../../components/creators/profile/ReviewsTab';
 import { PackagesTab } from '../../components/creators/profile/PackagesTab';
 import { SponsorTab } from '../../components/creators/profile/SponsorTab';
 import { ConnectTab } from '../../components/creators/profile/ConnectTab';
+import { PodcastsTab } from '../../components/creators/profile/PodcastsTab';
 import { RateCreatorModal, CollabBriefModal } from '../../components/creators/profile/ProfileModals';
 
 // --- MAIN PAGE ---
@@ -108,6 +110,8 @@ const ProfileTabContent = ({
       return <SponsorTab key="tab-sponsor" c={c} mob={mob} st={dsp} setActiveTab={setActiveTab} />;
     case 'connect':
       return <ConnectTab key="tab-connect" c={c} mob={mob} dsp={dsp} setBriefOpen={setBriefOpen} setMediaKitOpen={setMediaKitOpen} setActiveTab={setActiveTab} />;
+    case 'podcasts':
+      return <PodcastsTab key="tab-podcasts" c={c} mob={mob} setActiveTab={setActiveTab} />;
     default:
       return null;
   }
@@ -487,6 +491,7 @@ export default function CreatorProfilePage() {
             { id: 'identity',  label: 'Identity',    icon: Activity,      group: 'main' },
             { id: 'social',    label: 'Socials',     icon: Share2,        group: 'main' },
             { id: 'story',     label: 'Story',       icon: Globe,         group: 'main' },
+            c?.podcasts?.length > 0 && { id: 'podcasts',  label: 'Podcasts',   icon: Headphones,    group: 'main' },
             { id: 'gallery',   label: 'Gallery',     icon: ImageIcon,     group: 'main' },
             { id: 'work',      label: 'Work',        icon: Briefcase,     group: 'main' },
             { id: 'services',  label: 'Services',    icon: Sparkles,      group: 'main' },
@@ -495,7 +500,7 @@ export default function CreatorProfilePage() {
             { id: 'packages',  label: 'Packages',    icon: Zap,           group: 'action' },
             { id: 'sponsor',   label: 'Sponsored',   icon: Megaphone,     group: 'action' },
             { id: 'connect',   label: 'Connect',     icon: MessageSquare, group: 'action' },
-          ].map((t, idx, arr) => {
+          ].filter(Boolean).map((t, idx, arr) => {
             const isActive = activeTab === t.id;
             const isAction = t.group === 'action';
             const showDivider = !mob && idx > 0 && arr[idx - 1].group !== t.group;

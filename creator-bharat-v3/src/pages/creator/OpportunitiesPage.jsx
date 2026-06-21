@@ -1,10 +1,11 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Briefcase, Bookmark, Send, Search, Loader2, Zap, Gift, CheckCircle2, Clock, ArrowRight, Trophy, Lock } from 'lucide-react';
+import { Briefcase, Bookmark, Send, Search, Loader2, Zap, Gift, CheckCircle2, Clock, ArrowRight, Trophy, Lock, Sparkles } from 'lucide-react';
 import { useApp } from '@/core/context';
 import { fetchCampaigns } from '@/utils/platformService';
 import { fmt, LS } from '@/utils/helpers';
+import { apiCall } from '@/utils/api';
 import { Btn, Card, Bdg, Fld } from '@/components/common/Primitives';
 import { CreatorPageHeader } from './CreatorShellPage';
 
@@ -126,6 +127,9 @@ export default function OpportunitiesPage() {
   const [allCampaigns, setAllCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [selectedCampaign, setSelectedCampaign] = useState(null);
+  const [pitchText, setPitchText] = useState('');
+  const [aiPitchLoading, setAiPitchLoading] = useState(false);
   const [completedMissions, setCompletedMissions] = useState(() => 
     JSON.parse(localStorage.getItem('cb_completed_missions') || '[]')
   );
@@ -155,23 +159,58 @@ export default function OpportunitiesPage() {
       setShowUpgradeModal(true);
       return;
     }
-    dsp({ t: 'APPLY', id: campaign.id });
+    setSelectedCampaign(campaign);
+    setPitchText(`Hi ${campaign.brand} Team,\n\nI would love to collaborate on your "${campaign.title}" campaign! As a verified creator, I specialize in producing highly engaging visual content and can build direct brand equity with my audience.\n\nLooking forward to hearing from you!`);
+  };
+
+  const handleAiPitch = async () => {
+    if (!selectedCampaign) return;
+    setAiPitchLoading(true);
+    try {
+      const data = await apiCall('/ai/pitch-assistant', {
+        method: 'POST',
+        body: {
+          creatorName: st.user?.name || 'Verified Creator',
+          creatorNiches: st.user?.creator?.niche?.join(', ') || 'Lifestyle',
+          brandName: selectedCampaign.brand,
+          campaignTitle: selectedCampaign.title,
+          campaignBrief: selectedCampaign.desc || selectedCampaign.description || 'Brand collaboration'
+        }
+      });
+      setPitchText(data.pitch || '');
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'AI Pitch generated! ✨' } });
+    } catch (err) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'AI pitch generation failed' } });
+    } finally {
+      setAiPitchLoading(false);
+    }
+  };
+
+  const submitPitch = () => {
+    if (!selectedCampaign) return;
+    if (!pitchText.trim()) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: 'Please write a pitch or use AI to generate one.' } });
+      return;
+    }
+    
+    dsp({ t: 'APPLY', id: selectedCampaign.id });
     const newApp = {
       id: 'app-' + Date.now(),
-      campaignId: campaign.id,
-      campaignTitle: campaign.title,
-      brand: campaign.brand,
+      campaignId: selectedCampaign.id,
+      campaignTitle: selectedCampaign.title,
+      brand: selectedCampaign.brand,
       applicantEmail: st.user?.email,
       status: 'applied',
       date: new Date().toISOString(),
-      rate: campaign.budget || campaign.budgetMin || 15000,
-      pitch: 'Quick apply via Opportunities Hub'
+      rate: selectedCampaign.budget || selectedCampaign.budgetMin || 15000,
+      pitch: pitchText.trim()
     };
     const existing = LS.get('cb_applications', []);
-    if (!existing.find(a => a.campaignId === campaign.id && a.applicantEmail === st.user?.email)) {
+    if (!existing.find(a => a.campaignId === selectedCampaign.id && a.applicantEmail === st.user?.email)) {
       LS.set('cb_applications', [newApp, ...existing]);
     }
-    dsp({ t: 'TOAST', d: { type: 'success', msg: `Applied to ${campaign.title}` } });
+    dsp({ t: 'TOAST', d: { type: 'success', msg: `Applied to ${selectedCampaign.title}` } });
+    setSelectedCampaign(null);
   };
 
   const completeMission = (missionId) => {
@@ -308,6 +347,98 @@ export default function OpportunitiesPage() {
         </div>
       )}
       
+      {/* Collab Pitch Modal */}
+      <AnimatePresence>
+        {selectedCampaign && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+            onClick={() => setSelectedCampaign(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              style={{ background: '#fff', borderRadius: 32, padding: 32, maxWidth: 550, width: '100%', boxShadow: '0 40px 80px rgba(0,0,0,0.2)' }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <h3 style={{ fontSize: 20, fontWeight: 950, color: '#0f172a', margin: 0 }}>Apply to {selectedCampaign.brand}</h3>
+                <button 
+                  onClick={() => setSelectedCampaign(null)}
+                  style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: 20, fontWeight: 900, cursor: 'pointer' }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '16px', marginBottom: '24px', border: '1px solid #f1f5f9' }}>
+                <div style={{ fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase' }}>Campaign Deal</div>
+                <div style={{ fontSize: '15px', fontWeight: 900, color: '#0f172a' }}>{selectedCampaign.title}</div>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#FF9431', marginTop: 4 }}>Budget: {fmt.inr(selectedCampaign.budget || selectedCampaign.budgetMin)}</div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <label style={{ fontSize: '11px', fontWeight: 900, color: '#475569', textTransform: 'uppercase' }}>Your Pitch Proposal</label>
+                    <button
+                      type="button"
+                      onClick={handleAiPitch}
+                      disabled={aiPitchLoading}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        background: 'rgba(255, 148, 49, 0.08)',
+                        color: '#FF9431',
+                        border: 'none',
+                        borderRadius: '10px',
+                        padding: '6px 12px',
+                        fontSize: '11px',
+                        fontWeight: 900,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = '#FF9431'; e.currentTarget.style.color = '#fff'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 148, 49, 0.08)'; e.currentTarget.style.color = '#FF9431'; }}
+                    >
+                      <Sparkles size={11} fill="currentColor" />
+                      {aiPitchLoading ? 'Writing...' : 'Write Pitch with AI ✨'}
+                    </button>
+                  </div>
+                  <textarea
+                    value={pitchText}
+                    onChange={e => setPitchText(e.target.value)}
+                    rows={6}
+                    placeholder="Tell the brand why you are a perfect fit for this campaign..."
+                    style={{
+                      width: '100%',
+                      padding: '14px',
+                      borderRadius: '16px',
+                      border: '1.5px solid #e2e8f0',
+                      outline: 'none',
+                      fontSize: '14px',
+                      color: '#0f172a',
+                      fontWeight: 500,
+                      resize: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+                  <button onClick={() => setSelectedCampaign(null)} style={{ flex: 1, padding: '12px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#64748b', borderRadius: '100px', cursor: 'pointer', fontWeight: 800, fontSize: 14 }}>Cancel</button>
+                  <button onClick={submitPitch} style={{ flex: 1, padding: '12px', border: 'none', background: '#0f172a', color: '#fff', borderRadius: '100px', cursor: 'pointer', fontWeight: 950, fontSize: 14 }}>Submit Proposal Pitch</button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Upgrade Modal */}
       <AnimatePresence>
         {showUpgradeModal && (

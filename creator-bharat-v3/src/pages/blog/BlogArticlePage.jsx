@@ -115,12 +115,28 @@ AuthorCard.propTypes = {
   mob: PropTypes.bool.isRequired
 };
 
-const CommentsSection = ({ mob }) => {
+const CommentsSection = ({ mob, blogId, initialComments }) => {
   const [newComment, setNewComment] = useState('');
-  const [comments, setComments] = useState([
-    { id: 'c1', name: 'Arjun Mehta', date: '2 hours ago', text: 'Incredible insights! We are definitely seeing this shift in our logistics data as well. Tier 3 is the new Tier 1.', avatar: 'AM', likes: 12, isLiked: false },
-    { id: 'c2', name: 'Priya Sharma', date: '5 hours ago', text: 'The part about cultural resonance is so true. Standard global strategies just don’t work in Bharat.', avatar: 'PS', likes: 8, isLiked: false }
-  ]);
+  const [comments, setComments] = useState([]);
+
+  useEffect(() => {
+    if (initialComments && initialComments.length > 0) {
+      setComments(initialComments.map(c => ({
+        id: c.id,
+        name: c.name,
+        date: new Date(c.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }),
+        text: c.text,
+        avatar: (c.name || 'G').slice(0, 2).toUpperCase(),
+        likes: c.likes || 0,
+        isLiked: false
+      })));
+    } else {
+      setComments([
+        { id: 'c1', name: 'Arjun Mehta', date: '2 hours ago', text: 'Incredible insights! We are definitely seeing this shift in our logistics data as well. Tier 3 is the new Tier 1.', avatar: 'AM', likes: 12, isLiked: false },
+        { id: 'c2', name: 'Priya Sharma', date: '5 hours ago', text: 'The part about cultural resonance is so true. Standard global strategies just don’t work in Bharat.', avatar: 'PS', likes: 8, isLiked: false }
+      ]);
+    }
+  }, [initialComments]);
 
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState('');
@@ -145,9 +161,47 @@ const CommentsSection = ({ mob }) => {
     setEditingId(null);
   };
 
-  const handlePost = () => {
+  const handlePost = async () => {
     if (!newComment.trim()) return;
-    setComments([{ id: Date.now().toString(), name: 'You (Guest)', date: 'Just now', text: newComment, avatar: 'U' }, ...comments]);
+
+    if (blogId) {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+        const res = await fetch(`${apiUrl}/blog/${blogId}/comment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'You (Guest)',
+            email: 'guest@creatorbharat.com',
+            text: newComment
+          })
+        });
+        if (res.ok) {
+          const savedComment = await res.json();
+          setComments(prev => [
+            {
+              id: savedComment.id,
+              name: savedComment.name,
+              date: 'Just now',
+              text: savedComment.text,
+              avatar: 'U',
+              likes: 0,
+              isLiked: false
+            },
+            ...prev
+          ]);
+          setNewComment('');
+          return;
+        }
+      } catch (err) {
+        console.error('Failed to post comment to backend:', err);
+      }
+    }
+
+    setComments(prev => [
+      { id: Date.now().toString(), name: 'You (Guest)', date: 'Just now', text: newComment, avatar: 'U', likes: 0, isLiked: false },
+      ...prev
+    ]);
     setNewComment('');
   };
 
@@ -260,7 +314,9 @@ const CommentsSection = ({ mob }) => {
 };
 
 CommentsSection.propTypes = {
-  mob: PropTypes.bool.isRequired
+  mob: PropTypes.bool.isRequired,
+  blogId: PropTypes.string,
+  initialComments: PropTypes.array
 };
 
 const Masthead = ({ mob }) => (
@@ -907,7 +963,7 @@ const BlogArticleView = ({
             )}
           </section>
 
-          <CommentsSection mob={mob} />
+          <CommentsSection mob={mob} blogId={article.id} initialComments={article.comments} />
 
           {/* Article Navigation */}
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: '20px', marginTop: '80px', borderTop: '1px solid #f1f5f9', paddingTop: '40px' }}>
@@ -977,13 +1033,115 @@ BlogArticleView.propTypes = {
 
 export default function BlogArticlePage() {
   const { slug } = useParams();
-  const article = useMemo(() => blogData?.find(b => b.slug === slug), [slug]);
-  
-  const { 
-    mob, isSaved, setIsSaved, copied, showBackToTop, scaleX, 
-    liveCount, subscribed, email, setEmail, readingTime, 
-    handleShare, handleSubscribe, claps, handleClap, activeId
-  } = useBlogArticleLogic(slug, article);
+  const [article, setArticle] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchArticle = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+        const res = await fetch(`${apiUrl}/blog/${slug}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.id) {
+            // Normalize database article
+            const normalized = {
+              ...data,
+              content: data.body || data.content,
+              image: data.image || 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200',
+              date: new Date(data.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }),
+              toc: data.toc || [
+                { id: 'what-is', title: 'Introduction' },
+                { id: 'three-sides', title: 'Key Aspects' },
+                { id: 'get-started', title: 'Conclusion' }
+              ],
+              tags: data.tags || [],
+              category: data.category || 'Industry News',
+              author: typeof data.author === 'string' ? {
+                name: data.author || 'CreatorBharat',
+                role: 'Editorial Team',
+                bio: 'Official editorial voice of CreatorBharat.',
+                avatar: (data.author || 'CB').slice(0, 2).toUpperCase()
+              } : (data.author || {
+                name: 'CreatorBharat',
+                role: 'Editorial Team',
+                bio: 'Official editorial voice of CreatorBharat.',
+                avatar: 'CB'
+              })
+            };
+
+            // Try to extract dynamic TOC from content if not explicitly present
+            if (!data.toc || data.toc.length === 0) {
+              const parsedToc = [];
+              const regex = /<h2\s+id="([^"]+)"[^>]*>([\s\S]*?)<\/h2>/gi;
+              let match;
+              while ((match = regex.exec(normalized.content)) !== null) {
+                parsedToc.push({
+                  id: match[1],
+                  title: match[2].replace(/<[^>]*>/g, '').trim()
+                });
+              }
+              if (parsedToc.length > 0) {
+                normalized.toc = parsedToc;
+              }
+            }
+
+            setArticle(normalized);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn('Ecosystem Blog Detail API offline, falling back to local dataset.', err.message);
+      }
+
+      // Fallback
+      const local = blogData?.find(b => b.slug === slug);
+      setArticle(local || null);
+      setLoading(false);
+    };
+
+    fetchArticle();
+  }, [slug]);
+
+  const logic = useBlogArticleLogic(slug, article);
+
+  if (loading) {
+    return (
+      <div style={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        background: '#fff',
+        fontFamily: '"Playfair Display", serif'
+      }}>
+        <h1 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '20px', letterSpacing: '-0.02em', color: '#000' }}>
+          LOADING JOURNAL DISPATCH...
+        </h1>
+        <div style={{ 
+          width: '80px', 
+          height: '4px', 
+          background: '#FF9431',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <motion.div 
+            animate={{ left: ['-100%', '100%'] }}
+            transition={{ repeat: Infinity, duration: 1.2, ease: 'easeInOut' }}
+            style={{ 
+              position: 'absolute', 
+              top: 0, 
+              width: '50%', 
+              height: '100%', 
+              background: '#000' 
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
 
   if (!article) return <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><h1>Not Found</h1></div>;
 
@@ -991,22 +1149,22 @@ export default function BlogArticlePage() {
     <BlogArticleView 
       article={article}
       slug={slug}
-      mob={mob}
-      isSaved={isSaved}
-      setIsSaved={setIsSaved}
-      copied={copied}
-      showBackToTop={showBackToTop}
-      scaleX={scaleX}
-      liveCount={liveCount}
-      subscribed={subscribed}
-      email={email}
-      setEmail={setEmail}
-      readingTime={readingTime}
-      handleShare={handleShare}
-      handleSubscribe={handleSubscribe}
-      claps={claps}
-      handleClap={handleClap}
-      activeId={activeId}
+      mob={logic.mob}
+      isSaved={logic.isSaved}
+      setIsSaved={logic.setIsSaved}
+      copied={logic.copied}
+      showBackToTop={logic.showBackToTop}
+      scaleX={logic.scaleX}
+      liveCount={logic.liveCount}
+      subscribed={logic.subscribed}
+      email={logic.email}
+      setEmail={logic.setEmail}
+      readingTime={logic.readingTime}
+      handleShare={logic.handleShare}
+      handleSubscribe={logic.handleSubscribe}
+      claps={logic.claps}
+      handleClap={logic.handleClap}
+      activeId={logic.activeId}
     />
   );
 }
