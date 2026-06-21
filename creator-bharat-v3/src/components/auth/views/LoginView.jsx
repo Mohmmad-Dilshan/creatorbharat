@@ -7,6 +7,7 @@ import { useApp } from '@/core/context';
 import { ModeButton } from '../AuthShared.jsx';
 import { sendOtp, loginWithOtp, isUsingDemoAuth, getDemoOtp } from '@/utils/authService';
 import { useOtpTimer } from '@/hooks/useOtpTimer';
+import { LS } from '@/utils/helpers';
 
 const LoginView = ({ role, setRole, onLogin, onAuthSuccess, loading, setView }) => {
   const { dsp } = useApp();
@@ -23,6 +24,36 @@ const LoginView = ({ role, setRole, onLogin, onAuthSuccess, loading, setView }) 
   const { timer, startTimer, isActive: timerActive } = useOtpTimer(30);
 
   const onGoogle = () => {
+    if (isUsingDemoAuth()) {
+      const allCreators = LS.get('cb_creators', []);
+      const matched = allCreators.find(cr => cr.email === 'google-mock-user@creatorbharat.com');
+      
+      const mockUser = {
+        id: matched ? matched.id : 'c-google-mock',
+        email: 'google-mock-user@creatorbharat.com',
+        name: 'Google Dev User',
+        role: 'creator',
+        creator: matched || {
+          id: 'c-google-mock',
+          handle: 'googlemockuser',
+          city: 'Delhi',
+          state: 'Delhi',
+          followers: 12000,
+          score: 88,
+          niche: ['Tech Influencer'],
+          bio: 'Demo user logged in via Google Auth.',
+          gallery: [],
+          full_story: { p1: '', quote: '', p2: '', p3: '' },
+          milestones: [],
+          services: [],
+          awards: [],
+          collabs: [],
+        }
+      };
+      onAuthSuccess(mockUser, 'mock-google-token-' + Date.now());
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Signed in with Google (Demo Mode) successfully!' } });
+      return;
+    }
     const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
     globalThis.location.href = `${apiBase}/auth/google?role=${role}`;
   };

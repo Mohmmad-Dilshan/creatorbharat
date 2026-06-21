@@ -6,6 +6,7 @@ import { z } from 'zod';
 import prisma from '../prisma.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { sendEmail } from '../utils/mailer.js';
+import { sendSMS } from '../utils/sms.js';
 import crypto from 'crypto';
 
 const router = express.Router();
@@ -71,10 +72,8 @@ router.post('/send-otp', async (req, res) => {
 
     otpStore.set(cleanedPhone, { otp, expiresAt });
 
-    console.log(`\n--- [SMS OTP MOCK] ---`);
-    console.log(`Sent code: ${otp} to phone: ${cleanedPhone}`);
-    console.log(`Expires at: ${new Date(expiresAt).toLocaleTimeString()}`);
-    console.log(`-----------------------\n`);
+    // Send the OTP via our production SMS utility
+    await sendSMS(cleanedPhone, otp);
 
     res.json({ success: true, message: 'OTP sent successfully.' });
   } catch (err) {
@@ -457,6 +456,11 @@ router.get('/google', (req, res) => {
   const role = req.query.role || 'creator';
   
   if (!process.env.GOOGLE_CLIENT_ID) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[Google OAuth]: Missing GOOGLE_CLIENT_ID in development. Redirecting to mock login.');
+      const redirectCallbackUrl = `${req.protocol}://${req.get('host')}/api/auth/google/callback?code=mock_development_code&state=${role}`;
+      return res.redirect(redirectCallbackUrl);
+    }
     console.error('[Google OAuth]: Missing GOOGLE_CLIENT_ID in server environment.');
     return res.status(500).send('Google Authentication is not configured on this server. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.');
   }
@@ -478,39 +482,51 @@ router.get('/google/callback', async (req, res) => {
       return res.redirect(`${frontendUrl}/login?error=auth_failed`);
     }
 
-    const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/auth/google/callback`;
-    
-    // Exchange Auth Code for Access and ID Tokens
-    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        code,
-        client_id: process.env.GOOGLE_CLIENT_ID || '',
-        client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
-        redirect_uri: redirectUri,
-        grant_type: 'authorization_code'
-      })
-    });
+    let emailLower;
+    let name;
+    let picture;
 
-    const tokens = await tokenResponse.json();
-    if (tokens.error) {
-      console.error('[Google OAuth Token Error]:', tokens.error_description || tokens.error);
-      return res.redirect(`${frontendUrl}/login?error=token_failed`);
+    if (code === 'mock_development_code' && process.env.NODE_ENV !== 'production') {
+      emailLower = 'google-mock-user@creatorbharat.com';
+      name = 'Google Dev User';
+      picture = 'https://lh3.googleusercontent.com/a/default-user=s96-c';
+    } else {
+      const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/auth/google/callback`;
+      
+      // Exchange Auth Code for Access and ID Tokens
+      const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          code,
+          client_id: process.env.GOOGLE_CLIENT_ID || '',
+          client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
+          redirect_uri: redirectUri,
+          grant_type: 'authorization_code'
+        })
+      });
+
+      const tokens = await tokenResponse.json();
+      if (tokens.error) {
+        console.error('[Google OAuth Token Error]:', tokens.error_description || tokens.error);
+        return res.redirect(`${frontendUrl}/login?error=token_failed`);
+      }
+
+      // Retrieve User Profile using Access Token
+      const profileResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: `Bearer ${tokens.access_token}` }
+      });
+      
+      const profile = await profileResponse.json();
+      if (!profile.email) {
+        console.error('[Google OAuth Profile Error]: Missing email in profile payload.');
+        return res.redirect(`${frontendUrl}/login?error=profile_failed`);
+      }
+
+      emailLower = profile.email.toLowerCase().trim();
+      name = profile.name;
+      picture = profile.picture;
     }
-
-    // Retrieve User Profile using Access Token
-    const profileResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-      headers: { Authorization: `Bearer ${tokens.access_token}` }
-    });
-    
-    const profile = await profileResponse.json();
-    if (!profile.email) {
-      console.error('[Google OAuth Profile Error]: Missing email in profile payload.');
-      return res.redirect(`${frontendUrl}/login?error=profile_failed`);
-    }
-
-    const emailLower = profile.email.toLowerCase().trim();
 
     // Check if user already exists
     let user = await prisma.user.findUnique({

@@ -1,5 +1,6 @@
 import { apiCall } from './api';
 import { isDemoAuthMode } from '@/config/env';
+import { LS } from './helpers';
 
 const DEMO_DELAY = 800;
 const DEMO_OTP = '1234';
@@ -50,8 +51,27 @@ export async function loginWithPassword({ email, password, role }) {
   }
 
   await wait(1000);
-  const { cleanEmail, cleanName, handle } = cleanEmailName(email);
+  const emailLower = email.toLowerCase().trim();
   const isCreator = role === 'creator';
+
+  if (isCreator) {
+    const allCreators = LS.get('cb_creators', []);
+    const matchedCreator = allCreators.find(cr => cr.email?.toLowerCase().trim() === emailLower);
+    if (matchedCreator) {
+      return {
+        token: makeMockToken(),
+        user: {
+          id: matchedCreator.id,
+          email: matchedCreator.email,
+          name: matchedCreator.name,
+          role: 'creator',
+          creator: matchedCreator
+        }
+      };
+    }
+  }
+
+  const { cleanEmail, cleanName, handle } = cleanEmailName(email);
 
   const user = {
     id: isCreator ? 'c-1' : 'b-1',
@@ -123,11 +143,29 @@ export async function loginWithOtp(phone, otp) {
   if (isDemoAuthMode()) {
     await wait(1000);
     if (otp !== DEMO_OTP) throw demoError(`Invalid OTP. Please use ${DEMO_OTP}`);
-    // Simulate user fetch
+    
+    const cleanedPhone = phone.replace(/\D/g, '');
+    const allCreators = LS.get('cb_creators', []);
+    const matchedCreator = allCreators.find(cr => cr.phone?.replace(/\D/g, '') === cleanedPhone);
+
+    if (matchedCreator) {
+      return {
+        token: makeMockToken(),
+        user: {
+          id: matchedCreator.id,
+          email: matchedCreator.email,
+          name: matchedCreator.name,
+          role: 'creator',
+          creator: matchedCreator
+        }
+      };
+    }
+
+    // Simulate user fetch fallback
     const user = {
       id: 'c-1',
       email: 'demo-otp-user@creatorbharat.com',
-      phone: phone.replace(/\D/g, ''),
+      phone: cleanedPhone,
       name: 'OTP Demo User',
       role: 'creator',
       creator: {
@@ -173,12 +211,39 @@ export async function registerCreator(form) {
   }
 
   await wait(1000);
-  const cleanHandle = form.handle || form.name.toLowerCase().replace(/\s+/g, '');
+
+  const allCreators = LS.get('cb_creators', []);
+  
+  // Validate duplicate email
+  const emailLower = form.email?.toLowerCase().trim();
+  const emailExists = allCreators.some(cr => cr.email?.toLowerCase().trim() === emailLower);
+  if (emailExists) {
+    throw demoError('Email already registered.');
+  }
+
+  // Validate duplicate handle
+  const cleanHandle = (form.handle || form.name.toLowerCase().replace(/\s+/g, '')).toLowerCase().trim();
+  const handleExists = allCreators.some(cr => cr.handle?.toLowerCase().trim() === cleanHandle);
+  if (handleExists) {
+    throw demoError('Handle already taken.');
+  }
+
+  // Validate duplicate phone
+  let verifiedPhone = null;
+  if (form.phone) {
+    verifiedPhone = form.phone.replace(/\D/g, '');
+    const phoneExists = allCreators.some(cr => cr.phone?.replace(/\D/g, '') === verifiedPhone);
+    if (phoneExists) {
+      throw demoError('Phone number already registered to another account.');
+    }
+  }
+
   return {
     token: makeMockToken(),
     user: {
       id: 'c-' + Date.now(),
       email: form.email,
+      phone: verifiedPhone,
       name: form.name,
       role: 'creator',
       creator: {
@@ -186,6 +251,7 @@ export async function registerCreator(form) {
         handle: cleanHandle,
         city: form.city,
         state: form.state,
+        phone: verifiedPhone,
         followers: 0,
         score: 85,
       },

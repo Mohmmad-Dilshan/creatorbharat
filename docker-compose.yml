@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./creatorbharat-backend
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./creatorbharat-backend/.env
+    restart: always
+
+  admin:
+    build:
+      context: ./creatorbharat-admin
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:4000/api
+    ports:
+      - "5175:80"
+    restart: always
+
+  frontend:
+    build:
+      context: ./creator-bharat-v3
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:4000/api
+        - VITE_ENV=production
+        - VITE_AUTH_MODE=api
+        - VITE_WEB3FORMS_KEY=your_web3forms_key_here
+    ports:
+      - "5173:80"
+    restart: always
