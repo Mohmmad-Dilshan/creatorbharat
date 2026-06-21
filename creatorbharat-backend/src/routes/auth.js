@@ -446,6 +446,12 @@ router.post('/reset-password', async (req, res) => {
     resetStore.delete(token);
 
     res.json({ success: true, message: 'Your password has been reset successfully.' });
+  } catch (err) {
+    console.error('[reset-password] Error:', err.message);
+    res.status(500).json({ error: 'Failed to reset password. Please try again.' });
+  }
+});
+
 // Google OAuth Redirect
 router.get('/google', (req, res) => {
   const role = req.query.role || 'creator';

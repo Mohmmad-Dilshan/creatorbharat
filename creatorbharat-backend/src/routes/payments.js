@@ -383,6 +383,12 @@ router.post('/release-escrow', authMiddleware, async (req, res) => {
         platformFee: platformFee
       }
     });
+  } catch (err) {
+    console.error('[POST /api/payments/release-escrow] Error:', err.message);
+    res.status(500).json({ error: 'Failed to release escrow transaction.' });
+  }
+});
+
 // POST /api/payments/webhook — asynchronous transaction verification hook from Razorpay
 router.post('/webhook', async (req, res) => {
   try {
