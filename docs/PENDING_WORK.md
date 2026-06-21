@@ -11,18 +11,18 @@ This document catalogs future operational tasks, integrations, and optimizations
   - Add `/api/payments/webhook` URL in the Razorpay developer dashboard.
   - Set `RAZORPAY_WEBHOOK_SECRET` in Render environment settings to secure events validation.
 - [ ] **Resend Live Email Approval**:
-  - Verify your custom domain (e.g., `creatorbharat.in`) inside the Resend console.
+  - Verify your custom domain (e.g., `creatorbharat.com`) inside the Resend console.
   - Remove the Resend account from sandbox mode to send automated transactional emails to any external email address (creators & brands) instead of just the verified admin email.
 
 ---
 
 ## 🌐 2. Domain Mapping & DNS Setup
 - [ ] **Frontend (Vercel/Cloudflare)**:
-  - Add domain names (e.g., `creatorbharat.in` and `www.creatorbharat.in`) to the Vercel project settings and configure `CNAME` records in your registrar's DNS panel.
+  - Add domain names (e.g., `creatorbharat.com` and `www.creatorbharat.com`) to the Vercel project settings and configure `CNAME` records in your registrar's DNS panel.
 - [ ] **Backend API (Render)**:
-  - Configure `api.creatorbharat.in` inside Render Web Service settings, adding matching `CNAME` or `A` records to point to Render's server IPs.
+  - Configure `api.creatorbharat.com` inside Render Web Service settings, adding matching `CNAME` or `A` records to point to Render's server IPs.
 - [ ] **Admin Panel (Vercel)**:
-  - Map `admin.creatorbharat.in` to the separate Vite admin portal build settings.
+  - Map `admin.creatorbharat.com` to the separate Vite admin portal build settings.
 
 ---
 
