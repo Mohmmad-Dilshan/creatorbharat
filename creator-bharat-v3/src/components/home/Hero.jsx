@@ -676,7 +676,7 @@ const SearchSugs = memo(({ sugs, go }) => (
         onMouseEnter={e => e.currentTarget.style.background = '#F8FAFC'} 
         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
       >
-        <img src={s.photo || s.image || s.profile_pic || s.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name || 'C')}&background=FF9431&color=fff`} alt={s.name} style={{ width: 40, height: 40, borderRadius: 12, objectFit: 'cover', border: '1px solid #f1f5f9' }} />
+        <img src={s.photo || s.image || s.profile_pic || s.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name || 'C')}&background=FF9431&color=fff`} alt={s.name || 'Creator avatar'} loading="lazy" style={{ width: 40, height: 40, borderRadius: 12, objectFit: 'cover', border: '1px solid #f1f5f9' }} />
         <div>
           <div style={{ fontSize: 15, fontWeight: 900, color: '#0f172a' }}>{s.name}</div>
           <div style={{ fontSize: 12, color: '#94a3b8', fontWeight: 700 }}>{s.niche} • {s.city}</div>

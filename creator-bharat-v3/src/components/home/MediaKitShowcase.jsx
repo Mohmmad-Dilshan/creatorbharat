@@ -186,7 +186,7 @@ export default function MediaKitShowcase({ mob, go }) {
                     className="mediakit-control-btn"
                   >
                     <div style={{ width: 36, height: 36, borderRadius: 10, overflow: 'hidden', border: `1.5px solid ${activeCreator === idx ? c.color : 'transparent'}`, background: '#fff', flexShrink: 0 }}>
-                      <img src={c.avatar} style={{ width: '100%', height: '100%' }} alt={c.name} />
+                      <img src={c.avatar} style={{ width: '100%', height: '100%' }} alt={`${c.name}'s Showcase Avatar`} loading="lazy" />
                     </div>
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 850, color: activeCreator === idx ? '#fff' : '#0f172a' }}>{c.name}</div>
@@ -341,7 +341,7 @@ export default function MediaKitShowcase({ mob, go }) {
               {/* Creator Card Header */}
               <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
                 <div style={{ width: 64, height: 64, borderRadius: 20, overflow: 'hidden', border: `2.5px solid ${accentColor}`, background: '#fff', flexShrink: 0 }}>
-                  <img src={creator.avatar} style={{ width: '100%', height: '100%' }} alt="Avatar" />
+                  <img src={creator.avatar} style={{ width: '100%', height: '100%' }} alt={`${creator.name}'s Showcase Card Preview Avatar`} loading="lazy" />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   <div style={{ fontSize: 18, fontWeight: 950, color: '#0F172A', display: 'flex', alignItems: 'center', gap: 6, fontFamily: "'Outfit', sans-serif" }}>

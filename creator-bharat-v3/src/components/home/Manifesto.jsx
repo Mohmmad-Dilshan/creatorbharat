@@ -148,7 +148,8 @@ export default function Manifesto({ mob }) {
             {/* Blended Network Image */}
             <img 
               src="/about_hero_network.png" 
-              alt="Regional Creator Network Grid" 
+              alt="Regional Creator Network Grid mapping Bharat influencers" 
+              loading="lazy"
               style={{
                 width: '100%',
                 height: '100%',

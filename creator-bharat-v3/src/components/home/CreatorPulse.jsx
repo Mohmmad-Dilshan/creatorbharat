@@ -42,7 +42,8 @@ export default function CreatorPulse({ mob }) {
               <div key={creator.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
                 <div style={{ width: 64, height: 64, borderRadius: '50%', padding: 3, background: 'linear-gradient(45deg, #FF9431, #DC2626)', animation: 'pulse 2s infinite' }}>
                    <img 
-                    alt={`@${creator.handle}'s profile`} 
+                    alt={`@${creator.handle}'s profile picture`} 
+                    loading="lazy"
                     src={`https://i.pravatar.cc/150?u=${creator.id + 20}`} 
                     style={{ width: '100%', height: '100%', borderRadius: '50%', border: '3px solid #fff', objectFit: 'cover' }} 
                   />

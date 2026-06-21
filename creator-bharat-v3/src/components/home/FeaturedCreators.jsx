@@ -49,7 +49,8 @@ function AvatarWithGradient({ c, go, mob }) {
           <img
             src={c.photo || c.image || c.profile_pic || c.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(c.name || 'CB')}&backgroundColor=FF9431&textColor=ffffff`}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            alt={c.name}
+            alt={`${c.name || 'Creator'}'s Story Avatar`}
+            loading="lazy"
             onError={e => { e.target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(c.name || 'CB')}&backgroundColor=0f172a&textColor=ffffff`; }}
           />
         </div>
@@ -217,7 +218,8 @@ function SectionHeader({ loading, isFallback, listCount, mob, go, displayList, s
                   <img
                     src={c.photo || c.image || c.profile_pic || c.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(c.name || 'C')}&backgroundColor=FF9431&textColor=ffffff`}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    alt={c.name || 'Creator avatar'}
+                    alt={`${c.name || 'Creator'}'s Mini Avatar`}
+                    loading="lazy"
                     onError={e => { e.target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${i}&backgroundColor=0f172a&textColor=ffffff`; }}
                   />
                 </div>

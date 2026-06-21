@@ -32,7 +32,7 @@ export default function Features({ mob }) {
             </div>
             <div style={{ flex: 1, width: '100%', maxWidth: 300, background: '#fff', borderRadius: 24, padding: 20, boxShadow: '0 30px 60px rgba(255,148,49,0.15)', border: '1px solid rgba(255,148,49,0.1)', transform: 'rotate(2deg)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                <img alt="Creator avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&q=80" style={{ width: 44, height: 44, borderRadius: '50%' }} />
+                <img alt="Creator mock profile avatar" loading="lazy" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&q=80" style={{ width: 44, height: 44, borderRadius: '50%' }} />
                 <div style={{ flex: 1 }}>
                   <div style={{ height: 10, width: '60%', background: '#eee', borderRadius: 5, marginBottom: 6 }} />
                   <div style={{ height: 6, width: '30%', background: '#f5f5f5', borderRadius: 3 }} />

@@ -30,10 +30,11 @@ export default function BrandTrust() {
             <div key={`${logo.name}-${i}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 200, padding: '0 40px' }}>
               <img 
                 src={logo.url} 
+                loading="lazy"
                 style={{ height: 32, maxWidth: 140, objectFit: 'contain', filter: 'grayscale(1) opacity(0.3) brightness(0.5)', transition: 'all 0.5s cubic-bezier(0.23, 1, 0.32, 1)' }} 
                 onMouseEnter={e => { e.target.style.filter = 'grayscale(0) opacity(1) brightness(1)'; e.target.style.transform = 'scale(1.1)'; }}
                 onMouseLeave={e => { e.target.style.filter = 'grayscale(1) opacity(0.3) brightness(0.5)'; e.target.style.transform = 'scale(1)'; }}
-                alt={logo.name} 
+                alt={`${logo.name} Partner Logo`} 
                 onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
               />
               <span style={{ display: 'none', fontSize: 18, fontWeight: 900, color: 'rgba(0,0,0,0.15)', letterSpacing: '-0.02em' }}>{logo.name}</span>

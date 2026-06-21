@@ -228,7 +228,7 @@ export default function Cta({ mob, go }) {
                   {/* Avatar + Info */}
                   <div style={{ display: 'flex', gap: 14, marginTop: 8, alignItems: 'center' }}>
                     <div style={{ width: 52, height: 52, borderRadius: 14, overflow: 'hidden', border: '1.5px solid #FF9431', background: '#F8FAFC', flexShrink: 0 }}>
-                      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Amit" style={{ width: '100%', height: '100%' }} alt="Avatar" />
+                      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Amit" style={{ width: '100%', height: '100%' }} alt="Amit Sharma's Verified Creator Avatar" loading="lazy" />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                       <div style={{ fontSize: 15, fontWeight: 950, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 4, fontFamily: "'Outfit', sans-serif" }}>
