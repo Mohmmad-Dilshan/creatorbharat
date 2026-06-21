@@ -63,6 +63,15 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Welcome to the CreatorBharat SaaS Production API Server! 🇮🇳 🚀',
+    status: 'online',
+    version: '3.0.0',
+    support: 'hello@creatorbharat.com'
+  });
+});
+
 app.get('/api', (req, res) => {
   res.json({ message: 'CreatorBharat SaaS REST API Engine is active 🚀' });
 });
@@ -81,7 +90,10 @@ app.use('/api/uploads', uploadsRouter);
 
 // Global 404 Error handler
 app.use((req, res) => {
-  res.status(404).json({ error: 'Endpoint not found.' });
+  res.status(404).json({
+    error: 'Requested pathway or endpoint not found on this server.',
+    message: 'Please verify the route parameters or refer to the official API docs.'
+  });
 });
 
 // Global Exception handler
