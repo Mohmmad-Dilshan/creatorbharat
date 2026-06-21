@@ -126,7 +126,7 @@ export async function loginWithOtp(phone, otp) {
     // Simulate user fetch
     const user = {
       id: 'c-1',
-      email: 'demo-otp-user@creatorbharat.in',
+      email: 'demo-otp-user@creatorbharat.com',
       phone: phone.replace(/\D/g, ''),
       name: 'OTP Demo User',
       role: 'creator',
