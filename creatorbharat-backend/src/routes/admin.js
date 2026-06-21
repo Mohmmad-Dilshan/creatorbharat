@@ -3,6 +3,9 @@ import express from 'express';
 import prisma from '../prisma.js';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
 import { sendEmail } from '../utils/mailer.js';
+import bcrypt from 'bcryptjs';
+import fs from 'fs';
+import path from 'path';
 
 const router = express.Router();
 
@@ -1186,6 +1189,231 @@ router.delete('/gallery/:id', async (req, res) => {
   } catch (err) {
     console.error('[DELETE /api/admin/gallery/:id] Error:', err.message);
     res.status(500).json({ error: 'Failed to delete gallery item.' });
+  }
+});
+
+// --- Platform Settings Persistence ---
+const settingsPath = path.resolve('public/uploads/settings.json');
+const DEFAULT_SETTINGS = {
+  platformFee: 10,
+  supportEmail: 'support@creatorbharat.com',
+  enableAIAssistant: true,
+  enableEscrowSystem: true,
+  maintenanceMode: false
+};
+
+// GET /api/admin/settings
+router.get('/settings', (req, res) => {
+  try {
+    const dir = path.dirname(settingsPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    if (!fs.existsSync(settingsPath)) {
+      fs.writeFileSync(settingsPath, JSON.stringify(DEFAULT_SETTINGS, null, 2));
+      return res.json(DEFAULT_SETTINGS);
+    }
+    const raw = fs.readFileSync(settingsPath, 'utf8');
+    const settings = JSON.parse(raw);
+    res.json({ ...DEFAULT_SETTINGS, ...settings });
+  } catch (err) {
+    console.error('[GET /api/admin/settings] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve settings.' });
+  }
+});
+
+// POST /api/admin/settings
+router.post('/settings', (req, res) => {
+  try {
+    const { platformFee, supportEmail, enableAIAssistant, enableEscrowSystem, maintenanceMode } = req.body;
+    const dir = path.dirname(settingsPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    const newSettings = {
+      platformFee: platformFee !== undefined ? Number(platformFee) : 10,
+      supportEmail: supportEmail || 'support@creatorbharat.com',
+      enableAIAssistant: !!enableAIAssistant,
+      enableEscrowSystem: !!enableEscrowSystem,
+      maintenanceMode: !!maintenanceMode
+    };
+    fs.writeFileSync(settingsPath, JSON.stringify(newSettings, null, 2));
+    res.json({ message: 'Settings saved successfully.', settings: newSettings });
+  } catch (err) {
+    console.error('[POST /api/admin/settings] Error:', err.message);
+    res.status(500).json({ error: 'Failed to save settings.' });
+  }
+});
+
+// --- Creator CRUD Upgrades ---
+
+// POST /api/admin/creators
+router.post('/creators', async (req, res) => {
+  try {
+    const { email, password, name, handle, phone, city, state, niche, platform, followers, rateMin, rateMax } = req.body;
+    if (!email || !password || !name || !handle) {
+      return res.status(400).json({ error: 'Email, password, name, and handle are required.' });
+    }
+
+    const emailLower = email.toLowerCase().trim();
+    const handleLower = handle.toLowerCase().trim();
+
+    // Check uniqueness
+    const emailExists = await prisma.user.findUnique({ where: { email: emailLower } });
+    if (emailExists) return res.status(400).json({ error: 'Email already registered.' });
+
+    const handleExists = await prisma.creator.findUnique({ where: { handle: handleLower } });
+    if (handleExists) return res.status(400).json({ error: 'Handle already taken.' });
+
+    let phoneClean = null;
+    if (phone) {
+      phoneClean = phone.replace(/\D/g, '');
+      const phoneExists = await prisma.user.findUnique({ where: { phone: phoneClean } });
+      if (phoneExists) return res.status(400).json({ error: 'Phone number already registered.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        email: emailLower,
+        phone: phoneClean,
+        password: hashedPassword,
+        role: 'CREATOR',
+        creator: {
+          create: {
+            handle: handleLower,
+            name: name.trim(),
+            city: city ? city.trim() : null,
+            state: state ? state.trim() : null,
+            niche: Array.isArray(niche) ? niche : [],
+            platform: Array.isArray(platform) ? platform : [],
+            followers: followers !== undefined ? Number(followers) : 0,
+            rateMin: rateMin !== undefined ? Number(rateMin) : 0,
+            rateMax: rateMax !== undefined ? Number(rateMax) : 0,
+            status: 'APPROVED',
+            isVerified: true
+          }
+        }
+      },
+      include: { creator: true }
+    });
+
+    res.status(201).json(user.creator);
+  } catch (err) {
+    console.error('[POST /api/admin/creators] Error:', err.message);
+    res.status(500).json({ error: 'Failed to create creator.' });
+  }
+});
+
+// DELETE /api/admin/creators/:id
+router.delete('/creators/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const creator = await prisma.creator.findUnique({ where: { id } });
+    if (!creator) return res.status(404).json({ error: 'Creator not found.' });
+
+    await prisma.user.delete({ where: { id: creator.userId } });
+    res.json({ message: 'Creator account successfully deleted.' });
+  } catch (err) {
+    console.error('[DELETE /api/admin/creators/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to delete creator.' });
+  }
+});
+
+// --- Brand CRUD Upgrades ---
+
+// POST /api/admin/brands
+router.post('/brands', async (req, res) => {
+  try {
+    const { email, password, companyName, industry, website, phone } = req.body;
+    if (!email || !password || !companyName) {
+      return res.status(400).json({ error: 'Email, password, and company name are required.' });
+    }
+
+    const emailLower = email.toLowerCase().trim();
+
+    // Check unique email
+    const emailExists = await prisma.user.findUnique({ where: { email: emailLower } });
+    if (emailExists) return res.status(400).json({ error: 'Email already registered.' });
+
+    let phoneClean = null;
+    if (phone) {
+      phoneClean = phone.replace(/\D/g, '');
+      const phoneExists = await prisma.user.findUnique({ where: { phone: phoneClean } });
+      if (phoneExists) return res.status(400).json({ error: 'Phone number already registered.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        email: emailLower,
+        phone: phoneClean,
+        password: hashedPassword,
+        role: 'BRAND',
+        brand: {
+          create: {
+            companyName: companyName.trim(),
+            industry: industry ? industry.trim() : null,
+            website: website ? website.trim() : null
+          }
+        }
+      },
+      include: { brand: true }
+    });
+
+    res.status(201).json(user.brand);
+  } catch (err) {
+    console.error('[POST /api/admin/brands] Error:', err.message);
+    res.status(500).json({ error: 'Failed to create brand.' });
+  }
+});
+
+// DELETE /api/admin/brands/:id
+router.delete('/brands/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const brand = await prisma.brand.findUnique({ where: { id } });
+    if (!brand) return res.status(404).json({ error: 'Brand not found.' });
+
+    await prisma.user.delete({ where: { id: brand.userId } });
+    res.json({ message: 'Brand account successfully deleted.' });
+  } catch (err) {
+    console.error('[DELETE /api/admin/brands/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to delete brand.' });
+  }
+});
+
+// --- Campaign Creation ---
+
+// POST /api/admin/campaigns
+router.post('/campaigns', async (req, res) => {
+  try {
+    const { brandId, title, description, budget, platform, niche, status } = req.body;
+    if (!brandId || !title || !description) {
+      return res.status(400).json({ error: 'Brand ID, Title, and Description are required.' });
+    }
+
+    const brand = await prisma.brand.findUnique({ where: { id: brandId } });
+    if (!brand) return res.status(404).json({ error: 'Brand not found.' });
+
+    const campaign = await prisma.campaign.create({
+      data: {
+        brandId,
+        title: title.trim(),
+        description: description.trim(),
+        budget: budget !== undefined ? Number(budget) : 0,
+        platform: Array.isArray(platform) ? platform : [],
+        niche: Array.isArray(niche) ? niche : [],
+        status: status || 'ACTIVE'
+      }
+    });
+
+    res.status(201).json(campaign);
+  } catch (err) {
+    console.error('[POST /api/admin/campaigns] Error:', err.message);
+    res.status(500).json({ error: 'Failed to create campaign.' });
   }
 });
 

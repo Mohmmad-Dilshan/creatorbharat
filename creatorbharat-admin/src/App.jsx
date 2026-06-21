@@ -545,6 +545,40 @@ export default function App() {
   const [editCampPlatform, setEditCampPlatform] = useState('');
   const [editCampNiche, setEditCampNiche] = useState('');
   const [editCampStatus, setEditCampStatus] = useState('ACTIVE');
+  
+  // ── Creator Creation States
+  const [createCreatorModalOpen, setCreateCreatorModalOpen] = useState(false);
+  const [creEmail, setCreEmail] = useState('');
+  const [crePassword, setCrePassword] = useState('');
+  const [creName, setCreName] = useState('');
+  const [creHandle, setCreHandle] = useState('');
+  const [crePhone, setCrePhone] = useState('');
+  const [creCity, setCreCity] = useState('');
+  const [creState, setCreState] = useState('');
+  const [creFollowers, setCreFollowers] = useState(0);
+  const [creNiche, setCreNiche] = useState('');
+  const [crePlatform, setCrePlatform] = useState('');
+  const [creRateMin, setCreRateMin] = useState(0);
+  const [creRateMax, setCreRateMax] = useState(0);
+
+  // ── Brand Creation States
+  const [createBrandModalOpen, setCreateBrandModalOpen] = useState(false);
+  const [brandEmail, setBrandEmail] = useState('');
+  const [brandPassword, setBrandPassword] = useState('');
+  const [brandCompanyName, setBrandCompanyName] = useState('');
+  const [brandIndustry, setBrandIndustry] = useState('');
+  const [brandWebsite, setBrandWebsite] = useState('');
+  const [brandPhone, setBrandPhone] = useState('');
+
+  // ── Campaign Creation States
+  const [createCampaignModalOpen, setCreateCampaignModalOpen] = useState(false);
+  const [campBrandId, setCampBrandId] = useState('');
+  const [campTitle, setCampTitle] = useState('');
+  const [campDesc, setCampDesc] = useState('');
+  const [campBudget, setCampBudget] = useState(0);
+  const [campPlatform, setCampPlatform] = useState('');
+  const [campNiche, setCampNiche] = useState('');
+  const [campStatus, setCampStatus] = useState('ACTIVE');
 
   // ── SVG Chart Tooltip State
   const [hoveredPoint, setHoveredPoint] = useState(null);
@@ -774,13 +808,14 @@ export default function App() {
         fetch(`${API_BASE}/admin/platform/stats/deep`, { headers: H() }),
         fetch(`${API_BASE}/admin/gallery`, { headers: H() }),
         fetch(`${API_BASE}/uploads`, { headers: H() }),
+        fetch(`${API_BASE}/admin/settings`, { headers: H() }),
       ];
 
       const results = await Promise.allSettled(fetches);
       const safeJson = async (r) => { try { const d = await r.json(); return d; } catch { return null; } };
 
       const [rVer, rCre, rBr, rCam, rPay, rSt, rBlog, rNews, rCont, rPod, rRev, rComm,
-        rApps, rLead, rBrandAna, rAct, rDeepSt, rGal, rUp] = await Promise.all(results.map(r => r.status === 'fulfilled' ? safeJson(r.value) : null));
+        rApps, rLead, rBrandAna, rAct, rDeepSt, rGal, rUp, rSettings] = await Promise.all(results.map(r => r.status === 'fulfilled' ? safeJson(r.value) : null));
 
       if (rVer) setVerifications(Array.isArray(rVer) ? rVer : []);
       if (rCre) setCreators(rCre.creators || (Array.isArray(rCre) ? rCre : []));
@@ -801,6 +836,13 @@ export default function App() {
       if (rDeepSt) setDeepStats(rDeepSt);
       if (rGal) setGallery(Array.isArray(rGal) ? rGal : []);
       if (rUp) setUploads(Array.isArray(rUp) ? rUp : []);
+      if (rSettings) {
+        setPlatformFee(rSettings.platformFee);
+        setSupportEmail(rSettings.supportEmail);
+        setFeatAchievements(rSettings.enableAIAssistant);
+        setFeatWallet(rSettings.enableEscrowSystem);
+        setMaintenanceMode(rSettings.maintenanceMode);
+      }
 
     } catch (err) {
       console.error('Fetch error:', err);
@@ -854,6 +896,182 @@ export default function App() {
       toast('Campaign deleted', 'success');
       fetchData();
     } catch (err) { toast(err.message, 'error'); }
+  };
+
+  const handleDeleteCreator = async (creatorId) => {
+    if (!window.confirm('Delete this creator account permanently? This is irreversible.')) return;
+    try {
+      const res = await fetch(`${API_BASE}/admin/creators/${creatorId}`, { method: 'DELETE', headers: H() });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      toast('Creator account deleted successfully', 'success');
+      fetchData();
+    } catch (err) { toast(err.message, 'error'); }
+  };
+
+  const handleDeleteBrand = async (brandId) => {
+    if (!window.confirm('Delete this brand account permanently? This will also delete all their campaigns.')) return;
+    try {
+      const res = await fetch(`${API_BASE}/admin/brands/${brandId}`, { method: 'DELETE', headers: H() });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      toast('Brand account deleted successfully', 'success');
+      fetchData();
+    } catch (err) { toast(err.message, 'error'); }
+  };
+
+  const handleSaveSettings = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/admin/settings`, {
+        method: 'POST',
+        headers: H(),
+        body: JSON.stringify({
+          platformFee: Number(platformFee),
+          supportEmail,
+          enableAIAssistant: featAchievements,
+          enableEscrowSystem: featWallet,
+          maintenanceMode
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to save settings');
+      toast('Platform settings saved successfully!', 'success');
+      fetchData();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  };
+
+  const handleCreateCreator = async (e) => {
+    e.preventDefault();
+    if (!creEmail || !crePassword || !creName || !creHandle) {
+      return toast('Email, Password, Name, and Handle are required', 'error');
+    }
+    try {
+      const nicheArr = creNiche.split(',').map(n => n.trim()).filter(Boolean);
+      const platArr = crePlatform.split(',').map(p => p.trim()).filter(Boolean);
+      const res = await fetch(`${API_BASE}/admin/creators`, {
+        method: 'POST',
+        headers: H(),
+        body: JSON.stringify({
+          email: creEmail,
+          password: crePassword,
+          name: creName,
+          handle: creHandle,
+          phone: crePhone || null,
+          city: creCity || null,
+          state: creState || null,
+          niche: nicheArr,
+          platform: platArr,
+          followers: Number(creFollowers) || 0,
+          rateMin: Number(creRateMin) || 0,
+          rateMax: Number(creRateMax) || 0
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to create creator account');
+      toast('Creator account created successfully!', 'success');
+      setCreateCreatorModalOpen(false);
+      clearCreatorForm();
+      fetchData();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  };
+
+  const clearCreatorForm = () => {
+    setCreEmail('');
+    setCrePassword('');
+    setCreName('');
+    setCreHandle('');
+    setCrePhone('');
+    setCreCity('');
+    setCreState('');
+    setCreFollowers(0);
+    setCreNiche('');
+    setCrePlatform('');
+    setCreRateMin(0);
+    setCreRateMax(0);
+  };
+
+  const handleCreateBrand = async (e) => {
+    e.preventDefault();
+    if (!brandEmail || !brandPassword || !brandCompanyName) {
+      return toast('Email, Password, and Company Name are required', 'error');
+    }
+    try {
+      const res = await fetch(`${API_BASE}/admin/brands`, {
+        method: 'POST',
+        headers: H(),
+        body: JSON.stringify({
+          email: brandEmail,
+          password: brandPassword,
+          companyName: brandCompanyName,
+          industry: brandIndustry || null,
+          website: brandWebsite || null,
+          phone: brandPhone || null
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to create brand account');
+      toast('Brand account created successfully!', 'success');
+      setCreateBrandModalOpen(false);
+      clearBrandForm();
+      fetchData();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  };
+
+  const clearBrandForm = () => {
+    setBrandEmail('');
+    setBrandPassword('');
+    setBrandCompanyName('');
+    setBrandIndustry('');
+    setBrandWebsite('');
+    setBrandPhone('');
+  };
+
+  const handleCreateCampaign = async (e) => {
+    e.preventDefault();
+    if (!campBrandId || !campTitle || !campDesc) {
+      return toast('Brand, Title, and Description are required', 'error');
+    }
+    try {
+      const nicheArr = campNiche.split(',').map(n => n.trim()).filter(Boolean);
+      const platArr = campPlatform.split(',').map(p => p.trim()).filter(Boolean);
+      const res = await fetch(`${API_BASE}/admin/campaigns`, {
+        method: 'POST',
+        headers: H(),
+        body: JSON.stringify({
+          brandId: campBrandId,
+          title: campTitle,
+          description: campDesc,
+          budget: Number(campBudget) || 0,
+          platform: platArr,
+          niche: nicheArr,
+          status: campStatus
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to create campaign');
+      toast('Campaign created successfully!', 'success');
+      setCreateCampaignModalOpen(false);
+      clearCampaignForm();
+      fetchData();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  };
+
+  const clearCampaignForm = () => {
+    setCampBrandId('');
+    setCampTitle('');
+    setCampDesc('');
+    setCampBudget(0);
+    setCampPlatform('');
+    setCampNiche('');
+    setCampStatus('ACTIVE');
   };
 
   const handlePaymentOverride = async (paymentId, action) => {
@@ -1842,7 +2060,12 @@ export default function App() {
           {/* ══ ALL CREATORS ═══════════════════════════════════════════════ */}
           {activeTab === 'creators' && (
             <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader title="All Creators" badge={creators.length} sub="Manage creator profiles, suspensions and data" />
+              <SectionHeader 
+                title="All Creators" 
+                badge={creators.length} 
+                sub="Manage creator profiles, suspensions and data" 
+                action={<button onClick={() => { clearCreatorForm(); setCreateCreatorModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ New Creator</button>}
+              />
               <SearchBar value={creatorSearch} onChange={setCreatorSearch} placeholder="Search by name, handle, or city..." />
               <Table cols={['Creator', 'Handle', 'Location', 'Followers', 'Verified', 'Status', { label: 'Actions', align: 'right' }]}>
                 {filteredCreators.map(cr => (
@@ -1885,6 +2108,9 @@ export default function App() {
                         <DangerBtn small onClick={() => handleToggleSuspension(cr.user?.id)}>
                           {cr.user?.isSuspended ? <UserCheck size={11} /> : <UserX size={11} />}
                           {cr.user?.isSuspended ? 'Unban' : 'Suspend'}
+                        </DangerBtn>
+                        <DangerBtn small onClick={() => handleDeleteCreator(cr.id)}>
+                          <Trash2 size={11} /> Delete
                         </DangerBtn>
                       </div>
                     </Td>
@@ -2123,7 +2349,12 @@ export default function App() {
           {/* ══ ALL BRANDS ═════════════════════════════════════════════════ */}
           {activeTab === 'brands' && (
             <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader title="All Brands" badge={brands.length} sub="Manage brand accounts, view campaigns and suspend violators" />
+              <SectionHeader 
+                title="All Brands" 
+                badge={brands.length} 
+                sub="Manage brand accounts, view campaigns and suspend violators" 
+                action={<button onClick={() => { clearBrandForm(); setCreateBrandModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ New Brand</button>}
+              />
               <SearchBar value={brandSearch} onChange={setBrandSearch} placeholder="Search brand name or industry..." />
               <Table cols={['Brand', 'Industry', 'Email', 'Campaigns', 'Status', { label: 'Actions', align: 'right' }]}>
                 {filteredBrands.map(br => (
@@ -2150,6 +2381,9 @@ export default function App() {
                           {br.user?.isSuspended ? <UserCheck size={11} /> : <UserX size={11} />}
                           {br.user?.isSuspended ? 'Unban' : 'Suspend'}
                         </DangerBtn>
+                        <DangerBtn small onClick={() => handleDeleteBrand(br.id)}>
+                          <Trash2 size={11} /> Delete
+                        </DangerBtn>
                       </div>
                     </Td>
                   </tr>
@@ -2162,7 +2396,12 @@ export default function App() {
           {/* ══ CAMPAIGNS ══════════════════════════════════════════════════ */}
           {activeTab === 'campaigns' && (
             <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader title="Campaign Manager" badge={campaigns.length} sub="Oversee all brand campaigns, inspect applications" />
+              <SectionHeader 
+                title="Campaign Manager" 
+                badge={campaigns.length} 
+                sub="Oversee all brand campaigns, inspect applications" 
+                action={<button onClick={() => { clearCampaignForm(); setCreateCampaignModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ New Campaign</button>}
+              />
               <SearchBar value={campaignSearch} onChange={setCampaignSearch} placeholder="Search campaign or brand..." />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {filteredCampaigns.map(c => (
@@ -2686,7 +2925,7 @@ export default function App() {
                     </div>
                   ))}
                 </div>
-                <button onClick={() => toast('Settings saved! (Frontend-only demo)', 'success')} style={{ marginTop: 20, padding: '12px 28px', background: T.orange, color: '#fff', border: 'none', borderRadius: 12, fontWeight: 800, fontSize: 14, cursor: 'pointer', boxShadow: `0 4px 14px ${T.orange}30` }}>
+                <button onClick={handleSaveSettings} style={{ marginTop: 20, padding: '12px 28px', background: T.orange, color: '#fff', border: 'none', borderRadius: 12, fontWeight: 800, fontSize: 14, cursor: 'pointer', boxShadow: `0 4px 14px ${T.orange}30` }}>
                   Save Settings
                 </button>
               </div>
@@ -3301,6 +3540,197 @@ export default function App() {
               <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
                 <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>Update Campaign Details</button>
                 <button type="button" onClick={() => { setEditCampaignModalOpen(false); setEditingCampaign(null); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ══ CREATE CREATOR PROFILE MODAL ════════════════════════════════ */}
+      {createCreatorModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
+          <div style={{ width: '100%', maxWidth: 700, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
+            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>Create New Creator Account</h3>
+              <button onClick={() => { setCreateCreatorModalOpen(false); clearCreatorForm(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
+            </div>
+            <form onSubmit={handleCreateCreator} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Email Address *</label>
+                  <input type="email" value={creEmail} onChange={e => setCreEmail(e.target.value)} required placeholder="creator@email.com" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Password *</label>
+                  <input type="password" value={crePassword} onChange={e => setCrePassword(e.target.value)} required placeholder="Min 8 characters" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Full Name *</label>
+                  <input value={creName} onChange={e => setCreName(e.target.value)} required placeholder="e.g. Dilshan Mohmmad" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Handle * (Unique)</label>
+                  <input value={creHandle} onChange={e => setCreHandle(e.target.value)} required placeholder="e.g. dilshan_m" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Phone Number</label>
+                  <input value={crePhone} onChange={e => setCrePhone(e.target.value)} placeholder="10-digit number" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>City</label>
+                  <input value={creCity} onChange={e => setCreCity(e.target.value)} placeholder="e.g. Jaipur" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>State</label>
+                  <input value={creState} onChange={e => setCreState(e.target.value)} placeholder="e.g. Rajasthan" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Followers</label>
+                  <input type="number" value={creFollowers} onChange={e => setCreFollowers(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Min Rate (INR)</label>
+                  <input type="number" value={creRateMin} onChange={e => setCreRateMin(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Max Rate (INR)</label>
+                  <input type="number" value={creRateMax} onChange={e => setCreRateMax(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Niches (comma separated)</label>
+                  <input value={creNiche} onChange={e => setCreNiche(e.target.value)} placeholder="Fashion, Tech, Lifestyle" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Platforms (comma separated)</label>
+                  <input value={crePlatform} onChange={e => setCrePlatform(e.target.value)} placeholder="Instagram, YouTube" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
+                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>Create Creator Account</button>
+                <button type="button" onClick={() => { setCreateCreatorModalOpen(false); clearCreatorForm(); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ══ CREATE BRAND PROFILE MODAL ════════════════════════════════ */}
+      {createBrandModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
+          <div style={{ width: '100%', maxWidth: 550, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
+            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>Create New Brand Account</h3>
+              <button onClick={() => { setCreateBrandModalOpen(false); clearBrandForm(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
+            </div>
+            <form onSubmit={handleCreateBrand} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Email Address *</label>
+                  <input type="email" value={brandEmail} onChange={e => setBrandEmail(e.target.value)} required placeholder="brand@company.com" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Password *</label>
+                  <input type="password" value={brandPassword} onChange={e => setBrandPassword(e.target.value)} required placeholder="Min 8 characters" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Company Name *</label>
+                <input value={brandCompanyName} onChange={e => setBrandCompanyName(e.target.value)} required placeholder="e.g. Tata Projects Ltd" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Industry</label>
+                  <input value={brandIndustry} onChange={e => setBrandIndustry(e.target.value)} placeholder="e.g. Technology" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Website</label>
+                  <input value={brandWebsite} onChange={e => setBrandWebsite(e.target.value)} placeholder="https://..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Phone Number</label>
+                <input value={brandPhone} onChange={e => setBrandPhone(e.target.value)} placeholder="e.g. 9876543210" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+
+              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
+                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>Create Brand Account</button>
+                <button type="button" onClick={() => { setCreateBrandModalOpen(false); clearBrandForm(); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ══ CREATE CAMPAIGN MODAL ══════════════════════════════════════ */}
+      {createCampaignModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
+          <div style={{ width: '100%', maxWidth: 600, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
+            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>Create New Campaign</h3>
+              <button onClick={() => { setCreateCampaignModalOpen(false); clearCampaignForm(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
+            </div>
+            <form onSubmit={handleCreateCampaign} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Select Brand *</label>
+                <select value={campBrandId} onChange={e => setCampBrandId(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
+                  <option value="">-- Choose Brand --</option>
+                  {brands.map(b => (
+                    <option key={b.id} value={b.id}>{b.companyName}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Campaign Title *</label>
+                  <input value={campTitle} onChange={e => setCampTitle(e.target.value)} required placeholder="e.g. Diwali Special Launch" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Budget (INR) *</label>
+                  <input type="number" value={campBudget} onChange={e => setCampBudget(e.target.value)} required placeholder="50000" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Description / Brief *</label>
+                <textarea value={campDesc} onChange={e => setCampDesc(e.target.value)} rows={4} required placeholder="Detail the campaign requirements, deliverables, etc..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Target Platforms (comma separated)</label>
+                  <input value={campPlatform} onChange={e => setCampPlatform(e.target.value)} placeholder="Instagram, YouTube" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Target Niches (comma separated)</label>
+                  <input value={campNiche} onChange={e => setCampNiche(e.target.value)} placeholder="Fashion, Tech" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Campaign Status</label>
+                <select value={campStatus} onChange={e => setCampStatus(e.target.value)} style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
+                  <option value="ACTIVE">ACTIVE</option>
+                  <option value="COMPLETED">COMPLETED</option>
+                  <option value="PAUSED">PAUSED</option>
+                </select>
+              </div>
+              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
+                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>Create Campaign</button>
+                <button type="button" onClick={() => { setCreateCampaignModalOpen(false); clearCampaignForm(); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
               </div>
             </form>
           </div>
