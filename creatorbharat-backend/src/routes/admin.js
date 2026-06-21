@@ -521,4 +521,412 @@ router.delete('/reviews/:id', async (req, res) => {
   }
 });
 
+// POST /api/admin/verify/reject/:creatorId — reject creator verification and clear document uploads
+router.post('/verify/reject/:creatorId', async (req, res) => {
+  try {
+    const { creatorId } = req.params;
+    const { reason } = req.body;
+
+    const creator = await prisma.creator.findUnique({
+      where: { id: creatorId },
+      include: { user: true }
+    });
+
+    if (!creator) {
+      return res.status(404).json({ error: 'Creator profile not found.' });
+    }
+
+    const updated = await prisma.creator.update({
+      where: { id: creatorId },
+      data: {
+        isVerified: false,
+        status: 'REJECTED',
+        aadhaarUrl: null,
+        panUrl: null
+      }
+    });
+
+    res.json({ message: 'Creator verification rejected and documents reset.', creator: updated });
+
+    // Send email notification (non-blocking)
+    if (creator.user?.email) {
+      sendEmail({
+        to: creator.user.email,
+        subject: 'Action Required: Verification Documents Rejected ⚠️',
+        html: `
+          <div style="font-family: sans-serif; padding: 20px; color: #0f172a; max-width: 600px; margin: auto; border: 1px solid #f1f5f9; border-radius: 12px;">
+            <h2 style="color: #ef4444;">Verification Update, ${creator.name}</h2>
+            <p>During our administrative audit, we encountered issues with your uploaded identity verification documents.</p>
+            <div style="background: #fffbeb; border: 1px solid #fef3c7; color: #b45309; padding: 16px; border-radius: 8px; margin: 20px 0; font-weight: 500;">
+              <strong>Rejection Reason:</strong><br/>
+              ${reason || 'Uploaded documents are blurry, expired, or names do not match.'}
+            </div>
+            <p>To fix this, we have reset your verification portal. Please log back in to your dashboard and re-upload clear, valid documents:</p>
+            <p style="margin-top: 24px;">
+              <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/creator/verification" style="background: #ef4444; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                Upload Documents Again
+              </a>
+            </p>
+            <p style="margin-top: 28px; font-size: 12px; color: #94a3b8;">Best regards,<br/>Team CreatorBharat</p>
+          </div>
+        `
+      }).catch(err => console.error('Verification rejection email warning:', err.message));
+    }
+  } catch (err) {
+    console.error('[POST /api/admin/verify/reject/:creatorId] Error:', err.message);
+    res.status(500).json({ error: 'Failed to reject creator verification.' });
+  }
+});
+
+// GET /api/admin/campaigns/:campaignId/applications — fetch applications for a campaign
+router.get('/campaigns/:campaignId/applications', async (req, res) => {
+  try {
+    const { campaignId } = req.params;
+    const applications = await prisma.application.findMany({
+      where: { campaignId },
+      include: {
+        creator: true
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(applications);
+  } catch (err) {
+    console.error('[GET /api/admin/campaigns/:campaignId/applications] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve campaign applications.' });
+  }
+});
+
+// GET /api/admin/comments — fetch all blog comments
+router.get('/comments', async (req, res) => {
+  try {
+    const comments = await prisma.comment.findMany({
+      include: {
+        blog: true
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(comments);
+  } catch (err) {
+    console.error('[GET /api/admin/comments] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve blog comments.' });
+  }
+});
+
+// DELETE /api/admin/comments/:id — delete a blog comment
+router.delete('/comments/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.comment.delete({ where: { id } });
+    res.json({ message: 'Comment deleted successfully.' });
+  } catch (err) {
+    console.error('[DELETE /api/admin/comments/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to delete comment.' });
+  }
+});
+
+// POST /api/admin/applications/:id/status — moderate/change campaign pitch status
+router.post('/applications/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body; // PENDING, ACCEPTED, REJECTED, COMPLETED
+
+    if (!status) {
+      return res.status(400).json({ error: 'Status is required.' });
+    }
+
+    const application = await prisma.application.findUnique({
+      where: { id },
+      include: {
+        creator: { include: { user: true } },
+        campaign: { include: { brand: { include: { user: true } } } }
+      }
+    });
+
+    if (!application) {
+      return res.status(404).json({ error: 'Application pitch not found.' });
+    }
+
+    const updated = await prisma.application.update({
+      where: { id },
+      data: { status }
+    });
+
+    res.json({ message: 'Pitch application status updated successfully.', application: updated });
+
+    // Optional: send email to creator about pitch status update (non-blocking)
+    if (application.creator?.user?.email) {
+      sendEmail({
+        to: application.creator.user.email,
+        subject: `Pitch Status Update: ${application.campaign.title} 📣`,
+        html: `
+          <div style="font-family: sans-serif; padding: 20px; color: #0f172a; max-width: 600px; margin: auto; border: 1px solid #f1f5f9; border-radius: 12px;">
+            <h2 style="color: #FF9431;">Pitch Update! 📣</h2>
+            <p>Your pitch for the campaign "<strong>${application.campaign.title}</strong>" has been marked as <strong>${status}</strong> by administration moderation.</p>
+            <p style="margin-top: 24px;">
+              <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/creator/dashboard" style="background: #FF9431; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                Go to Dashboard
+              </a>
+            </p>
+            <p style="margin-top: 28px; font-size: 12px; color: #94a3b8;">Best regards,<br/>Team CreatorBharat</p>
+          </div>
+        `
+      }).catch(err => console.error('Application status update email warning:', err.message));
+    }
+  } catch (err) {
+    console.error('[POST /api/admin/applications/:id/status] Error:', err.message);
+    res.status(500).json({ error: 'Failed to update application status.' });
+  }
+});
+
+// GET /api/admin/creators/full — all creators with enriched data (wallet, score, achievements)
+router.get('/creators/full', async (req, res) => {
+  try {
+    const creators = await prisma.creator.findMany({
+      include: {
+        user: true,
+        _count: {
+          select: {
+            applications: true,
+            reviews: true,
+            podcasts: true
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(creators);
+  } catch (err) {
+    console.error('[GET /api/admin/creators/full] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve full creator data.' });
+  }
+});
+
+// GET /api/admin/creators/:id/transactions — creator wallet transaction history
+router.get('/creators/:id/transactions', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const payments = await prisma.payment.findMany({
+      where: {
+        OR: [
+          { recipientCreatorId: id },
+          { creatorId: id }
+        ]
+      },
+      include: {
+        brand: true,
+        campaign: true
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(payments);
+  } catch (err) {
+    console.error('[GET /api/admin/creators/:id/transactions] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve creator transactions.' });
+  }
+});
+
+// POST /api/admin/creators/:id/score — manually adjust creator score
+router.post('/creators/:id/score', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { score, reason } = req.body;
+
+    if (score === undefined || score === null) {
+      return res.status(400).json({ error: 'Score value is required.' });
+    }
+
+    const creator = await prisma.creator.findUnique({ where: { id }, include: { user: true } });
+    if (!creator) return res.status(404).json({ error: 'Creator not found.' });
+
+    const updated = await prisma.creator.update({
+      where: { id },
+      data: { score: Number(score) }
+    });
+
+    res.json({ message: `Creator score updated to ${score}. Reason: ${reason || 'Admin override'}`, creator: updated });
+
+    // Notify creator via email (non-blocking)
+    if (creator.user?.email) {
+      sendEmail({
+        to: creator.user.email,
+        subject: 'Your CreatorBharat Score Has Been Updated 🎯',
+        html: `<div style="font-family:sans-serif;padding:20px;max-width:600px;margin:auto">
+          <h2 style="color:#FF9431">Score Update! 🎯</h2>
+          <p>Hi ${creator.name}, your CreatorBharat platform score has been updated to <strong>${score}</strong>.</p>
+          ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}
+          <p style="margin-top:24px"><a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/creator/score" style="background:#FF9431;color:#fff;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block">View Your Score</a></p>
+        </div>`
+      }).catch(err => console.error('Score update email error:', err.message));
+    }
+  } catch (err) {
+    console.error('[POST /api/admin/creators/:id/score] Error:', err.message);
+    res.status(500).json({ error: 'Failed to update creator score.' });
+  }
+});
+
+// GET /api/admin/leaderboard — get leaderboard entries with management controls
+router.get('/leaderboard', async (req, res) => {
+  try {
+    const creators = await prisma.creator.findMany({
+      where: { isVerified: true },
+      include: {
+        user: true,
+        _count: { select: { applications: true, reviews: true } }
+      },
+      orderBy: [
+        { score: 'desc' },
+        { followers: 'desc' }
+      ],
+      take: 100
+    });
+    res.json(creators);
+  } catch (err) {
+    console.error('[GET /api/admin/leaderboard] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve leaderboard.' });
+  }
+});
+
+// GET /api/admin/applications — fetch ALL campaign applications across platform
+router.get('/applications', async (req, res) => {
+  try {
+    const applications = await prisma.application.findMany({
+      include: {
+        creator: { include: { user: true } },
+        campaign: { include: { brand: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(applications);
+  } catch (err) {
+    console.error('[GET /api/admin/applications] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve all applications.' });
+  }
+});
+
+// GET /api/admin/brand-analytics — brand performance dashboard
+router.get('/brand-analytics', async (req, res) => {
+  try {
+    const brands = await prisma.brand.findMany({
+      include: {
+        user: true,
+        _count: {
+          select: { campaigns: true }
+        },
+        campaigns: {
+          include: {
+            _count: { select: { applications: true } },
+            payments: { where: { type: 'CAMPAIGN_ESCROW' } }
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const brandAnalytics = brands.map(b => {
+      const totalBudget = b.campaigns.reduce((sum, c) => {
+        return sum + c.payments.reduce((s, p) => s + (p.amount || 0), 0);
+      }, 0);
+      const totalApplications = b.campaigns.reduce((sum, c) => sum + (c._count?.applications || 0), 0);
+      return {
+        id: b.id,
+        companyName: b.companyName,
+        industry: b.industry,
+        email: b.user?.email,
+        isSuspended: b.user?.isSuspended,
+        createdAt: b.createdAt,
+        totalCampaigns: b._count.campaigns,
+        totalApplications,
+        totalBudgetSpent: totalBudget
+      };
+    });
+
+    res.json(brandAnalytics);
+  } catch (err) {
+    console.error('[GET /api/admin/brand-analytics] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve brand analytics.' });
+  }
+});
+
+// GET /api/admin/platform/activity — admin activity log
+router.get('/platform/activity', async (req, res) => {
+  try {
+    // Aggregate recent activity from multiple tables
+    const [recentUsers, recentVerifications, recentPayments, recentCampaigns, recentBlogs] = await Promise.all([
+      prisma.user.findMany({ orderBy: { createdAt: 'desc' }, take: 10, select: { id: true, email: true, role: true, createdAt: true } }),
+      prisma.creator.findMany({ where: { isVerified: true }, orderBy: { updatedAt: 'desc' }, take: 10, select: { id: true, name: true, isVerified: true, updatedAt: true } }),
+      prisma.payment.findMany({ orderBy: { createdAt: 'desc' }, take: 10, include: { brand: { select: { companyName: true } } } }),
+      prisma.campaign.findMany({ orderBy: { createdAt: 'desc' }, take: 10, select: { id: true, title: true, status: true, createdAt: true } }),
+      prisma.blog.findMany({ orderBy: { createdAt: 'desc' }, take: 5, select: { id: true, title: true, published: true, createdAt: true } })
+    ]);
+
+    const activity = [
+      ...recentUsers.map(u => ({ type: 'NEW_USER', label: `New ${u.role} registered: ${u.email}`, time: u.createdAt })),
+      ...recentVerifications.map(v => ({ type: 'VERIFIED', label: `Creator verified: ${v.name}`, time: v.updatedAt })),
+      ...recentPayments.map(p => ({ type: 'PAYMENT', label: `Payment ${p.status}: ₹${p.amount} — ${p.brand?.companyName || 'Unknown Brand'}`, time: p.createdAt })),
+      ...recentCampaigns.map(c => ({ type: 'CAMPAIGN', label: `Campaign posted: ${c.title}`, time: c.createdAt })),
+      ...recentBlogs.map(b => ({ type: 'BLOG', label: `Blog ${b.published ? 'published' : 'drafted'}: ${b.title}`, time: b.createdAt }))
+    ].sort((a, b) => new Date(b.time) - new Date(a.time)).slice(0, 40);
+
+    res.json(activity);
+  } catch (err) {
+    console.error('[GET /api/admin/platform/activity] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve platform activity.' });
+  }
+});
+
+// GET /api/admin/platform/stats/deep — extended platform stats
+router.get('/platform/stats/deep', async (req, res) => {
+  try {
+    const [
+      totalCreators,
+      verifiedCreators,
+      totalBrands,
+      totalCampaigns,
+      activeCampaigns,
+      totalApplications,
+      acceptedApplications,
+      totalBlogs,
+      publishedBlogs,
+      totalSubscribers,
+      unreadContacts,
+      totalReviews,
+      pendingVerifications
+    ] = await Promise.all([
+      prisma.creator.count(),
+      prisma.creator.count({ where: { isVerified: true } }),
+      prisma.brand.count(),
+      prisma.campaign.count(),
+      prisma.campaign.count({ where: { status: 'ACTIVE' } }),
+      prisma.application.count(),
+      prisma.application.count({ where: { status: 'ACCEPTED' } }),
+      prisma.blog.count(),
+      prisma.blog.count({ where: { published: true } }),
+      prisma.newsletter.count(),
+      prisma.contactMessage.count({ where: { read: false } }),
+      prisma.review.count(),
+      prisma.creator.count({ where: { isVerified: false } })
+    ]);
+
+    const escrowTotal = await prisma.payment.aggregate({
+      where: { type: 'CAMPAIGN_ESCROW', status: 'PAID' },
+      _sum: { amount: true }
+    });
+
+    res.json({
+      creators: { total: totalCreators, verified: verifiedCreators, pending: pendingVerifications },
+      brands: { total: totalBrands },
+      campaigns: { total: totalCampaigns, active: activeCampaigns },
+      applications: { total: totalApplications, accepted: acceptedApplications },
+      content: { blogs: totalBlogs, published: publishedBlogs },
+      marketing: { subscribers: totalSubscribers, unreadContacts },
+      reviews: { total: totalReviews },
+      finance: { escrowHeld: escrowTotal._sum.amount || 0 }
+    });
+  } catch (err) {
+    console.error('[GET /api/admin/platform/stats/deep] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve deep platform stats.' });
+  }
+});
+
 export default router;
+
