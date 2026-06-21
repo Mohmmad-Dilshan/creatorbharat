@@ -383,9 +383,76 @@ router.post('/release-escrow', authMiddleware, async (req, res) => {
         platformFee: platformFee
       }
     });
+// POST /api/payments/webhook — asynchronous transaction verification hook from Razorpay
+router.post('/webhook', async (req, res) => {
+  try {
+    const signature = req.headers['x-razorpay-signature'];
+    if (!signature) {
+      return res.status(400).json({ error: 'Missing webhook signature header.' });
+    }
+
+    const secret = process.env.RAZORPAY_WEBHOOK_SECRET || 'cb_webhook_secret_key_2026';
+    const shasum = crypto.createHmac('sha256', secret);
+    shasum.update(JSON.stringify(req.body));
+    const digest = shasum.digest('hex');
+
+    if (digest !== signature) {
+      return res.status(400).json({ error: 'Invalid webhook signature.' });
+    }
+
+    const { event, payload } = req.body;
+    console.log(`[Razorpay Webhook]: Received event '${event}'`);
+
+    if (event === 'order.paid' || event === 'payment.captured') {
+      const orderEntity = payload.order?.entity || payload.payment?.entity;
+      const orderId = orderEntity?.id || orderEntity?.order_id;
+      const paymentId = payload.payment?.entity?.id || orderEntity?.payment_id;
+
+      if (orderId) {
+        // Find if we have a pending payment with this order ID
+        const payment = await prisma.payment.findFirst({
+          where: { razorpayOrderId: orderId }
+        });
+
+        if (payment && payment.status === 'PENDING') {
+          const updatedPayment = await prisma.payment.update({
+            where: { id: payment.id },
+            data: {
+              status: 'PAID',
+              razorpayId: paymentId || null
+            }
+          });
+
+          // Handle Pro listing activation
+          if (updatedPayment.type === 'PRO_LISTING' && updatedPayment.creatorId) {
+            await prisma.creator.update({
+              where: { id: updatedPayment.creatorId },
+              data: { isPro: true }
+            });
+            console.log(`[Razorpay Webhook]: Pro listing upgraded for creator ID: ${updatedPayment.creatorId}`);
+          }
+
+          // Handle Campaign Escrow status updates
+          if (updatedPayment.type === 'CAMPAIGN_ESCROW' && updatedPayment.campaignId && updatedPayment.recipientCreatorId) {
+            await prisma.application.updateMany({
+              where: {
+                campaignId: updatedPayment.campaignId,
+                creatorId: updatedPayment.recipientCreatorId
+              },
+              data: {
+                status: 'ACCEPTED'
+              }
+            });
+            console.log(`[Razorpay Webhook]: Escrow deposit complete, campaign application accepted for creator ID: ${updatedPayment.recipientCreatorId}`);
+          }
+        }
+      }
+    }
+
+    res.json({ status: 'ok' });
   } catch (err) {
-    console.error('[POST /api/payments/release-escrow] Error:', err.message);
-    res.status(500).json({ error: 'Failed to release campaign escrow budget.' });
+    console.error('[POST /api/payments/webhook] Error:', err.message);
+    res.status(500).json({ error: 'Webhook processing failed.' });
   }
 });
 
