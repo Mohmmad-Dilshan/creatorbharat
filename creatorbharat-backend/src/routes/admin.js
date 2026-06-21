@@ -15,12 +15,208 @@ router.get('/verifications', async (req, res) => {
   try {
     const creators = await prisma.creator.findMany({
       where: { isVerified: false },
+      include: { user: true },
       orderBy: { updatedAt: 'desc' }
     });
     res.json(creators);
   } catch (err) {
     console.error('[GET /api/admin/verifications] Error:', err.message);
     res.status(500).json({ error: 'Failed to retrieve verification queue.' });
+  }
+});
+
+// GET /api/admin/brands — fetch all registered brands
+router.get('/brands', async (req, res) => {
+  try {
+    const brands = await prisma.brand.findMany({
+      include: {
+        user: true,
+        _count: {
+          select: { campaigns: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(brands);
+  } catch (err) {
+    console.error('[GET /api/admin/brands] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve brands.' });
+  }
+});
+
+// GET /api/admin/payments — fetch all system payments
+router.get('/payments', async (req, res) => {
+  try {
+    const payments = await prisma.payment.findMany({
+      include: {
+        creator: true,
+        brand: true
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(payments);
+  } catch (err) {
+    console.error('[GET /api/admin/payments] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve payments.' });
+  }
+});
+
+// POST /api/admin/users/suspend/:userId — toggle account suspension status
+router.post('/users/suspend/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+
+    if (user.role === 'ADMIN') {
+      return res.status(400).json({ error: 'Cannot suspend administrators.' });
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: { isSuspended: !user.isSuspended }
+    });
+
+    res.json({ message: `User account successfully ${updated.isSuspended ? 'suspended' : 'unsuspended'}.`, user: updated });
+  } catch (err) {
+    console.error('[POST /api/admin/users/suspend/:userId] Error:', err.message);
+    res.status(500).json({ error: 'Failed to update user suspension status.' });
+  }
+});
+
+// POST /api/admin/payments/override — manually release or refund escrow balances
+router.post('/payments/override', async (req, res) => {
+  try {
+    const { paymentId, action } = req.body;
+    if (!paymentId || !action) {
+      return res.status(400).json({ error: 'Payment ID and override action are required.' });
+    }
+
+    const payment = await prisma.payment.findUnique({
+      where: { id: paymentId }
+    });
+
+    if (!payment) return res.status(404).json({ error: 'Escrow payment record not found.' });
+    if (payment.type !== 'CAMPAIGN_ESCROW') {
+      return res.status(400).json({ error: 'Overrides are only applicable to campaign escrows.' });
+    }
+
+    if (action === 'RELEASE') {
+      await prisma.payment.update({
+        where: { id: paymentId },
+        data: { status: 'RELEASED' }
+      });
+
+      if (payment.campaignId && payment.recipientCreatorId) {
+        await prisma.application.updateMany({
+          where: {
+            campaignId: payment.campaignId,
+            creatorId: payment.recipientCreatorId
+          },
+          data: { status: 'COMPLETED' }
+        });
+      }
+
+      res.json({ message: 'Escrow budget manually released to creator successfully.' });
+    } else if (action === 'REFUND') {
+      await prisma.payment.update({
+        where: { id: paymentId },
+        data: { status: 'REFUNDED' }
+      });
+
+      if (payment.campaignId && payment.recipientCreatorId) {
+        await prisma.application.updateMany({
+          where: {
+            campaignId: payment.campaignId,
+            creatorId: payment.recipientCreatorId
+          },
+          data: { status: 'REJECTED' }
+        });
+      }
+
+      res.json({ message: 'Escrow budget manually refunded to brand successfully.' });
+    } else {
+      res.status(400).json({ error: 'Invalid override action.' });
+    }
+  } catch (err) {
+    console.error('[POST /api/admin/payments/override] Error:', err.message);
+    res.status(500).json({ error: 'Failed to execute escrow payment override.' });
+  }
+});
+
+// DELETE /api/admin/campaigns/:campaignId — delete campaigns that violate T&C
+router.delete('/campaigns/:campaignId', async (req, res) => {
+  try {
+    const { campaignId } = req.params;
+    await prisma.campaign.delete({ where: { id: campaignId } });
+    res.json({ message: 'Campaign deleted successfully by administrator.' });
+  } catch (err) {
+    console.error('[DELETE /api/admin/campaigns/:campaignId] Error:', err.message);
+    res.status(500).json({ error: 'Failed to delete campaign.' });
+  }
+});
+
+// GET /api/admin/stats — aggregate live dashboard counts and trends
+router.get('/stats', async (req, res) => {
+  try {
+    const totalCreators = await prisma.creator.count();
+    const totalBrands = await prisma.brand.count();
+    const totalCampaigns = await prisma.campaign.count();
+    const totalEscrows = await prisma.payment.aggregate({
+      where: { status: 'PAID', type: 'CAMPAIGN_ESCROW' },
+      _sum: { amount: true }
+    });
+
+    const payments = await prisma.payment.findMany({
+      where: { status: { in: ['PAID', 'RELEASED'] } },
+      select: { amount: true, createdAt: true }
+    });
+
+    const users = await prisma.user.findMany({
+      select: { createdAt: true }
+    });
+
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const last6Months = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      last6Months.push({
+        month: monthNames[d.getMonth()],
+        year: d.getFullYear(),
+        userCount: 0,
+        escrowVolume: 0
+      });
+    }
+
+    users.forEach(u => {
+      const date = new Date(u.createdAt);
+      const mName = monthNames[date.getMonth()];
+      const year = date.getFullYear();
+      const match = last6Months.find(m => m.month === mName && m.year === year);
+      if (match) match.userCount++;
+    });
+
+    payments.forEach(p => {
+      const date = new Date(p.createdAt);
+      const mName = monthNames[date.getMonth()];
+      const year = date.getFullYear();
+      const match = last6Months.find(m => m.month === mName && m.year === year);
+      if (match) match.escrowVolume += p.amount;
+    });
+
+    res.json({
+      counts: {
+        creators: totalCreators,
+        brands: totalBrands,
+        campaigns: totalCampaigns,
+        escrowHoldings: totalEscrows._sum.amount || 0
+      },
+      chartData: last6Months
+    });
+  } catch (err) {
+    console.error('[GET /api/admin/stats] Error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch platform metrics.' });
   }
 });
 

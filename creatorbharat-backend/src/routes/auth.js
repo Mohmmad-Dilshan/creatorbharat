@@ -146,6 +146,10 @@ router.post('/login-otp', async (req, res) => {
       return res.status(404).json({ error: 'No account found with this phone number. Please sign up first.' });
     }
 
+    if (user.isSuspended) {
+      return res.status(403).json({ error: 'Your account has been suspended by an administrator. Please contact support.' });
+    }
+
     otpStore.delete(cleanedPhone);
 
     const token = signToken(user.id);
@@ -327,6 +331,10 @@ router.post('/login', async (req, res) => {
 
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password.' });
+    }
+
+    if (user.isSuspended) {
+      return res.status(403).json({ error: 'Your account has been suspended by an administrator. Please contact support.' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);

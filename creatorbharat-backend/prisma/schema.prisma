@@ -11,16 +11,17 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  phone     String?  @unique
-  password  String
-  role      Role     @default(CREATOR)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  email       String   @unique
+  phone       String?  @unique
+  password    String
+  role        Role     @default(CREATOR)
+  isSuspended Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  creator   Creator?
-  brand     Brand?
+  creator     Creator?
+  brand       Brand?
 }
 
 enum Role {
