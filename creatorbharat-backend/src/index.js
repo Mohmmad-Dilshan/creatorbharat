@@ -7,6 +7,7 @@ import { rateLimit } from 'express-rate-limit';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 import prisma from './prisma.js';
 
 // Route Imports
@@ -200,6 +201,34 @@ io.on('connection', (socket) => {
     }
   });
 });
+
+// Seed Admin Account on Server Startup
+(async () => {
+  try {
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@creatorbharat.com';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'change-this-strong-password';
+
+    const existingAdmin = await prisma.user.findUnique({
+      where: { email: adminEmail.toLowerCase().trim() }
+    });
+
+    if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      await prisma.user.create({
+        data: {
+          email: adminEmail.toLowerCase().trim(),
+          password: hashedPassword,
+          role: 'ADMIN'
+        }
+      });
+      console.log(`[Database Seeder]: Default admin user created successfully (${adminEmail}).`);
+    } else {
+      console.log(`[Database Seeder]: Admin account verified.`);
+    }
+  } catch (err) {
+    console.error('[Database Seeder Error]:', err.message);
+  }
+})();
 
 // Start Server
 server.listen(PORT, () => {
