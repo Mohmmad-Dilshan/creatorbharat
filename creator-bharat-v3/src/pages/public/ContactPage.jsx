@@ -25,6 +25,7 @@ import {
 
 // Import Externalized Data
 import { getContactData, saveContactData } from '@/data/contactData';
+import { ENV } from '@/config/env';
 
 function SupportFAQAccordion({ q, a, mob }) {
   const [open, setOpen] = useState(false);
@@ -85,24 +86,22 @@ export default function ContactPage() {
     }
     setFormState('loading');
     try {
-      const res = await fetch('https://api.web3forms.com/submit', {
+      const res = await fetch(`${ENV.apiUrl}/contacts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          access_key: import.meta.env.VITE_WEB3FORMS_KEY || (() => { console.warn('[ContactPage] VITE_WEB3FORMS_KEY not set in .env — form will use local fallback.'); return ''; })(),
           name: formData.name,
           email: formData.email,
           subject: formData.subject || `${role} inquiry`,
-          message: formData.message,
-          from_name: 'CreatorBharat Contact Form',
+          message: formData.message
         })
       });
       const data = await res.json();
-      if (data.success) {
+      if (res.ok) {
         setFormState('success');
         dsp({ t: 'TOAST', d: { type: 'success', msg: 'Message sent successfully!' } });
       } else {
-        throw new Error(data.message || 'Submission failed');
+        throw new Error(data.error || 'Submission failed');
       }
     } catch (err) {
       // Fallback: save locally if API fails

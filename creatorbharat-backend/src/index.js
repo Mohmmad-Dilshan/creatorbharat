@@ -21,6 +21,8 @@ import reviewsRouter from './routes/reviews.js';
 import messagesRouter from './routes/messages.js';
 import blogRouter from './routes/blog.js';
 import uploadsRouter from './routes/uploads.js';
+import newsletterRouter from './routes/newsletter.js';
+import contactsRouter from './routes/contacts.js';
 
 dotenv.config();
 
@@ -105,6 +107,8 @@ app.use('/api/reviews', reviewsRouter);
 app.use('/api/messages', messagesRouter);
 app.use('/api/blog', blogRouter);
 app.use('/api/uploads', uploadsRouter);
+app.use('/api/newsletter', newsletterRouter);
+app.use('/api/contacts', contactsRouter);
 
 // Global 404 Error handler
 app.use((req, res) => {

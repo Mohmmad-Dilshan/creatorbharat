@@ -272,4 +272,224 @@ router.post('/verify/:creatorId', async (req, res) => {
   }
 });
 
+// GET /api/admin/blogs — get all blog articles (published and drafts)
+router.get('/blogs', async (req, res) => {
+  try {
+    const blogs = await prisma.blog.findMany({
+      include: {
+        _count: { select: { comments: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(blogs);
+  } catch (err) {
+    console.error('[GET /api/admin/blogs] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve blog articles.' });
+  }
+});
+
+// POST /api/admin/blogs — create new blog post
+router.post('/blogs', async (req, res) => {
+  try {
+    const { title, slug, excerpt, body, category, author, image, tags, featured, published } = req.body;
+    if (!title || !slug || !body || !category || !author) {
+      return res.status(400).json({ error: 'Title, slug, body, category, and author are required.' });
+    }
+
+    const cleanSlug = slug.toLowerCase().replace(/[^a-z0-9-_]/g, '-').trim();
+
+    // Check unique slug
+    const existing = await prisma.blog.findUnique({ where: { slug: cleanSlug } });
+    if (existing) {
+      return res.status(400).json({ error: 'A blog post with this URL slug already exists.' });
+    }
+
+    const blog = await prisma.blog.create({
+      data: {
+        title: title.trim(),
+        slug: cleanSlug,
+        excerpt: (excerpt || '').trim(),
+        body: body.trim(),
+        category: category.trim(),
+        author: author.trim(),
+        image: image || null,
+        tags: Array.isArray(tags) ? tags : [],
+        featured: !!featured,
+        published: !!published
+      }
+    });
+
+    res.status(201).json(blog);
+  } catch (err) {
+    console.error('[POST /api/admin/blogs] Error:', err.message);
+    res.status(500).json({ error: 'Failed to create blog post.' });
+  }
+});
+
+// PUT /api/admin/blogs/:id — edit blog post
+router.put('/blogs/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, slug, excerpt, body, category, author, image, tags, featured, published } = req.body;
+
+    const existingBlog = await prisma.blog.findUnique({ where: { id } });
+    if (!existingBlog) return res.status(404).json({ error: 'Blog post not found.' });
+
+    let cleanSlug = existingBlog.slug;
+    if (slug && slug !== existingBlog.slug) {
+      cleanSlug = slug.toLowerCase().replace(/[^a-z0-9-_]/g, '-').trim();
+      const duplicate = await prisma.blog.findUnique({ where: { slug: cleanSlug } });
+      if (duplicate) return res.status(400).json({ error: 'A blog post with this URL slug already exists.' });
+    }
+
+    const updated = await prisma.blog.update({
+      where: { id },
+      data: {
+        title: title !== undefined ? title.trim() : existingBlog.title,
+        slug: cleanSlug,
+        excerpt: excerpt !== undefined ? excerpt.trim() : existingBlog.excerpt,
+        body: body !== undefined ? body.trim() : existingBlog.body,
+        category: category !== undefined ? category.trim() : existingBlog.category,
+        author: author !== undefined ? author.trim() : existingBlog.author,
+        image: image !== undefined ? image : existingBlog.image,
+        tags: tags !== undefined ? (Array.isArray(tags) ? tags : []) : existingBlog.tags,
+        featured: featured !== undefined ? !!featured : existingBlog.featured,
+        published: published !== undefined ? !!published : existingBlog.published
+      }
+    });
+
+    res.json(updated);
+  } catch (err) {
+    console.error('[PUT /api/admin/blogs/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to update blog post.' });
+  }
+});
+
+// DELETE /api/admin/blogs/:id — delete blog post
+router.delete('/blogs/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.blog.delete({ where: { id } });
+    res.json({ message: 'Blog article and its comments deleted successfully.' });
+  } catch (err) {
+    console.error('[DELETE /api/admin/blogs/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to delete blog article.' });
+  }
+});
+
+// GET /api/admin/newsletters — list newsletter subscribers
+router.get('/newsletters', async (req, res) => {
+  try {
+    const subscribers = await prisma.newsletter.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(subscribers);
+  } catch (err) {
+    console.error('[GET /api/admin/newsletters] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve newsletter subscribers.' });
+  }
+});
+
+// DELETE /api/admin/newsletters/:id — delete subscriber
+router.delete('/newsletters/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.newsletter.delete({ where: { id } });
+    res.json({ message: 'Newsletter subscriber removed successfully.' });
+  } catch (err) {
+    console.error('[DELETE /api/admin/newsletters/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to remove subscriber.' });
+  }
+});
+
+// GET /api/admin/contacts — list contact messages
+router.get('/contacts', async (req, res) => {
+  try {
+    const messages = await prisma.contactMessage.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(messages);
+  } catch (err) {
+    console.error('[GET /api/admin/contacts] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve contact messages.' });
+  }
+});
+
+// PUT /api/admin/contacts/:id/read — mark contact message as read
+router.put('/contacts/:id/read', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const msg = await prisma.contactMessage.findUnique({ where: { id } });
+    if (!msg) return res.status(404).json({ error: 'Contact message not found.' });
+
+    const updated = await prisma.contactMessage.update({
+      where: { id },
+      data: { read: !msg.read }
+    });
+    res.json(updated);
+  } catch (err) {
+    console.error('[PUT /api/admin/contacts/:id/read] Error:', err.message);
+    res.status(500).json({ error: 'Failed to update message status.' });
+  }
+});
+
+// DELETE /api/admin/contacts/:id — delete contact message
+router.delete('/contacts/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.contactMessage.delete({ where: { id } });
+    res.json({ message: 'Contact message deleted successfully.' });
+  } catch (err) {
+    console.error('[DELETE /api/admin/contacts/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to delete contact message.' });
+  }
+});
+
+// GET /api/admin/podcasts — get all podcasts
+router.get('/podcasts', async (req, res) => {
+  try {
+    const podcasts = await prisma.podcast.findMany({
+      include: {
+        creator: true
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(podcasts);
+  } catch (err) {
+    console.error('[GET /api/admin/podcasts] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve podcasts.' });
+  }
+});
+
+// POST /api/admin/podcasts/toggle/:id — toggle podcast published status
+router.post('/podcasts/toggle/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const podcast = await prisma.podcast.findUnique({ where: { id } });
+    if (!podcast) return res.status(404).json({ error: 'Podcast episode not found.' });
+
+    const updated = await prisma.podcast.update({
+      where: { id },
+      data: { published: !podcast.published }
+    });
+
+    res.json({ message: `Podcast successfully ${updated.published ? 'published' : 'unpublished'}.`, podcast: updated });
+  } catch (err) {
+    console.error('[POST /api/admin/podcasts/toggle/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to update podcast status.' });
+  }
+});
+
+// DELETE /api/admin/podcasts/:id — delete podcast
+router.delete('/podcasts/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.podcast.delete({ where: { id } });
+    res.json({ message: 'Podcast episode deleted successfully.' });
+  } catch (err) {
+    console.error('[DELETE /api/admin/podcasts/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to delete podcast episode.' });
+  }
+});
+
 export default router;

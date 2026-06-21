@@ -22,7 +22,9 @@ import {
   CreditCard,
   Trash2,
   SlidersHorizontal,
-  Info
+  Info,
+  MessageSquare,
+  PlayCircle
 } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
@@ -44,6 +46,34 @@ export default function App() {
   const [verifications, setVerifications] = useState([]);
   const [payments, setPayments] = useState([]);
   const [stats, setStats] = useState(null);
+
+  const [blogs, setBlogs] = useState([]);
+  const [newsletters, setNewsletters] = useState([]);
+  const [contacts, setContacts] = useState([]);
+  const [podcasts, setPodcasts] = useState([]);
+
+  // New Search Filters
+  const [blogSearch, setBlogSearch] = useState('');
+  const [newsletterSearch, setNewsletterSearch] = useState('');
+  const [contactSearch, setContactSearch] = useState('');
+  const [podcastSearch, setPodcastSearch] = useState('');
+
+  // Blog creation modal and form states
+  const [blogModalOpen, setBlogModalOpen] = useState(false);
+  const [editingBlog, setEditingBlog] = useState(null);
+  const [blogTitle, setBlogTitle] = useState('');
+  const [blogSlug, setBlogSlug] = useState('');
+  const [blogCategory, setBlogCategory] = useState('Marketing');
+  const [blogExcerpt, setBlogExcerpt] = useState('');
+  const [blogBody, setBlogBody] = useState('');
+  const [blogAuthor, setBlogAuthor] = useState('CB Editorial');
+  const [blogImage, setBlogImage] = useState('');
+  const [blogTags, setBlogTags] = useState('');
+  const [blogFeatured, setBlogFeatured] = useState(false);
+  const [blogPublished, setBlogPublished] = useState(false);
+
+  // View Contact Message detail modal
+  const [viewingContact, setViewingContact] = useState(null);
   
   const [dataLoading, setDataLoading] = useState(false);
   const [toasts, setToasts] = useState([]);
@@ -156,6 +186,26 @@ export default function App() {
       const dataSt = await resSt.json();
       if (resSt.ok) setStats(dataSt);
 
+      // 7. Fetch all blogs
+      const resBlog = await fetch(`${API_BASE}/admin/blogs`, { headers });
+      const dataBlog = await resBlog.json();
+      if (resBlog.ok) setBlogs(Array.isArray(dataBlog) ? dataBlog : []);
+
+      // 8. Fetch all newsletters
+      const resNews = await fetch(`${API_BASE}/admin/newsletters`, { headers });
+      const dataNews = await resNews.json();
+      if (resNews.ok) setNewsletters(Array.isArray(dataNews) ? dataNews : []);
+
+      // 9. Fetch all contacts
+      const resCont = await fetch(`${API_BASE}/admin/contacts`, { headers });
+      const dataCont = await resCont.json();
+      if (resCont.ok) setContacts(Array.isArray(dataCont) ? dataCont : []);
+
+      // 10. Fetch all podcasts
+      const resPod = await fetch(`${API_BASE}/admin/podcasts`, { headers });
+      const dataPod = await resPod.json();
+      if (resPod.ok) setPodcasts(Array.isArray(dataPod) ? dataPod : []);
+
     } catch (err) {
       console.error('Failed to fetch dashboard data:', err);
       triggerToast('Failed to sync live database stats', 'error');
@@ -258,6 +308,178 @@ export default function App() {
   const handleSaveSettings = (e) => {
     e.preventDefault();
     triggerToast('System settings saved successfully', 'success');
+  };
+
+  const handleSaveBlog = async (e) => {
+    e.preventDefault();
+    if (!blogTitle || !blogSlug || !blogBody) {
+      return triggerToast('Title, Slug, and Body are required.', 'error');
+    }
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      };
+      const bodyPayload = {
+        title: blogTitle.trim(),
+        slug: blogSlug.trim(),
+        category: blogCategory,
+        excerpt: blogExcerpt.trim(),
+        body: blogBody.trim(),
+        author: blogAuthor.trim(),
+        image: blogImage || 'https://images.unsplash.com/photo-1546074177-ffedd79d494d?q=80&w=600',
+        tags: blogTags.split(',').map(t => t.trim()).filter(Boolean),
+        featured: blogFeatured,
+        published: blogPublished
+      };
+
+      let res;
+      if (editingBlog) {
+        res = await fetch(`${API_BASE}/admin/blogs/${editingBlog.id}`, {
+          method: 'PUT',
+          headers,
+          body: JSON.stringify(bodyPayload)
+        });
+      } else {
+        res = await fetch(`${API_BASE}/admin/blogs`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(bodyPayload)
+        });
+      }
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to save blog post.');
+
+      triggerToast(editingBlog ? 'Blog updated successfully!' : 'Blog post created successfully!', 'success');
+      setBlogModalOpen(false);
+      setEditingBlog(null);
+      clearBlogForm();
+      fetchDashboardData();
+    } catch (err) {
+      triggerToast(err.message, 'error');
+    }
+  };
+
+  const clearBlogForm = () => {
+    setBlogTitle('');
+    setBlogSlug('');
+    setBlogCategory('Marketing');
+    setBlogExcerpt('');
+    setBlogBody('');
+    setBlogAuthor('CB Editorial');
+    setBlogImage('');
+    setBlogTags('');
+    setBlogFeatured(false);
+    setBlogPublished(false);
+  };
+
+  const handleOpenEditBlog = (blog) => {
+    setEditingBlog(blog);
+    setBlogTitle(blog.title);
+    setBlogSlug(blog.slug);
+    setBlogCategory(blog.category);
+    setBlogExcerpt(blog.excerpt || '');
+    setBlogBody(blog.body);
+    setBlogAuthor(blog.author);
+    setBlogImage(blog.image || '');
+    setBlogTags(blog.tags?.join(', ') || '');
+    setBlogFeatured(blog.featured);
+    setBlogPublished(blog.published);
+    setBlogModalOpen(true);
+  };
+
+  const handleDeleteBlog = async (blogId) => {
+    if (!window.confirm('Are you sure you want to delete this blog article?')) return;
+    try {
+      const res = await fetch(`${API_BASE}/admin/blogs/${blogId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete blog');
+      triggerToast('Blog article deleted successfully!', 'success');
+      fetchDashboardData();
+    } catch (err) {
+      triggerToast(err.message, 'error');
+    }
+  };
+
+  const handleDeleteSubscriber = async (subId) => {
+    if (!window.confirm('Remove this subscriber from list?')) return;
+    try {
+      const res = await fetch(`${API_BASE}/admin/newsletters/${subId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete subscriber');
+      triggerToast('Subscriber removed successfully!', 'success');
+      fetchDashboardData();
+    } catch (err) {
+      triggerToast(err.message, 'error');
+    }
+  };
+
+  const handleToggleContactRead = async (contactId) => {
+    try {
+      const res = await fetch(`${API_BASE}/admin/contacts/${contactId}/read`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update message status');
+      fetchDashboardData();
+    } catch (err) {
+      triggerToast(err.message, 'error');
+    }
+  };
+
+  const handleDeleteContact = async (contactId) => {
+    if (!window.confirm('Delete this contact message permanently?')) return;
+    try {
+      const res = await fetch(`${API_BASE}/admin/contacts/${contactId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete contact message');
+      triggerToast('Contact message deleted!', 'success');
+      fetchDashboardData();
+    } catch (err) {
+      triggerToast(err.message, 'error');
+    }
+  };
+
+  const handleTogglePodcast = async (podcastId) => {
+    try {
+      const res = await fetch(`${API_BASE}/admin/podcasts/toggle/${podcastId}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to toggle status');
+      triggerToast(data.message, 'success');
+      fetchDashboardData();
+    } catch (err) {
+      triggerToast(err.message, 'error');
+    }
+  };
+
+  const handleDeletePodcast = async (podcastId) => {
+    if (!window.confirm('Are you sure you want to delete this podcast episode?')) return;
+    try {
+      const res = await fetch(`${API_BASE}/admin/podcasts/${podcastId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete podcast');
+      triggerToast('Podcast deleted successfully!', 'success');
+      fetchDashboardData();
+    } catch (err) {
+      triggerToast(err.message, 'error');
+    }
   };
 
   // Render Authentication Gate if token is missing
@@ -516,6 +738,10 @@ export default function App() {
             { id: 'brands', label: 'Manage Brands', icon: Building2, badge: brands.length },
             { id: 'campaigns', label: 'Campaign Postings', icon: FileText, badge: campaigns.length },
             { id: 'escrows', label: 'Payments & Escrow', icon: CreditCard, badge: payments.length },
+            { id: 'blogs', label: 'Manage Blogs', icon: FileText, badge: blogs.length },
+            { id: 'newsletters', label: 'Newsletter Subs', icon: Mail, badge: newsletters.length },
+            { id: 'contacts', label: 'Contact Queries', icon: MessageSquare, badge: contacts.filter(c => !c.read).length },
+            { id: 'podcasts', label: 'Manage Podcasts', icon: PlayCircle, badge: podcasts.length },
             { id: 'settings', label: 'System Settings', icon: SlidersHorizontal }
           ].map(item => {
             const Icon = item.icon;
@@ -1332,7 +1558,692 @@ export default function App() {
             </form>
           </section>
         )}
+
+        {/* Manage Blogs Tab */}
+        {activeTab === 'blogs' && (
+          <section style={{ width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+              <div>
+                <h3 style={{ margin: '0 0 4px 0', fontSize: 20, fontWeight: 800, color: '#0f172a' }}>Blogs & Insights Editor</h3>
+                <p style={{ margin: 0, fontSize: 13, color: '#64748b', fontWeight: 500 }}>Create, update, publish and delete blog posts for the main platform.</p>
+              </div>
+              <button 
+                onClick={() => { clearBlogForm(); setEditingBlog(null); setBlogModalOpen(true); }}
+                style={{
+                  background: 'linear-gradient(135deg, #f97316, #ea580c)',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: 10,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 10px rgba(249, 115, 22, 0.15)'
+                }}
+              >
+                + Write Article
+              </button>
+            </div>
+
+            {/* Filter Bar */}
+            <div style={{ display: 'flex', gap: 14, marginBottom: 20, background: '#ffffff', padding: 16, borderRadius: 16, border: '1px solid #e2e8f0' }}>
+              <div style={{ flex: 1, position: 'relative' }}>
+                <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                <input 
+                  type="text" 
+                  value={blogSearch}
+                  onChange={(e) => setBlogSearch(e.target.value)}
+                  placeholder="Search articles by title, author, or category..."
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px 10px 40px',
+                    borderRadius: 10,
+                    border: '1px solid #cbd5e1',
+                    fontSize: 13,
+                    outline: 'none'
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Table */}
+            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 20, overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569', fontWeight: 700 }}>
+                    <th style={{ padding: '16px 24px' }}>Article Details</th>
+                    <th style={{ padding: '16px' }}>Category</th>
+                    <th style={{ padding: '16px' }}>Author</th>
+                    <th style={{ padding: '16px' }}>Views & Likes</th>
+                    <th style={{ padding: '16px' }}>Featured</th>
+                    <th style={{ padding: '16px' }}>Status</th>
+                    <th style={{ padding: '16px 24px', textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {blogs.filter(b => 
+                    b.title.toLowerCase().includes(blogSearch.toLowerCase()) ||
+                    b.author.toLowerCase().includes(blogSearch.toLowerCase()) ||
+                    b.category.toLowerCase().includes(blogSearch.toLowerCase())
+                  ).map(b => (
+                    <tr key={b.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '16px 24px' }}>
+                        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                          <img 
+                            src={b.image || 'https://images.unsplash.com/photo-1546074177-ffedd79d494d?q=80&w=600'} 
+                            alt={b.title} 
+                            style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', background: '#f1f5f9' }} 
+                          />
+                          <div>
+                            <span style={{ display: 'block', fontWeight: 700, color: '#0f172a' }}>{b.title}</span>
+                            <span style={{ display: 'block', fontSize: 11, color: '#64748b' }}>/{b.slug}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td style={{ padding: '16px', color: '#475569', fontWeight: 600 }}>{b.category}</td>
+                      <td style={{ padding: '16px', color: '#475569' }}>{b.author}</td>
+                      <td style={{ padding: '16px', color: '#475569' }}>
+                        <span>👁️ {b.views} views</span>
+                        <span style={{ marginLeft: 10 }}>❤️ {b.likes} likes</span>
+                      </td>
+                      <td style={{ padding: '16px' }}>
+                        <span style={{
+                          padding: '2px 8px',
+                          borderRadius: 20,
+                          fontSize: 10,
+                          fontWeight: 700,
+                          background: b.featured ? 'rgba(234, 179, 8, 0.1)' : '#f1f5f9',
+                          color: b.featured ? '#ca8a04' : '#64748b'
+                        }}>{b.featured ? 'Featured' : 'Standard'}</span>
+                      </td>
+                      <td style={{ padding: '16px' }}>
+                        <button
+                          onClick={async () => {
+                            try {
+                              const res = await fetch(`${API_BASE}/admin/blogs/${b.id}`, {
+                                method: 'PUT',
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  'Authorization': `Bearer ${token}`
+                                },
+                                body: JSON.stringify({ published: !b.published })
+                              });
+                              if (res.ok) {
+                                triggerToast(`Article ${!b.published ? 'Published' : 'Unpublished'} successfully!`, 'success');
+                                fetchDashboardData();
+                              }
+                            } catch(e) { triggerToast('Status toggle failed.', 'error'); }
+                          }}
+                          style={{
+                            padding: '4px 10px',
+                            borderRadius: 20,
+                            border: 'none',
+                            fontSize: 11,
+                            fontWeight: 750,
+                            cursor: 'pointer',
+                            background: b.published ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                            color: b.published ? '#16a34a' : '#dc2626'
+                          }}
+                        >
+                          {b.published ? 'Published' : 'Draft'}
+                        </button>
+                      </td>
+                      <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                        <button 
+                          onClick={() => handleOpenEditBlog(b)}
+                          style={{ background: 'none', border: 'none', color: '#3b82f6', fontWeight: 700, cursor: 'pointer', marginRight: 14 }}
+                        >
+                          Edit
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteBlog(b.id)}
+                          style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 700, cursor: 'pointer' }}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {blogs.length === 0 && (
+                    <tr>
+                      <td colSpan="7" style={{ padding: 40, textAlign: 'center', color: '#94a3b8', fontWeight: 600 }}>No blog articles found.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {/* Newsletter Subscribers Tab */}
+        {activeTab === 'newsletters' && (
+          <section style={{ width: '100%' }}>
+            <div style={{ marginBottom: 24 }}>
+              <h3 style={{ margin: '0 0 4px 0', fontSize: 20, fontWeight: 800, color: '#0f172a' }}>Newsletter Subscribers</h3>
+              <p style={{ margin: 0, fontSize: 13, color: '#64748b', fontWeight: 500 }}>Track dynamic marketing list signups from footer and blog sub-forms.</p>
+            </div>
+
+            <div style={{ display: 'flex', gap: 14, marginBottom: 20, background: '#ffffff', padding: 16, borderRadius: 16, border: '1px solid #e2e8f0' }}>
+              <div style={{ flex: 1, position: 'relative' }}>
+                <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                <input 
+                  type="text" 
+                  value={newsletterSearch}
+                  onChange={(e) => setNewsletterSearch(e.target.value)}
+                  placeholder="Search subscriber emails..."
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px 10px 40px',
+                    borderRadius: 10,
+                    border: '1px solid #cbd5e1',
+                    fontSize: 13,
+                    outline: 'none'
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 20, overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569', fontWeight: 700 }}>
+                    <th style={{ padding: '16px 24px' }}>Subscriber Email</th>
+                    <th style={{ padding: '16px' }}>Date Subscribed</th>
+                    <th style={{ padding: '16px 24px', textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {newsletters.filter(n => 
+                    n.email.toLowerCase().includes(newsletterSearch.toLowerCase())
+                  ).map(n => (
+                    <tr key={n.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '16px 24px', fontWeight: 700, color: '#0f172a' }}>{n.email}</td>
+                      <td style={{ padding: '16px', color: '#64748b' }}>{new Date(n.createdAt).toLocaleDateString([], { dateStyle: 'long' })}</td>
+                      <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                        <button 
+                          onClick={() => handleDeleteSubscriber(n.id)}
+                          style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 700, cursor: 'pointer' }}
+                        >
+                          Unsubscribe
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {newsletters.length === 0 && (
+                    <tr>
+                      <td colSpan="3" style={{ padding: 40, textAlign: 'center', color: '#94a3b8', fontWeight: 600 }}>No subscribers registered yet.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {/* Contact Queries Tab */}
+        {activeTab === 'contacts' && (
+          <section style={{ width: '100%' }}>
+            <div style={{ marginBottom: 24 }}>
+              <h3 style={{ margin: '0 0 4px 0', fontSize: 20, fontWeight: 800, color: '#0f172a' }}>Public Contact Messages</h3>
+              <p style={{ margin: 0, fontSize: 13, color: '#64748b', fontWeight: 500 }}>Review client and user inquiries submitted on the support page.</p>
+            </div>
+
+            <div style={{ display: 'flex', gap: 14, marginBottom: 20, background: '#ffffff', padding: 16, borderRadius: 16, border: '1px solid #e2e8f0' }}>
+              <div style={{ flex: 1, position: 'relative' }}>
+                <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                <input 
+                  type="text" 
+                  value={contactSearch}
+                  onChange={(e) => setContactSearch(e.target.value)}
+                  placeholder="Search messages by name, email, subject..."
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px 10px 40px',
+                    borderRadius: 10,
+                    border: '1px solid #cbd5e1',
+                    fontSize: 13,
+                    outline: 'none'
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 20, overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569', fontWeight: 700 }}>
+                    <th style={{ padding: '16px 24px' }}>Sender</th>
+                    <th style={{ padding: '16px' }}>Subject</th>
+                    <th style={{ padding: '16px' }}>Date</th>
+                    <th style={{ padding: '16px' }}>Read Status</th>
+                    <th style={{ padding: '16px 24px', textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {contacts.filter(c => 
+                    c.name.toLowerCase().includes(contactSearch.toLowerCase()) ||
+                    c.email.toLowerCase().includes(contactSearch.toLowerCase()) ||
+                    (c.subject && c.subject.toLowerCase().includes(contactSearch.toLowerCase()))
+                  ).map(c => (
+                    <tr key={c.id} style={{ borderBottom: '1px solid #f1f5f9', background: c.read ? 'transparent' : 'rgba(249, 115, 22, 0.02)' }}>
+                      <td style={{ padding: '16px 24px' }}>
+                        <div>
+                          <span style={{ display: 'block', fontWeight: 700, color: '#0f172a' }}>{c.name}</span>
+                          <span style={{ display: 'block', fontSize: 11, color: '#64748b' }}>{c.email}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: '16px', color: '#475569', fontWeight: c.read ? 500 : 700 }}>{c.subject || 'Inquiry'}</td>
+                      <td style={{ padding: '16px', color: '#64748b' }}>{new Date(c.createdAt).toLocaleDateString([], { dateStyle: 'medium' })}</td>
+                      <td style={{ padding: '16px' }}>
+                        <span style={{
+                          padding: '2px 8px',
+                          borderRadius: 20,
+                          fontSize: 10,
+                          fontWeight: 700,
+                          background: c.read ? '#f1f5f9' : 'rgba(34, 197, 94, 0.1)',
+                          color: c.read ? '#64748b' : '#16a34a'
+                        }}>{c.read ? 'Read' : 'New message'}</span>
+                      </td>
+                      <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                        <button 
+                          onClick={() => setViewingContact(c)}
+                          style={{ background: 'none', border: 'none', color: '#f97316', fontWeight: 700, cursor: 'pointer', marginRight: 14 }}
+                        >
+                          View
+                        </button>
+                        <button 
+                          onClick={() => handleToggleContactRead(c.id)}
+                          style={{ background: 'none', border: 'none', color: '#3b82f6', fontWeight: 700, cursor: 'pointer', marginRight: 14 }}
+                        >
+                          {c.read ? 'Mark Unread' : 'Mark Read'}
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteContact(c.id)}
+                          style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 700, cursor: 'pointer' }}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {contacts.length === 0 && (
+                    <tr>
+                      <td colSpan="5" style={{ padding: 40, textAlign: 'center', color: '#94a3b8', fontWeight: 600 }}>No contact messages in inbox.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {/* Manage Podcasts Tab */}
+        {activeTab === 'podcasts' && (
+          <section style={{ width: '100%' }}>
+            <div style={{ marginBottom: 24 }}>
+              <h3 style={{ margin: '0 0 4px 0', fontSize: 20, fontWeight: 800, color: '#0f172a' }}>Influencer Podcasts & Audios</h3>
+              <p style={{ margin: 0, fontSize: 13, color: '#64748b', fontWeight: 500 }}>Review and moderate audio files uploaded by system creators.</p>
+            </div>
+
+            <div style={{ display: 'flex', gap: 14, marginBottom: 20, background: '#ffffff', padding: 16, borderRadius: 16, border: '1px solid #e2e8f0' }}>
+              <div style={{ flex: 1, position: 'relative' }}>
+                <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                <input 
+                  type="text" 
+                  value={podcastSearch}
+                  onChange={(e) => setPodcastSearch(e.target.value)}
+                  placeholder="Search podcasts by title or creator name..."
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px 10px 40px',
+                    borderRadius: 10,
+                    border: '1px solid #cbd5e1',
+                    fontSize: 13,
+                    outline: 'none'
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 20, overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569', fontWeight: 700 }}>
+                    <th style={{ padding: '16px 24px' }}>Episode Detail</th>
+                    <th style={{ padding: '16px' }}>Host / Creator</th>
+                    <th style={{ padding: '16px' }}>Duration</th>
+                    <th style={{ padding: '16px' }}>Date Uploaded</th>
+                    <th style={{ padding: '16px' }}>Status</th>
+                    <th style={{ padding: '16px 24px', textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {podcasts.filter(p => 
+                    p.title.toLowerCase().includes(podcastSearch.toLowerCase()) ||
+                    p.creator?.name.toLowerCase().includes(podcastSearch.toLowerCase())
+                  ).map(p => (
+                    <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '16px 24px' }}>
+                        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                          <img 
+                            src={p.thumbnail || 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?q=80&w=200'} 
+                            alt={p.title} 
+                            style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover' }} 
+                          />
+                          <span style={{ fontWeight: 700, color: '#0f172a' }}>{p.title}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: '16px', color: '#475569' }}>
+                        <div>
+                          <span style={{ display: 'block', fontWeight: 650 }}>{p.creator?.name || 'Unknown'}</span>
+                          <span style={{ display: 'block', fontSize: 11, color: '#64748b' }}>@{p.creator?.handle}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: '16px', color: '#475569' }}>{p.duration || 'N/A'}</td>
+                      <td style={{ padding: '16px', color: '#64748b' }}>{new Date(p.createdAt).toLocaleDateString([], { dateStyle: 'medium' })}</td>
+                      <td style={{ padding: '16px' }}>
+                        <button
+                          onClick={() => handleTogglePodcast(p.id)}
+                          style={{
+                            padding: '4px 10px',
+                            borderRadius: 20,
+                            border: 'none',
+                            fontSize: 11,
+                            fontWeight: 750,
+                            cursor: 'pointer',
+                            background: p.published ? 'rgba(34, 197, 94, 0.1)' : 'rgba(249, 115, 22, 0.1)',
+                            color: p.published ? '#16a34a' : '#f97316'
+                          }}
+                        >
+                          {p.published ? 'Published' : 'Hidden'}
+                        </button>
+                      </td>
+                      <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                        <button 
+                          onClick={() => handleDeletePodcast(p.id)}
+                          style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 700, cursor: 'pointer' }}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {podcasts.length === 0 && (
+                    <tr>
+                      <td colSpan="6" style={{ padding: 40, textAlign: 'center', color: '#94a3b8', fontWeight: 600 }}>No podcasts uploaded by creators.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
       </main>
+
+      {/* Blog Editor Modal */}
+      {blogModalOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100vh',
+          background: 'rgba(15, 23, 42, 0.3)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 2000,
+          fontFamily: 'system-ui, -apple-system, sans-serif'
+        }}>
+          <div style={{
+            width: '100%',
+            maxWidth: 680,
+            background: '#ffffff',
+            borderRadius: 24,
+            border: '1px solid rgba(0,0,0,0.06)',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+            maxHeight: '90vh',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            animation: 'fadeIn 0.2s ease'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 30px', borderBottom: '1px solid #e2e8f0' }}>
+              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0f172a' }}>
+                {editingBlog ? 'Edit Blog Article' : 'Write New Blog Article'}
+              </h3>
+              <button 
+                onClick={() => { setBlogModalOpen(false); setEditingBlog(null); }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveBlog} style={{ flex: 1, padding: 30, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 6 }}>ARTICLE TITLE</label>
+                  <input 
+                    type="text" 
+                    value={blogTitle} 
+                    onChange={(e) => {
+                      setBlogTitle(e.target.value);
+                      if (!editingBlog) {
+                        setBlogSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
+                      }
+                    }}
+                    placeholder="E.g., 5 Rules to Negotiate Brand Deals"
+                    required
+                    style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 6 }}>URL SLUG</label>
+                  <input 
+                    type="text" 
+                    value={blogSlug} 
+                    onChange={(e) => setBlogSlug(e.target.value)}
+                    placeholder="E.g., rules-to-negotiate-brand-deals"
+                    required
+                    style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 20 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 6 }}>CATEGORY</label>
+                  <select 
+                    value={blogCategory} 
+                    onChange={(e) => setBlogCategory(e.target.value)}
+                    style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none', background: '#fff' }}
+                  >
+                    <option value="Marketing">Marketing</option>
+                    <option value="Creator Economy">Creator Economy</option>
+                    <option value="Brand Deals">Brand Deals</option>
+                    <option value="Tech Updates">Tech Updates</option>
+                    <option value="SaaS News">SaaS News</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 6 }}>AUTHOR NAME</label>
+                  <input 
+                    type="text" 
+                    value={blogAuthor} 
+                    onChange={(e) => setBlogAuthor(e.target.value)}
+                    required
+                    style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 6 }}>TAGS (COMMA SEPARATED)</label>
+                  <input 
+                    type="text" 
+                    value={blogTags} 
+                    onChange={(e) => setBlogTags(e.target.value)}
+                    placeholder="E.g., influencer, marketing, pricing"
+                    style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none' }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 6 }}>COVER IMAGE URL</label>
+                <input 
+                  type="text" 
+                  value={blogImage} 
+                  onChange={(e) => setBlogImage(e.target.value)}
+                  placeholder="https://example.com/banner.jpg"
+                  style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 6 }}>EXCERPT / SHORT SUMMARY</label>
+                <input 
+                  type="text" 
+                  value={blogExcerpt} 
+                  onChange={(e) => setBlogExcerpt(e.target.value)}
+                  placeholder="Brief 1-line description of this article..."
+                  style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 6 }}>BODY CONTENT (TEXT / MARKDOWN)</label>
+                <textarea 
+                  value={blogBody} 
+                  onChange={(e) => setBlogBody(e.target.value)}
+                  rows={8}
+                  placeholder="Write complete article details here..."
+                  required
+                  style={{ width: '100%', padding: 12, borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 13, outline: 'none', fontFamily: 'monospace' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: 30, background: '#f8fafc', padding: 16, borderRadius: 12, border: '1px solid #e2e8f0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <input 
+                    type="checkbox" 
+                    id="blog-feat" 
+                    checked={blogFeatured} 
+                    onChange={(e) => setBlogFeatured(e.target.checked)} 
+                    style={{ width: 16, height: 16, cursor: 'pointer' }}
+                  />
+                  <label htmlFor="blog-feat" style={{ fontSize: 12, fontWeight: 700, color: '#334155', cursor: 'pointer' }}>Feature on Homepage</label>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <input 
+                    type="checkbox" 
+                    id="blog-pub" 
+                    checked={blogPublished} 
+                    onChange={(e) => setBlogPublished(e.target.checked)} 
+                    style={{ width: 16, height: 16, cursor: 'pointer' }}
+                  />
+                  <label htmlFor="blog-pub" style={{ fontSize: 12, fontWeight: 700, color: '#334155', cursor: 'pointer' }}>Publish Immediately (Draft if unchecked)</label>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: 14, justifyContent: 'flex-end', marginTop: 10 }}>
+                <button 
+                  type="button" 
+                  onClick={() => { setBlogModalOpen(false); setEditingBlog(null); }}
+                  style={{ padding: '10px 18px', background: '#f1f5f9', color: '#475569', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  style={{ padding: '10px 22px', background: '#22c55e', color: '#fff', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 10px rgba(34, 197, 94, 0.15)' }}
+                >
+                  Save Post
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* View Contact Inquiry Modal */}
+      {viewingContact && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100vh',
+          background: 'rgba(15, 23, 42, 0.25)',
+          backdropFilter: 'blur(3px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 2000,
+          fontFamily: 'system-ui, -apple-system, sans-serif'
+        }}>
+          <div style={{
+            width: '100%',
+            maxWidth: 500,
+            background: '#ffffff',
+            borderRadius: 24,
+            border: '1px solid rgba(0,0,0,0.06)',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.08)',
+            padding: 30,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 20,
+            animation: 'fadeIn 0.2s ease'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: 16 }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: '#0f172a' }}>Contact Inquiry Detail</h3>
+                <span style={{ fontSize: 11, color: '#64748b' }}>Submitted on {new Date(viewingContact.createdAt).toLocaleString()}</span>
+              </div>
+              <button 
+                onClick={() => setViewingContact(null)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div style={{ background: '#f8fafc', padding: 16, borderRadius: 12, border: '1px solid #e2e8f0' }}>
+              <div style={{ marginBottom: 10 }}>
+                <span style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#94a3b8' }}>SENDER NAME</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>{viewingContact.name}</span>
+              </div>
+              <div style={{ marginBottom: 10 }}>
+                <span style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#94a3b8' }}>EMAIL ADDRESS</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>{viewingContact.email}</span>
+              </div>
+              <div>
+                <span style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#94a3b8' }}>INQUIRY SUBJECT</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#f97316' }}>{viewingContact.subject || 'Public Inquiry'}</span>
+              </div>
+            </div>
+
+            <div>
+              <span style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#94a3b8', marginBottom: 6 }}>MESSAGE CONTENT</span>
+              <p style={{ margin: 0, fontSize: 13, color: '#334155', lineHeight: 1.6, background: '#fff', border: '1px solid #cbd5e1', padding: 14, borderRadius: 12, whiteSpace: 'pre-wrap' }}>
+                {viewingContact.message}
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', gap: 14, justifyContent: 'flex-end', marginTop: 10 }}>
+              <button 
+                onClick={() => {
+                  if (!viewingContact.read) handleToggleContactRead(viewingContact.id);
+                  setViewingContact(null);
+                }}
+                style={{ padding: '10px 18px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+              >
+                Close & Mark Read
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* KYC Document Audit Drawer Slide-in Modal */}
       {drawerOpen && selectedCreator && (
