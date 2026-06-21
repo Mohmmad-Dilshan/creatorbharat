@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "d3": "^7.9.0",
@@ -24,8 +26,12 @@
     "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^29.1.1",
     "vite": "^6.3.5",
-    "vite-plugin-pwa": "^0.21.2"
+    "vite-plugin-pwa": "^0.21.2",
+    "vitest": "^4.1.9"
   }
 }

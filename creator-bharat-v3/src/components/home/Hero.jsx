@@ -630,13 +630,13 @@ TourBadge.propTypes = {
 const PrimaryButtons = memo(({ mob, go }) => {
   const { t } = useTranslation();
   return (
-    <div className="au d3" style={{ display: 'flex', flexDirection: 'row', gap: mob ? 12 : 20, marginBottom: mob ? 16 : 20, justifyContent: 'center', width: mob ? '100%' : 'auto', maxWidth: mob ? 480 : 'none', padding: mob ? '0 16px' : 0, boxSizing: 'border-box', alignItems: 'center' }}>
-      <Btn lg full={false} onClick={() => go('/join')} style={{ flex: mob ? 1 : 'initial', padding: mob ? '18px 14px' : '28px 64px', fontSize: mob ? 15 : 20, minWidth: mob ? 0 : 'auto', background: '#0f172a', color: '#fff', borderRadius: 100, fontWeight: 950, border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-        <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: mob ? 6 : 12 }}>🚀 {t('btnCreatorApply', 'Join as Creator')}</span>
+    <div className="au d3" style={{ display: 'flex', flexDirection: 'row', gap: mob ? 8 : 20, marginBottom: mob ? 16 : 20, justifyContent: 'center', width: mob ? '100%' : 'auto', maxWidth: mob ? 480 : 'none', padding: mob ? '0 8px' : 0, boxSizing: 'border-box', alignItems: 'center' }}>
+      <Btn lg full={mob} onClick={() => go('/join')} style={{ flex: mob ? 1 : 'initial', padding: mob ? '12px 10px' : '28px 64px', fontSize: mob ? 12 : 20, minWidth: mob ? 0 : 'auto', background: '#0f172a', color: '#fff', borderRadius: 100, fontWeight: 950, border: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.2)', position: 'relative', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+        <span style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: mob ? 4 : 12 }}>🚀 {t('btnCreatorApplyMobile', 'Join as Creator')}</span>
         <div style={{ position: 'absolute', top: 0, left: '-100%', width: '50%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)', animation: 'shimmer 3s infinite', transform: 'skewX(-20deg)' }} />
       </Btn>
-      <Btn lg variant="ghost" full={false} onClick={() => go('/creators')} style={{ flex: mob ? 1 : 'initial', padding: mob ? '18px 14px' : '26px 56px', fontSize: mob ? 15 : 18, minWidth: mob ? 0 : 'auto', background: 'rgba(255,255,255,0.8)', color: '#0f172a', borderRadius: 100, fontWeight: 950, border: '1.5px solid #f1f5f9', backdropFilter: 'blur(20px)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)', whiteSpace: 'nowrap' }}>
-        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: mob ? 6 : 12 }}>💼 {t('btnFindCreators', 'Hire Talent')}</span>
+      <Btn lg variant="ghost" full={mob} onClick={() => go('/creators')} style={{ flex: mob ? 1 : 'initial', padding: mob ? '12px 10px' : '26px 56px', fontSize: mob ? 12 : 18, minWidth: mob ? 0 : 'auto', background: 'rgba(255,255,255,0.8)', color: '#0f172a', borderRadius: 100, fontWeight: 950, border: '1.5px solid #f1f5f9', backdropFilter: 'blur(20px)', boxShadow: '0 10px 30px rgba(0,0,0,0.02)', whiteSpace: 'nowrap' }}>
+        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: mob ? 4 : 12 }}>💼 {t('btnFindCreatorsMobile', 'Hire Talent')}</span>
       </Btn>
     </div>
   );
