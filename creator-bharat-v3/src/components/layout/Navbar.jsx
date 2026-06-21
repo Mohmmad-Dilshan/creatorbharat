@@ -213,6 +213,7 @@ NavLinks.propTypes = {
 
 const UserActions = ({ st, dsp, go, mob }) => {
   const { t, i18n } = useTranslation();
+  const location = useLocation();
   const [lang, setLang] = useState('EN');
   const [langOpen, setLangOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -220,16 +221,66 @@ const UserActions = ({ st, dsp, go, mob }) => {
   const profileRef = useRef(null);
 
   const LANGS = [
-    { code: 'EN', id: 'en', label: 'English' },
-    { code: 'HI', id: 'hi', label: 'हिन्दी (Hindi)' },
-    { code: 'RJ', id: 'rj', label: 'राजस्थानी (Rajasthani)' }
+    { code: 'EN', id: 'en', label: 'English', isGoogle: false },
+    { code: 'HI', id: 'hi', label: 'हिन्दी (Hindi)', isGoogle: false },
+    { code: 'RJ', id: 'rj', label: 'राजस्थानी (Rajasthani)', isGoogle: false },
+    { code: 'AS', id: 'as', label: 'অসমীয়া (Assamese)', isGoogle: true },
+    { code: 'BN', id: 'bn', label: 'বাংলা (Bengali)', isGoogle: true },
+    { code: 'BRX', id: 'brx', label: 'बोडो (Bodo)', isGoogle: true },
+    { code: 'DOI', id: 'doi', label: 'डोगरी (Dogri)', isGoogle: true },
+    { code: 'GU', id: 'gu', label: 'ગુજરાતી (Gujarati)', isGoogle: true },
+    { code: 'KN', id: 'kn', label: 'ಕನ್ನಡ (Kannada)', isGoogle: true },
+    { code: 'KS', id: 'ks', label: 'कश्मीरी (Kashmiri)', isGoogle: true },
+    { code: 'KOK', id: 'kok', label: 'कोंकणी (Konkani)', isGoogle: true },
+    { code: 'MAI', id: 'mai', label: 'मैथिली (Maithili)', isGoogle: true },
+    { code: 'ML', id: 'ml', label: 'മലയാളം (Malayalam)', isGoogle: true },
+    { code: 'MNI', id: 'mni', label: 'मणिपुरी (Manipuri)', isGoogle: true },
+    { code: 'MR', id: 'mr', label: 'मराठी (Marathi)', isGoogle: true },
+    { code: 'NE', id: 'ne', label: 'नेपाली (Nepali)', isGoogle: true },
+    { code: 'OR', id: 'or', label: 'ओड़िया (Odia)', isGoogle: true },
+    { code: 'PA', id: 'pa', label: 'ਪੰਜਾਬੀ (Punjabi)', isGoogle: true },
+    { code: 'SA', id: 'sa', label: 'संस्कृत (Sanskrit)', isGoogle: true },
+    { code: 'SAT', id: 'sat', label: 'संथाली (Santali)', isGoogle: true },
+    { code: 'SD', id: 'sd', label: 'सिंधी (Sindhi)', isGoogle: true },
+    { code: 'TA', id: 'ta', label: 'தமிழ் (Tamil)', isGoogle: true },
+    { code: 'TE', id: 'te', label: 'తెలుగు (Telugu)', isGoogle: true },
+    { code: 'UR', id: 'ur', label: 'اردو (Urdu)', isGoogle: true }
   ];
 
   const handleLangChange = (l) => {
     setLang(l.code);
     setLangOpen(false);
-    i18n.changeLanguage(l.id);
-    dsp({ t: 'TOAST', d: { type: 'success', msg: `Language changed to ${l.label}` } });
+
+    const selectEl = document.querySelector('.goog-te-combo');
+    if (l.isGoogle) {
+      // Force React/i18next back to English so DOM elements render in English,
+      // which allows Google Translate (configured with pageLanguage: 'en') to translate them properly.
+      i18n.changeLanguage('en');
+
+      if (selectEl) {
+        selectEl.value = l.id;
+        selectEl.dispatchEvent(new Event('change'));
+        dsp({ t: 'TOAST', d: { type: 'success', msg: `Translating page to ${l.label}...` } });
+      } else {
+        dsp({ t: 'TOAST', d: { type: 'error', msg: `Translation service not ready. Please try again.` } });
+      }
+    } else {
+      if (selectEl) {
+        selectEl.value = 'en';
+        selectEl.dispatchEvent(new Event('change'));
+      }
+      // Clear google translate cookies to prevent automatic translation on reload
+      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname + ";";
+      const hostParts = window.location.hostname.split('.');
+      if (hostParts.length >= 2) {
+        const domain = "." + hostParts.slice(-2).join('.');
+        document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + domain + ";";
+      }
+
+      i18n.changeLanguage(l.id);
+      dsp({ t: 'TOAST', d: { type: 'success', msg: `Language changed to ${l.label}` } });
+    }
   };
 
   useEffect(() => {
@@ -242,14 +293,58 @@ const UserActions = ({ st, dsp, go, mob }) => {
       }
     };
     document.addEventListener('mousedown', handleOutsideClick);
-    
-    if (i18n.language) {
+
+    // Read googtrans cookie to synchronize lang code on mount
+    const getCookie = (name) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    };
+
+    const googtrans = getCookie('googtrans');
+    let initialized = false;
+    if (googtrans) {
+      const code = googtrans.split('/').pop();
+      if (code) {
+        const found = LANGS.find(l => l.id.toLowerCase() === code.toLowerCase());
+        if (found) {
+          setLang(found.code);
+          initialized = true;
+          // Sync i18n back to 'en' so Google Translate doesn't conflict
+          if (found.isGoogle) {
+            i18n.changeLanguage('en');
+          }
+        }
+      }
+    }
+
+    if (!initialized && i18n.language) {
       const found = LANGS.find(l => l.id === i18n.language.substring(0, 2));
       if (found) setLang(found.code);
     }
     
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
   }, [i18n.language]);
+
+  // Re-trigger Google Translate once on route changes to ensure new page translates completely
+  useEffect(() => {
+    const activeLang = LANGS.find(l => l.code === lang);
+    if (activeLang && activeLang.isGoogle) {
+      const timer = setTimeout(() => {
+        const selectEl = document.querySelector('.goog-te-combo');
+        if (selectEl) {
+          if (selectEl.value !== activeLang.id) {
+            selectEl.value = activeLang.id;
+          }
+          selectEl.dispatchEvent(new Event('change'));
+        }
+      }, 600); // 600ms delay to let the route mount
+      return () => clearTimeout(timer);
+    }
+  }, [location.pathname, lang]);
 
   const handleLogout = () => {
     setProfileOpen(false);
