@@ -6,6 +6,7 @@ import { z } from 'zod';
 import prisma from '../prisma.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { sendEmail } from '../utils/mailer.js';
+import crypto from 'crypto';
 
 const router = express.Router();
 
@@ -353,6 +354,102 @@ router.post('/login', async (req, res) => {
 // Get Active Session Endpoint
 router.get('/me', authMiddleware, (req, res) => {
   res.json({ user: safeUser(req.user) });
+});
+
+// In-memory store for password reset tokens (maps resetToken -> { userId, expiresAt })
+const resetStore = new Map();
+
+// Request Password Reset Link
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'Email address is required.' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase().trim() },
+      include: { creator: true, brand: true }
+    });
+
+    // For security, don't reveal if user exists or not, but return success
+    if (!user) {
+      return res.json({ success: true, message: 'If this email exists, a reset link has been sent.' });
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = Date.now() + 15 * 60 * 1000; // 15 minutes
+
+    resetStore.set(token, { userId: user.id, expiresAt });
+
+    const origin = req.headers.origin || 'http://localhost:5173';
+    const resetUrl = `${origin}/reset-password?token=${token}`;
+
+    const userName = user.creator?.name || user.brand?.companyName || 'Member';
+
+    await sendEmail({
+      to: user.email,
+      subject: 'Reset Your CreatorBharat Password 🔒',
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; color: #0f172a; max-width: 600px; margin: auto; border: 1px solid #f1f5f9; border-radius: 12px;">
+          <h2 style="color: #FF9431;">Reset Your Password 🔒</h2>
+          <p>Hello ${userName},</p>
+          <p>We received a request to reset the password for your CreatorBharat account. Click the button below to set a new password:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${resetUrl}" style="background-color: #FF9431; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 100px; font-weight: 900; display: inline-block;">Reset Password</a>
+          </div>
+          <p style="font-size: 12px; color: #64748b;">This link will expire in 15 minutes. If you did not request a password reset, please ignore this email.</p>
+          <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 24px 0;" />
+          <p style="font-size: 11px; color: #94a3b8;">If the button above does not work, copy and paste this URL into your browser:</p>
+          <p style="font-size: 11px; color: #FF9431; word-break: break-all;">${resetUrl}</p>
+          <p style="margin-top: 24px; font-size: 13px;">Best regards,<br/><strong>Team CreatorBharat</strong></p>
+        </div>
+      `
+    });
+
+    res.json({ success: true, message: 'Password reset email sent successfully.' });
+  } catch (err) {
+    console.error('[forgot-password] Error:', err.message);
+    res.status(500).json({ error: 'Failed to request password reset. Please try again.' });
+  }
+});
+
+// Perform Password Reset
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) {
+      return res.status(400).json({ error: 'Reset token and new password are required.' });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters long.' });
+    }
+
+    const record = resetStore.get(token);
+    if (!record) {
+      return res.status(400).json({ error: 'This password reset link is invalid or has expired.' });
+    }
+
+    if (Date.now() > record.expiresAt) {
+      resetStore.delete(token);
+      return res.status(400).json({ error: 'This password reset link has expired. Please request a new one.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await prisma.user.update({
+      where: { id: record.userId },
+      data: { password: hashedPassword }
+    });
+
+    resetStore.delete(token);
+
+    res.json({ success: true, message: 'Your password has been reset successfully.' });
+  } catch (err) {
+    console.error('[reset-password] Error:', err.message);
+    res.status(500).json({ error: 'Failed to reset password. Please try again.' });
+  }
 });
 
 export default router;
