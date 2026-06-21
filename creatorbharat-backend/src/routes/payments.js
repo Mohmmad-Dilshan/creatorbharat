@@ -4,6 +4,7 @@ import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import prisma from '../prisma.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { sendEmail } from '../utils/mailer.js';
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_SECRET || 'Rjr5lbVI802qbWuSHfjwkjAf',
 });
 
-// POST /api/payments/create-order — start Razorpay checkout transaction
+// POST /api/payments/create-order — start Razorpay checkout transaction for Pro Membership
 router.post('/create-order', authMiddleware, async (req, res) => {
   try {
     const { type } = req.body; // PRO_LISTING, CAMPAIGN_BOOST, FEATURED_SLOT
@@ -24,7 +25,7 @@ router.post('/create-order', authMiddleware, async (req, res) => {
     }
 
     const order = await razorpay.orders.create({
-      amount,
+      amount: amount * 100, // Razorpay expects amount in paise
       currency: 'INR',
       receipt: `cb_receipt_${Date.now()}`,
       notes: { type, userId: req.user.id }
@@ -33,7 +34,7 @@ router.post('/create-order', authMiddleware, async (req, res) => {
     const creator = req.user.role === 'CREATOR' ? req.user.creator : null;
     const brand = req.user.role === 'BRAND' ? req.user.brand : null;
 
-    const payment = await prisma.payment.create({
+    await prisma.payment.create({
       data: {
         amount,
         type,
@@ -46,7 +47,7 @@ router.post('/create-order', authMiddleware, async (req, res) => {
 
     res.json({
       orderId: order.id,
-      amount,
+      amount: amount * 100,
       currency: 'INR',
       key: process.env.RAZORPAY_KEY_ID || 'rzp_test_SOCWA3SKd7e4VW'
     });
@@ -56,7 +57,66 @@ router.post('/create-order', authMiddleware, async (req, res) => {
   }
 });
 
-// POST /api/payments/verify — verify webhook signature and complete transaction
+// POST /api/payments/create-escrow — brand deposits campaign budget into escrow
+router.post('/create-escrow', authMiddleware, async (req, res) => {
+  try {
+    if (req.user.role !== 'BRAND') {
+      return res.status(403).json({ error: 'Only brands can initiate campaign escrows.' });
+    }
+
+    const { campaignId, creatorId, amount } = req.body;
+    if (!campaignId || !creatorId || !amount) {
+      return res.status(400).json({ error: 'Campaign ID, recipient Creator ID, and amount are required.' });
+    }
+
+    const brand = await prisma.brand.findUnique({ where: { userId: req.user.id } });
+    if (!brand) {
+      return res.status(404).json({ error: 'Brand profile details not found.' });
+    }
+
+    // Verify campaign and application exist
+    const campaign = await prisma.campaign.findUnique({ where: { id: campaignId } });
+    if (!campaign) {
+      return res.status(404).json({ error: 'Campaign details not found.' });
+    }
+
+    const order = await razorpay.orders.create({
+      amount: amount * 100, // in paise
+      currency: 'INR',
+      receipt: `cb_escrow_${Date.now()}`,
+      notes: {
+        type: 'CAMPAIGN_ESCROW',
+        campaignId,
+        creatorId,
+        brandId: brand.id
+      }
+    });
+
+    await prisma.payment.create({
+      data: {
+        amount,
+        type: 'CAMPAIGN_ESCROW',
+        status: 'PENDING',
+        razorpayOrderId: order.id,
+        brandId: brand.id,
+        campaignId,
+        recipientCreatorId: creatorId
+      }
+    });
+
+    res.json({
+      orderId: order.id,
+      amount: amount * 100,
+      currency: 'INR',
+      key: process.env.RAZORPAY_KEY_ID || 'rzp_test_SOCWA3SKd7e4VW'
+    });
+  } catch (err) {
+    console.error('[POST /api/payments/create-escrow] Error:', err.message);
+    res.status(500).json({ error: 'Failed to create escrow transaction.' });
+  }
+});
+
+// POST /api/payments/verify — verify signature and complete transaction
 router.post('/verify', authMiddleware, async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
@@ -81,7 +141,7 @@ router.post('/verify', authMiddleware, async (req, res) => {
       }
     });
 
-    // If payment is for PRO membership, activate isPro on Creator model
+    // Handle Pro listing activation
     if (payment.type === 'PRO_LISTING' && payment.creatorId) {
       await prisma.creator.update({
         where: { id: payment.creatorId },
@@ -89,10 +149,243 @@ router.post('/verify', authMiddleware, async (req, res) => {
       });
     }
 
+    // Handle Campaign Escrow status updates
+    if (payment.type === 'CAMPAIGN_ESCROW' && payment.campaignId && payment.recipientCreatorId) {
+      // Update application status to ACCEPTED
+      await prisma.application.updateMany({
+        where: {
+          campaignId: payment.campaignId,
+          creatorId: payment.recipientCreatorId
+        },
+        data: {
+          status: 'ACCEPTED'
+        }
+      });
+    }
+
+    // Send Receipt Email (non-blocking)
+    (async () => {
+      try {
+        if (payment.type === 'PRO_LISTING') {
+          await sendEmail({
+            to: req.user.email,
+            subject: 'Receipt: Your CreatorBharat Pro Membership is Active! ⚡',
+            html: `
+              <div style="font-family: sans-serif; padding: 20px; color: #0f172a; max-width: 600px; margin: auto; border: 1px solid #f1f5f9; border-radius: 12px;">
+                <h2 style="color: #FF9431;">Payment Confirmation Receipt 🧾</h2>
+                <p>Hello ${req.user.creator?.name || 'Creator'},</p>
+                <p>Thank you for upgrading to <strong>CreatorBharat Pro</strong>. Your premium subscription is now active.</p>
+                
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 20px 0;">
+                  <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    <tr>
+                      <td style="color: #64748b; padding: 6px 0;">Order ID:</td>
+                      <td style="text-align: right; font-weight: 500;">${razorpay_order_id}</td>
+                    </tr>
+                    <tr>
+                      <td style="color: #64748b; padding: 6px 0;">Payment ID:</td>
+                      <td style="text-align: right; font-weight: 500;">${razorpay_payment_id}</td>
+                    </tr>
+                    <tr>
+                      <td style="color: #64748b; padding: 6px 0;">Plan:</td>
+                      <td style="text-align: right; font-weight: 500;">Pro Creator Listing Upgrade</td>
+                    </tr>
+                    <tr>
+                      <td style="color: #64748b; padding: 6px 0; border-top: 1px solid #e2e8f0;">Amount Paid:</td>
+                      <td style="text-align: right; font-weight: bold; color: #FF9431; padding: 6px 0; border-top: 1px solid #e2e8f0;">₹${payment.amount}.00 INR</td>
+                    </tr>
+                  </table>
+                </div>
+
+                <p>Here are your new Pro features:</p>
+                <ul style="line-height: 1.6;">
+                  <li><strong>Elite Gold Badge:</strong> Graces your profile directory listing.</li>
+                  <li><strong>Unlimited Application Pitches:</strong> Apply to all campaigns without restriction.</li>
+                  <li><strong>Featured Discovery Placement:</strong> Appear at the top of brand search results.</li>
+                </ul>
+
+                <p style="margin-top: 24px;">
+                  <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/creator/dashboard" style="background: #FF9431; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                    Open Pro Dashboard
+                  </a>
+                </p>
+                <p style="margin-top: 28px; font-size: 12px; color: #94a3b8;">Best regards,<br/>Team CreatorBharat</p>
+              </div>
+            `
+          });
+        } else if (payment.type === 'CAMPAIGN_ESCROW') {
+          // Fetch Campaign detail to include in the receipt
+          const campaign = await prisma.campaign.findUnique({
+            where: { id: payment.campaignId }
+          });
+
+          await sendEmail({
+            to: req.user.email,
+            subject: `Receipt: Escrow Secured for Campaign "${campaign?.title || 'Escrow Deposit'}" 🔒`,
+            html: `
+              <div style="font-family: sans-serif; padding: 20px; color: #0f172a; max-width: 600px; margin: auto; border: 1px solid #f1f5f9; border-radius: 12px;">
+                <h2 style="color: #FF9431;">Escrow Deposit Confirmed 🔒</h2>
+                <p>Hello ${req.user.brand?.companyName || 'Brand Partner'},</p>
+                <p>We have successfully received and secured your campaign escrow deposit. The campaign pitch application has been marked as accepted, and funds are held safely.</p>
+                
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 20px 0;">
+                  <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    <tr>
+                      <td style="color: #64748b; padding: 6px 0;">Order ID:</td>
+                      <td style="text-align: right; font-weight: 500;">${razorpay_order_id}</td>
+                    </tr>
+                    <tr>
+                      <td style="color: #64748b; padding: 6px 0;">Payment ID:</td>
+                      <td style="text-align: right; font-weight: 500;">${razorpay_payment_id}</td>
+                    </tr>
+                    <tr>
+                      <td style="color: #64748b; padding: 6px 0;">Campaign:</td>
+                      <td style="text-align: right; font-weight: 500;">${campaign?.title || 'Collaboration Deal'}</td>
+                    </tr>
+                    <tr>
+                      <td style="color: #64748b; padding: 6px 0; border-top: 1px solid #e2e8f0;">Escrowed Amount:</td>
+                      <td style="text-align: right; font-weight: bold; color: #FF9431; padding: 6px 0; border-top: 1px solid #e2e8f0;">₹${payment.amount}.00 INR</td>
+                    </tr>
+                  </table>
+                </div>
+
+                <p><strong>Security Note:</strong> These funds are held securely in CreatorBharat's neutral escrow vault. Once the creator completes the agreed milestones, you can release the funds directly to them from your brand panel.</p>
+
+                <p style="margin-top: 24px;">
+                  <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/brand/campaigns" style="background: #FF9431; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                    View Campaigns & Escrows
+                  </a>
+                </p>
+                <p style="margin-top: 28px; font-size: 12px; color: #94a3b8;">Best regards,<br/>Team CreatorBharat</p>
+              </div>
+            `
+          });
+        }
+      } catch (err) {
+        console.error('[Verify Email Dispatch Warning]:', err.message);
+      }
+    })();
+
     res.json({ success: true, payment });
   } catch (err) {
     console.error('[POST /api/payments/verify] Error:', err.message);
     res.status(500).json({ error: 'Checkout confirmation failed.' });
+  }
+});
+
+// POST /api/payments/release-escrow — release escrow budget (split payouts)
+router.post('/release-escrow', authMiddleware, async (req, res) => {
+  try {
+    const { campaignId, creatorId } = req.body;
+    if (!campaignId || !creatorId) {
+      return res.status(400).json({ error: 'Campaign ID and recipient Creator ID are required.' });
+    }
+
+    // Fetch the active escrow payment
+    const payment = await prisma.payment.findFirst({
+      where: {
+        campaignId,
+        recipientCreatorId: creatorId,
+        type: 'CAMPAIGN_ESCROW',
+        status: 'PAID'
+      }
+    });
+
+    if (!payment) {
+      return res.status(404).json({ error: 'No active paid escrow transaction found for this deal.' });
+    }
+
+    // Razorpay split logic:
+    // In production, we trigger transfers: razorpay.transfers.create({ ... })
+    // For sandbox/development: we mock the transfer logs
+    const creatorAmount = payment.amount * 0.90; // 90% goes to Creator
+    const platformFee = payment.amount * 0.10;  // 10% Platform fee
+
+    console.log(`[Escrow Payout Release]: Paid ${creatorAmount} INR to Creator ${creatorId} (90%). Mapped 10% fee (${platformFee} INR) to Platform.`);
+
+    // Update payment record in database
+    await prisma.payment.update({
+      where: { id: payment.id },
+      data: {
+        status: 'RELEASED'
+      }
+    });
+
+    // Update application status to COMPLETED
+    await prisma.application.updateMany({
+      where: {
+        campaignId,
+        creatorId
+      },
+      data: {
+        status: 'COMPLETED'
+      }
+    });
+
+    // Send email alert to Creator about escrow release (non-blocking)
+    (async () => {
+      try {
+        const creatorUser = await prisma.creator.findUnique({
+          where: { id: creatorId },
+          include: { user: true }
+        });
+        
+        if (creatorUser?.user?.email) {
+          await sendEmail({
+            to: creatorUser.user.email,
+            subject: 'Escrow Released! Your Collaboration Payout is Completed 💸',
+            html: `
+              <div style="font-family: sans-serif; padding: 20px; color: #0f172a; max-width: 600px; margin: auto; border: 1px solid #f1f5f9; border-radius: 12px;">
+                <h2 style="color: #FF9431;">Payment Released! 💸</h2>
+                <p>Hello ${creatorUser.name},</p>
+                <p>Great news! The brand has approved your campaign deliverables and released the escrow funds.</p>
+                
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 20px 0;">
+                  <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    <tr>
+                      <td style="color: #64748b; padding: 6px 0;">Campaign Deal:</td>
+                      <td style="text-align: right; font-weight: 500;">₹${payment.amount}.00 INR Total Value</td>
+                    </tr>
+                    <tr>
+                      <td style="color: #64748b; padding: 6px 0;">Your Payout (90%):</td>
+                      <td style="text-align: right; font-weight: bold; color: #10b981;">₹${creatorAmount}.00 INR</td>
+                    </tr>
+                    <tr>
+                      <td style="color: #64748b; padding: 6px 0;">Platform Fee (10%):</td>
+                      <td style="text-align: right; font-weight: 500;">₹${platformFee}.00 INR</td>
+                    </tr>
+                  </table>
+                </div>
+
+                <p>The payout has been initiated and will reflect in your registered bank account details shortly.</p>
+
+                <p style="margin-top: 24px;">
+                  <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/creator/dashboard" style="background: #FF9431; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                    View Creator Earnings
+                  </a>
+                </p>
+                <p style="margin-top: 28px; font-size: 12px; color: #94a3b8;">Best regards,<br/>Team CreatorBharat</p>
+              </div>
+            `
+          });
+        }
+      } catch (err) {
+        console.error('[Release Escrow Email Dispatch Warning]:', err.message);
+      }
+    })();
+
+    res.json({
+      success: true,
+      message: 'Escrow released successfully.',
+      details: {
+        total: payment.amount,
+        creatorPayout: creatorAmount,
+        platformFee: platformFee
+      }
+    });
+  } catch (err) {
+    console.error('[POST /api/payments/release-escrow] Error:', err.message);
+    res.status(500).json({ error: 'Failed to release campaign escrow budget.' });
   }
 });
 

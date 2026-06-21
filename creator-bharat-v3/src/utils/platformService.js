@@ -189,26 +189,43 @@ function getEnrichedCreator(creator) {
 }
 
 // ─── Creators ───────────────────────────────────────────────
-export async function fetchCreators({ limit = 250, force = false } = {}) {
-  // Return cache if valid
-  if (!force && _cache.creators && Date.now() < _cache.expiry) {
+export async function fetchCreators({ limit = 250, force = false, filters = {} } = {}) {
+  const hasFilters = filters && Object.keys(filters).length > 0;
+
+  // Return cache if valid (only when no active search filters are set)
+  if (!force && !hasFilters && _cache.creators && Date.now() < _cache.expiry) {
     return _cache.creators;
   }
 
   // Return fallback if in failure cooldown
-  if (!force && Date.now() < _cache.lastFailure + FAILURE_COOLDOWN) {
+  if (!force && !hasFilters && Date.now() < _cache.lastFailure + FAILURE_COOLDOWN) {
     const local = LS.get('cb_creators', []);
     return local.length > 0 ? local : SEED_CREATORS;
   }
 
-  // Deduplicate inflight requests
-  if (_creatorsPromise && !force) return _creatorsPromise;
+  // Deduplicate inflight requests (only when no active filters)
+  if (_creatorsPromise && !force && !hasFilters) return _creatorsPromise;
 
-  _creatorsPromise = (async () => {
+  const fetchPromise = (async () => {
     try {
-      // Use a larger limit by default for shared calls to satisfy all hooks
-      const fetchLimit = Math.max(limit, 500); 
-      const res = await apiCall(`/creators?limit=${fetchLimit}`);
+      const params = new URLSearchParams();
+      params.append('limit', Math.max(limit, 500));
+
+      if (filters.q) params.append('q', filters.q);
+      if (filters.state) params.append('state', filters.state);
+      if (filters.niche) {
+        const nicheVal = Array.isArray(filters.niche) ? filters.niche.join(',') : filters.niche;
+        params.append('niche', nicheVal);
+      }
+      if (filters.platform) {
+        const platformVal = Array.isArray(filters.platform) ? filters.platform.join(',') : filters.platform;
+        params.append('platform', platformVal);
+      }
+      if (filters.verified !== undefined) params.append('verified', filters.verified);
+      if (filters.minFollowers) params.append('minFollowers', filters.minFollowers);
+      if (filters.sort) params.append('sort', filters.sort);
+
+      const res = await apiCall(`/creators?${params.toString()}`);
       const remote = res.creators || (Array.isArray(res) ? res : []);
 
       const local = LS.get('cb_creators', []);
@@ -218,18 +235,23 @@ export async function fetchCreators({ limit = 250, force = false } = {}) {
         return localCopy ? { ...base, ...localCopy } : base;
       });
 
-      local.forEach(lc => {
-        if (!merged.some(c => c.id === lc.id || c.email === lc.email)) {
-          merged.push(getEnrichedCreator(lc));
-        }
-      });
+      // Only append other local creators when no search filters are active
+      if (!hasFilters) {
+        local.forEach(lc => {
+          if (!merged.some(c => c.id === lc.id || c.email === lc.email)) {
+            merged.push(getEnrichedCreator(lc));
+          }
+        });
+      }
 
-      if (merged.length === 0) {
+      if (merged.length === 0 && !hasFilters) {
         merged = SEED_CREATORS;
       }
 
-      _cache.creators = merged;
-      _cache.expiry = Date.now() + CACHE_DURATION;
+      if (!hasFilters) {
+        _cache.creators = merged;
+        _cache.expiry = Date.now() + CACHE_DURATION;
+      }
       return merged;
     } catch (err) {
       if (err.status !== 429) {
@@ -242,12 +264,16 @@ export async function fetchCreators({ limit = 250, force = false } = {}) {
       _cache.lastFailure = Date.now();
       const local = LS.get('cb_creators', []);
       return local.length > 0 ? local : SEED_CREATORS;
-    } finally {
-      _creatorsPromise = null;
     }
   })();
 
-  return _creatorsPromise;
+  if (!hasFilters) {
+    _creatorsPromise = fetchPromise;
+    // Clear inflight reference once completed
+    _creatorsPromise.finally(() => { _creatorsPromise = null; });
+  }
+
+  return fetchPromise;
 }
 
 export async function fetchCreatorById(id) {
@@ -426,11 +452,18 @@ export async function updateCreatorProfile(profileData) {
       responseTime: profileData.responseTime,
       photo: profileData.photo,
       coverPhoto: profileData.coverPhoto,
+      aadhaarUrl: profileData.aadhaarUrl,
+      panUrl: profileData.panUrl,
+      status: profileData.status,
       portfolio: profileData.portfolio,
       fullStory: profileData.fullStory || profileData.full_story,
       awards: profileData.awards,
       collabs: profileData.collabs,
       milestones: profileData.milestones,
+      packages: profileData.packages,
+      localHubs: profileData.localHubs || profileData.local_impact_hubs || profileData.local_hubs || profileData.audience_hubs,
+      regionalDialects: profileData.regionalDialects || profileData.regional_dialects,
+      localVoice: profileData.localVoice || profileData.local_voice,
       viralContent: profileData.viralContent || profileData.viral_content,
       caseStudies: profileData.caseStudies || profileData.case_studies,
       sponsoredPosts: profileData.sponsoredPosts || profileData.sponsored_posts,

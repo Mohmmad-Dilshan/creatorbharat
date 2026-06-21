@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Btn, Bdg } from '@/components/common/Primitives';
 import { useApp } from '@/core/context';
+import { apiCall } from '@/utils/api';
 
 // Import Modular Components & External Data
 import PricingCard from '@/components/pricing/PricingCard';
@@ -289,9 +290,24 @@ function CampaignRateCalculator({ mob }) {
   );
 }
 
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 export default function PricingPage() {
   const navigate = useNavigate();
-  const { st } = useApp();
+  const { st, dsp } = useApp();
   const [tab, setTab] = useState('creator');
   const [duration, setDuration] = useState('1m'); // '1m', '6m', '1y'
   const [mob, setMob] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
@@ -303,15 +319,72 @@ export default function PricingPage() {
     return () => window.removeEventListener('resize', checkSize);
   }, []);
 
-  // Smart redirect: If logged in → go to dashboard (payment handled there)
-  // If not logged in → go to signup page (creator or brand based on tab)
-  const handleProActivate = () => {
-    if (st.user) {
-      // Already logged in — take them to their dashboard to manage billing
-      navigate(st.role === 'brand' ? '/brand-dashboard' : '/creator/dashboard');
-    } else {
-      // Not logged in — send to correct signup flow
+  const handleProActivate = async () => {
+    if (!st.user) {
       navigate(tab === 'brand' ? '/brand-register' : '/apply');
+      return;
+    }
+
+    try {
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        dsp?.({ t: 'TOAST', d: { type: 'error', msg: 'Razorpay SDK failed to load. Please check your connection.' } });
+        return;
+      }
+
+      const res = await apiCall('/payments/create-order', {
+        method: 'POST',
+        body: { type: 'PRO_LISTING' }
+      });
+
+      const options = {
+        key: res.key,
+        amount: res.amount,
+        currency: res.currency,
+        name: 'CreatorBharat Pro',
+        description: 'Upgrade to Elite Creator status',
+        order_id: res.orderId,
+        handler: async function (response) {
+          try {
+            const verifyRes = await apiCall('/payments/verify', {
+              method: 'POST',
+              body: {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature
+              }
+            });
+            if (verifyRes.success) {
+              localStorage.setItem('cb_is_pro', 'true');
+              if (st.user?.creatorProfile) {
+                st.user.creatorProfile.isPro = true;
+              }
+              dsp?.({ t: 'SESSION_UPDATE', v: { isPro: true } });
+              dsp?.({ t: 'TOAST', d: { type: 'success', msg: 'Payment successful! Welcome to Pro! 🎉' } });
+              navigate('/creator/dashboard');
+            } else {
+              dsp?.({ t: 'TOAST', d: { type: 'error', msg: 'Verification failed. Please contact support.' } });
+            }
+          } catch (err) {
+            console.error('Verify payment error:', err);
+            dsp?.({ t: 'TOAST', d: { type: 'error', msg: 'Payment verification failed.' } });
+          }
+        },
+        prefill: {
+          name: st.user.name || '',
+          email: st.user.email || '',
+          contact: st.user.phone || ''
+        },
+        theme: {
+          color: '#FF9431'
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error('Payment checkout initiation failed:', err);
+      dsp?.({ t: 'TOAST', d: { type: 'error', msg: 'Failed to initiate payment. Please try again.' } });
     }
   };
 

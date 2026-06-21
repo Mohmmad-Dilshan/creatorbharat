@@ -13,6 +13,7 @@ generator client {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
+  phone     String?  @unique
   password  String
   role      Role     @default(CREATOR)
   createdAt DateTime @default(now())
@@ -35,6 +36,8 @@ model Creator {
   handle         String        @unique
   name           String
   bio            String?
+  photo          String?
+  coverImage     String?
   city           String?
   state          String?
   niche          String[]
@@ -45,6 +48,17 @@ model Creator {
   rateMax        Int           @default(0)
   isVerified     Boolean       @default(false)
   isPro          Boolean       @default(false)
+  aadhaarUrl     String?
+  panUrl         String?
+  status         String        @default("DRAFT")
+  fullStory      Json?
+  socialLinks    Json?
+  milestones     Json?
+  services       Json?
+  packages       Json?
+  localHubs      Json?
+  regionalDialects String[]
+  localVoice     String?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
@@ -156,24 +170,27 @@ model Comment {
 }
 
 model Payment {
-  id              String    @id @default(cuid())
-  creator         Creator?  @relation(fields: [creatorId], references: [id], onDelete: SetNull)
-  creatorId       String?
-  brand           Brand?    @relation(fields: [brandId], references: [id], onDelete: SetNull)
-  brandId         String?
-  amount          Int
-  currency        String    @default("INR")
-  type            PayType
-  status          PayStatus @default(PENDING)
-  razorpayOrderId String?
-  razorpayId      String?   @unique
-  createdAt       DateTime  @default(now())
+  id                 String    @id @default(cuid())
+  creator            Creator?  @relation(fields: [creatorId], references: [id], onDelete: SetNull)
+  creatorId          String?
+  brand              Brand?    @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  brandId            String?
+  campaignId         String?
+  recipientCreatorId String?
+  amount             Int
+  currency           String    @default("INR")
+  type               PayType
+  status             PayStatus @default(PENDING)
+  razorpayOrderId    String?
+  razorpayId         String?   @unique
+  createdAt          DateTime  @default(now())
 }
 
 enum PayType {
   PRO_LISTING
   CAMPAIGN_BOOST
   FEATURED_SLOT
+  CAMPAIGN_ESCROW
 }
 
 enum PayStatus {
@@ -181,6 +198,7 @@ enum PayStatus {
   PAID
   FAILED
   REFUNDED
+  RELEASED
 }
 
 model Podcast {

@@ -6,6 +6,8 @@ import { useApp } from '@/core/context';
 import { LS, fmt } from '@/utils/helpers';
 import { Card, Btn, Bdg, Bar } from '@/components/common/Primitives';
 import { CreatorPageHeader } from './CreatorShellPage';
+import { uploadFile } from '@/utils/uploadService';
+import { updateCreatorProfile } from '@/utils/platformService';
 
 const STEPS = [
   { id: 'profile', label: 'Profile Complete', desc: 'All 5 tabs filled: Identity, Social, Story, Packages, Local Hub', icon: FileCheck2 },
@@ -15,7 +17,7 @@ const STEPS = [
 ];
 
 function getStepIndex(status) {
-  if (status === 'APPROVED') return 4;
+  if (status === 'APPROVED' || status === 'VERIFIED') return 4;
   if (status === 'PENDING_APPROVAL') return 2;
   return 0; // DRAFT
 }
@@ -31,20 +33,87 @@ export default function VerificationPage() {
     return () => globalThis.removeEventListener('resize', h);
   }, []);
 
-  const [status, setStatus] = useState(() => localStorage.getItem('cb_verification_status') || 'DRAFT');
-  const profileCompleted = localStorage.getItem('cb_profile_completed') === 'true';
-  const currentStep = getStepIndex(status);
-
-  // Check profile completeness
+  // Fetch creator profile from App Context or LocalStorage fallback
   const allC = LS.get('cb_creators', []);
   const c = st.user?.creatorProfile || allC.find(cr => cr.email === st.user?.email) || {};
+
+  const [status, setStatus] = useState(c.status || 'DRAFT');
+  const [aadhaarUrl, setAadhaarUrl] = useState(c.aadhaarUrl || '');
+  const [panUrl, setPanUrl] = useState(c.panUrl || '');
+  const [uploadingAadhaar, setUploadingAadhaar] = useState(false);
+  const [uploadingPan, setUploadingPan] = useState(false);
+
+  useEffect(() => {
+    if (c.status) {
+      setStatus(c.status);
+    }
+  }, [c.status]);
+
+  const profileCompleted = localStorage.getItem('cb_profile_completed') === 'true' || fmt.completeness(c).pct >= 85;
+  const currentStep = getStepIndex(status);
   const comp = fmt.completeness(c);
 
-  const handleSubmitReview = () => {
-    localStorage.setItem('cb_verification_status', 'PENDING_APPROVAL');
-    setStatus('PENDING_APPROVAL');
-    if (dsp) {
+  const handleAadhaarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAadhaar(true);
+    dsp({ t: 'TOAST', d: { type: 'info', msg: 'Uploading Aadhaar document...' } });
+    try {
+      const res = await uploadFile(file);
+      setAadhaarUrl(res.url);
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Aadhaar document uploaded!' } });
+    } catch (err) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Upload failed' } });
+    } finally {
+      setUploadingAadhaar(false);
+    }
+  };
+
+  const handlePanUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingPan(true);
+    dsp({ t: 'TOAST', d: { type: 'info', msg: 'Uploading PAN document...' } });
+    try {
+      const res = await uploadFile(file);
+      setPanUrl(res.url);
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'PAN document uploaded!' } });
+    } catch (err) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Upload failed' } });
+    } finally {
+      setUploadingPan(false);
+    }
+  };
+
+  const handleSubmitReview = async () => {
+    if (!aadhaarUrl || !panUrl) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: 'Please upload both Aadhaar and PAN documents for verification.' } });
+      return;
+    }
+    dsp({ t: 'TOAST', d: { type: 'info', msg: 'Submitting verification request...' } });
+    try {
+      const updatedProfile = await updateCreatorProfile({
+        ...c,
+        aadhaarUrl,
+        panUrl,
+        status: 'PENDING_APPROVAL'
+      });
+      
+      // Update global context state
+      dsp({ 
+        t: 'UPDATE_PROFILE', 
+        profile: { 
+          status: 'PENDING_APPROVAL',
+          aadhaarUrl,
+          panUrl
+        } 
+      });
+      
+      setStatus('PENDING_APPROVAL');
+      localStorage.setItem('cb_verification_status', 'PENDING_APPROVAL');
       dsp({ t: 'TOAST', d: { type: 'success', msg: 'Profile submitted for review! Admin team will verify soon.' } });
+    } catch (err) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Submission failed. Please try again.' } });
     }
   };
 
@@ -119,6 +188,66 @@ export default function VerificationPage() {
             })}
           </div>
 
+          {/* KYC Documents Upload Section */}
+          {status === 'DRAFT' && profileCompleted && (
+            <div style={{ marginTop: 28, paddingTop: 28, borderTop: '1px dashed #e2e8f0', marginBottom: 20 }}>
+              <h4 style={{ fontSize: 15, fontWeight: 900, color: '#0f172a', marginBottom: 6 }}>KYC Document Verification</h4>
+              <p style={{ fontSize: 13, color: '#64748b', fontWeight: 600, marginBottom: 16 }}>Please upload scanned copies/photos of your Aadhaar & PAN card to request trust badge verification.</p>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16, marginBottom: 20 }}>
+                {/* Aadhaar Upload Box */}
+                <div style={{ border: '2px dashed #cbd5e1', borderRadius: 16, padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', position: 'relative' }}>
+                  <input type="file" id="aadhaar-file-upload" accept="image/*,application/pdf" style={{ display: 'none' }} onChange={handleAadhaarUpload} />
+                  {aadhaarUrl ? (
+                    <div style={{ textAlign: 'center' }}>
+                      <CheckCircle2 size={32} color="#10B981" style={{ margin: '0 auto 8px' }} />
+                      <span style={{ fontSize: 13, fontWeight: 800, color: '#1e293b' }}>Aadhaar Card Uploaded</span>
+                      <button type="button" onClick={() => setAadhaarUrl('')} style={{ border: 'none', background: 'transparent', color: '#ef4444', fontSize: 11, fontWeight: 900, cursor: 'pointer', display: 'block', margin: '6px auto 0' }}>Remove</button>
+                    </div>
+                  ) : (
+                    <div style={{ textAlign: 'center' }}>
+                      <Btn onClick={() => document.getElementById('aadhaar-file-upload').click()} disabled={uploadingAadhaar} style={{ height: 38, borderRadius: 10, background: '#fff', border: '1px solid #cbd5e1', color: '#1e293b', fontSize: 12, fontWeight: 800 }}>
+                        {uploadingAadhaar ? 'Uploading...' : 'Upload Aadhaar'}
+                      </Btn>
+                      <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 6, fontWeight: 600 }}>PDF or Image (up to 5MB)</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* PAN Upload Box */}
+                <div style={{ border: '2px dashed #cbd5e1', borderRadius: 16, padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', position: 'relative' }}>
+                  <input type="file" id="pan-file-upload" accept="image/*,application/pdf" style={{ display: 'none' }} onChange={handlePanUpload} />
+                  {panUrl ? (
+                    <div style={{ textAlign: 'center' }}>
+                      <CheckCircle2 size={32} color="#10B981" style={{ margin: '0 auto 8px' }} />
+                      <span style={{ fontSize: 13, fontWeight: 800, color: '#1e293b' }}>PAN Card Uploaded</span>
+                      <button type="button" onClick={() => setPanUrl('')} style={{ border: 'none', background: 'transparent', color: '#ef4444', fontSize: 11, fontWeight: 900, cursor: 'pointer', display: 'block', margin: '6px auto 0' }}>Remove</button>
+                    </div>
+                  ) : (
+                    <div style={{ textAlign: 'center' }}>
+                      <Btn onClick={() => document.getElementById('pan-file-upload').click()} disabled={uploadingPan} style={{ height: 38, borderRadius: 10, background: '#fff', border: '1px solid #cbd5e1', color: '#1e293b', fontSize: 12, fontWeight: 800 }}>
+                        {uploadingPan ? 'Uploading...' : 'Upload PAN'}
+                      </Btn>
+                      <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 6, fontWeight: 600 }}>PDF or Image (up to 5MB)</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Under Review Document State */}
+          {status === 'PENDING_APPROVAL' && (
+            <div style={{ marginTop: 28, paddingTop: 28, borderTop: '1px dashed #e2e8f0', marginBottom: 20 }}>
+              <h4 style={{ fontSize: 15, fontWeight: 900, color: '#0f172a', marginBottom: 8 }}>Submitted KYC Documents</h4>
+              <p style={{ fontSize: 13, color: '#64748b', fontWeight: 600, marginBottom: 16 }}>Your verification documents have been securely uploaded to the admin review queue.</p>
+              <div style={{ display: 'flex', gap: 12 }}>
+                {aadhaarUrl && <a href={aadhaarUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, fontWeight: 900, color: '#FF9431', textDecoration: 'none', background: '#FF943112', padding: '8px 16px', borderRadius: 10 }}>View Aadhaar Card</a>}
+                {panUrl && <a href={panUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, fontWeight: 900, color: '#FF9431', textDecoration: 'none', background: '#FF943112', padding: '8px 16px', borderRadius: 10 }}>View PAN Card</a>}
+              </div>
+            </div>
+          )}
+
           {/* Action Button */}
           {status === 'DRAFT' && !profileCompleted && (
             <Btn full lg onClick={() => navigate('/creator/profile')} style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', border: 'none', borderRadius: 16, marginTop: 16 }}>
@@ -126,7 +255,7 @@ export default function VerificationPage() {
             </Btn>
           )}
           {status === 'DRAFT' && profileCompleted && (
-            <Btn full lg onClick={handleSubmitReview} style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', border: 'none', borderRadius: 16, marginTop: 16 }}>
+            <Btn full lg onClick={handleSubmitReview} style={{ background: (!aadhaarUrl || !panUrl) ? '#e2e8f0' : 'linear-gradient(90deg, #FF9431, #EA580C)', color: (!aadhaarUrl || !panUrl) ? '#94a3b8' : '#fff', border: 'none', borderRadius: 16, marginTop: 16, cursor: (!aadhaarUrl || !panUrl) ? 'not-allowed' : 'pointer' }} disabled={!aadhaarUrl || !panUrl}>
               Submit for Verification <ArrowRight size={18} />
             </Btn>
           )}

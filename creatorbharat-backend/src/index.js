@@ -4,6 +4,10 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { rateLimit } from 'express-rate-limit';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import jwt from 'jsonwebtoken';
+import prisma from './prisma.js';
 
 // Route Imports
 import authRouter from './routes/auth.js';
@@ -15,11 +19,20 @@ import paymentsRouter from './routes/payments.js';
 import reviewsRouter from './routes/reviews.js';
 import messagesRouter from './routes/messages.js';
 import blogRouter from './routes/blog.js';
+import uploadsRouter from './routes/uploads.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
 
 // Security and CORS middleware
 app.use(helmet());
@@ -28,6 +41,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+app.use('/uploads', express.static('public/uploads'));
 
 // Global Rate Limiter to prevent brute-force attacks
 const limiter = rateLimit({
@@ -62,6 +76,7 @@ app.use('/api/payments', paymentsRouter);
 app.use('/api/reviews', reviewsRouter);
 app.use('/api/messages', messagesRouter);
 app.use('/api/blog', blogRouter);
+app.use('/api/uploads', uploadsRouter);
 
 // Global 404 Error handler
 app.use((req, res) => {
@@ -74,7 +89,119 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal Server Error.' });
 });
 
+// Active Socket connection registry
+const connectedUsers = new Map(); // profileId -> Set of socket.ids
+
+io.use(async (socket, next) => {
+  try {
+    const token = socket.handshake.auth?.token || socket.handshake.query?.token;
+    if (!token) {
+      return next(new Error('Authentication failed: Missing token'));
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'cb_super_secret_jwt_key_2026_production');
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      include: { creator: true, brand: true }
+    });
+    if (!user) {
+      return next(new Error('Authentication failed: User not found'));
+    }
+    socket.user = user;
+    next();
+  } catch (err) {
+    return next(new Error('Authentication failed: Invalid token'));
+  }
+});
+
+io.on('connection', (socket) => {
+  const isBrand = socket.user.role === 'BRAND';
+  const profileId = isBrand ? socket.user.brand?.id : socket.user.creator?.id;
+  
+  if (profileId) {
+    if (!connectedUsers.has(profileId)) {
+      connectedUsers.set(profileId, new Set());
+    }
+    connectedUsers.get(profileId).add(socket.id);
+  }
+
+  socket.on('send_message', async (payload, callback) => {
+    try {
+      const { receiverId, text } = payload;
+      if (!receiverId || !text) {
+        throw new Error('Receiver ID and message content are required');
+      }
+
+      let brandId = '';
+      let creatorId = '';
+
+      if (isBrand) {
+        const brand = socket.user.brand;
+        if (!brand) throw new Error('Brand details not found');
+        brandId = brand.id;
+        creatorId = receiverId;
+      } else {
+        const creator = socket.user.creator;
+        if (!creator) throw new Error('Creator details not found');
+        creatorId = creator.id;
+        brandId = receiverId;
+      }
+
+      const message = await prisma.message.create({
+        data: {
+          text,
+          fromBrand: isBrand,
+          brandId,
+          creatorId
+        }
+      });
+
+      const messageData = {
+        id: message.id,
+        text: message.text,
+        time: new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isMe: false,
+        createdAt: message.createdAt,
+        read: message.read,
+        brandId,
+        creatorId
+      };
+
+      // Emit to receiver if online
+      const receiverSockets = connectedUsers.get(receiverId);
+      if (receiverSockets) {
+        receiverSockets.forEach(sid => {
+          io.to(sid).emit('receive_message', messageData);
+        });
+      }
+
+      // Sync message to other tabs of the sender
+      const senderSockets = connectedUsers.get(profileId);
+      if (senderSockets) {
+        senderSockets.forEach(sid => {
+          if (sid !== socket.id) {
+            io.to(sid).emit('receive_message', { ...messageData, isMe: true });
+          }
+        });
+      }
+
+      if (callback) callback({ success: true, message: { ...messageData, isMe: true } });
+    } catch (err) {
+      console.error('Socket send_message error:', err.message);
+      if (callback) callback({ success: false, error: err.message });
+    }
+  });
+
+  socket.on('disconnect', () => {
+    if (profileId && connectedUsers.has(profileId)) {
+      connectedUsers.get(profileId).delete(socket.id);
+      if (connectedUsers.get(profileId).size === 0) {
+        connectedUsers.delete(profileId);
+      }
+    }
+  });
+});
+
 // Start Server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`🚀 CreatorBharat SaaS API Server running on port ${PORT}`);
 });

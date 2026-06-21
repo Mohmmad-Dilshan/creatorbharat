@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '@/core/context';
 import { LS, fmt } from '@/utils/helpers';
+import { updateCreatorProfile } from '@/utils/platformService';
 
 // ─── Design Tokens ─────────────────────────────────────────────────────────────
 const T = {
@@ -89,7 +90,7 @@ const STEPS = [
     icon: ShieldCheck,
     color: '#0f172a',
     required: false,
-    check: () => localStorage.getItem('cb_verification_status') !== 'DRAFT',
+    check: (c) => (c?.status && c?.status !== 'DRAFT') || localStorage.getItem('cb_verification_status') !== 'DRAFT',
   },
 ];
 
@@ -240,13 +241,24 @@ export default function OnboardingPage() {
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  onClick={() => {
-                    localStorage.setItem('cb_verification_status', 'PENDING_APPROVAL');
-                    localStorage.setItem('cb_profile_completed', 'true');
-                    if (dsp) {
-                      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Profile submitted for approval! 🎉' } });
+                  onClick={async () => {
+                    try {
+                      localStorage.setItem('cb_verification_status', 'PENDING_APPROVAL');
+                      localStorage.setItem('cb_profile_completed', 'true');
+                      await updateCreatorProfile({
+                        ...c,
+                        status: 'PENDING_APPROVAL'
+                      });
+                      if (dsp) {
+                        dsp({ t: 'TOAST', d: { type: 'success', msg: 'Profile submitted for approval! 🎉' } });
+                      }
+                      navigate('/creator/verification');
+                    } catch (err) {
+                      console.error('Failed to submit onboarding status:', err);
+                      if (dsp) {
+                        dsp({ t: 'TOAST', d: { type: 'error', msg: 'Error submitting profile. Please try again.' } });
+                      }
                     }
-                    navigate('/creator/verification');
                   }}
                   style={{
                     width: '100%',

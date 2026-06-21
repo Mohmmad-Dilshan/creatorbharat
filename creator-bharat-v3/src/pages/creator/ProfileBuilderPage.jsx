@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import AuthGatekeeper from '../../components/auth/AuthGatekeeper';
 import { updateCreatorProfile } from '../../utils/platformService';
+import { uploadFile } from '../../utils/uploadService';
 
 // ─── Step Nav Item ──────────────────────────────────────────────────────────
 const StepNavItem = ({ id, label, icon: Icon, active, completed, onClick }) => (
@@ -153,19 +154,27 @@ const IdentityTabContent = ({ F, c, st, mob, upF, saveProfile, saving }) => {
              <div className="visual-actions">
                 <input type="file" id="creator-photo-upload" accept="image/jpeg,image/png,image/webp"
                   style={{ display: 'none' }}
-                  onChange={(e) => {
+                  onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
-                    if (file.size > 2 * 1024 * 1024) { alert('Image 2MB se badi nahi honi chahiye'); return; }
-                    const reader = new FileReader();
-                    reader.onload = (ev) => upF('photo', ev.target.result);
-                    reader.readAsDataURL(file);
+                    if (file.size > 5 * 1024 * 1024) { 
+                      dsp({ t: 'TOAST', d: { type: 'error', msg: 'Image size should not exceed 5MB' } }); 
+                      return; 
+                    }
+                    dsp({ t: 'TOAST', d: { type: 'info', msg: 'Uploading profile photo...' } });
+                    try {
+                      const res = await uploadFile(file);
+                      upF('photo', res.url);
+                      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Profile photo uploaded!' } });
+                    } catch (err) {
+                      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Upload failed' } });
+                    }
                   }}
                 />
                 <button type="button" className="btn-primary-pill" onClick={() => document.getElementById('creator-photo-upload').click()}>
                    <Camera size={14} /> Profile Photo
                 </button>
-                <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '6px', fontWeight: 600 }}>Avatar (up to 2MB)</p>
+                <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '6px', fontWeight: 600 }}>Avatar (up to 5MB)</p>
              </div>
           </div>
 
@@ -177,13 +186,21 @@ const IdentityTabContent = ({ F, c, st, mob, upF, saveProfile, saving }) => {
              <div className="visual-actions" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <input type="file" id="creator-cover-upload" accept="image/jpeg,image/png,image/webp"
                   style={{ display: 'none' }}
-                  onChange={(e) => {
+                  onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
-                    if (file.size > 3 * 1024 * 1024) { alert('Cover Image 3MB se badi nahi honi chahiye'); return; }
-                    const reader = new FileReader();
-                    reader.onload = (ev) => upF('coverImage', ev.target.result);
-                    reader.readAsDataURL(file);
+                    if (file.size > 5 * 1024 * 1024) { 
+                      dsp({ t: 'TOAST', d: { type: 'error', msg: 'Banner size should not exceed 5MB' } }); 
+                      return; 
+                    }
+                    dsp({ t: 'TOAST', d: { type: 'info', msg: 'Uploading cover banner...' } });
+                    try {
+                      const res = await uploadFile(file);
+                      upF('coverImage', res.url);
+                      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Cover banner uploaded!' } });
+                    } catch (err) {
+                      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Upload failed' } });
+                    }
                   }}
                 />
                 <button type="button" className="btn-primary-pill" onClick={() => document.getElementById('creator-cover-upload').click()}>

@@ -10,6 +10,9 @@ import { useApp } from '@/core/context';
 import { LS } from '@/utils/helpers';
 import { Bdg, Btn } from '@/components/common/Primitives';
 import { useMessageLimit } from '@/hooks/useMessageLimit';
+import { io } from 'socket.io-client';
+import { apiCall } from '@/utils/api';
+import { ENV } from '@/config/env';
 
 // Default conversations
 const DEFAULT_CONVERSATIONS = [
@@ -96,11 +99,18 @@ export default function MessagesPage() {
   const [showList, setShowList] = useState(!mob);
   const [inputText, setInputText] = useState('');
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
-  const [conversations, setConversations] = useState(() => LS.get('cb_conversations', DEFAULT_CONVERSATIONS));
-  const [allMessages, setAllMessages] = useState(() => LS.get('cb_messages', DEFAULT_MESSAGES));
+  const [conversations, setConversations] = useState([]);
+  const [allMessages, setAllMessages] = useState({});
+  const [loading, setLoading] = useState(true);
   const scrollRef = useRef(null);
+  const socketRef = useRef(null);
+  const activeConvRef = useRef(activeConv);
 
   const limitInfo = getLimitInfo();
+
+  useEffect(() => {
+    activeConvRef.current = activeConv;
+  }, [activeConv]);
 
   useEffect(() => {
     const h = () => setMob(globalThis.innerWidth < 768);
@@ -112,40 +122,203 @@ export default function MessagesPage() {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [allMessages, activeConv]);
 
-  const messages = allMessages[activeConv] || [];
-  const activeConvData = conversations.find(c => c.id === activeConv);
+  useEffect(() => {
+    loadConversations();
+  }, []);
 
-  const handleSend = () => {
-    if (!inputText.trim()) return;
-    const newMsg = { id: Date.now(), text: inputText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isMe: true };
-    
-    const updated = { ...allMessages, [activeConv]: [...(allMessages[activeConv] || []), newMsg] };
-    setAllMessages(updated);
-    LS.set('cb_messages', updated);
-    setInputText('');
+  useEffect(() => {
+    const token = localStorage.getItem('cb_token');
+    if (!token) return;
 
-    // Update last message in conversation list
-    const updatedConvs = conversations.map(c => c.id === activeConv ? { ...c, lastMsg: inputText, time: 'Now', unread: 0 } : c);
-    setConversations(updatedConvs);
-    LS.set('cb_conversations', updatedConvs);
+    const socketUrl = (ENV?.apiUrl || 'http://localhost:4000/api').replace(/\/api\/?$/, '');
+    const socket = io(socketUrl, {
+      auth: { token },
+      transports: ['websocket']
+    });
 
-    // Auto-reply after delay
-    setTimeout(() => {
-      const reply = { id: Date.now() + 1, text: AUTO_REPLIES[activeConv] || "Message received. We'll get back to you soon.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isMe: false };
-      const withReply = { ...updated, [activeConv]: [...updated[activeConv], reply] };
-      setAllMessages(withReply);
-      LS.set('cb_messages', withReply);
-    }, 1500);
+    socketRef.current = socket;
+
+    socket.on('connect', () => {
+      console.log('Connected to WebSocket server');
+    });
+
+    socket.on('receive_message', (msg) => {
+      const currentActiveConv = activeConvRef.current;
+      const partnerId = st.user?.role === 'BRAND' ? msg.creatorId : msg.brandId;
+
+      if (partnerId === currentActiveConv) {
+        setAllMessages(prev => ({
+          ...prev,
+          [currentActiveConv]: [...(prev[currentActiveConv] || []), msg]
+        }));
+      }
+
+      setConversations(prev => {
+        const hasConv = prev.some(c => c.id === partnerId);
+        if (hasConv) {
+          return prev.map(c => {
+            if (c.id === partnerId) {
+              return {
+                ...c,
+                lastMsg: msg.text,
+                time: new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                unread: partnerId === currentActiveConv ? 0 : c.unread + 1
+              };
+            }
+            return c;
+          }).sort((a, b) => new Date(b.time) - new Date(a.time));
+        } else {
+          loadConversations();
+          return prev;
+        }
+      });
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  const loadConversations = async () => {
+    try {
+      setLoading(true);
+      const res = await apiCall('/messages/conversations');
+      const merged = [...res];
+      if (!merged.some(c => c.id === 'hq')) {
+        merged.push({
+          id: 'hq',
+          name: 'CreatorBharat HQ',
+          photo: null,
+          isHQ: true,
+          lastMsg: 'Welcome to the secure node.',
+          time: '10:00 AM',
+          unread: 0
+        });
+      }
+      setConversations(merged);
+
+      // Parse target chat from URL query parameters
+      const params = new URLSearchParams(globalThis.location.search);
+      const targetChat = params.get('chat');
+      let activeId = merged[0]?.id || 'hq';
+
+      if (targetChat) {
+        if (merged.some(c => c.id === targetChat)) {
+          activeId = targetChat;
+        } else {
+          try {
+            const profile = await apiCall(`/creators/${targetChat}`);
+            if (profile) {
+              const newConv = {
+                id: profile.id,
+                name: profile.name,
+                photo: profile.photo,
+                handle: profile.handle,
+                lastMsg: 'Starting a new conversation...',
+                time: 'Just now',
+                unread: 0
+              };
+              merged.unshift(newConv);
+              setConversations(merged);
+              activeId = profile.id;
+            }
+          } catch (err) {
+            console.error('Failed to fetch target chat profile:', err);
+          }
+        }
+      }
+
+      setActiveConv(activeId);
+      if (activeId !== 'hq') {
+        loadHistory(activeId);
+      } else {
+        setAllMessages(prev => ({
+          ...prev,
+          hq: [
+            { id: 1, text: "Welcome to CreatorBharat Secure Node. All sessions are encrypted.", time: "10:00 AM", isMe: false },
+            { id: 2, text: "How can we help you today?", time: "10:01 AM", isMe: false }
+          ]
+        }));
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error('Failed to load conversations:', err);
+      setConversations(DEFAULT_CONVERSATIONS);
+      setAllMessages(DEFAULT_MESSAGES);
+      setLoading(false);
+    }
+  };
+
+  const loadHistory = async (convId) => {
+    if (!convId || convId === 'hq') return;
+    try {
+      const res = await apiCall(`/messages/history/${convId}`);
+      setAllMessages(prev => ({
+        ...prev,
+        [convId]: res
+      }));
+      await apiCall(`/messages/read/${convId}`, { method: 'POST' });
+    } catch (err) {
+      console.error(`Failed to load history for ${convId}:`, err);
+    }
   };
 
   const selectConv = (id) => {
     setActiveConv(id);
     if (mob) setShowList(false);
-    // Mark as read
-    const updatedConvs = conversations.map(c => c.id === id ? { ...c, unread: 0 } : c);
-    setConversations(updatedConvs);
-    LS.set('cb_conversations', updatedConvs);
+    if (id !== 'hq') {
+      loadHistory(id);
+    }
+    setConversations(prev => prev.map(c => c.id === id ? { ...c, unread: 0 } : c));
   };
+
+  const handleSend = () => {
+    if (!inputText.trim()) return;
+
+    if (activeConv === 'hq') {
+      const newMsg = { id: Date.now(), text: inputText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isMe: true };
+      setAllMessages(prev => ({ ...prev, hq: [...(prev.hq || []), newMsg] }));
+      setInputText('');
+      setTimeout(() => {
+        const reply = { id: Date.now() + 1, text: "Command received. Our team will respond shortly.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isMe: false };
+        setAllMessages(prev => ({ ...prev, hq: [...(prev.hq || []), reply] }));
+      }, 1500);
+      return;
+    }
+
+    const socket = socketRef.current;
+    if (socket && socket.connected) {
+      socket.emit('send_message', {
+        receiverId: activeConv,
+        text: inputText
+      }, (response) => {
+        if (response && response.success) {
+          const newMsg = response.message;
+          setAllMessages(prev => ({
+            ...prev,
+            [activeConv]: [...(prev[activeConv] || []), newMsg]
+          }));
+          setConversations(prev => prev.map(c => {
+            if (c.id === activeConv) {
+              return {
+                ...c,
+                lastMsg: newMsg.text,
+                time: new Date(newMsg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                unread: 0
+              };
+            }
+            return c;
+          }));
+        }
+      });
+    }
+    setInputText('');
+  };
+
+  const messages = allMessages[activeConv] || [];
+  const activeConvData = conversations.find(c => c.id === activeConv);
+
+  // selectConv is defined above
 
   // Upgrade prompt modal
   const UpgradeModal = () => (
@@ -307,7 +480,7 @@ export default function MessagesPage() {
             </div>
 
             {/* Direct Chat Lock Overlay */}
-            {activeConv !== 'hq' && !st.isPro && (
+            {activeConv !== 'hq' && st.user?.role !== 'BRAND' && !st.isPro && (
               <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.4)', zIndex: 10 }}>
                 <div style={{ background: '#fff', padding: 32, borderRadius: 24, boxShadow: '0 20px 60px rgba(0,0,0,0.1)', textAlign: 'center', maxWidth: 360, border: '1px solid #f1f5f9' }}>
                   <div style={{ width: 64, height: 64, borderRadius: 20, background: '#FF943115', color: '#FF9431', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>

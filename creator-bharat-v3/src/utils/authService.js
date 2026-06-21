@@ -115,6 +115,46 @@ export async function verifyOtp(phone, otp) {
   return apiCall('/auth/verify-otp', { method: 'POST', body: { phone, otp } });
 }
 
+/**
+ * Log in the user using their phone number and verified OTP.
+ * POST /auth/login-otp
+ */
+export async function loginWithOtp(phone, otp) {
+  if (isDemoAuthMode()) {
+    await wait(1000);
+    if (otp !== DEMO_OTP) throw demoError(`Invalid OTP. Please use ${DEMO_OTP}`);
+    // Simulate user fetch
+    const user = {
+      id: 'c-1',
+      email: 'demo-otp-user@creatorbharat.in',
+      phone: phone.replace(/\D/g, ''),
+      name: 'OTP Demo User',
+      role: 'creator',
+      creator: {
+        id: 'c-1',
+        handle: 'otpdemouser',
+        city: 'Mumbai',
+        state: 'Maharashtra',
+        followers: 25000,
+        score: 92,
+        niche: ['Digital Creator'],
+        bio: 'Elite creator on CreatorBharat',
+        gallery: [],
+        full_story: { p1: '', quote: '', p2: '', p3: '' },
+        milestones: [],
+        services: [],
+        awards: [],
+        collabs: [],
+      }
+    };
+    return { token: makeMockToken(), user };
+  }
+  return normalizeAuthResponse(await apiCall('/auth/login-otp', {
+    method: 'POST',
+    body: { phone, otp },
+  }));
+}
+
 export async function registerCreator(form) {
   if (!isDemoAuthMode()) {
     return normalizeAuthResponse(await apiCall('/auth/register/creator', {

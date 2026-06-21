@@ -1475,17 +1475,41 @@ export default function CreatorsPage() {
     if (q) {
       safeDsp({ t: 'CF', v: { q } });
     }
-
-    setLoading(true);
-    fetchCreators({ limit: 200 })
-      .then(list => {
-        setAll(list);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
     
     return () => globalThis.removeEventListener('resize', h);
   }, []);
+
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    
+    const activeFilters = {};
+    if (f.q) activeFilters.q = f.q;
+    if (f.state) activeFilters.state = f.state;
+    if (f.niche && f.niche.length > 0) activeFilters.niche = f.niche;
+    if (f.platform && f.platform.length > 0) activeFilters.platform = f.platform;
+    if (f.verified) activeFilters.verified = f.verified;
+    if (f.minFollowers) activeFilters.minFollowers = f.minFollowers;
+    if (f.sort && f.sort !== 'score') activeFilters.sort = f.sort;
+
+    const timer = setTimeout(() => {
+      fetchCreators({ limit: 500, filters: activeFilters })
+        .then(list => {
+          if (active) {
+            setAll(list);
+            setLoading(false);
+          }
+        })
+        .catch(() => {
+          if (active) setLoading(false);
+        });
+    }, 300); // 300ms debounce
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [f]);
 
   const hasFilters = !!(f.search || (f.niche && f.niche.length > 0) || (f.platform && f.platform.length > 0) || f.state || f.district || f.minFollowers > 0 || f.maxFollowers > 0 || f.minRating);
   

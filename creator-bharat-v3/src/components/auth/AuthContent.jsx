@@ -247,7 +247,7 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
               <div className="auth-form-wrapper">
                 <AnimatePresence mode="wait">
                   {view === 'gateway' && <GatewayView setView={handleSetView} setRole={setRole} mob={isMobile} />}
-                  {view === 'login' && <LoginView role={role} setRole={setRole} onLogin={handleLogin} loading={loading} setView={handleSetView} mob={isMobile} />}
+                  {view === 'login' && <LoginView role={role} setRole={setRole} onLogin={handleLogin} onAuthSuccess={onAuthSuccess} loading={loading} setView={handleSetView} mob={isMobile} />}
                   {view === 'register' && <ApplyForm onSuccess={onAuthSuccess} onBackToLogin={() => handleSetView('login')} mob={isMobile} />}
                   {view === 'brand-register' && <BrandRegisterView setView={handleSetView} onSuccess={onAuthSuccess} mob={isMobile} />}
                   {view === 'forgot' && <ForgotView setView={handleSetView} />}

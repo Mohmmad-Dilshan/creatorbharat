@@ -11,17 +11,41 @@ router.get('/', async (req, res) => {
     const { q, state, niche, platform, verified, minFollowers, sort, page = 1, limit = 20 } = req.query;
 
     const where = {};
+    
+    // Text search (name, bio, handle)
     if (q) {
       where.OR = [
         { name: { contains: q, mode: 'insensitive' } },
-        { bio: { contains: q, mode: 'insensitive' } }
+        { bio: { contains: q, mode: 'insensitive' } },
+        { handle: { contains: q, mode: 'insensitive' } }
       ];
     }
+    
     if (state) where.state = state;
-    if (niche) where.niche = { has: niche };
-    if (platform) where.platform = { has: platform };
-    if (verified === 'true') where.isVerified = true;
-    if (minFollowers) where.followers = { gte: parseInt(minFollowers) };
+    
+    // Support multiple niches (comma-separated or single)
+    if (niche) {
+      const niches = niche.split(',').map(n => n.trim()).filter(Boolean);
+      if (niches.length > 0) {
+        where.niche = { hasSome: niches };
+      }
+    }
+    
+    // Support multiple platforms (comma-separated or single)
+    if (platform) {
+      const platforms = platform.split(',').map(p => p.trim()).filter(Boolean);
+      if (platforms.length > 0) {
+        where.platform = { hasSome: platforms };
+      }
+    }
+    
+    if (verified === 'true') {
+      where.isVerified = true;
+    }
+    
+    if (minFollowers) {
+      where.followers = { gte: parseInt(minFollowers) };
+    }
 
     const orderBy = sort === 'followers' ? { followers: 'desc' } : { createdAt: 'desc' };
 
@@ -80,8 +104,11 @@ router.put('/me', authMiddleware, async (req, res) => {
     }
 
     const {
-      name, bio, city, state, niche, platform,
-      followers, engagementRate, rateMin, rateMax
+      name, bio, photo, coverImage, coverPhoto, city, state, niche, platform,
+      followers, engagementRate, rateMin, rateMax,
+      aadhaarUrl, panUrl, status,
+      fullStory, socialLinks, milestones, services, packages, localHubs,
+      regionalDialects, localVoice
     } = req.body;
 
     const updated = await prisma.creator.update({
@@ -89,6 +116,8 @@ router.put('/me', authMiddleware, async (req, res) => {
       data: {
         name,
         bio,
+        photo,
+        coverImage: coverImage || coverPhoto || undefined,
         city,
         state,
         niche: Array.isArray(niche) ? niche : undefined,
@@ -96,7 +125,18 @@ router.put('/me', authMiddleware, async (req, res) => {
         followers: followers !== undefined ? parseInt(followers) : undefined,
         engagementRate: engagementRate !== undefined ? parseFloat(engagementRate) : undefined,
         rateMin: rateMin !== undefined ? parseInt(rateMin) : undefined,
-        rateMax: rateMax !== undefined ? parseInt(rateMax) : undefined
+        rateMax: rateMax !== undefined ? parseInt(rateMax) : undefined,
+        aadhaarUrl,
+        panUrl,
+        status,
+        fullStory: fullStory !== undefined ? fullStory : undefined,
+        socialLinks: socialLinks !== undefined ? socialLinks : undefined,
+        milestones: milestones !== undefined ? milestones : undefined,
+        services: services !== undefined ? services : undefined,
+        packages: packages !== undefined ? packages : undefined,
+        localHubs: localHubs !== undefined ? localHubs : undefined,
+        regionalDialects: Array.isArray(regionalDialects) ? regionalDialects : undefined,
+        localVoice: localVoice !== undefined ? localVoice : undefined
       }
     });
 
