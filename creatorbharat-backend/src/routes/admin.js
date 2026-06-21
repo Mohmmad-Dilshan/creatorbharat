@@ -492,4 +492,33 @@ router.delete('/podcasts/:id', async (req, res) => {
   }
 });
 
+// GET /api/admin/reviews — fetch all reviews
+router.get('/reviews', async (req, res) => {
+  try {
+    const reviews = await prisma.review.findMany({
+      include: {
+        creator: true,
+        brand: true
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(reviews);
+  } catch (err) {
+    console.error('[GET /api/admin/reviews] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve reviews.' });
+  }
+});
+
+// DELETE /api/admin/reviews/:id — delete/moderate a review
+router.delete('/reviews/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.review.delete({ where: { id } });
+    res.json({ message: 'Review deleted successfully.' });
+  } catch (err) {
+    console.error('[DELETE /api/admin/reviews/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to delete review.' });
+  }
+});
+
 export default router;

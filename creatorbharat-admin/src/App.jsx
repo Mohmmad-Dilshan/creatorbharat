@@ -24,7 +24,8 @@ import {
   SlidersHorizontal,
   Info,
   MessageSquare,
-  PlayCircle
+  PlayCircle,
+  Star
 } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
@@ -51,12 +52,14 @@ export default function App() {
   const [newsletters, setNewsletters] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [podcasts, setPodcasts] = useState([]);
+  const [reviews, setReviews] = useState([]);
 
   // New Search Filters
   const [blogSearch, setBlogSearch] = useState('');
   const [newsletterSearch, setNewsletterSearch] = useState('');
   const [contactSearch, setContactSearch] = useState('');
   const [podcastSearch, setPodcastSearch] = useState('');
+  const [reviewSearch, setReviewSearch] = useState('');
 
   // Blog creation modal and form states
   const [blogModalOpen, setBlogModalOpen] = useState(false);
@@ -205,6 +208,11 @@ export default function App() {
       const resPod = await fetch(`${API_BASE}/admin/podcasts`, { headers });
       const dataPod = await resPod.json();
       if (resPod.ok) setPodcasts(Array.isArray(dataPod) ? dataPod : []);
+
+      // 11. Fetch all reviews
+      const resRev = await fetch(`${API_BASE}/admin/reviews`, { headers });
+      const dataRev = await resRev.json();
+      if (resRev.ok) setReviews(Array.isArray(dataRev) ? dataRev : []);
 
     } catch (err) {
       console.error('Failed to fetch dashboard data:', err);
@@ -482,6 +490,22 @@ export default function App() {
     }
   };
 
+  const handleDeleteReview = async (reviewId) => {
+    if (!window.confirm('Are you sure you want to delete this review? This action is permanent.')) return;
+    try {
+      const res = await fetch(`${API_BASE}/admin/reviews/${reviewId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete review');
+      triggerToast('Review deleted successfully!', 'success');
+      fetchDashboardData();
+    } catch (err) {
+      triggerToast(err.message, 'error');
+    }
+  };
+
   // Render Authentication Gate if token is missing
   if (!token) {
     return (
@@ -742,6 +766,7 @@ export default function App() {
             { id: 'newsletters', label: 'Newsletter Subs', icon: Mail, badge: newsletters.length },
             { id: 'contacts', label: 'Contact Queries', icon: MessageSquare, badge: contacts.filter(c => !c.read).length },
             { id: 'podcasts', label: 'Manage Podcasts', icon: PlayCircle, badge: podcasts.length },
+            { id: 'reviews', label: 'Moderate Reviews', icon: Star, badge: reviews.length },
             { id: 'settings', label: 'System Settings', icon: SlidersHorizontal }
           ].map(item => {
             const Icon = item.icon;
@@ -1978,6 +2003,98 @@ export default function App() {
             </div>
           </section>
         )}
+
+        {/* Moderate Reviews Tab */}
+        {activeTab === 'reviews' && (
+          <section style={{ width: '100%' }}>
+            <div style={{ marginBottom: 24 }}>
+              <h3 style={{ margin: '0 0 4px 0', fontSize: 20, fontWeight: 800, color: '#0f172a' }}>Moderate Creator Reviews</h3>
+              <p style={{ margin: 0, fontSize: 13, color: '#64748b', fontWeight: 500 }}>Review ratings and delete abusive or fake reviews from creator profiles.</p>
+            </div>
+
+            <div style={{ display: 'flex', gap: 14, marginBottom: 20, background: '#ffffff', padding: 16, borderRadius: 16, border: '1px solid #e2e8f0' }}>
+              <div style={{ flex: 1, position: 'relative' }}>
+                <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                <input 
+                  type="text" 
+                  value={reviewSearch}
+                  onChange={(e) => setReviewSearch(e.target.value)}
+                  placeholder="Search reviews by target creator or reviewer name..."
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px 10px 40px',
+                    borderRadius: 10,
+                    border: '1px solid #cbd5e1',
+                    fontSize: 13,
+                    outline: 'none'
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 20, overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#475569', fontWeight: 700 }}>
+                    <th style={{ padding: '16px 24px' }}>Target Creator</th>
+                    <th style={{ padding: '16px' }}>Reviewer</th>
+                    <th style={{ padding: '16px' }}>Rating</th>
+                    <th style={{ padding: '16px' }}>Review Comment</th>
+                    <th style={{ padding: '16px' }}>Date</th>
+                    <th style={{ padding: '16px 24px', textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reviews.filter(r => 
+                    (r.creator?.name && r.creator.name.toLowerCase().includes(reviewSearch.toLowerCase())) ||
+                    (r.creator?.handle && r.creator.handle.toLowerCase().includes(reviewSearch.toLowerCase())) ||
+                    r.reviewerName.toLowerCase().includes(reviewSearch.toLowerCase()) ||
+                    r.text.toLowerCase().includes(reviewSearch.toLowerCase())
+                  ).map(r => (
+                    <tr key={r.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '16px 24px' }}>
+                        <div>
+                          <span style={{ display: 'block', fontWeight: 700, color: '#0f172a' }}>{r.creator?.name || 'Unknown'}</span>
+                          <span style={{ display: 'block', fontSize: 11, color: '#f97316', fontWeight: 700 }}>@{r.creator?.handle}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: '16px', color: '#475569', fontWeight: 650 }}>{r.reviewerName}</td>
+                      <td style={{ padding: '16px' }}>
+                        <div style={{ display: 'flex', gap: 2 }}>
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star 
+                              key={i} 
+                              size={14} 
+                              fill={i < r.rating ? '#eab308' : 'none'} 
+                              color={i < r.rating ? '#eab308' : '#cbd5e1'} 
+                            />
+                          ))}
+                        </div>
+                      </td>
+                      <td style={{ padding: '16px', color: '#334155', maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={r.text}>
+                        {r.text}
+                      </td>
+                      <td style={{ padding: '16px', color: '#64748b' }}>{new Date(r.createdAt).toLocaleDateString([], { dateStyle: 'medium' })}</td>
+                      <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                        <button 
+                          onClick={() => handleDeleteReview(r.id)}
+                          style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 700, cursor: 'pointer' }}
+                        >
+                          Delete Review
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {reviews.length === 0 && (
+                    <tr>
+                      <td colSpan="6" style={{ padding: 40, textAlign: 'center', color: '#94a3b8', fontWeight: 600 }}>No creator reviews logged yet.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
       </main>
 
       {/* Blog Editor Modal */}
@@ -2312,6 +2429,46 @@ export default function App() {
                 </div>
               </div>
               <p style={{ margin: 0, fontSize: 12, color: '#475569', lineHeight: 1.5 }}>{selectedCreator.bio || 'No bio description provided.'}</p>
+              
+              {/* Creator Metadata Grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+                <div>
+                  <span style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#94a3b8' }}>FOLLOWER COUNT</span>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: '#0f172a' }}>{selectedCreator.followers ? selectedCreator.followers.toLocaleString() : '0'}</span>
+                </div>
+                <div>
+                  <span style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#94a3b8' }}>ENGAGEMENT RATE</span>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: '#16a34a' }}>{selectedCreator.engagementRate || '4.2'}%</span>
+                </div>
+              </div>
+
+              {/* Niche Categories */}
+              {selectedCreator.niche && selectedCreator.niche.length > 0 && (
+                <div style={{ marginTop: 12 }}>
+                  <span style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#94a3b8', marginBottom: 6 }}>NICHES</span>
+                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                    {selectedCreator.niche.map((n, idx) => (
+                      <span key={idx} style={{ padding: '2px 8px', background: 'rgba(249, 115, 22, 0.05)', color: '#f97316', borderRadius: 20, fontSize: 10, fontWeight: 700 }}>
+                        {n}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Platforms */}
+              {selectedCreator.platform && selectedCreator.platform.length > 0 && (
+                <div style={{ marginTop: 12 }}>
+                  <span style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#94a3b8', marginBottom: 6 }}>ACTIVE CHANNELS</span>
+                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                    {selectedCreator.platform.map((p, idx) => (
+                      <span key={idx} style={{ padding: '2px 8px', background: '#f1f5f9', color: '#475569', borderRadius: 20, fontSize: 10, fontWeight: 700, textTransform: 'capitalize' }}>
+                        {p}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Document Aadhaar */}
