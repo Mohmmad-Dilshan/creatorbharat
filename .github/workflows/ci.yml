@@ -22,6 +22,8 @@ jobs:
           cache-dependency-path: creatorbharat-backend/package-lock.json
 
       - name: Install Backend Dependencies
+        env:
+          DATABASE_URL: "postgresql://mockuser:mockpass@localhost:5432/mockdb"
         run: |
           cd creatorbharat-backend
           npm ci
