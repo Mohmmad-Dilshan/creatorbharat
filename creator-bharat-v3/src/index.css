@@ -3491,6 +3491,12 @@ html, body {
   animation: flagSweep 3s linear infinite;
 }
 
+@media (max-width: 480px) {
+  .logo-text-animated {
+    display: none !important;
+  }
+}
+
 .nav-link {
   position: relative;
   transition: all 0.3s;

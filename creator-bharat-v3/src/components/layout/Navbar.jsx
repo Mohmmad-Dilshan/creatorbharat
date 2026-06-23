@@ -360,10 +360,10 @@ const UserActions = ({ st, dsp, go, mob }) => {
       <button
         onClick={() => setLangOpen(!langOpen)}
         style={{
-          display: 'flex', alignItems: 'center', gap: 6, background: 'transparent',
+          display: 'flex', alignItems: 'center', gap: mob ? 4 : 6, background: 'transparent',
           border: '1px solid rgba(0,0,0,0.1)', borderRadius: 100,
-          padding: '6px 12px', cursor: 'pointer', color: '#111',
-          fontWeight: 800, fontSize: 13, transition: '0.2s', marginRight: 8
+          padding: mob ? '5px 8px' : '6px 12px', cursor: 'pointer', color: '#111',
+          fontWeight: 800, fontSize: mob ? 11 : 13, transition: '0.2s', marginRight: mob ? 2 : 8
         }}
         title="Toggle Language"
       >
@@ -505,9 +505,9 @@ const UserActions = ({ st, dsp, go, mob }) => {
         {mob && (
           <button
             onClick={() => dsp({ t: 'UI', v: { mobileMenu: !st.ui.mobileMenu } })}
-            style={{ background: '#f1f5f9', border: 'none', width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#111' }}
+            style={{ background: '#f1f5f9', border: 'none', width: mob ? 38 : 44, height: mob ? 38 : 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#111' }}
           >
-            {st.ui.mobileMenu ? <X size={22} /> : <Menu size={22} />}
+            {st.ui.mobileMenu ? <X size={20} /> : <Menu size={20} />}
           </button>
         )}
       </div>
@@ -518,16 +518,16 @@ const UserActions = ({ st, dsp, go, mob }) => {
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <LangButton />
       <div className="nav-signin-btn-wrap">
-        <Btn lg onClick={() => go('/login')} style={{ fontWeight: 900, borderRadius: 100, padding: mob ? '10px 20px' : '12px 32px', fontSize: 13, background: T.gd, color: '#fff', border: 'none', boxShadow: `0 8px 24px rgba(255,148,49,0.2)` }}>
+        <Btn lg onClick={() => go('/login')} style={{ fontWeight: 900, borderRadius: 100, padding: mob ? '8px 16px' : '12px 32px', fontSize: mob ? 12 : 13, background: T.gd, color: '#fff', border: 'none', boxShadow: `0 8px 24px rgba(255,148,49,0.2)` }}>
           {mob ? 'Sign In' : 'Sign In Account'}
         </Btn>
       </div>
       {mob && (
         <button
           onClick={() => dsp({ t: 'UI', v: { mobileMenu: !st.ui.mobileMenu } })}
-          style={{ background: '#f1f5f9', border: 'none', width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#111', marginLeft: 8 }}
+          style={{ background: '#f1f5f9', border: 'none', width: mob ? 38 : 44, height: mob ? 38 : 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#111', marginLeft: mob ? 6 : 8 }}
         >
-          {st.ui.mobileMenu ? <X size={22} /> : <Menu size={22} />}
+          {st.ui.mobileMenu ? <X size={20} /> : <Menu size={20} />}
         </button>
       )}
     </div>
@@ -780,7 +780,7 @@ export default function Navbar() {
   const activeLinks = getNavLinks();
 
   const getPadding = () => {
-    if (mob) return '12px 16px';
+    if (mob) return '10px 12px';
     if (compactNav) return scroll ? '14px 24px' : '20px 24px';
     return scroll ? '16px 40px' : '24px 40px';
   };
@@ -861,7 +861,7 @@ export default function Navbar() {
           position: 'relative', zIndex: 1,
           background: scroll ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.9)',
           backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)',
-          borderRadius: 100, padding: mob ? '0 12px 0 20px' : compactNav ? '0 18px' : '0 32px',
+          borderRadius: 100, padding: mob ? '0 12px 0 14px' : compactNav ? '0 18px' : '0 32px',
           height: mob ? 54 : compactNav ? 64 : 72, display: 'flex', alignItems: 'center', gap: compactNav ? 14 : 24
         }}>
           <Logo onClick={() => go('/')} sm={compactNav} />
