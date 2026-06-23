@@ -1566,23 +1566,23 @@ export default function CreatorsPage() {
         padding: mob ? '90px 20px 50px' : '140px 24px 90px',
       }}>
 
-        {/* ── Full-bleed creator photo on right ── */}
+        {/* ── Background Image: collage on mobile, full-bleed creator photo on right for desktop ── */}
         <div style={{
           position: 'absolute',
           inset: 0,
-          backgroundImage: mob ? 'none' : 'url(/creator_landing_hero.png)',
+          backgroundImage: mob ? 'url(/creator_landing_bg.png)' : 'url(/creator_landing_hero.png)',
           backgroundSize: 'cover',
-          backgroundPosition: 'right center',
-          opacity: 0.9,
+          backgroundPosition: mob ? 'center' : 'right center',
+          opacity: mob ? 0.08 : 0.9,
           zIndex: 0,
         }} />
 
-        {/* ── White → transparent gradient mask (left to right) ── */}
+        {/* ── White → transparent gradient mask ── */}
         <div style={{
           position: 'absolute',
           inset: 0,
           background: mob
-            ? 'transparent'
+            ? 'linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.96) 100%)'
             : 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.98) 30%, rgba(255,255,255,0.6) 58%, rgba(255,255,255,0) 80%)',
           zIndex: 1,
           pointerEvents: 'none',
