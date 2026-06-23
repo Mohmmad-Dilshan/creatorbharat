@@ -705,13 +705,13 @@ export default function Navbar() {
         { path: '/gallery', label: t('nav.gallery', 'Ecosystem Gallery') },
         { path: '/stories', label: t('nav.stories', 'Success Stories') },
         { path: '/blog', label: t('nav.creatorHub', 'Creator Hub') },
+        { path: '/about', label: t('nav.about', 'About') },
         { path: '/ambassador', label: t('nav.ambassador', 'Campus Ambassador') },
         { path: '/press', label: t('nav.press', 'Press Kit') },
         { path: '/faq', label: t('nav.faq', 'Help & FAQ') },
         { path: '/contact', label: t('nav.contactUs', 'Contact Us') }
       ]
-    },
-    { path: '/about', label: t('nav.about', 'About') }
+    }
   ];
 
   const linksCreator = [

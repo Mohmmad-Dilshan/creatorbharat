@@ -46,8 +46,7 @@ export default function MobileMenu({ open }) {
     { path: '/ai-knowledge', l: 'AI Knowledge', i: BookOpen },
     { path: '/official-profile', l: 'Official Profile', i: ShieldCheck },
     { path: '/creator-density', l: 'Creator Density', i: Map },
-    { path: '/notifications', l: 'Official Gazette', i: Bell },
-    { path: '/about', l: 'Our Story', i: Heart }
+    { path: '/notifications', l: 'Official Gazette', i: Bell }
   ];
 
   const linksCreator = [
@@ -86,7 +85,8 @@ export default function MobileMenu({ open }) {
     { path: '/ambassador', l: 'Campus Ambassador', i: Award },
     { path: '/press', l: 'Press Kit', i: BookOpen },
     { path: '/stories', l: 'Success Stories', i: Award },
-    { path: '/blog', l: 'Creator Hub', i: BookOpen }
+    { path: '/blog', l: 'Creator Hub', i: BookOpen },
+    { path: '/about', l: 'Our Story', i: Heart }
   ];
 
   const supportLinksCreator = [
