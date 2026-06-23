@@ -75,7 +75,7 @@ html, body {
   position: relative;
   min-height: 100%;
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 #root {
@@ -87,7 +87,7 @@ body {
   font-family: 'Inter', sans-serif;
   background: var(--cb-bg-soft);
   color: var(--cb-slate-900);
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 h1, h2, h3, h4, .font-outfit {

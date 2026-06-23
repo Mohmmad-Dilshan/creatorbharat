@@ -299,8 +299,10 @@ export default function FeaturedCreators({ mob, creators, go, loading }) {
               gap: mob ? 12 : 16,
               overflowX: 'auto',
               scrollbarWidth: 'none',
+              margin: mob ? '0 -20px' : '0',
+              paddingLeft: mob ? 20 : 0,
+              paddingRight: mob ? 20 : 80,
               paddingBottom: 8,
-              paddingRight: mob ? 16 : 80,
               WebkitOverflowScrolling: 'touch',
               scrollSnapType: 'x mandatory',
             }}
@@ -315,7 +317,11 @@ export default function FeaturedCreators({ mob, creators, go, loading }) {
                     <div style={{ width: '100%', height: 36, borderRadius: 10, background: '#F1F5F9', animation: 'shimmer 1.5s infinite' }} />
                   </div>
                 ))
-              : displayList.map((c, i) => (
+              : displayList.map((c, i) => mob ? (
+                  <div key={c.id || `cre-${i}`} style={{ scrollSnapAlign: 'start', flexShrink: 0 }}>
+                    <CreatorCard c={c} go={go} mob={mob} />
+                  </div>
+                ) : (
                   <motion.div 
                     key={c.id || `cre-${i}`} 
                     style={{ scrollSnapAlign: 'start' }}

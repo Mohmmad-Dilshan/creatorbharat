@@ -85,7 +85,7 @@ KpiCard.propTypes = {
 function NicheBreakdown({ niches, mob }) {
   const hasData = niches && niches.length > 0;
   return (
-    <div style={{ background: '#fff', borderRadius: 20, padding: mob ? 24 : 32, border: '1px solid #E2E8F0', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }}>
+    <div style={{ background: '#fff', borderRadius: 20, padding: mob ? '20px 16px' : 32, border: '1px solid #E2E8F0', boxShadow: '0 4px 16px rgba(0,0,0,0.03)' }}>
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 11, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 6 }}>Creator Niches</div>
         <div style={{ fontSize: mob ? 18 : 22, fontWeight: 900, color: '#0f172a', fontFamily: "'Outfit', sans-serif" }}>
@@ -127,33 +127,57 @@ NicheBreakdown.propTypes = {
 function CityTable({ cities, mob }) {
   const hasData = cities && cities.length > 0;
   return (
-    <div style={{ background: '#fff', borderRadius: 20, padding: mob ? 24 : 32, border: '1px solid #E2E8F0', boxShadow: '0 4px 16px rgba(0,0,0,0.03)', overflow: 'auto' }}>
-      <div style={{ marginBottom: 24 }}>
+    <div style={{ background: '#fff', borderRadius: 20, padding: mob ? '20px 16px' : 32, border: '1px solid #E2E8F0', boxShadow: '0 4px 16px rgba(0,0,0,0.03)', overflow: 'auto' }}>
+      <div style={{ marginBottom: 24, paddingLeft: mob ? 2 : 0 }}>
         <div style={{ fontSize: 11, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 6 }}>Hyperlocal</div>
         <div style={{ fontSize: mob ? 18 : 22, fontWeight: 900, color: '#0f172a', fontFamily: "'Outfit', sans-serif" }}>
           {hasData ? 'Top Cities by Activity' : 'Awaiting city data'}
         </div>
       </div>
       {hasData ? (
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table style={{ width: '100%', minWidth: 'auto', borderCollapse: 'collapse', tableLayout: mob ? 'fixed' : 'auto' }}>
           <thead>
             <tr>
-              {['City', 'Creators', 'Reach', 'Deals'].map(h => (
-                <th key={h} style={{ fontSize: 11, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.8px', textAlign: h === 'City' ? 'left' : 'right', paddingBottom: 12, borderBottom: '1px solid #F1F5F9' }}>{h}</th>
-              ))}
+              {['City', 'Creators', 'Reach', 'Deals'].map((h, idx) => {
+                const getWidth = () => {
+                  if (!mob) return 'auto';
+                  if (idx === 0) return '38%';
+                  if (idx === 1) return '20%';
+                  if (idx === 2) return '22%';
+                  return '20%';
+                };
+                return (
+                  <th 
+                    key={h} 
+                    style={{ 
+                      fontSize: mob ? 10 : 11, 
+                      fontWeight: 800, 
+                      color: '#94a3b8', 
+                      textTransform: 'uppercase', 
+                      letterSpacing: '0.8px', 
+                      textAlign: h === 'City' ? 'left' : 'right', 
+                      padding: mob ? '8px 4px' : '0 0 12px 0', 
+                      borderBottom: '1px solid #F1F5F9',
+                      width: getWidth()
+                    }}
+                  >
+                    {h}
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody>
             {cities.map((r, i) => (
               <tr key={r.city} style={{ borderBottom: i < cities.length - 1 ? '1px solid #F8FAFC' : 'none' }}>
-                <td style={{ padding: '14px 0' }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#1e293b' }}>{r.city}</div>
-                  {r.state && <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 500 }}>{r.state}</div>}
+                <td style={{ padding: mob ? '10px 4px' : '14px 0' }}>
+                  <div style={{ fontSize: mob ? 13 : 14, fontWeight: 700, color: '#1e293b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: mob ? 95 : 'none' }} title={r.city}>{r.city}</div>
+                  {r.state && <div style={{ fontSize: mob ? 10 : 11, color: '#94a3b8', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: mob ? 95 : 'none' }} title={r.state}>{r.state}</div>}
                 </td>
-                <td style={{ textAlign: 'right', fontSize: 14, fontWeight: 700, color: '#FF9431' }}>{r.creators}</td>
-                <td style={{ textAlign: 'right', fontSize: 14, fontWeight: 600, color: '#0f172a' }}>{fmt.num(r.reach)}</td>
-                <td style={{ textAlign: 'right' }}>
-                  <span style={{ background: '#F0FDF4', color: '#16A34A', fontSize: 12, fontWeight: 800, padding: '3px 10px', borderRadius: 100 }}>{r.deals}</span>
+                <td style={{ textAlign: 'right', fontSize: mob ? 13 : 14, fontWeight: 700, color: '#FF9431', padding: mob ? '10px 4px' : '14px 0' }}>{r.creators}</td>
+                <td style={{ textAlign: 'right', fontSize: mob ? 13 : 14, fontWeight: 600, color: '#0f172a', padding: mob ? '10px 4px' : '14px 0' }}>{fmt.num(r.reach)}</td>
+                <td style={{ textAlign: 'right', padding: mob ? '10px 4px' : '14px 0' }}>
+                  <span style={{ background: '#F0FDF4', color: '#16A34A', fontSize: mob ? 11 : 12, fontWeight: 800, padding: mob ? '2px 6px' : '3px 10px', borderRadius: 100, display: 'inline-block' }}>{r.deals}</span>
                 </td>
               </tr>
             ))}
@@ -279,7 +303,7 @@ export default function ImpactStats({ mob }) {
 
         {/* Niche + City breakdown */}
         {!loading && analytics && (
-          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 16 : 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: mob ? 'minmax(0, 1fr)' : '1fr 1fr', gap: mob ? 16 : 20 }}>
             <motion.div
               initial={{ opacity: 0, x: mob ? 0 : -30, y: mob ? 20 : 0 }}
               whileInView={{ opacity: 1, x: 0, y: 0 }}

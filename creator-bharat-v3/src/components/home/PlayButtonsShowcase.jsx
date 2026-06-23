@@ -63,47 +63,61 @@ export default function PlayButtonsShowcase({ mob }) {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
+        <div style={{
+          display: mob ? 'flex' : 'grid',
+          flexDirection: mob ? 'column' : undefined,
+          gridTemplateColumns: mob ? undefined : 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: 24,
+          paddingBottom: mob ? '100px' : '0px'
+        }}>
           {PLAY_BUTTONS.map((pb, i) => (
-            <motion.div
+            <div
               key={pb.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
               style={{
-                background: '#f8fafc',
-                borderRadius: mob ? 24 : 32,
-                padding: mob ? '32px 20px' : '48px 32px',
-                border: '1px solid #f1f5f9',
-                textAlign: 'center',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                boxShadow: mob ? '0 -10px 30px rgba(0,0,0,0.06), 0 20px 40px rgba(0,0,0,0.04)' : '0 10px 30px rgba(0,0,0,0.02)',
                 position: mob ? 'sticky' : 'relative',
-                top: mob ? `${76 + i * 24}px` : 'auto',
+                top: mob ? `${80 + i * 24}px` : 'auto',
                 zIndex: i + 1,
-                overflow: 'hidden'
+                width: '100%'
               }}
-              className="pb-card"
             >
-              <div style={{ position: 'absolute', top: -40, right: -40, width: 120, height: 120, borderRadius: '50%', background: pb.bg, filter: 'blur(30px)', pointerEvents: 'none' }} />
-              
-              <div style={{ width: mob ? 70 : 80, height: mob ? 70 : 80, borderRadius: 20, background: pb.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: pb.color, marginBottom: 24, boxShadow: `0 12px 24px ${pb.color}20` }}>
-                <pb.icon size={mob ? 30 : 36} strokeWidth={2} />
-              </div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                style={{
+                  background: '#f8fafc',
+                  borderRadius: mob ? 24 : 32,
+                  padding: mob ? '32px 20px' : '48px 32px',
+                  border: '1px solid #f1f5f9',
+                  textAlign: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  boxShadow: mob ? '0 -10px 30px rgba(0,0,0,0.06), 0 20px 40px rgba(0,0,0,0.04)' : '0 10px 30px rgba(0,0,0,0.02)',
+                  overflow: 'hidden',
+                  width: '100%',
+                  boxSizing: 'border-box'
+                }}
+                className="pb-card"
+              >
+                <div style={{ position: 'absolute', top: -40, right: -40, width: 120, height: 120, borderRadius: '50%', background: pb.bg, filter: 'blur(30px)', pointerEvents: 'none' }} />
+                
+                <div style={{ width: mob ? 70 : 80, height: mob ? 70 : 80, borderRadius: 20, background: pb.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: pb.color, marginBottom: 24, boxShadow: `0 12px 24px ${pb.color}20` }}>
+                  <pb.icon size={mob ? 30 : 36} strokeWidth={2} />
+                </div>
 
-              <div style={{ fontSize: 13, fontWeight: 800, color: pb.color, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8 }}>
-                {pb.threshold}
-              </div>
-              <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 20 : 24, fontWeight: 900, color: '#0f172a', marginBottom: 12 }}>
-                {pb.title}
-              </h3>
-              <p style={{ fontSize: mob ? 14 : 15, color: '#64748b', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>
-                {pb.desc}
-              </p>
-            </motion.div>
+                <div style={{ fontSize: 13, fontWeight: 800, color: pb.color, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8 }}>
+                  {pb.threshold}
+                </div>
+                <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 20 : 24, fontWeight: 900, color: '#0f172a', marginBottom: 12 }}>
+                  {pb.title}
+                </h3>
+                <p style={{ fontSize: mob ? 14 : 15, color: '#64748b', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>
+                  {pb.desc}
+                </p>
+              </motion.div>
+            </div>
           ))}
         </div>
 
