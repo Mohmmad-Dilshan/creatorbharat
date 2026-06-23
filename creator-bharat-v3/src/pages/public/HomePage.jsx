@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/core/context';
 import { useFeaturedCreators } from '../../hooks/useFeaturedCreators';
 import { useStateCreatorCounts } from '../../hooks/useStateCreatorCounts';
+import { usePlatformStats } from '../../hooks/usePlatformStats';
 import { motion } from 'framer-motion';
 import { 
   Video, Mic, Play, Camera, Headphones, Music, Film, Tv, Radio, 
@@ -117,6 +118,8 @@ export default function HomePage() {
   // All data fetching via hooks — zero raw API calls in this file
   const { creators, loading } = useFeaturedCreators(10);
   const { stateCounts } = useStateCreatorCounts();
+  const { analytics } = usePlatformStats();
+  const creatorCount = analytics?.totalCreators || 0;
 
   useEffect(() => {
     const onResize = () => setMob(window.innerWidth < 768);
@@ -183,7 +186,7 @@ export default function HomePage() {
     { id: 'manifesto', comp: <Manifesto mob={mob} /> },
     { id: 'blueprint', comp: <Testimonials mob={mob} /> },
     { id: 'faq',       comp: <Faq mob={mob} /> },
-    { id: 'cta',       comp: <Cta mob={mob} go={go} /> },
+    { id: 'cta',       comp: <Cta mob={mob} go={go} creatorCount={creatorCount} /> },
   ];
 
   return (

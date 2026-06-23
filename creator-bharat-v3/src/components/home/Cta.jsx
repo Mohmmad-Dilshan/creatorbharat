@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { W } from '../../utils/helpers';
 
-export default function Cta({ mob, go }) {
+export default function Cta({ mob, go, creatorCount }) {
   const handleHoverStart = (e) => {
     e.currentTarget.style.transform = 'translateY(-4px)';
   };
@@ -88,7 +88,7 @@ export default function Cta({ mob, go }) {
                   lineHeight: 1.6,
                   textAlign: mob ? 'center' : 'left'
                 }}>
-                   Join over 10,000+ elite creators building their independent brand. Get verified, secure your escrow, and work directly with global companies—zero agency cuts.
+                   Join over {creatorCount ? `${creatorCount.toLocaleString()}+` : '2,400+'} elite creators building their independent brand. Get verified, secure your escrow, and work directly with global companies—zero agency cuts.
                 </p>
 
                 {/* Small Bullet List for value density */}
@@ -334,5 +334,6 @@ export default function Cta({ mob, go }) {
 
 Cta.propTypes = {
   mob: PropTypes.bool,
-  go: PropTypes.func.isRequired
+  go: PropTypes.func.isRequired,
+  creatorCount: PropTypes.number
 };
