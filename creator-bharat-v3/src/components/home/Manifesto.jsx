@@ -22,7 +22,7 @@ export default function Manifesto({ mob }) {
 
   return (
     <section style={{ 
-      padding: mob ? '20px 16px 20px' : '40px 24px 40px', 
+      padding: mob ? '24px 0 32px' : '40px 24px 40px', 
       background: '#f8fafc', 
       position: 'relative', 
       overflow: 'hidden' 
@@ -46,7 +46,13 @@ export default function Manifesto({ mob }) {
         filter: 'blur(90px)', pointerEvents: 'none' 
       }} />
 
-      <div style={{ ...W(), maxWidth: 1240, position: 'relative', zIndex: 1 }}>
+      <div style={{ 
+        ...W(), 
+        maxWidth: 1240, 
+        position: 'relative', 
+        zIndex: 1,
+        padding: mob ? '0 16px' : '0 20px'
+      }}>
         
         {/* Main Billboard Card */}
         <motion.div 
@@ -56,14 +62,16 @@ export default function Manifesto({ mob }) {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           style={{
             background: '#ffffff',
-            border: '1.5px solid #e2e8f0',
-            borderRadius: 32,
+            border: mob ? 'none' : '1.5px solid #e2e8f0',
+            borderTop: mob ? '1px solid #e2e8f0' : 'none',
+            borderBottom: mob ? '1px solid #e2e8f0' : 'none',
+            borderRadius: mob ? 0 : 32,
             boxShadow: '0 30px 60px rgba(15, 23, 42, 0.05)',
             overflow: 'hidden',
             display: 'grid',
             gridTemplateColumns: mob ? '1fr' : '1.15fr 0.85fr',
             alignItems: 'stretch',
-            marginBottom: mob ? 32 : 48
+            margin: mob ? '0 -16px 32px' : '0 0 48px'
           }}
         >
           
