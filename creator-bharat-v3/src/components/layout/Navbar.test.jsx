@@ -28,6 +28,11 @@ describe('Navbar Layout Component Tests', () => {
   });
 
   it('renders language switcher badge and toggles language selection', async () => {
+    // Mock Google Translate combo element
+    const select = document.createElement('select');
+    select.className = 'goog-te-combo';
+    document.body.appendChild(select);
+
     renderNavbar();
     
     // Find the language trigger button (currently displaying 'EN')
@@ -41,10 +46,17 @@ describe('Navbar Layout Component Tests', () => {
     const hindiOption = screen.getByText(/हिन्दी/i);
     expect(hindiOption).toBeInTheDocument();
 
+    // Set cookie to simulate Google Translate's behavior
+    document.cookie = 'googtrans=/en/hi';
+
     // Click Hindi option to switch languages
     fireEvent.click(hindiOption);
 
     // Verify language trigger text changed to 'HI'
     expect(screen.getByText('HI')).toBeInTheDocument();
+
+    // Clean up
+    document.body.removeChild(select);
+    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
   });
 });

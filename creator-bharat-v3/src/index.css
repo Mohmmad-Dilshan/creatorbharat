@@ -3493,7 +3493,7 @@ html, body {
 
 @media (max-width: 480px) {
   .logo-text-animated {
-    display: none !important;
+    font-size: 16px !important;
   }
 }
 
