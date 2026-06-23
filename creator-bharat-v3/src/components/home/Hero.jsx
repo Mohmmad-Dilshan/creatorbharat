@@ -134,7 +134,7 @@ const HeroValueProps = memo(({ mob }) => {
 
           {/* Headline */}
           <h2 style={{
-            fontSize: mob ? 36 : 58, fontWeight: 950, color: '#fff',
+            fontSize: mob ? 28 : 58, fontWeight: 950, color: '#fff',
             lineHeight: 1.05, letterSpacing: '-0.04em', margin: '0 0 10px 0',
             fontFamily: "'Outfit',sans-serif",
           }}>
@@ -176,31 +176,37 @@ const HeroValueProps = memo(({ mob }) => {
           </p>
 
           {/* Feature chips */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 32 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: mob ? 6 : 8, marginBottom: mob ? 24 : 32 }}>
             {FEATURES.map(f => (
               <div key={f.label} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6,
-                padding: '7px 14px',
+                padding: mob ? '5px 10px' : '7px 14px',
                 background: 'rgba(255,255,255,0.05)',
                 border: '1px solid rgba(255,255,255,0.1)',
                 borderRadius: 100,
               }}>
-                <span style={{ fontSize: 12 }}>{f.icon}</span>
-                <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.8)', fontFamily: "'Outfit',sans-serif", whiteSpace: 'nowrap' }}>{f.label}</span>
+                <span style={{ fontSize: mob ? 11 : 12 }}>{f.icon}</span>
+                <span style={{ fontSize: mob ? 10 : 11, fontWeight: 700, color: 'rgba(255,255,255,0.8)', fontFamily: "'Outfit',sans-serif", whiteSpace: 'nowrap' }}>{f.label}</span>
               </div>
             ))}
           </div>
 
           {/* Stats row */}
-          <div style={{ display: 'flex', gap: mob ? 20 : 28, flexWrap: 'wrap' }}>
+          <div style={{ 
+            display: mob ? 'grid' : 'flex', 
+            gridTemplateColumns: mob ? 'repeat(3, 1fr)' : 'none',
+            gap: mob ? 0 : 28, 
+            flexWrap: mob ? 'nowrap' : 'wrap' 
+          }}>
             {STATS.map((s, i) => (
               <div key={i} style={{
                 display: 'flex', flexDirection: 'column', gap: 2,
-                paddingRight: i < STATS.length - 1 ? (mob ? 20 : 28) : 0,
+                textAlign: mob ? 'center' : 'left',
+                paddingRight: mob ? 0 : (i < STATS.length - 1 ? 28 : 0),
                 borderRight: i < STATS.length - 1 ? '1px solid rgba(255,255,255,0.1)' : 'none',
               }}>
-                <span style={{ fontSize: mob ? 22 : 28, fontWeight: 950, color: '#fff', fontFamily: "'Outfit',sans-serif", letterSpacing: '-0.03em' }}>{s.value}</span>
-                <span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.38)', textTransform: 'uppercase', letterSpacing: '1.5px', fontFamily: "'Outfit',sans-serif" }}>{s.label}</span>
+                <span style={{ fontSize: mob ? 18 : 28, fontWeight: 950, color: '#fff', fontFamily: "'Outfit',sans-serif", letterSpacing: '-0.03em' }}>{s.value}</span>
+                <span style={{ fontSize: mob ? 8 : 10, fontWeight: 700, color: 'rgba(255,255,255,0.38)', textTransform: 'uppercase', letterSpacing: mob ? '1px' : '1.5px', fontFamily: "'Outfit',sans-serif" }}>{s.label}</span>
               </div>
             ))}
           </div>
@@ -210,7 +216,7 @@ const HeroValueProps = memo(({ mob }) => {
         <div style={{
           flex: 1,
           position: 'relative',
-          minHeight: mob ? 480 : 'auto',
+          minHeight: mob ? 340 : 'auto',
           overflow: 'hidden',
         }}>
           {/* The real human photo — fills the entire right half */}
