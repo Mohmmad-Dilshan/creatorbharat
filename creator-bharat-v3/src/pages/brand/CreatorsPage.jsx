@@ -1275,8 +1275,8 @@ const MobileCreatorDeck = () => {
         background: '#0f172a',
         borderRadius: '36px',
         padding: '10px',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 10px rgba(15, 23, 42, 0.95)',
-        border: '2px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+        border: '1.5px solid rgba(255, 255, 255, 0.15)',
         position: 'relative',
         boxSizing: 'border-box',
         overflow: 'hidden',
@@ -1563,17 +1563,17 @@ export default function CreatorsPage() {
         overflow: 'hidden',
         background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
         borderBottom: '1px solid #e2e8f0',
-        padding: mob ? '100px 20px 60px' : '140px 24px 90px',
+        padding: mob ? '90px 20px 50px' : '140px 24px 90px',
       }}>
 
         {/* ── Full-bleed creator photo on right ── */}
         <div style={{
           position: 'absolute',
           inset: 0,
-          backgroundImage: 'url(/creator_landing_hero.png)',
+          backgroundImage: mob ? 'none' : 'url(/creator_landing_hero.png)',
           backgroundSize: 'cover',
-          backgroundPosition: mob ? 'center top' : 'right center',
-          opacity: mob ? 0.15 : 0.9,
+          backgroundPosition: 'right center',
+          opacity: 0.9,
           zIndex: 0,
         }} />
 
@@ -1582,7 +1582,7 @@ export default function CreatorsPage() {
           position: 'absolute',
           inset: 0,
           background: mob
-            ? 'linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.96) 100%)'
+            ? 'transparent'
             : 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.98) 30%, rgba(255,255,255,0.6) 58%, rgba(255,255,255,0) 80%)',
           zIndex: 1,
           pointerEvents: 'none',
@@ -1680,12 +1680,12 @@ export default function CreatorsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               style={{
-                fontSize: mob ? '40px' : '74px',
+                fontSize: mob ? '36px' : '74px',
                 fontWeight: 950,
                 color: '#0f172a',
                 letterSpacing: '-0.05em',
-                lineHeight: 0.94,
-                marginBottom: '28px',
+                lineHeight: mob ? 1.05 : 0.94,
+                marginBottom: mob ? '20px' : '28px',
                 fontFamily: "'Outfit', sans-serif",
               }}
             >
@@ -1714,12 +1714,12 @@ export default function CreatorsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               style={{
-                fontSize: mob ? '15px' : '18px',
+                fontSize: mob ? '14px' : '18px',
                 color: '#475569',
                 maxWidth: '560px',
-                marginBottom: '40px',
+                marginBottom: mob ? '28px' : '40px',
                 fontWeight: 600,
-                lineHeight: 1.65,
+                lineHeight: 1.6,
                 letterSpacing: '0.01em',
               }}
             >
@@ -1736,7 +1736,7 @@ export default function CreatorsPage() {
                 gap: '14px',
                 flexDirection: mob ? 'column' : 'row',
                 width: mob ? '100%' : 'auto',
-                marginBottom: '48px',
+                marginBottom: mob ? '32px' : '48px',
               }}
             >
               <Btn
