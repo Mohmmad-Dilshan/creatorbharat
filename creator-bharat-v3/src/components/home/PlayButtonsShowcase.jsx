@@ -49,7 +49,7 @@ export default function PlayButtonsShowcase({ mob }) {
     }
   };
   return (
-    <section style={{ padding: mob ? '32px 20px 60px' : '48px 24px 100px', background: '#fff', position: 'relative', overflow: 'hidden' }}>
+    <section style={{ padding: mob ? '32px 20px 60px' : '48px 24px 100px', background: '#fff', position: 'relative', overflow: 'visible' }}>
       <div style={{ ...W(), maxWidth: 1200, position: 'relative', zIndex: 1, boxSizing: 'border-box' }}>
         <div style={{ textAlign: 'center', marginBottom: mob ? 40 : 64 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', background: '#FFF7ED', border: '1px solid #FFEDD5', borderRadius: 100, marginBottom: 16 }}>
@@ -80,8 +80,10 @@ export default function PlayButtonsShowcase({ mob }) {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.02)',
-                position: 'relative',
+                boxShadow: mob ? '0 -10px 30px rgba(0,0,0,0.06), 0 20px 40px rgba(0,0,0,0.04)' : '0 10px 30px rgba(0,0,0,0.02)',
+                position: mob ? 'sticky' : 'relative',
+                top: mob ? `${76 + i * 24}px` : 'auto',
+                zIndex: i + 1,
                 overflow: 'hidden'
               }}
               className="pb-card"
