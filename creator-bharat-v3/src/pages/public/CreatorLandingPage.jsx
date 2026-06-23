@@ -369,12 +369,12 @@ export default function CreatorLandingPage() {
               Not just followers — your CB Score, brand deals, and platform activity all count.
             </p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3,1fr)', gap: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
             {MILESTONES.map((m, i) => (
-              <motion.div key={m.title} className="milestone-trophy-card" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} style={{ padding: 40, background: '#ffffff', borderRadius: 40, border: '1px solid #e2e8f0', textAlign: 'center', boxShadow: '0 15px 40px rgba(0,0,0,0.02)', transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)' }}>
-                <div style={{ fontSize: 56, marginBottom: 20 }}>{m.icon}</div>
-                <h3 style={{ fontSize: 22, fontWeight: 950, color: '#0f172a', marginBottom: 12 }}>{m.title}</h3>
-                <div style={{ padding: '12px 16px', background: `${m.color}15`, borderRadius: 16, border: `1px solid ${m.color}30`, marginBottom: 20 }}>
+              <motion.div key={m.title} className="milestone-trophy-card" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} style={{ padding: mob ? '32px 20px' : '40px', background: '#ffffff', borderRadius: mob ? 24 : 40, border: '1px solid #e2e8f0', textAlign: 'center', boxShadow: '0 15px 40px rgba(0,0,0,0.02)', transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+                <div style={{ fontSize: mob ? 48 : 56, marginBottom: 20 }}>{m.icon}</div>
+                <h3 style={{ fontSize: mob ? 20 : 22, fontWeight: 950, color: '#0f172a', marginBottom: 12 }}>{m.title}</h3>
+                <div style={{ padding: mob ? '10px 12px' : '12px 16px', background: `${m.color}15`, borderRadius: 16, border: `1px solid ${m.color}30`, marginBottom: 20 }}>
                   <div style={{ fontSize: 12, fontWeight: 800, color: m.color, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 4 }}>Requirements</div>
                   <div style={{ fontSize: 13, color: '#475569', fontWeight: 600 }}>{m.req}</div>
                 </div>

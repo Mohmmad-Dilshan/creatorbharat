@@ -63,7 +63,7 @@ export default function PlayButtonsShowcase({ mob }) {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)', gap: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
           {PLAY_BUTTONS.map((pb, i) => (
             <motion.div
               key={pb.id}
@@ -73,8 +73,8 @@ export default function PlayButtonsShowcase({ mob }) {
               transition={{ delay: i * 0.1 }}
               style={{
                 background: '#f8fafc',
-                borderRadius: 32,
-                padding: '40px 32px',
+                borderRadius: mob ? 24 : 32,
+                padding: mob ? '32px 20px' : '48px 32px',
                 border: '1px solid #f1f5f9',
                 textAlign: 'center',
                 display: 'flex',
@@ -88,17 +88,17 @@ export default function PlayButtonsShowcase({ mob }) {
             >
               <div style={{ position: 'absolute', top: -40, right: -40, width: 120, height: 120, borderRadius: '50%', background: pb.bg, filter: 'blur(30px)', pointerEvents: 'none' }} />
               
-              <div style={{ width: 80, height: 80, borderRadius: 24, background: pb.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: pb.color, marginBottom: 24, boxShadow: `0 12px 24px ${pb.color}20` }}>
-                <pb.icon size={36} strokeWidth={2} />
+              <div style={{ width: mob ? 70 : 80, height: mob ? 70 : 80, borderRadius: 20, background: pb.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: pb.color, marginBottom: 24, boxShadow: `0 12px 24px ${pb.color}20` }}>
+                <pb.icon size={mob ? 30 : 36} strokeWidth={2} />
               </div>
 
               <div style={{ fontSize: 13, fontWeight: 800, color: pb.color, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 8 }}>
                 {pb.threshold}
               </div>
-              <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 900, color: '#0f172a', marginBottom: 12 }}>
+              <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 20 : 24, fontWeight: 900, color: '#0f172a', marginBottom: 12 }}>
                 {pb.title}
               </h3>
-              <p style={{ fontSize: 15, color: '#64748b', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>
+              <p style={{ fontSize: mob ? 14 : 15, color: '#64748b', lineHeight: 1.6, margin: 0, fontWeight: 500 }}>
                 {pb.desc}
               </p>
             </motion.div>
