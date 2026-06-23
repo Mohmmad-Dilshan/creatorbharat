@@ -1,10 +1,6 @@
-/**
- * FeaturedCreators.jsx
- *
- * Displays an Instagram-style horizontal scroll of suggested creators.
- */
 import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
 import { W, fmt } from '../../utils/helpers';
 import { ChevronLeft, ChevronRight, UserPlus, Check } from 'lucide-react';
 
@@ -190,7 +186,13 @@ function SectionHeader({ loading, isFallback, listCount, mob, go, displayList, s
   };
 
   return (
-    <div style={{ marginBottom: mob ? 20 : 32, padding: mob ? '0 4px' : 0 }}>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      style={{ marginBottom: mob ? 20 : 32, padding: mob ? '0 4px' : 0 }}
+    >
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 14px', background: '#FFF7ED', border: '1px solid #FFEDD5', borderRadius: 100, marginBottom: 14 }}>
@@ -250,7 +252,7 @@ function SectionHeader({ loading, isFallback, listCount, mob, go, displayList, s
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -314,9 +316,16 @@ export default function FeaturedCreators({ mob, creators, go, loading }) {
                   </div>
                 ))
               : displayList.map((c, i) => (
-                  <div key={c.id || `cre-${i}`} style={{ scrollSnapAlign: 'start' }}>
+                  <motion.div 
+                    key={c.id || `cre-${i}`} 
+                    style={{ scrollSnapAlign: 'start' }}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ duration: 0.5, delay: Math.min(i * 0.05, 0.4), ease: [0.16, 1, 0.3, 1] }}
+                  >
                     <CreatorCard c={c} go={go} mob={mob} />
-                  </div>
+                  </motion.div>
                 ))
             }
           </div>

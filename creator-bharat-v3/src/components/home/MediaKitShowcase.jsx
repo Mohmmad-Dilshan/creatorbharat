@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
 import { W } from '../../utils/helpers';
 import { 
   Sparkles, CheckCircle2, Star, Eye, Users, BarChart3, 
@@ -108,7 +109,13 @@ export default function MediaKitShowcase({ mob, go }) {
       <div style={{ ...W(), maxWidth: 1240, position: 'relative', zIndex: 1 }}>
         
         {/* Section Header */}
-        <div style={{ textAlign: 'center', marginBottom: mob ? 40 : 60 }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          style={{ textAlign: 'center', marginBottom: mob ? 40 : 60 }}
+        >
           <div style={{ 
             display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', 
             background: 'rgba(255, 148, 49, 0.08)', border: '1px solid rgba(255, 148, 49, 0.25)', 
@@ -143,7 +150,7 @@ export default function MediaKitShowcase({ mob, go }) {
           }}>
             A live, verified creator media kit that pulls real-time analytics, audience density maps, and past campaign outcomes directly into a professional booking link.
           </p>
-        </div>
+        </motion.div>
 
         {/* Layout Grid */}
         <div style={{
@@ -154,12 +161,18 @@ export default function MediaKitShowcase({ mob, go }) {
         }}>
           
           {/* Left Column: Interactive Controls */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            textAlign: 'left'
-          }}>
+          <motion.div 
+            initial={{ opacity: 0, x: mob ? 0 : -40, y: mob ? 20 : 0 }}
+            whileInView={{ opacity: 1, x: 0, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              textAlign: 'left'
+            }}
+          >
             {/* Step 1: Select Creator Profile */}
             <div style={{ marginBottom: 28 }}>
               <label style={{ fontSize: 11, fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 12, display: 'block' }}>
@@ -300,15 +313,21 @@ export default function MediaKitShowcase({ mob, go }) {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Right Column: Dynamic Glassmorphic Media Kit Preview Card */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            position: 'relative'
-          }}>
+          <motion.div 
+            initial={{ opacity: 0, x: mob ? 0 : 40, y: mob ? 20 : 0 }}
+            whileInView={{ opacity: 1, x: 0, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              position: 'relative'
+            }}
+          >
             {/* Soft Ambient color glow background matching creator color */}
             <div style={{
               position: 'absolute',
@@ -508,7 +527,7 @@ export default function MediaKitShowcase({ mob, go }) {
                 <Sparkles size={13} color={accentColor} />
               </button>
             </div>
-          </div>
+          </motion.div>
 
         </div>
 

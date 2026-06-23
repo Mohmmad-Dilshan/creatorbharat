@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
 import { W } from '../../utils/helpers';
 import { Check, Sparkles } from 'lucide-react';
 
@@ -48,17 +49,23 @@ export default function Manifesto({ mob }) {
       <div style={{ ...W(), maxWidth: 1240, position: 'relative', zIndex: 1 }}>
         
         {/* Main Billboard Card */}
-        <div style={{
-          background: '#ffffff',
-          border: '1.5px solid #e2e8f0',
-          borderRadius: 32,
-          boxShadow: '0 30px 60px rgba(15, 23, 42, 0.05)',
-          overflow: 'hidden',
-          display: 'grid',
-          gridTemplateColumns: mob ? '1fr' : '1.15fr 0.85fr',
-          alignItems: 'stretch',
-          marginBottom: mob ? 32 : 48
-        }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            background: '#ffffff',
+            border: '1.5px solid #e2e8f0',
+            borderRadius: 32,
+            boxShadow: '0 30px 60px rgba(15, 23, 42, 0.05)',
+            overflow: 'hidden',
+            display: 'grid',
+            gridTemplateColumns: mob ? '1fr' : '1.15fr 0.85fr',
+            alignItems: 'stretch',
+            marginBottom: mob ? 32 : 48
+          }}
+        >
           
           {/* Left Column: Heading, Checklist, Narrative */}
           <div style={{
@@ -225,7 +232,7 @@ export default function Manifesto({ mob }) {
 
           </div>
 
-        </div>
+        </motion.div>
 
         {/* Bottom Core Stats Cards */}
         <div style={{
@@ -239,8 +246,12 @@ export default function Manifesto({ mob }) {
             { label: 'Zero Commission', val: 'Keep 100% sponsorships' },
             { label: 'Regional First', val: 'Reach Millions in Bharat' }
           ].map((stat, index) => (
-            <div 
+            <motion.div 
               key={index} 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
               style={{
                 background: '#ffffff',
                 border: '1.5px solid #e2e8f0',
@@ -259,7 +270,7 @@ export default function Manifesto({ mob }) {
               <span style={{ fontSize: 16, fontWeight: 900, color: '#0f172a' }}>
                 {stat.val}
               </span>
-            </div>
+            </motion.div>
           ))}
         </div>
 

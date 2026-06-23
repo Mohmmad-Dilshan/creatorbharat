@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
 import { W } from '../../utils/helpers';
 import { 
   ShieldCheck, Radio, CreditCard, Search, Send, Check, 
@@ -311,7 +312,13 @@ BrandCanvasGraphics.propTypes = {
 
 function Heading({ mob }) {
   return (
-    <div style={{ textAlign: 'center', marginBottom: mob ? 32 : 44 }}>
+    <motion.div 
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      style={{ textAlign: 'center', marginBottom: mob ? 32 : 44 }}
+    >
       <div style={{
         display: 'inline-flex', alignItems: 'center', gap: 10, padding: '6px 16px',
         background: '#fff', border: '1px solid rgba(0,0,0,0.06)', 
@@ -332,7 +339,7 @@ function Heading({ mob }) {
       <p style={{ fontSize: mob ? 14 : 16, fontWeight: 600, color: '#64748b', maxWidth: 650, margin: '0 auto', lineHeight: 1.6 }}>
         A unified platform helping regional creators build, spotlight, and monetize, and helping brands discover, connect, and scale with absolute security.
       </p>
-    </div>
+    </motion.div>
   );
 }
 
@@ -377,7 +384,13 @@ export default function Testimonials({ mob }) {
         <Heading mob={mob} />
 
         {/* Horizontal tab selector */}
-        <div style={{ textAlign: 'center', marginBottom: mob ? 32 : 48 }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          style={{ textAlign: 'center', marginBottom: mob ? 32 : 48 }}
+        >
           <div style={{ 
             display: 'inline-flex', 
             background: 'rgba(241, 245, 249, 0.65)', 
@@ -446,21 +459,27 @@ export default function Testimonials({ mob }) {
               </div>
             </button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Unified Premium SaaS Marketing Billboard Card */}
-        <div style={{
-          background: '#ffffff',
-          border: '1.5px solid #e2e8f0',
-          borderRadius: 32,
-          boxShadow: '0 30px 60px rgba(15, 23, 42, 0.05)',
-          position: 'relative',
-          minHeight: mob ? 'auto' : 580,
-          overflow: 'hidden',
-          display: 'grid',
-          gridTemplateColumns: mob ? '1fr' : '1.15fr 0.85fr',
-          alignItems: 'stretch'
-        }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            background: '#ffffff',
+            border: '1.5px solid #e2e8f0',
+            borderRadius: 32,
+            boxShadow: '0 30px 60px rgba(15, 23, 42, 0.05)',
+            position: 'relative',
+            minHeight: mob ? 'auto' : 580,
+            overflow: 'hidden',
+            display: 'grid',
+            gridTemplateColumns: mob ? '1fr' : '1.15fr 0.85fr',
+            alignItems: 'stretch'
+          }}
+        >
           {/* Left Column: Headline, Checklist & Interactive Feature Badges */}
           <div style={{ 
             padding: mob ? '32px 20px' : '56px 48px', 
@@ -673,7 +692,7 @@ export default function Testimonials({ mob }) {
               <BrandCanvasGraphics current={current} />
             )}
           </div>
-        </div>
+        </motion.div>
       </div>
 
       <style>{`

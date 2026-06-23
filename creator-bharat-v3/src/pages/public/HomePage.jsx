@@ -175,18 +175,18 @@ export default function HomePage() {
 
   // Section list — add/remove/reorder here only
   const sections = [
-    { id: 'hero',      comp: <Hero mob={mob} st={st} dsp={dsp} go={go} /> },
-    { id: 'creators',  comp: <FeaturedCreators mob={mob} creators={creators} go={go} loading={loading} /> },
-    { id: 'trophies',  comp: <PlayButtonsShowcase mob={mob} /> },
-    { id: 'impact',    comp: <ImpactStats mob={mob} /> },
-    { id: 'map',       comp: <IndiaMap3D mob={mob} stateCounts={stateCounts} onSelectState={s => { navigate(st.role === 'brand' ? '/brand/creator-density' : '/creator-density', { state: { state: s } }); }} /> },
-    { id: 'roadmap',   comp: <CommunityPulse mob={mob} go={go} /> },
-    { id: 'showcase',  comp: <PlatformShowcase mob={mob} /> },
-    { id: 'mediakit',  comp: <MediaKitShowcase mob={mob} go={go} /> },
-    { id: 'manifesto', comp: <Manifesto mob={mob} /> },
-    { id: 'blueprint', comp: <Testimonials mob={mob} /> },
-    { id: 'faq',       comp: <Faq mob={mob} /> },
-    { id: 'cta',       comp: <Cta mob={mob} go={go} creatorCount={creatorCount} /> },
+    { id: 'hero',      comp: <Hero mob={mob} st={st} dsp={dsp} go={go} />, reveal: false },
+    { id: 'creators',  comp: <FeaturedCreators mob={mob} creators={creators} go={go} loading={loading} />, reveal: false },
+    { id: 'trophies',  comp: <PlayButtonsShowcase mob={mob} />, reveal: false },
+    { id: 'impact',    comp: <ImpactStats mob={mob} />, reveal: false },
+    { id: 'map',       comp: <IndiaMap3D mob={mob} stateCounts={stateCounts} onSelectState={s => { navigate(st.role === 'brand' ? '/brand/creator-density' : '/creator-density', { state: { state: s } }); }} />, reveal: true },
+    { id: 'roadmap',   comp: <CommunityPulse mob={mob} go={go} />, reveal: false },
+    { id: 'showcase',  comp: <PlatformShowcase mob={mob} />, reveal: false },
+    { id: 'mediakit',  comp: <MediaKitShowcase mob={mob} go={go} />, reveal: false },
+    { id: 'manifesto', comp: <Manifesto mob={mob} />, reveal: false },
+    { id: 'blueprint', comp: <Testimonials mob={mob} />, reveal: false },
+    { id: 'faq',       comp: <Faq mob={mob} />, reveal: false },
+    { id: 'cta',       comp: <Cta mob={mob} go={go} creatorCount={creatorCount} />, reveal: false },
   ];
 
   return (
@@ -247,7 +247,7 @@ export default function HomePage() {
         <div 
           key={s.id} 
           id={s.id} 
-          className={s.id === 'hero' ? '' : 'reveal-on-scroll'} 
+          className={s.reveal ? 'reveal-on-scroll' : ''} 
           style={{ position: 'relative' }}
         >
           {s.comp}

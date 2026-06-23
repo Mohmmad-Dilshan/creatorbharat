@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
 import { W } from '../../utils/helpers';
 import { 
   X, CheckCircle2, AlertTriangle, ShieldCheck, ChevronLeft, ChevronRight, 
@@ -383,7 +384,13 @@ export default function Faq({ mob }) {
       <div style={{ ...W(1200), position: 'relative', zIndex: 1 }}>
         
         {/* Unified Section Header */}
-        <div style={{ textAlign: 'center', marginBottom: mob ? 32 : 48 }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          style={{ textAlign: 'center', marginBottom: mob ? 32 : 48 }}
+        >
           <div style={{ 
             display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', 
             background: 'rgba(255, 148, 49, 0.08)', border: '1px solid rgba(255, 148, 49, 0.25)', borderRadius: 100, marginBottom: 16
@@ -399,7 +406,7 @@ export default function Faq({ mob }) {
             fontSize: mob ? 30 : 52, 
             fontWeight: 950, 
             color: '#0f172a', 
-            lineHeight: 1.1, 
+            lineHeight: 1.15, 
             letterSpacing: '-0.03em',
             marginBottom: 16
           }}>
@@ -413,7 +420,7 @@ export default function Faq({ mob }) {
           <p style={{ fontSize: mob ? 14 : 16, color: '#64748b', fontWeight: 600, maxWidth: 640, margin: '0 auto', lineHeight: 1.6 }}>
             Explore how CreatorBharat resolves critical creator pain points directly through a secure, commission-free platform.
           </p>
-        </div>
+        </motion.div>
 
         {/* Mobile Tab Swipeable Pills */}
         {mob && (
@@ -460,18 +467,24 @@ export default function Faq({ mob }) {
         )}
 
         {/* Unified Premium SaaS Dashboard Panel */}
-        <div style={{
-          background: '#ffffff',
-          border: '1px solid #e2e8f0',
-          borderRadius: 24,
-          boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.05)',
-          display: 'grid',
-          gridTemplateColumns: mob ? '1fr' : '320px 1fr',
-          minHeight: 520,
-          overflow: 'hidden',
-          padding: 12,
-          gap: 12
-        }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: 24,
+            boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.05)',
+            display: 'grid',
+            gridTemplateColumns: mob ? '1fr' : '320px 1fr',
+            minHeight: 520,
+            overflow: 'hidden',
+            padding: 12,
+            gap: 12
+          }}
+        >
           {/* Desktop Left Sidebar Tabs */}
           {!mob && (
             <div style={{
@@ -613,10 +626,16 @@ export default function Faq({ mob }) {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Bottom tagline */}
-        <div style={{ textAlign: 'center', marginTop: mob ? 36 : 48 }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          style={{ textAlign: 'center', marginTop: mob ? 36 : 48 }}
+        >
            <div style={{ display: 'inline-block', padding: '12px 28px', background: '#fff', border: '1px solid rgba(0,0,0,0.05)', borderRadius: 100, boxShadow: '0 8px 24px rgba(0,0,0,0.02)' }}>
              <p style={{ fontSize: mob ? 13 : 16, fontWeight: 800, color: '#334155', fontStyle: 'italic', margin: 0 }}>
                <span style={{ color: '#FF9431', fontSize: 22, lineHeight: 0, verticalAlign: 'middle' }}>&ldquo;</span>
@@ -626,7 +645,7 @@ export default function Faq({ mob }) {
                <span style={{ color: '#FF9431', fontSize: 22, lineHeight: 0, verticalAlign: 'middle' }}>&rdquo;</span>
              </p>
            </div>
-        </div>
+        </motion.div>
 
       </div>
 

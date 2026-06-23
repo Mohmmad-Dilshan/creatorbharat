@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
 import { W, fmt } from '../../utils/helpers';
 import { User, Radio, CreditCard, ArrowRight, CheckCircle } from 'lucide-react';
 import MiniIndiaMap from '../MiniIndiaMap';
@@ -89,7 +90,13 @@ export default function CommunityPulse({ mob, go }) {
       <div style={{ ...W(), maxWidth: 1200, position: 'relative', zIndex: 1, boxSizing: 'border-box' }}>
 
         {/* ── Header ── */}
-        <div style={{ marginBottom: mob ? 48 : 80, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 32, flexWrap: mob ? 'wrap' : 'nowrap' }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          style={{ marginBottom: mob ? 48 : 80, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 32, flexWrap: mob ? 'wrap' : 'nowrap', width: '100%' }}
+        >
 
           {/* Left: orange border line + text */}
           <div style={{ borderLeft: '4px solid #FF9431', paddingLeft: mob ? 20 : 32, flex: 1, minWidth: 0 }}>
@@ -115,7 +122,7 @@ export default function CommunityPulse({ mob, go }) {
               <span style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Bharat</span>
             </div>
           )}
-        </div>
+        </motion.div>
 
 
         {/* ── Steps ── */}
@@ -125,8 +132,12 @@ export default function CommunityPulse({ mob, go }) {
             {steps.map((s, i) => {
               const Icon = s.icon;
               return (
-                <button
+                <motion.button
                   key={s.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.5, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
                   aria-expanded={activeStep === i}
                   aria-label={`Step ${s.n}: ${s.h}`}
                   style={{
@@ -164,7 +175,7 @@ export default function CommunityPulse({ mob, go }) {
                       <span style={{ fontSize: 11, fontWeight: 700, color: s.color }}>{s.stat}</span>
                     </div>
                   </div>
-                </button>
+                </motion.button>
               );
             })}
           </div>
@@ -186,8 +197,12 @@ export default function CommunityPulse({ mob, go }) {
                 const isLeft = i % 2 === 0;
 
                 return (
-                  <div
+                  <motion.div
                     key={s.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-80px" }}
+                    transition={{ duration: 0.6, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
                     style={{
                       display: 'grid',
                       gridTemplateColumns: '1fr 80px 1fr',
@@ -221,7 +236,7 @@ export default function CommunityPulse({ mob, go }) {
                     <div style={{ textAlign: isLeft ? 'left' : 'right', padding: isLeft ? '0 0 0 48px' : '0 48px 0 0', opacity: isLeft ? 0.15 : 1, transition: 'opacity 0.3s' }}>
                       {!isLeft && <StepContent s={s} isLeft={false} />}
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
@@ -229,7 +244,13 @@ export default function CommunityPulse({ mob, go }) {
         )}
 
         {/* ── CTA ── */}
-        <div style={{ textAlign: 'center', marginTop: mob ? 48 : 80 }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          style={{ textAlign: 'center', marginTop: mob ? 48 : 80 }}
+        >
           <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
             <p style={{ fontSize: mob ? 14 : 16, color: '#94a3b8', fontWeight: 400 }}>
               Ready to start your journey?
@@ -256,7 +277,7 @@ export default function CommunityPulse({ mob, go }) {
               Start Your Creator Journey <ArrowRight size={18} />
             </button>
           </div>
-        </div>
+        </motion.div>
       </div>
       <style>{`
         @keyframes flagShimmer {

@@ -8,6 +8,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
 import { Briefcase, Users, Megaphone, MapPin, ArrowUpRight, RefreshCw } from 'lucide-react';
 import { usePlatformStats } from '../../hooks/usePlatformStats';
 import { fmt } from '../../utils/helpers';
@@ -225,7 +226,13 @@ export default function ImpactStats({ mob }) {
       <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative', zIndex: 1 }}>
 
         {/* Header */}
-        <div style={{ marginBottom: mob ? 36 : 56, textAlign: 'center' }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          style={{ marginBottom: mob ? 36 : 56, textAlign: 'center' }}
+        >
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '6px 16px', background: '#fff', border: '1px solid #E2E8F0', borderRadius: 100, marginBottom: 20, boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
             <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: loading ? '#F59E0B' : '#10B981', display: 'block', zIndex: 1, transition: 'background 0.3s' }} />
@@ -250,27 +257,57 @@ export default function ImpactStats({ mob }) {
           <p style={{ fontSize: mob ? 14 : 17, color: '#64748b', maxWidth: 520, margin: '0 auto', lineHeight: 1.7 }}>
             Pulled live from our platform. Every number reflects real creators and campaigns on CreatorBharat.
           </p>
-        </div>
+        </motion.div>
 
         {/* KPI Row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: mob ? 12 : 20, marginBottom: mob ? 16 : 20 }}>
           {loading
             ? [0,1,2,3].map(i => <SkeletonCard key={i} />)
-            : buildKpis(analytics).map((k) => <KpiCard key={k.label} {...k} mob={mob} />)
+            : buildKpis(analytics).map((k, i) => (
+                <motion.div
+                  key={k.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.5, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <KpiCard {...k} mob={mob} />
+                </motion.div>
+              ))
           }
         </div>
 
         {/* Niche + City breakdown */}
         {!loading && analytics && (
           <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 16 : 20 }}>
-            <NicheBreakdown niches={analytics.topNiches} mob={mob} />
-            <CityTable cities={analytics.topCities} mob={mob} />
+            <motion.div
+              initial={{ opacity: 0, x: mob ? 0 : -30, y: mob ? 20 : 0 }}
+              whileInView={{ opacity: 1, x: 0, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <NicheBreakdown niches={analytics.topNiches} mob={mob} />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: mob ? 0 : 30, y: mob ? 20 : 0 }}
+              whileInView={{ opacity: 1, x: 0, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <CityTable cities={analytics.topCities} mob={mob} />
+            </motion.div>
           </div>
         )}
 
-        <p style={{ marginTop: 20, textAlign: 'center', fontSize: 12, color: '#94a3b8' }}>
+        <motion.p 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          style={{ marginTop: 20, textAlign: 'center', fontSize: 12, color: '#94a3b8' }}
+        >
           All figures derived live from verified creator profiles and campaign registrations.
-        </p>
+        </motion.p>
       </div>
 
       <style>{`

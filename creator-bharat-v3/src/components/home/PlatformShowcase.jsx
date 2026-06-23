@@ -8,6 +8,7 @@
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
 import { W } from '../../utils/helpers';
 import { ShieldCheck, Handshake, Globe, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -246,7 +247,13 @@ export default function PlatformShowcase({ mob }) {
       <div style={{ ...W(), maxWidth: 1200, position: 'relative', zIndex: 1, boxSizing: 'border-box' }}>
 
         {/* ── Header ── */}
-        <div style={{ textAlign: 'center', marginBottom: mob ? 32 : 64 }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          style={{ textAlign: 'center', marginBottom: mob ? 32 : 64 }}
+        >
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '5px 16px', background: '#fff', border: '1px solid #E2E8F0', borderRadius: 100, marginBottom: 20, boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF9431', display: 'inline-block' }} />
             <span style={{ fontSize: 11, fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Identity & Growth</span>
@@ -261,31 +268,54 @@ export default function PlatformShowcase({ mob }) {
           <p style={{ fontSize: mob ? 13 : 17, color: '#64748b', maxWidth: 480, margin: '0 auto', lineHeight: 1.7 }}>
             Three non-negotiable promises we make to every creator who joins CreatorBharat.
           </p>
-        </div>
+        </motion.div>
 
         {/* ── Cards ── */}
         {mob ? (
           /* MOBILE: one card at a time with flip */
-          <MobileCardCarousel />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+            style={{ width: '100%' }}
+          >
+            <MobileCardCarousel />
+          </motion.div>
         ) : (
           /* DESKTOP: 3 cards in a row */
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))', gap: 24, marginBottom: 64 }}>
             {COMMITMENTS.map((c, i) => (
-              <CommitmentCard key={c.id} c={c} idx={i} hovered={hovered} setHovered={setHovered} />
+              <motion.div
+                key={c.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                style={{ display: 'flex' }}
+              >
+                <CommitmentCard c={c} idx={i} hovered={hovered} setHovered={setHovered} />
+              </motion.div>
             ))}
           </div>
         )}
 
         {/* ── Mission Quote block ── */}
-        <div style={{
-          position: 'relative',
-          background: '#0f172a',
-          borderRadius: 28,
-          padding: mob ? '36px 24px' : '56px 72px',
-          overflow: 'hidden',
-          textAlign: 'center',
-          marginTop: mob ? 32 : 0,
-        }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            position: 'relative',
+            background: '#0f172a',
+            borderRadius: 28,
+            padding: mob ? '36px 24px' : '56px 72px',
+            overflow: 'hidden',
+            textAlign: 'center',
+            marginTop: mob ? 32 : 0,
+          }}
+        >
           <div style={{ position: 'absolute', top: -60, left: -60, width: 240, height: 240, borderRadius: '50%', background: 'rgba(255,153,51,0.12)', filter: 'blur(60px)', pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', bottom: -60, right: -60, width: 240, height: 240, borderRadius: '50%', background: 'rgba(19,136,8,0.12)', filter: 'blur(60px)', pointerEvents: 'none' }} />
 
@@ -305,7 +335,7 @@ export default function PlatformShowcase({ mob }) {
             </div>
             <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 14, fontWeight: 500 }}>CreatorBharat Mission Statement</p>
           </div>
-        </div>
+        </motion.div>
 
       </div>
     </section>

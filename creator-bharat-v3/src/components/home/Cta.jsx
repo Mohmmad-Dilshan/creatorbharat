@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
 import { W } from '../../utils/helpers';
 
 export default function Cta({ mob, go, creatorCount }) {
@@ -15,14 +16,20 @@ export default function Cta({ mob, go, creatorCount }) {
       <div style={{ ...W(1100), position: 'relative' }}>
         
         {/* THE ELITE CTA CARD WITH SPINNING BORDER */}
-        <div style={{ 
-          position: 'relative',
-          padding: '1.5px',
-          borderRadius: 48,
-          overflow: 'hidden',
-          background: 'rgba(0,0,0,0.05)',
-          boxShadow: '0 40px 100px rgba(0,0,0,0.05)'
-        }}>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.96, y: 30 }}
+          whileInView={{ opacity: 1, scale: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          style={{ 
+            position: 'relative',
+            padding: '1.5px',
+            borderRadius: 48,
+            overflow: 'hidden',
+            background: 'rgba(0,0,0,0.05)',
+            boxShadow: '0 40px 100px rgba(0,0,0,0.05)'
+          }}
+        >
            {/* THE SPINNING LINE (NAVBAR SYNC) */}
            <div style={{
              position: 'absolute', top: '50%', left: '50%', width: '150%', height: '400%',
@@ -49,13 +56,20 @@ export default function Cta({ mob, go, creatorCount }) {
               <div style={{ position: 'absolute', top: '-20%', left: '-20%', width: '140%', height: '140%', background: 'radial-gradient(circle at center, rgba(255,148,49,0.04) 0%, transparent 70%)', zIndex: 0 }} />
 
               {/* Left Column: Copy, bullets, and action buttons */}
-              <div style={{ 
-                position: 'relative', 
-                zIndex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: mob ? 'center' : 'flex-start'
-              }}>
+              <motion.div 
+                initial={{ opacity: 0, x: mob ? 0 : -30, y: mob ? 15 : 0 }}
+                whileInView={{ opacity: 1, x: 0, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                style={{ 
+                  position: 'relative', 
+                  zIndex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: mob ? 'center' : 'flex-start',
+                  width: '100%'
+                }}
+              >
                 <div style={{ 
                   display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 20px', 
                   background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.25)', 
@@ -163,20 +177,26 @@ export default function Cta({ mob, go, creatorCount }) {
                      Explore Creators
                    </button>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Right Column: Interactive 3D Creator ID Card Showcase */}
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                position: 'relative',
-                zIndex: 1,
-                minHeight: mob ? 220 : 340,
-                width: '100%',
-                padding: mob ? '10px 0' : 0
-              }}>
+              <motion.div 
+                initial={{ opacity: 0, x: mob ? 0 : 30, y: mob ? 15 : 0 }}
+                whileInView={{ opacity: 1, x: 0, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  position: 'relative',
+                  zIndex: 1,
+                  minHeight: mob ? 220 : 340,
+                  width: '100%',
+                  padding: mob ? '10px 0' : 0
+                }}
+              >
                 {/* Ambient Background Glow behind Card */}
                 <div style={{
                   position: 'absolute',
@@ -307,9 +327,9 @@ export default function Cta({ mob, go, creatorCount }) {
                     <span style={{ fontSize: 8, fontWeight: 900, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.5px' }}>0% Commission</span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
-         </div>
+         </motion.div>
 
       </div>
 
