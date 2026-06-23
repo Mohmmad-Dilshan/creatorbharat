@@ -3621,14 +3621,26 @@ html, body {
 /* --- Premium Scroll Reveal System (Elite UX) --- */
 .reveal-on-scroll {
   opacity: 0;
-  transform: translateY(40px) scale(0.97);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(15px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
 }
 
 .reveal-on-scroll.active {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0);
 }
+
+/* Disable scroll-reveal animations on mobile devices for smooth native scroll */
+@media (max-width: 768px) {
+  .reveal-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
+}
+
 
 /* Delay modifiers for sequential item stagger load */
 .delay-100 { transition-delay: 100ms; }
