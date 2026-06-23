@@ -67,7 +67,7 @@ export default function Cta({ mob, go }) {
 
                 <h2 style={{ 
                   fontFamily: "'Outfit', sans-serif", 
-                  fontSize: mob ? 32 : 56, 
+                  fontSize: mob ? 'clamp(24px, 7.5vw, 32px)' : 56, 
                   fontWeight: 950, 
                   color: '#0f172a', 
                   lineHeight: 1.15, 
@@ -104,9 +104,9 @@ export default function Cta({ mob, go }) {
                     "0% platform commission on all campaigns",
                     "Full dispute mediation through Creator Union membership"
                   ].map((text, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF9431', flexShrink: 0 }} />
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#334155' }}>{text}</span>
+                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF9431', flexShrink: 0, marginTop: 5 }} />
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#334155', lineHeight: 1.4 }}>{text}</span>
                     </div>
                   ))}
                 </div>
@@ -173,7 +173,9 @@ export default function Cta({ mob, go }) {
                 alignItems: 'center',
                 position: 'relative',
                 zIndex: 1,
-                minHeight: mob ? 280 : 340
+                minHeight: mob ? 220 : 340,
+                width: '100%',
+                padding: mob ? '10px 0' : 0
               }}>
                 {/* Ambient Background Glow behind Card */}
                 <div style={{
@@ -186,117 +188,124 @@ export default function Cta({ mob, go }) {
                   zIndex: 0
                 }} />
                 
-                {/* The Glassmorphic Creator ID Card */}
+                {/* The Card & Badges Wrapper */}
                 <div style={{
                   position: 'relative',
-                  width: mob ? 290 : 350,
-                  height: mob ? 180 : 210,
-                  borderRadius: 24,
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.85) 100%)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1.5px solid rgba(255, 255, 255, 0.4)',
-                  boxShadow: '0 30px 60px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255,255,255,0.6)',
-                  padding: mob ? 18 : 24,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  textAlign: 'left',
-                  transform: mob ? 'rotate(0deg)' : 'rotate(-4deg) translateY(0px)',
-                  transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                  zIndex: 2,
-                  cursor: 'pointer',
-                  overflow: 'hidden'
-                }}
-                className="interactive-creator-id-card"
-                >
-                  {/* Saffron-White-Green Tricolor Strip */}
+                  width: mob ? '260px' : '350px',
+                  height: mob ? '160px' : '210px',
+                  zIndex: 1
+                }}>
+                  {/* The Glassmorphic Creator ID Card */}
                   <div style={{
                     position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: 4,
-                    background: 'linear-gradient(90deg, #FF9431 0%, #F8FAFC 50%, #138808 100%)'
-                  }} />
+                    inset: 0,
+                    borderRadius: 20,
+                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.85) 100%)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1.5px solid rgba(255, 255, 255, 0.4)',
+                    boxShadow: '0 30px 60px rgba(15, 23, 42, 0.1), inset 0 1px 0 rgba(255,255,255,0.6)',
+                    padding: mob ? 14 : 24,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    textAlign: 'left',
+                    transform: mob ? 'rotate(0deg)' : 'rotate(-4deg) translateY(0px)',
+                    transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                    zIndex: 2,
+                    cursor: 'pointer',
+                    overflow: 'hidden'
+                  }}
+                  className="interactive-creator-id-card"
+                  >
+                    {/* Saffron-White-Green Tricolor Strip */}
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: 4,
+                      background: 'linear-gradient(90deg, #FF9431 0%, #F8FAFC 50%, #138808 100%)'
+                    }} />
 
-                  {/* Card Header */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: 10, fontWeight: 900, color: '#FF9431', letterSpacing: '1.5px', textTransform: 'uppercase', fontFamily: "'Outfit', sans-serif" }}>Bharat Creator ID</span>
-                    <span style={{ fontSize: 9, fontWeight: 900, background: 'rgba(16, 185, 129, 0.08)', color: '#10B981', padding: '3px 8px', borderRadius: 100, border: '1px solid rgba(16, 185, 129, 0.15)', fontFamily: "'Outfit', sans-serif" }}>Verified Partner</span>
-                  </div>
-
-                  {/* Avatar + Info */}
-                  <div style={{ display: 'flex', gap: 14, marginTop: 8, alignItems: 'center' }}>
-                    <div style={{ width: 52, height: 52, borderRadius: 14, overflow: 'hidden', border: '1.5px solid #FF9431', background: '#F8FAFC', flexShrink: 0 }}>
-                      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Amit" style={{ width: '100%', height: '100%' }} alt="Amit Sharma's Verified Creator Avatar" loading="lazy" />
+                    {/* Card Header */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: mob ? 9 : 10, fontWeight: 900, color: '#FF9431', letterSpacing: '1.5px', textTransform: 'uppercase', fontFamily: "'Outfit', sans-serif" }}>Bharat Creator ID</span>
+                      <span style={{ fontSize: mob ? 8 : 9, fontWeight: 900, background: 'rgba(16, 185, 129, 0.08)', color: '#10B981', padding: mob ? '2px 6px' : '3px 8px', borderRadius: 100, border: '1px solid rgba(16, 185, 129, 0.15)', fontFamily: "'Outfit', sans-serif" }}>Verified</span>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                      <div style={{ fontSize: 15, fontWeight: 950, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 4, fontFamily: "'Outfit', sans-serif" }}>
-                        Amit Sharma
-                        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: '#FF9431' }}>
-                          <span style={{ fontSize: 8, color: '#fff', fontWeight: 900, marginTop: -1 }}>✓</span>
-                        </span>
+
+                    {/* Avatar + Info */}
+                    <div style={{ display: 'flex', gap: mob ? 10 : 14, marginTop: mob ? 4 : 8, alignItems: 'center' }}>
+                      <div style={{ width: mob ? 44 : 52, height: mob ? 44 : 52, borderRadius: 12, overflow: 'hidden', border: '1.5px solid #FF9431', background: '#F8FAFC', flexShrink: 0 }}>
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Amit" style={{ width: '100%', height: '100%' }} alt="Amit Sharma's Verified Creator Avatar" loading="lazy" />
                       </div>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B' }}>@amit_vlogs • Tech & Travel</div>
-                      <div style={{ fontSize: 10, fontWeight: 800, color: '#10B981', marginTop: 2, fontFamily: "'Outfit', sans-serif" }}>CB Score: 92 (Top 1%)</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        <div style={{ fontSize: mob ? 13 : 15, fontWeight: 950, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 4, fontFamily: "'Outfit', sans-serif" }}>
+                          Amit Sharma
+                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: mob ? 12 : 14, height: mob ? 12 : 14, borderRadius: '50%', background: '#FF9431' }}>
+                            <span style={{ fontSize: mob ? 7 : 8, color: '#fff', fontWeight: 900, marginTop: -1 }}>✓</span>
+                          </span>
+                        </div>
+                        <div style={{ fontSize: mob ? 9 : 10, fontWeight: 700, color: '#64748B' }}>@amit_vlogs • Tech & Travel</div>
+                        <div style={{ fontSize: mob ? 9 : 10, fontWeight: 800, color: '#10B981', marginTop: 1, fontFamily: "'Outfit', sans-serif" }}>CB Score: 92 (Top 1%)</div>
+                      </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: mob ? 4 : 8, borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: mob ? 8 : 10 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontSize: mob ? 7 : 8, fontWeight: 900, color: '#94A3B8', textTransform: 'uppercase', fontFamily: "'Outfit', sans-serif" }}>Location</span>
+                        <span style={{ fontSize: mob ? 9 : 10, fontWeight: 800, color: '#334155', fontFamily: "'Outfit', sans-serif" }}>Jaipur, RJ</span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                        <svg width={mob ? "20" : "24"} height={mob ? "20" : "24"} viewBox="0 0 32 32" style={{ opacity: 0.85 }}>
+                          <path d="M0 0h10v10H0zm2 2v6h6V2zm10 0h10v10H12zm2 2v6h6V2zm0 10h10v10H12zm2 2v6h6v-6zm-14 0h10v10H0zm2 2v6h6v-6z" fill="#0f172a" />
+                        </svg>
+                        <span style={{ fontSize: mob ? 6 : 7, fontWeight: 800, color: '#64748B', fontFamily: "'Outfit', sans-serif" }}>ID: CB-98745</span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Footer */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 8, borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: 10 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ fontSize: 8, fontWeight: 900, color: '#94A3B8', textTransform: 'uppercase', fontFamily: "'Outfit', sans-serif" }}>Location</span>
-                      <span style={{ fontSize: 10, fontWeight: 800, color: '#334155', fontFamily: "'Outfit', sans-serif" }}>Jaipur, RJ</span>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                      <svg width="24" height="24" viewBox="0 0 32 32" style={{ opacity: 0.85 }}>
-                        <path d="M0 0h10v10H0zm2 2v6h6V2zm10 0h10v10H12zm2 2v6h6V2zm0 10h10v10H12zm2 2v6h6v-6zm-14 0h10v10H0zm2 2v6h6v-6z" fill="#0f172a" />
-                      </svg>
-                      <span style={{ fontSize: 7, fontWeight: 800, color: '#64748B', fontFamily: "'Outfit', sans-serif" }}>ID: CB-98745</span>
-                    </div>
+                  {/* Floating Badge 1: Saffron Tier */}
+                  <div style={{
+                    position: 'absolute',
+                    top: mob ? '-12px' : '-8px',
+                    right: mob ? '-8px' : '-16px',
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(8px)',
+                    border: '1.5px solid #FF9431',
+                    borderRadius: 12,
+                    padding: '4px 10px',
+                    boxShadow: '0 8px 20px rgba(255,148,49,0.12)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    zIndex: 3,
+                    transform: 'rotate(6deg)'
+                  }}>
+                    <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#FF9431' }} />
+                    <span style={{ fontSize: 8, fontWeight: 900, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Saffron Tier</span>
                   </div>
-                </div>
 
-                {/* Floating Badge 1: Saffron Tier */}
-                <div style={{
-                  position: 'absolute',
-                  top: mob ? '5%' : '15%',
-                  right: mob ? '5%' : '8%',
-                  background: 'rgba(255, 255, 255, 0.95)',
-                  backdropFilter: 'blur(8px)',
-                  border: '1.5px solid #FF9431',
-                  borderRadius: 14,
-                  padding: '6px 12px',
-                  boxShadow: '0 10px 25px rgba(255,148,49,0.12)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  zIndex: 3,
-                  transform: 'rotate(6deg)'
-                }}>
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF9431' }} />
-                  <span style={{ fontSize: 9, fontWeight: 900, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Saffron Tier</span>
-                </div>
-
-                {/* Floating Badge 2: 0% Commission */}
-                <div style={{
-                  position: 'absolute',
-                  bottom: mob ? '5%' : '15%',
-                  left: mob ? '5%' : '8%',
-                  background: 'rgba(255, 255, 255, 0.95)',
-                  backdropFilter: 'blur(8px)',
-                  border: '1.5px solid #10B981',
-                  borderRadius: 14,
-                  padding: '6px 12px',
-                  boxShadow: '0 10px 25px rgba(16,185,129,0.12)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  zIndex: 3,
-                  transform: 'rotate(-4deg)'
-                }}>
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
-                  <span style={{ fontSize: 9, fontWeight: 900, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.5px' }}>0% Commission</span>
+                  {/* Floating Badge 2: 0% Commission */}
+                  <div style={{
+                    position: 'absolute',
+                    bottom: mob ? '-12px' : '-8px',
+                    left: mob ? '-8px' : '-16px',
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(8px)',
+                    border: '1.5px solid #10B981',
+                    borderRadius: 12,
+                    padding: '4px 10px',
+                    boxShadow: '0 8px 20px rgba(16,185,129,0.12)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    zIndex: 3,
+                    transform: 'rotate(-4deg)'
+                  }}>
+                    <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#10B981' }} />
+                    <span style={{ fontSize: 8, fontWeight: 900, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.5px' }}>0% Commission</span>
+                  </div>
                 </div>
               </div>
             </div>
