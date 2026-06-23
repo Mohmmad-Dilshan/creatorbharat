@@ -1561,8 +1561,8 @@ export default function CreatorsPage() {
         display: 'flex',
         alignItems: 'center',
         overflow: 'hidden',
-        background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
-        borderBottom: '1px solid #e2e8f0',
+        background: mob ? 'linear-gradient(180deg, #090d16 0%, #111827 100%)' : 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
+        borderBottom: mob ? '1px solid #1f2937' : '1px solid #e2e8f0',
         padding: mob ? '90px 20px 50px' : '140px 24px 90px',
       }}>
 
@@ -1573,7 +1573,7 @@ export default function CreatorsPage() {
           backgroundImage: mob ? 'url(/creator_landing_bg.png)' : 'url(/creator_landing_hero.png)',
           backgroundSize: 'cover',
           backgroundPosition: mob ? 'center' : 'right center',
-          opacity: mob ? 0.08 : 0.9,
+          opacity: mob ? 0.12 : 0.9,
           zIndex: 0,
         }} />
 
@@ -1582,7 +1582,7 @@ export default function CreatorsPage() {
           position: 'absolute',
           inset: 0,
           background: mob
-            ? 'linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.96) 100%)'
+            ? 'linear-gradient(180deg, rgba(9,13,22,0.55) 0%, rgba(9,13,22,0.92) 100%)'
             : 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.98) 30%, rgba(255,255,255,0.6) 58%, rgba(255,255,255,0) 80%)',
           zIndex: 1,
           pointerEvents: 'none',
@@ -1595,10 +1595,10 @@ export default function CreatorsPage() {
               position: 'absolute',
               top: '-10%',
               right: '-10%',
-              width: '280px',
-              height: '280px',
-              background: 'radial-gradient(circle, rgba(255, 148, 49, 0.12) 0%, transparent 70%)',
-              filter: 'blur(40px)',
+              width: '320px',
+              height: '320px',
+              background: 'radial-gradient(circle, rgba(255, 148, 49, 0.22) 0%, transparent 70%)',
+              filter: 'blur(50px)',
               zIndex: 1,
               pointerEvents: 'none'
             }} />
@@ -1606,10 +1606,10 @@ export default function CreatorsPage() {
               position: 'absolute',
               bottom: '-10%',
               left: '-10%',
-              width: '280px',
-              height: '280px',
-              background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)',
-              filter: 'blur(40px)',
+              width: '320px',
+              height: '320px',
+              background: 'radial-gradient(circle, rgba(16, 185, 129, 0.18) 0%, transparent 70%)',
+              filter: 'blur(50px)',
               zIndex: 1,
               pointerEvents: 'none'
             }} />
@@ -1652,8 +1652,8 @@ export default function CreatorsPage() {
                 alignItems: 'center',
                 gap: '10px',
                 padding: '8px 20px',
-                background: 'rgba(255,148,49,0.06)',
-                border: '1.5px solid rgba(255,148,49,0.15)',
+                background: mob ? 'rgba(255,148,49,0.1)' : 'rgba(255,148,49,0.06)',
+                border: mob ? '1.5px solid rgba(255,148,49,0.3)' : '1.5px solid rgba(255,148,49,0.15)',
                 borderRadius: '100px',
                 marginBottom: '28px',
               }}
@@ -1682,7 +1682,7 @@ export default function CreatorsPage() {
               style={{
                 fontSize: mob ? '36px' : '74px',
                 fontWeight: 950,
-                color: '#0f172a',
+                color: mob ? '#ffffff' : '#0f172a',
                 letterSpacing: '-0.05em',
                 lineHeight: mob ? 1.05 : 0.94,
                 marginBottom: mob ? '20px' : '28px',
@@ -1715,7 +1715,7 @@ export default function CreatorsPage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               style={{
                 fontSize: mob ? '14px' : '18px',
-                color: '#475569',
+                color: mob ? '#94a3b8' : '#475569',
                 maxWidth: '560px',
                 marginBottom: mob ? '28px' : '40px',
                 fontWeight: 600,
@@ -1723,7 +1723,7 @@ export default function CreatorsPage() {
                 letterSpacing: '0.01em',
               }}
             >
-              India's most trusted creator intelligence platform. Discover, verify, and collaborate with <span style={{ color: '#0f172a', fontWeight: 800 }}>authentic regional voices</span> across Tier-1, Tier-2, and Tier-3 cities — with real-time metric scorecards and secure escrow payments.
+              India's most trusted creator intelligence platform. Discover, verify, and collaborate with <span style={{ color: mob ? '#ffffff' : '#0f172a', fontWeight: 800 }}>authentic regional voices</span> across Tier-1, Tier-2, and Tier-3 cities — with real-time metric scorecards and secure escrow payments.
             </motion.p>
 
             {/* CTA Buttons */}
@@ -1746,17 +1746,18 @@ export default function CreatorsPage() {
                   if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }}
                 style={{
-                  background: '#0f172a',
+                  background: mob ? 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)' : '#0f172a',
                   color: '#fff',
                   padding: '16px 32px',
                   borderRadius: '14px',
                   fontWeight: 950,
                   fontSize: '15px',
                   width: mob ? '100%' : 'auto',
-                  boxShadow: '0 16px 36px rgba(15,23,42,0.18)',
+                  boxShadow: mob ? '0 16px 32px rgba(255,148,49,0.3)' : '0 16px 36px rgba(15,23,42,0.18)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
+                  border: mob ? 'none' : 'auto'
                 }}
               >
                 Explore Creators <ChevronRight size={18} />
@@ -1765,11 +1766,11 @@ export default function CreatorsPage() {
                 lg
                 onClick={() => navigate('/brand-register')}
                 style={{
-                  background: '#fff',
-                  color: '#0f172a',
+                  background: mob ? 'rgba(255,255,255,0.06)' : '#fff',
+                  color: mob ? '#fff' : '#0f172a',
                   padding: '16px 32px',
                   borderRadius: '14px',
-                  border: '1.5px solid #e2e8f0',
+                  border: mob ? '1px solid rgba(255,255,255,0.15)' : '1.5px solid #e2e8f0',
                   fontWeight: 950,
                   fontSize: '15px',
                   width: mob ? '100%' : 'auto',
@@ -1805,12 +1806,12 @@ export default function CreatorsPage() {
                   alignItems: 'center',
                   gap: '6px',
                   padding: '7px 14px',
-                  background: '#f8fafc',
-                  border: '1px solid #e2e8f0',
+                  background: mob ? 'rgba(255,255,255,0.03)' : '#f8fafc',
+                  border: mob ? '1px solid rgba(255,255,255,0.08)' : '1px solid #e2e8f0',
                   borderRadius: '100px',
                   fontSize: '12px',
                   fontWeight: 800,
-                  color: '#475569',
+                  color: mob ? '#cbd5e1' : '#475569',
                 }}>
                   <span style={{ color: b.color }}>{b.icon}</span>
                   {b.label}
