@@ -1561,19 +1561,21 @@ export default function CreatorsPage() {
         display: 'flex',
         alignItems: 'center',
         overflow: 'hidden',
-        background: mob ? 'linear-gradient(180deg, #090d16 0%, #111827 100%)' : 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
-        borderBottom: mob ? '1px solid #1f2937' : '1px solid #e2e8f0',
+        background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
+        borderBottom: '1px solid #e2e8f0',
         padding: mob ? '90px 20px 50px' : '140px 24px 90px',
+        width: '100%',
+        boxSizing: 'border-box',
       }}>
 
-        {/* ── Background Image: collage on mobile, full-bleed creator photo on right for desktop ── */}
+        {/* ── Full-bleed creator photo background on right ── */}
         <div style={{
           position: 'absolute',
           inset: 0,
-          backgroundImage: mob ? 'url(/creator_landing_bg.png)' : 'url(/creator_landing_hero.png)',
+          backgroundImage: 'url(/creator_landing_hero.png)',
           backgroundSize: 'cover',
-          backgroundPosition: mob ? 'center' : 'right center',
-          opacity: mob ? 0.12 : 0.9,
+          backgroundPosition: mob ? 'center top' : 'right center',
+          opacity: mob ? 0.35 : 0.9,
           zIndex: 0,
         }} />
 
@@ -1582,7 +1584,7 @@ export default function CreatorsPage() {
           position: 'absolute',
           inset: 0,
           background: mob
-            ? 'linear-gradient(180deg, rgba(9,13,22,0.55) 0%, rgba(9,13,22,0.92) 100%)'
+            ? 'linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.96) 100%)'
             : 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.98) 30%, rgba(255,255,255,0.6) 58%, rgba(255,255,255,0) 80%)',
           zIndex: 1,
           pointerEvents: 'none',
@@ -1595,10 +1597,10 @@ export default function CreatorsPage() {
               position: 'absolute',
               top: '-10%',
               right: '-10%',
-              width: '320px',
-              height: '320px',
-              background: 'radial-gradient(circle, rgba(255, 148, 49, 0.22) 0%, transparent 70%)',
-              filter: 'blur(50px)',
+              width: '280px',
+              height: '280px',
+              background: 'radial-gradient(circle, rgba(255, 148, 49, 0.12) 0%, transparent 70%)',
+              filter: 'blur(40px)',
               zIndex: 1,
               pointerEvents: 'none'
             }} />
@@ -1606,10 +1608,10 @@ export default function CreatorsPage() {
               position: 'absolute',
               bottom: '-10%',
               left: '-10%',
-              width: '320px',
-              height: '320px',
-              background: 'radial-gradient(circle, rgba(16, 185, 129, 0.18) 0%, transparent 70%)',
-              filter: 'blur(50px)',
+              width: '280px',
+              height: '280px',
+              background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)',
+              filter: 'blur(40px)',
               zIndex: 1,
               pointerEvents: 'none'
             }} />
@@ -1633,6 +1635,7 @@ export default function CreatorsPage() {
           padding: mob ? '0 4px' : '0 24px',
           position: 'relative',
           zIndex: 5,
+          boxSizing: 'border-box',
         }}>
           <div style={{
             display: 'flex',
@@ -1652,8 +1655,8 @@ export default function CreatorsPage() {
                 alignItems: 'center',
                 gap: '10px',
                 padding: '8px 20px',
-                background: mob ? 'rgba(255,148,49,0.1)' : 'rgba(255,148,49,0.06)',
-                border: mob ? '1.5px solid rgba(255,148,49,0.3)' : '1.5px solid rgba(255,148,49,0.15)',
+                background: 'rgba(255,148,49,0.06)',
+                border: '1.5px solid rgba(255,148,49,0.15)',
                 borderRadius: '100px',
                 marginBottom: '28px',
               }}
@@ -1682,7 +1685,7 @@ export default function CreatorsPage() {
               style={{
                 fontSize: mob ? '36px' : '74px',
                 fontWeight: 950,
-                color: mob ? '#ffffff' : '#0f172a',
+                color: '#0f172a',
                 letterSpacing: '-0.05em',
                 lineHeight: mob ? 1.05 : 0.94,
                 marginBottom: mob ? '20px' : '28px',
@@ -1713,17 +1716,33 @@ export default function CreatorsPage() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              style={{
-                fontSize: mob ? '14px' : '18px',
-                color: mob ? '#94a3b8' : '#475569',
+              style={mob ? {
+                fontSize: '14px',
+                color: '#475569',
                 maxWidth: '560px',
-                marginBottom: mob ? '28px' : '40px',
+                marginBottom: '28px',
                 fontWeight: 600,
                 lineHeight: 1.6,
                 letterSpacing: '0.01em',
+                background: 'rgba(255, 255, 255, 0.65)',
+                backdropFilter: 'blur(10px)',
+                border: '1.5px solid rgba(255, 255, 255, 0.8)',
+                borderRadius: '20px',
+                padding: '16px 20px',
+                textAlign: 'center',
+                boxShadow: '0 8px 32px rgba(15, 23, 42, 0.03)',
+                boxSizing: 'border-box'
+              } : {
+                fontSize: '18px',
+                color: '#475569',
+                maxWidth: '560px',
+                marginBottom: '40px',
+                fontWeight: 600,
+                lineHeight: 1.65,
+                letterSpacing: '0.01em',
               }}
             >
-              India's most trusted creator intelligence platform. Discover, verify, and collaborate with <span style={{ color: mob ? '#ffffff' : '#0f172a', fontWeight: 800 }}>authentic regional voices</span> across Tier-1, Tier-2, and Tier-3 cities — with real-time metric scorecards and secure escrow payments.
+              India's most trusted creator intelligence platform. Discover, verify, and collaborate with <span style={{ color: '#0f172a', fontWeight: 800 }}>authentic regional voices</span> across Tier-1, Tier-2, and Tier-3 cities — with real-time metric scorecards and secure escrow payments.
             </motion.p>
 
             {/* CTA Buttons */}
@@ -1746,18 +1765,17 @@ export default function CreatorsPage() {
                   if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }}
                 style={{
-                  background: mob ? 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)' : '#0f172a',
+                  background: '#0f172a',
                   color: '#fff',
                   padding: '16px 32px',
                   borderRadius: '14px',
                   fontWeight: 950,
                   fontSize: '15px',
                   width: mob ? '100%' : 'auto',
-                  boxShadow: mob ? '0 16px 32px rgba(255,148,49,0.3)' : '0 16px 36px rgba(15,23,42,0.18)',
+                  boxShadow: '0 16px 36px rgba(15,23,42,0.18)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  border: mob ? 'none' : 'auto'
                 }}
               >
                 Explore Creators <ChevronRight size={18} />
@@ -1766,11 +1784,11 @@ export default function CreatorsPage() {
                 lg
                 onClick={() => navigate('/brand-register')}
                 style={{
-                  background: mob ? 'rgba(255,255,255,0.06)' : '#fff',
-                  color: mob ? '#fff' : '#0f172a',
+                  background: '#fff',
+                  color: '#0f172a',
                   padding: '16px 32px',
                   borderRadius: '14px',
-                  border: mob ? '1px solid rgba(255,255,255,0.15)' : '1.5px solid #e2e8f0',
+                  border: '1.5px solid #e2e8f0',
                   fontWeight: 950,
                   fontSize: '15px',
                   width: mob ? '100%' : 'auto',
@@ -1806,12 +1824,12 @@ export default function CreatorsPage() {
                   alignItems: 'center',
                   gap: '6px',
                   padding: '7px 14px',
-                  background: mob ? 'rgba(255,255,255,0.03)' : '#f8fafc',
-                  border: mob ? '1px solid rgba(255,255,255,0.08)' : '1px solid #e2e8f0',
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
                   borderRadius: '100px',
                   fontSize: '12px',
                   fontWeight: 800,
-                  color: mob ? '#cbd5e1' : '#475569',
+                  color: '#475569',
                 }}>
                   <span style={{ color: b.color }}>{b.icon}</span>
                   {b.label}
