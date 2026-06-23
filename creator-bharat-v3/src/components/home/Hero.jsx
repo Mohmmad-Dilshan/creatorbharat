@@ -81,30 +81,32 @@ const HeroValueProps = memo(({ mob }) => {
 
   return (
     <div className="au d3" style={{
-      width: '100%',
+      width: mob ? 'calc(100% + 40px)' : '100%',
       maxWidth: 1200,
       marginBottom: mob ? 60 : 100,
-      padding: mob ? '0 16px' : '0 40px',
+      padding: 0,
+      margin: mob ? '0 -20px 60px -20px' : '0 auto 100px auto',
       boxSizing: 'border-box',
       position: 'relative',
     }}>
       {/* ── OUTER WRAPPER — clips the image to the rounded corner ── */}
       <div style={{
-        borderRadius: mob ? 32 : 52,
+        borderRadius: mob ? 0 : 52,
         overflow: 'hidden',
         position: 'relative',
-        border: '1px solid rgba(255,255,255,0.07)',
-        boxShadow: '0 40px 100px rgba(0,0,0,0.35)',
+        border: mob ? 'none' : '1px solid rgba(255,255,255,0.07)',
+        boxShadow: mob ? 'none' : '0 40px 100px rgba(0,0,0,0.35)',
         display: 'flex',
         flexDirection: mob ? 'column' : 'row',
         minHeight: mob ? 'auto' : 560,
+        width: '100%',
       }}>
 
         {/* ── LEFT — Dark text panel ── */}
         <div style={{
           flex: mob ? 'none' : '0 0 55%',
           background: 'linear-gradient(135deg, #0c1220 0%, #151c35 60%, #0c1220 100%)',
-          padding: mob ? '48px 28px 52px' : '72px 56px 72px 64px',
+          padding: mob ? '48px 20px 52px' : '72px 56px 72px 64px',
           position: 'relative',
           zIndex: 2,
           display: 'flex',
@@ -254,7 +256,7 @@ const HeroValueProps = memo(({ mob }) => {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: mob ? 'flex-end' : 'space-between',
-            padding: mob ? '16px 16px 20px' : '32px 32px 28px',
+            padding: mob ? '16px 20px 20px' : '32px 32px 28px',
           }}>
             {/* Top-right: Verified badge — desktop only at top, hidden on mobile */}
             {!mob && <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
