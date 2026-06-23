@@ -270,7 +270,16 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
             
             <div className="auth-scroll-area">
               <div className="auth-mobile-header">
-                 <Logo sm onClick={() => navigate('/')} />
+                <Logo sm onClick={() => navigate('/')} />
+                {view === 'register' && (
+                  <button
+                    type="button"
+                    onClick={() => handleSetView('gateway')}
+                    className="auth-header-back-btn"
+                  >
+                    ← Back
+                  </button>
+                )}
               </div>
               <div className="auth-form-wrapper">
                 <AnimatePresence mode="wait">

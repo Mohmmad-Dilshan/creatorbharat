@@ -172,17 +172,6 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
 
   return (
     <div className="apply-form-shell" style={{ display: 'flex', flexDirection: 'column' }}>
-      {/* Back button row — always above stepper, no overlap */}
-      <div className="apply-back-row">
-        <button 
-          type="button"
-          onClick={onBackToLogin}
-          className="apply-back-btn"
-        >
-          ← Back
-        </button>
-      </div>
-
       <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {/* Step Indicator */}
         <div style={{ marginBottom: 24 }}>
@@ -395,30 +384,6 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
       <style>{`
         .apply-form-shell {
           min-width: 0;
-        }
-
-        .apply-back-row {
-          display: flex;
-          align-items: center;
-          margin-bottom: 16px;
-        }
-
-        .apply-back-btn {
-          border: none;
-          background: rgba(0,0,0,0.04);
-          padding: 6px 14px;
-          border-radius: 10px;
-          font-size: 12px;
-          font-weight: 800;
-          cursor: pointer;
-          color: #64748B;
-          font-family: inherit;
-          transition: background 0.18s ease;
-        }
-
-        .apply-back-btn:hover {
-          background: rgba(0,0,0,0.08);
-          color: #111827;
         }
 
         .apply-stepper {

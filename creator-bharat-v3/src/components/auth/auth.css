@@ -109,6 +109,31 @@
   padding: 60px 40px 80px;
 }
 
+.auth-mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.auth-header-back-btn {
+  border: none;
+  background: rgba(0,0,0,0.05);
+  padding: 7px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  color: #64748B;
+  font-family: inherit;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.auth-header-back-btn:hover {
+  background: rgba(0,0,0,0.09);
+  color: #111827;
+}
+
 .auth-close-btn {
   position: absolute;
   top: 24px;
