@@ -8,7 +8,8 @@ import { TrustBadge, TabNavigator, TabEmptyState } from './ProfileShared';
 
 const GalleryItem = ({ i, src, index, mob, onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const imgUrl = typeof src === 'string' ? src : `https://picsum.photos/seed/elite-gal-${i}/1000/1000`;
+  const imgUrl = typeof src === 'string' ? src : (src?.imageUrl || `https://picsum.photos/seed/elite-gal-${i}/1000/1000`);
+  const title = typeof src === 'string' ? '' : src?.title;
   return (
     <button 
       key={`gal-${i}`} 
@@ -18,8 +19,9 @@ const GalleryItem = ({ i, src, index, mob, onClick }) => {
       onClick={() => onClick(index)}
     >
       <img src={imgUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
-      <span style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.2)', opacity: isHovered ? 1 : 0, transition: 'opacity 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ background: '#fff', padding: '16px', borderRadius: '50%', color: '#0f172a', display: 'flex' }}><ImageIcon size={24} /></span>
+      <span style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', opacity: isHovered ? 1 : 0, transition: 'opacity 0.3s', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', padding: '12px' }}>
+        <span style={{ background: '#fff', padding: '12px', borderRadius: '50%', color: '#0f172a', display: 'flex', marginBottom: '8px' }}><ImageIcon size={20} /></span>
+        {title && <span style={{ fontSize: '12px', fontWeight: 800, textAlign: 'center' }}>{title}</span>}
       </span>
     </button>
   );
@@ -30,12 +32,16 @@ export const GalleryTab = ({ c, mob, setActiveTab }) => {
   const [activeIndex, setActiveIndex] = useState(null);
   const isDummy = c.id === 'fallback';
   if (!c.gallery && !isDummy) return <TabEmptyState title="Gallery" icon={ImageIcon} mob={mob} setActiveTab={setActiveTab} tabId="gallery" />;
-  const images = c.gallery || [1,2,3,4,5,6,7,8,9];
+  const images = (Array.isArray(c.gallery) && c.gallery.length > 0) ? c.gallery : (isDummy ? [1,2,3,4,5,6,7,8,9] : []);
+
+  if (images.length === 0) {
+    return <TabEmptyState title="Gallery" icon={ImageIcon} mob={mob} setActiveTab={setActiveTab} tabId="gallery" />;
+  }
 
   const getImgUrl = (idx) => {
     if (idx === null || idx < 0 || idx >= images.length) return '';
     const src = images[idx];
-    return typeof src === 'string' ? src : `https://picsum.photos/seed/elite-gal-${idx + 1}/1000/1000`;
+    return typeof src === 'string' ? src : (src?.imageUrl || '');
   };
 
   useEffect(() => {
@@ -70,7 +76,7 @@ export const GalleryTab = ({ c, mob, setActiveTab }) => {
           
           <div style={{ display: 'grid', gridTemplateColumns: mob ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: mob ? '16px' : '24px' }}>
              {images.map((img, idx) => (
-                <GalleryItem key={img} i={idx + 1} index={idx} src={img} mob={mob} onClick={setActiveIndex} />
+                <GalleryItem key={img.id || idx} i={idx + 1} index={idx} src={img} mob={mob} onClick={setActiveIndex} />
              ))}
           </div>
           <div style={{ marginTop: mob ? '20px' : '48px', textAlign: 'center' }}>
@@ -168,7 +174,7 @@ export const GalleryTab = ({ c, mob, setActiveTab }) => {
                     exit={{ scale: 0.95, opacity: 0 }}
                     transition={{ duration: 0.2 }}
                     src={getImgUrl(activeIndex)}
-                    alt={`Gallery item ${activeIndex + 1}`}
+                    alt={images[activeIndex]?.title || `Gallery item ${activeIndex + 1}`}
                     onClick={(e) => e.stopPropagation()}
                     style={{
                       maxHeight: '100%',
@@ -209,9 +215,13 @@ export const GalleryTab = ({ c, mob, setActiveTab }) => {
                 </button>
              </div>
 
-             {/* Bottom watermark or caption */}
-             <div style={{ position: 'absolute', bottom: '24px', color: '#64748b', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px' }}>
-                Lifestyle Showcase • CreatorBharat verified
+             {/* Bottom caption / title info */}
+             <div style={{ position: 'absolute', bottom: '24px', color: '#fff', fontSize: '13px', fontWeight: 650, textAlign: 'center', zIndex: 10 }}>
+                {images[activeIndex]?.title && <div style={{ fontWeight: 900, fontSize: '16px', color: '#FF9431' }}>{images[activeIndex].title}</div>}
+                {images[activeIndex]?.description && <div style={{ color: '#cbd5e1', marginTop: '4px', maxWidth: '400px' }}>{images[activeIndex].description}</div>}
+                <div style={{ color: '#64748b', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px', marginTop: '12px' }}>
+                   Lifestyle Showcase • CreatorBharat verified
+                </div>
              </div>
            </motion.div>
          </AnimatePresence>,

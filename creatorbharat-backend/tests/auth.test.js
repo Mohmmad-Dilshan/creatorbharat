@@ -18,6 +18,16 @@ vi.mock('../src/prisma.js', () => {
     brand: {
       findUnique: vi.fn(),
       create: vi.fn(),
+    },
+    otpVerification: {
+      upsert: vi.fn().mockResolvedValue({}),
+      findUnique: vi.fn(),
+      delete: vi.fn()
+    },
+    passwordReset: {
+      upsert: vi.fn(),
+      findUnique: vi.fn(),
+      delete: vi.fn()
     }
   };
   return {

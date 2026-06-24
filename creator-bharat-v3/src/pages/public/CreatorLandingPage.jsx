@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, Star } from 'lucide-react';
 import { Btn, Bdg } from '@/components/common/Primitives';
 import Seo from '@/components/common/SEO';
+import { apiCall } from '@/utils/api';
 
 // Import Externalized Data
 import {
@@ -19,11 +20,18 @@ import {
 export default function CreatorLandingPage() {
   const navigate = useNavigate();
   const [mob, setMob] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+  const [pageConfig, setPageConfig] = useState({});
 
   useEffect(() => {
     const h = () => setMob(window.innerWidth < 768);
     window.addEventListener('resize', h);
     return () => window.removeEventListener('resize', h);
+  }, []);
+
+  useEffect(() => {
+    apiCall('/pages/creator-landing').then(r => {
+      if (r?.content) setPageConfig(r.content);
+    }).catch(() => {});
   }, []);
 
   return (
@@ -214,24 +222,32 @@ export default function CreatorLandingPage() {
             <div className="hero-left-col" style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start' }}>
               <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: 'rgba(255,148,49,0.1)', padding: '10px 20px', borderRadius: 100, marginBottom: 32, border: '1px solid rgba(255,148,49,0.2)' }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#FF9431', boxShadow: '0 0 10px #FF9431' }} />
-                <span style={{ fontSize: 12, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.2em' }}>India's Creator Ecosystem</span>
+                <span style={{ fontSize: 12, fontWeight: 900, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '0.2em' }}>{pageConfig.heroBadge || "India's Creator Ecosystem"}</span>
               </motion.div>
 
               <motion.h1 className="hero-title" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ fontSize: mob ? '40px' : '68px', fontWeight: 950, color: '#0f172a', lineHeight: 1.05, letterSpacing: '-0.04em', marginBottom: 24, textAlign: mob ? 'center' : 'left' }}>
-                Build Your <br />
-                <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #0f172a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Creator Legacy.</span>
+                {pageConfig.heroTitle ? (
+                  <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #0f172a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{pageConfig.heroTitle}</span>
+                ) : (
+                  <>
+                    Build Your <br />
+                    <span style={{ background: 'linear-gradient(135deg, #FF9431 0%, #0f172a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Creator Legacy.</span>
+                  </>
+                )}
               </motion.h1>
 
               <motion.p className="hero-desc" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ fontSize: mob ? '15px' : '18px', color: '#475569', maxWidth: 600, margin: mob ? '0 auto 32px' : '0 0 32px 0', lineHeight: 1.6, fontWeight: 500, textAlign: mob ? 'center' : 'left' }}>
-                Bharat ke har creator ke liye — Tier 2, Tier 3, ya metro. <span style={{ color: '#0f172a', fontWeight: 700 }}>Verified profile, direct brand deals, zero commission.</span> Apni pehchan banao.
+                {pageConfig.heroSubtitle ? pageConfig.heroSubtitle : (
+                  <>Bharat ke har creator ke liye — Tier 2, Tier 3, ya metro. <span style={{ color: '#0f172a', fontWeight: 700 }}>Verified profile, direct brand deals, zero commission.</span> Apni pehchan banao.</>
+                )}
               </motion.p>
 
               <motion.div className="hero-ctas" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ display: 'flex', gap: 16, justifyContent: mob ? 'center' : 'flex-start', flexWrap: 'wrap', width: '100%' }}>
                 <Btn lg onClick={() => navigate('/apply')} style={{ background: '#FF9431', color: '#fff', borderRadius: 100, padding: '16px 36px', fontSize: 15, fontWeight: 950, boxShadow: '0 20px 40px rgba(255,148,49,0.25)' }}>
-                  Join Free — Start Today <ArrowRight size={18} />
+                  {pageConfig.ctaPrimary || "Join Free — Start Today"} <ArrowRight size={18} />
                 </Btn>
                 <Btn lg onClick={() => navigate('/creators')} style={{ background: '#ffffff', color: '#475569', borderRadius: 100, padding: '16px 36px', fontSize: 15, fontWeight: 950, border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
-                  See Creator Profiles
+                  {pageConfig.ctaSecondary || "See Creator Profiles"}
                 </Btn>
               </motion.div>
 
@@ -638,17 +654,19 @@ export default function CreatorLandingPage() {
             <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 30% 50%, rgba(255,255,255,0.15), transparent 60%)' }} />
             <div style={{ position: 'relative', zIndex: 1 }}>
               <h2 style={{ fontSize: mob ? '36px' : '64px', fontWeight: 950, color: '#fff', marginBottom: 24, letterSpacing: '-0.04em' }}>
-                Bharat Ka Creator <br />Kahin Bhi Jayega. 🇮🇳
+                {pageConfig.bottomTitle ? pageConfig.bottomTitle : (
+                  <>Bharat Ka Creator <br />Kahin Bhi Jayega. 🇮🇳</>
+                )}
               </h2>
               <p style={{ fontSize: mob ? '16px' : '20px', color: 'rgba(255,255,255,0.8)', maxWidth: 600, margin: '0 auto 48px', lineHeight: 1.6, fontWeight: 500 }}>
-                Bhilwara se Bangalore tak — har creator ki pehchan honi chahiye. Join karo aur apni legacy banao.
+                {pageConfig.bottomSubtitle || "Bhilwara se Bangalore tak — har creator ki pehchan honi chahiye. Join karo aur apni legacy banao."}
               </p>
               <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Btn lg onClick={() => navigate('/apply')} style={{ background: '#fff', color: '#EA580C', borderRadius: 100, padding: '20px 48px', fontSize: 17, fontWeight: 950, boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}>
-                  Join Free Now <ArrowRight size={20} />
+                  {pageConfig.bottomCtaPrimary || "Join Free Now"} <ArrowRight size={20} />
                 </Btn>
                 <Btn lg onClick={() => navigate('/pricing')} style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', borderRadius: 100, padding: '20px 48px', fontSize: 17, fontWeight: 950, border: '1px solid rgba(255,255,255,0.3)' }}>
-                  View Pro Plans
+                  {pageConfig.bottomCtaSecondary || "View Pro Plans"}
                 </Btn>
               </div>
             </div>

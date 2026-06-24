@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useApp } from '../../core/context';
 import { LS, fmt } from '../../utils/helpers';
+import { apiCall } from '../../utils/api';
 import { Card, Bdg, Btn, Empty } from '../../components/common/Primitives';
 import AuthGatekeeper from '../../components/auth/AuthGatekeeper';
 import { 
@@ -104,6 +105,8 @@ export default function BrandApplicationsPage() {
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const h = () => setMob(globalThis.innerWidth < 768);
@@ -111,18 +114,75 @@ export default function BrandApplicationsPage() {
     return () => globalThis.removeEventListener('resize', h);
   }, []);
 
+  const statusMapDbToFe = {
+    PENDING: 'applied',
+    ACCEPTED: 'selected',
+    REJECTED: 'rejected',
+    SHORTLISTED: 'shortlisted'
+  };
+
+  const statusMapFeToDb = {
+    applied: 'PENDING',
+    selected: 'ACCEPTED',
+    rejected: 'REJECTED',
+    shortlisted: 'SHORTLISTED'
+  };
+
+  useEffect(() => {
+    let active = true;
+    async function loadApplications() {
+      if (!st.user) return;
+      try {
+        const data = await apiCall('/applications/me');
+        if (!active) return;
+        const mapped = data.map(app => ({
+          id: app.id,
+          campaignId: app.campaignId,
+          campaignTitle: app.campaign?.title || 'Campaign',
+          applicantName: app.creator?.name || 'Creator',
+          applicantEmail: app.creator?.user?.email || 'creator@example.com',
+          pitch: app.pitch,
+          rate: app.creator?.rateMin || 0,
+          status: statusMapDbToFe[app.status] || 'applied',
+          date: app.createdAt.split('T')[0],
+          creatorHandle: app.creator?.handle
+        }));
+        
+        if (mapped.length === 0) {
+          const myCampaigns = LS.get('cb_campaigns', []).filter(c => c.brandEmail === st.user.email);
+          const myCampaignIds = myCampaigns.map(c => c.id);
+          const allApplications = LS.get('cb_applications', []);
+          const fallback = allApplications
+            .filter(app => myCampaignIds.includes(app.campaignId))
+            .map(app => ({
+              ...app,
+              status: app.status || 'applied'
+            }));
+          setApplications(fallback);
+        } else {
+          setApplications(mapped);
+        }
+      } catch (err) {
+        console.error('Failed to load applications:', err);
+        if (active) {
+          const myCampaigns = LS.get('cb_campaigns', []).filter(c => c.brandEmail === st.user?.email);
+          const myCampaignIds = myCampaigns.map(c => c.id);
+          const allApplications = LS.get('cb_applications', []);
+          setApplications(allApplications.filter(app => myCampaignIds.includes(app.campaignId)));
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    loadApplications();
+    return () => { active = false; };
+  }, [st.user]);
+
   if (!st.user || st.role !== 'brand') {
     return <AuthGatekeeper mob={mob} role="brand" />;
   }
 
-  // Get all applications for this brand's campaigns
-  const myCampaigns = LS.get('cb_campaigns', []).filter(c => c.brandEmail === st.user.email);
-  const myCampaignIds = myCampaigns.map(c => c.id);
-  const allApplications = LS.get('cb_applications', []);
-  
-  const brandApplications = useMemo(() => {
-    return allApplications.filter(app => myCampaignIds.includes(app.campaignId));
-  }, [allApplications, myCampaignIds]);
+  const brandApplications = applications;
 
   const filtered = useMemo(() => {
     let list = brandApplications;
@@ -138,16 +198,19 @@ export default function BrandApplicationsPage() {
     return list;
   }, [brandApplications, filter, search]);
 
-  const updateStatus = (app, newStatus) => {
-    const all = LS.get('cb_applications', []);
-    const idx = all.findIndex(a => a.id === app.id);
-    if (idx > -1) {
-      all[idx] = { ...all[idx], status: newStatus };
-      LS.set('cb_applications', all);
+  const updateStatus = async (app, newStatus) => {
+    try {
+      const apiStatus = statusMapFeToDb[newStatus] || 'PENDING';
+      await apiCall(`/applications/${app.id}`, {
+        method: 'PUT',
+        body: { status: apiStatus }
+      });
+      setApplications(prev => prev.map(a => a.id === app.id ? { ...a, status: newStatus } : a));
+      dsp({ t: 'TOAST', d: { type: 'success', msg: `Creator ${newStatus} for ${app.campaignTitle}` } });
+    } catch (err) {
+      console.error('Failed to update status:', err);
+      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Failed to update application status.' } });
     }
-    dsp({ t: 'TOAST', d: { type: 'success', msg: `Creator ${newStatus} for ${app.campaignTitle}` } });
-    // Force re-render
-    globalThis.dispatchEvent(new Event('storage'));
   };
 
   const counts = {

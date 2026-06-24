@@ -44,7 +44,34 @@ router.post('/create', authMiddleware, async (req, res) => {
   }
 });
 
+// GET /api/campaigns/me — list campaigns of the authenticated brand
+router.get('/me', authMiddleware, async (req, res) => {
+  try {
+    if (req.user.role !== 'BRAND') {
+      return res.status(403).json({ error: 'Access restricted to brands only.' });
+    }
+    const brand = await prisma.brand.findUnique({
+      where: { userId: req.user.id }
+    });
+    if (!brand) {
+      return res.status(404).json({ error: 'Brand profile details not found.' });
+    }
+    const campaigns = await prisma.campaign.findMany({
+      where: { brandId: brand.id },
+      include: {
+        _count: { select: { applications: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(campaigns);
+  } catch (err) {
+    console.error('[GET /api/campaigns/me] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve campaigns.' });
+  }
+});
+
 // GET /api/campaigns — list all active campaigns
+
 router.get('/', async (req, res) => {
   try {
     const { platform, niche } = req.query;

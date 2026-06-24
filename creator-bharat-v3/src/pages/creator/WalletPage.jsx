@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { fmt, LS } from '../../utils/helpers';
+import { apiCall } from '../../utils/api';
 import { useApp } from '@/core/context';
 import { Card, Btn, Bdg, Bar } from '@/components/common/Primitives';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -84,23 +85,45 @@ export default function WalletPage() {
   const myCreators = LS.get('cb_creators', []);
   const c = st.user?.creatorProfile || myCreators.find(cr => cr.email === st.user?.email) || {};
 
-  // Stateful ledger with local storage syncing
-  const [ledger, setLedger] = useState(() => {
-    const saved = localStorage.getItem('cb_ledger_payouts');
-    if (saved) return JSON.parse(saved);
-    const initialLedger = [
-      { id: 'tx1', campaign: 'Summer Glow Skincare', brand: 'Nykaa', amount: 15000, status: 'paid', date: '2026-04-15' },
-      { id: 'tx2', campaign: 'iPhone 17 Launch', brand: 'Apple India', amount: 45000, status: 'pending', date: '2026-05-01' },
-      { id: 'tx3', campaign: 'Local Food Fest', brand: 'Zomato', amount: 5000, status: 'processing', date: '2026-05-05' },
-      { id: 'tx4', campaign: 'Travel Series: Goa', brand: 'MakeMyTrip', amount: 12000, status: 'paid', date: '2026-04-10' },
-    ];
-    localStorage.setItem('cb_ledger_payouts', JSON.stringify(initialLedger));
-    return initialLedger;
-  });
+  // Stateful ledger with DB syncing
+  const [ledger, setLedger] = useState([]);
+  const [loadingLedger, setLoadingLedger] = useState(true);
 
   useEffect(() => {
     const h = () => setMob(globalThis.innerWidth < 768);
     globalThis.addEventListener('resize', h);
+    
+    // Load wallet history from API
+    setLoadingLedger(true);
+    apiCall('/payments/history')
+      .then(data => {
+        const mapped = data.map(tx => ({
+          id: tx.id,
+          campaign: tx.description,
+          brand: tx.type === 'BANK_WITHDRAWAL' ? 'Razorpay Instant Payouts' : 'Brand Escrow',
+          amount: tx.amount,
+          status: tx.status === 'SUCCESS' ? 'paid' : tx.status === 'PENDING' ? 'pending' : 'failed',
+          date: tx.createdAt.split('T')[0]
+        }));
+        
+        const seedFallback = [
+          { id: 'tx1', campaign: 'Summer Glow Skincare', brand: 'Nykaa', amount: 15000, status: 'paid', date: '2026-04-15' },
+          { id: 'tx2', campaign: 'iPhone 17 Launch', brand: 'Apple India', amount: 45000, status: 'pending', date: '2026-05-01' },
+          { id: 'tx3', campaign: 'Local Food Fest', brand: 'Zomato', amount: 5000, status: 'processing', date: '2026-05-05' },
+          { id: 'tx4', campaign: 'Travel Series: Goa', brand: 'MakeMyTrip', amount: 12000, status: 'paid', date: '2026-04-10' },
+        ];
+        
+        if (mapped.length === 0) {
+          setLedger(seedFallback);
+        } else {
+          setLedger([...mapped, ...seedFallback]);
+        }
+      })
+      .catch(err => {
+        console.error('Failed to load transaction history:', err);
+      })
+      .finally(() => setLoadingLedger(false));
+
     return () => globalThis.removeEventListener('resize', h);
   }, []);
 
@@ -122,7 +145,7 @@ export default function WalletPage() {
     return true;
   });
 
-  const handleWithdrawalSubmit = (e) => {
+  const handleWithdrawalSubmit = async (e) => {
     e.preventDefault();
     const amount = Number(withdrawAmount);
     
@@ -136,36 +159,30 @@ export default function WalletPage() {
     }
 
     setWithdrawing(true);
-    setTimeout(() => {
-      // Create new transaction in ledger
+    try {
+      const res = await apiCall('/payments/withdraw', {
+        method: 'POST',
+        body: { amount }
+      });
+      
       const newTx = {
-        id: 'tx-' + Date.now(),
-        campaign: 'Bank Payout Settlement',
-        brand: 'Razorpay Instant Payouts',
-        amount: -amount,
-        status: 'processing',
-        date: new Date().toISOString().split('T')[0]
+        id: res.transaction.id,
+        campaign: res.transaction.description,
+        brand: 'Razorpay Payouts',
+        amount: res.transaction.amount,
+        status: 'paid',
+        date: res.transaction.createdAt.split('T')[0]
       };
       
-      // Also adjust NYKAA and other paid ones by creating an offsetting transaction
-      // For visual simplicity in the dashboard, we reduce the balance by subtracting
-      const updatedLedger = [
-        newTx,
-        ...ledger.map(t => {
-          // If we had simple transactions, we keep them but balance will dynamically recalculate 
-          // because totalPaid subtracts negative amounts too!
-          return t;
-        })
-      ];
-      
-      setLedger(updatedLedger);
-      localStorage.setItem('cb_ledger_payouts', JSON.stringify(updatedLedger));
-      
-      setWithdrawing(false);
+      setLedger(prev => [newTx, ...prev]);
       setModalOpen(false);
       setWithdrawAmount('');
-      toast(`Withdrawal of ${fmt.inr(amount)} initiated successfully via Razorpay!`, 'success');
-    }, 2000);
+      toast(`Withdrawal of ${fmt.inr(amount)} completed successfully via Razorpay!`, 'success');
+    } catch (err) {
+      toast(err.message || 'Failed to complete bank withdrawal.', 'error');
+    } finally {
+      setWithdrawing(false);
+    }
   };
 
   return (

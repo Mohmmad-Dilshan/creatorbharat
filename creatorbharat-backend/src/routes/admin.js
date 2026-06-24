@@ -3,6 +3,8 @@ import express from 'express';
 import prisma from '../prisma.js';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
 import { sendEmail } from '../utils/mailer.js';
+import { getSettings, invalidateSettingsCache } from '../utils/settings.js';
+import { createNotification } from './notifications.js';
 import bcrypt from 'bcryptjs';
 import fs from 'fs';
 import path from 'path';
@@ -350,37 +352,47 @@ router.post('/verify/:creatorId', async (req, res) => {
       return res.status(404).json({ error: 'Creator profile not found.' });
     }
 
-    const updated = await prisma.creator.update({
+      const updated = await prisma.creator.update({
       where: { id: creatorId },
       data: { isVerified: true }
     });
 
     res.json({ message: 'Creator profile successfully verified.', creator: updated });
 
-    // Send verification approval email (non-blocking)
-    if (creator.user?.email) {
-      sendEmail({
-        to: creator.user.email,
-        subject: 'Profile Verified - Welcome to CreatorBharat Elite! 🎖️',
-        html: `
-          <div style="font-family: sans-serif; padding: 20px; color: #0f172a; max-width: 600px; margin: auto; border: 1px solid #f1f5f9; border-radius: 12px;">
-            <h2 style="color: #FF9431;">Congratulations, ${creator.name}! 🎉</h2>
-            <p>Your CreatorBharat profile verification is complete. You have been awarded the official <strong>Elite Badge</strong>.</p>
-            <p>Here is what this means for your profile:</p>
-            <ul style="line-height: 1.6;">
-              <li><strong>Verified Badge:</strong> A checkmark badge is now visible next to your handle to build instant trust with brands.</li>
-              <li><strong>Top Placement:</strong> Verified creators are prioritized in search results and campaign matchmaking filters.</li>
-              <li><strong>Direct Collabs:</strong> Premium brands can now message you directly and send contract offers.</li>
-            </ul>
-            <p style="margin-top: 24px;">
-              <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/creator/dashboard" style="background: #FF9431; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
-                Go to Creator Dashboard
-              </a>
-            </p>
-            <p style="margin-top: 28px; font-size: 12px; color: #94a3b8;">Best regards,<br/>Team CreatorBharat</p>
-          </div>
-        `
-      }).catch(err => console.error('Verification approval email warning:', err.message));
+    // Fire notification + email (non-blocking)
+    if (creator.user) {
+      createNotification({
+        userId: creator.user.id,
+        title: '🎖️ Profile Verified!',
+        body: 'Congratulations! Your CreatorBharat profile has been officially verified.',
+        type: 'VERIFICATION',
+        link: '/creator/dashboard'
+      });
+
+      if (creator.user?.email) {
+        sendEmail({
+          to: creator.user.email,
+          subject: 'Profile Verified - Welcome to CreatorBharat Elite! 🎖️',
+          html: `
+            <div style="font-family: sans-serif; padding: 20px; color: #0f172a; max-width: 600px; margin: auto; border: 1px solid #f1f5f9; border-radius: 12px;">
+              <h2 style="color: #FF9431;">Congratulations, ${creator.name}! 🎉</h2>
+              <p>Your CreatorBharat profile verification is complete. You have been awarded the official <strong>Elite Badge</strong>.</p>
+              <p>Here is what this means for your profile:</p>
+              <ul style="line-height: 1.6;">
+                <li><strong>Verified Badge:</strong> A checkmark badge is now visible next to your handle to build instant trust with brands.</li>
+                <li><strong>Top Placement:</strong> Verified creators are prioritized in search results and campaign matchmaking filters.</li>
+                <li><strong>Direct Collabs:</strong> Premium brands can now message you directly and send contract offers.</li>
+              </ul>
+              <p style="margin-top: 24px;">
+                <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/creator/dashboard" style="background: #FF9431; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                  Go to Creator Dashboard
+                </a>
+              </p>
+              <p style="margin-top: 28px; font-size: 12px; color: #94a3b8;">Best regards,<br/>Team CreatorBharat</p>
+            </div>
+          `
+        }).catch(err => console.error('Verification approval email warning:', err.message));
+      }
     }
   } catch (err) {
     console.error('[POST /api/admin/verify/:creatorId] Error:', err.message);
@@ -930,7 +942,17 @@ router.post('/creators/:id/score', async (req, res) => {
 
     res.json({ message: `Creator score updated to ${score}. Reason: ${reason || 'Admin override'}`, creator: updated });
 
-    // Notify creator via email (non-blocking)
+    // Notify creator via in-app + email (non-blocking)
+    if (creator.user?.id) {
+      createNotification({
+        userId: creator.user.id,
+        title: '🎯 Score Updated!',
+        body: `Your CreatorBharat score has been updated to ${score}${reason ? '. Reason: ' + reason : ''}.`,
+        type: 'INFO',
+        link: '/creator/score'
+      });
+    }
+
     if (creator.user?.email) {
       sendEmail({
         to: creator.user.email,
@@ -1205,30 +1227,13 @@ router.delete('/gallery/:id', async (req, res) => {
   }
 });
 
-// --- Platform Settings Persistence ---
-const settingsPath = path.resolve('public/uploads/settings.json');
-const DEFAULT_SETTINGS = {
-  platformFee: 10,
-  supportEmail: 'support@creatorbharat.com',
-  enableAIAssistant: true,
-  enableEscrowSystem: true,
-  maintenanceMode: false
-};
+// --- Platform Settings Persistence (DB-backed) ---
 
 // GET /api/admin/settings
-router.get('/settings', (req, res) => {
+router.get('/settings', async (req, res) => {
   try {
-    const dir = path.dirname(settingsPath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    if (!fs.existsSync(settingsPath)) {
-      fs.writeFileSync(settingsPath, JSON.stringify(DEFAULT_SETTINGS, null, 2));
-      return res.json(DEFAULT_SETTINGS);
-    }
-    const raw = fs.readFileSync(settingsPath, 'utf8');
-    const settings = JSON.parse(raw);
-    res.json({ ...DEFAULT_SETTINGS, ...settings });
+    const settings = await getSettings();
+    res.json(settings);
   } catch (err) {
     console.error('[GET /api/admin/settings] Error:', err.message);
     res.status(500).json({ error: 'Failed to retrieve settings.' });
@@ -1236,27 +1241,57 @@ router.get('/settings', (req, res) => {
 });
 
 // POST /api/admin/settings
-router.post('/settings', (req, res) => {
+router.post('/settings', async (req, res) => {
   try {
-    const { platformFee, supportEmail, enableAIAssistant, enableEscrowSystem, maintenanceMode } = req.body;
-    const dir = path.dirname(settingsPath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    const newSettings = {
-      platformFee: platformFee !== undefined ? Number(platformFee) : 10,
-      supportEmail: supportEmail || 'support@creatorbharat.com',
-      enableAIAssistant: !!enableAIAssistant,
-      enableEscrowSystem: !!enableEscrowSystem,
-      maintenanceMode: !!maintenanceMode
-    };
-    fs.writeFileSync(settingsPath, JSON.stringify(newSettings, null, 2));
-    res.json({ message: 'Settings saved successfully.', settings: newSettings });
+    const {
+      siteName, supportEmail, frontendUrl,
+      proMembershipPrice, campaignBoostPrice, featuredSlotPrice, platformFee,
+      enableAIAssistant, enableEscrowSystem, maintenanceMode, enableEmail, enableSMS,
+      razorpayKeyId, razorpaySecret, razorpayMode,
+      resendApiKey, emailFrom,
+      smsProvider, fast2smsKey, twilioSid, twilioToken, twilioPhone
+    } = req.body;
+
+    const data = {};
+    if (siteName !== undefined) data.siteName = siteName;
+    if (supportEmail !== undefined) data.supportEmail = supportEmail;
+    if (frontendUrl !== undefined) data.frontendUrl = frontendUrl;
+    if (proMembershipPrice !== undefined) data.proMembershipPrice = Number(proMembershipPrice);
+    if (campaignBoostPrice !== undefined) data.campaignBoostPrice = Number(campaignBoostPrice);
+    if (featuredSlotPrice !== undefined) data.featuredSlotPrice = Number(featuredSlotPrice);
+    if (platformFee !== undefined) data.platformFee = Number(platformFee);
+    if (enableAIAssistant !== undefined) data.enableAIAssistant = Boolean(enableAIAssistant);
+    if (enableEscrowSystem !== undefined) data.enableEscrowSystem = Boolean(enableEscrowSystem);
+    if (maintenanceMode !== undefined) data.maintenanceMode = Boolean(maintenanceMode);
+    if (enableEmail !== undefined) data.enableEmail = Boolean(enableEmail);
+    if (enableSMS !== undefined) data.enableSMS = Boolean(enableSMS);
+    if (razorpayKeyId !== undefined) data.razorpayKeyId = razorpayKeyId;
+    if (razorpaySecret !== undefined) data.razorpaySecret = razorpaySecret;
+    if (razorpayMode !== undefined) data.razorpayMode = razorpayMode;
+    if (resendApiKey !== undefined) data.resendApiKey = resendApiKey;
+    if (emailFrom !== undefined) data.emailFrom = emailFrom;
+    if (smsProvider !== undefined) data.smsProvider = smsProvider;
+    if (fast2smsKey !== undefined) data.fast2smsKey = fast2smsKey;
+    if (twilioSid !== undefined) data.twilioSid = twilioSid;
+    if (twilioToken !== undefined) data.twilioToken = twilioToken;
+    if (twilioPhone !== undefined) data.twilioPhone = twilioPhone;
+
+    const updated = await prisma.systemSetting.upsert({
+      where: { id: 'singleton' },
+      update: data,
+      create: { id: 'singleton', ...data }
+    });
+
+    // Invalidate cache so next request picks up fresh settings
+    invalidateSettingsCache();
+
+    res.json({ message: 'Settings saved successfully.', settings: updated });
   } catch (err) {
     console.error('[POST /api/admin/settings] Error:', err.message);
     res.status(500).json({ error: 'Failed to save settings.' });
   }
 });
+
 
 // --- Creator CRUD Upgrades ---
 
@@ -1427,6 +1462,56 @@ router.post('/campaigns', async (req, res) => {
   } catch (err) {
     console.error('[POST /api/admin/campaigns] Error:', err.message);
     res.status(500).json({ error: 'Failed to create campaign.' });
+  }
+});
+
+// GET /api/admin/system/pages — fetch all page configurations
+router.get('/system/pages', async (req, res) => {
+  try {
+    const configs = await prisma.dynamicPageConfig.findMany();
+    res.json(configs);
+  } catch (err) {
+    console.error('[GET /api/admin/system/pages] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve page configurations.' });
+  }
+});
+
+// GET /api/admin/system/pages/:pageName — fetch specific page config
+router.get('/system/pages/:pageName', async (req, res) => {
+  try {
+    const { pageName } = req.params;
+    const config = await prisma.dynamicPageConfig.findUnique({
+      where: { pageName }
+    });
+    if (!config) {
+      return res.status(404).json({ error: 'Page configuration not found.' });
+    }
+    res.json(config);
+  } catch (err) {
+    console.error('[GET /api/admin/system/pages/:pageName] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve page configuration.' });
+  }
+});
+
+// PUT /api/admin/system/pages/:pageName — save/update page configuration
+router.put('/system/pages/:pageName', async (req, res) => {
+  try {
+    const { pageName } = req.params;
+    const { content } = req.body;
+    if (!content) {
+      return res.status(400).json({ error: 'Configuration content is required.' });
+    }
+
+    const config = await prisma.dynamicPageConfig.upsert({
+      where: { pageName },
+      update: { content },
+      create: { pageName, content }
+    });
+
+    res.json(config);
+  } catch (err) {
+    console.error('[PUT /api/admin/system/pages/:pageName] Error:', err.message);
+    res.status(500).json({ error: 'Failed to update page configuration.' });
   }
 });
 

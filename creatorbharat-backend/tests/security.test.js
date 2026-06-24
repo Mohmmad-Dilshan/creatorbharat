@@ -11,6 +11,11 @@ vi.mock('../src/prisma.js', () => {
     },
     creator: {
       findMany: vi.fn(),
+    },
+    otpVerification: {
+      upsert: vi.fn().mockResolvedValue({}),
+      findUnique: vi.fn(),
+      delete: vi.fn()
     }
   };
   return {

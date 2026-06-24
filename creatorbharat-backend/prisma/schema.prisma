@@ -63,10 +63,13 @@ model Creator {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
-  applications   Application[]
-  reviews        Review[]
-  payments       Payment[]
-  podcasts       Podcast[]
+  applications       Application[]
+  reviews            Review[]
+  payments           Payment[]
+  podcasts           Podcast[]
+  walletTransactions WalletTransaction[]
+  gallery            CreatorGallery[]
+  gigs               CampaignGig[]
 
   @@index([status])
   @@index([city, state])
@@ -102,6 +105,7 @@ model Campaign {
   updatedAt   DateTime @updatedAt
 
   applications Application[]
+  gigs         CampaignGig[]
 
   @@index([status])
   @@index([budget])
@@ -260,4 +264,145 @@ model GalleryItem {
   tags        String[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model WalletTransaction {
+  id              String            @id @default(cuid())
+  creatorId       String
+  creator         Creator           @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  amount          Int               // Positive for earnings, negative for withdrawals
+  type            TransactionType
+  status          TransactionStatus @default(PENDING)
+  description     String
+  referenceId     String?           @unique
+  createdAt       DateTime          @default(now())
+
+  @@index([creatorId])
+  @@index([createdAt])
+}
+
+enum TransactionType {
+  CAMPAIGN_PAYOUT
+  REFERRAL_REWARD
+  BANK_WITHDRAWAL
+  REFUND
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model DynamicPageConfig {
+  id        String   @id @default(cuid())
+  pageName  String   @unique
+  content   Json
+  updatedAt DateTime @updatedAt
+}
+
+model OtpVerification {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  otp       String
+  expiresAt DateTime
+}
+
+model PasswordReset {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+}
+
+model CreatorGallery {
+  id          String   @id @default(cuid())
+  creatorId   String
+  creator     Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  imageUrl    String
+  title       String?
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+model CampaignGig {
+  id          String         @id @default(cuid())
+  campaignId  String
+  campaign    Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  creatorId   String
+  creator     Creator        @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  status      String         @default("ACTIVE") // ACTIVE, COMPLETED, CANCELLED
+  milestones  GigMilestone[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model GigMilestone {
+  id          String      @id @default(cuid())
+  gigId       String
+  gig         CampaignGig @relation(fields: [gigId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  status      String      @default("PENDING") // PENDING, SUBMITTED, APPROVED
+  proofText   String?
+  proofUrl    String?
+  amount      Float       @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+// 🔔 In-App Notifications
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  body      String
+  type      String   @default("INFO") // INFO, SUCCESS, WARNING, PAYMENT, CAMPAIGN, VERIFICATION
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([isRead])
+}
+
+// ⚙️ Dynamic Platform Settings (stored in DB, managed from admin panel)
+model SystemSetting {
+  id    String @id @default("singleton")
+
+  // General
+  siteName       String @default("CreatorBharat")
+  supportEmail   String @default("support@creatorbharat.com")
+  frontendUrl    String @default("http://localhost:5173")
+
+  // Pricing (in INR, stored as paise × 100)
+  proMembershipPrice   Int @default(4900)
+  campaignBoostPrice   Int @default(9900)
+  featuredSlotPrice    Int @default(19900)
+  platformFee          Int @default(10) // percentage
+
+  // Feature Toggles
+  enableAIAssistant   Boolean @default(true)
+  enableEscrowSystem  Boolean @default(true)
+  maintenanceMode     Boolean @default(false)
+  enableEmail         Boolean @default(true)
+  enableSMS           Boolean @default(true)
+
+  // Razorpay
+  razorpayKeyId   String @default("")
+  razorpaySecret  String @default("")
+  razorpayMode    String @default("test") // test | live
+
+  // Email (Resend)
+  resendApiKey String @default("")
+  emailFrom    String @default("onboarding@resend.dev")
+
+  // SMS
+  smsProvider    String @default("fast2sms") // fast2sms | twilio
+  fast2smsKey    String @default("")
+  twilioSid      String @default("")
+  twilioToken    String @default("")
+  twilioPhone    String @default("")
+
+  updatedAt DateTime @updatedAt
 }

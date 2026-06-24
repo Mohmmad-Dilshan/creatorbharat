@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, Star } from 'lucide-react';
 import { Btn, Bdg } from '@/components/common/Primitives';
 import Seo from '@/components/common/SEO';
+import { apiCall } from '@/utils/api';
 
 // Import Externalized Data
 import {
@@ -17,11 +18,18 @@ import {
 export default function BrandLandingPage() {
   const navigate = useNavigate();
   const [mob, setMob] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+  const [pageConfig, setPageConfig] = useState({});
 
   useEffect(() => {
     const h = () => setMob(window.innerWidth < 768);
     window.addEventListener('resize', h);
     return () => window.removeEventListener('resize', h);
+  }, []);
+
+  useEffect(() => {
+    apiCall('/pages/brand-landing').then(r => {
+      if (r?.content) setPageConfig(r.content);
+    }).catch(() => {});
   }, []);
 
   return (
@@ -200,24 +208,32 @@ export default function BrandLandingPage() {
             <div className="hero-left-col" style={{ display: 'flex', flexDirection: 'column', alignItems: mob ? 'center' : 'flex-start' }}>
               <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: 'rgba(16,185,129,0.1)', padding: '10px 20px', borderRadius: 100, marginBottom: 32, border: '1px solid rgba(16,185,129,0.2)' }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 10px #10B981' }} />
-                <span style={{ fontSize: 12, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Brand Command Center</span>
+                <span style={{ fontSize: 12, fontWeight: 900, color: '#10B981', textTransform: 'uppercase', letterSpacing: '0.2em' }}>{pageConfig.heroBadge || "Brand Command Center"}</span>
               </motion.div>
 
               <motion.h1 className="hero-title" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ fontSize: mob ? '40px' : '68px', fontWeight: 950, color: '#0f172a', lineHeight: 1.05, letterSpacing: '-0.04em', marginBottom: 24, textAlign: mob ? 'center' : 'left' }}>
-                Scale with <br />
-                <span style={{ background: 'linear-gradient(135deg, #10B981 0%, #0f172a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bharat's Best.</span>
+                {pageConfig.heroTitle ? (
+                  <span style={{ background: 'linear-gradient(135deg, #10B981 0%, #0f172a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{pageConfig.heroTitle}</span>
+                ) : (
+                  <>
+                    Scale with <br />
+                    <span style={{ background: 'linear-gradient(135deg, #10B981 0%, #0f172a 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bharat's Best.</span>
+                  </>
+                )}
               </motion.h1>
 
               <motion.p className="hero-desc" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ fontSize: mob ? '15px' : '18px', color: '#475569', maxWidth: 600, margin: mob ? '0 auto 32px' : '0 0 32px 0', lineHeight: 1.6, fontWeight: 500, textAlign: mob ? 'center' : 'left' }}>
-                Scout verified regional creators, launch campaigns with escrow protection, and track ROI in real-time. <span style={{ color: '#0f172a', fontWeight: 700 }}>Zero commission. Zero middlemen.</span>
+                {pageConfig.heroSubtitle ? pageConfig.heroSubtitle : (
+                  <>Scout verified regional creators, launch campaigns with escrow protection, and track ROI in real-time. <span style={{ color: '#0f172a', fontWeight: 700 }}>Zero commission. Zero middlemen.</span></>
+                )}
               </motion.p>
 
               <motion.div className="hero-ctas" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ display: 'flex', gap: 16, justifyContent: mob ? 'center' : 'flex-start', flexWrap: 'wrap', width: '100%' }}>
                 <Btn lg onClick={() => navigate('/brand-register')} style={{ background: '#10B981', color: '#fff', borderRadius: 100, padding: '16px 36px', fontSize: 15, fontWeight: 950, boxShadow: '0 20px 40px rgba(16,185,129,0.25)' }}>
-                  Start Scouting Free <ArrowRight size={18} />
+                  {pageConfig.ctaPrimary || "Start Scouting Free"} <ArrowRight size={18} />
                 </Btn>
                 <Btn lg onClick={() => navigate('/creators')} style={{ background: '#ffffff', color: '#475569', borderRadius: 100, padding: '16px 36px', fontSize: 15, fontWeight: 950, border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
-                  Browse Creators
+                  {pageConfig.ctaSecondary || "Browse Creators"}
                 </Btn>
               </motion.div>
 
@@ -406,17 +422,19 @@ export default function BrandLandingPage() {
             <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 30% 50%, rgba(16,185,129,0.04), transparent 60%)' }} />
             <div style={{ position: 'relative', zIndex: 1 }}>
               <h2 style={{ fontSize: mob ? '36px' : '64px', fontWeight: 950, color: '#0f172a', marginBottom: 24, letterSpacing: '-0.04em' }}>
-                Ready to Scale? <br /><span style={{ color: '#10B981' }}>Join 500+ Brands.</span>
+                {pageConfig.bottomTitle ? pageConfig.bottomTitle : (
+                  <>Ready to Scale? <br /><span style={{ color: '#10B981' }}>Join 500+ Brands.</span></>
+                )}
               </h2>
               <p style={{ fontSize: mob ? '16px' : '20px', color: '#475569', maxWidth: 600, margin: '0 auto 48px', lineHeight: 1.6, fontWeight: 500 }}>
-                Start free. No credit card required. Access Bharat's most verified creator network today.
+                {pageConfig.bottomSubtitle || "Start free. No credit card required. Access Bharat's most verified creator network today."}
               </p>
               <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Btn lg onClick={() => navigate('/brand-register')} style={{ background: '#10B981', color: '#fff', borderRadius: 100, padding: '20px 48px', fontSize: 17, fontWeight: 950, boxShadow: '0 20px 40px rgba(16,185,129,0.3)' }}>
-                  Register Your Brand <ArrowRight size={20} />
+                  {pageConfig.bottomCtaPrimary || "Register Your Brand"} <ArrowRight size={20} />
                 </Btn>
                 <Btn lg onClick={() => navigate('/creators')} style={{ background: '#ffffff', color: '#475569', borderRadius: 100, padding: '20px 48px', fontSize: 17, fontWeight: 950, border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
-                  Browse Creators
+                  {pageConfig.bottomCtaSecondary || "Browse Creators"}
                 </Btn>
               </div>
             </div>

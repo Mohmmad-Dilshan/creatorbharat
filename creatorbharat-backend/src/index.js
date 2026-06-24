@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { logger } from './utils/logger.js';
 import { rateLimit } from 'express-rate-limit';
+import compression from 'compression';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
@@ -27,6 +28,8 @@ import contactsRouter from './routes/contacts.js';
 import galleryRouter from './routes/gallery.js';
 import podcastsRouter from './routes/podcasts.js';
 import aiRouter from './routes/ai.js';
+import gigsRouter from './routes/gigs.js';
+import notificationsRouter from './routes/notifications.js';
 
 dotenv.config();
 
@@ -62,7 +65,8 @@ const io = new Server(server, {
   cors: corsOptions
 });
 
-// Security and CORS middleware
+// Response compression, Security and CORS middleware
+app.use(compression());
 app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -97,15 +101,26 @@ app.use((req, res, next) => {
 
 app.use('/uploads', express.static('public/uploads'));
 
-// Global Rate Limiter to prevent brute-force attacks
-const limiter = rateLimit({
+// Strict Rate Limiter for Authentication & OTP requests to prevent spams
+const authLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 5, // Limit each IP to 5 auth/OTP requests per minute
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many authentication attempts. Please try again after a minute.' }
+});
+
+// Relaxed Rate Limiter for general browsing APIs
+const browseLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // Limit each IP to 200 requests per windowMs
+  max: 600, // Limit each IP to 600 requests per 15 minutes for browsing
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests, please try again later.' }
 });
-app.use('/api/', limiter);
+
+app.use('/api/auth/', authLimiter);
+app.use('/api/', browseLimiter);
 
 // Base Health Check endpoint
 app.get('/api/health', (req, res) => {
@@ -129,6 +144,111 @@ app.get('/api', (req, res) => {
   res.json({ message: 'CreatorBharat SaaS REST API Engine is active 🚀' });
 });
 
+app.get('/api/stats/summary', async (req, res) => {
+  try {
+    const totalCreators = await prisma.creator.count();
+    const reachResult = await prisma.creator.aggregate({
+      _sum: { followers: true }
+    });
+    const totalReach = reachResult._sum.followers || 0;
+    const totalCampaigns = await prisma.campaign.count();
+
+    const stateCountsResult = await prisma.creator.groupBy({
+      by: ['state'],
+      _count: { state: true }
+    });
+
+    const stateCounts = {};
+    stateCountsResult.forEach(item => {
+      if (item.state) {
+        stateCounts[item.state] = item._count.state;
+      }
+    });
+
+    res.json({
+      totalCreators,
+      totalReach,
+      totalCampaigns,
+      stateCounts
+    });
+  } catch (err) {
+    console.error('[GET /api/stats/summary] Error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch platform summary statistics.' });
+  }
+});
+
+// GET /api/pages/:pageName — public route to fetch page configuration
+app.get('/api/pages/:pageName', async (req, res) => {
+  try {
+    const { pageName } = req.params;
+    const config = await prisma.dynamicPageConfig.findUnique({
+      where: { pageName }
+    });
+    if (!config) {
+      // Structured defaults for demo environments
+      let defaultContent = {};
+      if (pageName === 'home') {
+        defaultContent = {
+          heroTitle: 'Find Elite Local Creators Across India',
+          heroSubtitle: 'CreatorBharat connects top regional influencers with local and global brands for impactful collaborations.',
+          ctaText: 'Launch Campaign Now',
+          announcement: '⚡ Version 3.0 Live: Introducing Instant Wallet Bank Settlements!'
+        };
+      } else if (pageName === 'pricing') {
+        defaultContent = {
+          starterPrice: 0,
+          proPrice: 49,
+          proFeatures: 'Instant wallet withdrawals, Automated GST invoicing, Priority campaign listing, 0% commission fees, Pro verified badge',
+          brandStarterPrice: 0,
+          brandProPrice: 4999,
+          brandProFeatures: 'Launch Unlimited Campaigns, Direct Outreach Pitch Console, Full A4 Creator Resume Access, Verified Gold Brand Badge, AI Smart Talent Matches, Advanced Analytics Dashboard, 24/7 Premium Priority Support'
+        };
+      } else if (pageName === 'calculator') {
+        defaultContent = {
+          rateMultiplier: 0.018,
+          nicheMultiplier: 1.0,
+          minFee: 500
+        };
+      } else if (pageName === 'faqs' || pageName === 'faq') {
+        defaultContent = [
+          { q: 'How does CreatorBharat escrow work?', a: 'Brands deposit campaign budgets into secure escrows. Funds are released instantly to creators after verified milestone deliverables are submitted.' },
+          { q: 'Is there a signup fee for creators?', a: 'Signing up as a basic creator is completely free. Basic creators can receive brand deals. Creator Pro unlocking instant payouts requires a tiny monthly fee of ₹49.' },
+          { q: 'Can I link multiple Instagram accounts?', a: 'Currently, each creator account can link one verified primary Instagram handle and one YouTube channel to calculate dynamic engagement rates.' }
+        ];
+      } else if (pageName === 'creator-landing') {
+        defaultContent = {
+          heroBadge: "India's Creator Ecosystem",
+          heroTitle: "Build Your Creator Legacy.",
+          heroSubtitle: "Bharat ke har creator ke liye — Tier 2, Tier 3, ya metro. Verified profile, direct brand deals, zero commission. Apni pehchan banao.",
+          ctaPrimary: "Join Free — Start Today",
+          ctaSecondary: "See Creator Profiles",
+          bottomTitle: "Bharat Ka Creator Kahin Bhi Jayega. 🇮🇳",
+          bottomSubtitle: "Bhilwara se Bangalore tak — har creator ki pehchan honi chahiye. Join karo aur apni legacy banao.",
+          bottomCtaPrimary: "Join Free Now",
+          bottomCtaSecondary: "View Pro Plans"
+        };
+      } else if (pageName === 'brand-landing') {
+        defaultContent = {
+          heroBadge: "Brand Command Center",
+          heroTitle: "Scale with Bharat's Best.",
+          heroSubtitle: "Scout verified regional creators, launch campaigns with escrow protection, and track ROI in real-time. Zero commission. Zero middlemen.",
+          ctaPrimary: "Start Scouting Free",
+          ctaSecondary: "Browse Creators",
+          bottomTitle: "Ready to Scale? Join 500+ Brands.",
+          bottomSubtitle: "Start free. No credit card required. Access Bharat's most verified creator network today.",
+          bottomCtaPrimary: "Register Your Brand",
+          bottomCtaSecondary: "Browse Creators"
+        };
+      }
+      return res.json({ pageName, content: defaultContent });
+    }
+    res.json(config);
+  } catch (err) {
+    console.error('[GET /api/pages/:pageName] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve page configuration.' });
+  }
+});
+
 // App Router Registry
 app.use('/api/auth', authRouter);
 app.use('/api/creators', creatorsRouter);
@@ -145,6 +265,8 @@ app.use('/api/contacts', contactsRouter);
 app.use('/api/gallery', galleryRouter);
 app.use('/api/podcasts', podcastsRouter);
 app.use('/api/ai', aiRouter);
+app.use('/api/gigs', gigsRouter);
+app.use('/api/notifications', notificationsRouter);
 
 // Global 404 Error handler
 app.use((req, res) => {
@@ -256,6 +378,45 @@ io.on('connection', (socket) => {
       }
 
       if (callback) callback({ success: true, message: { ...messageData, isMe: true } });
+
+      // If sending to official support, trigger automated response
+      if (receiverId === 'cb-official-support') {
+        setTimeout(async () => {
+          try {
+            const supportResponseText = `Thank you for contacting CreatorBharat Support! 🇮🇳 Our team will review your message shortly. If this is regarding a recent milestone payment, please ensure you have uploaded proper verification links.`;
+            
+            const supportMessage = await prisma.message.create({
+              data: {
+                text: supportResponseText,
+                fromBrand: !isBrand,
+                brandId: isBrand ? profileId : 'cb-official-support',
+                creatorId: isBrand ? 'cb-official-support' : profileId,
+                read: false
+              }
+            });
+
+            const supportMsgData = {
+              id: supportMessage.id,
+              text: supportMessage.text,
+              time: new Date(supportMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              isMe: false,
+              createdAt: supportMessage.createdAt,
+              read: supportMessage.read,
+              brandId: supportMessage.brandId,
+              creatorId: supportMessage.creatorId
+            };
+
+            const senderSocks = connectedUsers.get(profileId);
+            if (senderSocks) {
+              senderSocks.forEach(sid => {
+                io.to(sid).emit('receive_message', supportMsgData);
+              });
+            }
+          } catch (err) {
+            console.error('Support auto-response error:', err.message);
+          }
+        }, 1500);
+      }
     } catch (err) {
       console.error('Socket send_message error:', err.message);
       if (callback) callback({ success: false, error: err.message });

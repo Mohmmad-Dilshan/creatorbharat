@@ -8,6 +8,7 @@ import { fmt, LS } from '@/utils/helpers';
 import { apiCall } from '@/utils/api';
 import { Btn, Card, Bdg, Fld } from '@/components/common/Primitives';
 import { CreatorPageHeader } from './CreatorShellPage';
+import { ENV } from '@/config/env';
 
 const MISSIONS = [
   {
@@ -123,7 +124,7 @@ export default function OpportunitiesPage() {
   const { st, dsp } = useApp();
   const navigate = useNavigate();
   const [q, setQ] = useState('');
-  const [tab, setTab] = useState('campaigns'); // 'campaigns' | 'missions'
+  const [tab, setTab] = useState('campaigns'); // 'campaigns' | 'gigs' | 'missions'
   const [allCampaigns, setAllCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -135,6 +136,31 @@ export default function OpportunitiesPage() {
     JSON.parse(localStorage.getItem('cb_completed_missions') || '[]')
   );
 
+  const [gigs, setGigs] = useState([]);
+  const [loadingGigs, setLoadingGigs] = useState(false);
+  const [submittingMilestone, setSubmittingMilestone] = useState(null);
+  const [proofText, setProofText] = useState('');
+  const [proofUrl, setProofUrl] = useState('');
+  const [isSubmittingProof, setIsSubmittingProof] = useState(false);
+
+  const loadGigs = async () => {
+    setLoadingGigs(true);
+    try {
+      const token = localStorage.getItem('cb_token');
+      const res = await fetch(ENV.apiUrl + '/gigs/me', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setGigs(data);
+      }
+    } catch (err) {
+      console.error('Failed to load gigs:', err);
+    } finally {
+      setLoadingGigs(false);
+    }
+  };
+
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
@@ -142,8 +168,19 @@ export default function OpportunitiesPage() {
       .then(list => { if (!cancelled) setAllCampaigns(list || []); })
       .catch(() => { if (!cancelled) setAllCampaigns([]); })
       .finally(() => { if (!cancelled) setLoading(false); });
+
+    if (localStorage.getItem('cb_token')) {
+      loadGigs();
+    }
+
     return () => { cancelled = true; };
   }, []);
+
+  useEffect(() => {
+    if (tab === 'gigs') {
+      loadGigs();
+    }
+  }, [tab]);
 
   const campaigns = useMemo(() => {
     const term = q.toLowerCase();
@@ -188,31 +225,78 @@ export default function OpportunitiesPage() {
     }
   };
 
-  const submitPitch = () => {
+  const submitPitch = async () => {
     if (!selectedCampaign) return;
     if (!pitchText.trim()) {
       dsp({ t: 'TOAST', d: { type: 'error', msg: 'Please write a pitch or use AI to generate one.' } });
       return;
     }
     
-    dsp({ t: 'APPLY', id: selectedCampaign.id });
-    const newApp = {
-      id: 'app-' + Date.now(),
-      campaignId: selectedCampaign.id,
-      campaignTitle: selectedCampaign.title,
-      brand: selectedCampaign.brand,
-      applicantEmail: st.user?.email,
-      status: 'applied',
-      date: new Date().toISOString(),
-      rate: selectedCampaign.budget || selectedCampaign.budgetMin || 15000,
-      pitch: pitchText.trim()
-    };
-    const existing = LS.get('cb_applications', []);
-    if (!existing.find(a => a.campaignId === selectedCampaign.id && a.applicantEmail === st.user?.email)) {
-      LS.set('cb_applications', [newApp, ...existing]);
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('cb_token');
+      const res = await fetch(ENV.apiUrl + '/applications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          campaignId: selectedCampaign.id,
+          message: pitchText.trim(),
+          proposedRate: selectedCampaign.budget || 5000
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to submit application.');
+
+      dsp({ t: 'APPLY', id: selectedCampaign.id });
+      dsp({ t: 'TOAST', d: { type: 'success', msg: `Applied to ${selectedCampaign.title}!` } });
+      setSelectedCampaign(null);
+    } catch (err) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message } });
+    } finally {
+      setLoading(false);
     }
-    dsp({ t: 'TOAST', d: { type: 'success', msg: `Applied to ${selectedCampaign.title}` } });
-    setSelectedCampaign(null);
+  };
+
+  const handleSubmitProof = async () => {
+    if (!submittingMilestone) return;
+    if (!proofText.trim() && !proofUrl.trim()) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: 'Please provide either a message or link as proof of work.' } });
+      return;
+    }
+
+    setIsSubmittingProof(true);
+    try {
+      const token = localStorage.getItem('cb_token');
+      const { gigId, milestoneId } = submittingMilestone;
+      const res = await fetch(ENV.apiUrl + `/gigs/${gigId}/milestones/${milestoneId}/submit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          proofText: proofText.trim(),
+          proofUrl: proofUrl.trim()
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to submit milestone proof');
+
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Milestone proof submitted successfully! 🚀' } });
+      setSubmittingMilestone(null);
+      setProofText('');
+      setProofUrl('');
+      loadGigs();
+    } catch (err) {
+      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message } });
+    } finally {
+      setIsSubmittingProof(false);
+    }
   };
 
   const completeMission = (missionId) => {
@@ -241,6 +325,7 @@ export default function OpportunitiesPage() {
       <div style={{ display: 'flex', background: '#f1f5f9', padding: 4, borderRadius: 16, width: 'fit-content', marginBottom: 28, gap: 4 }}>
         {[
           { id: 'campaigns', label: '🎯 Brand Campaigns', count: campaigns.length },
+          { id: 'gigs', label: '💼 Live Contracts', count: gigs.length },
           { id: 'missions', label: '⚡ Monthly Missions', count: MISSIONS.length },
         ].map(t => (
           <button
@@ -310,6 +395,103 @@ export default function OpportunitiesPage() {
             </div>
           )}
         </>
+      )}
+
+      {/* LIVE CONTRACTS TAB */}
+      {tab === 'gigs' && (
+        <div>
+          {loadingGigs ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px 0', color: '#94a3b8' }}>
+              <Loader2 size={24} className="spin" style={{ marginRight: 12 }} />
+              <span style={{ fontSize: 15, fontWeight: 700 }}>Loading contract gigs...</span>
+            </div>
+          ) : gigs.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '80px 20px', color: '#94a3b8' }}>
+              <Briefcase size={48} style={{ marginBottom: 16, opacity: 0.3 }} />
+              <p style={{ fontSize: 18, fontWeight: 800, color: '#475569' }}>No active gigs</p>
+              <p style={{ fontSize: 14, fontWeight: 500 }}>Accept brand bids to kickstart a live milestone-based contract!</p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+              {gigs.map(gig => (
+                <Card key={gig.id} style={{ padding: 24 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', marginBottom: '20px' }}>
+                    <div>
+                      <span style={{ fontSize: '12px', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase' }}>Campaign Gig Contract</span>
+                      <h3 style={{ fontSize: 18, fontWeight: 950, color: '#0f172a', margin: '4px 0 0' }}>{gig.campaign?.title}</h3>
+                      <p style={{ fontSize: 13, color: '#64748b', margin: '4px 0 0', fontWeight: 600 }}>Brand Partner: <strong style={{ color: '#FF9431' }}>{gig.campaign?.brand?.companyName || 'Brand Partner'}</strong></p>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <Bdg color={gig.status === 'COMPLETED' ? 'green' : 'blue'}>{gig.status}</Bdg>
+                      <div style={{ fontSize: '18px', fontWeight: 950, color: '#0f172a' }}>
+                        ₹{gig.campaign?.budget?.toLocaleString() || '5,000'}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Milestones wizard flow */}
+                  <div style={{ fontSize: '13px', fontWeight: 900, color: '#475569', textTransform: 'uppercase', marginBottom: '16px' }}>Escrow Milestones Checklist</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {gig.milestones.map((ms, idx) => (
+                      <div key={ms.id} style={{
+                        display: 'flex', gap: '16px', alignItems: 'flex-start',
+                        background: ms.status === 'APPROVED' ? '#f0fdf4' : ms.status === 'SUBMITTED' ? '#eff6ff' : '#f8fafc',
+                        padding: '16px', borderRadius: '16px', border: '1px solid',
+                        borderColor: ms.status === 'APPROVED' ? '#10b98120' : ms.status === 'SUBMITTED' ? '#3b82f620' : '#e2e8f0'
+                      }}>
+                        <div style={{
+                          width: '24px', height: '24px', borderRadius: '50%',
+                          background: ms.status === 'APPROVED' ? '#10B981' : ms.status === 'SUBMITTED' ? '#3B82F6' : '#94a3b8',
+                          color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: '11px', fontWeight: 900, flexShrink: 0
+                        }}>
+                          {ms.status === 'APPROVED' ? '✓' : idx + 1}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
+                            <div>
+                              <h4 style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a', margin: 0 }}>{ms.title}</h4>
+                              {ms.description && <p style={{ fontSize: '12px', color: '#64748b', margin: '4px 0 0', fontWeight: 550, lineHeight: 1.4 }}>{ms.description}</p>}
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{ fontSize: '12px', fontWeight: 800, color: '#0f172a' }}>₹{ms.amount?.toLocaleString()}</span>
+                              <Bdg sm color={ms.status === 'APPROVED' ? 'green' : ms.status === 'SUBMITTED' ? 'blue' : 'slate'}>
+                                {ms.status === 'APPROVED' ? 'Released ✓' : ms.status === 'SUBMITTED' ? 'Under Review' : 'Pending'}
+                              </Bdg>
+                            </div>
+                          </div>
+
+                          {/* Render submitted proof details if any */}
+                          {ms.status === 'SUBMITTED' && (
+                            <div style={{ marginTop: '12px', padding: '10px 12px', background: '#fff', borderRadius: '10px', border: '1px solid #3b82f615', fontSize: '12px' }}>
+                              <strong style={{ color: '#3b82f6' }}>Submitted Proof: </strong>
+                              {ms.proofText && <span>"{ms.proofText}" </span>}
+                              {ms.proofUrl && <a href={ms.proofUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#FF9431', fontWeight: 800, textDecoration: 'underline', display: 'inline-flex', alignItems: 'center', gap: '2px' }}>Link ↗</a>}
+                            </div>
+                          )}
+
+                          {/* Submit Action Button */}
+                          {ms.status === 'PENDING' && (
+                            <button
+                              onClick={() => setSubmittingMilestone({ gigId: gig.id, milestoneId: ms.id })}
+                              style={{
+                                marginTop: '12px', background: '#0f172a', color: '#fff',
+                                border: 'none', borderRadius: '100px', padding: '8px 16px',
+                                fontSize: '12px', fontWeight: 800, cursor: 'pointer'
+                              }}
+                            >
+                              Submit Verification Proof 🚀
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
       )}
 
       {/* MISSIONS TAB */}
@@ -498,6 +680,64 @@ export default function OpportunitiesPage() {
                 <button onClick={() => setShowUpgradeModal(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
                   Close
                 </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Milestone Proof Submission Modal */}
+      <AnimatePresence>
+        {submittingMilestone && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+            onClick={() => setSubmittingMilestone(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              style={{ background: '#fff', borderRadius: 32, padding: 32, maxWidth: 500, width: '100%', boxShadow: '0 40px 80px rgba(0,0,0,0.15)' }}
+            >
+              <h3 style={{ fontSize: 20, fontWeight: 950, color: '#0f172a', marginBottom: 6 }}>Submit Milestone Deliverable</h3>
+              <p style={{ fontSize: 13, color: '#64748b', fontWeight: 550, marginBottom: 20 }}>Provide links or confirmation details of your completed milestone task for brand approval and instant escrow release.</p>
+
+              <div className="form-stack" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <Fld 
+                  label="Work Verification Link (Instagram post/reel/drive link)" 
+                  value={proofUrl} 
+                  onChange={e => setProofUrl(e.target.value)} 
+                  placeholder="https://instagram.com/p/..." 
+                />
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>Submission Message</label>
+                  <textarea
+                    value={proofText}
+                    onChange={e => setProofText(e.target.value)}
+                    rows={4}
+                    placeholder="Provide details about the work, caption notes, or verification updates..."
+                    style={{
+                      width: '100%', padding: '14px', borderRadius: '16px', border: '1.5px solid #e2e8f0',
+                      outline: 'none', fontSize: '14px', color: '#0f172a', fontWeight: 500, resize: 'none', boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+                  <button onClick={() => setSubmittingMilestone(null)} style={{ flex: 1, padding: '12px', border: '1px solid #e2e8f0', background: '#f8fafc', color: '#64748b', borderRadius: '100px', cursor: 'pointer', fontWeight: 800, fontSize: 14 }}>Cancel</button>
+                  <button 
+                    onClick={handleSubmitProof} 
+                    disabled={isSubmittingProof}
+                    style={{ flex: 1, padding: '12px', border: 'none', background: '#FF9431', color: '#fff', borderRadius: '100px', cursor: 'pointer', fontWeight: 950, fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                  >
+                    {isSubmittingProof && <Loader2 size={16} className="animate-spin" />}
+                    Submit Proof
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>

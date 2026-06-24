@@ -564,43 +564,108 @@ const FloatingCreatorIcons = memo(({ mob }) => {
 
 FloatingCreatorIcons.propTypes = { mob: PropTypes.bool };
 
-const HeroHeader = memo(({ mob }) => {
+const CITIES = ['Jaipur.', 'Lucknow.', 'Indore.', 'Bhopal.', 'Surat.', 'Bharat.'];
+
+const RotatingCities = memo(({ mob }) => {
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setIdx(prev => (prev + 1) % CITIES.length);
+    }, 2500);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const currentCity = CITIES[idx];
+
+  return (
+    <span style={{ 
+      display: 'inline-flex', 
+      height: mob ? '42px' : '100px', 
+      overflow: 'hidden', 
+      verticalAlign: 'bottom',
+      position: 'relative',
+      paddingLeft: mob ? 6 : 15,
+      paddingRight: mob ? 5 : 15
+    }}>
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={currentCity}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
+          style={{
+            background: 'linear-gradient(90deg, #FF9431, #128807)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            display: 'inline-block',
+            fontWeight: 950
+          }}
+        >
+          {currentCity}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+});
+
+RotatingCities.propTypes = { mob: PropTypes.bool };
+
+const HeroHeader = memo(({ mob, homeConfig }) => {
   const { t } = useTranslation();
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: 1100 }}>
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="au" 
-        style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: mob ? '10px 20px' : '14px 36px', borderRadius: 100, background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(20px)', border: '1px solid rgba(0,0,0,0.06)', marginBottom: 48, boxShadow: '0 20px 40px rgba(0,0,0,0.03)', position: 'relative' }}
+        transition={{ delay: 0.1, duration: 0.5 }}
+        style={{ marginBottom: mob ? 20 : 32 }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', padding: '6px 14px', borderRadius: 100, fontSize: 11, fontWeight: 950, textTransform: 'uppercase', letterSpacing: '1.5px' }}>ELITE</div>
-          <span style={{ fontSize: mob ? 12 : 14, fontWeight: 900, color: '#0f172a', letterSpacing: '0.2px' }}>{t('hero.eliteLabel', "Empowering Bharat's Next 100M Creators")}</span>
-          <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.1)' }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 12px #10B981', animation: 'pulse-green 2s infinite' }} />
-            <span style={{ fontSize: 11, fontWeight: 950, color: '#10B981', textTransform: 'uppercase' }}>{t('hero.pulseLabel', 'National Pulse')}</span>
-          </div>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, padding: '8px 16px', background: 'rgba(255,148,49,0.06)', border: '1px solid rgba(255,148,49,0.15)', borderRadius: 100 }}>
+          {homeConfig && homeConfig.announcement ? (
+            <span style={{ fontSize: 11, fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1.5px' }}>{homeConfig.announcement}</span>
+          ) : (
+            <>
+              <span style={{ fontSize: 11, fontWeight: 950, color: '#FF9431', textTransform: 'uppercase', letterSpacing: '1.5px' }}>{t('hero.eliteEcosystem', 'Elite Ecosystem')}</span>
+              <div style={{ width: 1, height: 20, background: 'rgba(0,0,0,0.1)' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 12px #10B981', animation: 'pulse-green 2s infinite' }} />
+                <span style={{ fontSize: 11, fontWeight: 950, color: '#10B981', textTransform: 'uppercase' }}>{t('hero.pulseLabel', 'National Pulse')}</span>
+              </div>
+            </>
+          )}
         </div>
       </motion.div>
 
       <h1 className="au d1" style={{ fontSize: mob ? 'clamp(32px, 9vw, 42px)' : 'clamp(80px, 10vw, 110px)', fontWeight: 950, color: '#0f172a', lineHeight: 0.95, marginBottom: mob ? 24 : 40, letterSpacing: '-0.06em', maxWidth: '100%', textAlign: 'center' }}>
-        {t('hero.yourDigital', 'Your Digital')} <Typewriter /> <br />
-        {t('hero.builtFor', 'Built for')} <span style={{ background: 'linear-gradient(90deg, #FF9431, #128807)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', paddingRight: mob ? 5 : 15 }}>{t('hero.bharatText', 'Bharat.')}</span>
+        {homeConfig && homeConfig.heroTitle ? (
+          homeConfig.heroTitle
+        ) : (
+          <>
+            {t('hero.yourDigital', 'Your Digital')} <Typewriter /> <br />
+            {t('hero.builtFor', 'Built for')} <RotatingCities mob={mob} />
+          </>
+        )}
       </h1>
       <p className="au d2" style={{ fontSize: mob ? 16 : 24, color: '#475569', lineHeight: 1.6, marginTop: 0, marginRight: 'auto', marginBottom: mob ? 24 : 48, marginLeft: 'auto', fontWeight: 600, maxWidth: 800 }}>
-        {t('heroSubtitle', "India's all-in-one platform helping Tier 2 & 3 creators build a professional identity, access regional missions, and grow nationally.")}
-        <br />
-        <span style={{ color: '#64748b', fontWeight: 500 }}>{t('heroSubtitleDetail', 'Verified creator profiles, paid brand campaigns, and real visibility for talent beyond the metros.')}</span>
-        <br />
-        <span style={{ display: 'block', width: 'fit-content', margin: '10px auto 0', fontSize: mob ? 13 : 15, fontWeight: 950, textTransform: 'uppercase', letterSpacing: '1.8px', background: 'linear-gradient(90deg, #FF9431 0%, #1A3A8A 48%, #138808 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t('heroTirangaTag', 'Built in Bharat. Ready for India.')}</span>
+        {homeConfig && homeConfig.heroSubtitle ? (
+          homeConfig.heroSubtitle
+        ) : (
+          <>
+            {t('heroSubtitle', "India's all-in-one platform helping Tier 2 & 3 creators build a professional identity, access regional missions, and grow nationally.")}
+            <br />
+            <span style={{ color: '#64748b', fontWeight: 500 }}>{t('heroSubtitleDetail', 'Verified creator profiles, paid brand campaigns, and real visibility for talent beyond the metros.')}</span>
+            <br />
+            <span style={{ display: 'block', width: 'fit-content', margin: '10px auto 0', fontSize: mob ? 13 : 15, fontWeight: 950, textTransform: 'uppercase', letterSpacing: '1.8px', background: 'linear-gradient(90deg, #FF9431 0%, #1A3A8A 48%, #138808 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t('heroTirangaTag', 'Built in Bharat. Ready for India.')}</span>
+          </>
+        )}
       </p>
     </div>
   );
 });
 
-HeroHeader.propTypes = { mob: PropTypes.bool };
+HeroHeader.propTypes = { mob: PropTypes.bool, homeConfig: PropTypes.object };
 
 const TourBadge = memo(({ mob, onClick }) => {
   const { t } = useTranslation();
@@ -1136,7 +1201,7 @@ const SummitBanner = memo(({ mob, go, st }) => {
 
 SummitBanner.propTypes = { mob: PropTypes.bool, go: PropTypes.func, st: PropTypes.object };
 
-export default function Hero({ mob, st, dsp, go }) {
+export default function Hero({ mob, st, dsp, go, homeConfig }) {
   const [sugs, setSugs] = useState([]);
   const [activeIdx, setActiveIdx] = useState(-1);
 
@@ -1202,7 +1267,7 @@ export default function Hero({ mob, st, dsp, go }) {
       <TirangaGlow mob={mob} />
       <div style={{ ...W(), position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ position: 'relative', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <HeroHeader mob={mob} />
+          <HeroHeader mob={mob} homeConfig={homeConfig} />
           <HeroCTA mob={mob} go={go} dsp={dsp} />
           <FloatingCreatorIcons mob={mob} />
         </div>

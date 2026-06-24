@@ -311,6 +311,19 @@ export default function PricingPage() {
   const [tab, setTab] = useState('creator');
   const [duration, setDuration] = useState('1m'); // '1m', '6m', '1y'
   const [mob, setMob] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+  const [pricingConfig, setPricingConfig] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    apiCall('/pages/pricing')
+      .then(res => {
+        if (active && res && res.content) {
+          setPricingConfig(res.content);
+        }
+      })
+      .catch(err => console.error('Failed to load pricing config:', err));
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     const checkSize = () => setMob(window.innerWidth < 768);
@@ -396,8 +409,60 @@ export default function PricingPage() {
     return BRAND_PRICING[duration] || BRAND_PRICING['1m'];
   };
 
+  const getProPriceText = (dur) => {
+    if (pricingConfig && pricingConfig.proPrice !== undefined) {
+      const basePrice = Number(pricingConfig.proPrice);
+      if (dur === '1m') return `₹${basePrice}`;
+      if (dur === '6m') return `₹${Math.round(basePrice * 6 * 0.85)}`; // 15% discount
+      if (dur === '1y') return `₹${Math.round(basePrice * 12 * 0.75)}`; // 25% discount
+    }
+    const pricing = CREATOR_PRICING[dur] || CREATOR_PRICING['1m'];
+    return pricing.price;
+  };
+
+  const getProFeaturesList = (defaultFeatures) => {
+    if (pricingConfig && pricingConfig.proFeatures) {
+      if (Array.isArray(pricingConfig.proFeatures)) {
+        return pricingConfig.proFeatures;
+      }
+      return pricingConfig.proFeatures.split(',').map(f => f.trim()).filter(Boolean);
+    }
+    return defaultFeatures;
+  };
+
   const creatorPlans = getCreatorPlans(duration);
+  const starterPlan = creatorPlans.find(p => p.id === 'free');
+  if (starterPlan && pricingConfig && pricingConfig.starterPrice !== undefined) {
+    const starterVal = Number(pricingConfig.starterPrice);
+    starterPlan.price = starterVal === 0 ? 'Free' : `₹${starterVal}`;
+  }
+  const proPlan = creatorPlans.find(p => p.id === 'pro');
+  if (proPlan) {
+    proPlan.price = getProPriceText(duration);
+    proPlan.features = getProFeaturesList(proPlan.features);
+  }
+
   const brandPlans = getBrandPlans(duration);
+  const brandStarter = brandPlans.find(p => p.id === 'brand_free');
+  if (brandStarter && pricingConfig && pricingConfig.brandStarterPrice !== undefined) {
+    const brandStarterVal = Number(pricingConfig.brandStarterPrice);
+    brandStarter.price = brandStarterVal === 0 ? 'Free' : `₹${brandStarterVal}`;
+  }
+  const brandPro = brandPlans.find(p => p.id === 'brand_pro');
+  if (brandPro && pricingConfig && pricingConfig.brandProPrice !== undefined) {
+    const brandProVal = Number(pricingConfig.brandProPrice);
+    if (duration === '1m') brandPro.price = `₹${brandProVal.toLocaleString('en-IN')}`;
+    else if (duration === '6m') brandPro.price = `₹${Math.round(brandProVal * 6 * 0.85).toLocaleString('en-IN')}`;
+    else if (duration === '1y') brandPro.price = `₹${Math.round(brandProVal * 12 * 0.75).toLocaleString('en-IN')}`;
+    
+    if (pricingConfig.brandProFeatures) {
+      if (Array.isArray(pricingConfig.brandProFeatures)) {
+        brandPro.features = pricingConfig.brandProFeatures;
+      } else {
+        brandPro.features = pricingConfig.brandProFeatures.split(',').map(f => f.trim()).filter(Boolean);
+      }
+    }
+  }
   const activePlans = tab === 'creator' ? creatorPlans : brandPlans;
 
   const renderCellContent = (value, color) => {

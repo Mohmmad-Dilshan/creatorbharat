@@ -14,6 +14,7 @@ import {
 import AuthGatekeeper from '../../components/auth/AuthGatekeeper';
 import { updateCreatorProfile } from '../../utils/platformService';
 import { uploadFile } from '../../utils/uploadService';
+import { ENV } from '@/config/env';
 
 // ─── Step Nav Item ──────────────────────────────────────────────────────────
 const StepNavItem = ({ id, label, icon: Icon, active, completed, onClick }) => (
@@ -568,9 +569,12 @@ SocialTabContent.propTypes = {
 };
 
 // ─── Tab 3: Gallery Portfolio ──────────────────────────────────────────────────
-const GalleryTabContent = ({ F, mob, upF, upGallery, saveProfile, setTab, isPro, navigate }) => {
+const GalleryTabContent = ({ F, mob, upF, saveProfile, setTab, isPro, navigate }) => {
   const [newUrl, setNewUrl] = useState('');
   const [newCaption, setNewCaption] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [photoTitle, setPhotoTitle] = useState('');
+  const [photoDesc, setPhotoDesc] = useState('');
 
   const addStory = () => {
     if (!newUrl.trim()) return;
@@ -601,41 +605,210 @@ const GalleryTabContent = ({ F, mob, upF, upGallery, saveProfile, setTab, isPro,
     upF('stories', storiesList.filter(s => s.id !== id));
   };
 
+  const handleUploadImage = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should not exceed 5MB');
+      return;
+    }
+
+    const currentGallery = F.gallery || [];
+    const limit = isPro ? 12 : 4;
+    if (currentGallery.length >= limit) {
+      alert(`Limit reached! You can upload up to ${limit} portfolio images. Upgrade to Pro for more!`);
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const uploadRes = await uploadFile(file);
+      
+      const token = localStorage.getItem('cb_token');
+      const res = await fetch(ENV.apiUrl + '/gallery', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          imageUrl: uploadRes.url,
+          title: photoTitle.trim() || file.name,
+          description: photoDesc.trim() || ''
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to save gallery item');
+
+      upF('gallery', [...currentGallery, data.item]);
+      setPhotoTitle('');
+      setPhotoDesc('');
+      alert('Portfolio image uploaded successfully! 📸');
+    } catch (err) {
+      alert(err.message || 'Upload failed');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDeleteImage = async (itemId) => {
+    if (!confirm('Are you sure you want to remove this image from your portfolio?')) return;
+    
+    try {
+      const token = localStorage.getItem('cb_token');
+      const res = await fetch(ENV.apiUrl + `/gallery/${itemId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to delete gallery item');
+      }
+
+      upF('gallery', (F.gallery || []).filter(item => item.id !== itemId));
+    } catch (err) {
+      alert(err.message || 'Failed to delete');
+    }
+  };
+
   const activeStories = getActiveStories(F.stories || []);
   const expiredStories = (F.stories || []).filter(s => !activeStories.some(a => a.id === s.id));
   const monthlyCount = getMonthlyStoriesCount(F.stories || []);
   const monthlyLimit = isPro ? 10 : 3;
 
+  const currentGallery = F.gallery || [];
+  const galleryLimit = isPro ? 12 : 4;
+
   return (
     <Card className="settings-form-card card-3d-effect">
        <h3 className="db-section-title">Step 3: Gallery Portfolio & Creator Stories</h3>
-       <p className="db-sub-text" style={{ marginBottom: 40 }}>Showcase your visual portfolio by adding image URLs and share temporary Creator Stories.</p>
+       <p className="db-sub-text" style={{ marginBottom: 30 }}>Showcase your dynamic portfolio by uploading photos and share temporary Creator Stories.</p>
        
        <div className="form-stack">
-          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
-             {(isPro ? [...F.gallery, '', '', ''].slice(0, Math.max(F.gallery.length + 1, 4)) : F.gallery).map((imgUrl, idx) => {
-               const isLocked = !isPro && idx >= 4;
-               return !isLocked ? (
-                 <Fld 
-                   key={idx}
-                   label={`Gallery Image ${idx + 1}`} 
-                   value={imgUrl} 
-                   onChange={e => upGallery(idx, e.target.value)} 
-                   placeholder="https://images.unsplash.com/..." 
-                 />
-               ) : null;
-             })}
+          {/* Dynamic Portfolio Section */}
+          <div style={{ marginBottom: '40px' }}>
+             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                <h4 style={{ fontSize: '16px', fontWeight: 950, color: '#0f172a', margin: 0 }}>📸 Dynamic Work Portfolio</h4>
+                <span style={{ fontSize: '12px', fontWeight: 800, color: '#FF9431', background: 'rgba(255,148,49,0.08)', padding: '4px 12px', borderRadius: '100px' }}>
+                   {currentGallery.length} / {galleryLimit} Images Uploaded
+                </span>
+             </div>
+
+             {/* Upload Form Panel */}
+             {currentGallery.length < galleryLimit && (
+               <div style={{ background: '#f8fafc', padding: '20px', borderRadius: '20px', border: '1px solid #e2e8f0', marginBottom: '24px' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 900, color: '#FF9431', marginBottom: '12px', textTransform: 'uppercase' }}>Add Portfolio Work</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                     <Fld 
+                       label="Work Title (e.g. Nike Campaign)" 
+                       value={photoTitle} 
+                       onChange={e => setPhotoTitle(e.target.value)} 
+                       placeholder="Enter photo title..." 
+                     />
+                     <Fld 
+                       label="Brief Description (Optional)" 
+                       value={photoDesc} 
+                       onChange={e => setPhotoDesc(e.target.value)} 
+                       placeholder="Describe this project..." 
+                     />
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <input 
+                      type="file" 
+                      id="portfolio-image-upload" 
+                      accept="image/*" 
+                      style={{ display: 'none' }}
+                      onChange={handleUploadImage}
+                    />
+                    <button 
+                       type="button"
+                       disabled={uploading}
+                       onClick={() => document.getElementById('portfolio-image-upload').click()}
+                       style={{
+                         background: uploading ? '#cbd5e1' : 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)',
+                         color: '#fff',
+                         border: 'none',
+                         padding: '12px 24px',
+                         borderRadius: '100px',
+                         fontSize: '13px',
+                         fontWeight: 800,
+                         cursor: uploading ? 'not-allowed' : 'pointer',
+                         display: 'flex',
+                         alignItems: 'center',
+                         gap: '8px'
+                       }}
+                    >
+                       {uploading ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
+                       Upload Portfolio Photo 🚀
+                    </button>
+                    <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>Supports JPEG, PNG, WEBP up to 5MB</span>
+                  </div>
+               </div>
+             )}
+
+             {/* Portfolio Masonry/Grid */}
+             {currentGallery.length > 0 ? (
+               <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px' }}>
+                  {currentGallery.map((item) => (
+                    <div 
+                      key={item.id || item.imageUrl} 
+                      className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 transition-all duration-300 hover:shadow-md"
+                      style={{ aspectRatio: '1/1', border: '1px solid #e2e8f0', borderRadius: '16px', position: 'relative', overflow: 'hidden' }}
+                    >
+                       <img src={item.imageUrl} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} alt="" />
+                       <div style={{
+                         position: 'absolute',
+                         bottom: 0, left: 0, right: 0,
+                         background: 'linear-gradient(transparent, rgba(0,0,0,0.85))',
+                         padding: '12px 8px 8px',
+                         color: '#fff'
+                       }}>
+                          <div style={{ fontSize: '12px', fontWeight: 800, textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>{item.title || 'Untitled'}</div>
+                          {item.description && <div style={{ fontSize: '10px', opacity: 0.8, textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden' }}>{item.description}</div>}
+                       </div>
+                       <button 
+                          type="button"
+                          onClick={() => handleDeleteImage(item.id)}
+                          style={{
+                            position: 'absolute', top: '12px', right: '12px',
+                            background: 'rgba(239, 68, 68, 0.95)', color: '#fff',
+                            border: 'none', borderRadius: '50%',
+                            width: '28px', height: '28px',
+                            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                          }}
+                       >
+                          <Trash2 size={14} />
+                       </button>
+                    </div>
+                  ))}
+               </div>
+             ) : (
+               <div style={{ textAlign: 'center', padding: '32px', background: '#f8fafc', borderRadius: '20px', border: '1px dashed #cbd5e1' }}>
+                  <ImageIcon size={32} color="#94a3b8" style={{ margin: '0 auto 12px' }} />
+                  <p style={{ fontSize: 13, fontWeight: 700, color: '#64748b', margin: 0 }}>No portfolio images uploaded yet.</p>
+                  <p style={{ fontSize: 12, color: '#94a3b8', margin: '4px 0 0' }}>Upload your best campaign visual outputs to wow brands!</p>
+               </div>
+             )}
+
+             {!isPro && (
+               <div style={{ marginTop: 16, padding: '12px 16px', background: '#f8fafc', borderRadius: 12, border: '1px dashed #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                 <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 650 }}>
+                   🔒 Free account tier limit: Max 4 images. (Upgrade to Pro for 12)
+                 </span>
+                 <span onClick={() => navigate('/creator/monetization')} style={{ fontSize: 12, color: '#FF9431', fontWeight: 800, cursor: 'pointer', textDecoration: 'underline' }}>
+                   Go Pro ↗
+                 </span>
+               </div>
+             )}
           </div>
-          {!isPro && (
-            <div style={{ marginTop: 12, padding: '10px 16px', background: '#f8fafc', borderRadius: 12, border: '1px dashed #e2e8f0' }}>
-              <p style={{ fontSize: 12, color: '#94a3b8', margin: 0, fontWeight: 600 }}>
-                🔒 Upgrade to Pro for unlimited gallery images (currently max 4)
-              </p>
-            </div>
-          )}
 
           {/* Stories Management Section */}
-          <div style={{ marginTop: '40px', borderTop: '1px solid #f1f5f9', paddingTop: '32px' }}>
+          <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '32px' }}>
              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <h4 style={{ fontSize: '16px', fontWeight: 950, color: '#0f172a', margin: 0 }}>📸 Interactive Creator Stories</h4>
                 <span style={{ fontSize: '12px', fontWeight: 800, color: '#FF9431', background: 'rgba(255,148,49,0.08)', padding: '4px 12px', borderRadius: '100px' }}>
@@ -754,7 +927,6 @@ const GalleryTabContent = ({ F, mob, upF, upGallery, saveProfile, setTab, isPro,
 
 GalleryTabContent.propTypes = {
   F: PropTypes.object.isRequired, mob: PropTypes.bool.isRequired, upF: PropTypes.func.isRequired,
-  upGallery: PropTypes.func.isRequired, saveProfile: PropTypes.func.isRequired,
   setTab: PropTypes.func.isRequired, isPro: PropTypes.bool, navigate: PropTypes.func.isRequired
 };
 
@@ -1446,7 +1618,7 @@ const getInitialFormState = (c) => {
     facebookFollowers: c?.facebook_followers || c?.facebookFollowers || '',
     rateMin: c?.rateMin || '', rateMax: c?.rateMax || '', portfolio: c?.portfolio || '',
     address: c?.address || '', tagline: c?.tagline || '', connections: c?.connections || '500+',
-    gallery: [c?.gallery?.[0]||'', c?.gallery?.[1]||'', c?.gallery?.[2]||'', c?.gallery?.[3]||''],
+    gallery: Array.isArray(c?.gallery) ? c.gallery : [],
     // Full Story — read from snake_case first
     storyP1: story.p1 || '', storyQuote: story.quote || '',
     storyP2: story.p2 || '', storyP3: story.p3 || '',

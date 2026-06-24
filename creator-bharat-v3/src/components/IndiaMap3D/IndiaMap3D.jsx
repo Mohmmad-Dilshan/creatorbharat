@@ -31,6 +31,10 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {}, simpl
   const opacity = useTransform(scrollYProgress, [0, 0.5], mob ? [1, 1] : [0, 1]);
 
   useEffect(() => {
+    if (mob) {
+      setLoading(false);
+      return;
+    }
     let cancelled = false;
     async function init() {
       try {
@@ -61,7 +65,7 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {}, simpl
     }
     init();
     return () => { cancelled = true; };
-  }, []);
+  }, [mob]);
 
   function drawMap(d3, features) {
     const svgEl = svgRef.current;
@@ -113,45 +117,117 @@ export default function IndiaMap3D({ mob, onSelectState, stateCounts = {}, simpl
           </div>
         )}
 
-        <div className={styles.svgWrap} style={{ height: mob ? '380px' : '640px', position: 'relative' }}>
-          {loading && (
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 10, background: 'transparent' }}
-            >
-               <div style={{ width: 48, height: 48, borderRadius: '50%', border: '4px solid rgba(255,153,51,0.2)', borderTopColor: '#FF9933', borderRightColor: '#FFFFFF', borderBottomColor: '#138808', animation: 'spin 1s linear infinite' }} />
-               <p style={{ marginTop: 16, fontSize: 13, fontWeight: 900, color: 'rgba(255,255,255,0.7)', letterSpacing: '2px', textTransform: 'uppercase' }}>Loading Bharat...</p>
-               <style dangerouslySetInnerHTML={{__html: `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}} />
-            </motion.div>
-          )}
-          
-          <svg ref={svgRef} viewBox="0 0 560 640" className={styles.svg} style={{ width: '100%', height: '100%', display: 'block', opacity: loading ? 0 : 1, transition: 'opacity 0.8s ease-in-out' }} />
-          
-          {selectedState && (
-            <motion.div 
-              initial={{ opacity: 0, y: 10, scale: 0.9 }} 
-              animate={{ opacity: 1, y: 0, scale: 1 }} 
-              className={styles.stateLabel}
-              style={{ textAlign: 'center', minWidth: 220 }}
-            >
-              <div style={{ fontSize: 11, opacity: 0.7, marginBottom: 4, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px' }}>Selected Region</div>
-              <div style={{ fontSize: 22, fontWeight: 900, marginBottom: 8 }}>{selectedState}</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
-                <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.2)', borderRadius: 100, fontSize: 15, fontWeight: 800 }}>
-                  🎯 <b>{stateCounts[selectedState] || 0}</b> {stateCounts[selectedState] === 1 ? 'Creator' : 'Creators'}
-                </div>
-                {(stateCounts[selectedState] || 0) === 0 && (
-                  <div style={{ fontSize: 11, opacity: 0.7, fontWeight: 600 }}>
-                    Be the first from {selectedState}!
-                  </div>
-                )}
-                {(stateCounts[selectedState] || 0) > 0 && (
-                  <div style={{ fontSize: 11, opacity: 0.7, fontWeight: 600 }}>
-                    Verified & active on the platform
-                  </div>
-                )}
+        <div className={styles.svgWrap} style={{ height: mob ? 'auto' : '640px', position: 'relative', overflow: mob ? 'visible' : 'hidden' }}>
+          {mob ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '10px 0 30px', width: '100%', boxSizing: 'border-box' }}>
+              <p style={{ fontSize: '12px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0, textAlign: 'center' }}>
+                Tap a State to filter local creators
+              </p>
+              <div style={{ 
+                display: 'flex', 
+                gap: '10px', 
+                overflowX: 'auto', 
+                padding: '8px 4px 16px', 
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'none',
+                width: '100%'
+              }} className="hide-scrollbar">
+                <style dangerouslySetInnerHTML={{__html: `.hide-scrollbar::-webkit-scrollbar { display: none; }`}} />
+                {MAJOR_STATES.map(state => {
+                  const count = stateCounts[state] || 0;
+                  const active = selectedState === state;
+                  return (
+                    <button
+                      key={state}
+                      onClick={() => {
+                        const nextState = active ? null : state;
+                        setSelectedState(nextState);
+                        if (onSelectState) onSelectState(nextState);
+                      }}
+                      style={{
+                        padding: '12px 20px',
+                        background: active ? 'linear-gradient(135deg, #FF9431 0%, #ff7b00 100%)' : '#ffffff',
+                        color: active ? '#ffffff' : '#475569',
+                        border: `1.5px solid ${active ? '#FF9431' : '#e2e8f0'}`,
+                        borderRadius: '100px',
+                        fontSize: '13px',
+                        fontWeight: 800,
+                        whiteSpace: 'nowrap',
+                        cursor: 'pointer',
+                        boxShadow: active ? '0 4px 12px rgba(255, 148, 49, 0.2)' : '0 2px 6px rgba(0,0,0,0.02)',
+                        transition: 'all 0.2s ease-in-out'
+                      }}
+                    >
+                      📍 {state} ({count})
+                    </button>
+                  );
+                })}
               </div>
-            </motion.div>
+              
+              {selectedState && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }} 
+                  animate={{ opacity: 1, scale: 1 }} 
+                  style={{
+                    background: '#ffffff',
+                    border: '1.5px solid #FF943120',
+                    boxShadow: '0 10px 24px rgba(255,148,49,0.05)',
+                    borderRadius: '20px',
+                    padding: '20px',
+                    textAlign: 'center',
+                    marginTop: '10px'
+                  }}
+                >
+                  <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Selected Region</div>
+                  <div style={{ fontSize: '20px', fontWeight: 950, color: '#0f172a', marginBottom: '8px' }}>{selectedState}</div>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 16px', background: 'rgba(255,148,49,0.06)', border: '1px solid rgba(255,148,49,0.15)', borderRadius: '100px', fontSize: '14px', fontWeight: 900, color: '#FF9431' }}>
+                    🎯 {stateCounts[selectedState] || 0} {stateCounts[selectedState] === 1 ? 'Creator' : 'Creators'}
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          ) : (
+            <>
+              {loading && (
+                <motion.div 
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 10, background: 'transparent' }}
+                >
+                   <div style={{ width: 48, height: 48, borderRadius: '50%', border: '4px solid rgba(255,153,51,0.2)', borderTopColor: '#FF9933', borderRightColor: '#FFFFFF', borderBottomColor: '#138808', animation: 'spin 1s linear infinite' }} />
+                   <p style={{ marginTop: 16, fontSize: 13, fontWeight: 950, color: 'rgba(255,255,255,0.7)', letterSpacing: '2px', textTransform: 'uppercase' }}>Loading Bharat...</p>
+                   <style dangerouslySetInnerHTML={{__html: `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}} />
+                </motion.div>
+              )}
+              
+              <svg ref={svgRef} viewBox="0 0 560 640" className={styles.svg} style={{ width: '100%', height: '100%', display: 'block', opacity: loading ? 0 : 1, transition: 'opacity 0.8s ease-in-out' }} />
+              
+              {selectedState && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10, scale: 0.9 }} 
+                  animate={{ opacity: 1, y: 0, scale: 1 }} 
+                  className={styles.stateLabel}
+                  style={{ textAlign: 'center', minWidth: 220 }}
+                >
+                  <div style={{ fontSize: 11, opacity: 0.7, marginBottom: 4, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px' }}>Selected Region</div>
+                  <div style={{ fontSize: 22, fontWeight: 900, marginBottom: 8 }}>{selectedState}</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'center' }}>
+                    <div style={{ padding: '6px 16px', background: 'rgba(255,255,255,0.2)', borderRadius: 100, fontSize: 15, fontWeight: 800 }}>
+                      🎯 <b>{stateCounts[selectedState] || 0}</b> {stateCounts[selectedState] === 1 ? 'Creator' : 'Creators'}
+                    </div>
+                    {(stateCounts[selectedState] || 0) === 0 && (
+                      <div style={{ fontSize: 11, opacity: 0.7, fontWeight: 600 }}>
+                        Be the first from {selectedState}!
+                      </div>
+                    )}
+                    {(stateCounts[selectedState] || 0) > 0 && (
+                      <div style={{ fontSize: 11, opacity: 0.7, fontWeight: 600 }}>
+                        Verified & active on the platform
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </>
           )}
 
           {/* Rajasthan Custom Message (Desktop Only) */}

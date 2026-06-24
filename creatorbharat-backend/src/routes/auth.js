@@ -68,9 +68,13 @@ router.post('/send-otp', async (req, res) => {
 
     // Default code 1234 for dev/testing, random 4-digit for production
     const otp = process.env.NODE_ENV === 'production' ? Math.floor(1000 + Math.random() * 9000).toString() : '1234';
-    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-    otpStore.set(cleanedPhone, { otp, expiresAt });
+    await prisma.otpVerification.upsert({
+      where: { phone: cleanedPhone },
+      update: { otp, expiresAt },
+      create: { phone: cleanedPhone, otp, expiresAt }
+    });
 
     // Send the OTP via our production SMS utility
     await sendSMS(cleanedPhone, otp);
@@ -91,14 +95,16 @@ router.post('/verify-otp', async (req, res) => {
     }
 
     const cleanedPhone = phone.replace(/\D/g, '');
-    const record = otpStore.get(cleanedPhone);
+    const record = await prisma.otpVerification.findUnique({
+      where: { phone: cleanedPhone }
+    });
 
     if (!record) {
       return res.status(400).json({ error: 'No OTP requested for this phone number.' });
     }
 
-    if (Date.now() > record.expiresAt) {
-      otpStore.delete(cleanedPhone);
+    if (new Date() > record.expiresAt) {
+      await prisma.otpVerification.delete({ where: { phone: cleanedPhone } }).catch(() => {});
       return res.status(400).json({ error: 'OTP has expired. Please request a new one.' });
     }
 
@@ -122,14 +128,16 @@ router.post('/login-otp', async (req, res) => {
     }
 
     const cleanedPhone = phone.replace(/\D/g, '');
-    const record = otpStore.get(cleanedPhone);
+    const record = await prisma.otpVerification.findUnique({
+      where: { phone: cleanedPhone }
+    });
 
     if (!record) {
       return res.status(400).json({ error: 'No OTP requested for this phone number.' });
     }
 
-    if (Date.now() > record.expiresAt) {
-      otpStore.delete(cleanedPhone);
+    if (new Date() > record.expiresAt) {
+      await prisma.otpVerification.delete({ where: { phone: cleanedPhone } }).catch(() => {});
       return res.status(400).json({ error: 'OTP has expired. Please request a new one.' });
     }
 
@@ -150,7 +158,7 @@ router.post('/login-otp', async (req, res) => {
       return res.status(403).json({ error: 'Your account has been suspended by an administrator. Please contact support.' });
     }
 
-    otpStore.delete(cleanedPhone);
+    await prisma.otpVerification.delete({ where: { phone: cleanedPhone } }).catch(() => {});
 
     const token = signToken(user.id);
     res.json({ token, user: safeUser(user) });
@@ -178,8 +186,10 @@ router.post('/register/creator', async (req, res) => {
     let verifiedPhone = null;
     if (validated.phone) {
       const cleanedPhone = validated.phone.replace(/\D/g, '');
-      const record = otpStore.get(cleanedPhone);
-      if (!record || record.otp !== validated.otp?.trim() || Date.now() > record.expiresAt) {
+      const record = await prisma.otpVerification.findUnique({
+        where: { phone: cleanedPhone }
+      });
+      if (!record || record.otp !== validated.otp?.trim() || new Date() > record.expiresAt) {
         return res.status(400).json({ error: 'Invalid or expired OTP for phone verification.' });
       }
       
@@ -188,7 +198,85 @@ router.post('/register/creator', async (req, res) => {
         return res.status(400).json({ error: 'Phone number already registered to another account.' });
       }
       verifiedPhone = cleanedPhone;
-      otpStore.delete(cleanedPhone);
+      await prisma.otpVerification.delete({ where: { phone: cleanedPhone } }).catch(() => {});
+    }
+
+    const hashedPassword = await bcrypt.hash(validated.password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        email: emailLower,
+        phone: verifiedPhone,
+        password: hashedPassword,
+        role: 'CREATOR',
+        creator: {
+          create: {
+            handle: handleLower,
+            name: validated.name.trim(),
+            city: validated.city?.trim() || null,
+            state: validated.state?.trim() || null
+          }
+        }
+      },
+      include: { creator: true }
+    });
+
+    const token = signToken(user.id);
+    res.status(201).json({ token, user: safeUser(user) });
+
+    // Send Welcome Email
+    sendEmail({
+      to: user.email,
+      subject: 'Welcome to CreatorBharat! 🇮🇳',
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; color: #0f172a; max-width: 600px; margin: auto; border: 1px solid #f1f5f9; border-radius: 12px;">
+          <h2 style="color: #FF9431;">Welcome to CreatorBharat, ${validated.name.trim()}! 🎉</h2>
+          <p>We are thrilled to have you join India's premier influencer network.</p>
+          <p>Here are your next steps to get started:</p>
+          <ul style="line-height: 1.6;">
+            <li><strong>Complete your profile:</strong> Add your portfolio, rates, and local impact details.</li>
+            <li><strong>Submit for Verification:</strong> Get your Elite Badge to stand out to premium brands.</li>
+            <li><strong>Apply to Campaigns:</strong> Pitch directly to campaigns in your niche.</li>
+          </ul>
+          <p style="margin-top: 24px;">Best regards,<br/><strong>Team CreatorBharat</strong></p>
+        </div>
+      `
+    }).catch(err => console.error('Welcome email error:', err));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return res.status(400).json({ error: err.errors[0].message });
+    }
+    console.error('[register/creator] Error:', err.message);
+    res.status(500).json({ error: 'Registration failed. Please try again.' });
+  }
+});
+
+// Brand Registration Endpoint
+router.post('/register/brand', async (req, res) => {
+  try {
+    const validated = BrandRegisterSchema.parse(req.body);
+    const emailLower = validated.email.toLowerCase().trim();
+
+    const emailExists = await prisma.user.findUnique({ where: { email: emailLower } });
+    if (emailExists) return res.status(400).json({ error: 'Email already registered.' });
+
+    // Handle OTP verification if phone is provided
+    let verifiedPhone = null;
+    if (validated.phone) {
+      const cleanedPhone = validated.phone.replace(/\D/g, '');
+      const record = await prisma.otpVerification.findUnique({
+        where: { phone: cleanedPhone }
+      });
+      if (!record || record.otp !== validated.otp?.trim() || new Date() > record.expiresAt) {
+        return res.status(400).json({ error: 'Invalid or expired OTP for phone verification.' });
+      }
+      
+      const phoneExists = await prisma.user.findUnique({ where: { phone: cleanedPhone } });
+      if (phoneExists) {
+        return res.status(400).json({ error: 'Phone number already registered to another account.' });
+      }
+      verifiedPhone = cleanedPhone;
+      await prisma.otpVerification.delete({ where: { phone: cleanedPhone } }).catch(() => {});
     }
 
     const hashedPassword = await bcrypt.hash(validated.password, 10);
@@ -355,9 +443,6 @@ router.get('/me', authMiddleware, (req, res) => {
   res.json({ user: safeUser(req.user) });
 });
 
-// In-memory store for password reset tokens (maps resetToken -> { userId, expiresAt })
-const resetStore = new Map();
-
 // Request Password Reset Link
 router.post('/forgot-password', async (req, res) => {
   try {
@@ -377,9 +462,11 @@ router.post('/forgot-password', async (req, res) => {
     }
 
     const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = Date.now() + 15 * 60 * 1000; // 15 minutes
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
-    resetStore.set(token, { userId: user.id, expiresAt });
+    await prisma.passwordReset.create({
+      data: { token, userId: user.id, expiresAt }
+    });
 
     const origin = req.headers.origin || 'http://localhost:5173';
     const resetUrl = `${origin}/reset-password?token=${token}`;
@@ -425,13 +512,15 @@ router.post('/reset-password', async (req, res) => {
       return res.status(400).json({ error: 'Password must be at least 8 characters long.' });
     }
 
-    const record = resetStore.get(token);
+    const record = await prisma.passwordReset.findUnique({
+      where: { token }
+    });
     if (!record) {
       return res.status(400).json({ error: 'This password reset link is invalid or has expired.' });
     }
 
-    if (Date.now() > record.expiresAt) {
-      resetStore.delete(token);
+    if (new Date() > record.expiresAt) {
+      await prisma.passwordReset.delete({ where: { token } }).catch(() => {});
       return res.status(400).json({ error: 'This password reset link has expired. Please request a new one.' });
     }
 
@@ -442,7 +531,7 @@ router.post('/reset-password', async (req, res) => {
       data: { password: hashedPassword }
     });
 
-    resetStore.delete(token);
+    await prisma.passwordReset.delete({ where: { token } }).catch(() => {});
 
     res.json({ success: true, message: 'Your password has been reset successfully.' });
   } catch (err) {

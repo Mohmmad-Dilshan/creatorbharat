@@ -5,6 +5,42 @@ import { authMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
 
+async function getCreatorRankDetails(creator) {
+  if (!creator) return 'Bronze';
+  
+  const followers = creator.followers || 0;
+  
+  // Calculate completed campaigns (gigs)
+  const completedGigs = await prisma.campaignGig.count({
+    where: { creatorId: creator.id, status: 'COMPLETED' }
+  });
+
+  // Calculate average rating
+  const reviewAgg = await prisma.review.aggregate({
+    where: { creatorId: creator.id },
+    _avg: { rating: true }
+  });
+  const avgRating = reviewAgg._avg.rating || 5.0;
+
+  // Calculate leaderboard percent (top 1% by followers)
+  const countHigher = await prisma.creator.count({
+    where: { followers: { gt: followers } }
+  });
+  const totalCreators = await prisma.creator.count();
+  const topPercent = totalCreators > 0 ? (countHigher / totalCreators) * 100 : 100;
+
+  // Determine Rank
+  if (topPercent <= 1 && followers >= 500000) {
+    return 'Platinum';
+  } else if (followers >= 250000 && avgRating >= 4.8) {
+    return 'Gold';
+  } else if (followers >= 50000 && completedGigs >= 2) {
+    return 'Silver';
+  } else {
+    return 'Bronze';
+  }
+}
+
 // GET /api/creators — query and filter active creators
 router.get('/', async (req, res) => {
   try {
@@ -59,8 +95,13 @@ router.get('/', async (req, res) => {
       prisma.creator.count({ where })
     ]);
 
+    const creatorsWithRanks = await Promise.all(creators.map(async (c) => {
+      const rank = await getCreatorRankDetails(c);
+      return { ...c, rank };
+    }));
+
     res.json({
-      creators,
+      creators: creatorsWithRanks,
       total,
       page: parseInt(page),
       pages: Math.ceil(total / limit)
@@ -90,6 +131,9 @@ router.get('/:idOrHandle', async (req, res) => {
         },
         reviews: {
           orderBy: { createdAt: 'desc' }
+        },
+        gallery: {
+          orderBy: { createdAt: 'desc' }
         }
       }
     });
@@ -98,7 +142,8 @@ router.get('/:idOrHandle', async (req, res) => {
       return res.status(404).json({ error: 'Creator profile not found.' });
     }
 
-    res.json(creator);
+    const rank = await getCreatorRankDetails(creator);
+    res.json({ ...creator, rank });
   } catch (err) {
     console.error('[GET /api/creators/:idOrHandle] Error:', err.message);
     res.status(500).json({ error: 'Failed to fetch creator profile.' });

@@ -3,13 +3,14 @@ import { motion } from 'framer-motion';
 import { BarChart3, TrendingUp, Users, Target, ArrowUpRight, Briefcase, Star } from 'lucide-react';
 import { useApp } from '../../core/context';
 import { LS, fmt } from '../../utils/helpers';
+import { apiCall } from '../../utils/api';
 import { Card, Bdg } from '../../components/common/Primitives';
 import AuthGatekeeper from '../../components/auth/AuthGatekeeper';
 
 const StatCard = ({ label, value, trend, icon: Icon, color, delay = 0 }) => (
   <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay }}>
     <Card style={{ padding: 24 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+      <div style={{ display: 'flex', justifycontent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
         <div style={{ width: 44, height: 44, borderRadius: 14, background: color + '12', color, display: 'grid', placeItems: 'center' }}>
           <Icon size={22} />
         </div>
@@ -29,7 +30,7 @@ const BarChartSimple = ({ data, label, color = '#10B981' }) => {
   const max = Math.max(...data.map(d => d.value), 1);
   return (
     <Card style={{ padding: 28 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifycontent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <h3 style={{ fontSize: 16, fontWeight: 900, color: '#0f172a', margin: 0 }}>{label}</h3>
         <Bdg color="green" sm>Last 7 days</Bdg>
       </div>
@@ -57,6 +58,9 @@ const BarChartSimple = ({ data, label, color = '#10B981' }) => {
 export default function BrandAnalyticsPage() {
   const { st } = useApp();
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
+  const [campaigns, setCampaigns] = useState([]);
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const h = () => setMob(globalThis.innerWidth < 768);
@@ -64,15 +68,55 @@ export default function BrandAnalyticsPage() {
     return () => globalThis.removeEventListener('resize', h);
   }, []);
 
+  useEffect(() => {
+    let active = true;
+    async function loadAnalyticsData() {
+      if (!st.user) return;
+      try {
+        const [campsData, appsData] = await Promise.all([
+          apiCall('/campaigns/me'),
+          apiCall('/applications/me')
+        ]);
+
+        if (!active) return;
+
+        let camps = campsData;
+        if (!camps || camps.length === 0) {
+          camps = LS.get('cb_campaigns', []).filter(c => c.brandEmail === st.user.email);
+        }
+        setCampaigns(camps);
+
+        let apps = appsData;
+        if (!apps || apps.length === 0) {
+          const allApps = LS.get('cb_applications', []);
+          const campIds = camps.map(c => c.id);
+          apps = allApps.filter(a => campIds.includes(a.campaignId));
+        }
+        setApplications(apps);
+      } catch (err) {
+        console.error('Failed to load brand analytics:', err);
+        if (active) {
+          const camps = LS.get('cb_campaigns', []).filter(c => c.brandEmail === st.user?.email);
+          setCampaigns(camps);
+          const allApps = LS.get('cb_applications', []);
+          const campIds = camps.map(c => c.id);
+          setApplications(allApps.filter(a => campIds.includes(a.campaignId)));
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    loadAnalyticsData();
+    return () => { active = false; };
+  }, [st.user]);
+
   if (!st.user || st.role !== 'brand') return <AuthGatekeeper mob={mob} role="brand" />;
 
-  const myCampaigns = LS.get('cb_campaigns', []).filter(c => c.brandEmail === st.user.email);
-  const allApps = LS.get('cb_applications', []);
-  const myCampIds = myCampaigns.map(c => c.id);
-  const myApps = allApps.filter(a => myCampIds.includes(a.campaignId));
+  const myCampaigns = campaigns;
+  const myApps = applications;
 
   const totalReach = myCampaigns.reduce((s, c) => s + ((c.slots || 10) * 12500), 0);
-  const selectedCreators = myApps.filter(a => a.status === 'selected').length;
+  const selectedCreators = myApps.filter(a => a.status?.toLowerCase() === 'selected').length;
   const convRate = myApps.length > 0 ? Math.round((selectedCreators / myApps.length) * 100) : 0;
 
   // Weekly activity (derived from campaign dates)
@@ -87,11 +131,14 @@ export default function BrandAnalyticsPage() {
   // Niche breakdown from campaigns
   const nicheMap = {};
   myCampaigns.forEach(c => {
-    const n = c.niche || 'General';
-    nicheMap[n] = (nicheMap[n] || 0) + 1;
+    const nichesList = Array.isArray(c.niche) ? c.niche : [c.niche || 'General'];
+    nichesList.forEach(n => {
+      nicheMap[n] = (nicheMap[n] || 0) + 1;
+    });
   });
   const niches = Object.entries(nicheMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
   const maxNiche = Math.max(...niches.map(n => n[1]), 1);
+
 
   return (
     <div className="dashboard-page-container">

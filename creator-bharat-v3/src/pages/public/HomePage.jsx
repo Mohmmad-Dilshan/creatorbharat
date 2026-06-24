@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/core/context';
+import { apiCall } from '@/utils/api';
 import { useFeaturedCreators } from '../../hooks/useFeaturedCreators';
 import { useStateCreatorCounts } from '../../hooks/useStateCreatorCounts';
 import { usePlatformStats } from '../../hooks/usePlatformStats';
@@ -114,6 +115,19 @@ export default function HomePage() {
   const { st, dsp } = useApp();
   const navigate = useNavigate();
   const [mob, setMob] = useState(window.innerWidth < 768);
+  const [homeConfig, setHomeConfig] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    apiCall('/pages/home')
+      .then(res => {
+        if (active && res && res.content) {
+          setHomeConfig(res.content);
+        }
+      })
+      .catch(err => console.error('Failed to load homepage config:', err));
+    return () => { active = false; };
+  }, []);
 
   // All data fetching via hooks — zero raw API calls in this file
   const { creators, loading } = useFeaturedCreators(10);
@@ -175,7 +189,7 @@ export default function HomePage() {
 
   // Section list — add/remove/reorder here only
   const sections = [
-    { id: 'hero',      comp: <Hero mob={mob} st={st} dsp={dsp} go={go} />, reveal: false },
+    { id: 'hero',      comp: <Hero mob={mob} st={st} dsp={dsp} go={go} homeConfig={homeConfig} />, reveal: false },
     { id: 'creators',  comp: <FeaturedCreators mob={mob} creators={creators} go={go} loading={loading} />, reveal: false },
     { id: 'trophies',  comp: <PlayButtonsShowcase mob={mob} />, reveal: false },
     { id: 'impact',    comp: <ImpactStats mob={mob} />, reveal: false },

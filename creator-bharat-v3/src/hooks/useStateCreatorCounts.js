@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { fetchCreators } from '../utils/platformService';
+import { apiCall } from '../utils/api';
 
 export function useStateCreatorCounts() {
   const [stateCounts, setStateCounts] = useState({});
@@ -15,19 +15,13 @@ export function useStateCreatorCounts() {
   useEffect(() => {
     let cancelled = false;
 
-    fetchCreators({ limit: 500 })
-      .then(creators => {
+    apiCall('/stats/summary')
+      .then(data => {
         if (cancelled) return;
-
-        // Build { "Rajasthan": 42, "Maharashtra": 87, ... }
-        const counts = {};
-        creators.forEach(c => {
-          const state = c.state;
-          if (!state) return;
-          counts[state] = (counts[state] || 0) + 1;
-        });
-
-        setStateCounts(counts);
+        setStateCounts(data.stateCounts || {});
+      })
+      .catch(() => {
+        if (!cancelled) setStateCounts({});
       })
       .finally(() => {
         if (!cancelled) setLoading(false);

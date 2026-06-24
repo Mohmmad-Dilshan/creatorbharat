@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Seo from '@/components/common/SEO';
 import { Btn } from '@/components/common/Primitives';
 import { MessageCircle } from 'lucide-react';
+import { apiCall } from '@/utils/api';
 
 // Data Import
 import { FAQS, FAQ_CATEGORIES } from '../../data/faqs';
@@ -15,6 +16,7 @@ export default function FAQPage() {
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [search, setSearch] = useState('');
   const [activeCat, setActiveCat] = useState('all');
+  const [dynamicFaqs, setDynamicFaqs] = useState(null);
 
   useEffect(() => {
     const h = () => setMob(globalThis.innerWidth < 768);
@@ -22,14 +24,25 @@ export default function FAQPage() {
     return () => globalThis.removeEventListener('resize', h);
   }, []);
 
+  useEffect(() => {
+    apiCall('/pages/faq').then(res => {
+      if (res?.content) {
+        const items = Array.isArray(res.content) ? res.content : res.content.items;
+        if (items?.length) setDynamicFaqs(items);
+      }
+    }).catch(() => {});
+  }, []);
+
+  const ACTIVE_FAQS = dynamicFaqs || FAQS;
+
   const { counts, filtered } = useMemo(() => {
-    const map = { all: FAQS.length };
-    FAQS.forEach(f => {
+    const map = { all: ACTIVE_FAQS.length };
+    ACTIVE_FAQS.forEach(f => {
       const catId = FAQ_CATEGORIES.find(c => c.name.toLowerCase().includes(f.cat.toLowerCase().replace('for ', '')) || c.id === f.cat.toLowerCase())?.id || 'general';
       map[catId] = (map[catId] || 0) + 1;
     });
 
-    const list = FAQS.filter(f => {
+    const list = ACTIVE_FAQS.filter(f => {
       const matchesSearch = f.q.toLowerCase().includes(search.toLowerCase()) || f.a.toLowerCase().includes(search.toLowerCase());
       if (search.trim()) return matchesSearch;
       if (activeCat === 'all') return true;
@@ -38,14 +51,14 @@ export default function FAQPage() {
     });
 
     return { counts: map, filtered: list };
-  }, [search, activeCat]);
+  }, [search, activeCat, ACTIVE_FAQS]);
 
   const trending = ["Elite Score", "Payment Cycle", "Verification Badge", "Campaign ROI"];
 
   const faqJsonLd = useMemo(() => ({
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "mainEntity": FAQS.map(faq => ({
+    "mainEntity": ACTIVE_FAQS.map(faq => ({
       "@type": "Question",
       "name": faq.q,
       "acceptedAnswer": {
@@ -53,7 +66,7 @@ export default function FAQPage() {
         "text": faq.a
       }
     }))
-  }), []);
+  }), [ACTIVE_FAQS]);
 
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', paddingBottom: '120px' }}>

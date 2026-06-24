@@ -9,7 +9,7 @@ import {
   ChevronRight, Wallet, CheckCircle, Clock, Sparkles, Lock,
   ArrowRight, Award, Globe, Settings, Check, MapPin, Download,
   Trophy, X, Copy, Play, Target, Activity, IndianRupee, Heart, Eye,
-  RefreshCw, Plus, Flame, Star, Send, ArrowUpRight, Crown
+  RefreshCw, Plus, Flame, Star, Send, ArrowUpRight, Crown, Bell
 } from 'lucide-react';
 
 // ─── Design Tokens (2026 Minimalist SaaS Theme) ──────────────────────────────────
@@ -1399,7 +1399,9 @@ export default function DashboardPage() {
   const [matchingCampaigns, setMatchingCampaigns] = useState([]);
   const [portfolioActive, setPortfolioActive] = useState(() => localStorage.getItem('cb_portfolio_active') === 'true');
   const [isUpgradeOpen, setIsUpgradeOpen] = useState(false);
+  const [unreadNotifCount, setUnreadNotifCount] = useState(0);
   const [profileViews, setProfileViews] = useState(() => {
+
     const v = localStorage.getItem('cb_profile_views');
     if (!v) {
       localStorage.setItem('cb_profile_views', '1424');
@@ -1461,6 +1463,20 @@ export default function DashboardPage() {
     }).catch(() => {});
 
     return () => { active = false; };
+  }, []);
+
+  // Poll unread notification count every 60s
+  useEffect(() => {
+    const fetchUnread = async () => {
+      try {
+        const { apiCall } = await import('../../utils/api');
+        const data = await apiCall('/notifications');
+        setUnreadNotifCount(data.unreadCount || 0);
+      } catch { /* backend offline or not logged in */ }
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 60000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleNextSlide = () => {
@@ -1600,16 +1616,43 @@ export default function DashboardPage() {
                 {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
               </span>
             </div>
-            <button
-              onClick={() => navigate('/creator/settings')}
-              style={{
-                width: 36, height: 36, borderRadius: 8, background: '#fff',
-                border: `1px solid ${C.border}`, display: 'flex',
-                alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-              }}
-            >
-              <Settings size={14} color={C.slate} />
-            </button>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              {/* Notification Bell */}
+              <button
+                onClick={() => navigate('/creator/notifications')}
+                style={{
+                  width: 36, height: 36, borderRadius: 8, background: '#fff',
+                  border: `1px solid ${C.border}`, display: 'flex',
+                  alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                  position: 'relative'
+                }}
+              >
+                <Bell size={14} color={unreadNotifCount > 0 ? C.saffron : C.slate} />
+                {unreadNotifCount > 0 && (
+                  <span style={{
+                    position: 'absolute', top: -4, right: -4, minWidth: 16, height: 16,
+                    borderRadius: 8, background: C.saffron, color: '#fff',
+                    fontSize: 9, fontWeight: 900, display: 'flex',
+                    alignItems: 'center', justifyContent: 'center', padding: '0 3px',
+                    border: '2px solid #fff', lineHeight: 1
+                  }}>
+                    {unreadNotifCount > 9 ? '9+' : unreadNotifCount}
+                  </span>
+                )}
+              </button>
+              {/* Settings */}
+              <button
+                onClick={() => navigate('/creator/settings')}
+                style={{
+                  width: 36, height: 36, borderRadius: 8, background: '#fff',
+                  border: `1px solid ${C.border}`, display: 'flex',
+                  alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+                }}
+              >
+                <Settings size={14} color={C.slate} />
+              </button>
+            </div>
+
           </div>
         </motion.div>
 

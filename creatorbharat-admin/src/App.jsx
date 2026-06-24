@@ -199,6 +199,7 @@ const NAV_SECTIONS = (counts) => [
       { id: 'contacts', label: 'Contact Inbox', icon: Bell, badge: counts.unreadContacts },
       { id: 'gallery', label: 'Gallery Manager', icon: Image, badge: counts.gallery },
       { id: 'media-library', label: 'Media Library', icon: FolderOpen, badge: counts.uploads },
+      { id: 'pages', label: 'Page Content Manager', icon: SlidersHorizontal },
     ]
   },
   {
@@ -234,6 +235,7 @@ const TAB_META = {
   contacts: { title: 'Contact Inbox', sub: 'Reply to or delete user contact messages' },
   gallery: { title: 'Gallery Manager', sub: 'Manage CreatorBharat Ecosystem Gallery items' },
   'media-library': { title: 'Media Library', sub: 'Upload files and copy their URLs for use across the platform' },
+  pages: { title: 'Page Content Manager', sub: 'Dynamically customize public page text, pricing tiers, and calculator rates' },
   settings: { title: 'System Settings', sub: 'Configure platform-wide settings and toggles' },
   danger: { title: '⚠️ Danger Zone', sub: 'Irreversible platform-wide operations' },
 };
@@ -444,6 +446,57 @@ export default function App() {
   const [brandAnalytics, setBrandAnalytics] = useState([]);
   const [activityLog, setActivityLog] = useState([]);
 
+  // ── Page Config Manager States
+  const [selectedPageName, setSelectedPageName] = useState('home');
+  const [homeConfig, setHomeConfig] = useState({
+    heroTitle: 'Find Elite Local Creators Across India',
+    heroSubtitle: 'CreatorBharat connects top regional influencers with local and global brands for impactful collaborations.',
+    ctaText: 'Launch Campaign Now',
+    announcement: '⚡ Version 3.0 Live: Introducing Instant Wallet Bank Settlements!'
+  });
+  const [pricingConfig, setPricingConfig] = useState({
+    starterPrice: 0,
+    proPrice: 49,
+    proFeatures: 'Instant wallet withdrawals, Automated GST invoicing, Priority campaign listing, 0% commission fees, Pro verified badge',
+    brandStarterPrice: 0,
+    brandProPrice: 4999,
+    brandProFeatures: 'Launch Unlimited Campaigns, Direct Outreach Pitch Console, Full A4 Creator Resume Access, Verified Gold Brand Badge, AI Smart Talent Matches, Advanced Analytics Dashboard, 24/7 Premium Priority Support'
+  });
+  const [calculatorConfig, setCalculatorConfig] = useState({
+    rateMultiplier: 0.15,
+    nicheMultiplier: 1.2,
+    minFee: 500
+  });
+  const [creatorLandingConfig, setCreatorLandingConfig] = useState({
+    heroBadge: "India's Creator Ecosystem",
+    heroTitle: "Build Your Creator Legacy.",
+    heroSubtitle: "Bharat ke har creator ke liye — Tier 2, Tier 3, ya metro. Verified profile, direct brand deals, zero commission. Apni pehchan banao.",
+    ctaPrimary: "Join Free — Start Today",
+    ctaSecondary: "See Creator Profiles",
+    bottomTitle: "Bharat Ka Creator Kahin Bhi Jayega. 🇮🇳",
+    bottomSubtitle: "Bhilwara se Bangalore tak — har creator ki pehchan honi chahiye. Join karo aur apni legacy banao.",
+    bottomCtaPrimary: "Join Free Now",
+    bottomCtaSecondary: "View Pro Plans"
+  });
+  const [brandLandingConfig, setBrandLandingConfig] = useState({
+    heroBadge: "Brand Command Center",
+    heroTitle: "Scale with Bharat's Best.",
+    heroSubtitle: "Scout verified regional creators, launch campaigns with escrow protection, and track ROI in real-time. Zero commission. Zero middlemen.",
+    ctaPrimary: "Start Scouting Free",
+    ctaSecondary: "Browse Creators",
+    bottomTitle: "Ready to Scale? Join 500+ Brands.",
+    bottomSubtitle: "Start free. No credit card required. Access Bharat's most verified creator network today.",
+    bottomCtaPrimary: "Register Your Brand",
+    bottomCtaSecondary: "Browse Creators"
+  });
+  const [faqJson, setFaqJson] = useState(JSON.stringify([
+    { q: 'How does CreatorBharat escrow work?', a: 'Brands deposit campaign budgets into secure escrows. Funds are released instantly to creators after verified milestone deliverables are submitted.' },
+    { q: 'Is there a signup fee for creators?', a: 'Signing up as a basic creator is completely free. Basic creators can receive brand deals. Creator Pro unlocking instant payouts requires a tiny monthly fee of ₹49.' },
+    { q: 'Can I link multiple Instagram accounts?', a: 'Currently, each creator account can link one verified primary Instagram handle and one YouTube channel to calculate dynamic engagement rates.' }
+  ], null, 2));
+  const [faqError, setFaqError] = useState('');
+
+
   // ── Search States
   const [creatorSearch, setCreatorSearch] = useState('');
   const [brandSearch, setBrandSearch] = useState('');
@@ -499,13 +552,34 @@ export default function App() {
   const [blogFeatured, setBlogFeatured] = useState(false);
   const [blogPublished, setBlogPublished] = useState(false);
 
-  // ── Settings
+  // ── Settings (Full Platform Config)
   const [platformFee, setPlatformFee] = useState(10);
   const [maintenanceMode, setMaintenanceMode] = useState(false);
-  const [supportEmail, setSupportEmail] = useState('hello@creatorbharat.com');
+  const [supportEmail, setSupportEmail] = useState('support@creatorbharat.com');
+  const [siteName, setSiteName] = useState('CreatorBharat');
+  const [frontendUrl, setFrontendUrl] = useState('http://localhost:5173');
   const [featAchievements, setFeatAchievements] = useState(true);
-  const [featCommunity, setFeatCommunity] = useState(true);
   const [featWallet, setFeatWallet] = useState(true);
+  const [enableEmail, setEnableEmail] = useState(true);
+  const [enableSMS, setEnableSMS] = useState(true);
+  // Pricing
+  const [proMembershipPrice, setProMembershipPrice] = useState(4900);
+  const [campaignBoostPrice, setCampaignBoostPrice] = useState(9900);
+  const [featuredSlotPrice, setFeaturedSlotPrice] = useState(19900);
+  // Razorpay
+  const [razorpayKeyId, setRazorpayKeyId] = useState('');
+  const [razorpaySecret, setRazorpaySecret] = useState('');
+  const [razorpayMode, setRazorpayMode] = useState('test');
+  // Email
+  const [resendApiKey, setResendApiKey] = useState('');
+  const [emailFrom, setEmailFrom] = useState('onboarding@resend.dev');
+  // SMS
+  const [smsProvider, setSmsProvider] = useState('fast2sms');
+  const [fast2smsKey, setFast2smsKey] = useState('');
+  const [twilioSid, setTwilioSid] = useState('');
+  const [twilioToken, setTwilioToken] = useState('');
+  const [twilioPhone, setTwilioPhone] = useState('');
+  const [settingsTab, setSettingsTab] = useState('general');
 
   // ── Creator Profile Editor
   const [editCreatorModalOpen, setEditCreatorModalOpen] = useState(false);
@@ -809,13 +883,14 @@ export default function App() {
         fetch(`${API_BASE}/admin/gallery`, { headers: H() }),
         fetch(`${API_BASE}/uploads`, { headers: H() }),
         fetch(`${API_BASE}/admin/settings`, { headers: H() }),
+        fetch(`${API_BASE}/admin/system/pages`, { headers: H() }),
       ];
 
       const results = await Promise.allSettled(fetches);
       const safeJson = async (r) => { try { const d = await r.json(); return d; } catch { return null; } };
 
       const [rVer, rCre, rBr, rCam, rPay, rSt, rBlog, rNews, rCont, rPod, rRev, rComm,
-        rApps, rLead, rBrandAna, rAct, rDeepSt, rGal, rUp, rSettings] = await Promise.all(results.map(r => r.status === 'fulfilled' ? safeJson(r.value) : null));
+        rApps, rLead, rBrandAna, rAct, rDeepSt, rGal, rUp, rSettings, rPages] = await Promise.all(results.map(r => r.status === 'fulfilled' ? safeJson(r.value) : null));
 
       if (rVer) setVerifications(Array.isArray(rVer) ? rVer : []);
       if (rCre) setCreators(rCre.creators || (Array.isArray(rCre) ? rCre : []));
@@ -836,12 +911,40 @@ export default function App() {
       if (rDeepSt) setDeepStats(rDeepSt);
       if (rGal) setGallery(Array.isArray(rGal) ? rGal : []);
       if (rUp) setUploads(Array.isArray(rUp) ? rUp : []);
+      if (rPages && Array.isArray(rPages)) {
+        rPages.forEach(p => {
+          if (p.pageName === 'home') setHomeConfig(p.content);
+          else if (p.pageName === 'pricing') setPricingConfig(p.content);
+          else if (p.pageName === 'calculator') setCalculatorConfig(p.content);
+          else if (p.pageName === 'faqs' || p.pageName === 'faq') setFaqJson(JSON.stringify(p.content, null, 2));
+          else if (p.pageName === 'creator-landing') setCreatorLandingConfig(p.content);
+          else if (p.pageName === 'brand-landing') setBrandLandingConfig(p.content);
+        });
+      }
+
       if (rSettings) {
-        setPlatformFee(rSettings.platformFee);
-        setSupportEmail(rSettings.supportEmail);
-        setFeatAchievements(rSettings.enableAIAssistant);
-        setFeatWallet(rSettings.enableEscrowSystem);
-        setMaintenanceMode(rSettings.maintenanceMode);
+        setPlatformFee(rSettings.platformFee || 10);
+        setSupportEmail(rSettings.supportEmail || 'support@creatorbharat.com');
+        setSiteName(rSettings.siteName || 'CreatorBharat');
+        setFrontendUrl(rSettings.frontendUrl || 'http://localhost:5173');
+        setFeatAchievements(rSettings.enableAIAssistant ?? true);
+        setFeatWallet(rSettings.enableEscrowSystem ?? true);
+        setMaintenanceMode(rSettings.maintenanceMode ?? false);
+        setEnableEmail(rSettings.enableEmail ?? true);
+        setEnableSMS(rSettings.enableSMS ?? true);
+        setProMembershipPrice(rSettings.proMembershipPrice || 4900);
+        setCampaignBoostPrice(rSettings.campaignBoostPrice || 9900);
+        setFeaturedSlotPrice(rSettings.featuredSlotPrice || 19900);
+        setRazorpayKeyId(rSettings.razorpayKeyId || '');
+        setRazorpaySecret(rSettings.razorpaySecret || '');
+        setRazorpayMode(rSettings.razorpayMode || 'test');
+        setResendApiKey(rSettings.resendApiKey || '');
+        setEmailFrom(rSettings.emailFrom || 'onboarding@resend.dev');
+        setSmsProvider(rSettings.smsProvider || 'fast2sms');
+        setFast2smsKey(rSettings.fast2smsKey || '');
+        setTwilioSid(rSettings.twilioSid || '');
+        setTwilioToken(rSettings.twilioToken || '');
+        setTwilioPhone(rSettings.twilioPhone || '');
       }
 
     } catch (err) {
@@ -851,6 +954,53 @@ export default function App() {
   };
 
   useEffect(() => { if (token) fetchData(); }, [token]);
+
+  const handleSavePageConfig = async () => {
+    let content = {};
+    if (selectedPageName === 'home') {
+      content = homeConfig;
+    } else if (selectedPageName === 'pricing') {
+      content = pricingConfig;
+    } else if (selectedPageName === 'calculator') {
+      content = calculatorConfig;
+    } else if (selectedPageName === 'creator-landing') {
+      content = creatorLandingConfig;
+    } else if (selectedPageName === 'brand-landing') {
+      content = brandLandingConfig;
+    } else if (selectedPageName === 'faqs') {
+      try {
+        content = JSON.parse(faqJson);
+        setFaqError('');
+      } catch (err) {
+        setFaqError('Invalid JSON format. Please verify syntax.');
+        toast('Failed to save: Invalid FAQ JSON.', 'error');
+        return;
+      }
+    }
+
+    const targetPageName = selectedPageName === 'faqs' ? 'faq' : selectedPageName;
+
+    try {
+      const res = await fetch(`${API_BASE}/admin/system/pages/${targetPageName}`, {
+        method: 'PUT',
+        headers: {
+          ...H(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ content })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast(`${selectedPageName.toUpperCase()} page configuration saved!`, 'success');
+      } else {
+        toast(`Failed to save: ${data.error || res.statusText}`, 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      toast('Network error while saving page configuration.', 'error');
+    }
+  };
+
 
   // ─── API Actions ────────────────────────────────────────────────────────────
   const handleApproveVerification = async (creatorId) => {
@@ -926,16 +1076,24 @@ export default function App() {
         method: 'POST',
         headers: H(),
         body: JSON.stringify({
+          siteName, supportEmail, frontendUrl,
           platformFee: Number(platformFee),
-          supportEmail,
+          proMembershipPrice: Number(proMembershipPrice),
+          campaignBoostPrice: Number(campaignBoostPrice),
+          featuredSlotPrice: Number(featuredSlotPrice),
           enableAIAssistant: featAchievements,
           enableEscrowSystem: featWallet,
-          maintenanceMode
+          maintenanceMode,
+          enableEmail,
+          enableSMS,
+          razorpayKeyId, razorpaySecret, razorpayMode,
+          resendApiKey, emailFrom,
+          smsProvider, fast2smsKey, twilioSid, twilioToken, twilioPhone
         })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to save settings');
-      toast('Platform settings saved successfully!', 'success');
+      toast('✅ Platform settings saved! Changes are live immediately.', 'success');
       fetchData();
     } catch (err) {
       toast(err.message, 'error');
@@ -2893,42 +3051,669 @@ export default function App() {
             </div>
           )}
 
+          {/* ══ DYNAMIC PAGES CONFIG MANAGER ════════════════════════════ */}
+          {activeTab === 'pages' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
+                <SectionHeader title="Dynamic Page Content Manager" sub="Manage live configurations for website and platform pages" />
+                
+                <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '220px 1fr', gap: 28, marginTop: 12 }}>
+                  {/* Left sub-sidebar navigation */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 20, borderRight: mob ? 'none' : `1px solid ${T.border}`, borderBottom: mob ? `1px solid ${T.border}` : 'none', paddingRight: mob ? 0 : 20, paddingBottom: mob ? 20 : 0 }}>
+                    <div>
+                      <h4 style={{ fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>🌐 Public Website</h4>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        {[
+                          { id: 'home', name: 'Home Hero' },
+                          { id: 'pricing', name: 'Pricing & Plans' },
+                          { id: 'faqs', name: 'FAQs List' },
+                          { id: 'calculator', name: 'Rate Calculator' }
+                        ].map(p => (
+                          <button
+                            key={p.id}
+                            onClick={() => setSelectedPageName(p.id)}
+                            style={{
+                              padding: '8px 12px',
+                              borderRadius: 8,
+                              border: 'none',
+                              textAlign: 'left',
+                              background: selectedPageName === p.id ? T.orangeLight : 'transparent',
+                              color: selectedPageName === p.id ? T.orange : T.navy,
+                              fontWeight: selectedPageName === p.id ? 800 : 600,
+                              cursor: 'pointer',
+                              fontSize: 13,
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            {p.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 style={{ fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>🙋 For Creators</h4>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        {[
+                          { id: 'creator-landing', name: 'Creator Hub' }
+                        ].map(p => (
+                          <button
+                            key={p.id}
+                            onClick={() => setSelectedPageName(p.id)}
+                            style={{
+                              padding: '8px 12px',
+                              borderRadius: 8,
+                              border: 'none',
+                              textAlign: 'left',
+                              background: selectedPageName === p.id ? T.orangeLight : 'transparent',
+                              color: selectedPageName === p.id ? T.orange : T.navy,
+                              fontWeight: selectedPageName === p.id ? 800 : 600,
+                              cursor: 'pointer',
+                              fontSize: 13,
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            {p.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 style={{ fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>🏢 For Brands</h4>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        {[
+                          { id: 'brand-landing', name: 'Brand Hub' }
+                        ].map(p => (
+                          <button
+                            key={p.id}
+                            onClick={() => setSelectedPageName(p.id)}
+                            style={{
+                              padding: '8px 12px',
+                              borderRadius: 8,
+                              border: 'none',
+                              textAlign: 'left',
+                              background: selectedPageName === p.id ? T.orangeLight : 'transparent',
+                              color: selectedPageName === p.id ? T.orange : T.navy,
+                              fontWeight: selectedPageName === p.id ? 800 : 600,
+                              cursor: 'pointer',
+                              fontSize: 13,
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            {p.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right side form editor */}
+                  <div style={{ background: T.bg, padding: 24, borderRadius: 16, border: `1px solid ${T.border}` }}>
+                    <h3 style={{ fontSize: 14, fontWeight: 850, color: T.navy, marginBottom: 20, borderBottom: `1px solid ${T.border}`, paddingBottom: 12, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      Configure: {selectedPageName.replace('-', ' ')}
+                    </h3>
+
+                    {/* Editor form for selected page config */}
+                    {selectedPageName === 'home' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Hero Title</label>
+                          <input
+                            type="text"
+                            value={homeConfig.heroTitle || ''}
+                            onChange={e => setHomeConfig({ ...homeConfig, heroTitle: e.target.value })}
+                            style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Hero Subtitle</label>
+                          <textarea
+                            value={homeConfig.heroSubtitle || ''}
+                            onChange={e => setHomeConfig({ ...homeConfig, heroSubtitle: e.target.value })}
+                            style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none', minHeight: 80 }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>CTA Button Text</label>
+                          <input
+                            type="text"
+                            value={homeConfig.ctaText || ''}
+                            onChange={e => setHomeConfig({ ...homeConfig, ctaText: e.target.value })}
+                            style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Alert Announcement Bar</label>
+                          <input
+                            type="text"
+                            value={homeConfig.announcement || ''}
+                            onChange={e => setHomeConfig({ ...homeConfig, announcement: e.target.value })}
+                            style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedPageName === 'pricing' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                          <div>
+                            <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Creator Starter Plan Fee (₹)</label>
+                            <input
+                              type="number"
+                              value={pricingConfig.starterPrice || 0}
+                              onChange={e => setPricingConfig({ ...pricingConfig, starterPrice: parseInt(e.target.value) || 0 })}
+                              style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                            />
+                          </div>
+                          <div>
+                            <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Creator Pro Plan Fee (₹/month)</label>
+                            <input
+                              type="number"
+                              value={pricingConfig.proPrice || 0}
+                              onChange={e => setPricingConfig({ ...pricingConfig, proPrice: parseInt(e.target.value) || 0 })}
+                              style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Creator Pro Features List (comma separated)</label>
+                          <textarea
+                            value={pricingConfig.proFeatures || ''}
+                            onChange={e => setPricingConfig({ ...pricingConfig, proFeatures: e.target.value })}
+                            style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none', minHeight: 60 }}
+                            placeholder="Feature 1, Feature 2, Feature 3"
+                          />
+                        </div>
+                        <hr style={{ border: 'none', borderTop: `1px solid ${T.border}`, margin: '8px 0' }} />
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                          <div>
+                            <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Brand Launchpad Fee (₹)</label>
+                            <input
+                              type="number"
+                              value={pricingConfig.brandStarterPrice || 0}
+                              onChange={e => setPricingConfig({ ...pricingConfig, brandStarterPrice: parseInt(e.target.value) || 0 })}
+                              style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                            />
+                          </div>
+                          <div>
+                            <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Brand Enterprise Fee (₹/month)</label>
+                            <input
+                              type="number"
+                              value={pricingConfig.brandProPrice || 0}
+                              onChange={e => setPricingConfig({ ...pricingConfig, brandProPrice: parseInt(e.target.value) || 0 })}
+                              style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Brand Enterprise Features List (comma separated)</label>
+                          <textarea
+                            value={pricingConfig.brandProFeatures || ''}
+                            onChange={e => setPricingConfig({ ...pricingConfig, brandProFeatures: e.target.value })}
+                            style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none', minHeight: 60 }}
+                            placeholder="Feature 1, Feature 2, Feature 3"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedPageName === 'calculator' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Base Rate Coefficient (multiplier for follower count)</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={calculatorConfig.rateMultiplier || 0.15}
+                            onChange={e => setCalculatorConfig({ ...calculatorConfig, rateMultiplier: parseFloat(e.target.value) || 0 })}
+                            style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Instagram Niche Premium Multiplier (e.g. Beauty/Tech = 1.25)</label>
+                          <input
+                            type="number"
+                            step="0.05"
+                            value={calculatorConfig.nicheMultiplier || 1.2}
+                            onChange={e => setCalculatorConfig({ ...calculatorConfig, nicheMultiplier: parseFloat(e.target.value) || 0 })}
+                            style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Min Platform Commission Fee (INR)</label>
+                          <input
+                            type="number"
+                            value={calculatorConfig.minFee || 500}
+                            onChange={e => setCalculatorConfig({ ...calculatorConfig, minFee: parseInt(e.target.value) || 0 })}
+                            style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedPageName === 'creator-landing' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div>
+                          <h5 style={{ fontSize: 12, fontWeight: 800, color: T.orange, marginBottom: 12, textTransform: 'uppercase' }}>Hero Section</h5>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Badge Text</label>
+                              <input
+                                type="text"
+                                value={creatorLandingConfig.heroBadge || ''}
+                                onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, heroBadge: e.target.value })}
+                                style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                              />
+                            </div>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Hero Title Highlight</label>
+                              <input
+                                type="text"
+                                value={creatorLandingConfig.heroTitle || ''}
+                                onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, heroTitle: e.target.value })}
+                                style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                              />
+                            </div>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Hero Subtitle</label>
+                              <textarea
+                                value={creatorLandingConfig.heroSubtitle || ''}
+                                onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, heroSubtitle: e.target.value })}
+                                style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none', minHeight: 60 }}
+                              />
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                              <div>
+                                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>CTA Primary Button</label>
+                                <input
+                                  type="text"
+                                  value={creatorLandingConfig.ctaPrimary || ''}
+                                  onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, ctaPrimary: e.target.value })}
+                                  style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                                />
+                              </div>
+                              <div>
+                                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>CTA Secondary Button</label>
+                                <input
+                                  type="text"
+                                  value={creatorLandingConfig.ctaSecondary || ''}
+                                  onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, ctaSecondary: e.target.value })}
+                                  style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <hr style={{ border: 'none', borderTop: `1px solid ${T.border}`, margin: '8px 0' }} />
+
+                        <div>
+                          <h5 style={{ fontSize: 12, fontWeight: 800, color: T.orange, marginBottom: 12, textTransform: 'uppercase' }}>Bottom Final CTA Section</h5>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Bottom Title</label>
+                              <input
+                                type="text"
+                                value={creatorLandingConfig.bottomTitle || ''}
+                                onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, bottomTitle: e.target.value })}
+                                style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                              />
+                            </div>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Bottom Subtitle</label>
+                              <textarea
+                                value={creatorLandingConfig.bottomSubtitle || ''}
+                                onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, bottomSubtitle: e.target.value })}
+                                style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none', minHeight: 60 }}
+                              />
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                              <div>
+                                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Bottom CTA Primary</label>
+                                <input
+                                  type="text"
+                                  value={creatorLandingConfig.bottomCtaPrimary || ''}
+                                  onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, bottomCtaPrimary: e.target.value })}
+                                  style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                                />
+                              </div>
+                              <div>
+                                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Bottom CTA Secondary</label>
+                                <input
+                                  type="text"
+                                  value={creatorLandingConfig.bottomCtaSecondary || ''}
+                                  onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, bottomCtaSecondary: e.target.value })}
+                                  style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedPageName === 'brand-landing' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div>
+                          <h5 style={{ fontSize: 12, fontWeight: 800, color: '#10B981', marginBottom: 12, textTransform: 'uppercase' }}>Hero Section</h5>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Badge Text</label>
+                              <input
+                                type="text"
+                                value={brandLandingConfig.heroBadge || ''}
+                                onChange={e => setBrandLandingConfig({ ...brandLandingConfig, heroBadge: e.target.value })}
+                                style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                              />
+                            </div>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Hero Title Highlight</label>
+                              <input
+                                type="text"
+                                value={brandLandingConfig.heroTitle || ''}
+                                onChange={e => setBrandLandingConfig({ ...brandLandingConfig, heroTitle: e.target.value })}
+                                style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                              />
+                            </div>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Hero Subtitle</label>
+                              <textarea
+                                value={brandLandingConfig.heroSubtitle || ''}
+                                onChange={e => setBrandLandingConfig({ ...brandLandingConfig, heroSubtitle: e.target.value })}
+                                style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none', minHeight: 60 }}
+                              />
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                              <div>
+                                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>CTA Primary Button</label>
+                                <input
+                                  type="text"
+                                  value={brandLandingConfig.ctaPrimary || ''}
+                                  onChange={e => setBrandLandingConfig({ ...brandLandingConfig, ctaPrimary: e.target.value })}
+                                  style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                                />
+                              </div>
+                              <div>
+                                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>CTA Secondary Button</label>
+                                <input
+                                  type="text"
+                                  value={brandLandingConfig.ctaSecondary || ''}
+                                  onChange={e => setBrandLandingConfig({ ...brandLandingConfig, ctaSecondary: e.target.value })}
+                                  style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <hr style={{ border: 'none', borderTop: `1px solid ${T.border}`, margin: '8px 0' }} />
+
+                        <div>
+                          <h5 style={{ fontSize: 12, fontWeight: 800, color: '#10B981', marginBottom: 12, textTransform: 'uppercase' }}>Bottom Final CTA Section</h5>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Bottom Title</label>
+                              <input
+                                type="text"
+                                value={brandLandingConfig.bottomTitle || ''}
+                                onChange={e => setBrandLandingConfig({ ...brandLandingConfig, bottomTitle: e.target.value })}
+                                style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                              />
+                            </div>
+                            <div>
+                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Bottom Subtitle</label>
+                              <textarea
+                                value={brandLandingConfig.bottomSubtitle || ''}
+                                onChange={e => setBrandLandingConfig({ ...brandLandingConfig, bottomSubtitle: e.target.value })}
+                                style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none', minHeight: 60 }}
+                              />
+                            </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                              <div>
+                                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Bottom CTA Primary</label>
+                                <input
+                                  type="text"
+                                  value={brandLandingConfig.bottomCtaPrimary || ''}
+                                  onChange={e => setBrandLandingConfig({ ...brandLandingConfig, bottomCtaPrimary: e.target.value })}
+                                  style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                                />
+                              </div>
+                              <div>
+                                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Bottom CTA Secondary</label>
+                                <input
+                                  type="text"
+                                  value={brandLandingConfig.bottomCtaSecondary || ''}
+                                  onChange={e => setBrandLandingConfig({ ...brandLandingConfig, bottomCtaSecondary: e.target.value })}
+                                  style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedPageName === 'faqs' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>FAQ JSON Configuration (Array of {`{ q, a }`})</label>
+                          <textarea
+                            value={faqJson}
+                            onChange={e => setFaqJson(e.target.value)}
+                            style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 12, fontFamily: 'monospace', color: T.navy, background: T.card, outline: 'none', minHeight: 250 }}
+                          />
+                          {faqError && <p style={{ color: T.red, fontSize: 12, margin: '4px 0 0' }}>{faqError}</p>}
+                        </div>
+                      </div>
+                    )}
+
+                    <button
+                      onClick={handleSavePageConfig}
+                      style={{
+                        marginTop: 24,
+                        padding: '12px 28px',
+                        background: T.orange,
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: 12,
+                        fontWeight: 800,
+                        fontSize: 14,
+                        cursor: 'pointer',
+                        boxShadow: `0 4px 14px ${T.orange}30`
+                      }}
+                    >
+                      Save Page Content
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* ══ SETTINGS ═══════════════════════════════════════════════════ */}
           {activeTab === 'settings' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-                <SectionHeader title="Platform Settings" sub="Configure global platform behavior" />
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-                  {[
-                    { label: 'Platform Commission Fee (%)', value: platformFee, setter: setPlatformFee, type: 'number' },
-                    { label: 'Support Email', value: supportEmail, setter: setSupportEmail, type: 'email' },
-                  ].map((field, i) => (
-                    <div key={i}>
-                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 }}>{field.label}</label>
-                      <input type={field.type} value={field.value} onChange={e => field.setter(e.target.value)} style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box' }} />
-                    </div>
-                  ))}
-                </div>
-                <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
-                  <h4 style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 800, color: T.navy }}>Feature Flags</h4>
-                  {[
-                    { label: 'Creator Achievements System', value: featAchievements, setter: setFeatAchievements },
-                    { label: 'Community Forum', value: featCommunity, setter: setFeatCommunity },
-                    { label: 'Creator Wallet & Payouts', value: featWallet, setter: setFeatWallet },
-                    { label: 'Maintenance Mode', value: maintenanceMode, setter: setMaintenanceMode },
-                  ].map((flag, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 18px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 12 }}>
-                      <span style={{ fontSize: 14, fontWeight: 700, color: T.navy }}>{flag.label}</span>
-                      <div onClick={() => flag.setter(!flag.value)} style={{ width: 48, height: 26, borderRadius: 13, background: flag.value ? T.green : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.2s' }}>
-                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#fff', position: 'absolute', top: 3, left: flag.value ? 25 : 3, transition: 'left 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <button onClick={handleSaveSettings} style={{ marginTop: 20, padding: '12px 28px', background: T.orange, color: '#fff', border: 'none', borderRadius: 12, fontWeight: 800, fontSize: 14, cursor: 'pointer', boxShadow: `0 4px 14px ${T.orange}30` }}>
-                  Save Settings
-                </button>
+              <SectionHeader title="System Settings" sub="Manage API keys, pricing, and feature toggles — changes are live instantly without redeployment" />
+
+              {/* Settings Tabs */}
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {[
+                  { id: 'general', label: '⚙️ General' },
+                  { id: 'pricing', label: '💰 Pricing' },
+                  { id: 'razorpay', label: '💳 Razorpay' },
+                  { id: 'email', label: '📧 Email' },
+                  { id: 'sms', label: '📱 SMS' },
+                  { id: 'toggles', label: '🔀 Feature Toggles' },
+                ].map(tab => (
+                  <button key={tab.id} onClick={() => setSettingsTab(tab.id)} style={{
+                    padding: '8px 18px', borderRadius: 10, border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: 13,
+                    background: settingsTab === tab.id ? T.orange : T.bg,
+                    color: settingsTab === tab.id ? '#fff' : T.slate,
+                    boxShadow: settingsTab === tab.id ? `0 4px 12px ${T.orange}30` : 'none',
+                    transition: 'all 0.2s'
+                  }}>{tab.label}</button>
+                ))}
               </div>
+
+              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
+
+                {/* General Tab */}
+                {settingsTab === 'general' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                    <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: T.navy }}>⚙️ General Configuration</h4>
+                    {[
+                      { label: 'Site Name', value: siteName, setter: setSiteName, type: 'text', ph: 'CreatorBharat' },
+                      { label: 'Support Email', value: supportEmail, setter: setSupportEmail, type: 'email', ph: 'support@creatorbharat.com' },
+                      { label: 'Frontend URL', value: frontendUrl, setter: setFrontendUrl, type: 'url', ph: 'https://creatorbharat.com' },
+                      { label: 'Platform Commission Fee (%)', value: platformFee, setter: setPlatformFee, type: 'number', ph: '10' },
+                    ].map((f, i) => (
+                      <div key={i}>
+                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>{f.label}</label>
+                        <input type={f.type} value={f.value} placeholder={f.ph} onChange={e => f.setter(e.target.value)}
+                          style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box' }} />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Pricing Tab */}
+                {settingsTab === 'pricing' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                    <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: T.navy }}>💰 Subscription Pricing (in ₹)</h4>
+                    <p style={{ margin: 0, fontSize: 13, color: T.muted }}>Change prices here — frontend and payment gateway will use updated values automatically.</p>
+                    {[
+                      { label: 'Creator Pro Membership (₹)', value: proMembershipPrice, setter: setProMembershipPrice },
+                      { label: 'Campaign Boost (₹)', value: campaignBoostPrice, setter: setCampaignBoostPrice },
+                      { label: 'Featured Creator Slot (₹)', value: featuredSlotPrice, setter: setFeaturedSlotPrice },
+                    ].map((f, i) => (
+                      <div key={i}>
+                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>{f.label}</label>
+                        <input type="number" value={f.value} onChange={e => f.setter(e.target.value)}
+                          style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box' }} />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Razorpay Tab */}
+                {settingsTab === 'razorpay' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                    <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: T.navy }}>💳 Razorpay Payment Gateway</h4>
+                    <div style={{ padding: 14, background: '#fef3c7', border: '1px solid #fcd34d', borderRadius: 10, fontSize: 13, color: '#92400e', fontWeight: 600 }}>
+                      ⚠️ These keys are stored securely in the database. Use Test keys for development, Live keys for production.
+                    </div>
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      {['test', 'live'].map(mode => (
+                        <button key={mode} onClick={() => setRazorpayMode(mode)} style={{
+                          flex: 1, padding: '10px 0', borderRadius: 10, border: `2px solid ${razorpayMode === mode ? T.orange : T.border}`,
+                          background: razorpayMode === mode ? T.orangeLight : T.bg,
+                          color: razorpayMode === mode ? T.orange : T.slate,
+                          fontWeight: 800, fontSize: 13, cursor: 'pointer', textTransform: 'uppercase'
+                        }}>{mode} Mode</button>
+                      ))}
+                    </div>
+                    {[
+                      { label: 'Key ID (rzp_test_... or rzp_live_...)', value: razorpayKeyId, setter: setRazorpayKeyId, ph: 'rzp_test_xxxxxxxxxxxx' },
+                      { label: 'Key Secret', value: razorpaySecret, setter: setRazorpaySecret, ph: '••••••••••••••••••••', type: 'password' },
+                    ].map((f, i) => (
+                      <div key={i}>
+                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>{f.label}</label>
+                        <input type={f.type || 'text'} value={f.value} placeholder={f.ph} onChange={e => f.setter(e.target.value)}
+                          style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box', fontFamily: 'monospace' }} />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Email Tab */}
+                {settingsTab === 'email' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                    <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: T.navy }}>📧 Email Service (Resend)</h4>
+                    <p style={{ margin: 0, fontSize: 13, color: T.muted }}>Get your API key from <a href="https://resend.com" target="_blank" rel="noreferrer" style={{ color: T.blue }}>resend.com</a>. Email sending can be toggled below.</p>
+                    {[
+                      { label: 'Resend API Key', value: resendApiKey, setter: setResendApiKey, ph: 're_xxxxxxxxxxxxxxxxxxxx', type: 'password' },
+                      { label: 'From Email Address', value: emailFrom, setter: setEmailFrom, ph: 'hello@yourdomain.com', type: 'email' },
+                    ].map((f, i) => (
+                      <div key={i}>
+                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>{f.label}</label>
+                        <input type={f.type || 'text'} value={f.value} placeholder={f.ph} onChange={e => f.setter(e.target.value)}
+                          style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box', fontFamily: 'monospace' }} />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* SMS Tab */}
+                {settingsTab === 'sms' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                    <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: T.navy }}>📱 SMS Provider</h4>
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      {['fast2sms', 'twilio'].map(p => (
+                        <button key={p} onClick={() => setSmsProvider(p)} style={{
+                          flex: 1, padding: '10px 0', borderRadius: 10, border: `2px solid ${smsProvider === p ? T.blue : T.border}`,
+                          background: smsProvider === p ? T.blueLight : T.bg,
+                          color: smsProvider === p ? T.blue : T.slate,
+                          fontWeight: 800, fontSize: 13, cursor: 'pointer', textTransform: 'uppercase'
+                        }}>{p === 'fast2sms' ? 'Fast2SMS (India)' : 'Twilio (Global)'}</button>
+                      ))}
+                    </div>
+                    {smsProvider === 'fast2sms' && (
+                      <div>
+                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Fast2SMS API Key</label>
+                        <input type="password" value={fast2smsKey} placeholder="Fast2SMS Authorization Key" onChange={e => setFast2smsKey(e.target.value)}
+                          style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box', fontFamily: 'monospace' }} />
+                      </div>
+                    )}
+                    {smsProvider === 'twilio' && (
+                      <>
+                        {[
+                          { label: 'Twilio Account SID', value: twilioSid, setter: setTwilioSid, ph: 'ACxxxxxxxxxxxxxxxx' },
+                          { label: 'Twilio Auth Token', value: twilioToken, setter: setTwilioToken, ph: '••••••••••••••••••••', type: 'password' },
+                          { label: 'Twilio Phone Number', value: twilioPhone, setter: setTwilioPhone, ph: '+1XXXXXXXXXX' },
+                        ].map((f, i) => (
+                          <div key={i}>
+                            <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>{f.label}</label>
+                            <input type={f.type || 'text'} value={f.value} placeholder={f.ph} onChange={e => f.setter(e.target.value)}
+                              style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box', fontFamily: 'monospace' }} />
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {/* Feature Toggles Tab */}
+                {settingsTab === 'toggles' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: T.navy }}>🔀 Feature Toggles</h4>
+                    <p style={{ margin: 0, fontSize: 13, color: T.muted }}>Enable or disable platform features instantly — no code deployment required.</p>
+                    {[
+                      { label: 'AI Assistant (Pitch Generator)', sub: 'Gemini-powered pitch writer for creators', value: featAchievements, setter: setFeatAchievements, color: T.purple },
+                      { label: 'Creator Wallet & Escrow System', sub: 'Razorpay-backed payment escrow for campaigns', value: featWallet, setter: setFeatWallet, color: T.green },
+                      { label: 'Email Notifications', sub: 'Send transactional emails via Resend', value: enableEmail, setter: setEnableEmail, color: T.blue },
+                      { label: 'SMS / OTP Service', sub: 'Phone number verification via Fast2SMS or Twilio', value: enableSMS, setter: setEnableSMS, color: T.teal },
+                      { label: '🚨 Maintenance Mode', sub: 'Shows maintenance page to all users — keep this OFF in production', value: maintenanceMode, setter: setMaintenanceMode, color: T.red },
+                    ].map((flag, i) => (
+                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', background: flag.value ? flag.color + '08' : T.bg, border: `1px solid ${flag.value ? flag.color + '30' : T.border}`, borderRadius: 14, transition: 'all 0.2s' }}>
+                        <div>
+                          <div style={{ fontSize: 14, fontWeight: 800, color: T.navy }}>{flag.label}</div>
+                          <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{flag.sub}</div>
+                        </div>
+                        <div onClick={() => flag.setter(!flag.value)} style={{ width: 52, height: 28, borderRadius: 14, background: flag.value ? flag.color : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', flexShrink: 0 }}>
+                          <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#fff', position: 'absolute', top: 3, left: flag.value ? 27 : 3, transition: 'left 0.25s', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+              </div>
+
+              <button onClick={handleSaveSettings} style={{ padding: '14px 32px', background: T.orange, color: '#fff', border: 'none', borderRadius: 12, fontWeight: 800, fontSize: 14, cursor: 'pointer', boxShadow: `0 4px 14px ${T.orange}30`, alignSelf: 'flex-start' }}>
+                💾 Save All Settings
+              </button>
             </div>
           )}
 

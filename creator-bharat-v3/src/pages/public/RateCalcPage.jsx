@@ -15,6 +15,7 @@ import {
 import { Btn, Bdg } from '@/components/common/Primitives';
 import { fmt } from '../../utils/helpers';
 import Seo from '@/components/common/SEO';
+import { apiCall } from '@/utils/api';
 
 const RollingNumber = ({ value }) => {
   const [display, setDisplay] = useState(value);
@@ -524,12 +525,25 @@ export default function RateCalcPage() {
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [F, setF] = useState({ platform: 'Instagram', followers: 25000, niche: 'Lifestyle', er: 4.2 });
   const [result, setResult] = useState(null);
+  const [calcConfig, setCalcConfig] = useState(null);
   const [calcCount, setCalcCount] = useState(() => {
     return Number(localStorage.getItem('cb_ratecalc_count') || 0);
   });
 
   const isLocked = !isAuth && calcCount >= 2;
   const isFirstMount = React.useRef(true);
+
+  useEffect(() => {
+    let active = true;
+    apiCall('/pages/calculator')
+      .then(res => {
+        if (active && res && res.content) {
+          setCalcConfig(res.content);
+        }
+      })
+      .catch(err => console.error('Failed to load calculator config:', err));
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     const h = () => setMob(globalThis.innerWidth < 768);
@@ -549,8 +563,15 @@ export default function RateCalcPage() {
     else if (er >= 6) ebonus = 1.3;
     else if (er < 2) ebonus = 0.7;
 
-    const base = f * 0.018; 
-    const post = Math.round(base * pmult * nmult * ebonus / 100) * 100;
+    const rateCoeff = calcConfig && calcConfig.rateMultiplier !== undefined ? Number(calcConfig.rateMultiplier) : 0.018;
+    const nichePremiumScale = calcConfig && calcConfig.nicheMultiplier !== undefined ? Number(calcConfig.nicheMultiplier) : 1.0;
+    const minFeeVal = calcConfig && calcConfig.minFee !== undefined ? Number(calcConfig.minFee) : 500;
+
+    const base = f * rateCoeff;
+    let post = Math.round(base * pmult * nmult * nichePremiumScale * ebonus / 100) * 100;
+    if (post < minFeeVal) {
+      post = minFeeVal;
+    }
     
     setResult({
       post,
@@ -574,7 +595,7 @@ export default function RateCalcPage() {
       localStorage.setItem('cb_ratecalc_count', next);
       return next;
     });
-  }, [F, isAuth]);
+  }, [F, isAuth, calcConfig]);
 
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh' }}>

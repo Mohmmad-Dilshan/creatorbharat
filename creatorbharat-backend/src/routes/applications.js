@@ -173,6 +173,49 @@ router.put('/:id', async (req, res) => {
       data: { status }
     });
 
+    if (status === 'ACCEPTED') {
+      try {
+        const existingGig = await prisma.campaignGig.findFirst({
+          where: {
+            campaignId: application.campaignId,
+            creatorId: application.creatorId
+          }
+        });
+
+        if (!existingGig) {
+          const totalBudget = application.campaign.budget || 5000;
+          const milestone1Amount = Math.round(totalBudget * 0.4);
+          const milestone2Amount = totalBudget - milestone1Amount;
+
+          await prisma.campaignGig.create({
+            data: {
+              campaignId: application.campaignId,
+              creatorId: application.creatorId,
+              status: 'ACTIVE',
+              milestones: {
+                create: [
+                  {
+                    title: 'Content Draft Submission',
+                    description: 'Create and submit the draft of the video or post for brand review and feedback.',
+                    status: 'PENDING',
+                    amount: milestone1Amount
+                  },
+                  {
+                    title: 'Go-Live and Release',
+                    description: 'Publish the approved content live on specified social media channels and submit the live link.',
+                    status: 'PENDING',
+                    amount: milestone2Amount
+                  }
+                ]
+              }
+            }
+          });
+        }
+      } catch (err) {
+        console.error('[applications.js] Failed to create CampaignGig:', err.message);
+      }
+    }
+
     res.json(updated);
   } catch (err) {
     console.error('[PUT /api/applications/:id] Error:', err.message);

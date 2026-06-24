@@ -69,6 +69,33 @@ router.get('/conversations', async (req, res) => {
           timestamp: chatInfo.lastMessage.createdAt
         });
       });
+
+      if (conversationsMap.has('cb-official-support') && !conversations.some(c => c.id === 'cb-official-support')) {
+        const chatInfo = conversationsMap.get('cb-official-support');
+        conversations.push({
+          id: 'cb-official-support',
+          name: 'CreatorBharat Official Support',
+          photo: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150',
+          handle: 'support',
+          lastMsg: chatInfo.lastMessage.text,
+          time: new Date(chatInfo.lastMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          unread: chatInfo.unreadCount,
+          timestamp: chatInfo.lastMessage.createdAt
+        });
+      }
+
+      if (!conversations.some(c => c.id === 'cb-official-support')) {
+        conversations.push({
+          id: 'cb-official-support',
+          name: 'CreatorBharat Official Support',
+          photo: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150',
+          handle: 'support',
+          lastMsg: 'Welcome to CreatorBharat Support! 🇮🇳 How can we assist you today?',
+          time: 'Just Now',
+          unread: 0,
+          timestamp: new Date()
+        });
+      }
     } else {
       const brands = await prisma.brand.findMany({
         where: { id: { in: otherIds } },
@@ -88,6 +115,33 @@ router.get('/conversations', async (req, res) => {
           timestamp: chatInfo.lastMessage.createdAt
         });
       });
+
+      if (conversationsMap.has('cb-official-support') && !conversations.some(c => c.id === 'cb-official-support')) {
+        const chatInfo = conversationsMap.get('cb-official-support');
+        conversations.push({
+          id: 'cb-official-support',
+          name: 'CreatorBharat Official Support',
+          photo: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150',
+          handle: 'support',
+          lastMsg: chatInfo.lastMessage.text,
+          time: new Date(chatInfo.lastMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          unread: chatInfo.unreadCount,
+          timestamp: chatInfo.lastMessage.createdAt
+        });
+      }
+
+      if (!conversations.some(c => c.id === 'cb-official-support')) {
+        conversations.push({
+          id: 'cb-official-support',
+          name: 'CreatorBharat Official Support',
+          photo: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150',
+          handle: 'support',
+          lastMsg: 'Welcome to CreatorBharat Support! 🇮🇳 How can we assist you today?',
+          time: 'Just Now',
+          unread: 0,
+          timestamp: new Date()
+        });
+      }
     }
 
     conversations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -131,6 +185,17 @@ router.get('/history/:otherId', async (req, res) => {
       createdAt: msg.createdAt,
       read: msg.read
     }));
+
+    if (otherId === 'cb-official-support' && mapped.length === 0) {
+      mapped.push({
+        id: 'welcome-support-msg',
+        text: 'Welcome to CreatorBharat Support! 🇮🇳 If you have any questions about gig milestones, wallet withdrawals, or brand partnerships, reply here. Our team is online to help you.',
+        time: 'Just Now',
+        isMe: false,
+        createdAt: new Date(),
+        read: true
+      });
+    }
 
     res.json(mapped);
   } catch (err) {

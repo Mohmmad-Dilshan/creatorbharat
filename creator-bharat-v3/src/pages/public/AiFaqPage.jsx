@@ -19,6 +19,7 @@ import {
 import Seo from '@/components/common/SEO';
 import { Btn, Bdg } from '@/components/common/Primitives';
 import { usePlatformStats } from '@/hooks/usePlatformStats';
+import { apiCall } from '@/utils/api';
 
 // Import Externalized Data
 import {
@@ -42,15 +43,28 @@ export default function AiFaqPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
+  const [faqsList, setFaqsList] = useState(AI_FAQS);
   const [openIndex, setOpenIndex] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    apiCall('/pages/faqs')
+      .then(res => {
+        if (active && res && res.content && Array.isArray(res.content) && res.content.length > 0) {
+          setFaqsList(res.content);
+        }
+      })
+      .catch(err => console.error('Failed to load faqs config:', err));
+    return () => { active = false; };
+  }, []);
 
   // FAQ Filtering
   const filteredFaqs = useMemo(() => {
-    return AI_FAQS.filter(faq => 
+    return faqsList.filter(faq => 
       faq.q.toLowerCase().includes(search.toLowerCase()) || 
       faq.a.toLowerCase().includes(search.toLowerCase())
     );
-  }, [search]);
+  }, [search, faqsList]);
 
   return (
     <div style={{ background: '#fcfcfc', minHeight: '100vh', color: '#475569', paddingBottom: 100, overflow: 'hidden', fontFamily: "'Outfit', sans-serif" }}>
