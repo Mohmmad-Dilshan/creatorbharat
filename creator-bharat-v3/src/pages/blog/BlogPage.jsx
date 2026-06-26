@@ -13,6 +13,7 @@ import { Btn, Bdg } from '@/components/common/Primitives';
 import { Link } from 'react-router-dom';
 import { blogData } from '../../data/blogData';
 import Seo from '@/components/common/SEO';
+import { apiCall } from '@/utils/api';
 
 /**
  * THEME: CreatorBharat Elite Edition
@@ -142,37 +143,74 @@ const LeadStory = ({ blog }) => (
 
 LeadStory.propTypes = { blog: blogShape.isRequired };
 
-const NewsletterBanner = () => (
-  <section style={{ 
-    background: BRAND_ORANGE, 
-    padding: '60px 40px', 
-    marginBottom: '60px', 
-    textAlign: 'center',
-    color: '#000',
-    position: 'relative',
-    overflow: 'hidden'
-  }}>
-    <div style={{ position: 'relative', zIndex: 1 }}>
-      <Mail size={40} style={{ marginBottom: '20px' }} />
-      <h3 style={{ fontFamily: '"Playfair Display", serif', fontSize: '40px', fontWeight: 900, marginBottom: '15px' }}>The Bharat Intelligence</h3>
-      <p style={{ fontSize: '18px', fontWeight: 700, marginBottom: '30px', maxWidth: '600px', margin: '0 auto 30px' }}>
-        Join 50,000+ creators and brand managers getting exclusive weekly data reports.
-      </p>
-      <div style={{ display: 'flex', gap: '10px', maxWidth: '500px', margin: '0 auto', flexDirection: globalThis.innerWidth < 600 ? 'column' : 'row' }}>
-        <input 
-          type="email" 
-          id="newsletter-email"
-          name="newsletter-email"
-          placeholder="ENTER YOUR EMAIL" 
-          style={{ flex: 1, padding: '15px 20px', border: '2px solid #000', background: '#fff', fontSize: '14px', fontWeight: 800, outline: 'none' }} 
-        />
-        <button style={{ background: '#000', color: '#fff', padding: '15px 30px', border: 'none', fontSize: '14px', fontWeight: 900, cursor: 'pointer', textTransform: 'uppercase' }}>
-          Subscribe Now
-        </button>
+const NewsletterBanner = () => {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setLoading(true);
+    apiCall('/newsletter/subscribe', {
+      method: 'POST',
+      body: JSON.stringify({ email: email.trim() })
+    })
+      .then(() => {
+        setSubscribed(true);
+        setEmail('');
+      })
+      .catch((err) => {
+        console.error('Newsletter subscribe error:', err);
+        alert(err.message || 'Subscription failed. Please try again.');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  return (
+    <section style={{ 
+      background: BRAND_ORANGE, 
+      padding: '60px 40px', 
+      marginBottom: '60px', 
+      textAlign: 'center',
+      color: '#000',
+      position: 'relative',
+      overflow: 'hidden'
+    }}>
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <Mail size={40} style={{ marginBottom: '20px' }} />
+        <h3 style={{ fontFamily: '"Playfair Display", serif', fontSize: '40px', fontWeight: 900, marginBottom: '15px' }}>The Bharat Intelligence</h3>
+        <p style={{ fontSize: '18px', fontWeight: 700, marginBottom: '30px', maxWidth: '600px', margin: '0 auto 30px' }}>
+          Join 50,000+ creators and brand managers getting exclusive weekly data reports.
+        </p>
+        
+        {subscribed ? (
+          <div style={{ fontSize: '18px', fontWeight: 900, color: '#000', padding: '10px 0' }}>
+            🎉 Thank you! You've subscribed to The Bharat Intelligence.
+          </div>
+        ) : (
+          <form onSubmit={handleSubscribe} style={{ display: 'flex', gap: '10px', maxWidth: '500px', margin: '0 auto', flexDirection: globalThis.innerWidth < 600 ? 'column' : 'row' }}>
+            <input 
+              type="email" 
+              id="newsletter-email"
+              name="newsletter-email"
+              placeholder="ENTER YOUR EMAIL" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              style={{ flex: 1, padding: '15px 20px', border: '2px solid #000', background: '#fff', fontSize: '14px', fontWeight: 800, outline: 'none' }} 
+            />
+            <button type="submit" disabled={loading} style={{ background: '#000', color: '#fff', padding: '15px 30px', border: 'none', fontSize: '14px', fontWeight: 900, cursor: 'pointer', textTransform: 'uppercase', opacity: loading ? 0.7 : 1 }}>
+              {loading ? 'Subscribing...' : 'Subscribe Now'}
+            </button>
+          </form>
+        )}
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 
 const NewsCard = ({ blog, size = 'medium' }) => {

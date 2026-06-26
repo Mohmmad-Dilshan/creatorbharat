@@ -1515,5 +1515,181 @@ router.put('/system/pages/:pageName', async (req, res) => {
   }
 });
 
+// GET /api/admin/ambassadors — fetch all ambassador applications
+router.get('/ambassadors', async (req, res) => {
+  try {
+    const apps = await prisma.ambassadorApplication.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(apps);
+  } catch (err) {
+    console.error('[GET /api/admin/ambassadors] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve ambassador applications.' });
+  }
+});
+
+// POST /api/admin/ambassadors/:id/status — Approve/Reject/Toggle status of an application
+router.post('/ambassadors/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body; // e.g. APPROVED, REJECTED, PENDING
+    const app = await prisma.ambassadorApplication.update({
+      where: { id },
+      data: { status }
+    });
+    res.json(app);
+  } catch (err) {
+    console.error('[POST /api/admin/ambassadors/:id/status] Error:', err.message);
+    res.status(500).json({ error: 'Failed to update ambassador application status.' });
+  }
+});
+
+// DELETE /api/admin/ambassadors/:id — Delete an ambassador application
+router.delete('/ambassadors/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.ambassadorApplication.delete({ where: { id } });
+    res.json({ success: true, message: 'Application deleted.' });
+  } catch (err) {
+    console.error('[DELETE /api/admin/ambassadors/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to delete application.' });
+  }
+});
+
+// GET /api/admin/missions — fetch all missions
+router.get('/missions', async (req, res) => {
+  try {
+    const missions = await prisma.mission.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(missions);
+  } catch (err) {
+    console.error('[GET /api/admin/missions] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve missions.' });
+  }
+});
+
+// POST /api/admin/missions — create a new mission
+router.post('/missions', async (req, res) => {
+  try {
+    const { title, description, reward, rewardColor, deadline, steps, active } = req.body;
+    if (!title || !reward) {
+      return res.status(400).json({ error: 'Title and Reward are required.' });
+    }
+
+    const mission = await prisma.mission.create({
+      data: {
+        title,
+        description: description || '',
+        reward,
+        rewardColor: rewardColor || '#FF9431',
+        deadline: deadline ? new Date(deadline) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        steps: Array.isArray(steps) ? steps : (steps ? steps.split('\n').map(s => s.trim()).filter(Boolean) : []),
+        active: active !== undefined ? active : true
+      }
+    });
+    res.status(201).json(mission);
+  } catch (err) {
+    console.error('[POST /api/admin/missions] Error:', err.message);
+    res.status(500).json({ error: 'Failed to create mission.' });
+  }
+});
+
+// PUT /api/admin/missions/:id — update mission
+router.put('/missions/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, reward, rewardColor, deadline, steps, active } = req.body;
+
+    const updateData = {};
+    if (title !== undefined) updateData.title = title;
+    if (description !== undefined) updateData.description = description;
+    if (reward !== undefined) updateData.reward = reward;
+    if (rewardColor !== undefined) updateData.rewardColor = rewardColor;
+    if (deadline !== undefined) updateData.deadline = new Date(deadline);
+    if (steps !== undefined) updateData.steps = Array.isArray(steps) ? steps : steps.split('\n').map(s => s.trim()).filter(Boolean);
+    if (active !== undefined) updateData.active = active;
+
+    const mission = await prisma.mission.update({
+      where: { id },
+      data: updateData
+    });
+    res.json(mission);
+  } catch (err) {
+    console.error('[PUT /api/admin/missions/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to update mission.' });
+  }
+});
+
+// DELETE /api/admin/missions/:id — delete mission
+router.delete('/missions/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.mission.delete({ where: { id } });
+    res.json({ success: true, message: 'Mission deleted.' });
+  } catch (err) {
+    console.error('[DELETE /api/admin/missions/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to delete mission.' });
+  }
+});
+
+// GET /api/admin/missions/completions — fetch all pending/reviewed mission completions
+router.get('/missions/completions', async (req, res) => {
+  try {
+    const completions = await prisma.missionCompletion.findMany({
+      include: {
+        mission: true,
+        creator: {
+          select: { id: true, name: true, handle: true, photo: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(completions);
+  } catch (err) {
+    console.error('[GET /api/admin/missions/completions] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve mission completions.' });
+  }
+});
+
+// POST /api/admin/missions/completions/:id/status — Approve/Reject a completion submission
+router.post('/missions/completions/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body; // APPROVED or REJECTED
+    if (!status || (status !== 'APPROVED' && status !== 'REJECTED')) {
+      return res.status(400).json({ error: 'Valid status (APPROVED/REJECTED) is required.' });
+    }
+
+    const completion = await prisma.missionCompletion.update({
+      where: { id },
+      data: { status },
+      include: { mission: true, creator: true }
+    });
+
+    // Notify creator
+    try {
+      await prisma.notification.create({
+        data: {
+          userId: completion.creator.userId,
+          title: status === 'APPROVED' ? '🎉 Mission Approved!' : '❌ Mission Proof Rejected',
+          body: status === 'APPROVED' 
+            ? `Your proof for "${completion.mission.title}" has been approved. Reward: ${completion.mission.reward} has been credited.`
+            : `Your proof for "${completion.mission.title}" was rejected. Please review instructions and re-submit.`,
+          type: status === 'APPROVED' ? 'SUCCESS' : 'DANGER',
+          link: '/creator/monetization'
+        }
+      });
+    } catch (notifErr) {
+      console.error('Failed to notify creator about completion status:', notifErr.message);
+    }
+
+    res.json(completion);
+  } catch (err) {
+    console.error('[POST /api/admin/missions/completions/:id/status] Error:', err.message);
+    res.status(500).json({ error: 'Failed to update mission completion status.' });
+  }
+});
+
 export default router;
 

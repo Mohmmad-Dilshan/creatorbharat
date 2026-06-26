@@ -71,23 +71,47 @@ const MISSIONS = [
 
 const MissionCard = ({ mission, completed, onComplete }) => {
   const [expanded, setExpanded] = useState(false);
-  const Icon = mission.icon;
+  const [proofUrl, setProofUrl] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const Icon = mission.icon || Trophy;
+  const rewardColor = mission.rewardColor || '#FF9431';
+
+  const isDynamic = !!mission.createdAt; // dynamic missions have createdAt
+  const status = isDynamic ? mission.status : (completed ? 'APPROVED' : 'NOT_STARTED');
+
+  const stepsList = Array.isArray(mission.steps) 
+    ? mission.steps 
+    : (typeof mission.steps === 'string' 
+        ? JSON.parse(mission.steps) 
+        : ['Follow the instructions and submit your proof below']);
+
+  const handleDynamicSubmit = (e) => {
+    e.preventDefault();
+    if (!proofUrl.trim()) return;
+    setSubmitting(true);
+    onComplete(mission.id, proofUrl.trim())
+      .then(() => setProofUrl(''))
+      .finally(() => setSubmitting(false));
+  };
+
+  const statusColor = status === 'APPROVED' ? 'green' : status === 'PENDING' ? 'blue' : status === 'REJECTED' ? 'red' : 'saffron';
+  const statusText = status === 'APPROVED' ? 'Done ✓' : status === 'PENDING' ? 'Under Review' : status === 'REJECTED' ? 'Rejected (Try Again)' : mission.reward;
 
   return (
-    <Card style={{ padding: 24, border: completed ? '1.5px solid #10B98130' : '1px solid #f1f5f9', background: completed ? '#f0fdf4' : '#fff' }}>
+    <Card style={{ padding: 24, border: status === 'APPROVED' ? '1.5px solid #10B98130' : '1px solid #f1f5f9', background: status === 'APPROVED' ? '#f0fdf4' : '#fff' }}>
       <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-        <div style={{ width: 48, height: 48, borderRadius: 16, background: mission.rewardColor + '12', color: mission.rewardColor, display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-          {completed ? <CheckCircle2 size={24} /> : <Icon size={24} />}
+        <div style={{ width: 48, height: 48, borderRadius: 16, background: rewardColor + '12', color: rewardColor, display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+          {status === 'APPROVED' ? <CheckCircle2 size={24} color="#10B981" /> : <Icon size={24} />}
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 6 }}>
             <h4 style={{ fontSize: 16, fontWeight: 900, color: '#0f172a', margin: 0 }}>{mission.title}</h4>
-            <Bdg sm color={completed ? 'green' : 'saffron'}>{completed ? 'Done ✓' : mission.reward}</Bdg>
+            <Bdg sm color={statusColor}>{statusText}</Bdg>
           </div>
-          <p style={{ fontSize: 13, color: '#64748b', fontWeight: 500, lineHeight: 1.5, margin: '0 0 12px' }}>{mission.desc}</p>
+          <p style={{ fontSize: 13, color: '#64748b', fontWeight: 500, lineHeight: 1.5, margin: '0 0 12px' }}>{mission.desc || mission.description}</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, color: '#94a3b8' }}>
-              <Clock size={12} /> Deadline: {mission.deadline}
+              <Clock size={12} /> Deadline: {isDynamic ? new Date(mission.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : mission.deadline}
             </div>
             <button
               onClick={() => setExpanded(!expanded)}
@@ -100,16 +124,50 @@ const MissionCard = ({ mission, completed, onComplete }) => {
           {expanded && (
             <div style={{ marginTop: 16, padding: 16, background: '#f8fafc', borderRadius: 14, border: '1px solid #f1f5f9' }}>
               <div style={{ fontSize: 11, fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', marginBottom: 10 }}>Steps to complete:</div>
-              {mission.steps.map((step, i) => (
+              {stepsList.map((step, i) => (
                 <div key={step} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                   <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#FF943112', color: '#FF9431', display: 'grid', placeItems: 'center', fontSize: 10, fontWeight: 900, flexShrink: 0 }}>{i + 1}</div>
                   <span style={{ fontSize: 13, color: '#475569', fontWeight: 600 }}>{step}</span>
                 </div>
               ))}
-              {!completed && (
-                <Btn full sm onClick={() => onComplete(mission.id)} style={{ marginTop: 12, background: mission.rewardColor, color: '#fff', borderRadius: 12 }}>
+              
+              {!isDynamic && status !== 'APPROVED' && (
+                <Btn full sm onClick={() => onComplete(mission.id)} style={{ marginTop: 12, background: rewardColor, color: '#fff', borderRadius: 12 }}>
                   Mark as Complete
                 </Btn>
+              )}
+
+              {isDynamic && (status === 'NOT_STARTED' || status === 'REJECTED') && (
+                <form onSubmit={handleDynamicSubmit} style={{ marginTop: 16, borderTop: '1px solid #e2e8f0', paddingTop: 16 }}>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 900, color: '#475569', marginBottom: 8 }}>SUBMIT VERIFICATION PROOF</label>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <input
+                      type="url"
+                      placeholder="Paste link to your post, story, or proof URL..."
+                      value={proofUrl}
+                      onChange={(e) => setProofUrl(e.target.value)}
+                      required
+                      style={{
+                        flex: 1,
+                        padding: '10px 14px',
+                        border: '1.5px solid #e2e8f0',
+                        borderRadius: 12,
+                        fontSize: 13,
+                        outline: 'none',
+                        background: '#fff'
+                      }}
+                    />
+                    <Btn sm type="submit" disabled={submitting} style={{ background: '#FF9431', color: '#fff', borderRadius: 12 }}>
+                      {submitting ? <Loader2 size={14} className="spin" /> : 'Submit'}
+                    </Btn>
+                  </div>
+                </form>
+              )}
+
+              {isDynamic && status === 'PENDING' && (
+                <div style={{ marginTop: 12, padding: '10px 14px', background: '#eff6ff', borderRadius: 12, border: '1px solid #bfdbfe', fontSize: 13, color: '#1e40af', fontWeight: 600 }}>
+                  ⏳ Proof submitted! Admin verification is pending.
+                </div>
               )}
             </div>
           )}
@@ -135,6 +193,8 @@ export default function OpportunitiesPage() {
   const [completedMissions, setCompletedMissions] = useState(() => 
     JSON.parse(localStorage.getItem('cb_completed_missions') || '[]')
   );
+  const [dbMissions, setDbMissions] = useState([]);
+  const [missionsLoading, setMissionsLoading] = useState(false);
 
   const [gigs, setGigs] = useState([]);
   const [loadingGigs, setLoadingGigs] = useState(false);
@@ -142,6 +202,16 @@ export default function OpportunitiesPage() {
   const [proofText, setProofText] = useState('');
   const [proofUrl, setProofUrl] = useState('');
   const [isSubmittingProof, setIsSubmittingProof] = useState(false);
+
+  const loadMissions = () => {
+    setMissionsLoading(true);
+    apiCall('/missions')
+      .then(res => {
+        if (Array.isArray(res)) setDbMissions(res);
+      })
+      .catch(err => console.error('Failed to load missions:', err))
+      .finally(() => setMissionsLoading(false));
+  };
 
   const loadGigs = async () => {
     setLoadingGigs(true);
@@ -179,6 +249,8 @@ export default function OpportunitiesPage() {
   useEffect(() => {
     if (tab === 'gigs') {
       loadGigs();
+    } else if (tab === 'missions') {
+      loadMissions();
     }
   }, [tab]);
 
@@ -299,17 +371,35 @@ export default function OpportunitiesPage() {
     }
   };
 
-  const completeMission = (missionId) => {
-    const updated = [...completedMissions, missionId];
-    setCompletedMissions(updated);
-    localStorage.setItem('cb_completed_missions', JSON.stringify(updated));
-    const mission = MISSIONS.find(m => m.id === missionId);
-    
-    // Update streak
-    const newStreak = Math.ceil(updated.length / 2);
-    localStorage.setItem('cb_mission_streak', String(newStreak));
+  const completeMission = async (missionId, proofUrl) => {
+    const isDynamic = dbMissions.some(m => m.id === missionId);
+    if (!isDynamic) {
+      const updated = [...completedMissions, missionId];
+      setCompletedMissions(updated);
+      localStorage.setItem('cb_completed_missions', JSON.stringify(updated));
+      const mission = MISSIONS.find(m => m.id === missionId);
+      
+      // Update streak
+      const newStreak = Math.ceil(updated.length / 2);
+      localStorage.setItem('cb_mission_streak', String(newStreak));
 
-    dsp({ t: 'TOAST', d: { type: 'success', msg: `Mission complete! ${mission?.reward} earned 🎉` } });
+      dsp({ t: 'TOAST', d: { type: 'success', msg: `Mission complete! ${mission?.reward} earned 🎉` } });
+      return;
+    }
+
+    try {
+      const res = await apiCall(`/missions/${missionId}/complete`, {
+        method: 'POST',
+        body: JSON.stringify({ proofUrl })
+      });
+      if (res) {
+        dsp({ t: 'TOAST', d: { type: 'success', msg: 'Mission proof submitted for review! 🚀' } });
+        loadMissions();
+      }
+    } catch (err) {
+      console.error('Failed to complete mission:', err);
+      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Submission failed' } });
+    }
   };
 
   return (
@@ -326,7 +416,7 @@ export default function OpportunitiesPage() {
         {[
           { id: 'campaigns', label: '🎯 Brand Campaigns', count: campaigns.length },
           { id: 'gigs', label: '💼 Live Contracts', count: gigs.length },
-          { id: 'missions', label: '⚡ Monthly Missions', count: MISSIONS.length },
+          { id: 'missions', label: '⚡ Monthly Missions', count: dbMissions.length > 0 ? dbMissions.length : MISSIONS.length },
         ].map(t => (
           <button
             key={t.id}
@@ -498,11 +588,11 @@ export default function OpportunitiesPage() {
       {tab === 'missions' && (
         <div>
           {/* Mission Stats */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 28 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(4, 1fr)', gap: 16, marginBottom: 28 }}>
             {[
-              { label: 'Available', value: MISSIONS.length, color: '#FF9431' },
-              { label: 'Completed', value: completedMissions.length, color: '#10B981' },
-              { label: 'Rewards Earned', value: completedMissions.length > 0 ? '₹' + (completedMissions.length * 199) : '₹0', color: '#7C3AED' },
+              { label: 'Available', value: dbMissions.length > 0 ? dbMissions.length : MISSIONS.length, color: '#FF9431' },
+              { label: 'Completed', value: dbMissions.length > 0 ? dbMissions.filter(m => m.status === 'APPROVED').length : completedMissions.length, color: '#10B981' },
+              { label: 'Rewards Earned', value: dbMissions.length > 0 ? '₹' + (dbMissions.filter(m => m.status === 'APPROVED').length * 199) : (completedMissions.length > 0 ? '₹' + (completedMissions.length * 199) : '₹0'), color: '#7C3AED' },
               { label: 'Monthly Streak', value: `${localStorage.getItem('cb_mission_streak') || (completedMissions.length > 0 ? Math.ceil(completedMissions.length / 2) : 0)} Months 🔥`, color: '#EC4899' },
             ].map(s => (
               <Card key={s.label} style={{ padding: 20, textAlign: 'center' }}>
@@ -512,16 +602,23 @@ export default function OpportunitiesPage() {
             ))}
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {MISSIONS.map(mission => (
-              <MissionCard
-                key={mission.id}
-                mission={mission}
-                completed={completedMissions.includes(mission.id)}
-                onComplete={completeMission}
-              />
-            ))}
-          </div>
+          {missionsLoading ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 0', color: '#94a3b8' }}>
+              <Loader2 size={24} className="spin" style={{ marginRight: 12 }} />
+              <span style={{ fontSize: 14, fontWeight: 700 }}>Loading monthly missions...</span>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {(dbMissions.length > 0 ? dbMissions : MISSIONS).map(mission => (
+                <MissionCard
+                  key={mission.id}
+                  mission={mission}
+                  completed={dbMissions.length > 0 ? mission.status === 'APPROVED' : completedMissions.includes(mission.id)}
+                  onComplete={completeMission}
+                />
+              ))}
+            </div>
+          )}
 
           <div style={{ marginTop: 24, padding: 20, background: '#f8fafc', borderRadius: 20, border: '1px solid #f1f5f9', textAlign: 'center' }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#64748b' }}>

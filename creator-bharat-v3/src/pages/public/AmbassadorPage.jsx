@@ -5,6 +5,7 @@ import { Sparkles, Trophy, Check, Send, AlertCircle, Plus, Minus, ArrowRight, St
 import Seo from '@/components/common/SEO';
 import { Btn, Bdg } from '@/components/common/Primitives';
 import { AMBASSADOR_PERKS, AMBASSADOR_STEPS, AMBASSADOR_FAQS } from '@/data/ambassadorData';
+import { apiCall } from '@/utils/api';
 
 const FAQItem = ({ q, a, index }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -107,21 +108,30 @@ export default function AmbassadorPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate API submission
-    setTimeout(() => {
-      setLoading(false);
-      setSubmitted(true);
-      setForm({
-        name: '',
-        email: '',
-        phone: '',
-        college: '',
-        city: '',
-        year: '1st Year',
-        social: '',
-        reason: ''
+    apiCall('/ambassador', {
+      method: 'POST',
+      body: JSON.stringify(form)
+    })
+      .then(() => {
+        setSubmitted(true);
+        setForm({
+          name: '',
+          email: '',
+          phone: '',
+          college: '',
+          city: '',
+          year: '1st Year',
+          social: '',
+          reason: ''
+        });
+      })
+      .catch((err) => {
+        console.error('Ambassador submission failed:', err);
+        alert(err.message || 'Failed to submit application. Please try again.');
+      })
+      .finally(() => {
+        setLoading(false);
       });
-    }, 1500);
   };
 
   return (

@@ -18,10 +18,23 @@ import { useApp } from '../../core/context';
 import { Btn, Bdg } from '../../components/common/Primitives';
 import AuthGatekeeper from '../../components/auth/AuthGatekeeper';
 import Seo from '../../components/common/SEO';
+import { apiCall } from '../../utils/api';
 
 export default function MonetizationPage() {
   const { st, dsp } = useApp();
   const [mob, setMob] = useState(globalThis.innerWidth < 1024);
+  const [refData, setRefData] = useState(null);
+  const [refLoading, setRefLoading] = useState(false);
+
+  useEffect(() => {
+    setRefLoading(true);
+    apiCall('/referrals/my')
+      .then(res => {
+        if (res) setRefData(res);
+      })
+      .catch(err => console.error('Failed to fetch referrals:', err))
+      .finally(() => setRefLoading(false));
+  }, []);
 
   useEffect(() => {
     const h = () => setMob(globalThis.innerWidth < 1024);
@@ -495,7 +508,8 @@ export default function MonetizationPage() {
              padding: '8px 8px 8px 24px', 
              borderRadius: '100px',
              border: '1px solid rgba(255,255,255,0.1)',
-             maxWidth: '100%'
+             maxWidth: '100%',
+             marginBottom: 40
            }}>
              <span style={{ fontSize: '14px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', marginRight: '24px' }}>creatorbharat.com/join?ref={st.user?.handle || 'ELITE'}</span>
              <Btn lg style={{ background: '#fff', color: '#000', borderRadius: '100px', fontWeight: 900 }} onClick={() => {
@@ -504,6 +518,47 @@ export default function MonetizationPage() {
                 toast('Referral link copied to clipboard!', 'success');
              }}>Copy Link</Btn>
            </div>
+
+           {refData && (
+             <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : '1fr 1fr 1fr 1fr', gap: 16, textAlign: 'center', marginBottom: 48 }}>
+               {[
+                 { label: 'Total Referred', value: refData.totalReferred },
+                 { label: 'Verified Signups', value: refData.verifiedCount },
+                 { label: 'Pending Verification', value: refData.pendingCount },
+                 { label: 'Earnings Earned', value: `₹${refData.totalEarnings}` }
+               ].map((stat) => (
+                 <div key={stat.label} style={{ background: 'rgba(255,255,255,0.04)', padding: 20, borderRadius: 20, border: '1px solid rgba(255,255,255,0.08)' }}>
+                   <div style={{ fontSize: 24, fontWeight: 950, color: '#fff' }}>{stat.value}</div>
+                   <div style={{ fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.4)', marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{stat.label}</div>
+                 </div>
+               ))}
+             </div>
+           )}
+
+           {refData && refData.referrals && refData.referrals.length > 0 && (
+             <div style={{ textAlign: 'left', background: 'rgba(255,255,255,0.02)', padding: '24px 32px', borderRadius: 28, border: '1px solid rgba(255,255,255,0.05)' }}>
+               <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', marginBottom: 16 }}>Referred Creators</h3>
+               <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 12 }}>
+                 {refData.referrals.map((ref) => {
+                   const creator = ref.referred;
+                   if (!creator) return null;
+                   const creatorPhoto = creator.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(creator.name || 'C')}&background=FF9431&color=fff`;
+                   return (
+                     <div key={ref.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 16, background: 'rgba(255,255,255,0.03)', borderRadius: 20, border: '1px solid rgba(255,255,255,0.06)' }}>
+                       <img src={creatorPhoto} alt="" style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }} />
+                       <div style={{ flex: 1 }}>
+                         <div style={{ fontSize: 14, fontWeight: 800, color: '#fff' }}>{creator.name}</div>
+                         <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>@{creator.handle}</div>
+                       </div>
+                       <Bdg color={ref.status === 'REWARDED' ? 'green' : ref.status === 'VERIFIED' ? 'orange' : 'blue'} sm>
+                         {ref.status}
+                       </Bdg>
+                     </div>
+                   );
+                 })}
+               </div>
+             </div>
+           )}
         </div>
       </section>
 

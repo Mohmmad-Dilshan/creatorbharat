@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../core/context';
 import { LS } from '../../utils/helpers';
+import { apiCall } from '../../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Trophy, Star, CheckCircle2, Lock, Zap, Award,
@@ -380,6 +381,37 @@ export default function AchievementsPage() {
   const cbScore = c?.score || 0;
   const profileComplete = localStorage.getItem('cb_profile_completed') === 'true';
 
+  const [achievements, setAchievements] = useState([]);
+  const [achievementsLoading, setAchievementsLoading] = useState(true);
+
+  useEffect(() => {
+    if (c?.id) {
+      apiCall(`/achievements/creator/${c.id}`)
+        .then(res => {
+          if (Array.isArray(res)) {
+            setAchievements(res);
+          }
+          setAchievementsLoading(false);
+        })
+        .catch(err => {
+          console.error('Failed to load achievements:', err);
+          setAchievementsLoading(false);
+        });
+    } else {
+      setAchievementsLoading(false);
+    }
+  }, [c?.id]);
+
+  const formattedAwards = [
+    ...PLATFORM_AWARDS,
+    ...achievements.map(a => ({
+      emoji: a.type === 'PLAY_BUTTON_10K' ? '🎖️' : a.type === 'PLAY_BUTTON_50K' ? '🏆' : a.type === 'PLAY_BUTTON_100K' ? '👑' : '⭐',
+      title: a.title,
+      date: new Date(a.unlockedAt).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }),
+      type: a.type || 'Platform Award'
+    }))
+  ];
+
   // Calculate earned badges
   const earnedBadges = {
     mission_master: ['m1','m2','m3','m4','m5'].filter(id => localStorage.getItem(`cb_mission_${id}`) === 'true').length >= 5,
@@ -522,9 +554,9 @@ export default function AchievementsPage() {
               </p>
             </div>
 
-            {PLATFORM_AWARDS.length > 0 ? (
+            {formattedAwards.length > 0 ? (
               <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(3, 1fr)', gap: 16 }}>
-                {PLATFORM_AWARDS.map((award, idx) => <AwardBadge key={idx} award={award} idx={idx} />)}
+                {formattedAwards.map((award, idx) => <AwardBadge key={idx} award={award} idx={idx} />)}
               </div>
             ) : (
               <div style={{ textAlign: 'center', padding: '60px 20px', background: '#f8fafc', borderRadius: 20, border: '1px dashed #e2e8f0' }}>

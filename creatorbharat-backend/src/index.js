@@ -30,6 +30,12 @@ import podcastsRouter from './routes/podcasts.js';
 import aiRouter from './routes/ai.js';
 import gigsRouter from './routes/gigs.js';
 import notificationsRouter from './routes/notifications.js';
+import achievementsRouter from './routes/achievements.js';
+import eventsRouter from './routes/events.js';
+import communityRouter from './routes/community.js';
+import referralsRouter from './routes/referrals.js';
+import missionsRouter from './routes/missions.js';
+import ambassadorRouter from './routes/ambassador.js';
 
 dotenv.config();
 
@@ -269,6 +275,12 @@ app.use('/api/podcasts', podcastsRouter);
 app.use('/api/ai', aiRouter);
 app.use('/api/gigs', gigsRouter);
 app.use('/api/notifications', notificationsRouter);
+app.use('/api/achievements', achievementsRouter);
+app.use('/api/events', eventsRouter);
+app.use('/api/community', communityRouter);
+app.use('/api/referrals', referralsRouter);
+app.use('/api/missions', missionsRouter);
+app.use('/api/ambassador', ambassadorRouter);
 
 // Global 404 Error handler
 app.use((req, res) => {

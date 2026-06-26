@@ -1,0 +1,53 @@
+// 🇮🇳 CreatorBharat College Ambassador Applications Router
+import express from 'express';
+import prisma from '../prisma.js';
+import { z } from 'zod';
+
+const router = express.Router();
+
+const ambassadorSchema = z.object({
+  name: z.string().min(1, 'Name is required.'),
+  email: z.string().email('Please enter a valid email address.'),
+  phone: z.string().min(10, 'Please enter a valid phone number.'),
+  instagram: z.string().optional(),
+  youtube: z.string().optional(),
+  college: z.string().min(1, 'College name is required.'),
+  city: z.string().min(1, 'City is required.'),
+  pitch: z.string().min(10, 'Pitch must be at least 10 characters long.')
+});
+
+// POST /api/ambassador — Submit an ambassador application
+router.post('/', async (req, res) => {
+  try {
+    const parse = ambassadorSchema.safeParse(req.body);
+    if (!parse.success) {
+      return res.status(400).json({ error: parse.error.errors[0].message });
+    }
+
+    const { name, email, phone, instagram, youtube, college, city, pitch } = parse.data;
+
+    const application = await prisma.ambassadorApplication.create({
+      data: {
+        name: name.trim(),
+        email: email.toLowerCase().trim(),
+        phone: phone.trim(),
+        instagram: instagram ? instagram.trim() : null,
+        youtube: youtube ? youtube.trim() : null,
+        college: college.trim(),
+        city: city.trim(),
+        pitch: pitch.trim()
+      }
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Ambassador application submitted successfully! Our campus coordinator will reach out to you.',
+      application
+    });
+  } catch (err) {
+    console.error('[POST /api/ambassador] Error:', err.message);
+    res.status(500).json({ error: 'Failed to record ambassador application.' });
+  }
+});
+
+export default router;

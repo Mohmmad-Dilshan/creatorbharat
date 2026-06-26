@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '@/core/context';
 import { LS, fmt } from '@/utils/helpers';
+import { apiCall } from '@/utils/api';
 import { Card, Btn, Bdg } from '@/components/common/Primitives';
 import { CreatorPageHeader } from './CreatorShellPage';
 
@@ -313,6 +314,54 @@ export default function EventsPage() {
   const navigate = useNavigate();
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
   const [bookingEvent, setBookingEvent] = useState(null);
+  const [eventsList, setEventsList] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    apiCall('/events')
+      .then(res => {
+        if (Array.isArray(res) && res.length > 0) {
+          const mapped = res.map(e => {
+            const minScoreMatch = e.eligibility ? e.eligibility.match(/\d+/) : null;
+            const minScoreVal = minScoreMatch ? parseInt(minScoreMatch[0]) : 0;
+            return {
+              id: e.id,
+              title: e.title,
+              subtitle: e.description.slice(0, 100) + '...',
+              date: new Date(e.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+              location: e.location,
+              venue: e.venue || '',
+              type: e.type.toLowerCase(),
+              status: new Date(e.date) > new Date() ? 'upcoming' : 'past',
+              seats: 100,
+              seatsLeft: 42,
+              eligibility: e.eligibility || 'Any verified creator',
+              minScore: minScoreVal,
+              highlights: [
+                'Brand speed-networking sessions',
+                'Live Play Button award ceremony',
+                'Masterclasses by industry leaders'
+              ],
+              perks: {
+                free: ['Entry pass', 'Event kit'],
+                pro: ['VIP seating', 'Exclusive after-party']
+              },
+              cover: e.coverImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1200',
+              color: e.type === 'SUMMIT' ? '#FF9431' : e.type === 'WORKSHOP' ? '#10B981' : '#7C3AED'
+            };
+          });
+          setEventsList(mapped);
+        } else {
+          setEventsList(EVENTS);
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to load events:', err);
+        setEventsList(EVENTS);
+        setLoading(false);
+      });
+  }, []);
 
   useEffect(() => {
     const h = () => setMob(globalThis.innerWidth < 768);
@@ -405,7 +454,7 @@ export default function EventsPage() {
 
       {/* Events Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : 'repeat(auto-fill, minmax(340px, 1fr))', gap: 24 }}>
-        {EVENTS.map((event, i) => (
+        {eventsList.map((event, i) => (
           <EventCard
             key={event.id}
             event={event}

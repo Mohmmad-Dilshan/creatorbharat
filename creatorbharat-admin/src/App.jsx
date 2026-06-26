@@ -176,6 +176,8 @@ const NAV_SECTIONS = (counts) => [
       { id: 'creator-reviews', label: 'Creator Reviews', icon: Star, badge: counts.reviews },
       { id: 'podcasts', label: 'Podcasts', icon: Headphones, badge: counts.podcasts },
       { id: 'leaderboard', label: 'Leaderboard', icon: Crown },
+      { id: 'ambassadors', label: 'Ambassador Program', icon: Award, badge: counts.pendingAmbassadors },
+      { id: 'missions', label: 'Missions Panel', icon: Target, badge: counts.pendingMissions },
     ]
   },
   {
@@ -200,6 +202,7 @@ const NAV_SECTIONS = (counts) => [
       { id: 'gallery', label: 'Gallery Manager', icon: Image, badge: counts.gallery },
       { id: 'media-library', label: 'Media Library', icon: FolderOpen, badge: counts.uploads },
       { id: 'pages', label: 'Page Content Manager', icon: SlidersHorizontal },
+      { id: 'events', label: 'Events Manager', icon: Calendar },
     ]
   },
   {
@@ -220,7 +223,7 @@ const TAB_META = {
   creators: { title: 'All Creators', sub: 'Manage creator profiles, scores and suspensions' },
   'creator-wallets': { title: 'Creator Wallets', sub: 'View transaction history and wallet balances per creator' },
   'creator-score': { title: 'Creator Score Manager', sub: 'Manually adjust or audit creator platform scores' },
-  'creator-achievements': { title: 'Achievements & Milestones', sub: 'Track creator achievement progress' },
+  'creator-achievements': { title: 'Achievements & Milestones', sub: 'Track creator achievement progress and manually grant badges' },
   'creator-reviews': { title: 'Creator Reviews', sub: 'Moderate brand reviews given to creators' },
   podcasts: { title: 'Podcast Manager', sub: 'Publish, unpublish, or delete podcast episodes' },
   leaderboard: { title: 'Leaderboard Management', sub: 'Top verified creators by score and followers' },
@@ -238,6 +241,9 @@ const TAB_META = {
   pages: { title: 'Page Content Manager', sub: 'Dynamically customize public page text, pricing tiers, and calculator rates' },
   settings: { title: 'System Settings', sub: 'Configure platform-wide settings and toggles' },
   danger: { title: '⚠️ Danger Zone', sub: 'Irreversible platform-wide operations' },
+  events: { title: 'Events Manager', sub: 'Create and coordinate public platform events and conferences' },
+  ambassadors: { title: 'Campus Ambassador Applications', sub: 'Review and approve/reject college student representation applications' },
+  missions: { title: 'Monthly Missions & Completions', sub: 'Manage monthly platform-wide creator tasks and proof submissions' },
 };
 
 // ─── STATUS COLORS ─────────────────────────────────────────────────────────
@@ -446,6 +452,40 @@ export default function App() {
   const [galVideoUrl, setGalVideoUrl] = useState('');
   const [galDuration, setGalDuration] = useState('');
   const [galTags, setGalTags] = useState('');
+
+  // ── Campus Ambassador / Events / Missions States
+  const [ambassadors, setAmbassadors] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [missions, setMissions] = useState([]);
+  const [missionCompletions, setMissionCompletions] = useState([]);
+
+  // Modals for Events
+  const [eventModalOpen, setEventModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState(null);
+  const [evtTitle, setEvtTitle] = useState('');
+  const [evtDescription, setEvtDescription] = useState('');
+  const [evtDate, setEvtDate] = useState('');
+  const [evtLocation, setEvtLocation] = useState('');
+  const [evtLink, setEvtLink] = useState('');
+  const [evtImage, setEvtImage] = useState('');
+
+  // Modals for Achievements (Grant Achievement)
+  const [grantAchModalOpen, setGrantAchModalOpen] = useState(false);
+  const [achCreatorId, setAchCreatorId] = useState('');
+  const [achType, setAchType] = useState('VERIFICATION');
+  const [achTitle, setAchTitle] = useState('');
+  const [achDescription, setAchDescription] = useState('');
+
+  // Modals for Missions
+  const [missionModalOpen, setMissionModalOpen] = useState(false);
+  const [editingMission, setEditingMission] = useState(null);
+  const [misTitle, setMisTitle] = useState('');
+  const [misDescription, setMisDescription] = useState('');
+  const [misReward, setMisReward] = useState('');
+  const [misRewardColor, setMisRewardColor] = useState('#FF9431');
+  const [misDeadline, setMisDeadline] = useState('');
+  const [misSteps, setMisSteps] = useState('');
+  const [misActive, setMisActive] = useState(true);
 
   // ── New Data
   const [allApplications, setAllApplications] = useState([]);
@@ -861,6 +901,103 @@ export default function App() {
     }
   };
 
+  const handleSaveEvent = async (e) => {
+    e.preventDefault();
+    try {
+      const url = editingEvent 
+        ? `${API_BASE}/events/${editingEvent.id}`
+        : `${API_BASE}/events`;
+      const method = editingEvent ? 'PUT' : 'POST';
+      
+      const res = await fetch(url, {
+        method,
+        headers: H(),
+        body: JSON.stringify({
+          title: evtTitle,
+          description: evtDescription,
+          date: evtDate,
+          location: evtLocation,
+          venue: evtLocation,
+          type: 'SUMMIT',
+          coverImage: evtImage || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=100',
+          registrationUrl: evtLink || '',
+          eligibility: 'All Creators',
+          isFeatured: true,
+          published: true
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to save event');
+      toast(editingEvent ? 'Event updated successfully!' : 'Event created successfully!', 'success');
+      setEventModalOpen(false);
+      setEditingEvent(null);
+      fetchData();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  };
+
+  const handleSaveAchievement = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${API_BASE}/achievements`, {
+        method: 'POST',
+        headers: H(),
+        body: JSON.stringify({
+          creatorId: achCreatorId,
+          type: achType,
+          title: achTitle,
+          description: achDescription
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to grant achievement');
+      toast('Achievement granted successfully!', 'success');
+      setGrantAchModalOpen(false);
+      setAchCreatorId('');
+      setAchType('VERIFICATION');
+      setAchTitle('');
+      setAchDescription('');
+      fetchData();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  };
+
+  const handleSaveMission = async (e) => {
+    e.preventDefault();
+    try {
+      const url = editingMission 
+        ? `${API_BASE}/admin/missions/${editingMission.id}`
+        : `${API_BASE}/admin/missions`;
+      const method = editingMission ? 'PUT' : 'POST';
+      
+      const stepsArr = misSteps.split('\n').map(s => s.trim()).filter(Boolean);
+      
+      const res = await fetch(url, {
+        method,
+        headers: H(),
+        body: JSON.stringify({
+          title: misTitle,
+          description: misDescription,
+          reward: misReward,
+          rewardColor: misRewardColor || '#FF9431',
+          deadline: misDeadline,
+          steps: stepsArr,
+          active: misActive
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to save mission');
+      toast(editingMission ? 'Mission updated successfully!' : 'Mission created successfully!', 'success');
+      setMissionModalOpen(false);
+      setEditingMission(null);
+      fetchData();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  };
+
   // ─── Auth Headers Helper ────────────────────────────────────────────────────
   const H = () => ({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` });
 
@@ -891,13 +1028,20 @@ export default function App() {
         fetch(`${API_BASE}/uploads`, { headers: H() }),
         fetch(`${API_BASE}/admin/settings`, { headers: H() }),
         fetch(`${API_BASE}/admin/system/pages`, { headers: H() }),
+        fetch(`${API_BASE}/admin/ambassadors`, { headers: H() }),
+        fetch(`${API_BASE}/events`),
+        fetch(`${API_BASE}/admin/missions`, { headers: H() }),
+        fetch(`${API_BASE}/admin/missions/completions`, { headers: H() }),
       ];
 
       const results = await Promise.allSettled(fetches);
       const safeJson = async (r) => { try { const d = await r.json(); return d; } catch { return null; } };
 
-      const [rVer, rCre, rBr, rCam, rPay, rSt, rBlog, rNews, rCont, rPod, rRev, rComm,
-        rApps, rLead, rBrandAna, rAct, rDeepSt, rGal, rUp, rSettings, rPages] = await Promise.all(results.map(r => r.status === 'fulfilled' ? safeJson(r.value) : null));
+      const [
+        rVer, rCre, rBr, rCam, rPay, rSt, rBlog, rNews, rCont, rPod, rRev, rComm,
+        rApps, rLead, rBrandAna, rAct, rDeepSt, rGal, rUp, rSettings, rPages,
+        rAmb, rEvt, rMis, rMisComp
+      ] = await Promise.all(results.map(r => r.status === 'fulfilled' ? safeJson(r.value) : null));
 
       if (rVer) setVerifications(Array.isArray(rVer) ? rVer : []);
       if (rCre) setCreators(rCre.creators || (Array.isArray(rCre) ? rCre : []));
@@ -918,6 +1062,10 @@ export default function App() {
       if (rDeepSt) setDeepStats(rDeepSt);
       if (rGal) setGallery(Array.isArray(rGal) ? rGal : []);
       if (rUp) setUploads(Array.isArray(rUp) ? rUp : []);
+      if (rAmb) setAmbassadors(Array.isArray(rAmb) ? rAmb : []);
+      if (rEvt) setEvents(Array.isArray(rEvt) ? rEvt : []);
+      if (rMis) setMissions(Array.isArray(rMis) ? rMis : []);
+      if (rMisComp) setMissionCompletions(Array.isArray(rMisComp) ? rMisComp : []);
       if (rPages && Array.isArray(rPages)) {
         rPages.forEach(p => {
           if (p.pageName === 'home') setHomeConfig(p.content);
@@ -1575,7 +1723,9 @@ export default function App() {
     unreadContacts: contacts.filter(c => !c.read).length,
     gallery: gallery.length,
     uploads: uploads.length,
-  }), [creators, brands, campaigns, payments, verifications, blogs, newsletters, reviews, comments, podcasts, allApplications, contacts, gallery, uploads]);
+    pendingAmbassadors: ambassadors.filter(a => a.status === 'PENDING').length,
+    pendingMissions: missionCompletions.filter(c => c.status === 'PENDING').length,
+  }), [creators, brands, campaigns, payments, verifications, blogs, newsletters, reviews, comments, podcasts, allApplications, contacts, gallery, uploads, ambassadors, missionCompletions]);
 
   const filteredGallery = useMemo(() => gallery.filter(g =>
     `${g.title} ${g.category} ${g.location || ''} ${(g.tags || []).join(' ')}`.toLowerCase().includes(gallerySearch.toLowerCase())
@@ -2374,7 +2524,11 @@ export default function App() {
           {/* ══ CREATOR ACHIEVEMENTS ═══════════════════════════════════════ */}
           {activeTab === 'creator-achievements' && (
             <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader title="Achievements & Milestones" sub="Track creator milestone progress based on follower counts and brand deals" />
+              <SectionHeader 
+                title="Achievements & Milestones" 
+                sub="Track creator milestone progress based on follower counts and brand deals" 
+                action={<button onClick={() => { setAchCreatorId(''); setAchType('VERIFICATION'); setAchTitle(''); setAchDescription(''); setGrantAchModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ Grant Achievement</button>}
+              />
               <div style={{ marginBottom: 20, padding: 16, background: T.orangeLight, borderRadius: 12, border: `1px solid ${T.orangeBorder}` }}>
                 <p style={{ margin: 0, fontSize: 13, color: T.orange, fontWeight: 700 }}>ℹ️ Achievements are automatically unlocked when creators hit follower + deal milestones. Verified creators get physical swag shipped to them.</p>
               </div>
@@ -2516,6 +2670,255 @@ export default function App() {
                 ))}
               </Table>
               {filteredLeaderboard.length === 0 && <EmptyState icon="🏆" msg="No verified creators in leaderboard yet" />}
+            </div>
+          )}
+
+          {/* ══ EVENTS MANAGER ════════════════════════════════════════════ */}
+          {activeTab === 'events' && (
+            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
+              <SectionHeader 
+                title="Events Manager" 
+                badge={events.length} 
+                sub="Create and manage public platform conferences, summits, and creator meetups" 
+                action={<button onClick={() => { setEditingEvent(null); setEvtTitle(''); setEvtDescription(''); setEvtDate(''); setEvtLocation(''); setEvtLink(''); setEvtImage(''); setEventModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ New Event</button>}
+              />
+              {events.length === 0 ? <EmptyState icon="📅" msg="No events created yet" /> : (
+                <Table cols={['Banner', 'Event Title', 'Date', 'Location', 'Link', { label: 'Actions', align: 'right' }]}>
+                  {events.map(evt => (
+                    <tr key={evt.id} style={{ borderBottom: `1px solid ${T.border}` }}>
+                      <Td>
+                        <img src={evt.image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=100'} alt={evt.title} style={{ width: 60, height: 40, borderRadius: 6, objectFit: 'cover', border: `1px solid ${T.border}` }} />
+                      </Td>
+                      <Td bold>
+                        <div>{evt.title}</div>
+                        <div style={{ fontSize: 11, color: T.muted, fontWeight: 550 }}>{evt.description?.substring(0, 50)}...</div>
+                      </Td>
+                      <Td bold>{evt.date}</Td>
+                      <Td>{evt.location}</Td>
+                      <Td>
+                        {evt.link ? <a href={evt.link} target="_blank" rel="noopener noreferrer" style={{ color: T.orange, fontWeight: 700 }}>Link ↗</a> : '—'}
+                      </Td>
+                      <Td right>
+                        <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                          <ActionBtn small onClick={() => {
+                            setEditingEvent(evt);
+                            setEvtTitle(evt.title || '');
+                            setEvtDescription(evt.description || '');
+                            setEvtDate(evt.date || '');
+                            setEvtLocation(evt.location || '');
+                            setEvtLink(evt.link || '');
+                            setEvtImage(evt.image || '');
+                            setEventModalOpen(true);
+                          }}>✎ Edit</ActionBtn>
+                          <DangerBtn small onClick={async () => {
+                            if (!window.confirm('Delete this event permanently?')) return;
+                            try {
+                              const res = await fetch(`${API_BASE}/events/${evt.id}`, { method: 'DELETE', headers: H() });
+                              if (res.ok) { toast('Event deleted', 'success'); fetchData(); }
+                              else { const d = await res.json(); throw new Error(d.error || 'Failed'); }
+                            } catch (err) { toast(err.message, 'error'); }
+                          }}><Trash2 size={11} /></DangerBtn>
+                        </div>
+                      </Td>
+                    </tr>
+                  ))}
+                </Table>
+              )}
+            </div>
+          )}
+
+          {/* ══ CAMPUS AMBASSADOR APPLICATIONS ════════════════════════════ */}
+          {activeTab === 'ambassadors' && (
+            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
+              <SectionHeader 
+                title="Campus Ambassador Applications" 
+                badge={ambassadors.length} 
+                sub="Review submitted student profiles applying to represent CreatorBharat on campuses" 
+              />
+              {ambassadors.length === 0 ? <EmptyState icon="🎓" msg="No ambassador applications yet" /> : (
+                <Table cols={['Name / Contact', 'College / City', 'Socials', 'Pitch Brief', 'Applied Date', 'Status', { label: 'Actions', align: 'right' }]}>
+                  {ambassadors.map(app => (
+                    <tr key={app.id} style={{ borderBottom: `1px solid ${T.border}` }}>
+                      <Td bold>
+                        <div>{app.name}</div>
+                        <div style={{ fontSize: 11, color: T.muted, fontWeight: 550 }}>{app.email} · {app.phone}</div>
+                      </Td>
+                      <Td>
+                        <div style={{ fontWeight: 700 }}>{app.college}</div>
+                        <div style={{ fontSize: 11, color: T.muted }}>{app.city}</div>
+                      </Td>
+                      <Td>
+                        <div style={{ fontSize: 12 }}>
+                          {app.instagram && <div style={{ fontWeight: 600 }}>Insta: <span style={{ color: T.orange }}>@{app.instagram}</span></div>}
+                          {app.youtube && <div style={{ fontWeight: 600 }}>YT: <span style={{ color: T.blue }}>{app.youtube}</span></div>}
+                        </div>
+                      </Td>
+                      <Td>
+                        <span style={{ maxWidth: 180, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={app.pitch}>
+                          {app.pitch}
+                        </span>
+                      </Td>
+                      <Td muted>{fmtDate(app.createdAt)}</Td>
+                      <Td>
+                        <Badge color={app.status === 'APPROVED' ? T.green : app.status === 'REJECTED' ? T.red : T.yellow}>
+                          {app.status}
+                        </Badge>
+                      </Td>
+                      <Td right>
+                        <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                          {app.status === 'PENDING' && (
+                            <>
+                              <button onClick={async () => {
+                                try {
+                                  const res = await fetch(`${API_BASE}/admin/ambassadors/${app.id}/status`, {
+                                    method: 'POST', headers: H(), body: JSON.stringify({ status: 'APPROVED' })
+                                  });
+                                  if (res.ok) { toast('Ambassador application approved!', 'success'); fetchData(); }
+                                } catch (err) { toast(err.message, 'error'); }
+                              }} style={{ padding: '4px 10px', background: T.greenLight, border: `1px solid ${T.green}20`, color: T.green, borderRadius: 6, fontSize: 11, fontWeight: 800, cursor: 'pointer' }}>✓ Approve</button>
+                              <button onClick={async () => {
+                                try {
+                                  const res = await fetch(`${API_BASE}/admin/ambassadors/${app.id}/status`, {
+                                    method: 'POST', headers: H(), body: JSON.stringify({ status: 'REJECTED' })
+                                  });
+                                  if (res.ok) { toast('Ambassador application rejected', 'info'); fetchData(); }
+                                } catch (err) { toast(err.message, 'error'); }
+                              }} style={{ padding: '4px 10px', background: T.redLight, border: `1px solid ${T.red}20`, color: T.red, borderRadius: 6, fontSize: 11, fontWeight: 800, cursor: 'pointer' }}>✕ Reject</button>
+                            </>
+                          )}
+                          <DangerBtn small onClick={async () => {
+                            if (!window.confirm('Delete this application permanently?')) return;
+                            try {
+                              const res = await fetch(`${API_BASE}/admin/ambassadors/${app.id}`, { method: 'DELETE', headers: H() });
+                              if (res.ok) { toast('Application deleted', 'success'); fetchData(); }
+                            } catch (err) { toast(err.message, 'error'); }
+                          }}><Trash2 size={11} /></DangerBtn>
+                        </div>
+                      </Td>
+                    </tr>
+                  ))}
+                </Table>
+              )}
+            </div>
+          )}
+
+          {/* ══ MONTHLY MISSIONS & COMPLETIONS ════════════════════════════ */}
+          {activeTab === 'missions' && (
+            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28, display: 'flex', flexDirection: 'column', gap: 32 }}>
+              
+              {/* Part A: Missions list */}
+              <div>
+                <SectionHeader 
+                  title="Monthly Platform Missions" 
+                  badge={missions.length} 
+                  sub="Create and manage monthly platform-wide creator tasks and rewards" 
+                  action={<button onClick={() => { setEditingMission(null); setMisTitle(''); setMisDescription(''); setMisReward(''); setMisRewardColor('#FF9431'); setMisDeadline(''); setMisSteps(''); setMisActive(true); setMissionModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ Create Mission</button>}
+                />
+                {missions.length === 0 ? <EmptyState icon="🎯" msg="No monthly missions defined yet" /> : (
+                  <Table cols={['Mission Detail', 'Reward', 'Deadline', 'Status', { label: 'Actions', align: 'right' }]}>
+                    {missions.map(mis => (
+                      <tr key={mis.id} style={{ borderBottom: `1px solid ${T.border}` }}>
+                        <Td bold>
+                          <div>{mis.title}</div>
+                          <div style={{ fontSize: 11, color: T.muted, fontWeight: 550 }}>{mis.description}</div>
+                        </Td>
+                        <Td>
+                          <Badge color={mis.rewardColor || T.orange}>{mis.reward}</Badge>
+                        </Td>
+                        <Td muted>{fmtDate(mis.deadline)}</Td>
+                        <Td>
+                          <Badge color={mis.active ? T.green : T.muted}>{mis.active ? 'Active' : 'Draft'}</Badge>
+                        </Td>
+                        <Td right>
+                          <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                            <ActionBtn small onClick={() => {
+                              setEditingMission(mis);
+                              setMisTitle(mis.title || '');
+                              setMisDescription(mis.description || '');
+                              setMisReward(mis.reward || '');
+                              setMisRewardColor(mis.rewardColor || '#FF9431');
+                              setMisDeadline(mis.deadline ? new Date(mis.deadline).toISOString().split('T')[0] : '');
+                              setMisSteps(Array.isArray(mis.steps) ? mis.steps.join('\n') : '');
+                              setMisActive(mis.active ?? true);
+                              setMissionModalOpen(true);
+                            }}>✎ Edit</ActionBtn>
+                            <DangerBtn small onClick={async () => {
+                              if (!window.confirm('Delete this mission?')) return;
+                              try {
+                                const res = await fetch(`${API_BASE}/admin/missions/${mis.id}`, { method: 'DELETE', headers: H() });
+                                if (res.ok) { toast('Mission deleted', 'success'); fetchData(); }
+                              } catch (err) { toast(err.message, 'error'); }
+                            }}><Trash2 size={11} /></DangerBtn>
+                          </div>
+                        </Td>
+                      </tr>
+                    ))}
+                  </Table>
+                )}
+              </div>
+
+              {/* Part B: Completions Proof Submissions Queue */}
+              <div style={{ borderTop: `1px solid ${T.border}`, paddingTop: 28 }}>
+                <SectionHeader 
+                  title="Proof Submission Queue" 
+                  badge={missionCompletions.length} 
+                  sub="Verify submitted proof URLs from creators claiming mission completion rewards" 
+                />
+                {missionCompletions.length === 0 ? <EmptyState icon="⏳" msg="No completion proofs submitted yet" /> : (
+                  <Table cols={['Creator', 'Mission', 'Submitted Proof Link', 'Status', { label: 'Review Actions', align: 'right' }]}>
+                    {missionCompletions.map(comp => (
+                      <tr key={comp.id} style={{ borderBottom: `1px solid ${T.border}` }}>
+                        <Td bold>
+                          <div>{comp.creator?.name || '—'}</div>
+                          <div style={{ fontSize: 11, color: T.muted, fontWeight: 550 }}>@{comp.creator?.handle}</div>
+                        </Td>
+                        <Td>
+                          <div style={{ fontWeight: 700 }}>{comp.mission?.title}</div>
+                          <div style={{ fontSize: 11, color: T.muted }}>Reward: {comp.mission?.reward}</div>
+                        </Td>
+                        <Td>
+                          {comp.proofUrl ? (
+                            <a href={comp.proofUrl} target="_blank" rel="noopener noreferrer" style={{ color: T.orange, fontWeight: 800, textDecoration: 'underline' }}>
+                              View Proof Link ↗
+                            </a>
+                          ) : 'No Link Provided'}
+                        </Td>
+                        <Td>
+                          <Badge color={comp.status === 'APPROVED' ? T.green : comp.status === 'REJECTED' ? T.red : T.yellow}>
+                            {comp.status}
+                          </Badge>
+                        </Td>
+                        <Td right>
+                          <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                            {comp.status === 'PENDING' && (
+                              <>
+                                <button onClick={async () => {
+                                  try {
+                                    const res = await fetch(`${API_BASE}/admin/missions/completions/${comp.id}/status`, {
+                                      method: 'POST', headers: H(), body: JSON.stringify({ status: 'APPROVED' })
+                                    });
+                                    if (res.ok) { toast('Mission submission approved & reward notification sent!', 'success'); fetchData(); }
+                                    else { const d = await res.json(); throw new Error(d.error); }
+                                  } catch (err) { toast(err.message, 'error'); }
+                                }} style={{ padding: '5px 12px', background: T.greenLight, border: `1px solid ${T.green}20`, color: T.green, borderRadius: 6, fontSize: 11, fontWeight: 800, cursor: 'pointer' }}>✓ Approve</button>
+                                <button onClick={async () => {
+                                  try {
+                                    const res = await fetch(`${API_BASE}/admin/missions/completions/${comp.id}/status`, {
+                                      method: 'POST', headers: H(), body: JSON.stringify({ status: 'REJECTED' })
+                                    });
+                                    if (res.ok) { toast('Mission submission rejected & notification sent', 'info'); fetchData(); }
+                                    else { const d = await res.json(); throw new Error(d.error); }
+                                  } catch (err) { toast(err.message, 'error'); }
+                                }} style={{ padding: '5px 12px', background: T.redLight, border: `1px solid ${T.red}20`, color: T.red, borderRadius: 6, fontSize: 11, fontWeight: 800, cursor: 'pointer' }}>✕ Reject</button>
+                              </>
+                            )}
+                          </div>
+                        </Td>
+                      </tr>
+                    ))}
+                  </Table>
+                )}
+              </div>
             </div>
           )}
 
@@ -4530,6 +4933,148 @@ export default function App() {
               <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
                 <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>Create Campaign</button>
                 <button type="button" onClick={() => { setCreateCampaignModalOpen(false); clearCampaignForm(); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ══ NEW/EDIT EVENT MODAL ════════════════════════════════════ */}
+      {eventModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
+          <div style={{ width: '100%', maxWidth: 600, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
+            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>{editingEvent ? 'Edit Event Details' : 'Create New Event'}</h3>
+              <button onClick={() => { setEventModalOpen(false); setEditingEvent(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
+            </div>
+            <form onSubmit={handleSaveEvent} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Event Title *</label>
+                <input value={evtTitle} onChange={e => setEvtTitle(e.target.value)} required placeholder="e.g. National Creator Summit 2026" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Description / Agenda *</label>
+                <textarea value={evtDescription} onChange={e => setEvtDescription(e.target.value)} required rows={4} placeholder="What is the schedule, key hosts, and learning outcomes?" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Date & Time *</label>
+                  <input type="datetime-local" value={evtDate} onChange={e => setEvtDate(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Location / Venue *</label>
+                  <input value={evtLocation} onChange={e => setEvtLocation(e.target.value)} required placeholder="e.g. New Delhi, ILBS Auditorium" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Registration link</label>
+                  <input value={evtLink} onChange={e => setEvtLink(e.target.value)} placeholder="https://..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Banner Cover Image URL</label>
+                  <input value={evtImage} onChange={e => setEvtImage(e.target.value)} placeholder="https://..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
+                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>{editingEvent ? 'Update Event Details' : 'Create Event'}</button>
+                <button type="button" onClick={() => { setEventModalOpen(false); setEditingEvent(null); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ══ GRANT ACHIEVEMENT MODAL ══════════════════════════════════ */}
+      {grantAchModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
+          <div style={{ width: '100%', maxWidth: 550, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
+            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>Grant Creator Achievement Badge</h3>
+              <button onClick={() => { setGrantAchModalOpen(false); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
+            </div>
+            <form onSubmit={handleSaveAchievement} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Select Creator *</label>
+                <select value={achCreatorId} onChange={e => setAchCreatorId(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
+                  <option value="">-- Choose Creator --</option>
+                  {creators.map(c => (
+                    <option key={c.id} value={c.id}>{c.name} (@{c.handle})</option>
+                  ))}
+                </select>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Badge Type *</label>
+                  <select value={achType} onChange={e => setAchType(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}>
+                    <option value="VERIFICATION">VERIFICATION</option>
+                    <option value="FOLLOWER_MILESTONE">FOLLOWER MILESTONE</option>
+                    <option value="DEAL_MILESTONE">DEAL MILESTONE</option>
+                    <option value="CUSTOM">CUSTOM BADGE</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Badge Title *</label>
+                  <input value={achTitle} onChange={e => setAchTitle(e.target.value)} required placeholder="e.g. Rising Star, Superhost" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Description / Criteria</label>
+                <textarea value={achDescription} onChange={e => setAchDescription(e.target.value)} rows={3} placeholder="Describe the reason for awarding this badge..." style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} />
+              </div>
+              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
+                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>Grant Badge</button>
+                <button type="button" onClick={() => { setGrantAchModalOpen(false); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ══ NEW/EDIT MISSION MODAL ══════════════════════════════════ */}
+      {missionModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(6px)', overflowY: 'auto', padding: '40px 20px' }}>
+          <div style={{ width: '100%', maxWidth: 600, background: T.card, borderRadius: 24, overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.15)' }}>
+            <div style={{ padding: '24px 28px', borderBottom: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.navy }}>{editingMission ? 'Edit Monthly Mission' : 'Create Monthly Mission'}</h3>
+              <button onClick={() => { setMissionModalOpen(false); setEditingMission(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.muted }}><X size={20} /></button>
+            </div>
+            <form onSubmit={handleSaveMission} style={{ padding: 28, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Mission Title *</label>
+                  <input value={misTitle} onChange={e => setMisTitle(e.target.value)} required placeholder="e.g. Join the Creator Network" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Reward Tag *</label>
+                  <input value={misReward} onChange={e => setMisReward(e.target.value)} required placeholder="e.g. 500 Coins, Swag Bag" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Reward Color (Hex)</label>
+                  <input value={misRewardColor} onChange={e => setMisRewardColor(e.target.value)} placeholder="#FF9431" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Deadline Date *</label>
+                  <input type="date" value={misDeadline} onChange={e => setMisDeadline(e.target.value)} required style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Description / Instructions *</label>
+                <textarea value={misDescription} onChange={e => setMisDescription(e.target.value)} required rows={3} placeholder="What does the creator need to do?" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Steps / Checklist (One per line) *</label>
+                <textarea value={misSteps} onChange={e => setMisSteps(e.target.value)} required rows={4} placeholder="Complete your profile&#10;Verify your email&#10;Share referral link" style={{ width: '100%', padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} />
+              </div>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 700, color: T.navy, cursor: 'pointer', marginTop: 8 }}>
+                <input type="checkbox" checked={misActive} onChange={e => setMisActive(e.target.checked)} style={{ width: 16, height: 16 }} />
+                ✓ Mission is Active and visible to creators
+              </label>
+              <div style={{ display: 'flex', gap: 12, paddingTop: 8 }}>
+                <button type="submit" style={{ flex: 1, padding: '12px', background: T.orange, color: '#fff', border: 'none', borderRadius: 11, fontWeight: 800, fontSize: 14, cursor: 'pointer' }}>{editingMission ? 'Update Mission' : 'Create Mission'}</button>
+                <button type="button" onClick={() => { setMissionModalOpen(false); setEditingMission(null); }} style={{ padding: '12px 20px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 11, fontWeight: 700, fontSize: 13, cursor: 'pointer', color: T.slate }}>Cancel</button>
               </div>
             </form>
           </div>

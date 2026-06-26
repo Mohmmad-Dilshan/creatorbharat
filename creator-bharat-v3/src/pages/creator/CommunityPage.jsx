@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '@/core/context';
 import { fetchCreators } from '@/utils/platformService';
+import { apiCall } from '@/utils/api';
 import { fmt } from '@/utils/helpers';
 import { Btn, Card, Bdg, Fld } from '@/components/common/Primitives';
 import { CreatorPageHeader } from './CreatorShellPage';
@@ -217,6 +218,22 @@ CreatorDetailView.propTypes = {
   navigate: PropTypes.func.isRequired
 };
 
+const timeAgo = (dateStr) => {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHr = Math.floor(diffMin / 60);
+  const diffDays = Math.floor(diffHr / 24);
+
+  if (diffSec < 60) return 'Just now';
+  if (diffMin < 60) return `${diffMin}m ago`;
+  if (diffHr < 24) return `${diffHr}h ago`;
+  return `${diffDays}d ago`;
+};
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function CommunityPage() {
   const { id } = useParams();
@@ -224,6 +241,12 @@ export default function CommunityPage() {
   const navigate = useNavigate();
 
   // Search & Filter States
+  const [tab, setTab] = useState('network'); // 'network' | 'feed'
+  const [posts, setPosts] = useState([]);
+  const [feedLoading, setFeedLoading] = useState(false);
+  const [newPostText, setNewPostText] = useState('');
+  const [submittingPost, setSubmittingPost] = useState(false);
+
   const [q, setQ] = useState('');
   const [niche, setNiche] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
@@ -237,6 +260,66 @@ export default function CommunityPage() {
   const [loading, setLoading] = useState(true);
   const [limit, setLimit] = useState(12);
   const [mob, setMob] = useState(globalThis.innerWidth < 768);
+
+  const loadFeed = () => {
+    setFeedLoading(true);
+    apiCall('/community/posts')
+      .then(res => {
+        if (Array.isArray(res)) setPosts(res);
+        setFeedLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to load feed:', err);
+        setFeedLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    if (tab === 'feed') {
+      loadFeed();
+    }
+  }, [tab]);
+
+  const handleCreatePost = (e) => {
+    e.preventDefault();
+    if (!newPostText.trim()) return;
+
+    setSubmittingPost(true);
+    apiCall('/community/posts', {
+      method: 'POST',
+      body: JSON.stringify({ content: newPostText })
+    })
+      .then(newPost => {
+        setPosts(prev => [newPost, ...prev]);
+        setNewPostText('');
+        setSubmittingPost(false);
+        dsp({ t: 'TOAST', d: { type: 'success', msg: 'Post shared in community!' } });
+      })
+      .catch(err => {
+        console.error('Failed to create post:', err);
+        setSubmittingPost(false);
+        dsp({ t: 'TOAST', d: { type: 'error', msg: 'Failed to share post.' } });
+      });
+  };
+
+  const handleLikePost = (postId) => {
+    apiCall(`/community/posts/${postId}/like`, { method: 'POST' })
+      .then(res => {
+        if (res && res.success) {
+          setPosts(prev => prev.map(p => {
+            if (p.id === postId) {
+              return {
+                ...p,
+                likesCount: res.likesCount,
+                likedByMe: res.likedByMe
+              };
+            }
+            return p;
+          }));
+        }
+      })
+      .catch(err => console.error('Failed to like post:', err));
+  };
 
   useEffect(() => {
     const h = () => setMob(globalThis.innerWidth < 768);
@@ -338,240 +421,420 @@ export default function CommunityPage() {
     <div className="dashboard-page-container">
       <CreatorPageHeader
         badge="CREATOR COMMUNITY"
-        title="Creator Network"
-        subtitle="Connect with other verified creators — collaborate, co-create, and grow together."
-        icon={Users}
+        title={tab === 'network' ? "Creator Network" : "Community Feed"}
+        subtitle={tab === 'network' ? "Connect with other verified creators — collaborate, co-create, and grow together." : "Share updates, ask questions, and interact with the creator community."}
+        icon={tab === 'network' ? Users : Compass}
       />
 
-      {/* Main Search Bar & Filter Toggle */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 16, alignItems: 'center' }}>
-        <div style={{ flex: 1 }}>
-          <Fld
-            label=""
-            icon={Search}
-            value={q}
-            onChange={e => setQ(e.target.value)}
-            placeholder="Search by name, city, niche..."
-          />
-        </div>
-        <button 
-          onClick={() => setShowFilters(!showFilters)}
-          style={{ 
-            padding: '12px 18px', 
-            borderRadius: 14, 
-            border: `1.5px solid ${showFilters ? '#FF9431' : '#e2e8f0'}`, 
-            background: showFilters ? 'rgba(255,148,49,0.1)' : '#f8fafc', 
-            color: showFilters ? '#FF9431' : '#0f172a', 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 8, 
-            fontSize: 14, 
-            fontWeight: 800, 
+      {/* Tab Switcher */}
+      <div style={{ display: 'flex', gap: 12, marginBottom: 24, borderBottom: '1px solid #e2e8f0', paddingBottom: 12 }}>
+        <button
+          onClick={() => setTab('network')}
+          style={{
+            padding: '10px 20px',
+            background: 'none',
+            border: 'none',
+            borderBottom: tab === 'network' ? '3px solid #FF9431' : '3px solid transparent',
+            color: tab === 'network' ? '#FF9431' : '#64748b',
+            fontWeight: 800,
+            fontSize: 15,
             cursor: 'pointer',
-            height: '46px',
-            transition: 'all 0.3s'
+            transition: 'all 0.2s',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8
           }}
         >
-          <SlidersHorizontal size={16} />
-          {!mob && 'Advanced Filters'}
+          <Users size={16} />
+          Creator Network
+        </button>
+        <button
+          onClick={() => setTab('feed')}
+          style={{
+            padding: '10px 20px',
+            background: 'none',
+            border: 'none',
+            borderBottom: tab === 'feed' ? '3px solid #FF9431' : '3px solid transparent',
+            color: tab === 'feed' ? '#FF9431' : '#64748b',
+            fontWeight: 800,
+            fontSize: 15,
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8
+          }}
+        >
+          <Compass size={16} />
+          Community Feed
         </button>
       </div>
 
-      {/* EXPANDABLE SAAS FILTER DRAWER */}
-      <AnimatePresence>
-        {showFilters && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            style={{ overflow: 'hidden', marginBottom: 24 }}
-          >
-            <div style={{ 
-              background: '#f8fafc', 
-              border: '1.5px solid #e2e8f0', 
-              borderRadius: 24, 
-              padding: mob ? '20px' : '28px',
-              display: 'grid',
-              gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)',
-              gap: 20
-            }}>
-              {/* Col 1: Location & Platform */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 6 }}>HQ City / State</label>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Jaipur, Indore" 
-                    value={locationFilter}
-                    onChange={e => setLocationFilter(e.target.value)}
-                    style={{ width: '100%', padding: '11px 14px', border: '1.5px solid #e2e8f0', borderRadius: 12, fontSize: 13, outline: 'none', background: '#fff', boxSizing: 'border-box' }}
+      {tab === 'network' ? (
+        <>
+          {/* Main Search Bar & Filter Toggle */}
+          <div style={{ display: 'flex', gap: 12, marginBottom: 16, alignItems: 'center' }}>
+            <div style={{ flex: 1 }}>
+              <Fld
+                label=""
+                icon={Search}
+                value={q}
+                onChange={e => setQ(e.target.value)}
+                placeholder="Search by name, city, niche..."
+              />
+            </div>
+            <button 
+              onClick={() => setShowFilters(!showFilters)}
+              style={{ 
+                padding: '12px 18px', 
+                borderRadius: 14, 
+                border: `1.5px solid ${showFilters ? '#FF9431' : '#e2e8f0'}`, 
+                background: showFilters ? 'rgba(255,148,49,0.1)' : '#f8fafc', 
+                color: showFilters ? '#FF9431' : '#0f172a', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 8, 
+                fontSize: 14, 
+                fontWeight: 800, 
+                cursor: 'pointer',
+                height: '46px',
+                transition: 'all 0.3s'
+              }}
+            >
+              <SlidersHorizontal size={16} />
+              {!mob && 'Advanced Filters'}
+            </button>
+          </div>
+
+          {/* EXPANDABLE SAAS FILTER DRAWER */}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                style={{ overflow: 'hidden', marginBottom: 24 }}
+              >
+                <div style={{ 
+                  background: '#f8fafc', 
+                  border: '1.5px solid #e2e8f0', 
+                  borderRadius: 24, 
+                  padding: mob ? '20px' : '28px',
+                  display: 'grid',
+                  gridTemplateColumns: mob ? '1fr' : 'repeat(3, 1fr)',
+                  gap: 20
+                }}>
+                  {/* Col 1: Location & Platform */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 6 }}>HQ City / State</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. Jaipur, Indore" 
+                        value={locationFilter}
+                        onChange={e => setLocationFilter(e.target.value)}
+                        style={{ width: '100%', padding: '11px 14px', border: '1.5px solid #e2e8f0', borderRadius: 12, fontSize: 13, outline: 'none', background: '#fff', boxSizing: 'border-box' }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 6 }}>Social Network</label>
+                      <select 
+                        value={platformFilter}
+                        onChange={e => setPlatformFilter(e.target.value)}
+                        style={{ width: '100%', padding: '11px 14px', border: '1.5px solid #e2e8f0', borderRadius: 12, fontSize: 13, outline: 'none', background: '#fff', cursor: 'pointer' }}
+                      >
+                        <option value="all">All Platforms</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="twitter">Twitter / X</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Col 2: Follower Tier & Min ER */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 6 }}>Follower Tier</label>
+                      <select
+                        value={tierFilter}
+                        onChange={e => setTierFilter(e.target.value)}
+                        style={{ width: '100%', padding: '11px 14px', border: '1.5px solid #e2e8f0', borderRadius: 12, fontSize: 13, outline: 'none', background: '#fff', cursor: 'pointer' }}
+                      >
+                        <option value="all">All Tiers</option>
+                        <option value="nano">Nano (&lt; 10K)</option>
+                        <option value="micro">Micro (10K - 50K)</option>
+                        <option value="mid">Mid-Tier (50K - 100K)</option>
+                        <option value="mega">Mega (100K+)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 6 }}>Min Engagement Rate (ER)</label>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        {[0, 3, 5, 8].map(er => (
+                          <button 
+                            key={er} 
+                            onClick={() => setErFilter(er)}
+                            style={{
+                              flex: 1, padding: '8px', borderRadius: 10,
+                              border: `1.5px solid ${erFilter === er ? '#FF9431' : '#e2e8f0'}`,
+                              background: erFilter === er ? 'rgba(255,148,49,0.1)' : '#fff',
+                              color: erFilter === er ? '#FF9431' : '#64748b',
+                              fontSize: 12, fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s'
+                            }}
+                          >
+                            {er === 0 ? 'All' : `>${er}%`}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Col 3: Sorting & Clear */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, justifyContent: 'space-between' }}>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 6 }}>Sort Results By</label>
+                      <select 
+                        value={sortBy}
+                        onChange={e => setSortBy(e.target.value)}
+                        style={{ width: '100%', padding: '11px 14px', border: '1.5px solid #e2e8f0', borderRadius: 12, fontSize: 13, outline: 'none', background: '#fff', cursor: 'pointer' }}
+                      >
+                        <option value="score">Highest CB Score</option>
+                        <option value="followers">Most Followers</option>
+                        <option value="er">Highest Engagement</option>
+                      </select>
+                    </div>
+                    
+                    <button
+                      onClick={() => {
+                        setLocationFilter('');
+                        setPlatformFilter('all');
+                        setTierFilter('all');
+                        setErFilter(0);
+                        setSortBy('score');
+                        setNiche('');
+                      }}
+                      style={{
+                        padding: '12px', borderRadius: 12, border: 'none',
+                        background: '#e2e8f0', color: '#475569', fontSize: 12, fontWeight: 900,
+                        cursor: 'pointer', transition: '0.2s', width: '100%'
+                      }}
+                      onMouseEnter={e => e.target.style.background = '#cbd5e1'}
+                      onMouseLeave={e => e.target.style.background = '#e2e8f0'}
+                    >
+                      Reset All Filters
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Niche quick filters */}
+          {niches.length > 0 && !showFilters && (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
+              <button
+                onClick={() => setNiche('')}
+                style={{ padding: '6px 14px', borderRadius: 100, border: 'none', background: !niche ? '#0f172a' : '#f1f5f9', color: !niche ? '#fff' : '#64748b', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}
+              >
+                All Niches
+              </button>
+              {niches.map(n => (
+                <button
+                  key={n}
+                  onClick={() => setNiche(niche === n ? '' : n)}
+                  style={{ padding: '6px 14px', borderRadius: 100, border: 'none', background: niche === n ? '#FF9431' : '#f1f5f9', color: niche === n ? '#fff' : '#64748b', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Stats bar */}
+          <div style={{ display: 'flex', gap: 16, marginBottom: 28, padding: '14px 20px', background: '#f8fafc', borderRadius: 16, border: '1px solid #f1f5f9' }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#64748b' }}>
+              <span style={{ fontWeight: 900, color: '#0f172a' }}>{filtered.length}</span> creators found
+            </div>
+            <div style={{ width: 1, background: '#e2e8f0' }} />
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#64748b' }}>
+              <span style={{ fontWeight: 900, color: '#FF9431' }}>{st.saved.length}</span> saved in library
+            </div>
+          </div>
+
+          {loading ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px 0', color: '#94a3b8' }}>
+              <Loader2 size={24} className="spin" style={{ marginRight: 12 }} />
+              <span style={{ fontSize: 15, fontWeight: 700 }}>Loading creators...</span>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '80px 20px', color: '#94a3b8' }}>
+              <Users size={48} style={{ marginBottom: 16, opacity: 0.3 }} />
+              <p style={{ fontSize: 18, fontWeight: 800, color: '#475569' }}>No creators found</p>
+              <p style={{ fontSize: 14, fontWeight: 500 }}>Try a different search or niche filter.</p>
+            </div>
+          ) : (
+            <>
+              <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(auto-fill, minmax(280px, 1fr))', gap: mob ? 12 : 24 }}>
+                {visible.map((creator, i) => (
+                  <CreatorNetworkCard
+                    key={creator.id || i}
+                    creator={creator}
+                    saved={st.saved.includes(creator.id)}
+                    onSave={() => dsp({ t: 'SAVE', id: creator.id })}
+                    onChat={() => navigate('/creator/messages')}
+                    onView={() => navigate(`/creator/community/${creator.handle || creator.id}`)}
+                    delay={i * 0.04}
                   />
-                </div>
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 6 }}>Social Network</label>
-                  <select 
-                    value={platformFilter}
-                    onChange={e => setPlatformFilter(e.target.value)}
-                    style={{ width: '100%', padding: '11px 14px', border: '1.5px solid #e2e8f0', borderRadius: 12, fontSize: 13, outline: 'none', background: '#fff', cursor: 'pointer' }}
-                  >
-                    <option value="all">All Platforms</option>
-                    <option value="instagram">Instagram</option>
-                    <option value="youtube">YouTube</option>
-                    <option value="linkedin">LinkedIn</option>
-                    <option value="twitter">Twitter / X</option>
-                  </select>
-                </div>
+                ))}
               </div>
 
-              {/* Col 2: Follower Tier & Min ER */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 6 }}>Follower Tier</label>
-                  <select
-                    value={tierFilter}
-                    onChange={e => setTierFilter(e.target.value)}
-                    style={{ width: '100%', padding: '11px 14px', border: '1.5px solid #e2e8f0', borderRadius: 12, fontSize: 13, outline: 'none', background: '#fff', cursor: 'pointer' }}
+              {visible.length < filtered.length && (
+                <div style={{ textAlign: 'center', marginTop: 32 }}>
+                  <button
+                    onClick={() => setLimit(prev => prev + 12)}
+                    style={{ padding: '14px 40px', borderRadius: 100, background: '#0f172a', color: '#fff', fontSize: 14, fontWeight: 900, border: 'none', cursor: 'pointer' }}
                   >
-                    <option value="all">All Tiers</option>
-                    <option value="nano">Nano (&lt; 10K)</option>
-                    <option value="micro">Micro (10K - 50K)</option>
-                    <option value="mid">Mid-Tier (50K - 100K)</option>
-                    <option value="mega">Mega (100K+)</option>
-                  </select>
+                    Load More Creators
+                  </button>
+                  <p style={{ marginTop: 12, fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>
+                    Showing {visible.length} of {filtered.length}
+                  </p>
                 </div>
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 6 }}>Min Engagement Rate (ER)</label>
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    {[0, 3, 5, 8].map(er => (
-                      <button 
-                        key={er} 
-                        onClick={() => setErFilter(er)}
-                        style={{
-                          flex: 1, padding: '8px', borderRadius: 10,
-                          border: `1.5px solid ${erFilter === er ? '#FF9431' : '#e2e8f0'}`,
-                          background: erFilter === er ? 'rgba(255,148,49,0.1)' : '#fff',
-                          color: erFilter === er ? '#FF9431' : '#64748b',
-                          fontSize: 12, fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s'
-                        }}
-                      >
-                        {er === 0 ? 'All' : `>${er}%`}
-                      </button>
-                    ))}
+              )}
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          {/* Post Creator Card */}
+          <Card style={{ padding: 20, marginBottom: 24, background: '#fff', borderRadius: 20, border: '1.5px solid #e2e8f0' }}>
+            <form onSubmit={handleCreatePost}>
+              <div style={{ display: 'flex', gap: 16 }}>
+                <img
+                  src={st.user?.photo || st.user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user?.name || 'Me')}&background=FF9431&color=fff`}
+                  alt="My Profile"
+                  style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover' }}
+                />
+                <div style={{ flex: 1 }}>
+                  <textarea
+                    value={newPostText}
+                    onChange={(e) => setNewPostText(e.target.value)}
+                    placeholder="What's happening in your creator journey?"
+                    style={{
+                      width: '100%',
+                      minHeight: 80,
+                      border: 'none',
+                      outline: 'none',
+                      fontSize: 15,
+                      resize: 'none',
+                      color: '#0f172a',
+                      fontWeight: 500,
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, borderTop: '1px solid #f1f5f9', paddingTop: 12 }}>
+                    <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>
+                      {newPostText.length} / 500 characters
+                    </span>
+                    <Btn
+                      sm
+                      type="submit"
+                      disabled={submittingPost || !newPostText.trim()}
+                      style={{
+                        background: '#FF9431',
+                        color: '#fff',
+                        borderRadius: 12,
+                        padding: '8px 18px',
+                        fontWeight: 850,
+                        opacity: (!newPostText.trim() || submittingPost) ? 0.6 : 1
+                      }}
+                    >
+                      {submittingPost ? <Loader2 size={14} className="spin" /> : 'Post to Feed'}
+                    </Btn>
                   </div>
                 </div>
               </div>
+            </form>
+          </Card>
 
-              {/* Col 3: Sorting & Clear */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, justifyContent: 'space-between' }}>
-                <div>
-                  <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 6 }}>Sort Results By</label>
-                  <select 
-                    value={sortBy}
-                    onChange={e => setSortBy(e.target.value)}
-                    style={{ width: '100%', padding: '11px 14px', border: '1.5px solid #e2e8f0', borderRadius: 12, fontSize: 13, outline: 'none', background: '#fff', cursor: 'pointer' }}
-                  >
-                    <option value="score">Highest CB Score</option>
-                    <option value="followers">Most Followers</option>
-                    <option value="er">Highest Engagement</option>
-                  </select>
-                </div>
-                
-                <button
-                  onClick={() => {
-                    setLocationFilter('');
-                    setPlatformFilter('all');
-                    setTierFilter('all');
-                    setErFilter(0);
-                    setSortBy('score');
-                    setNiche('');
-                  }}
-                  style={{
-                    padding: '12px', borderRadius: 12, border: 'none',
-                    background: '#e2e8f0', color: '#475569', fontSize: 12, fontWeight: 900,
-                    cursor: 'pointer', transition: '0.2s', width: '100%'
-                  }}
-                  onMouseEnter={e => e.target.style.background = '#cbd5e1'}
-                  onMouseLeave={e => e.target.style.background = '#e2e8f0'}
-                >
-                  Reset All Filters
-                </button>
-              </div>
+          {/* Feed Listing */}
+          {feedLoading ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px 0', color: '#94a3b8' }}>
+              <Loader2 size={24} className="spin" style={{ marginRight: 12 }} />
+              <span style={{ fontSize: 15, fontWeight: 700 }}>Loading community feed...</span>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Niche quick filters */}
-      {niches.length > 0 && !showFilters && (
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
-          <button
-            onClick={() => setNiche('')}
-            style={{ padding: '6px 14px', borderRadius: 100, border: 'none', background: !niche ? '#0f172a' : '#f1f5f9', color: !niche ? '#fff' : '#64748b', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}
-          >
-            All Niches
-          </button>
-          {niches.map(n => (
-            <button
-              key={n}
-              onClick={() => setNiche(niche === n ? '' : n)}
-              style={{ padding: '6px 14px', borderRadius: 100, border: 'none', background: niche === n ? '#FF9431' : '#f1f5f9', color: niche === n ? '#fff' : '#64748b', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}
-            >
-              {n}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Stats bar */}
-      <div style={{ display: 'flex', gap: 16, marginBottom: 28, padding: '14px 20px', background: '#f8fafc', borderRadius: 16, border: '1px solid #f1f5f9' }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#64748b' }}>
-          <span style={{ fontWeight: 900, color: '#0f172a' }}>{filtered.length}</span> creators found
-        </div>
-        <div style={{ width: 1, background: '#e2e8f0' }} />
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#64748b' }}>
-          <span style={{ fontWeight: 900, color: '#FF9431' }}>{st.saved.length}</span> saved in library
-        </div>
-      </div>
-
-      {/* Grid */}
-      {loading ? (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px 0', color: '#94a3b8' }}>
-          <Loader2 size={24} className="spin" style={{ marginRight: 12 }} />
-          <span style={{ fontSize: 15, fontWeight: 700 }}>Loading creators...</span>
-        </div>
-      ) : filtered.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '80px 20px', color: '#94a3b8' }}>
-          <Users size={48} style={{ marginBottom: 16, opacity: 0.3 }} />
-          <p style={{ fontSize: 18, fontWeight: 800, color: '#475569' }}>No creators found</p>
-          <p style={{ fontSize: 14, fontWeight: 500 }}>Try a different search or niche filter.</p>
-        </div>
-      ) : (
-        <>
-          <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr 1fr' : 'repeat(auto-fill, minmax(280px, 1fr))', gap: mob ? 12 : 24 }}>
-            {visible.map((creator, i) => (
-              <CreatorNetworkCard
-                key={creator.id || i}
-                creator={creator}
-                saved={st.saved.includes(creator.id)}
-                onSave={() => dsp({ t: 'SAVE', id: creator.id })}
-                onChat={() => navigate('/creator/messages')}
-                onView={() => navigate(`/creator/community/${creator.handle || creator.id}`)}
-                delay={i * 0.04}
-              />
-            ))}
-          </div>
-
-          {visible.length < filtered.length && (
-            <div style={{ textAlign: 'center', marginTop: 32 }}>
-              <button
-                onClick={() => setLimit(prev => prev + 12)}
-                style={{ padding: '14px 40px', borderRadius: 100, background: '#0f172a', color: '#fff', fontSize: 14, fontWeight: 900, border: 'none', cursor: 'pointer' }}
-              >
-                Load More Creators
-              </button>
-              <p style={{ marginTop: 12, fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>
-                Showing {visible.length} of {filtered.length}
-              </p>
+          ) : posts.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '60px 20px', color: '#94a3b8' }}>
+              <MessageSquare size={48} style={{ marginBottom: 16, opacity: 0.3 }} />
+              <p style={{ fontSize: 18, fontWeight: 800, color: '#475569' }}>No posts yet</p>
+              <p style={{ fontSize: 14, fontWeight: 500 }}>Be the first one to share an update!</p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {posts.map((post) => {
+                const creatorPhoto = post.creator?.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.creator?.name || 'C')}&background=FF9431&color=fff`;
+                return (
+                  <Card key={post.id} style={{ padding: 20, background: '#fff', borderRadius: 20, border: '1.5px solid #e2e8f0' }}>
+                    <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+                      <img
+                        src={creatorPhoto}
+                        alt={post.creator?.name}
+                        style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover' }}
+                      />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <span style={{ fontWeight: 800, color: '#0f172a', fontSize: 15 }}>
+                                {post.creator?.name}
+                              </span>
+                              {post.creator?.isVerified && (
+                                <span style={{ background: '#FF943120', color: '#FF9431', fontSize: 9, fontWeight: 900, padding: '2px 6px', borderRadius: 4, textTransform: 'uppercase' }}>
+                                  Verified
+                                </span>
+                              )}
+                            </div>
+                            <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>
+                              @{post.creator?.handle || 'creator'} · {timeAgo(post.createdAt)}
+                            </span>
+                          </div>
+                        </div>
+                        <p style={{ fontSize: 14, color: '#334155', fontWeight: 500, lineHeight: 1.6, marginTop: 10, marginBottom: 16, whiteSpace: 'pre-wrap' }}>
+                          {post.content}
+                        </p>
+                        {post.imageUrl && (
+                          <img
+                            src={post.imageUrl}
+                            alt="Post attachment"
+                            style={{ width: '100%', maxHeight: 300, objectFit: 'cover', borderRadius: 12, marginBottom: 16 }}
+                          />
+                        )}
+                        <div style={{ display: 'flex', gap: 24, borderTop: '1px solid #f1f5f9', paddingTop: 12 }}>
+                          <button
+                            onClick={() => handleLikePost(post.id)}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              color: post.likedByMe ? '#EF4444' : '#64748b',
+                              fontSize: 13,
+                              fontWeight: 700,
+                              padding: 0
+                            }}
+                          >
+                            <Heart size={16} fill={post.likedByMe ? '#EF4444' : 'none'} />
+                            {post.likesCount || 0} Likes
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
             </div>
           )}
         </>
