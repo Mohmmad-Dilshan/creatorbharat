@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { ShieldCheck, FileCheck2, CreditCard, BadgeCheck, CheckCircle2, ArrowRight, Users, Star } from 'lucide-react';
 import { Btn, Bdg } from '@/components/common/Primitives';
 import Seo from '@/components/common/SEO';
+import { apiCall } from '@/utils/api';
+import * as LucideIcons from 'lucide-react';
 
 const CREATOR_STEPS = [
   { n: '01', icon: FileCheck2, title: 'Create Your Profile', desc: 'Sign up and fill all 5 profile tabs: Identity, Social handles, Story milestones, Packages & rates, Local Hub.', color: '#FF9431' },
@@ -23,11 +25,41 @@ export default function VerificationGuidePage() {
   const navigate = useNavigate();
   const [mob, setMob] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
 
+  const [dynamicCreatorSteps, setDynamicCreatorSteps] = useState(null);
+  const [dynamicBrandSteps, setDynamicBrandSteps] = useState(null);
+
   useEffect(() => {
     const handleResize = () => setMob(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
+    apiCall('/pages/verify-guide').then(res => {
+      if (res?.content) {
+        const content = res.content;
+        if (content.creatorSteps) {
+          const resolved = content.creatorSteps.map(s => ({
+            ...s,
+            icon: LucideIcons[s.iconName] || LucideIcons.FileCheck2
+          }));
+          setDynamicCreatorSteps(resolved);
+        }
+        if (content.brandSteps) {
+          const resolved = content.brandSteps.map(s => ({
+            ...s,
+            icon: LucideIcons[s.iconName] || LucideIcons.Users
+          }));
+          setDynamicBrandSteps(resolved);
+        }
+      }
+    }).catch(err => {
+      console.warn('Failed to load dynamic verify-guide config:', err);
+    });
+  }, []);
+
+  const ACTIVE_CREATOR_STEPS = dynamicCreatorSteps || CREATOR_STEPS;
+  const ACTIVE_BRAND_STEPS = dynamicBrandSteps || BRAND_STEPS;
 
   return (
     <div style={{ background: '#fff', minHeight: '100vh', overflowX: 'hidden' }}>
@@ -153,7 +185,7 @@ export default function VerificationGuidePage() {
             <h2 style={{ fontSize: 40, fontWeight: 950, color: '#0f172a', marginTop: 16, letterSpacing: '-0.03em' }}>Creator Verification</h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 24 }}>
-            {CREATOR_STEPS.map((step, i) => (
+            {ACTIVE_CREATOR_STEPS.map((step, i) => (
               <motion.div key={step.n} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} style={{ padding: 32, background: '#fff', borderRadius: 32, border: '1px solid #f1f5f9', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: -10, right: -10, fontSize: 60, fontWeight: 950, color: 'rgba(0,0,0,0.03)', lineHeight: 1 }}>{step.n}</div>
                 <div style={{ width: 48, height: 48, borderRadius: 16, background: step.color + '12', color: step.color, display: 'grid', placeItems: 'center', marginBottom: 20 }}>
@@ -180,7 +212,7 @@ export default function VerificationGuidePage() {
             <h2 style={{ fontSize: 40, fontWeight: 950, color: '#0f172a', marginTop: 16, letterSpacing: '-0.03em' }}>Brand Verification</h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 24 }}>
-            {BRAND_STEPS.map((step, i) => (
+            {ACTIVE_BRAND_STEPS.map((step, i) => (
               <motion.div key={step.n} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} style={{ padding: 32, background: '#f8fafc', borderRadius: 32, border: '1px solid #f1f5f9', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', top: -10, right: -10, fontSize: 60, fontWeight: 950, color: 'rgba(0,0,0,0.03)', lineHeight: 1 }}>{step.n}</div>
                 <div style={{ width: 48, height: 48, borderRadius: 16, background: step.color + '12', color: step.color, display: 'grid', placeItems: 'center', marginBottom: 20 }}>

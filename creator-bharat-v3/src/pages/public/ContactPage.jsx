@@ -26,6 +26,14 @@ import {
 // Import Externalized Data
 import { getContactData, saveContactData } from '@/data/contactData';
 import { ENV } from '@/config/env';
+import { apiCall } from '@/utils/api';
+import * as LucideIcons from 'lucide-react';
+import { LinkedinIcon } from '@/components/icons/SocialIcons';
+
+const ALL_ICONS = {
+  ...LucideIcons,
+  LinkedinIcon
+};
 
 function SupportFAQAccordion({ q, a, mob }) {
   const [open, setOpen] = useState(false);
@@ -74,6 +82,27 @@ export default function ContactPage() {
   useEffect(() => {
     const h = () => setMob(globalThis.innerWidth < 768);
     globalThis.addEventListener('resize', h);
+
+    apiCall('/pages/contact').then(res => {
+      if (res?.content) {
+        const content = res.content;
+        const resolved = {
+          ...content,
+          advantages: (content.advantages || []).map(adv => ({
+            ...adv,
+            icon: ALL_ICONS[adv.iconName] || LucideIcons.Mail
+          })),
+          contactMethods: (content.contactMethods || []).map(method => ({
+            ...method,
+            icon: ALL_ICONS[method.iconName] || LucideIcons.Mail
+          }))
+        };
+        setPageData(resolved);
+      }
+    }).catch(err => {
+      console.warn('Failed to load dynamic contact page config:', err);
+    });
+
     return () => globalThis.removeEventListener('resize', h);
   }, []);
 

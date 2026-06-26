@@ -77,11 +77,17 @@ FAQItem.propTypes = {
   index: PropTypes.number.isRequired
 };
 
+import * as LucideIcons from 'lucide-react';
+
 export default function AmbassadorPage() {
   const [mob, setMob] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   
+  const [dynamicPerks, setDynamicPerks] = useState(null);
+  const [dynamicSteps, setDynamicSteps] = useState(null);
+  const [dynamicFaqs, setDynamicFaqs] = useState(null);
+
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -99,6 +105,33 @@ export default function AmbassadorPage() {
     window.addEventListener('resize', checkSize);
     return () => window.removeEventListener('resize', checkSize);
   }, []);
+
+  useEffect(() => {
+    apiCall('/pages/ambassador').then(res => {
+      if (res?.content) {
+        const content = res.content;
+        if (content.perks) {
+          const resolvedPerks = content.perks.map(p => ({
+            ...p,
+            icon: LucideIcons[p.iconName] || LucideIcons.HelpCircle
+          }));
+          setDynamicPerks(resolvedPerks);
+        }
+        if (content.steps) {
+          setDynamicSteps(content.steps);
+        }
+        if (content.faqs) {
+          setDynamicFaqs(content.faqs);
+        }
+      }
+    }).catch(err => {
+      console.warn('Failed to load dynamic ambassador page config:', err);
+    });
+  }, []);
+
+  const ACTIVE_PERKS = dynamicPerks || AMBASSADOR_PERKS;
+  const ACTIVE_STEPS = dynamicSteps || AMBASSADOR_STEPS;
+  const ACTIVE_FAQS = dynamicFaqs || AMBASSADOR_FAQS;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -323,7 +356,7 @@ export default function AmbassadorPage() {
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
           gap: '24px' 
         }}>
-          {AMBASSADOR_PERKS.map((perk, i) => {
+          {ACTIVE_PERKS.map((perk, i) => {
             const Icon = perk.icon;
             return (
               <motion.div
@@ -385,7 +418,7 @@ export default function AmbassadorPage() {
             gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', 
             gap: '24px' 
           }}>
-            {AMBASSADOR_STEPS.map((step, i) => (
+            {ACTIVE_STEPS.map((step, i) => (
               <motion.div
                 key={step.num}
                 initial={{ opacity: 0, y: 30 }}
@@ -622,7 +655,7 @@ export default function AmbassadorPage() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {AMBASSADOR_FAQS.map((faq, i) => (
+          {ACTIVE_FAQS.map((faq, i) => (
             <FAQItem key={i} q={faq.q} a={faq.a} index={i} />
           ))}
         </div>

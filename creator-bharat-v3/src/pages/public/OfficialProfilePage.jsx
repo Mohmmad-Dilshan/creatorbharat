@@ -15,11 +15,36 @@ import { fetchCreators } from '@/utils/platformService';
 
 // Extracted Feature Components & Data
 import { OFFICIAL_DATA } from '@/components/features/official/officialData';
+import { apiCall } from '@/utils/api';
+import * as LucideIcons from 'lucide-react';
 import LiveTicker from '@/components/features/official/LiveTicker';
 import ProfileHeader from '@/components/features/official/ProfileHeader';
 import TabContent from '@/components/features/official/TabContent';
 import StoryViewer from '@/components/features/official/StoryViewer';
 import AuthRequiredModal from '@/components/features/official/AuthRequiredModal';
+
+function resolveIconsInObject(obj) {
+  if (!obj) return obj;
+  if (typeof obj === 'string') {
+    if (LucideIcons[obj]) return LucideIcons[obj];
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(resolveIconsInObject);
+  }
+  if (typeof obj === 'object') {
+    const res = {};
+    for (const key in obj) {
+      if (key === 'icon' && typeof obj[key] === 'string') {
+        res[key] = LucideIcons[obj[key]] || LucideIcons.HelpCircle;
+      } else {
+        res[key] = resolveIconsInObject(obj[key]);
+      }
+    }
+    return res;
+  }
+  return obj;
+}
 
 export default function OfficialProfilePage() {
   const navigate = useNavigate();
@@ -31,6 +56,7 @@ export default function OfficialProfilePage() {
   const [lang, setLang] = useState('en');
   const [creatorsCount, setCreatorsCount] = useState(0);
   const [creatorsList, setCreatorsList] = useState([]);
+  const [cmsLoaded, setCmsLoaded] = useState(false);
 
   const isFollowing = st?.follows?.includes('creatorbharat-official');
 
@@ -88,6 +114,24 @@ export default function OfficialProfilePage() {
       }
     };
     loadRealStats();
+
+    // Fetch official profile dynamic configurations
+    apiCall('/pages/official').then(res => {
+      if (res?.content) {
+        const resolved = resolveIconsInObject(res.content);
+        // Merge into OFFICIAL_DATA in-place
+        Object.keys(resolved).forEach(key => {
+          if (resolved[key] && typeof resolved[key] === 'object' && !Array.isArray(resolved[key])) {
+            OFFICIAL_DATA[key] = { ...OFFICIAL_DATA[key], ...resolved[key] };
+          } else {
+            OFFICIAL_DATA[key] = resolved[key];
+          }
+        });
+        setCmsLoaded(true);
+      }
+    }).catch(err => {
+      console.warn('Failed to load dynamic official profile config:', err);
+    });
 
     return () => globalThis.removeEventListener('resize', h);
   }, []);
