@@ -3,6 +3,7 @@ import express from 'express';
 import prisma from '../prisma.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { sendEmail } from '../utils/mailer.js';
+import { createNotification } from './notifications.js';
 
 const router = express.Router();
 
@@ -66,6 +67,16 @@ router.post('/', async (req, res) => {
             }
           }
         });
+
+        if (campaignDetail?.brand?.user?.id) {
+          await createNotification({
+            userId: campaignDetail.brand.user.id,
+            title: '🚀 New Pitch Received',
+            body: `Creator ${creator.name} has applied to your campaign "${campaignDetail.title}".`,
+            type: 'CAMPAIGN',
+            link: '/brand-applications'
+          });
+        }
 
         if (campaignDetail?.brand?.user?.email) {
           await sendEmail({
@@ -215,6 +226,65 @@ router.put('/:id', async (req, res) => {
         console.error('[applications.js] Failed to create CampaignGig:', err.message);
       }
     }
+
+    // Notify creator of status update (non-blocking)
+    (async () => {
+      try {
+        const appDetails = await prisma.application.findUnique({
+          where: { id },
+          include: {
+            campaign: {
+              include: {
+                brand: true
+              }
+            },
+            creator: {
+              include: {
+                user: true
+              }
+            }
+          }
+        });
+
+        if (appDetails?.creator?.user?.id) {
+          await createNotification({
+            userId: appDetails.creator.user.id,
+            title: status === 'ACCEPTED' ? '🎉 Application Accepted!' : status === 'REJECTED' ? '⚠️ Application Update' : '📋 Application Shortlisted',
+            body: status === 'ACCEPTED'
+              ? `Your application for campaign "${appDetails.campaign.title}" has been accepted! A collaboration gig is now active.`
+              : status === 'REJECTED'
+                ? `Your application for campaign "${appDetails.campaign.title}" was not selected.`
+                : `Your application for campaign "${appDetails.campaign.title}" has been shortlisted.`,
+            type: 'CAMPAIGN',
+            link: '/creator/opportunities'
+          });
+        }
+
+        if (appDetails?.creator?.user?.email) {
+          await sendEmail({
+            to: appDetails.creator.user.email,
+            subject: `Campaign Application Update: ${appDetails.campaign.title}`,
+            html: `
+              <div style="font-family: sans-serif; padding: 20px; color: #0f172a; max-width: 600px; margin: auto; border: 1px solid #f1f5f9; border-radius: 12px;">
+                <h2 style="color: #FF9431;">Application Status Update!</h2>
+                <p>Hi ${appDetails.creator.name},</p>
+                <p>The brand <strong>${appDetails.campaign.brand.companyName}</strong> has updated the status of your pitch for the campaign: <strong>${appDetails.campaign.title}</strong>.</p>
+                <p><strong>New Status:</strong> <span style="font-weight: bold; color: ${status === 'ACCEPTED' ? '#10b981' : status === 'REJECTED' ? '#ef4444' : '#f59e0b'}">${status}</span></p>
+                \${status === 'ACCEPTED' ? '<p>Congratulations! Since your pitch was accepted, a collaboration gig has been created for you. You can now submit your content draft for approval.</p>' : ''}
+                <p style="margin-top: 24px;">
+                  <a href="\${process.env.FRONTEND_URL || 'http://localhost:5173'}/creator/opportunities" style="background: #FF9431; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                    View My Opportunities
+                  </a>
+                </p>
+                <p style="margin-top: 28px; font-size: 12px; color: #94a3b8;">Best regards,<br/>Team CreatorBharat</p>
+              </div>
+            `
+          });
+        }
+      } catch (err) {
+        console.error('Application status update notification warning:', err.message);
+      }
+    })();
 
     res.json(updated);
   } catch (err) {

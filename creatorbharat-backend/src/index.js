@@ -36,6 +36,9 @@ import communityRouter from './routes/community.js';
 import referralsRouter from './routes/referrals.js';
 import missionsRouter from './routes/missions.js';
 import ambassadorRouter from './routes/ambassador.js';
+import savedRouter from './routes/saved.js';
+import teamRouter from './routes/team.js';
+
 
 dotenv.config();
 
@@ -529,10 +532,331 @@ app.get('/api/pages/:pageName', async (req, res) => {
   }
 });
 
+// ─── Platform Settings API ──────────────────────────────────────────────────
+// Default platform settings structure
+const DEFAULT_PLATFORM_SETTINGS = {
+  features: {
+    creatorRegistration: true,
+    brandRegistration: true,
+    campaignCreation: true,
+    escrowPayments: true,
+    verificationRequests: true,
+    leaderboard: true,
+    rateCalculator: true,
+    communityFeed: true,
+    brandSearch: true,
+    messages: true,
+    achievements: true,
+    referralSystem: true,
+    walletWithdrawal: true,
+    creatorScore: true,
+    events: true,
+    podcasts: true,
+    missionSystem: true,
+    gigs: true
+  },
+  comingSoon: {
+    aiMatchmaking: false,
+    videoVerification: false,
+    mobileApp: true,
+    advancedAnalytics: false,
+    multiLanguage: false,
+    apiAccess: true,
+    liveStreaming: true,
+    brandMarketplace: false
+  },
+  commission: {
+    platformFeePercent: 0,
+    escrowFeePercent: 2.5,
+    brandCommissionPercent: 0,
+    creatorCommissionPercent: 0,
+    minCampaignBudget: 500,
+    maxCampaignBudget: 1000000
+  },
+  creator: {
+    maxActiveCampaigns: 10,
+    minFollowersForVerification: 1000,
+    profileCompletionRequired: 60,
+    scoreDecayDays: 90,
+    maxPortfolioItems: 20,
+    allowGuestProfiles: true
+  },
+  brand: {
+    maxActiveCampaigns: 25,
+    maxCreatorsPerCampaign: 100,
+    autoApproveBrands: false,
+    requireEscrowForCampaigns: true,
+    allowDirectMessages: true,
+    showBudgetToCreators: true
+  },
+  announcement: {
+    globalBannerEnabled: false,
+    globalBannerText: '',
+    globalBannerType: 'info',
+    maintenanceMode: false,
+    maintenanceMessage: 'Platform is under scheduled maintenance. Back in 2 hours.',
+    newsTicker: ''
+  }
+};
+
+// Public GET — frontend fetches this on boot (no auth required)
+app.get('/api/platform-settings', async (req, res) => {
+  try {
+    const record = await prisma.platformSettings.findUnique({ where: { key: 'global' } });
+    if (!record) {
+      // Seed defaults and return
+      await prisma.platformSettings.create({ data: { key: 'global', value: JSON.stringify(DEFAULT_PLATFORM_SETTINGS) } });
+      return res.json(DEFAULT_PLATFORM_SETTINGS);
+    }
+    const parsed = typeof record.value === 'string' ? JSON.parse(record.value) : record.value;
+    // Deep merge with defaults to handle new keys added to DEFAULT
+    const merged = {
+      features: { ...DEFAULT_PLATFORM_SETTINGS.features, ...(parsed.features || {}) },
+      comingSoon: { ...DEFAULT_PLATFORM_SETTINGS.comingSoon, ...(parsed.comingSoon || {}) },
+      commission: { ...DEFAULT_PLATFORM_SETTINGS.commission, ...(parsed.commission || {}) },
+      creator: { ...DEFAULT_PLATFORM_SETTINGS.creator, ...(parsed.creator || {}) },
+      brand: { ...DEFAULT_PLATFORM_SETTINGS.brand, ...(parsed.brand || {}) },
+      announcement: { ...DEFAULT_PLATFORM_SETTINGS.announcement, ...(parsed.announcement || {}) }
+    };
+    return res.json(merged);
+  } catch (err) {
+    console.error('[GET /api/platform-settings] Error:', err.message);
+    return res.json(DEFAULT_PLATFORM_SETTINGS);
+  }
+});
+
+// Admin GET — full settings fetch (admin auth)
+app.get('/api/admin/platform-settings', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No token provided' });
+    jwt.verify(token, process.env.JWT_SECRET);
+    const record = await prisma.platformSettings.findUnique({ where: { key: 'global' } });
+    if (!record) {
+      await prisma.platformSettings.create({ data: { key: 'global', value: JSON.stringify(DEFAULT_PLATFORM_SETTINGS) } });
+      return res.json(DEFAULT_PLATFORM_SETTINGS);
+    }
+    const parsed = typeof record.value === 'string' ? JSON.parse(record.value) : record.value;
+    const merged = {
+      features: { ...DEFAULT_PLATFORM_SETTINGS.features, ...(parsed.features || {}) },
+      comingSoon: { ...DEFAULT_PLATFORM_SETTINGS.comingSoon, ...(parsed.comingSoon || {}) },
+      commission: { ...DEFAULT_PLATFORM_SETTINGS.commission, ...(parsed.commission || {}) },
+      creator: { ...DEFAULT_PLATFORM_SETTINGS.creator, ...(parsed.creator || {}) },
+      brand: { ...DEFAULT_PLATFORM_SETTINGS.brand, ...(parsed.brand || {}) },
+      announcement: { ...DEFAULT_PLATFORM_SETTINGS.announcement, ...(parsed.announcement || {}) }
+    };
+    return res.json(merged);
+  } catch (err) {
+    console.error('[GET /api/admin/platform-settings] Error:', err.message);
+    return res.status(500).json({ error: 'Failed to fetch platform settings.' });
+  }
+});
+
+// Admin PUT — update settings
+app.put('/api/admin/platform-settings', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No token provided' });
+    jwt.verify(token, process.env.JWT_SECRET);
+    const newSettings = req.body;
+    if (!newSettings || typeof newSettings !== 'object') {
+      return res.status(400).json({ error: 'Invalid settings payload.' });
+    }
+    // Merge with defaults to prevent data loss
+    const safe = {
+      features: { ...DEFAULT_PLATFORM_SETTINGS.features, ...(newSettings.features || {}) },
+      comingSoon: { ...DEFAULT_PLATFORM_SETTINGS.comingSoon, ...(newSettings.comingSoon || {}) },
+      commission: { ...DEFAULT_PLATFORM_SETTINGS.commission, ...(newSettings.commission || {}) },
+      creator: { ...DEFAULT_PLATFORM_SETTINGS.creator, ...(newSettings.creator || {}) },
+      brand: { ...DEFAULT_PLATFORM_SETTINGS.brand, ...(newSettings.brand || {}) },
+      announcement: { ...DEFAULT_PLATFORM_SETTINGS.announcement, ...(newSettings.announcement || {}) }
+    };
+    await prisma.platformSettings.upsert({
+      where: { key: 'global' },
+      update: { value: JSON.stringify(safe) },
+      create: { key: 'global', value: JSON.stringify(safe) }
+    });
+    return res.json({ success: true, settings: safe });
+  } catch (err) {
+    console.error('[PUT /api/admin/platform-settings] Error:', err.message);
+    return res.status(500).json({ error: 'Failed to update platform settings.' });
+  }
+});
+
+const DEFAULT_ADMIN_PANEL_SETTINGS = {
+  theme: 'dark-sidebar',
+  autoRefreshRate: 60,
+  sessionTimeout: 3600,
+  showConsoleLogs: false,
+  soundAlerts: true,
+  requireMFA: false
+};
+
+// Admin Panel settings — GET
+app.get('/api/admin/panel-settings', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No token provided' });
+    jwt.verify(token, process.env.JWT_SECRET);
+    const record = await prisma.platformSettings.findUnique({ where: { key: 'admin-panel' } });
+    if (!record) {
+      await prisma.platformSettings.create({ data: { key: 'admin-panel', value: JSON.stringify(DEFAULT_ADMIN_PANEL_SETTINGS) } });
+      return res.json(DEFAULT_ADMIN_PANEL_SETTINGS);
+    }
+    const parsed = typeof record.value === 'string' ? JSON.parse(record.value) : record.value;
+    const merged = { ...DEFAULT_ADMIN_PANEL_SETTINGS, ...parsed };
+    return res.json(merged);
+  } catch (err) {
+    console.error('[GET /api/admin/panel-settings] Error:', err.message);
+    return res.status(500).json({ error: 'Failed to fetch admin settings.' });
+  }
+});
+
+// Admin Panel settings — PUT
+app.put('/api/admin/panel-settings', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No token provided' });
+    jwt.verify(token, process.env.JWT_SECRET);
+    const newSettings = req.body;
+    if (!newSettings || typeof newSettings !== 'object') {
+      return res.status(400).json({ error: 'Invalid settings payload.' });
+    }
+    const safe = { ...DEFAULT_ADMIN_PANEL_SETTINGS, ...newSettings };
+    await prisma.platformSettings.upsert({
+      where: { key: 'admin-panel' },
+      update: { value: JSON.stringify(safe) },
+      create: { key: 'admin-panel', value: JSON.stringify(safe) }
+    });
+    return res.json({ success: true, settings: safe });
+  } catch (err) {
+    console.error('[PUT /api/admin/panel-settings] Error:', err.message);
+    return res.status(500).json({ error: 'Failed to update admin settings.' });
+  }
+});
+
+// Admin Credentials — PUT
+app.put('/api/admin/update-credentials', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No token provided' });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { email, currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Current password and new password are required.' });
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
+    if (!user) return res.status(404).json({ error: 'Admin user not found.' });
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) return res.status(400).json({ error: 'Incorrect current password.' });
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const updateData = { password: hashedPassword };
+    if (email) {
+      updateData.email = email;
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: updateData
+    });
+
+    return res.json({ success: true, message: 'Admin credentials updated successfully.', email: updatedUser.email });
+  } catch (err) {
+    console.error('[PUT /api/admin/update-credentials] Error:', err.message);
+    return res.status(500).json({ error: 'Failed to update admin credentials.' });
+  }
+});
+
+// GET /api/admin/system/backup
+app.get('/api/admin/system/backup', async (req, res) => {
+  try {
+    const token = req.query.token || req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No token provided' });
+    jwt.verify(token, process.env.JWT_SECRET);
+
+    const users = await prisma.user.findMany({ select: { id: true, email: true, role: true, createdAt: true } });
+    const creators = await prisma.creator.findMany() || [];
+    const brands = await prisma.brand.findMany() || [];
+    const campaigns = await prisma.campaign.findMany() || [];
+    const payments = await prisma.payment.findMany() || [];
+    const teamMembers = await prisma.teamMember.findMany() || [];
+
+    const backupData = {
+      timestamp: new Date().toISOString(),
+      version: '1.0.0',
+      database: {
+        usersCount: users.length,
+        creatorsCount: creators.length,
+        brandsCount: brands.length,
+        campaignsCount: campaigns.length,
+        paymentsCount: payments.length,
+        teamMembersCount: teamMembers.length,
+        users,
+        creators,
+        brands,
+        campaigns,
+        payments,
+        teamMembers
+      }
+    };
+
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', `attachment; filename=creatorbharat_backup_${Date.now()}.json`);
+    return res.send(JSON.stringify(backupData, null, 2));
+  } catch (err) {
+    console.error('[GET /api/admin/system/backup] Error:', err.message);
+    return res.status(500).json({ error: 'Failed to generate database backup.' });
+  }
+});
+
+// GET /api/admin/system/diagnostics
+app.get('/api/admin/system/diagnostics', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No token provided' });
+    jwt.verify(token, process.env.JWT_SECRET);
+
+    const counts = {
+      users: await prisma.user.count(),
+      creators: await prisma.creator.count(),
+      brands: await prisma.brand.count(),
+      campaigns: await prisma.campaign.count(),
+      payments: await prisma.payment.count(),
+      teamMembers: await prisma.teamMember.count(),
+      otps: await prisma.otpVerification.count()
+    };
+
+    const memory = process.memoryUsage();
+
+    return res.json({
+      success: true,
+      uptime: process.uptime(),
+      nodeVersion: process.version,
+      platform: process.platform,
+      memory: {
+        rss: (memory.rss / 1024 / 1024).toFixed(2) + ' MB',
+        heapTotal: (memory.heapTotal / 1024 / 1024).toFixed(2) + ' MB',
+        heapUsed: (memory.heapUsed / 1024 / 1024).toFixed(2) + ' MB',
+        external: (memory.external / 1024 / 1024).toFixed(2) + ' MB'
+      },
+      counts
+    });
+  } catch (err) {
+    console.error('[GET /api/admin/system/diagnostics] Error:', err.message);
+    return res.status(500).json({ error: 'Failed to retrieve diagnostics.' });
+  }
+});
+
 // App Router Registry
+
 app.use('/api/auth', authRouter);
 app.use('/api/creators', creatorsRouter);
 app.use('/api/campaigns', campaignsRouter);
+app.use('/api/admin/team', teamRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/applications', applicationsRouter);
 app.use('/api/payments', paymentsRouter);
@@ -553,6 +877,8 @@ app.use('/api/community', communityRouter);
 app.use('/api/referrals', referralsRouter);
 app.use('/api/missions', missionsRouter);
 app.use('/api/ambassador', ambassadorRouter);
+app.use('/api/saved', savedRouter);
+
 
 // Global 404 Error handler
 app.use((req, res) => {
@@ -730,9 +1056,10 @@ io.on('connection', (socket) => {
       where: { email: adminEmail.toLowerCase().trim() }
     });
 
+    let adminUser = existingAdmin;
     if (!existingAdmin) {
       const hashedPassword = await bcrypt.hash(adminPassword, 10);
-      await prisma.user.create({
+      adminUser = await prisma.user.create({
         data: {
           email: adminEmail.toLowerCase().trim(),
           password: hashedPassword,
@@ -742,6 +1069,15 @@ io.on('connection', (socket) => {
       console.log(`[Database Seeder]: Default admin user created successfully (${adminEmail}).`);
     } else {
       console.log(`[Database Seeder]: Admin account verified.`);
+    }
+
+    if (adminUser) {
+      await prisma.teamMember.upsert({
+        where: { userId: adminUser.id },
+        update: { role: 'SUPERADMIN', status: 'ACTIVE' },
+        create: { userId: adminUser.id, role: 'SUPERADMIN', status: 'ACTIVE' }
+      });
+      console.log(`[Database Seeder]: SUPERADMIN team member profile synced for ${adminEmail}.`);
     }
 
     // Seed Creators and Brands if empty
@@ -1453,8 +1789,10 @@ io.on('connection', (socket) => {
       ];
 
       for (const config of defaultPageConfigs) {
-        await prisma.dynamicPageConfig.create({
-          data: config
+        await prisma.dynamicPageConfig.upsert({
+          where: { pageName: config.pageName },
+          update: {},
+          create: config
         });
       }
     }
@@ -1521,7 +1859,60 @@ io.on('connection', (socket) => {
           data: m
         });
       }
-      console.log(`[Database Seeder]: ${defaultMissions.length} default missions seeded successfully.`);
+    }
+
+    // Seed default events if empty
+    const eventCount = await prisma.event.count();
+    if (eventCount === 0) {
+      console.log('[Database Seeder]: Seeding default events...');
+      const defaultEvents = [
+        {
+          id: 'summit-2027',
+          title: 'CreatorBharat National Summit 2027',
+          description: 'Bharat ka Sabse Bada Creator Gathering. Birla Auditorium, Jaipur. Highlights include Top 50 creators get free travel + stay, Brand speed-networking sessions, Live Play Button award ceremony, Masterclasses by industry leaders, Exclusive brand deal signings.',
+          date: new Date('2027-03-15T09:00:00.000Z'),
+          location: 'Jaipur, Rajasthan',
+          venue: 'Birla Auditorium, Jaipur',
+          type: 'SUMMIT',
+          coverImage: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1200',
+          eligibility: 'CB Score 60+ required',
+          isFeatured: true,
+          published: true
+        },
+        {
+          id: 'workshop-jaipur-2027',
+          title: 'Creator Masterclass — Jaipur Hub',
+          description: 'Content Strategy & Brand Pitching Workshop. CB Hub, Bhilwara Road. Highlights include Content strategy for Tier-2 markets, How to pitch brands directly, CB Score improvement workshop, Live profile review session.',
+          date: new Date('2027-01-20T10:00:00.000Z'),
+          location: 'Jaipur, Rajasthan',
+          venue: 'CB Hub, Bhilwara Road',
+          type: 'WORKSHOP',
+          coverImage: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&q=80&w=1200',
+          eligibility: 'Any verified creator',
+          isFeatured: false,
+          published: true
+        },
+        {
+          id: 'awards-2027',
+          title: 'CreatorBharat Awards Night 2027',
+          description: 'Celebrating Bharat\'s Top Regional Creators. NSCI Dome, Worli. Highlights include India Creator Button ceremony, Best Niche Creator awards, Brand Partner of the Year, Rising Star recognition.',
+          date: new Date('2027-12-10T18:00:00.000Z'),
+          location: 'Mumbai, Maharashtra',
+          venue: 'NSCI Dome, Worli',
+          type: 'SUMMIT',
+          coverImage: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1200',
+          eligibility: 'CB Score 80+ required',
+          isFeatured: true,
+          published: true
+        }
+      ];
+
+      for (const e of defaultEvents) {
+        await prisma.event.create({
+          data: e
+        });
+      }
+      console.log(`[Database Seeder]: ${defaultEvents.length} default events seeded successfully.`);
     }
   } catch (err) {
     console.error('[Database Seeder Error]:', err.message);

@@ -745,6 +745,17 @@ router.post('/verify/reject/:creatorId', async (req, res) => {
 
     res.json({ message: 'Creator verification rejected and documents reset.', creator: updated });
 
+    // Fire in-app notification + email (non-blocking)
+    if (creator.user?.id) {
+      createNotification({
+        userId: creator.user.id,
+        title: '⚠️ Verification Action Required',
+        body: `Your identity verification documents were rejected: ${reason || 'Documents are blurry or details mismatch'}. Please re-upload.`,
+        type: 'VERIFICATION',
+        link: '/creator/verification'
+      });
+    }
+
     // Send email notification (non-blocking)
     if (creator.user?.email) {
       sendEmail({
@@ -2030,6 +2041,55 @@ router.post('/system/test-mail', async (req, res) => {
     res.json({ success: true, ...result, recipient });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/admin/referrals — Fetch all referrals with referrer and referred profiles
+router.get('/referrals', async (req, res) => {
+  try {
+    const referrals = await prisma.referral.findMany({
+      include: {
+        referrer: {
+          select: {
+            id: true,
+            name: true,
+            handle: true,
+            photo: true
+          }
+        },
+        referred: {
+          select: {
+            id: true,
+            name: true,
+            handle: true,
+            photo: true
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(referrals);
+  } catch (err) {
+    console.error('[GET /api/admin/referrals] Error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch referrals.' });
+  }
+});
+
+// POST /api/admin/referrals/:id/status — Approve or pay a referral manually
+router.post('/referrals/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body; // e.g. "VERIFIED", "REWARDED"
+
+    const referral = await prisma.referral.update({
+      where: { id },
+      data: { status }
+    });
+
+    res.json({ success: true, message: `Referral status updated to ${status}`, referral });
+  } catch (err) {
+    console.error('[POST /api/admin/referrals/:id/status] Error:', err.message);
+    res.status(500).json({ error: 'Failed to update referral status.' });
   }
 });
 

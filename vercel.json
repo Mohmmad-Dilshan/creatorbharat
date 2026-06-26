@@ -6,6 +6,10 @@
 
   "rewrites": [
     {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
       "source": "/c/:id",
       "destination": "/api/profile-preview?id=:id"
     },

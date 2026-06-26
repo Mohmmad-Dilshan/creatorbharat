@@ -6,6 +6,7 @@ import prisma from '../prisma.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { sendEmail } from '../utils/mailer.js';
 import { getSettings } from '../utils/settings.js';
+import { createNotification } from './notifications.js';
 
 const router = express.Router();
 
@@ -346,7 +347,7 @@ router.post('/release-escrow', authMiddleware, async (req, res) => {
       }
     });
 
-    // Send email alert to Creator about escrow release (non-blocking)
+    // Send email/in-app alert to Creator about escrow release (non-blocking)
     (async () => {
       try {
         const creatorUser = await prisma.creator.findUnique({
@@ -354,6 +355,16 @@ router.post('/release-escrow', authMiddleware, async (req, res) => {
           include: { user: true }
         });
         
+        if (creatorUser?.user?.id) {
+          await createNotification({
+            userId: creatorUser.user.id,
+            title: '💸 Collaboration Payout Released!',
+            body: `₹${Math.round(creatorAmount)} has been added to your wallet for campaign payload.`,
+            type: 'PAYMENT',
+            link: '/creator/wallet'
+          });
+        }
+
         if (creatorUser?.user?.email) {
           await sendEmail({
             to: creatorUser.user.email,

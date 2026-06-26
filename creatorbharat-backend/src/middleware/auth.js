@@ -39,3 +39,26 @@ export const requireRole = (allowedRoles) => {
     next();
   };
 };
+
+// Middleware to verify Admin Team Members and check Role-Based Access Control (RBAC)
+export const requireTeamRoles = (allowedRoles) => {
+  return async (req, res, next) => {
+    try {
+      if (req.user.role !== 'ADMIN') {
+        return res.status(403).json({ error: 'Access denied. Admins only.' });
+      }
+      const member = await prisma.teamMember.findUnique({
+        where: { userId: req.user.id }
+      });
+      if (!member || !allowedRoles.includes(member.role) || member.status !== 'ACTIVE') {
+        return res.status(403).json({ error: 'Forbidden. Insufficient permissions for this operation.' });
+      }
+      req.teamMember = member;
+      next();
+    } catch (err) {
+      console.error('[requireTeamRoles] Error:', err);
+      res.status(500).json({ error: 'RBAC verification failed.' });
+    }
+  };
+};
+

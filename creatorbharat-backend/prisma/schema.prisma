@@ -22,6 +22,8 @@ model User {
 
   creator     Creator?
   brand       Brand?
+  savedItems  SavedItem[]
+  teamProfile TeamMember?
 }
 
 enum Role {
@@ -49,6 +51,7 @@ model Creator {
   rateMax        Int           @default(0)
   isVerified     Boolean       @default(false)
   isPro          Boolean       @default(false)
+  score          Int           @default(70)
   aadhaarUrl     String?
   panUrl         String?
   status         String        @default("DRAFT")
@@ -112,6 +115,7 @@ model Campaign {
 
   applications Application[]
   gigs         CampaignGig[]
+  payments     Payment[]
 
   @@index([status])
   @@index([budget])
@@ -197,6 +201,7 @@ model Payment {
   brand              Brand?    @relation(fields: [brandId], references: [id], onDelete: SetNull)
   brandId            String?
   campaignId         String?
+  campaign           Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
   recipientCreatorId String?
   amount             Int
   currency           String    @default("INR")
@@ -304,6 +309,13 @@ model DynamicPageConfig {
   id        String   @id @default(cuid())
   pageName  String   @unique
   content   Json
+  updatedAt DateTime @updatedAt
+}
+
+model PlatformSettings {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   @db.Text
   updatedAt DateTime @updatedAt
 }
 
@@ -521,3 +533,36 @@ model AmbassadorApplication {
   status    String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
   createdAt DateTime @default(now())
 }
+
+model SavedItem {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetId   String   // The ID of the saved creator or saved campaign
+  itemType   String   // "CREATOR" or "CAMPAIGN"
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, targetId, itemType])
+  @@index([userId])
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String   // "SUPERADMIN", "MODERATOR", "SUPPORT", "FINANCE"
+  status    String   @default("ACTIVE") // "ACTIVE", "REVOKED"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InviteToken {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  role      String   // "SUPERADMIN", "MODERATOR", "SUPPORT", "FINANCE"
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+

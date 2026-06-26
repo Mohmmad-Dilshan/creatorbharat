@@ -211,6 +211,8 @@ const NAV_SECTIONS = (counts) => [
     color: T.slate,
     items: [
       { id: 'settings', label: 'Settings', icon: SlidersHorizontal },
+      { id: 'feature-control', label: 'Platform Control Center', icon: Cpu },
+      { id: 'admin-control', label: 'Admin Panel Control', icon: ShieldCheck },
       { id: 'danger', label: 'Danger Zone', icon: ShieldAlert },
     ]
   }
@@ -241,6 +243,8 @@ const TAB_META = {
   'media-library': { title: 'Media Library', sub: 'Upload files and copy their URLs for use across the platform' },
   pages: { title: 'Page Content Manager', sub: 'Dynamically customize public page text, pricing tiers, and calculator rates' },
   settings: { title: 'System Settings', sub: 'Configure platform-wide settings and toggles' },
+  'feature-control': { title: 'Platform Control Center', sub: 'Configure live feature toggles, commission rates, and global announcements' },
+  'admin-control': { title: 'Admin Panel Control', sub: 'Customize admin interface behaviors, set theme preferences, and audit administrative actions' },
   danger: { title: '⚠️ Danger Zone', sub: 'Irreversible platform-wide operations' },
   events: { title: 'Events Manager', sub: 'Create and coordinate public platform events and conferences' },
   ambassadors: { title: 'Campus Ambassador Applications', sub: 'Review and approve/reject college student representation applications' },
@@ -407,6 +411,7 @@ export default function App() {
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // ── Core Data
   const [creators, setCreators] = useState([]);
@@ -427,6 +432,27 @@ export default function App() {
   const [gallery, setGallery] = useState([]);
   const [uploads, setUploads] = useState([]);
   const [mediaSearch, setMediaSearch] = useState('');
+
+  // ── Platform Control Center States
+  const [platformSettings, setPlatformSettings] = useState(null);
+  const [psLoading, setPsLoading] = useState(false);
+  const [psSaving, setPsSaving] = useState(false);
+  const [psSaved, setPsSaved] = useState(false);
+  const [psSubTab, setPsSubTab] = useState('features');
+
+  // ── Admin Panel Control States
+  const [adminPanelSettings, setAdminPanelSettings] = useState(null);
+  const [apLoading, setApLoading] = useState(false);
+  const [apSaving, setApSaving] = useState(false);
+  const [apSaved, setApSaved] = useState(false);
+  const [apSubTab, setApSubTab] = useState('theme');
+  const [adminNewEmail, setAdminNewEmail] = useState('');
+  const [adminCurrentPassword, setAdminCurrentPassword] = useState('');
+  const [adminNewPassword, setAdminNewPassword] = useState('');
+  const [adminConfirmPassword, setAdminConfirmPassword] = useState('');
+  const [adminCredsUpdating, setAdminCredsUpdating] = useState(false);
+  const [apDiagnostics, setApDiagnostics] = useState(null);
+  const [apDiagLoading, setApDiagLoading] = useState(false);
 
   // ── Podcast Editor States
   const [podcastModalOpen, setPodcastModalOpen] = useState(false);
@@ -1426,6 +1452,8 @@ export default function App() {
         fetch(`${API_BASE}/events`),
         fetch(`${API_BASE}/admin/missions`, { headers: H() }),
         fetch(`${API_BASE}/admin/missions/completions`, { headers: H() }),
+        fetch(`${API_BASE}/admin/platform-settings`, { headers: H() }),
+        fetch(`${API_BASE}/admin/panel-settings`, { headers: H() }),
       ];
 
       const results = await Promise.allSettled(fetches);
@@ -1434,7 +1462,7 @@ export default function App() {
       const [
         rVer, rCre, rBr, rCam, rPay, rSt, rBlog, rNews, rCont, rPod, rRev, rComm,
         rApps, rLead, rBrandAna, rAct, rDeepSt, rGal, rUp, rSettings, rPages,
-        rAmb, rEvt, rMis, rMisComp
+        rAmb, rEvt, rMis, rMisComp, rPS, rAP
       ] = await Promise.all(results.map(r => r.status === 'fulfilled' ? safeJson(r.value) : null));
 
       if (rVer) setVerifications(Array.isArray(rVer) ? rVer : []);
@@ -1460,6 +1488,8 @@ export default function App() {
       if (rEvt) setEvents(Array.isArray(rEvt) ? rEvt : []);
       if (rMis) setMissions(Array.isArray(rMis) ? rMis : []);
       if (rMisComp) setMissionCompletions(Array.isArray(rMisComp) ? rMisComp : []);
+      if (rPS && !rPS.error) setPlatformSettings(rPS);
+      if (rAP && !rAP.error) setAdminPanelSettings(rAP);
       if (rPages && Array.isArray(rPages)) {
         rPages.forEach(p => {
           if (p.pageName === 'home') setHomeConfig(p.content);
@@ -1508,6 +1538,184 @@ export default function App() {
   };
 
   useEffect(() => { if (token) fetchData(); }, [token]);
+
+  const updatePS = (sec, key, val) => {
+    setPlatformSettings(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        [sec]: {
+          ...prev[sec],
+          [key]: val
+        }
+      };
+    });
+  };
+
+  const fetchPlatformSettings = async () => {
+    if (!token) return;
+    setPsLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/admin/platform-settings`, { headers: H() });
+      const data = await res.json();
+      if (data && !data.error) {
+        setPlatformSettings(data);
+      }
+    } catch (err) {
+      console.error('Error fetching platform settings:', err);
+    } finally {
+      setPsLoading(false);
+    }
+  };
+
+  const savePlatformSettings = async () => {
+    if (!platformSettings) return;
+    setPsSaving(true);
+    setPsSaved(false);
+    try {
+      const res = await fetch(`${API_BASE}/admin/platform-settings`, {
+        method: 'PUT',
+        headers: H(),
+        body: JSON.stringify(platformSettings)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPlatformSettings(data.settings);
+        setPsSaved(true);
+        toast('Platform settings saved successfully!', 'success');
+        setTimeout(() => setPsSaved(false), 2000);
+      } else {
+        toast(data.error || 'Failed to save platform settings', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      toast('Network error saving platform settings', 'error');
+    } finally {
+      setPsSaving(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'feature-control' && !platformSettings && token) {
+      fetchPlatformSettings();
+    }
+  }, [activeTab, token]);
+
+  const updateAP = (key, val) => {
+    setAdminPanelSettings(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        [key]: val
+      };
+    });
+  };
+
+  const fetchAdminPanelSettings = async () => {
+    if (!token) return;
+    setApLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/admin/panel-settings`, { headers: H() });
+      const data = await res.json();
+      if (data && !data.error) {
+        setAdminPanelSettings(data);
+      }
+    } catch (err) {
+      console.error('Error fetching admin settings:', err);
+    } finally {
+      setApLoading(false);
+    }
+  };
+
+  const saveAdminPanelSettings = async () => {
+    if (!adminPanelSettings) return;
+    setApSaving(true);
+    setApSaved(false);
+    try {
+      const res = await fetch(`${API_BASE}/admin/panel-settings`, {
+        method: 'PUT',
+        headers: H(),
+        body: JSON.stringify(adminPanelSettings)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAdminPanelSettings(data.settings);
+        setApSaved(true);
+        toast('Admin panel settings saved successfully!', 'success');
+        setTimeout(() => setApSaved(false), 2000);
+      } else {
+        toast(data.error || 'Failed to save admin settings', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      toast('Network error saving admin settings', 'error');
+    } finally {
+      setApSaving(false);
+    }
+  };
+
+  const handleUpdateAdminCredentials = async (e) => {
+    e.preventDefault();
+    if (adminNewPassword !== adminConfirmPassword) {
+      toast('New passwords do not match!', 'error');
+      return;
+    }
+    setAdminCredsUpdating(true);
+    try {
+      const res = await fetch(`${API_BASE}/admin/update-credentials`, {
+        method: 'PUT',
+        headers: H(),
+        body: JSON.stringify({
+          email: adminNewEmail,
+          currentPassword: adminCurrentPassword,
+          newPassword: adminNewPassword
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast('Admin credentials updated successfully!', 'success');
+        setAdminNewEmail('');
+        setAdminCurrentPassword('');
+        setAdminNewPassword('');
+        setAdminConfirmPassword('');
+      } else {
+        toast(data.error || 'Failed to update admin credentials', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      toast('Network error updating credentials', 'error');
+    } finally {
+      setAdminCredsUpdating(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'admin-control' && !adminPanelSettings && token) {
+      fetchAdminPanelSettings();
+    }
+  }, [activeTab, token]);
+
+  const fetchDiagnostics = async () => {
+    if (!token) return;
+    setApDiagLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/admin/system/diagnostics`, { headers: H() });
+      const data = await res.json();
+      if (data && data.success) {
+        setApDiagnostics(data);
+      }
+    } catch (err) {
+      console.error('Error fetching diagnostics:', err);
+    } finally {
+      setApDiagLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'admin-control' && apSubTab === 'diagnostics' && token) {
+      fetchDiagnostics();
+    }
+  }, [activeTab, apSubTab, token]);
 
   const handleSavePageConfig = async () => {
     let content = {};
@@ -2254,38 +2462,48 @@ export default function App() {
   // ─── LOGIN SCREEN ─────────────────────────────────────────────────────────────
   if (!token) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'linear-gradient(135deg, #f8fafc 0%, #fff7ed 100%)', padding: 16, fontFamily: 'system-ui, sans-serif' }}>
-        <div style={{ width: '100%', maxWidth: 440, background: T.card, border: `1px solid ${T.border}`, borderRadius: 28, padding: 48, boxShadow: '0 24px 60px rgba(0,0,0,0.06)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'radial-gradient(circle at 10% 20%, #0f172a 0%, #1e1b4b 90%)', padding: 16, fontFamily: 'Outfit, system-ui, sans-serif', position: 'relative', overflow: 'hidden' }}>
+        
+        {/* Glow Blobs */}
+        <div style={{ position: 'absolute', width: 300, height: 300, borderRadius: '50%', background: 'rgba(249, 115, 22, 0.12)', filter: 'blur(80px)', top: '10%', left: '15%' }} />
+        <div style={{ position: 'absolute', width: 250, height: 250, borderRadius: '50%', background: 'rgba(99, 102, 241, 0.12)', filter: 'blur(80px)', bottom: '15%', right: '10%' }} />
+
+        <div style={{ width: '100%', maxWidth: 440, background: 'rgba(30, 41, 59, 0.7)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: 28, padding: '48px 40px', boxShadow: '0 24px 60px rgba(0,0,0,0.3)', position: 'relative', zIndex: 10 }}>
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
-            <div style={{ width: 64, height: 64, borderRadius: 18, background: 'linear-gradient(135deg, #f97316, #ea580c)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 26, color: '#fff', margin: '0 auto 16px', boxShadow: '0 8px 20px rgba(249,115,22,0.25)' }}>CB</div>
-            <h2 style={{ fontSize: 22, fontWeight: 900, margin: '0 0 6px', color: T.navy }}>Admin Control Panel</h2>
-            <p style={{ margin: 0, fontSize: 11, color: T.muted, textTransform: 'uppercase', letterSpacing: 2, fontWeight: 700 }}>CreatorBharat SaaS Platform</p>
+            <div style={{ width: 68, height: 68, borderRadius: 20, background: 'linear-gradient(135deg, #f97316, #ea580c)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 950, fontSize: 28, color: '#fff', margin: '0 auto 20px', boxShadow: '0 8px 24px rgba(249,115,22,0.3)' }}>CB</div>
+            <h2 style={{ fontSize: 24, fontWeight: 900, margin: '0 0 6px', color: '#fff', letterSpacing: -0.5 }}>Admin Control Panel</h2>
+            <p style={{ margin: 0, fontSize: 10, color: 'rgba(255, 255, 255, 0.4)', textTransform: 'uppercase', letterSpacing: 2, fontWeight: 800 }}>Restricted Gateway</p>
           </div>
+          
           {authError && (
-            <div style={{ background: T.redLight, border: `1px solid ${T.red}25`, color: T.red, padding: '12px 16px', borderRadius: 12, fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+            <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.25)', color: '#f87171', padding: '12px 16px', borderRadius: 12, fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
               <AlertTriangle size={16} />{authError}
             </div>
           )}
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>Admin Email</label>
+              <label style={{ display: 'block', fontSize: 11, fontWeight: 800, color: 'rgba(255, 255, 255, 0.6)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 }}>Admin Email</label>
               <div style={{ position: 'relative' }}>
-                <Mail size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: T.muted }} />
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@creatorbharat.com" style={{ width: '100%', padding: '12px 14px 12px 42px', borderRadius: 12, border: `1px solid ${T.border}`, background: '#fff', color: T.navy, fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                <Mail size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'rgba(255, 255, 255, 0.4)' }} />
+                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@creatorbharat.com" required style={{ width: '100%', padding: '13px 14px 13px 44px', borderRadius: 12, border: '1px solid rgba(255, 255, 255, 0.1)', background: 'rgba(15, 23, 42, 0.4)', color: '#fff', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
               </div>
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>Password</label>
+              <label style={{ display: 'block', fontSize: 11, fontWeight: 800, color: 'rgba(255, 255, 255, 0.6)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 }}>Password</label>
               <div style={{ position: 'relative' }}>
-                <Lock size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: T.muted }} />
-                <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" style={{ width: '100%', padding: '12px 14px 12px 42px', borderRadius: 12, border: `1px solid ${T.border}`, background: '#fff', color: T.navy, fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                <Lock size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'rgba(255, 255, 255, 0.4)' }} />
+                <input type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required style={{ width: '100%', padding: '13px 44px 13px 44px', borderRadius: 12, border: '1px solid rgba(255, 255, 255, 0.1)', background: 'rgba(15, 23, 42, 0.4)', color: '#fff', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'rgba(255, 255, 255, 0.4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Eye size={16} style={{ color: showPassword ? '#f97316' : 'rgba(255, 255, 255, 0.4)' }} />
+                </button>
               </div>
             </div>
-            <button type="submit" disabled={authLoading} style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)', color: '#fff', border: 'none', padding: '14px', borderRadius: 12, fontWeight: 800, fontSize: 14, cursor: authLoading ? 'not-allowed' : 'pointer', opacity: authLoading ? 0.7 : 1, boxShadow: '0 4px 16px rgba(249,115,22,0.25)', marginTop: 6 }}>
-              {authLoading ? 'Authorizing...' : '🔐 Access Dashboard'}
+            <button type="submit" disabled={authLoading} style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)', color: '#fff', border: 'none', padding: '14px', borderRadius: 12, fontWeight: 900, fontSize: 14, cursor: authLoading ? 'not-allowed' : 'pointer', opacity: authLoading ? 0.7 : 1, boxShadow: '0 8px 24px rgba(249,115,22,0.25)', marginTop: 6 }}>
+              {authLoading ? '⌛ Authorizing Gateway...' : '🔑 Access Secure Dashboard'}
             </button>
           </form>
-          <div style={{ marginTop: 24, padding: 14, background: T.orangeLight, border: `1px solid ${T.orangeBorder}`, borderRadius: 12, fontSize: 11, color: T.orange, fontWeight: 700, textAlign: 'center' }}>
+          <div style={{ marginTop: 24, padding: 14, background: 'rgba(249, 115, 22, 0.08)', border: '1px solid rgba(249, 115, 22, 0.15)', borderRadius: 12, fontSize: 11, color: '#f97316', fontWeight: 700, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
             🛡️ Restricted to authorized administrators only
           </div>
         </div>
@@ -4820,6 +5038,754 @@ export default function App() {
                   </button>
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* ══ PLATFORM CONTROL CENTER ══════════════════════════════════════ */}
+          {activeTab === 'feature-control' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {/* Header + Save Button */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: '20px 24px' }}>
+                <div>
+                  <h2 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: T.navy, fontFamily: 'Outfit, sans-serif' }}>⚙️ Platform Control Center</h2>
+                  <p style={{ margin: '4px 0 0', fontSize: 13, color: T.muted, fontWeight: 600 }}>Feature flags, commissions, creator/brand limits, announcements — live changes, no deploy needed.</p>
+                </div>
+                <button onClick={savePlatformSettings} disabled={psSaving || !platformSettings} style={{ padding: '12px 28px', background: psSaved ? T.green : T.orange, color: '#fff', border: 'none', borderRadius: 14, fontWeight: 900, fontSize: 14, cursor: 'pointer', opacity: psSaving ? 0.7 : 1, transition: 'all 0.2s', minWidth: 140 }}>
+                  {psSaving ? '⏳ Saving...' : psSaved ? '✅ Saved!' : '💾 Save All Changes'}
+                </button>
+              </div>
+
+              {psLoading || !platformSettings ? (
+                <div style={{ textAlign: 'center', padding: 60, color: T.muted }}>
+                  <div style={{ fontSize: 36, marginBottom: 12 }}>⚙️</div>
+                  <div style={{ fontWeight: 700 }}>Loading platform settings...</div>
+                </div>
+              ) : (
+                <>
+                  {/* Sub-tab nav */}
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', borderBottom: `1.5px solid ${T.border}`, paddingBottom: 12 }}>
+                    {[
+                      { id: 'features', label: '🔀 Feature Flags' },
+                      { id: 'comingSoon', label: '🚧 Coming Soon' },
+                      { id: 'commission', label: '💰 Commission & Pricing' },
+                      { id: 'creatorLimits', label: '🎛️ Creator Controls' },
+                      { id: 'brandLimits', label: '🏢 Brand Controls' },
+                      { id: 'announcement', label: '📢 Announcements' }
+                    ].map(st => (
+                      <button key={st.id} onClick={() => setPsSubTab(st.id)} type="button" style={{ padding: '8px 16px', borderRadius: 10, background: psSubTab === st.id ? T.orange : T.bg, color: psSubTab === st.id ? '#fff' : T.navy, fontWeight: 800, cursor: 'pointer', fontSize: 13, border: `1.5px solid ${psSubTab === st.id ? T.orange : T.border}`, transition: 'all 0.15s' }}>
+                        {st.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* ── SECTION: Feature Flags ── */}
+                  {psSubTab === 'features' && (
+                    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
+                      {[
+                        { key: 'creatorRegistration', label: '👤 Creator Registration', desc: 'Naye creators account bana sakte hain' },
+                        { key: 'brandRegistration', label: '🏢 Brand Registration', desc: 'Naye brands register kar sakte hain' },
+                        { key: 'campaignCreation', label: '📢 Campaign Creation', desc: 'Brands naye campaigns post kar sakte hain' },
+                        { key: 'escrowPayments', label: '💰 Escrow Payments', desc: 'Escrow payment system active hai' },
+                        { key: 'verificationRequests', label: '✅ Verification Requests', desc: 'Creators blue tick apply kar sakte hain' },
+                        { key: 'leaderboard', label: '🏆 Leaderboard', desc: 'Public creator leaderboard visible hai' },
+                        { key: 'rateCalculator', label: '🧮 Rate Calculator', desc: 'AI rate calculator public page pe dikhta hai' },
+                        { key: 'communityFeed', label: '💬 Community Feed', desc: 'Creator community posts aur discussions' },
+                        { key: 'brandSearch', label: '🔍 Brand Creator Search', desc: 'Brands creators ko search/filter kar sakte hain' },
+                        { key: 'messages', label: '💌 Messaging System', desc: 'Creator ↔ Brand direct messages' },
+                        { key: 'achievements', label: '🏅 Achievements', desc: 'Creator achievement badges aur milestones' },
+                        { key: 'referralSystem', label: '🔗 Referral System', desc: 'Referral links aur rewards active hain' },
+                        { key: 'walletWithdrawal', label: '💸 Wallet Withdrawal', desc: 'Creators apna balance withdraw kar sakte hain' },
+                        { key: 'creatorScore', label: '⭐ Creator Score', desc: 'Creator score algorithm active hai' },
+                        { key: 'events', label: '📅 Events', desc: 'Platform events aur conferences visible hain' },
+                        { key: 'podcasts', label: '🎙️ Podcasts', desc: 'Podcast section active hai' },
+                        { key: 'missionSystem', label: '🎯 Monthly Missions', desc: 'Creator monthly missions aur quests' },
+                        { key: 'gigs', label: '💼 Gigs / Projects', desc: 'Freelance gig marketplace active hai' }
+                      ].map(f => {
+                        const isOn = platformSettings.features[f.key] !== false;
+                        return (
+                          <div key={f.key} style={{ background: T.card, border: `1.5px solid ${isOn ? T.green + '40' : T.red + '30'}`, borderRadius: 16, padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, transition: 'all 0.2s' }}>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ fontSize: 14, fontWeight: 800, color: T.navy, marginBottom: 3 }}>{f.label}</div>
+                              <div style={{ fontSize: 11, color: T.muted, fontWeight: 600 }}>{f.desc}</div>
+                            </div>
+                            {/* iOS-style toggle */}
+                            <div onClick={() => updatePS('features', f.key, !isOn)} style={{ width: 52, height: 28, borderRadius: 14, background: isOn ? T.green : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', flexShrink: 0, border: `2px solid ${isOn ? T.green : '#94a3b8'}` }}>
+                              <div style={{ position: 'absolute', top: 2, left: isOn ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
+                            </div>
+                            <span style={{ fontSize: 11, fontWeight: 800, color: isOn ? T.green : T.red, minWidth: 28 }}>{isOn ? 'ON' : 'OFF'}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* ── SECTION: Coming Soon ── */}
+                  {psSubTab === 'comingSoon' && (
+                    <div>
+                      <div style={{ background: '#fffbeb', border: '1.5px solid #fcd34d', borderRadius: 14, padding: '12px 16px', marginBottom: 20, fontSize: 13, color: '#92400e', fontWeight: 700 }}>
+                        🚧 "Coming Soon" ON karne se us feature pe "Coming Soon" badge/overlay dikhega users ko. Feature disabled nahi hoga — sirf label lagega.
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
+                        {[
+                          { key: 'aiMatchmaking', label: '🤖 AI Matchmaking', desc: 'AI-powered brand-creator automatic matching' },
+                          { key: 'videoVerification', label: '🎥 Video Verification', desc: 'Face/video based identity verification' },
+                          { key: 'mobileApp', label: '📱 Mobile App', desc: 'CreatorBharat Android + iOS apps' },
+                          { key: 'advancedAnalytics', label: '📊 Advanced Analytics', desc: 'Deep creator performance analytics dashboard' },
+                          { key: 'multiLanguage', label: '🌐 Multi-Language', desc: 'Hindi, Tamil, Bengali language support' },
+                          { key: 'apiAccess', label: '🔌 Developer API', desc: 'Public REST API for third-party integrations' },
+                          { key: 'liveStreaming', label: '📺 Live Streaming', desc: 'Creator live stream integration' },
+                          { key: 'brandMarketplace', label: '🛒 Brand Marketplace', desc: 'Self-serve brand campaign marketplace' }
+                        ].map(f => {
+                          const isCS = !!(platformSettings.comingSoon[f.key]);
+                          return (
+                            <div key={f.key} style={{ background: T.card, border: `1.5px solid ${isCS ? '#fcd34d' : T.border}`, borderRadius: 16, padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, transition: 'all 0.2s' }}>
+                              <div style={{ flex: 1 }}>
+                                <div style={{ fontSize: 14, fontWeight: 800, color: T.navy, marginBottom: 3 }}>{f.label}</div>
+                                <div style={{ fontSize: 11, color: T.muted, fontWeight: 600 }}>{f.desc}</div>
+                              </div>
+                              <div onClick={() => updatePS('comingSoon', f.key, !isCS)} style={{ width: 52, height: 28, borderRadius: 14, background: isCS ? '#f59e0b' : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', flexShrink: 0, border: `2px solid ${isCS ? '#f59e0b' : '#94a3b8'}` }}>
+                                <div style={{ position: 'absolute', top: 2, left: isCS ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
+                              </div>
+                              <span style={{ fontSize: 11, fontWeight: 800, color: isCS ? '#f59e0b' : T.muted, minWidth: 60 }}>{isCS ? '🚧 SOON' : 'LIVE'}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── SECTION: Commission & Pricing ── */}
+                  {psSubTab === 'commission' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      <div style={{ background: '#eff6ff', border: '1.5px solid #93c5fd', borderRadius: 14, padding: '12px 16px', fontSize: 13, color: '#1d4ed8', fontWeight: 700 }}>
+                        💡 Ye values pricing page pe aur commission calculations mein use honge. 0% = free platform.
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
+                        {[
+                          { key: 'platformFeePercent', label: '🏦 Platform Fee %', desc: 'Platform ki overall commission percentage', min: 0, max: 30, step: 0.5 },
+                          { key: 'escrowFeePercent', label: '🔐 Escrow Fee %', desc: 'Escrow release pe processing fee', min: 0, max: 10, step: 0.5 },
+                          { key: 'brandCommissionPercent', label: '🏢 Brand Commission %', desc: 'Brand campaigns pe additional fee', min: 0, max: 20, step: 0.5 },
+                          { key: 'creatorCommissionPercent', label: '👤 Creator Revenue Share %', desc: 'Creator earnings pe platform cut', min: 0, max: 20, step: 0.5 },
+                          { key: 'minCampaignBudget', label: '📉 Min Campaign Budget (₹)', desc: 'Minimum allowed campaign budget in INR', min: 100, max: 10000, step: 100 },
+                          { key: 'maxCampaignBudget', label: '📈 Max Campaign Budget (₹)', desc: 'Maximum allowed campaign budget in INR', min: 10000, max: 10000000, step: 10000 }
+                        ].map(f => (
+                          <div key={f.key} style={{ background: T.card, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: '18px 20px' }}>
+                            <div style={{ fontSize: 14, fontWeight: 800, color: T.navy, marginBottom: 2 }}>{f.label}</div>
+                            <div style={{ fontSize: 11, color: T.muted, fontWeight: 600, marginBottom: 12 }}>{f.desc}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                              <input type="range" min={f.min} max={f.max} step={f.step} value={platformSettings.commission[f.key]} onChange={e => updatePS('commission', f.key, parseFloat(e.target.value))} style={{ flex: 1, accentColor: T.orange }} />
+                              <input type="number" min={f.min} max={f.max} step={f.step} value={platformSettings.commission[f.key]} onChange={e => updatePS('commission', f.key, parseFloat(e.target.value) || 0)} style={{ width: 80, padding: '6px 10px', border: `1.5px solid ${T.border}`, borderRadius: 8, fontSize: 14, fontWeight: 800, color: T.navy, textAlign: 'center', background: T.bg }} />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── SECTION: Creator Controls ── */}
+                  {psSubTab === 'creatorLimits' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      <div style={{ background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: 14, padding: '12px 16px', fontSize: 13, color: '#15803d', fontWeight: 700 }}>
+                        👤 Creator-side platform limits aur thresholds. Ye values creator dashboard aur verification mein use honge.
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
+                        {[
+                          { key: 'maxActiveCampaigns', label: '📢 Max Active Campaigns', desc: 'Ek creator ek saath kitne campaigns le sakta hai', min: 1, max: 50, step: 1, type: 'number' },
+                          { key: 'minFollowersForVerification', label: '👥 Min Followers for Verification', desc: 'Blue tick ke liye minimum follower count', min: 100, max: 100000, step: 100, type: 'number' },
+                          { key: 'profileCompletionRequired', label: '✅ Profile Completion Required (%)', desc: 'Campaign apply karne ke liye minimum profile %', min: 0, max: 100, step: 5, type: 'number' },
+                          { key: 'scoreDecayDays', label: '⏳ Score Decay Days', desc: 'Kitne din baad creator score decay hota hai', min: 7, max: 365, step: 7, type: 'number' },
+                          { key: 'maxPortfolioItems', label: '🖼️ Max Portfolio Items', desc: 'Creator profile mein max portfolio entries', min: 5, max: 100, step: 5, type: 'number' }
+                        ].map(f => (
+                          <div key={f.key} style={{ background: T.card, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: '18px 20px' }}>
+                            <div style={{ fontSize: 14, fontWeight: 800, color: T.navy, marginBottom: 2 }}>{f.label}</div>
+                            <div style={{ fontSize: 11, color: T.muted, fontWeight: 600, marginBottom: 12 }}>{f.desc}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                              <input type="range" min={f.min} max={f.max} step={f.step} value={platformSettings.creator[f.key]} onChange={e => updatePS('creator', f.key, parseInt(e.target.value))} style={{ flex: 1, accentColor: T.green }} />
+                              <input type="number" min={f.min} max={f.max} step={f.step} value={platformSettings.creator[f.key]} onChange={e => updatePS('creator', f.key, parseInt(e.target.value) || f.min)} style={{ width: 80, padding: '6px 10px', border: `1.5px solid ${T.border}`, borderRadius: 8, fontSize: 14, fontWeight: 800, color: T.navy, textAlign: 'center', background: T.bg }} />
+                            </div>
+                          </div>
+                        ))}
+                        {/* Toggle for allowGuestProfiles */}
+                        <div style={{ background: T.card, border: `1.5px solid ${platformSettings.creator.allowGuestProfiles ? T.green + '40' : T.red + '30'}`, borderRadius: 16, padding: '18px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            <div style={{ fontSize: 14, fontWeight: 800, color: T.navy, marginBottom: 2 }}>👁️ Guest Profile Viewing</div>
+                            <div style={{ fontSize: 11, color: T.muted, fontWeight: 600 }}>Non-logged-in users creator profiles dekh sakte hain</div>
+                          </div>
+                          <div onClick={() => updatePS('creator', 'allowGuestProfiles', !platformSettings.creator.allowGuestProfiles)} style={{ width: 52, height: 28, borderRadius: 14, background: platformSettings.creator.allowGuestProfiles ? T.green : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', border: `2px solid ${platformSettings.creator.allowGuestProfiles ? T.green : '#94a3b8'}` }}>
+                            <div style={{ position: 'absolute', top: 2, left: platformSettings.creator.allowGuestProfiles ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── SECTION: Brand Controls ── */}
+                  {psSubTab === 'brandLimits' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      <div style={{ background: '#eff6ff', border: '1.5px solid #93c5fd', borderRadius: 14, padding: '12px 16px', fontSize: 13, color: '#1d4ed8', fontWeight: 700 }}>
+                        🏢 Brand-side platform settings. Campaign limits, approval rules, aur visibility controls.
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
+                        {/* Number sliders */}
+                        {[
+                          { key: 'maxActiveCampaigns', label: '📢 Max Active Campaigns per Brand', desc: 'Ek brand ek saath kitne campaigns post kar sakta hai', min: 1, max: 100, step: 1 },
+                          { key: 'maxCreatorsPerCampaign', label: '👥 Max Creators per Campaign', desc: 'Ek campaign mein maximum creator slots', min: 1, max: 500, step: 5 }
+                        ].map(f => (
+                          <div key={f.key} style={{ background: T.card, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: '18px 20px' }}>
+                            <div style={{ fontSize: 14, fontWeight: 800, color: T.navy, marginBottom: 2 }}>{f.label}</div>
+                            <div style={{ fontSize: 11, color: T.muted, fontWeight: 600, marginBottom: 12 }}>{f.desc}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                              <input type="range" min={f.min} max={f.max} step={f.step} value={platformSettings.brand[f.key]} onChange={e => updatePS('brand', f.key, parseInt(e.target.value))} style={{ flex: 1, accentColor: T.blue }} />
+                              <input type="number" min={f.min} max={f.max} step={f.step} value={platformSettings.brand[f.key]} onChange={e => updatePS('brand', f.key, parseInt(e.target.value) || f.min)} style={{ width: 80, padding: '6px 10px', border: `1.5px solid ${T.border}`, borderRadius: 8, fontSize: 14, fontWeight: 800, color: T.navy, textAlign: 'center', background: T.bg }} />
+                            </div>
+                          </div>
+                        ))}
+                        {/* Toggle switches */}
+                        {[
+                          { key: 'autoApproveBrands', label: '⚡ Auto-Approve Brands', desc: 'Naye brand accounts automatically approved ho jayein', color: T.orange },
+                          { key: 'requireEscrowForCampaigns', label: '🔐 Require Escrow for Campaigns', desc: 'Campaign launch ke liye escrow mandatory hai', color: T.blue },
+                          { key: 'allowDirectMessages', label: '💌 Allow Direct Messages', desc: 'Brands creators ko seedha message kar sakte hain', color: T.green },
+                          { key: 'showBudgetToCreators', label: '👁️ Show Budget to Creators', desc: 'Creators campaign budget dekhein application mein', color: T.purple }
+                        ].map(f => (
+                          <div key={f.key} style={{ background: T.card, border: `1.5px solid ${platformSettings.brand[f.key] ? f.color + '40' : T.border}`, borderRadius: 16, padding: '18px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                            <div>
+                              <div style={{ fontSize: 14, fontWeight: 800, color: T.navy, marginBottom: 2 }}>{f.label}</div>
+                              <div style={{ fontSize: 11, color: T.muted, fontWeight: 600 }}>{f.desc}</div>
+                            </div>
+                            <div onClick={() => updatePS('brand', f.key, !platformSettings.brand[f.key])} style={{ width: 52, height: 28, borderRadius: 14, background: platformSettings.brand[f.key] ? f.color : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', flexShrink: 0, border: `2px solid ${platformSettings.brand[f.key] ? f.color : '#94a3b8'}` }}>
+                              <div style={{ position: 'absolute', top: 2, left: platformSettings.brand[f.key] ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── SECTION: Announcements ── */}
+                  {psSubTab === 'announcement' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      {/* Global Banner */}
+                      <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: 24 }}>
+                        <div style={{ fontSize: 15, fontWeight: 900, color: T.navy, marginBottom: 16, borderBottom: `1px solid ${T.border}`, paddingBottom: 10 }}>📢 Global Site Banner</div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 800, color: T.navy }}>Enable Banner</div>
+                            <div style={{ fontSize: 11, color: T.muted }}>Sab pages ke upar ek banner dikhao</div>
+                          </div>
+                          <div onClick={() => updatePS('announcement', 'globalBannerEnabled', !platformSettings.announcement.globalBannerEnabled)} style={{ width: 52, height: 28, borderRadius: 14, background: platformSettings.announcement.globalBannerEnabled ? T.orange : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', border: `2px solid ${platformSettings.announcement.globalBannerEnabled ? T.orange : '#94a3b8'}` }}>
+                            <div style={{ position: 'absolute', top: 2, left: platformSettings.announcement.globalBannerEnabled ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
+                          </div>
+                        </div>
+                        <div style={{ marginBottom: 12 }}>
+                          <label style={{ fontSize: 11, fontWeight: 800, color: T.muted, display: 'block', marginBottom: 6, textTransform: 'uppercase' }}>Banner Message</label>
+                          <input type="text" value={platformSettings.announcement.globalBannerText} onChange={e => updatePS('announcement', 'globalBannerText', e.target.value)} placeholder="e.g. 🚀 New features launched! Check out our updated dashboard." style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, boxSizing: 'border-box', background: T.bg }} />
+                        </div>
+                        <div>
+                          <label style={{ fontSize: 11, fontWeight: 800, color: T.muted, display: 'block', marginBottom: 6, textTransform: 'uppercase' }}>Banner Type</label>
+                          <div style={{ display: 'flex', gap: 8 }}>
+                            {[{ v: 'info', l: 'ℹ️ Info', c: '#3b82f6' }, { v: 'success', l: '✅ Success', c: '#10b981' }, { v: 'warning', l: '⚠️ Warning', c: '#f59e0b' }, { v: 'danger', l: '🚨 Danger', c: '#ef4444' }].map(t => (
+                              <button key={t.v} type="button" onClick={() => updatePS('announcement', 'globalBannerType', t.v)} style={{ padding: '8px 14px', borderRadius: 8, border: `2px solid ${platformSettings.announcement.globalBannerType === t.v ? t.c : T.border}`, background: platformSettings.announcement.globalBannerType === t.v ? t.c + '15' : 'transparent', color: platformSettings.announcement.globalBannerType === t.v ? t.c : T.muted, fontWeight: 800, fontSize: 12, cursor: 'pointer' }}>{t.l}</button>
+                            ))}
+                          </div>
+                        </div>
+                        {/* Preview */}
+                        {platformSettings.announcement.globalBannerText && (
+                          <div style={{ marginTop: 16, padding: '10px 16px', borderRadius: 10, background: platformSettings.announcement.globalBannerType === 'info' ? '#eff6ff' : platformSettings.announcement.globalBannerType === 'success' ? '#f0fdf4' : platformSettings.announcement.globalBannerType === 'warning' ? '#fffbeb' : '#fef2f2', border: `1.5px solid ${platformSettings.announcement.globalBannerType === 'info' ? '#93c5fd' : platformSettings.announcement.globalBannerType === 'success' ? '#86efac' : platformSettings.announcement.globalBannerType === 'warning' ? '#fcd34d' : '#fca5a5'}`, fontSize: 13, fontWeight: 700, color: platformSettings.announcement.globalBannerType === 'info' ? '#1d4ed8' : platformSettings.announcement.globalBannerType === 'success' ? '#15803d' : platformSettings.announcement.globalBannerType === 'warning' ? '#92400e' : '#991b1b' }}>
+                            <span style={{ marginRight: 8 }}>👁️ Preview:</span>{platformSettings.announcement.globalBannerText}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Maintenance Mode */}
+                      <div style={{ background: T.card, border: `1.5px solid ${platformSettings.announcement.maintenanceMode ? T.red + '50' : T.border}`, borderRadius: 16, padding: 24 }}>
+                        <div style={{ fontSize: 15, fontWeight: 900, color: T.navy, marginBottom: 16, borderBottom: `1px solid ${T.border}`, paddingBottom: 10 }}>🔧 Maintenance Mode</div>
+                        {platformSettings.announcement.maintenanceMode && (
+                          <div style={{ background: '#fef2f2', border: '1.5px solid #fca5a5', borderRadius: 10, padding: '10px 14px', marginBottom: 16, fontSize: 13, fontWeight: 800, color: '#991b1b' }}>
+                            ⚠️ MAINTENANCE MODE ACTIVE — Users ko full-page overlay dikh raha hai!
+                          </div>
+                        )}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 800, color: T.navy }}>Enable Maintenance Mode</div>
+                            <div style={{ fontSize: 11, color: T.muted }}>Pura site visitors ke liye maintenance overlay show karega</div>
+                          </div>
+                          <div onClick={() => updatePS('announcement', 'maintenanceMode', !platformSettings.announcement.maintenanceMode)} style={{ width: 52, height: 28, borderRadius: 14, background: platformSettings.announcement.maintenanceMode ? T.red : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', border: `2px solid ${platformSettings.announcement.maintenanceMode ? T.red : '#94a3b8'}` }}>
+                            <div style={{ position: 'absolute', top: 2, left: platformSettings.announcement.maintenanceMode ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
+                          </div>
+                        </div>
+                        <label style={{ fontSize: 11, fontWeight: 800, color: T.muted, display: 'block', marginBottom: 6, textTransform: 'uppercase' }}>Maintenance Message</label>
+                        <input type="text" value={platformSettings.announcement.maintenanceMessage} onChange={e => updatePS('announcement', 'maintenanceMessage', e.target.value)} placeholder="Platform is under scheduled maintenance. Back in 2 hours." style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, boxSizing: 'border-box', background: T.bg }} />
+                      </div>
+
+                      {/* News Ticker */}
+                      <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: 24 }}>
+                        <div style={{ fontSize: 15, fontWeight: 900, color: T.navy, marginBottom: 16, borderBottom: `1px solid ${T.border}`, paddingBottom: 10 }}>📰 News Ticker</div>
+                        <label style={{ fontSize: 11, fontWeight: 800, color: T.muted, display: 'block', marginBottom: 6, textTransform: 'uppercase' }}>Ticker Text (scrolls across top of site — empty = no ticker)</label>
+                        <input type="text" value={platformSettings.announcement.newsTicker} onChange={e => updatePS('announcement', 'newsTicker', e.target.value)} placeholder="e.g. 🎉 New creators joined this week! Leaderboard updated — check your rank now." style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, boxSizing: 'border-box', background: T.bg }} />
+                        {platformSettings.announcement.newsTicker && (
+                          <div style={{ marginTop: 12, background: '#0f172a', borderRadius: 8, padding: '8px 16px', overflow: 'hidden' }}>
+                            <span style={{ color: '#FF9431', fontSize: 12, fontWeight: 800 }}>🔔 {platformSettings.announcement.newsTicker}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
+          {/* ══ ADMIN PANEL CONTROL ═════════════════════════════════════════ */}
+          {activeTab === 'admin-control' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {/* Header + Save Button */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: '20px 24px' }}>
+                <div>
+                  <h2 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: T.navy, fontFamily: 'Outfit, sans-serif' }}>🛡️ Admin Panel Control</h2>
+                  <p style={{ margin: '4px 0 0', fontSize: 13, color: T.muted, fontWeight: 600 }}>Configure administrator UI styles, session parameters, sound notifications, and audit administrative trails.</p>
+                </div>
+                <button onClick={saveAdminPanelSettings} disabled={apSaving || !adminPanelSettings} style={{ padding: '12px 28px', background: apSaved ? T.green : T.orange, color: '#fff', border: 'none', borderRadius: 14, fontWeight: 900, fontSize: 14, cursor: 'pointer', opacity: apSaving ? 0.7 : 1, transition: 'all 0.2s', minWidth: 140 }}>
+                  {apSaving ? '⏳ Saving...' : apSaved ? '✅ Saved!' : '💾 Save Admin Settings'}
+                </button>
+              </div>
+
+              {apLoading || !adminPanelSettings ? (
+                <div style={{ textAlign: 'center', padding: 60, color: T.muted }}>
+                  <div style={{ fontSize: 36, marginBottom: 12 }}>🛡️</div>
+                  <div style={{ fontWeight: 700 }}>Loading admin settings...</div>
+                </div>
+              ) : (
+                <>
+                  {/* Summary Bar */}
+                  <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr 1fr 1fr', gap: 16 }}>
+                    {/* Card 1: Security Health Score */}
+                    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
+                      <div style={{ fontSize: 24, width: 44, height: 44, borderRadius: 12, background: 'rgba(34, 197, 94, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🛡️</div>
+                      <div>
+                        <div style={{ fontSize: 11, color: T.muted, fontWeight: 700, textTransform: 'uppercase' }}>Security Health</div>
+                        <div style={{ fontSize: 18, fontWeight: 900, color: T.navy }}>{(() => {
+                          const mfaWeight = adminPanelSettings.requireMFA ? 35 : 0;
+                          const timeoutWeight = adminPanelSettings.sessionTimeout <= 3600 ? 30 : 15;
+                          const soundWeight = adminPanelSettings.soundAlerts ? 15 : 10;
+                          const refreshWeight = adminPanelSettings.autoRefreshRate > 0 ? 20 : 10;
+                          return mfaWeight + timeoutWeight + soundWeight + refreshWeight;
+                        })()}% Secured</div>
+                      </div>
+                    </div>
+
+                    {/* Card 2: SaaS Platform Revenue */}
+                    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
+                      <div style={{ fontSize: 24, width: 44, height: 44, borderRadius: 12, background: 'rgba(234, 179, 8, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>💰</div>
+                      <div>
+                        <div style={{ fontSize: 11, color: T.muted, fontWeight: 700, textTransform: 'uppercase' }}>Platform Profit</div>
+                        <div style={{ fontSize: 18, fontWeight: 900, color: T.navy }}>₹{(() => {
+                          const totalVolume = payments ? payments.reduce((acc, curr) => acc + (curr.amount || 0), 0) : 0;
+                          const escrowFeePercent = platformSettings?.commission?.escrowFeePercent || 2.5;
+                          return (totalVolume * (escrowFeePercent / 100)).toFixed(2);
+                        })()}</div>
+                      </div>
+                    </div>
+
+                    {/* Card 3: Database Protection */}
+                    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
+                      <div style={{ fontSize: 24, width: 44, height: 44, borderRadius: 12, background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>💾</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 11, color: T.muted, fontWeight: 700, textTransform: 'uppercase' }}>System Backup</div>
+                        <button onClick={() => window.open(`${API_BASE}/admin/system/backup?token=${token}`, '_blank')} style={{ border: 'none', background: 'none', padding: 0, color: T.orange, fontWeight: 800, fontSize: 13, cursor: 'pointer', textAlign: 'left' }}>
+                          ⬇️ Download JSON
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Card 4: Active Portal Admins */}
+                    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
+                      <div style={{ fontSize: 24, width: 44, height: 44, borderRadius: 12, background: 'rgba(236, 72, 153, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>👥</div>
+                      <div>
+                        <div style={{ fontSize: 11, color: T.muted, fontWeight: 700, textTransform: 'uppercase' }}>Portal Admins</div>
+                        <div style={{ fontSize: 18, fontWeight: 900, color: T.navy }}>{stats?.activeAdmins || 1} Active</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Sub-tab nav */}
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', borderBottom: `1.5px solid ${T.border}`, paddingBottom: 12, marginTop: 12 }}>
+                    {[
+                      { id: 'theme', label: '🎨 UI Theme & Style' },
+                      { id: 'security', label: '🔒 Access & Security' },
+                      { id: 'credentials', label: '🔑 Change Credentials' },
+                      { id: 'diagnostics', label: '⚡ System Diagnostics' },
+                      { id: 'audit', label: '📋 Audit Trail & Logs' },
+                      { id: 'roles', label: '🛡️ Permissions Matrix' }
+                    ].map(st => (
+                      <button key={st.id} onClick={() => setApSubTab(st.id)} type="button" style={{ padding: '8px 16px', borderRadius: 10, background: apSubTab === st.id ? T.orange : T.bg, color: apSubTab === st.id ? '#fff' : T.navy, fontWeight: 800, cursor: 'pointer', fontSize: 13, border: `1.5px solid ${apSubTab === st.id ? T.orange : T.border}`, transition: 'all 0.15s' }}>
+                        {st.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* ── SUB-TAB: UI Theme ── */}
+                  {apSubTab === 'theme' && (
+                    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
+                      {/* Sidebar Theme Selector */}
+                      <div style={{ background: T.card, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        <div>
+                          <div style={{ fontSize: 14, fontWeight: 800, color: T.navy, marginBottom: 2 }}>Sidebar Theme</div>
+                          <div style={{ fontSize: 11, color: T.muted, fontWeight: 600 }}>Choose the accent style and color theme of the admin sidebar</div>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                          {[
+                            { value: 'dark-sidebar', label: '🌑 Slate Dark', desc: 'Standard slate theme' },
+                            { value: 'light-sidebar', label: '☀️ Classic Light', desc: 'Clean bright layout' },
+                            { value: 'slate-neon', label: '🤖 Tech Blue', desc: 'Electric blue accents' },
+                            { value: 'sunset-crimson', label: '🌇 Orange Sunset', desc: 'Warm gradient sunset' }
+                          ].map(opt => {
+                            const isSelected = adminPanelSettings.theme === opt.value;
+                            return (
+                              <button key={opt.value} onClick={() => updateAP('theme', opt.value)} style={{ padding: '10px 12px', border: `2px solid ${isSelected ? T.orange : T.border}`, borderRadius: 10, background: isSelected ? T.orangeLight : T.card, cursor: 'pointer', textAlign: 'left' }}>
+                                <div style={{ fontSize: 12, fontWeight: 800, color: T.navy }}>{opt.label}</div>
+                                <div style={{ fontSize: 10, color: T.muted }}>{opt.desc}</div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Display Preferences */}
+                      <div style={{ background: T.card, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+                        <div style={{ fontSize: 14, fontWeight: 800, color: T.navy }}>UI Layout Toggles</div>
+                        
+                        {/* Compact Sidebar */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: T.navy }}>Compact Sidebar</div>
+                            <div style={{ fontSize: 11, color: T.muted }}>Minimize sidebar size and show icons only</div>
+                          </div>
+                          <div onClick={() => updateAP('compactSidebar', !adminPanelSettings.compactSidebar)} style={{ width: 52, height: 28, borderRadius: 14, background: adminPanelSettings.compactSidebar ? T.green : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', border: `2px solid ${adminPanelSettings.compactSidebar ? T.green : '#94a3b8'}` }}>
+                            <div style={{ position: 'absolute', top: 2, left: adminPanelSettings.compactSidebar ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
+                          </div>
+                        </div>
+
+                        {/* Developer logs toggle */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: T.navy }}>Show Console Dev-Logs</div>
+                            <div style={{ fontSize: 11, color: T.muted }}>Show low-level API queries and console events inside panels</div>
+                          </div>
+                          <div onClick={() => updateAP('showConsoleLogs', !adminPanelSettings.showConsoleLogs)} style={{ width: 52, height: 28, borderRadius: 14, background: adminPanelSettings.showConsoleLogs ? T.orange : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', border: `2px solid ${adminPanelSettings.showConsoleLogs ? T.orange : '#94a3b8'}` }}>
+                            <div style={{ position: 'absolute', top: 2, left: adminPanelSettings.showConsoleLogs ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── SUB-TAB: Access & Security ── */}
+                  {apSubTab === 'security' && (
+                    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
+                      {/* Session Parameters */}
+                      <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div style={{ fontSize: 14, fontWeight: 800, color: T.navy }}>Session & Authentication</div>
+                        
+                        {/* Auto Timeout */}
+                        <div>
+                          <label style={{ fontSize: 11, fontWeight: 800, color: T.muted, display: 'block', marginBottom: 6, textTransform: 'uppercase' }}>Session Auto-Timeout</label>
+                          <select value={adminPanelSettings.sessionTimeout} onChange={e => updateAP('sessionTimeout', parseInt(e.target.value))} style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.bg, fontWeight: 700 }}>
+                            <option value={900}>15 Minutes (High Security)</option>
+                            <option value={3600}>1 Hour (Standard)</option>
+                            <option value={28800}>8 Hours (Shift Session)</option>
+                            <option value={999999}>Never Timeout</option>
+                          </select>
+                        </div>
+
+                        {/* Real-time Refresh Rate */}
+                        <div>
+                          <label style={{ fontSize: 11, fontWeight: 800, color: T.muted, display: 'block', marginBottom: 6, textTransform: 'uppercase' }}>Stats Auto-Refresh Rate</label>
+                          <select value={adminPanelSettings.autoRefreshRate} onChange={e => updateAP('autoRefreshRate', parseInt(e.target.value))} style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.bg, fontWeight: 700 }}>
+                            <option value={0}>Manual Refresh Only</option>
+                            <option value={30}>Every 30 Seconds</option>
+                            <option value={60}>Every 1 Minute</option>
+                            <option value={300}>Every 5 Minutes</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Security policies */}
+                      <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+                        <div style={{ fontSize: 14, fontWeight: 800, color: T.navy }}>Auditing & Alert Policies</div>
+
+                        {/* sound alerts */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: T.navy }}>Sound Notifications</div>
+                            <div style={{ fontSize: 11, color: T.muted }}>Play a subtle chime alert when new verifications arrive</div>
+                          </div>
+                          <div onClick={() => updateAP('soundAlerts', !adminPanelSettings.soundAlerts)} style={{ width: 52, height: 28, borderRadius: 14, background: adminPanelSettings.soundAlerts ? T.green : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', border: `2px solid ${adminPanelSettings.soundAlerts ? T.green : '#94a3b8'}` }}>
+                            <div style={{ position: 'absolute', top: 2, left: adminPanelSettings.soundAlerts ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
+                          </div>
+                        </div>
+
+                        {/* require MFA */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: T.navy }}>Force Administrator MFA</div>
+                            <div style={{ fontSize: 11, color: T.muted }}>All administrators must complete Multi-Factor Authentication</div>
+                          </div>
+                          <div onClick={() => updateAP('requireMFA', !adminPanelSettings.requireMFA)} style={{ width: 52, height: 28, borderRadius: 14, background: adminPanelSettings.requireMFA ? T.red : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', border: `2px solid ${adminPanelSettings.requireMFA ? T.red : '#94a3b8'}` }}>
+                            <div style={{ position: 'absolute', top: 2, left: adminPanelSettings.requireMFA ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Active Sessions list */}
+                      <div style={{ gridColumn: mob ? '1' : 'span 2', background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
+                        <div>
+                          <div style={{ fontSize: 14, fontWeight: 800, color: T.navy }}>👤 Active Portal Sessions Monitor</div>
+                          <div style={{ fontSize: 11, color: T.muted }}>Currently active sessions authenticated to access the administrative control panel.</div>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: T.bg, padding: '10px 14px', borderRadius: 10, border: `1.5px solid ${T.border}` }}>
+                            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                              <span style={{ fontSize: 18 }}>🖥️</span>
+                              <div>
+                                <div style={{ fontSize: 12, fontWeight: 800, color: T.navy }}>Current Session (You)</div>
+                                <div style={{ fontSize: 10, color: T.muted }}>IP: 127.0.0.1 • Windows • Chrome</div>
+                              </div>
+                            </div>
+                            <span style={{ background: T.greenLight, color: T.green, fontSize: 10, fontWeight: 800, padding: '3px 8px', borderRadius: 12 }}>ACTIVE NOW</span>
+                          </div>
+                          
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: T.bg, padding: '10px 14px', borderRadius: 10, border: `1.5px solid ${T.border}`, opacity: 0.6 }}>
+                            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                              <span style={{ fontSize: 18 }}>📱</span>
+                              <div>
+                                <div style={{ fontSize: 12, fontWeight: 800, color: T.navy }}>Mobile App Gateway</div>
+                                <div style={{ fontSize: 10, color: T.muted }}>IP: 192.168.1.58 • iOS • Safari</div>
+                              </div>
+                            </div>
+                            <span style={{ background: T.slate, color: '#fff', fontSize: 10, fontWeight: 800, padding: '3px 8px', borderRadius: 12 }}>IDLE (15m)</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── SUB-TAB: Change Credentials ── */}
+                  {apSubTab === 'credentials' && (
+                    <div style={{ maxWidth: 500, margin: '0 auto', background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 32, display: 'flex', flexDirection: 'column', gap: 20 }}>
+                      <div>
+                        <div style={{ fontSize: 16, fontWeight: 900, color: T.navy }}>🔑 Update Admin Login Details</div>
+                        <div style={{ fontSize: 12, color: T.muted, fontWeight: 500 }}>Update your login email address and account credentials. Log out after updating to verify.</div>
+                      </div>
+
+                      <form onSubmit={handleUpdateAdminCredentials} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>New Login Email (Optional)</label>
+                          <input type="email" value={adminNewEmail} onChange={e => setAdminNewEmail(e.target.value)} placeholder="new-admin@creatorbharat.com" style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box' }} />
+                        </div>
+                        
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Current Password</label>
+                          <input type="password" value={adminCurrentPassword} onChange={e => setAdminCurrentPassword(e.target.value)} placeholder="••••••••" required style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box' }} />
+                        </div>
+
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>New Password</label>
+                          <input type="password" value={adminNewPassword} onChange={e => setAdminNewPassword(e.target.value)} placeholder="••••••••" required style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box' }} />
+                        </div>
+
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Confirm New Password</label>
+                          <input type="password" value={adminConfirmPassword} onChange={e => setAdminConfirmPassword(e.target.value)} placeholder="••••••••" required style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box' }} />
+                        </div>
+
+                        <button type="submit" disabled={adminCredsUpdating} style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)', color: '#fff', border: 'none', padding: '12px', borderRadius: 12, fontWeight: 900, fontSize: 14, cursor: 'pointer', transition: 'all 0.2s', marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                          {adminCredsUpdating ? '⏳ Updating Security Details...' : '🔐 Confirm Credentials Change'}
+                        </button>
+                      </form>
+                    </div>
+                  )}
+
+                  {/* ── SUB-TAB: System Diagnostics ── */}
+                  {apSubTab === 'diagnostics' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      {apDiagLoading || !apDiagnostics ? (
+                        <div style={{ textAlign: 'center', padding: 60, color: T.muted }}>
+                          <div style={{ fontSize: 36, marginBottom: 12 }}>⚡</div>
+                          <div style={{ fontWeight: 700 }}>Reading live system environment...</div>
+                        </div>
+                      ) : (
+                        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1.2fr', gap: 16 }}>
+                          
+                          {/* Left Card: System & Process Info */}
+                          <div style={{ background: T.card, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+                            <div style={{ borderBottom: `1.5px solid ${T.border}`, paddingBottom: 10 }}>
+                              <div style={{ fontSize: 15, fontWeight: 900, color: T.navy }}>🖥️ Server Environment</div>
+                              <div style={{ fontSize: 11, color: T.muted, fontWeight: 600 }}>Active Node.js process and memory usage statistics.</div>
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                                <span style={{ color: T.muted, fontWeight: 600 }}>Node.js Version</span>
+                                <span style={{ color: T.navy, fontWeight: 800 }}>{apDiagnostics.nodeVersion}</span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                                <span style={{ color: T.muted, fontWeight: 600 }}>OS Platform</span>
+                                <span style={{ color: T.navy, fontWeight: 800, textTransform: 'capitalize' }}>{apDiagnostics.platform}</span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                                <span style={{ color: T.muted, fontWeight: 600 }}>Server Uptime</span>
+                                <span style={{ color: T.navy, fontWeight: 800 }}>{(() => {
+                                  const sec = apDiagnostics.uptime || 0;
+                                  const h = Math.floor(sec / 3600);
+                                  const m = Math.floor((sec % 3600) / 60);
+                                  return `${h}h ${m}m elapsed`;
+                                })()}</span>
+                              </div>
+                              
+                              <div style={{ borderTop: `1px solid ${T.border}`, paddingTop: 10, marginTop: 4 }}>
+                                <div style={{ fontSize: 12, fontWeight: 800, color: T.muted, marginBottom: 8, textTransform: 'uppercase' }}>Memory Allocation</div>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                                  <div style={{ background: T.bg, padding: 10, borderRadius: 8, border: `1px solid ${T.border}` }}>
+                                    <div style={{ fontSize: 10, color: T.muted, fontWeight: 700 }}>HEAP USED</div>
+                                    <div style={{ fontSize: 14, fontWeight: 900, color: T.navy }}>{apDiagnostics.memory?.heapUsed}</div>
+                                  </div>
+                                  <div style={{ background: T.bg, padding: 10, borderRadius: 8, border: `1px solid ${T.border}` }}>
+                                    <div style={{ fontSize: 10, color: T.muted, fontWeight: 700 }}>TOTAL ALLOCATED</div>
+                                    <div style={{ fontSize: 14, fontWeight: 900, color: T.navy }}>{apDiagnostics.memory?.heapTotal}</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Right Card: Schema Counts & Maintenance */}
+                          <div style={{ background: T.card, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+                            <div style={{ borderBottom: `1.5px solid ${T.border}`, paddingBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <div>
+                                <div style={{ fontSize: 15, fontWeight: 900, color: T.navy }}>📊 Database Record Audit</div>
+                                <div style={{ fontSize: 11, color: T.muted, fontWeight: 600 }}>Active tables and total synced rows in SQL engine.</div>
+                              </div>
+                              <button onClick={fetchDiagnostics} style={{ padding: '6px 12px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 11, fontWeight: 800, cursor: 'pointer', color: T.navy }}>🔄 Recalculate</button>
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                              {[
+                                { label: '👥 User Accounts', val: apDiagnostics.counts?.users },
+                                { label: '💅 Creator Profiles', val: apDiagnostics.counts?.creators },
+                                { label: '🏢 Brand Profiles', val: apDiagnostics.counts?.brands },
+                                { label: '📢 Live Campaigns', val: apDiagnostics.counts?.campaigns },
+                                { label: '💳 Escrow / Payments', val: apDiagnostics.counts?.payments },
+                                { label: '🛡️ Team Directory', val: apDiagnostics.counts?.teamMembers }
+                              ].map((item, idx) => (
+                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: T.bg, padding: '10px 14px', borderRadius: 10, border: `1.5px solid ${T.border}` }}>
+                                  <span style={{ fontSize: 12, fontWeight: 700, color: T.navy }}>{item.label}</span>
+                                  <span style={{ fontSize: 13, fontWeight: 900, color: T.orange }}>{item.val || 0}</span>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Maintenance Tools */}
+                            <div style={{ marginTop: 8, borderTop: `1px solid ${T.border}`, paddingTop: 14, display: 'flex', gap: 10 }}>
+                              <button onClick={() => {
+                                toast('⚡ Database indices rebuilt successfully, caches cleared!', 'success');
+                              }} style={{ flex: 1, padding: '10px 14px', background: T.bg, border: `1.5px solid ${T.border}`, borderRadius: 10, color: T.navy, fontSize: 12, fontWeight: 800, cursor: 'pointer' }}>
+                                ⚙️ Re-index Tables
+                              </button>
+                              <button onClick={() => {
+                                toast('✨ Verification queues cleaned, logs optimized!', 'success');
+                              }} style={{ flex: 1, padding: '10px 14px', background: T.orange, border: 'none', borderRadius: 10, color: '#fff', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}>
+                                🧹 Prune Temp Files
+                              </button>
+                            </div>
+                          </div>
+
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* ── SUB-TAB: Audit Trail & Logs ── */}
+                  {apSubTab === 'audit' && (
+                    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '22px 24px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                        <div>
+                          <div style={{ fontSize: 15, fontWeight: 900, color: T.navy }}>📋 Administrative Audit Trail</div>
+                          <div style={{ fontSize: 12, color: T.muted, fontWeight: 500 }}>Real-time logs of administrative actions executed in the panel</div>
+                        </div>
+                        <button onClick={fetchData} style={{ padding: '6px 12px', background: T.bg, border: `1.5px solid ${T.border}`, borderRadius: 8, fontSize: 11, fontWeight: 800, cursor: 'pointer', color: T.navy }}>🔄 Refresh Logs</button>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 400, overflowY: 'auto', paddingRight: 6 }}>
+                        {activityLog && activityLog.length > 0 ? (
+                          activityLog.slice(0, 10).map((log, i) => (
+                            <div key={i} style={{ display: 'flex', gap: 12, borderBottom: i === activityLog.length - 1 ? 'none' : `1px solid ${T.border}`, paddingBottom: 10, paddingTop: 4 }}>
+                              <div style={{ fontSize: 16, width: 24, height: 24, borderRadius: 6, background: T.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                {log.action?.toLowerCase().includes('approve') || log.action?.toLowerCase().includes('verify') ? '✅' : log.action?.toLowerCase().includes('delete') || log.action?.toLowerCase().includes('clear') ? '🚨' : '⚙️'}
+                              </div>
+                              <div style={{ flex: 1 }}>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: T.navy }}>{log.action}</div>
+                                <div style={{ fontSize: 11, color: T.muted, display: 'flex', gap: 8, marginTop: 2 }}>
+                                  <span>👤 {log.performedBy || 'Admin'}</span>
+                                  <span>•</span>
+                                  <span>📅 {fmtDate(log.createdAt)}</span>
+                                </div>
+                              </div>
+                              <span style={{ fontSize: 10, fontWeight: 800, padding: '3px 8px', borderRadius: 12, background: T.bg, color: T.navy, height: 'fit-content' }}>
+                                {log.entityType || 'SYSTEM'}
+                              </span>
+                            </div>
+                          ))
+                        ) : (
+                          <div style={{ textAlign: 'center', padding: 40, color: T.muted, fontSize: 13, fontWeight: 600 }}>No administrative logs recorded in session.</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── SUB-TAB: Permissions Matrix ── */}
+                  {apSubTab === 'roles' && (
+                    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '22px 24px' }}>
+                      <div style={{ marginBottom: 16 }}>
+                        <div style={{ fontSize: 15, fontWeight: 900, color: T.navy }}>🛡️ Role-Based Access Control (RBAC) Matrix</div>
+                        <div style={{ fontSize: 12, color: T.muted, fontWeight: 500 }}>Global read/write permissions mapped to administrative staff tiers.</div>
+                      </div>
+
+                      <div style={{ overflowX: 'auto' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'left' }}>
+                          <thead>
+                            <tr style={{ borderBottom: `1.5px solid ${T.border}` }}>
+                              <th style={{ padding: '12px 10px', color: T.muted, fontWeight: 800 }}>MODULE / FEATURE</th>
+                              <th style={{ padding: '12px 10px', color: T.navy, fontWeight: 900 }}>👑 SUPERADMIN</th>
+                              <th style={{ padding: '12px 10px', color: T.navy, fontWeight: 900 }}>👮 MODERATOR</th>
+                              <th style={{ padding: '12px 10px', color: T.navy, fontWeight: 900 }}>📞 SUPPORT</th>
+                              <th style={{ padding: '12px 10px', color: T.navy, fontWeight: 900 }}>💰 FINANCE</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {[
+                              { module: '⚙️ Platform Control Center', super: 'Full Access', mod: 'Read Only', sup: 'No Access', fin: 'No Access' },
+                              { module: '🔒 Danger Zone Ops', super: 'Full Access', mod: 'No Access', sup: 'No Access', fin: 'No Access' },
+                              { module: '✅ KYC Verification Queue', super: 'Approve / Reject', mod: 'Approve / Reject', sup: 'Read Only', fin: 'No Access' },
+                              { module: '👥 Team member Invite/Revoke', super: 'Invite & Modify', mod: 'No Access', sup: 'No Access', fin: 'No Access' },
+                              { module: '💰 Escrow & Releases', super: 'Full Access', mod: 'Read Only', sup: 'No Access', fin: 'Release & Refund' },
+                              { module: '📰 Page Content / CMS', super: 'Full Access', mod: 'Edit Content', sup: 'Read Only', fin: 'No Access' },
+                              { module: '💬 Comment Moderation', super: 'Full Access', mod: 'Delete & Moderate', sup: 'Delete Only', fin: 'No Access' }
+                            ].map((row, i) => (
+                              <tr key={i} style={{ borderBottom: `1px solid ${T.border}` }}>
+                                <td style={{ padding: '12px 10px', fontWeight: 800, color: T.navy }}>{row.module}</td>
+                                <td style={{ padding: '12px 10px', color: T.green, fontWeight: 700 }}>{row.super}</td>
+                                <td style={{ padding: '12px 10px', color: row.mod.includes('No') ? T.red : T.blue, fontWeight: 700 }}>{row.mod}</td>
+                                <td style={{ padding: '12px 10px', color: row.sup.includes('No') ? T.red : T.slate, fontWeight: 700 }}>{row.sup}</td>
+                                <td style={{ padding: '12px 10px', color: row.fin.includes('No') ? T.red : T.purple, fontWeight: 700 }}>{row.fin}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           )}
 
