@@ -1,7 +1,93 @@
 import { Router } from 'express';
 import { authMiddleware } from '../middleware/auth.js';
+import { getSettings } from '../utils/settings.js';
 
 const router = Router();
+
+// ─── 0. AI CHATBOT (Public) ────────────────────────────────────────────────────
+// POST /api/ai/chat — CreatorBharat AI Assistant (no auth required for public)
+router.post('/chat', async (req, res) => {
+  const { message, history = [] } = req.body;
+  if (!message || !message.trim()) {
+    return res.status(400).json({ error: 'Message is required.' });
+  }
+
+  const SYSTEM_CONTEXT = `You are BharatAI, the official AI assistant for CreatorBharat — India's first creator-brand collaboration platform focused on Tier 2 & Tier 3 city creators.
+
+About CreatorBharat:
+- Platform for Indian creators to connect with brands for paid collaborations
+- Features: CB Score (creator reputation score), verified profiles, zero commission model
+- Supports: Instagram, YouTube, Podcast, Blog creators
+- Creator Plans: Free (basic) and Pro (₹499/mo with premium features)
+- Brand Plans: Starter (₹999/mo) and Pro (₹2499/mo) with campaign management tools
+- Escrow payment protection for all transactions
+- Physical trophy rewards for top creators
+- Monthly missions and challenges
+- Regional focus: Bhilwara, Jaipur, Tier 2 & 3 cities across India
+
+Your role: Help creators and brands understand the platform, answer questions about features, pricing, how to apply, verification process, campaigns, and CB Score. Be friendly, use Hinglish naturally when helpful, and always be helpful.
+
+Keep answers concise (2-4 sentences max) unless explaining a complex topic. Use emojis sparingly but naturally. If you don't know something specific, direct them to contact@creatorbharat.com.`;
+
+  try {
+    const settings = await getSettings().catch(() => ({}));
+    const geminiKey = process.env.GEMINI_API_KEY || settings.geminiApiKey;
+
+    if (geminiKey) {
+      // Build conversation turns for Gemini
+      const contents = [];
+      // Add history (last 6 messages for context)
+      const recentHistory = history.slice(-6);
+      recentHistory.forEach(msg => {
+        contents.push({ role: msg.role === 'user' ? 'user' : 'model', parts: [{ text: msg.content }] });
+      });
+      // Add system context + current message
+      contents.push({ role: 'user', parts: [{ text: `${SYSTEM_CONTEXT}\n\nUser: ${message}` }] });
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+        if (reply) {
+          return res.json({ reply, source: 'gemini' });
+        }
+      }
+    }
+
+    // Smart keyword-based fallback responses
+    const msg = message.toLowerCase();
+    let reply = '';
+
+    if (msg.includes('price') || msg.includes('pricing') || msg.includes('cost') || msg.includes('kitna') || msg.includes('fee')) {
+      reply = 'CreatorBharat mein join karna bilkul Free hai! 🎉 Pro Plan sirf ₹499/month mein premium features deta hai jaise verified badge, priority campaigns, aur advanced analytics. Brand plans ₹999 se start hote hain.';
+    } else if (msg.includes('verify') || msg.includes('verification') || msg.includes('badge') || msg.includes('kyc')) {
+      reply = 'Verification ke liye apna profile complete karo, social media links add karo, aur KYC documents submit karo. Humari team 2-3 working days mein review karti hai. Verified creators ko blue badge milta hai aur zyada campaigns milte hain! ✅';
+    } else if (msg.includes('score') || msg.includes('cb score') || msg.includes('ranking')) {
+      reply = 'CB Score CreatorBharat ka unique creator reputation score hai (0-1000). Ye aapki engagement rate, profile completeness, campaign success, aur community activity se calculate hota hai. High score = more brand deals! 📊';
+    } else if (msg.includes('brand') || msg.includes('campaign') || msg.includes('deal') || msg.includes('collaboration')) {
+      reply = 'Brands ke saath connect karne ke liye Opportunities section mein jaao, apni niche ke campaigns dekho, aur AI Pitch Assistant se personalized pitch bhejo. Escrow payment se payment 100% safe rehta hai! 🤝';
+    } else if (msg.includes('wallet') || msg.includes('payout') || msg.includes('payment') || msg.includes('earning')) {
+      reply = 'Earnings apne CreatorBharat Wallet mein aati hain. Payout request karo aur 3-5 business days mein directly bank account mein transfer ho jaata hai. Minimum payout ₹500 hai. Zero commission — poora paisa tumhara! 💰';
+    } else if (msg.includes('apply') || msg.includes('join') || msg.includes('signup') || msg.includes('register')) {
+      reply = 'Join karna easy hai! /apply pe jaao, form fill karo, social media link karo aur submit karo. Approval ke baad creator dashboard access milega. Abhi 50,000+ creators hain platform par! 🚀';
+    } else if (msg.includes('contact') || msg.includes('support') || msg.includes('help') || msg.includes('problem')) {
+      reply = 'Support ke liye contact@creatorbharat.com pe email karo ya Help section mein ticket raise karo. Our team is available 24/7! 🙏';
+    } else {
+      reply = 'Namaste! Main BharatAI hoon, CreatorBharat ka official AI assistant. 🇮🇳 Aap creator verification, pricing, CB Score, campaigns, ya kuch bhi CreatorBharat ke baare mein pooch sakte ho!';
+    }
+
+    return res.json({ reply, source: 'fallback' });
+  } catch (err) {
+    console.error('[POST /api/ai/chat] Error:', err.message);
+    return res.json({ reply: 'Kuch technical issue aa gaya. Please thodi der baad try karo ya contact@creatorbharat.com pe reach karo! 🙏', source: 'error' });
+  }
+});
 
 // Helper to make request to Gemini API
 async function callGemini(prompt) {

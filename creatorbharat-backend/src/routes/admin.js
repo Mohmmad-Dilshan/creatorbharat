@@ -1745,5 +1745,294 @@ router.post('/notifications/send', async (req, res) => {
   }
 });
 
+
+// ─────────────────────────────────────────────────────────────────
+// 📊 DATA EXPORT ROUTES — CSV Downloads
+// ─────────────────────────────────────────────────────────────────
+
+// Helper: convert array of objects to CSV string
+function toCSV(rows) {
+  if (!rows || rows.length === 0) return '';
+  const headers = Object.keys(rows[0]);
+  const lines = [headers.join(',')];
+  rows.forEach(row => {
+    const vals = headers.map(h => {
+      const v = row[h];
+      if (v === null || v === undefined) return '';
+      const s = String(v).replace(/"/g, '""');
+      return s.includes(',') || s.includes('\n') || s.includes('"') ? `"${s}"` : s;
+    });
+    lines.push(vals.join(','));
+  });
+  return lines.join('\n');
+}
+
+// GET /api/admin/export/creators — download all creators as CSV
+router.get('/export/creators', async (req, res) => {
+  try {
+    const creators = await prisma.creator.findMany({
+      include: { user: { select: { email: true, createdAt: true, isSuspended: true } } },
+      orderBy: { createdAt: 'desc' }
+    });
+    const rows = creators.map(c => ({
+      id: c.id,
+      name: c.displayName || c.name,
+      email: c.user?.email || '',
+      phone: c.phone || '',
+      city: c.city || '',
+      state: c.state || '',
+      niche: Array.isArray(c.niches) ? c.niches.join('|') : (c.niche || ''),
+      cbScore: c.cbScore || 0,
+      followers: c.followers || 0,
+      isVerified: c.isVerified,
+      isSuspended: c.user?.isSuspended || false,
+      plan: c.plan || 'FREE',
+      joinedAt: c.user?.createdAt ? new Date(c.user.createdAt).toISOString().split('T')[0] : ''
+    }));
+    const csv = toCSV(rows);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="creators_${new Date().toISOString().split('T')[0]}.csv"`);
+    return res.send(csv);
+  } catch (err) {
+    console.error('[GET /api/admin/export/creators] Error:', err.message);
+    res.status(500).json({ error: 'Failed to export creators.' });
+  }
+});
+
+// GET /api/admin/export/brands — download all brands as CSV
+router.get('/export/brands', async (req, res) => {
+  try {
+    const brands = await prisma.brand.findMany({
+      include: {
+        user: { select: { email: true, createdAt: true, isSuspended: true } },
+        _count: { select: { campaigns: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    const rows = brands.map(b => ({
+      id: b.id,
+      brandName: b.brandName || b.name,
+      email: b.user?.email || '',
+      industry: b.industry || '',
+      website: b.website || '',
+      plan: b.plan || 'FREE',
+      totalCampaigns: b._count?.campaigns || 0,
+      isSuspended: b.user?.isSuspended || false,
+      joinedAt: b.user?.createdAt ? new Date(b.user.createdAt).toISOString().split('T')[0] : ''
+    }));
+    const csv = toCSV(rows);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="brands_${new Date().toISOString().split('T')[0]}.csv"`);
+    return res.send(csv);
+  } catch (err) {
+    console.error('[GET /api/admin/export/brands] Error:', err.message);
+    res.status(500).json({ error: 'Failed to export brands.' });
+  }
+});
+
+// GET /api/admin/export/campaigns — download all campaigns as CSV
+router.get('/export/campaigns', async (req, res) => {
+  try {
+    const campaigns = await prisma.campaign.findMany({
+      include: {
+        brand: { select: { brandName: true } },
+        _count: { select: { applications: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    const rows = campaigns.map(c => ({
+      id: c.id,
+      title: c.title,
+      brandName: c.brand?.brandName || '',
+      status: c.status,
+      budget: c.budget || 0,
+      platforms: Array.isArray(c.platforms) ? c.platforms.join('|') : (c.platforms || ''),
+      niches: Array.isArray(c.niches) ? c.niches.join('|') : (c.niches || ''),
+      totalApplications: c._count?.applications || 0,
+      createdAt: c.createdAt ? new Date(c.createdAt).toISOString().split('T')[0] : '',
+      deadline: c.deadline ? new Date(c.deadline).toISOString().split('T')[0] : ''
+    }));
+    const csv = toCSV(rows);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="campaigns_${new Date().toISOString().split('T')[0]}.csv"`);
+    return res.send(csv);
+  } catch (err) {
+    console.error('[GET /api/admin/export/campaigns] Error:', err.message);
+    res.status(500).json({ error: 'Failed to export campaigns.' });
+  }
+});
+
+// GET /api/admin/export/payments — download all payments as CSV
+router.get('/export/payments', async (req, res) => {
+  try {
+    const payments = await prisma.payment.findMany({
+      include: {
+        creator: { select: { displayName: true } },
+        brand: { select: { brandName: true } }
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 10000
+    });
+    const rows = payments.map(p => ({
+      id: p.id,
+      creatorName: p.creator?.displayName || '',
+      brandName: p.brand?.brandName || '',
+      amount: p.amount || 0,
+      currency: p.currency || 'INR',
+      status: p.status,
+      method: p.method || '',
+      razorpayId: p.razorpayId || '',
+      createdAt: p.createdAt ? new Date(p.createdAt).toISOString().split('T')[0] : ''
+    }));
+    const csv = toCSV(rows);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="payments_${new Date().toISOString().split('T')[0]}.csv"`);
+    return res.send(csv);
+  } catch (err) {
+    console.error('[GET /api/admin/export/payments] Error:', err.message);
+    res.status(500).json({ error: 'Failed to export payments.' });
+  }
+});
+
+// GET /api/admin/export/newsletters — download email subscriber list as CSV
+router.get('/export/newsletters', async (req, res) => {
+  try {
+    const subs = await prisma.newsletter.findMany({ orderBy: { createdAt: 'desc' } });
+    const rows = subs.map(s => ({
+      id: s.id,
+      email: s.email,
+      subscribedAt: s.createdAt ? new Date(s.createdAt).toISOString().split('T')[0] : ''
+    }));
+    const csv = toCSV(rows);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="newsletter_subscribers_${new Date().toISOString().split('T')[0]}.csv"`);
+    return res.send(csv);
+  } catch (err) {
+    console.error('[GET /api/admin/export/newsletters] Error:', err.message);
+    res.status(500).json({ error: 'Failed to export newsletter subscribers.' });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────
+// 🔴 DANGER ZONE — Real Bulk Operations
+// ─────────────────────────────────────────────────────────────────
+
+// POST /api/admin/danger/clear-newsletters — permanently delete all newsletter subscribers
+router.post('/danger/clear-newsletters', async (req, res) => {
+  try {
+    const { confirm } = req.body;
+    if (confirm !== 'DELETE') {
+      return res.status(400).json({ error: 'Send { "confirm": "DELETE" } to confirm this destructive action.' });
+    }
+    const result = await prisma.newsletter.deleteMany({});
+    console.warn(`[DANGER] Admin ${req.user?.id} deleted all ${result.count} newsletter subscribers.`);
+    res.json({ success: true, deleted: result.count, message: `${result.count} newsletter subscribers permanently deleted.` });
+  } catch (err) {
+    console.error('[POST /api/admin/danger/clear-newsletters] Error:', err.message);
+    res.status(500).json({ error: 'Failed to clear newsletter subscribers.' });
+  }
+});
+
+// POST /api/admin/danger/delete-draft-blogs — delete all draft blog posts
+router.post('/danger/delete-draft-blogs', async (req, res) => {
+  try {
+    const { confirm } = req.body;
+    if (confirm !== 'DELETE') {
+      return res.status(400).json({ error: 'Send { "confirm": "DELETE" } to confirm this destructive action.' });
+    }
+    const result = await prisma.blog.deleteMany({ where: { status: 'DRAFT' } });
+    console.warn(`[DANGER] Admin ${req.user?.id} deleted all ${result.count} draft blogs.`);
+    res.json({ success: true, deleted: result.count, message: `${result.count} draft blog posts permanently deleted.` });
+  } catch (err) {
+    console.error('[POST /api/admin/danger/delete-draft-blogs] Error:', err.message);
+    res.status(500).json({ error: 'Failed to delete draft blogs.' });
+  }
+});
+
+// POST /api/admin/danger/revoke-pending-verifications — reject all pending verification requests
+router.post('/danger/revoke-pending-verifications', async (req, res) => {
+  try {
+    const { confirm } = req.body;
+    if (confirm !== 'DELETE') {
+      return res.status(400).json({ error: 'Send { "confirm": "DELETE" } to confirm this destructive action.' });
+    }
+    const result = await prisma.creator.updateMany({
+      where: { isVerified: false, verificationStatus: 'PENDING' },
+      data: { verificationStatus: 'REJECTED', verificationNote: 'Bulk revoked by admin' }
+    });
+    console.warn(`[DANGER] Admin ${req.user?.id} revoked ${result.count} pending verifications.`);
+    res.json({ success: true, revoked: result.count, message: `${result.count} pending verification requests revoked.` });
+  } catch (err) {
+    console.error('[POST /api/admin/danger/revoke-pending-verifications] Error:', err.message);
+    res.status(500).json({ error: 'Failed to revoke pending verifications.' });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────
+// 🏥 ADMIN HEALTH CHECK — Real System Status
+// ─────────────────────────────────────────────────────────────────
+
+// GET /api/admin/health — real-time system health check
+router.get('/health', async (req, res) => {
+  const health = {
+    timestamp: new Date().toISOString(),
+    services: {}
+  };
+
+  // Check Database
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    health.services.database = { status: 'healthy', latency: null };
+  } catch (err) {
+    health.services.database = { status: 'error', message: err.message };
+  }
+
+  // Check Resend Email
+  try {
+    const settings = await getSettings();
+    health.services.email = {
+      status: settings.enableEmail ? 'enabled' : 'disabled',
+      provider: 'Resend',
+      configured: !!(settings.resendApiKey)
+    };
+  } catch {
+    health.services.email = { status: 'unknown' };
+  }
+
+  // Check AI Service
+  health.services.ai = {
+    status: process.env.GEMINI_API_KEY ? 'configured' : 'not_configured',
+    provider: 'Google Gemini'
+  };
+
+  // Check Razorpay
+  health.services.payments = {
+    status: (process.env.RAZORPAY_KEY_ID || '') !== '' ? 'configured' : 'not_configured',
+    provider: 'Razorpay'
+  };
+
+  const allHealthy = health.services.database?.status === 'healthy';
+  res.status(allHealthy ? 200 : 503).json(health);
+});
+
+// POST /api/admin/system/test-mail — send a real test email
+router.post('/system/test-mail', async (req, res) => {
+  try {
+    const { to } = req.body;
+    const recipient = to || req.user?.email;
+    if (!recipient) return res.status(400).json({ error: 'No recipient email provided.' });
+    const { sendEmail } = await import('../utils/mailer.js');
+    const result = await sendEmail({
+      to: recipient,
+      subject: '✅ CreatorBharat — Test Email Successful',
+      html: `<div style="font-family:sans-serif;padding:32px;background:#f8fafc;border-radius:12px;max-width:500px;margin:auto"><h2 style="color:#FF9431">Test Email ✅</h2><p>Yeh ek test email hai CreatorBharat Admin Panel se.</p><p>Agar yeh email aaya, toh Resend integration sahi kaam kar raha hai! 🎉</p><small style="color:#94a3b8">Sent: ${new Date().toLocaleString('en-IN')}</small></div>`
+    });
+    res.json({ success: true, ...result, recipient });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;
+
 

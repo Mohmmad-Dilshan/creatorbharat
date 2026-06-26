@@ -1030,16 +1030,92 @@ export default function App() {
     toast('Session closed', 'info');
   };
 
-  const handleSendTestEmail = () => {
-    toast('Test transactional email triggered successfully! Fallback console logs checked.', 'success');
+  const handleSendTestEmail = async () => {
+    try {
+      toast('Sending test email...', 'info');
+      const res = await fetch(`${API_BASE}/admin/system/test-mail`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ to: adminUser?.email })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      toast(data.sandbox ? '📧 Email logged to console (no API key set)' : `✅ Test email sent to ${data.recipient}!`, 'success');
+    } catch (err) {
+      toast(err.message || 'Failed to send test email', 'error');
+    }
   };
 
-  const handleSyncCheck = () => {
-    toast('Neon Database Integrity verified successfully. 0 discrepancies.', 'success');
+  const handleSyncCheck = async () => {
+    try {
+      toast('Running health check...', 'info');
+      const res = await fetch(`${API_BASE}/admin/health`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      const dbStatus = data.services?.database?.status;
+      if (dbStatus === 'healthy') {
+        toast('✅ All systems healthy! DB connected, services online.', 'success');
+      } else {
+        toast(`⚠️ DB Status: ${dbStatus}. Check backend logs.`, 'error');
+      }
+    } catch (err) {
+      toast('Could not reach backend. Is server running?', 'error');
+    }
   };
 
-  const handleClearCache = () => {
-    toast('Temporary server memory and state cache cleared successfully.', 'success');
+  const handleClearCache = async () => {
+    try {
+      // Re-fetch all data to refresh admin state
+      toast('Refreshing all data...', 'info');
+      await fetchData();
+      toast('✅ Admin data refreshed from database!', 'success');
+    } catch (err) {
+      toast('Refresh failed: ' + (err.message || 'Unknown error'), 'error');
+    }
+  };
+
+  // CSV Export helper
+  const handleExportCSV = async (type) => {
+    try {
+      toast(`Preparing ${type} export...`, 'info');
+      const res = await fetch(`${API_BASE}/admin/export/${type}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Export failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${type}_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast(`✅ ${type} data exported successfully!`, 'success');
+    } catch (err) {
+      toast(`Export failed: ${err.message}`, 'error');
+    }
+  };
+
+  // Danger Zone real handlers
+  const handleDangerOp = async (endpoint, label) => {
+    const typed = window.prompt(`Type DELETE to confirm: ${label}\n\n⚠️ THIS CANNOT BE UNDONE!`);
+    if (typed !== 'DELETE') { toast('Cancelled — confirmation text did not match.', 'info'); return; }
+    try {
+      toast(`Executing: ${label}...`, 'info');
+      const res = await fetch(`${API_BASE}/admin/danger/${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ confirm: 'DELETE' })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Operation failed');
+      toast(`✅ ${data.message}`, 'success');
+      await fetchData();
+    } catch (err) {
+      toast(`❌ ${err.message}`, 'error');
+    }
   };
 
   const handleUploadFile = async (e, type = 'image', callback) => {
@@ -4709,17 +4785,37 @@ export default function App() {
                 </div>
                 <p style={{ margin: 0, fontSize: 13, color: '#7f1d1d', fontWeight: 600 }}>These operations are irreversible. Proceed only if you know what you are doing.</p>
               </div>
+              {/* Data Export Section */}
+              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: 22 }}>
+                <div style={{ fontWeight: 800, color: T.navy, fontSize: 15, marginBottom: 6 }}>📊 Data Export</div>
+                <div style={{ fontSize: 13, color: T.muted, fontWeight: 500, marginBottom: 16 }}>Download platform data as CSV files for analysis or backup.</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
+                  {[
+                    { label: '👥 Export Creators', type: 'creators', color: T.blue },
+                    { label: '🏢 Export Brands', type: 'brands', color: T.green },
+                    { label: '📢 Export Campaigns', type: 'campaigns', color: T.purple },
+                    { label: '💰 Export Payments', type: 'payments', color: T.orange },
+                    { label: '📧 Export Newsletters', type: 'newsletters', color: T.slate },
+                  ].map(exp => (
+                    <button key={exp.type} onClick={() => handleExportCSV(exp.type)} style={{ padding: '10px 14px', background: exp.color + '12', color: exp.color, border: `1px solid ${exp.color}25`, borderRadius: 10, fontWeight: 800, fontSize: 12, cursor: 'pointer', textAlign: 'left' }}>
+                      {exp.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Danger Operations */}
               {[
-                { title: 'Clear All Newsletter Subscribers', desc: 'Permanently remove all email subscribers from the mailing list', action: 'Clear Subscribers', color: T.orange },
-                { title: 'Delete All Draft Blogs', desc: 'Remove all unpublished blog drafts from the system', action: 'Delete Drafts', color: T.red },
-                { title: 'Revoke All Pending Verifications', desc: 'Reset the entire verification queue — creators must re-submit', action: 'Revoke All KYC', color: T.red },
+                { title: 'Clear All Newsletter Subscribers', desc: 'Permanently remove all email subscribers from the mailing list', action: 'Clear Subscribers', color: T.orange, endpoint: 'clear-newsletters' },
+                { title: 'Delete All Draft Blogs', desc: 'Remove all unpublished blog drafts from the system', action: 'Delete Drafts', color: T.red, endpoint: 'delete-draft-blogs' },
+                { title: 'Revoke All Pending Verifications', desc: 'Reset the entire verification queue — creators must re-submit', action: 'Revoke All KYC', color: T.red, endpoint: 'revoke-pending-verifications' },
               ].map((op, i) => (
                 <div key={i} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: 22, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20 }}>
                   <div>
                     <div style={{ fontWeight: 800, color: T.navy, fontSize: 14, marginBottom: 4 }}>{op.title}</div>
                     <div style={{ fontSize: 13, color: T.muted, fontWeight: 500 }}>{op.desc}</div>
                   </div>
-                  <button onClick={() => { if (window.confirm(`Are you absolutely sure? This cannot be undone.`)) toast('Operation executed (demo mode)', 'info'); }} style={{ padding: '9px 20px', background: op.color + '15', color: op.color, border: `1px solid ${op.color}30`, borderRadius: 10, fontWeight: 800, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                  <button onClick={() => handleDangerOp(op.endpoint, op.title)} style={{ padding: '9px 20px', background: op.color + '15', color: op.color, border: `1px solid ${op.color}30`, borderRadius: 10, fontWeight: 800, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                     {op.action}
                   </button>
                 </div>
