@@ -44,7 +44,7 @@ Keep answers concise (2-4 sentences max) unless explaining a complex topic. Use 
       // Add system context + current message
       contents.push({ role: 'user', parts: [{ text: `${SYSTEM_CONTEXT}\n\nUser: ${message}` }] });
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`;
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -57,7 +57,12 @@ Keep answers concise (2-4 sentences max) unless explaining a complex topic. Use 
         if (reply) {
           return res.json({ reply, source: 'gemini' });
         }
+        console.warn('[AI/chat] Gemini returned empty reply:', JSON.stringify(data));
+      } else {
+        const errText = await response.text();
+        console.error(`[AI/chat] Gemini API error ${response.status}:`, errText);
       }
+
     }
 
     // Smart keyword-based fallback responses
@@ -96,7 +101,7 @@ async function callGemini(prompt) {
     throw new Error('Gemini API Key missing');
   }
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
