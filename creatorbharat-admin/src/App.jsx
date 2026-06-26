@@ -454,7 +454,7 @@ export default function App() {
   const [activityLog, setActivityLog] = useState([]);
 
   // ── Page Config Manager States
-  const [selectedPageName, setSelectedPageName] = useState('home');
+  const [selectedPageName, setSelectedPageName] = useState('pricing');
   const [homeConfig, setHomeConfig] = useState({
     heroTitle: 'Find Elite Local Creators Across India',
     heroSubtitle: 'CreatorBharat connects top regional influencers with local and global brands for impactful collaborations.',
@@ -497,9 +497,9 @@ export default function App() {
     bottomCtaSecondary: "Browse Creators"
   });
   const [faqJson, setFaqJson] = useState(JSON.stringify([
-    { q: 'How does CreatorBharat escrow work?', a: 'Brands deposit campaign budgets into secure escrows. Funds are released instantly to creators after verified milestone deliverables are submitted.' },
-    { q: 'Is there a signup fee for creators?', a: 'Signing up as a basic creator is completely free. Basic creators can receive brand deals. Creator Pro unlocking instant payouts requires a tiny monthly fee of ₹49.' },
-    { q: 'Can I link multiple Instagram accounts?', a: 'Currently, each creator account can link one verified primary Instagram handle and one YouTube channel to calculate dynamic engagement rates.' }
+    { cat: 'General', q: 'How does CreatorBharat escrow work?', a: 'Brands deposit campaign budgets into secure escrows. Funds are released instantly to creators after verified milestone deliverables are submitted.' },
+    { cat: 'Creators', q: 'Is there a signup fee for creators?', a: 'Signing up as a basic creator is completely free. Basic creators can receive brand deals. Creator Pro unlocking instant payouts requires a tiny monthly fee of ₹49.' },
+    { cat: 'Creators', q: 'Can I link multiple Instagram accounts?', a: 'Currently, each creator account can link one verified primary Instagram handle and one YouTube channel to calculate dynamic engagement rates.' }
   ], null, 2));
   const [faqError, setFaqError] = useState('');
 
@@ -976,11 +976,19 @@ export default function App() {
       content = brandLandingConfig;
     } else if (selectedPageName === 'faqs') {
       try {
-        content = JSON.parse(faqJson);
+        const parsed = JSON.parse(faqJson);
+        if (!Array.isArray(parsed)) {
+          throw new Error('FAQs must be an array of objects.');
+        }
+        content = parsed.map(item => ({
+          cat: item.cat || 'General',
+          q: item.q || '',
+          a: item.a || ''
+        }));
         setFaqError('');
       } catch (err) {
-        setFaqError('Invalid JSON format. Please verify syntax.');
-        toast('Failed to save: Invalid FAQ JSON.', 'error');
+        setFaqError(err.message || 'Invalid JSON format. Please verify syntax.');
+        toast('Failed to save: ' + (err.message || 'Invalid FAQ JSON.'), 'error');
         return;
       }
     }
@@ -3071,7 +3079,6 @@ export default function App() {
                       <h4 style={{ fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>🌐 Public Website</h4>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                         {[
-                          { id: 'home', name: 'Home Hero' },
                           { id: 'pricing', name: 'Pricing & Plans' },
                           { id: 'faqs', name: 'FAQs List' },
                           { id: 'calculator', name: 'Rate Calculator' }
@@ -3505,7 +3512,7 @@ export default function App() {
                     {selectedPageName === 'faqs' && (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                         <div>
-                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>FAQ JSON Configuration (Array of {`{ q, a }`})</label>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>FAQ JSON Configuration (Array of {`{ cat, q, a }`})</label>
                           <textarea
                             value={faqJson}
                             onChange={e => setFaqJson(e.target.value)}
