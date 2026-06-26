@@ -386,6 +386,13 @@ const PremiumMediaUpload = ({ label, value, onChange, type = 'image', onUploadFi
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem('cb_admin_token') || '');
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [mob, setMob] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setMob(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // ── Auth
   const [email, setEmail] = useState('');
