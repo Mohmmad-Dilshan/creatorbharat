@@ -9,22 +9,33 @@ const ambassadorSchema = z.object({
   name: z.string().min(1, 'Name is required.'),
   email: z.string().email('Please enter a valid email address.'),
   phone: z.string().min(10, 'Please enter a valid phone number.'),
-  instagram: z.string().optional(),
-  youtube: z.string().optional(),
-  college: z.string().min(1, 'College name is required.'),
   city: z.string().min(1, 'City is required.'),
-  pitch: z.string().min(10, 'Pitch must be at least 10 characters long.')
+  college: z.string().min(1, 'College name is required.'),
+  year: z.string().optional(),
+  social: z.string().optional(),
+  reason: z.string().min(10, 'Reason must be at least 10 characters long.')
 });
 
 // POST /api/ambassador — Submit an ambassador application
 router.post('/', async (req, res) => {
   try {
-    const parse = ambassadorSchema.safeParse(req.body);
+    let requestData = req.body;
+    if (typeof requestData === 'string') {
+      try {
+        requestData = JSON.parse(requestData);
+      } catch (e) {
+        // Not a JSON string, ignore and keep as is
+      }
+    }
+
+    const parse = ambassadorSchema.safeParse(requestData);
     if (!parse.success) {
       return res.status(400).json({ error: parse.error.errors[0].message });
     }
 
-    const { name, email, phone, instagram, youtube, college, city, pitch } = parse.data;
+    const { name, email, phone, city, college, year, social, reason } = parse.data;
+    const pitch = `[Year: ${year || 'N/A'}] ${reason}`;
+    const instagram = social || null;
 
     const application = await prisma.ambassadorApplication.create({
       data: {
@@ -32,7 +43,6 @@ router.post('/', async (req, res) => {
         email: email.toLowerCase().trim(),
         phone: phone.trim(),
         instagram: instagram ? instagram.trim() : null,
-        youtube: youtube ? youtube.trim() : null,
         college: college.trim(),
         city: city.trim(),
         pitch: pitch.trim()

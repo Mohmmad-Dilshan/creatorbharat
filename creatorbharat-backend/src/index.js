@@ -1098,6 +1098,431 @@ io.on('connection', (socket) => {
         console.log(`[Database Seeder]: ${defaultPodcasts.length} default podcasts seeded successfully.`);
       }
     }
+
+    // Seed Dynamic Page Configurations if empty
+    const pageConfigCount = await prisma.dynamicPageConfig.count();
+    if (pageConfigCount === 0) {
+      console.log('[Database Seeder]: Seeding default dynamic page configurations...');
+      const defaultPageConfigs = [
+        {
+          pageName: 'home',
+          content: {
+            heroTitle: 'Find Elite Local Creators Across India',
+            heroSubtitle: 'CreatorBharat connects top regional influencers with local and global brands for impactful collaborations.',
+            ctaText: 'Launch Campaign Now',
+            announcement: '⚡ Version 3.0 Live: Introducing Instant Wallet Bank Settlements!'
+          }
+        },
+        {
+          pageName: 'pricing',
+          content: {
+            starterPrice: 0,
+            proPrice: 49,
+            proFeatures: 'Instant wallet withdrawals, Automated GST invoicing, Priority campaign listing, 0% commission fees, Pro verified badge',
+            brandStarterPrice: 0,
+            brandProPrice: 4999,
+            brandProFeatures: 'Launch Unlimited Campaigns, Direct Outreach Pitch Console, Full A4 Creator Resume Access, Verified Gold Brand Badge, AI Smart Talent Matches, Advanced Analytics Dashboard, 24/7 Premium Priority Support'
+          }
+        },
+        {
+          pageName: 'calculator',
+          content: {
+            rateMultiplier: 0.018,
+            nicheMultiplier: 1.0,
+            minFee: 500
+          }
+        },
+        {
+          pageName: 'faq',
+          content: [
+            { cat: 'General', q: 'How does CreatorBharat escrow work?', a: 'Brands deposit campaign budgets into secure escrows. Funds are released instantly to creators after verified milestone deliverables are submitted.' },
+            { cat: 'Creators', q: 'Is there a signup fee for creators?', a: 'Signing up as a basic creator is completely free. Basic creators can receive brand deals. Creator Pro unlocking instant payouts requires a tiny monthly fee of ₹49.' },
+            { cat: 'Creators', q: 'Can I link multiple Instagram accounts?', a: 'Currently, each creator account can link one verified primary Instagram handle and one YouTube channel to calculate dynamic engagement rates.' }
+          ]
+        },
+        {
+          pageName: 'creator-landing',
+          content: {
+            heroBadge: "India's Creator Ecosystem",
+            heroTitle: "Build Your Creator Legacy.",
+            heroSubtitle: "Bharat ke har creator ke liye — Tier 2, Tier 3, ya metro. Verified profile, direct brand deals, zero commission. Apni pehchan banao.",
+            ctaPrimary: "Join Free — Start Today",
+            ctaSecondary: "See Creator Profiles",
+            bottomTitle: "Bharat Ka Creator Kahin Bhi Jayega. 🇮🇳",
+            bottomSubtitle: "Bhilwara se Bangalore tak — har creator ki pehchan honi chahiye. Join karo aur apni legacy banao.",
+            bottomCtaPrimary: "Join Free Now",
+            bottomCtaSecondary: "View Pro Plans"
+          }
+        },
+        {
+          pageName: 'brand-landing',
+          content: {
+            heroBadge: "Brand Command Center",
+            heroTitle: "Scale with Bharat's Best.",
+            heroSubtitle: "Scout verified regional creators, launch campaigns with escrow protection, and track ROI in real-time. Zero commission. Zero middlemen.",
+            ctaPrimary: "Start Scouting Free",
+            ctaSecondary: "Browse Creators",
+            bottomTitle: "Ready to Scale? Join 500+ Brands.",
+            bottomSubtitle: "Start free. No credit card required. Access Bharat's most verified creator network today.",
+            bottomCtaPrimary: "Register Your Brand",
+            bottomCtaSecondary: "Browse Creators"
+          }
+        },
+        {
+          pageName: 'about',
+          content: {
+            BLUEPRINT_CARDS: [
+              {
+                num: "01",
+                title: "Verify Identity",
+                sub: "Digital Pehchan",
+                desc: "We verify the analytics, location, and brand-safety of regional creators so brands can bypass fake followers and hire authentic talent.",
+                accent: "#FF9431"
+              },
+              {
+                num: "02",
+                title: "Bypass Middlemen",
+                sub: "Direct Pitch SaaS",
+                desc: "Brands pitch directly to creators in Tier 2 & 3 cities through our open marketplace. No agency gatekeepers or massive markups.",
+                accent: "#10B981"
+              },
+              {
+                num: "03",
+                title: "Zero Broker Fees",
+                sub: "Safe Escrow Ledgers",
+                desc: "Payouts are secured in safe escrow ledgers and released immediately upon project completion. Best part? We charge 0% commission.",
+                accent: "#3B82F6"
+              }
+            ],
+            TIMELINE_DATA: [
+              {
+                year: "JAN 2026: THE SPARK",
+                title: "The Bhilwara Prototype",
+                desc: "Identifying the massive gap between regional talent in Tier 2 & 3 cities and national brand opportunities. We tested our first directory manually mapping 150 local creators in Rajasthan.",
+                stats: [
+                  { label: "Creators Mapped", value: "150+" },
+                  { label: "Target City", value: "Bhilwara" }
+                ]
+              },
+              {
+                year: "APR 2026: THE INFRASTRUCTURE",
+                title: "The Trust & Identity Layer",
+                desc: "Launched our proprietary Creator Score algorithm and verified Digital Pehchan. This allowed upcoming creators to present data-validated analytics without expensive agencies.",
+                stats: [
+                  { label: "Active Profiles", value: "1,200+" },
+                  { label: "System Trust Metric", value: "Blue Badges" }
+                ]
+              },
+              {
+                year: "JUN 2026: THE EXPANSION",
+                title: "Elite National Marketplace",
+                desc: "Scaled CreatorBharat into an elite SaaS platform with zero broker fee policies, automated ROI calculators, interactive podium leaderboards, and safe escrow ledger systems.",
+                stats: [
+                  { label: "Active Users", value: "2,400+" },
+                  { label: "Broker Fees Charged", value: "0%" }
+                ]
+              }
+            ],
+            PHILOSOPHY_PILLARS: [
+              {
+                title: 'Identity',
+                desc: 'Giving every creator a verified, data-backed professional portfolio that brands can trust.',
+                features: ['Digital Pehchan Profile', 'Real-Time Engagement APIs', 'Anti-Fraud Score Metrics'],
+                color: '#FF9431',
+                badge: 'Infrastructure'
+              },
+              {
+                title: 'Access',
+                desc: 'Removing gatekeepers. Creators in small towns now apply directly to the biggest national brands.',
+                features: ['Zero-Brokerage Escrow', 'Open Pitch Marketplace', 'Local Language Support'],
+                color: '#10B981',
+                badge: 'Opportunity'
+              },
+              {
+                title: 'Growth',
+                desc: 'Providing the financial tools and analytics to scale from a local star to a national icon.',
+                features: ['ROI Valuation Gauges', 'SaaS Media Kits', 'Fast Invoice Financing'],
+                color: '#3B82F6',
+                badge: 'Scale'
+              }
+            ],
+            LEADERSHIP_TEAM: [
+              {
+                name: "Mohmmad Dilshan",
+                role: "Founder & Chief Architect",
+                image: "/team_dilshan.jpg",
+                bio: "Democratizing the digital economy for the next billion users through decentralized intelligence, modular architecture, and zero-brokerage campaigns.",
+                skills: ["System Architecture", "Product Strategy", "Decentralized Networks", "Escrow Ledgers"],
+                socials: {
+                  linkedin: "https://linkedin.com/in/mohmmad-dilshan",
+                  github: "https://github.com/mohmmad-dilshan"
+                },
+                tag: "CONSENSUS_NODE_001",
+                location: "Bhilwara"
+              }
+            ],
+            ADVISORY_BOARD: [],
+            PRESS_LOGOS: [
+              { name: "YourStory", desc: "Featured in Top Regional Startups" },
+              { name: "Economic Times", desc: "The SaaS Shift in Creator Tech" },
+              { name: "LiveMint", desc: "Empowering Tier 2 & 3 Micro-influencers" },
+              { name: "TechCrunch", desc: "Zero-Brokerage Escrow Platform Launch" },
+              { name: "Business Standard", desc: "SaaS Disrupting Traditional Talent Agencies" }
+            ],
+            INVESTOR_LOGOS: [
+              { name: "Y Combinator", type: "W26 Candidate" },
+              { name: "Sequoia Spark", type: "Cohort III" },
+              { name: "Accel Partners", type: "Seed Backer" },
+              { name: "AngelList India", type: "Syndicate Lead" }
+            ]
+          }
+        },
+        {
+          pageName: 'press',
+          content: [
+            {
+              date: "June 10, 2026",
+              title: "CreatorBharat Launched: Setting up India's First Identity Layer for Tier 2 & 3 Creators",
+              excerpt: "CreatorBharat today announced the rollout of v1, introducing an AI-driven digital trust score, localized regional discovery, and 0% commission structures for micro-creators.",
+              url: "#"
+            },
+            {
+              date: "March 15, 2026",
+              title: "CreatorBharat Onboards 1,200+ Verified Creators Across Rajasthan and Madhya Pradesh",
+              excerpt: "The startup has witnessed 4x growth in regional creator registrations, enabling local brands in Jaipur, Bhilwara, and Indore to run high-ROI campaigns directly.",
+              url: "#"
+            },
+            {
+              date: "January 22, 2026",
+              title: "CreatorBharat Receives DPIIT Startup Recognition from Govt of India",
+              excerpt: "Recognized for building innovative digital infrastructure that maps and verifies regional talent, promoting localized employment and direct commerce.",
+              url: "#"
+            }
+          ]
+        },
+        {
+          pageName: 'stories',
+          content: [
+            {
+              id: 'story-1',
+              type: 'brand',
+              brandName: 'Jaipur Heritage Apparel',
+              niche: 'Fashion & Retail',
+              location: 'Jaipur, Rajasthan',
+              creatorName: 'Aryan Sharma',
+              avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&q=80',
+              banner: '/campaign_jaipur_heritage.png',
+              title: 'How Jaipur Heritage Apparel grew Sales by 3x in 30 Days 🚀',
+              description: 'A traditional fashion brand in Jaipur struggled to reach Gen-Z consumers through social ads, which had high acquisition costs. Partnered with regional creators to curate authentic styling reels.',
+              challenge: 'High customer acquisition cost (CAC) and zero regional awareness.',
+              solution: 'Launched a hyperlocal styling mission with 3 verified local fashion creators on Instagram.',
+              metrics: [
+                { label: 'Sales Growth', value: '310%', icon: 'TrendingUp', color: '#ff9431' },
+                { label: 'CAC Reduced', value: '-42%', icon: 'Target', color: '#ff4b4b' },
+                { label: 'Organic Reach', value: '1.2M+', icon: 'Users', color: '#3b82f6' }
+              ],
+              testimonial: {
+                quote: "CreatorBharat solved our biggest challenge: authenticity at scale. Working with Aryan and other verified local creators was frictionless, and the ROI speaks for itself.",
+                author: "Vikram Rathore",
+                role: "Marketing Director",
+                company: "Jaipur Heritage Apparel"
+              },
+              actionText: 'Collaborate with Aryan',
+              actionPath: '/leaderboard'
+            },
+            {
+              id: 'story-2',
+              type: 'creator',
+              creatorName: 'Ramesh Dewangan',
+              channelName: '@BastarCraftsVlog',
+              niche: 'Art & Heritage',
+              location: 'Bastar, Chhattisgarh',
+              avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
+              banner: '/campaign_bastar_crafts.png',
+              title: 'From Bastar Village to National Brand Campaigns 🌟',
+              description: 'Ramesh is a terracotta artisan in Chhattisgarh. Before joining CreatorBharat, he had no direct access to national brands. He now collaborates with major home decor brands across India.',
+              challenge: 'Lack of brand access, pricing transparency, and modern identity tools.',
+              solution: 'Created a verified digital creator profile on CreatorBharat, linking regional crafts to urban home design campaigns.',
+              metrics: [
+                { label: 'Earnings Secured', value: '₹3.5 Lakhs', icon: 'DollarSign', color: '#10b981' },
+                { label: 'Followers Gained', value: '+180k', icon: 'Users', color: '#3b82f6' },
+                { label: 'Direct Deals', value: '12 Campaigns', icon: 'Award', color: '#8b5cf6' }
+              ],
+              testimonial: {
+                quote: "Pehle mujhe payments ke liye mahino intezar karna padta tha. CreatorBharat par register hone ke baad, brands mujhe direct secure escrows ke saath access karte hain.",
+                author: "Ramesh Dewangan",
+                role: "Terracotta Master Artisan",
+                company: "Bastar Craft Syndicate"
+              },
+              actionText: "View Ramesh's Profile",
+              actionPath: '/leaderboard'
+            },
+            {
+              id: 'story-3',
+              type: 'platform',
+              title: 'DPIIT Registered Startup: 15,000+ Regional Identities Verified 🇮🇳',
+              location: 'National Coverage',
+              niche: 'Ecosystem Growth',
+              banner: '/platform_milestone_bharat.png',
+              description: 'CreatorBharat has officially mapped and verified over 15,000 regional creators across 28 states in India. Under our Bharat-first outreach program, we have eliminated intermediate brokerage commissions.',
+              challenge: 'Fragmented talent registry and high commission brokerages in Tier 2/3 cities.',
+              solution: 'Designed the unified "Digital Pehchan" verified trust scores, standard escrow payments, and regional leaderboard hubs.',
+              metrics: [
+                { label: 'States Mapped', value: '28 States', icon: 'Globe2', color: '#ff9431' },
+                { label: 'Platform Fee', value: '0% Brokerage', icon: 'ShieldCheck', color: '#10b981' },
+                { label: 'Ecosystem Trust', value: '99.4% Secured', icon: 'Zap', color: '#8b5cf6' }
+              ],
+              testimonial: {
+                quote: "Our mission is to democratize opportunities for Tier-2 and Tier-3 talent. We are building the foundational verification layers that traditional agencies ignore.",
+                author: "Mohmmad Dilshan",
+                role: "Founder & CEO",
+                company: "CreatorBharat"
+              },
+              actionText: 'Claim Your Profile Free',
+              actionPath: '/join'
+            }
+          ]
+        },
+        {
+          pageName: 'ai-faq',
+          content: [
+            {
+              q: "What is the CreatorBharat Elite Score?",
+              a: "The Elite Score is a proprietary machine learning score (from 0 to 100) calculated by analyzing a creator's verified follower counts, comment-to-like engagement ratios, content consistency, brand safety index, and niche authority. Higher scores receive premium ranking on our public leaderboards."
+            },
+            {
+              q: "How does the AI Matchmaker algorithm choose creators?",
+              a: "Our campaign matching algorithm parses a brand's budget, niche requirements, platforms, and target location. It then performs semantic similarity matching against verified creator bios, local dialect parameters, and past campaign categories to recommend creators with the highest predicted ROI."
+            },
+            {
+              q: "Why is Digital Pehchan KYC required?",
+              a: "Digital Pehchan ensures that every creator profile on our platform belongs to a real citizen of India. By submitting Aadhaar, PAN, or GST credentials, creators verify their identity, which eliminates bot traffic and fake profiles and builds trust with brand sponsors."
+            }
+          ]
+        },
+        {
+          pageName: 'notifications',
+          content: [
+            {
+              id: 'notif-1',
+              refNo: 'CB/GOVT/2026/SEC-4/082',
+              date: '17-06-2026',
+              department: 'Dept. of Verification & Trust',
+              deptHi: 'सत्यापन एवं विश्वास विभाग',
+              title: 'BharatAI Profile Verification Engine Launched Under Section 4(a) 🛡️',
+              titleHi: 'धारा 4(a) के तहत भारतएआई प्रोफाइल सत्यापन प्रणाली का शुभारंभ',
+              description: 'All creators operating in Tier 2 & 3 regions of India are hereby notified to claim their official verified badge by submitting authentic audience engagement proofs. Verified profiles receive priority matching in brand campaign allotment. Compliance boosts creator visibility by up to 85%.',
+              pdfName: 'CB_Verification_Gazette_v3.pdf',
+              status: 'ACTIVE',
+              signatory: 'Dr. R. K. Sen, Joint Secretary (Creator Welfare)',
+              actionText: 'Apply for Verification',
+              actionPath: '/join'
+            },
+            {
+              id: 'notif-2',
+              refNo: 'CB/GOVT/2026/MKT-9/104',
+              date: '16-06-2026',
+              department: 'Dept. of Campaign & Escrow Operations',
+              deptHi: 'अभियान एवं एस्क्रो संचालन विभाग',
+              title: 'Notification: Launch of Rajasthan Regional Spotlight Campaign 🏺',
+              titleHi: 'अधिसूचना: राजस्थान क्षेत्रीय अभियान आवंटन सूचना',
+              description: 'Applications are invited from eligible fashion, cultural, and lifestyle creators in Rajasthan for the Jaipur Heritage Promotion Spotlight. Budget allocation is guaranteed under official escrow protection terms. Direct payouts will be executed with zero commissions. Retainers start at ₹25,000 per asset.',
+              pdfName: 'CB_Raj_Spotlight_Circular.pdf',
+              status: 'ACTIVE',
+              signatory: 'Smt. Anjali Sharma, Director (Campaign Allocation)',
+              actionText: 'View Allotments',
+              actionPath: '/creators'
+            },
+            {
+              id: 'notif-3',
+              refNo: 'CB/GOVT/2026/DIR-3/011',
+              date: '14-06-2026',
+              department: 'Ecosystem Registry Office',
+              deptHi: 'पारिस्थितिकी तंत्र रजिस्ट्री कार्यालय',
+              title: 'Release of Weekly Top 100 Virality Index & Leaderboard 🏆',
+              titleHi: 'साप्ताहिक शीर्ष 100 क्रिएटर्स की वायरल सूचकांक सूची जारी',
+              description: 'The national registry of top performing regional creators is updated for the current cycle. Weekly statistics are logged to measure authentic organic reach. Creators appearing in the top decile are recommended for government-partnered regional campaigns.',
+              pdfName: 'CB_Leaderboard_Registry_W24.pdf',
+              status: 'PUBLISHED',
+              signatory: 'Shri Amit Verma, Registrar (Creator Stats)',
+              actionText: 'Open Leaderboard',
+              actionPath: '/leaderboard'
+            }
+          ]
+        }
+      ];
+
+      for (const config of defaultPageConfigs) {
+        await prisma.dynamicPageConfig.create({
+          data: config
+        });
+      }
+    }
+
+    // Seed default missions if empty
+    const missionCount = await prisma.mission.count();
+    if (missionCount === 0) {
+      console.log('[Database Seeder]: Seeding default missions...');
+      const defaultMissions = [
+        {
+          id: 'm1',
+          title: 'Refer 2 Creators',
+          description: 'Invite 2 new creators from your city to join CreatorBharat. Get ₹199 listing fee cashback per referral.',
+          type: 'referral',
+          reward: '₹199 Cashback',
+          rewardAmount: 199,
+          steps: ['Share your referral link', '2 creators sign up', 'Both complete profiles', 'Cashback credited in wallet'],
+          active: true
+        },
+        {
+          id: 'm2',
+          title: 'Post with #CreatorBharat',
+          description: 'Post 1 reel or story on Instagram/YouTube with #CreatorBharat tag. Earn direct platform credits.',
+          type: 'content',
+          reward: '₹500 Credits',
+          rewardAmount: 500,
+          steps: ['Create engaging content', 'Add #CreatorBharat hashtag', 'Submit post link below', 'Credits in 24hrs'],
+          active: true
+        },
+        {
+          id: 'm3',
+          title: 'Complete Profile to 100%',
+          description: 'Fill all 6 profile tabs (Identity, Socials, Story, Packages, Local Hub, Sponsored Posts) to unlock Pro trial.',
+          type: 'profile',
+          reward: '7-Day Pro Trial',
+          rewardAmount: 0,
+          steps: ['Identity tab (name + bio)', 'Social handles + links', 'Story & milestones', 'Packages & rates', 'Local hub info', 'Add 1 sponsored post'],
+          active: true
+        },
+        {
+          id: 'm4',
+          title: 'Apply to 3 Brand Campaigns',
+          description: 'Apply to any 3 active campaigns from the Opportunities section. Show brands you are active and ready!',
+          type: 'work',
+          reward: '₹100 Wallet Credit',
+          rewardAmount: 100,
+          steps: ['Browse campaigns below', 'Apply to first campaign', 'Apply to second campaign', 'Apply to third campaign', 'Credit added automatically'],
+          active: true
+        },
+        {
+          id: 'm5',
+          title: 'Get 1 Brand Review',
+          description: 'Complete a brand deal and request a rating from the brand on your public profile. Boosts CB Score by +10.',
+          type: 'review',
+          reward: '+10 CB Score',
+          rewardAmount: 0,
+          steps: ['Complete any brand deal', 'Contact brand via messages', 'Request a review/rating', 'Review appears on profile'],
+          active: true
+        }
+      ];
+
+      for (const m of defaultMissions) {
+        await prisma.mission.create({
+          data: m
+        });
+      }
+      console.log(`[Database Seeder]: ${defaultMissions.length} default missions seeded successfully.`);
+    }
   } catch (err) {
     console.error('[Database Seeder Error]:', err.message);
   }

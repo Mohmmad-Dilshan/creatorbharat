@@ -463,6 +463,7 @@ model Mission {
   type         String              // REFER, POST_SOCIAL, COMPLETE_PROFILE, APPLY_CAMPAIGN
   reward       String              // "₹199 cashback", etc.
   rewardAmount Int                 @default(0)
+  steps        Json?
   active       Boolean             @default(true)
   expiresAt    DateTime?
   createdAt    DateTime            @default(now())
