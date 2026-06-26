@@ -48,13 +48,13 @@ export default function AiFaqPage() {
 
   useEffect(() => {
     let active = true;
-    apiCall('/pages/faqs')
+    apiCall('/pages/ai-faq')
       .then(res => {
         if (active && res && res.content && Array.isArray(res.content) && res.content.length > 0) {
           setFaqsList(res.content);
         }
       })
-      .catch(err => console.error('Failed to load faqs config:', err));
+      .catch(err => console.error('Failed to load ai-faq config:', err));
     return () => { active = false; };
   }, []);
 

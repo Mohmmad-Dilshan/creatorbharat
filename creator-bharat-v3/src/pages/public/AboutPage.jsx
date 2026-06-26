@@ -6,6 +6,7 @@ import Seo from '@/components/common/SEO';
 import { MapPin, Sparkles, Lock, TrendingUp } from 'lucide-react';
 import { Btn, Bdg } from '@/components/common/Primitives';
 import { fetchCreators, fetchCampaigns, derivePlatformAnalytics } from '@/utils/platformService';
+import { apiCall } from '@/utils/api';
 import { TwitterIcon, LinkedinIcon, GithubIcon } from '@/components/icons/SocialIcons';
 
 // Extracted Feature Components
@@ -67,7 +68,8 @@ StatBlock.propTypes = {
   delay: PropTypes.number
 };
 
-const HeroBlueprint = () => {
+const HeroBlueprint = ({ cards }) => {
+  const blueprintCards = cards || BLUEPRINT_CARDS;
   return (
     <div style={{
       marginTop: '60px',
@@ -77,7 +79,7 @@ const HeroBlueprint = () => {
       position: 'relative',
       zIndex: 2
     }}>
-      {BLUEPRINT_CARDS.map((card, i) => (
+      {blueprintCards.map((card, i) => (
         <motion.div
           key={card.title}
           initial={{ opacity: 0, y: 30 }}
@@ -124,6 +126,37 @@ export default function AboutPage() {
   const [creators, setCreators] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
   const [apiError, setApiError] = useState(false);
+
+  const [aboutConfig, setAboutConfig] = useState({});
+
+  useEffect(() => {
+    apiCall('/pages/about')
+      .then(res => {
+        if (res?.content) {
+          setAboutConfig(res.content);
+        }
+      })
+      .catch(err => {
+        console.warn('Failed to load about page configuration:', err);
+      });
+  }, []);
+
+  const ACTIVE_BLUEPRINT_CARDS = aboutConfig.BLUEPRINT_CARDS || BLUEPRINT_CARDS;
+  const ACTIVE_TIMELINE_DATA = aboutConfig.TIMELINE_DATA || TIMELINE_DATA;
+  const ACTIVE_PHILOSOPHY_PILLARS = useMemo(() => {
+    const raw = aboutConfig.PHILOSOPHY_PILLARS || PHILOSOPHY_PILLARS;
+    return raw.map((pillar, i) => {
+      const defaultPillar = PHILOSOPHY_PILLARS[i] || {};
+      return {
+        ...pillar,
+        icon: pillar.icon && typeof pillar.icon === 'object' ? pillar.icon : defaultPillar.icon
+      };
+    });
+  }, [aboutConfig.PHILOSOPHY_PILLARS]);
+  const ACTIVE_LEADERSHIP_TEAM = aboutConfig.LEADERSHIP_TEAM || LEADERSHIP_TEAM;
+  const ACTIVE_ADVISORY_BOARD = aboutConfig.ADVISORY_BOARD || ADVISORY_BOARD;
+  const ACTIVE_PRESS_LOGOS = aboutConfig.PRESS_LOGOS || PRESS_LOGOS;
+  const ACTIVE_INVESTOR_LOGOS = aboutConfig.INVESTOR_LOGOS || INVESTOR_LOGOS;
 
   useEffect(() => {
     const handleResize = () => setMob(window.innerWidth < 768);
@@ -576,7 +609,7 @@ export default function AboutPage() {
             </motion.div>
           </div>
 
-          <HeroBlueprint />
+          <HeroBlueprint cards={ACTIVE_BLUEPRINT_CARDS} />
 
           <LiveAnalyticsPulse />
           
@@ -604,7 +637,7 @@ export default function AboutPage() {
               opacity: 0.75,
               marginBottom: '32px'
             }}>
-              {PRESS_LOGOS.map((pub) => (
+              {ACTIVE_PRESS_LOGOS.map((pub) => (
                 <div key={pub.name} style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: mob ? '18px' : '22px', fontWeight: 950, color: '#0f172a', letterSpacing: '-0.04em', fontFamily: "'Outfit', sans-serif" }}>
                     {pub.name}
@@ -627,7 +660,7 @@ export default function AboutPage() {
               borderTop: '1px dashed #e2e8f0',
               opacity: 0.95
             }}>
-              {INVESTOR_LOGOS.map((inv) => (
+              {ACTIVE_INVESTOR_LOGOS.map((inv) => (
                 <div key={inv.name} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#f8fafc', padding: '6px 14px', borderRadius: '100px', border: '1px solid #e2e8f0' }}>
                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FF9431', boxShadow: '0 0 6px #FF9431' }} />
                    <span style={{ fontSize: '11px', fontWeight: 900, color: '#0f172a' }}>{inv.name}</span>
@@ -770,9 +803,9 @@ export default function AboutPage() {
           
           <div style={{ position: 'relative', maxWidth: '800px', margin: '0 auto' }}>
             <div style={{ position: 'absolute', left: '8px', top: '24px', bottom: '24px', width: '2px', background: '#e2e8f0', zIndex: 1 }} />
-            <div style={{ position: 'absolute', left: '8px', top: '24px', height: `${(activeStep / (TIMELINE_DATA.length - 1)) * 90}%`, width: '2px', background: 'linear-gradient(to bottom, #FF9431, #10B981)', zIndex: 1, transition: 'height 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }} />
+            <div style={{ position: 'absolute', left: '8px', top: '24px', height: `${(activeStep / (ACTIVE_TIMELINE_DATA.length - 1)) * 90}%`, width: '2px', background: 'linear-gradient(to bottom, #FF9431, #10B981)', zIndex: 1, transition: 'height 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }} />
             
-            {TIMELINE_DATA.map((step, idx) => (
+            {ACTIVE_TIMELINE_DATA.map((step, idx) => (
               <TimelineStep 
                 key={step.year}
                 year={step.year}
@@ -782,7 +815,7 @@ export default function AboutPage() {
                 isActive={activeStep === idx}
                 onSelect={() => setActiveStep(idx)}
                 idx={idx}
-                total={TIMELINE_DATA.length}
+                total={ACTIVE_TIMELINE_DATA.length}
               />
             ))}
           </div>
@@ -804,7 +837,7 @@ export default function AboutPage() {
           </div>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px' }}>
-            {PHILOSOPHY_PILLARS.map((v) => (
+            {ACTIVE_PHILOSOPHY_PILLARS.map((v) => (
               <motion.div
                 key={v.title}
                 whileHover={{ y: -8 }}
@@ -863,7 +896,7 @@ export default function AboutPage() {
 
             {/* Leadership - Centered Founder Card */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '40px' }}>
-               {LEADERSHIP_TEAM.map((member) => (
+               {ACTIVE_LEADERSHIP_TEAM.map((member) => (
                   <motion.div
                     key={member.name}
                     whileHover={{ y: -6 }}
@@ -954,7 +987,7 @@ export default function AboutPage() {
             </div>
 
             {/* Advisory Board Row */}
-            {ADVISORY_BOARD && ADVISORY_BOARD.length > 0 && (
+            {ACTIVE_ADVISORY_BOARD && ACTIVE_ADVISORY_BOARD.length > 0 && (
                <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '80px' }}>
                   <div style={{ textAlign: 'center', marginBottom: '50px' }}>
                      <Bdg color="emerald" sm>BOARD OF ADVISORS</Bdg>
@@ -962,7 +995,7 @@ export default function AboutPage() {
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-                     {ADVISORY_BOARD.map((advisor) => (
+                     {ACTIVE_ADVISORY_BOARD.map((advisor) => (
                         <div key={advisor.name} style={{ background: 'rgba(255,255,255,0.6)', border: '1px solid #e2e8f0', borderRadius: '30px', padding: '32px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 10px 30px rgba(0,0,0,0.01)' }}>
                            <div>
                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>

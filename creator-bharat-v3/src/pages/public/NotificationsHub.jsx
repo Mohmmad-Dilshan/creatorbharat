@@ -17,6 +17,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import Seo from '@/components/common/SEO';
 import { useApp } from '@/core/context';
+import { apiCall } from '@/utils/api';
 
 const GOVT_CIRCULARS = [
   {
@@ -88,6 +89,16 @@ export default function NotificationsHub() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeDept, setActiveDept] = useState('all');
   const [selectedCircular, setSelectedCircular] = useState(null);
+
+  useEffect(() => {
+    apiCall('/pages/notifications')
+      .then(res => {
+        if (res?.content && Array.isArray(res.content) && res.content.length > 0) {
+          setCirculars(res.content);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (selectedCircular) {

@@ -545,6 +545,283 @@ export default function App() {
   ], null, 2));
   const [faqError, setFaqError] = useState('');
 
+  const [aboutJson, setAboutJson] = useState(JSON.stringify({
+    BLUEPRINT_CARDS: [
+      {
+        num: "01",
+        title: "Verify Identity",
+        sub: "Digital Pehchan",
+        desc: "We verify the analytics, location, and brand-safety of regional creators so brands can bypass fake followers and hire authentic talent.",
+        accent: "#FF9431"
+      },
+      {
+        num: "02",
+        title: "Bypass Middlemen",
+        sub: "Direct Pitch SaaS",
+        desc: "Brands pitch directly to creators in Tier 2 & 3 cities through our open marketplace. No agency gatekeepers or massive markups.",
+        accent: "#10B981"
+      },
+      {
+        num: "03",
+        title: "Zero Broker Fees",
+        sub: "Safe Escrow Ledgers",
+        desc: "Payouts are secured in safe escrow ledgers and released immediately upon project completion. Best part? We charge 0% commission.",
+        accent: "#3B82F6"
+      }
+    ],
+    TIMELINE_DATA: [
+      {
+        year: "JAN 2026: THE SPARK",
+        title: "The Bhilwara Prototype",
+        desc: "Identifying the massive gap between regional talent in Tier 2 & 3 cities and national brand opportunities. We tested our first directory manually mapping 150 local creators in Rajasthan.",
+        stats: [
+          { label: "Creators Mapped", value: "150+" },
+          { label: "Target City", value: "Bhilwara" }
+        ]
+      },
+      {
+        year: "APR 2026: THE INFRASTRUCTURE",
+        title: "The Trust & Identity Layer",
+        desc: "Launched our proprietary Creator Score algorithm and verified Digital Pehchan. This allowed upcoming creators to present data-validated analytics without expensive agencies.",
+        stats: [
+          { label: "Active Profiles", value: "1,200+" },
+          { label: "System Trust Metric", value: "Blue Badges" }
+        ]
+      },
+      {
+        year: "JUN 2026: THE EXPANSION",
+        title: "Elite National Marketplace",
+        desc: "Scaled CreatorBharat into an elite SaaS platform with zero broker fee policies, automated ROI calculators, interactive podium leaderboards, and safe escrow ledger systems.",
+        stats: [
+          { label: "Active Users", value: "2,400+" },
+          { label: "Broker Fees Charged", value: "0%" }
+        ]
+      }
+    ],
+    PHILOSOPHY_PILLARS: [
+      {
+        title: 'Identity',
+        desc: 'Giving every creator a verified, data-backed professional portfolio that brands can trust.',
+        features: ['Digital Pehchan Profile', 'Real-Time Engagement APIs', 'Anti-Fraud Score Metrics'],
+        color: '#FF9431',
+        badge: 'Infrastructure'
+      },
+      {
+        title: 'Access',
+        desc: 'Removing gatekeepers. Creators in small towns now apply directly to the biggest national brands.',
+        features: ['Zero-Brokerage Escrow', 'Open Pitch Marketplace', 'Local Language Support'],
+        color: '#10B981',
+        badge: 'Opportunity'
+      },
+      {
+        title: 'Growth',
+        desc: 'Providing the financial tools and analytics to scale from a local star to a national icon.',
+        features: ['ROI Valuation Gauges', 'SaaS Media Kits', 'Fast Invoice Financing'],
+        color: '#3B82F6',
+        badge: 'Scale'
+      }
+    ],
+    LEADERSHIP_TEAM: [
+      {
+        name: "Mohmmad Dilshan",
+        role: "Founder & Chief Architect",
+        image: "/team_dilshan.jpg",
+        bio: "Democratizing the digital economy for the next billion users through decentralized intelligence, modular architecture, and zero-brokerage campaigns.",
+        skills: ["System Architecture", "Product Strategy", "Decentralized Networks", "Escrow Ledgers"],
+        socials: {
+          linkedin: "https://linkedin.com/in/mohmmad-dilshan",
+          github: "https://github.com/mohmmad-dilshan"
+        },
+        tag: "CONSENSUS_NODE_001",
+        location: "Bhilwara"
+      }
+    ],
+    ADVISORY_BOARD: [],
+    PRESS_LOGOS: [
+      { name: "YourStory", desc: "Featured in Top Regional Startups" },
+      { name: "Economic Times", desc: "The SaaS Shift in Creator Tech" },
+      { name: "LiveMint", desc: "Empowering Tier 2 & 3 Micro-influencers" },
+      { name: "TechCrunch", desc: "Zero-Brokerage Escrow Platform Launch" },
+      { name: "Business Standard", desc: "SaaS Disrupting Traditional Talent Agencies" }
+    ],
+    INVESTOR_LOGOS: [
+      { name: "Y Combinator", type: "W26 Candidate" },
+      { name: "Sequoia Spark", type: "Cohort III" },
+      { name: "Accel Partners", type: "Seed Backer" },
+      { name: "AngelList India", type: "Syndicate Lead" }
+    ]
+  }, null, 2));
+  const [aboutError, setAboutError] = useState('');
+
+  const [pressJson, setPressJson] = useState(JSON.stringify([
+    {
+      date: "June 10, 2026",
+      title: "CreatorBharat Launched: Setting up India's First Identity Layer for Tier 2 & 3 Creators",
+      excerpt: "CreatorBharat today announced the rollout of v1, introducing an AI-driven digital trust score, localized regional discovery, and 0% commission structures for micro-creators.",
+      url: "#"
+    },
+    {
+      date: "March 15, 2026",
+      title: "CreatorBharat Onboards 1,200+ Verified Creators Across Rajasthan and Madhya Pradesh",
+      excerpt: "The startup has witnessed 4x growth in regional creator registrations, enabling local brands in Jaipur, Bhilwara, and Indore to run high-ROI campaigns directly.",
+      url: "#"
+    },
+    {
+      date: "January 22, 2026",
+      title: "CreatorBharat Receives DPIIT Startup Recognition from Govt of India",
+      excerpt: "Recognized for building innovative digital infrastructure that maps and verifies regional talent, promoting localized employment and direct commerce.",
+      url: "#"
+    }
+  ], null, 2));
+  const [pressError, setPressError] = useState('');
+
+  const [storiesJson, setStoriesJson] = useState(JSON.stringify([
+    {
+      id: 'story-1',
+      type: 'brand',
+      brandName: 'Jaipur Heritage Apparel',
+      niche: 'Fashion & Retail',
+      location: 'Jaipur, Rajasthan',
+      creatorName: 'Aryan Sharma',
+      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&q=80',
+      banner: '/campaign_jaipur_heritage.png',
+      title: 'How Jaipur Heritage Apparel grew Sales by 3x in 30 Days 🚀',
+      description: 'A traditional fashion brand in Jaipur struggled to reach Gen-Z consumers through social ads, which had high acquisition costs. Partnered with regional creators to curate authentic styling reels.',
+      challenge: 'High customer acquisition cost (CAC) and zero regional awareness.',
+      solution: 'Launched a hyperlocal styling mission with 3 verified local fashion creators on Instagram.',
+      metrics: [
+        { label: 'Sales Growth', value: '310%', icon: 'TrendingUp', color: '#ff9431' },
+        { label: 'CAC Reduced', value: '-42%', icon: 'Target', color: '#ff4b4b' },
+        { label: 'Organic Reach', value: '1.2M+', icon: 'Users', color: '#3b82f6' }
+      ],
+      testimonial: {
+        quote: "CreatorBharat solved our biggest challenge: authenticity at scale. Working with Aryan and other verified local creators was frictionless, and the ROI speaks for itself.",
+        author: "Vikram Rathore",
+        role: "Marketing Director",
+        company: "Jaipur Heritage Apparel"
+      },
+      actionText: 'Collaborate with Aryan',
+      actionPath: '/leaderboard'
+    },
+    {
+      id: 'story-2',
+      type: 'creator',
+      creatorName: 'Ramesh Dewangan',
+      channelName: '@BastarCraftsVlog',
+      niche: 'Art & Heritage',
+      location: 'Bastar, Chhattisgarh',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
+      banner: '/campaign_bastar_crafts.png',
+      title: 'From Bastar Village to National Brand Campaigns 🌟',
+      description: 'Ramesh is a terracotta artisan in Chhattisgarh. Before joining CreatorBharat, he had no direct access to national brands. He now collaborates with major home decor brands across India.',
+      challenge: 'Lack of brand access, pricing transparency, and modern identity tools.',
+      solution: 'Created a verified digital creator profile on CreatorBharat, linking regional crafts to urban home design campaigns.',
+      metrics: [
+        { label: 'Earnings Secured', value: '₹3.5 Lakhs', icon: 'DollarSign', color: '#10b981' },
+        { label: 'Followers Gained', value: '+180k', icon: 'Users', color: '#3b82f6' },
+        { label: 'Direct Deals', value: '12 Campaigns', icon: 'Award', color: '#8b5cf6' }
+      ],
+      testimonial: {
+        quote: "Pehle mujhe payments ke liye mahino intezar karna padta tha. CreatorBharat par register hone ke baad, brands mujhe direct secure escrows ke saath access karte hain.",
+        author: "Ramesh Dewangan",
+        role: "Terracotta Master Artisan",
+        company: "Bastar Craft Syndicate"
+      },
+      actionText: "View Ramesh's Profile",
+      actionPath: '/leaderboard'
+    },
+    {
+      id: 'story-3',
+      type: 'platform',
+      title: 'DPIIT Registered Startup: 15,000+ Regional Identities Verified 🇮🇳',
+      location: 'National Coverage',
+      niche: 'Ecosystem Growth',
+      banner: '/platform_milestone_bharat.png',
+      description: 'CreatorBharat has officially mapped and verified over 15,000 regional creators across 28 states in India. Under our Bharat-first outreach program, we have eliminated intermediate brokerage commissions.',
+      challenge: 'Fragmented talent registry and high commission brokerages in Tier 2/3 cities.',
+      solution: 'Designed the unified "Digital Pehchan" verified trust scores, standard escrow payments, and regional leaderboard hubs.',
+      metrics: [
+        { label: 'States Mapped', value: '28 States', icon: 'Globe2', color: '#ff9431' },
+        { label: 'Platform Fee', value: '0% Brokerage', icon: 'ShieldCheck', color: '#10b981' },
+        { label: 'Ecosystem Trust', value: '99.4% Secured', icon: 'Zap', color: '#8b5cf6' }
+      ],
+      testimonial: {
+        quote: "Our mission is to democratize opportunities for Tier-2 and Tier-3 talent. We are building the foundational verification layers that traditional agencies ignore.",
+        author: "Mohmmad Dilshan",
+        role: "Founder & CEO",
+        company: "CreatorBharat"
+      },
+      actionText: 'Claim Your Profile Free',
+      actionPath: '/join'
+    }
+  ], null, 2));
+  const [storiesError, setStoriesError] = useState('');
+
+  const [aiFaqJson, setAiFaqJson] = useState(JSON.stringify([
+    {
+      q: "What is the CreatorBharat Elite Score?",
+      a: "The Elite Score is a proprietary machine learning score (from 0 to 100) calculated by analyzing a creator's verified follower counts, comment-to-like engagement ratios, content consistency, brand safety index, and niche authority. Higher scores receive premium ranking on our public leaderboards."
+    },
+    {
+      q: "How does the AI Matchmaker algorithm choose creators?",
+      a: "Our campaign matching algorithm parses a brand's budget, niche requirements, platforms, and target location. It then performs semantic similarity matching against verified creator bios, local dialect parameters, and past campaign categories to recommend creators with the highest predicted ROI."
+    },
+    {
+      q: "Why is Digital Pehchan KYC required?",
+      a: "Digital Pehchan ensures that every creator profile on our platform belongs to a real citizen of India. By submitting Aadhaar, PAN, or GST credentials, creators verify their identity, which eliminates bot traffic and fake profiles and builds trust with brand sponsors."
+    }
+  ], null, 2));
+  const [aiFaqError, setAiFaqError] = useState('');
+
+  const [notificationsJson, setNotificationsJson] = useState(JSON.stringify([
+    {
+      id: 'notif-1',
+      refNo: 'CB/GOVT/2026/SEC-4/082',
+      date: '17-06-2026',
+      department: 'Dept. of Verification & Trust',
+      deptHi: 'सत्यापन एवं विश्वास विभाग',
+      title: 'BharatAI Profile Verification Engine Launched Under Section 4(a) 🛡️',
+      titleHi: 'धारा 4(a) के तहत भारतएआई प्रोफाइल सत्यापन प्रणाली का शुभारंभ',
+      description: 'All creators operating in Tier 2 & 3 regions of India are hereby notified to claim their official verified badge by submitting authentic audience engagement proofs. Verified profiles receive priority matching in brand campaign allotment. Compliance boosts creator visibility by up to 85%.',
+      pdfName: 'CB_Verification_Gazette_v3.pdf',
+      status: 'ACTIVE',
+      signatory: 'Dr. R. K. Sen, Joint Secretary (Creator Welfare)',
+      actionText: 'Apply for Verification',
+      actionPath: '/join'
+    },
+    {
+      id: 'notif-2',
+      refNo: 'CB/GOVT/2026/MKT-9/104',
+      date: '16-06-2026',
+      department: 'Dept. of Campaign & Escrow Operations',
+      deptHi: 'अभियान एवं एस्क्रो संचालन विभाग',
+      title: 'Notification: Launch of Rajasthan Regional Spotlight Campaign 🏺',
+      titleHi: 'अधिसूचना: राजस्थान क्षेत्रीय अभियान आवंटन सूचना',
+      description: 'Applications are invited from eligible fashion, cultural, and lifestyle creators in Rajasthan for the Jaipur Heritage Promotion Spotlight. Budget allocation is guaranteed under official escrow protection terms. Direct payouts will be executed with zero commissions. Retainers start at ₹25,000 per asset.',
+      pdfName: 'CB_Raj_Spotlight_Circular.pdf',
+      status: 'ACTIVE',
+      signatory: 'Smt. Anjali Sharma, Director (Campaign Allocation)',
+      actionText: 'View Allotments',
+      actionPath: '/creators'
+    },
+    {
+      id: 'notif-3',
+      refNo: 'CB/GOVT/2026/DIR-3/011',
+      date: '14-06-2026',
+      department: 'Ecosystem Registry Office',
+      deptHi: 'पारिस्थितिकी तंत्र रजिस्ट्री कार्यालय',
+      title: 'Release of Weekly Top 100 Virality Index & Leaderboard 🏆',
+      titleHi: 'साप्ताहिक शीर्ष 100 क्रिएटर्स की वायरल सूचकांक सूची जारी',
+      description: 'The national registry of top performing regional creators is updated for the current cycle. Weekly statistics are logged to measure authentic organic reach. Creators appearing in the top decile are recommended for government-partnered regional campaigns.',
+      pdfName: 'CB_Leaderboard_Registry_W24.pdf',
+      status: 'PUBLISHED',
+      signatory: 'Shri Amit Verma, Registrar (Creator Stats)',
+      actionText: 'Open Leaderboard',
+      actionPath: '/leaderboard'
+    }
+  ], null, 2));
+  const [notificationsError, setNotificationsError] = useState('');
+
 
   // ── Search States
   const [creatorSearch, setCreatorSearch] = useState('');
@@ -1115,6 +1392,11 @@ export default function App() {
           else if (p.pageName === 'faqs' || p.pageName === 'faq') setFaqJson(JSON.stringify(p.content, null, 2));
           else if (p.pageName === 'creator-landing') setCreatorLandingConfig(p.content);
           else if (p.pageName === 'brand-landing') setBrandLandingConfig(p.content);
+          else if (p.pageName === 'about') setAboutJson(JSON.stringify(p.content, null, 2));
+          else if (p.pageName === 'press') setPressJson(JSON.stringify(p.content, null, 2));
+          else if (p.pageName === 'stories') setStoriesJson(JSON.stringify(p.content, null, 2));
+          else if (p.pageName === 'ai-faq') setAiFaqJson(JSON.stringify(p.content, null, 2));
+          else if (p.pageName === 'notifications') setNotificationsJson(JSON.stringify(p.content, null, 2));
         });
       }
 
@@ -1178,6 +1460,67 @@ export default function App() {
       } catch (err) {
         setFaqError(err.message || 'Invalid JSON format. Please verify syntax.');
         toast('Failed to save: ' + (err.message || 'Invalid FAQ JSON.'), 'error');
+        return;
+      }
+    } else if (selectedPageName === 'about') {
+      try {
+        content = JSON.parse(aboutJson);
+        setAboutError('');
+      } catch (err) {
+        setAboutError(err.message || 'Invalid JSON format. Please verify syntax.');
+        toast('Failed to save: Invalid About page JSON.', 'error');
+        return;
+      }
+    } else if (selectedPageName === 'press') {
+      try {
+        const parsed = JSON.parse(pressJson);
+        if (!Array.isArray(parsed)) {
+          throw new Error('Press content must be an array of objects.');
+        }
+        content = parsed;
+        setPressError('');
+      } catch (err) {
+        setPressError(err.message || 'Invalid JSON format. Please verify syntax.');
+        toast('Failed to save: Invalid Press JSON.', 'error');
+        return;
+      }
+    } else if (selectedPageName === 'stories') {
+      try {
+        const parsed = JSON.parse(storiesJson);
+        if (!Array.isArray(parsed)) {
+          throw new Error('Stories content must be an array of objects.');
+        }
+        content = parsed;
+        setStoriesError('');
+      } catch (err) {
+        setStoriesError(err.message || 'Invalid JSON format. Please verify syntax.');
+        toast('Failed to save: Invalid Stories JSON.', 'error');
+        return;
+      }
+    } else if (selectedPageName === 'ai-faq') {
+      try {
+        const parsed = JSON.parse(aiFaqJson);
+        if (!Array.isArray(parsed)) {
+          throw new Error('AI FAQ content must be an array of objects.');
+        }
+        content = parsed;
+        setAiFaqError('');
+      } catch (err) {
+        setAiFaqError(err.message || 'Invalid JSON format. Please verify syntax.');
+        toast('Failed to save: Invalid AI FAQ JSON.', 'error');
+        return;
+      }
+    } else if (selectedPageName === 'notifications') {
+      try {
+        const parsed = JSON.parse(notificationsJson);
+        if (!Array.isArray(parsed)) {
+          throw new Error('Notifications content must be an array of objects.');
+        }
+        content = parsed;
+        setNotificationsError('');
+      } catch (err) {
+        setNotificationsError(err.message || 'Invalid JSON format. Please verify syntax.');
+        toast('Failed to save: Invalid Notifications JSON.', 'error');
         return;
       }
     }
@@ -3628,9 +3971,15 @@ export default function App() {
                       <h4 style={{ fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>🌐 Public Website</h4>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                         {[
+                          { id: 'home', name: 'Home Hero' },
                           { id: 'pricing', name: 'Pricing & Plans' },
+                          { id: 'calculator', name: 'Rate Calculator' },
                           { id: 'faqs', name: 'FAQs List' },
-                          { id: 'calculator', name: 'Rate Calculator' }
+                          { id: 'about', name: 'About Us' },
+                          { id: 'press', name: 'Press Room' },
+                          { id: 'stories', name: 'Success Stories' },
+                          { id: 'ai-faq', name: 'AI FAQ Hub' },
+                          { id: 'notifications', name: 'Public Notices Hub' }
                         ].map(p => (
                           <button
                             key={p.id}
@@ -4068,6 +4417,76 @@ export default function App() {
                             style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 12, fontFamily: 'monospace', color: T.navy, background: T.card, outline: 'none', minHeight: 250 }}
                           />
                           {faqError && <p style={{ color: T.red, fontSize: 12, margin: '4px 0 0' }}>{faqError}</p>}
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedPageName === 'about' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>About Us Page JSON Configuration</label>
+                          <textarea
+                            value={aboutJson}
+                            onChange={e => setAboutJson(e.target.value)}
+                            style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 12, fontFamily: 'monospace', color: T.navy, background: T.card, outline: 'none', minHeight: 300 }}
+                          />
+                          {aboutError && <p style={{ color: T.red, fontSize: 12, margin: '4px 0 0' }}>{aboutError}</p>}
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedPageName === 'press' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Press Releases JSON List (Array of {`{ date, title, excerpt, url }`})</label>
+                          <textarea
+                            value={pressJson}
+                            onChange={e => setPressJson(e.target.value)}
+                            style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 12, fontFamily: 'monospace', color: T.navy, background: T.card, outline: 'none', minHeight: 300 }}
+                          />
+                          {pressError && <p style={{ color: T.red, fontSize: 12, margin: '4px 0 0' }}>{pressError}</p>}
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedPageName === 'stories' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Success Stories JSON List (Array of {`{ id, type, brandName, creatorName, title, description, metrics, testimonial }`})</label>
+                          <textarea
+                            value={storiesJson}
+                            onChange={e => setStoriesJson(e.target.value)}
+                            style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 12, fontFamily: 'monospace', color: T.navy, background: T.card, outline: 'none', minHeight: 300 }}
+                          />
+                          {storiesError && <p style={{ color: T.red, fontSize: 12, margin: '4px 0 0' }}>{storiesError}</p>}
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedPageName === 'ai-faq' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>AI FAQ JSON List (Array of {`{ q, a }`})</label>
+                          <textarea
+                            value={aiFaqJson}
+                            onChange={e => setAiFaqJson(e.target.value)}
+                            style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 12, fontFamily: 'monospace', color: T.navy, background: T.card, outline: 'none', minHeight: 300 }}
+                          />
+                          {aiFaqError && <p style={{ color: T.red, fontSize: 12, margin: '4px 0 0' }}>{aiFaqError}</p>}
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedPageName === 'notifications' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Public Circulars JSON List (Array of {`{ id, refNo, date, department, deptHi, title, titleHi, description, pdfName, status, signatory, actionText, actionPath }`})</label>
+                          <textarea
+                            value={notificationsJson}
+                            onChange={e => setNotificationsJson(e.target.value)}
+                            style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 12, fontFamily: 'monospace', color: T.navy, background: T.card, outline: 'none', minHeight: 300 }}
+                          />
+                          {notificationsError && <p style={{ color: T.red, fontSize: 12, margin: '4px 0 0' }}>{notificationsError}</p>}
                         </div>
                       </div>
                     )}

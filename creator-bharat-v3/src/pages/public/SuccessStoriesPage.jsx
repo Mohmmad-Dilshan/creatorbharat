@@ -1,20 +1,35 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, ArrowUpRight, Quote, MapPin, Sparkles, ArrowRight } from 'lucide-react';
+import { ShieldCheck, ArrowUpRight, Quote, MapPin, Sparkles, ArrowRight, TrendingUp, Target, Users, DollarSign, Award, Globe2, Zap } from 'lucide-react';
+const ICON_MAP = { TrendingUp, Target, Users, DollarSign, Award, Globe2, ShieldCheck, Zap };
 import { useNavigate } from 'react-router-dom';
 import Seo from '@/components/common/SEO';
+import { apiCall } from '@/utils/api';
 
 // Import Externalized Data
 import { ALL_STORIES } from '@/data/successStoriesData';
 
 export default function SuccessStoriesPage() {
+  const [dynamicStories, setDynamicStories] = useState(null);
+
+  useEffect(() => {
+    apiCall('/pages/stories')
+      .then(res => {
+        if (res?.content && Array.isArray(res.content) && res.content.length > 0) {
+          setDynamicStories(res.content);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const ACTIVE_STORIES = dynamicStories || ALL_STORIES;
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('all'); // all, brand, creator, platform
 
   const filteredStories = useMemo(() => {
-    if (activeTab === 'all') return ALL_STORIES;
-    return ALL_STORIES.filter(s => s.type === activeTab);
-  }, [activeTab]);
+    if (activeTab === 'all') return ACTIVE_STORIES;
+    return ACTIVE_STORIES.filter(s => s.type === activeTab);
+  }, [activeTab, ACTIVE_STORIES]);
 
   const [mob, setMob] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
 
@@ -59,8 +74,8 @@ export default function SuccessStoriesPage() {
           "name": "CreatorBharat Success Stories & Case Studies",
           "description": "Real case studies from India's rising creator ecosystem — verified brand campaigns, creator career boosts, and platform milestones.",
           "url": "https://creatorbharat.com/stories",
-          "numberOfItems": ALL_STORIES.length,
-          "itemListElement": ALL_STORIES.slice(0, 5).map((story, i) => ({
+          "numberOfItems": ACTIVE_STORIES.length,
+          "itemListElement": ACTIVE_STORIES.slice(0, 5).map((story, i) => ({
             "@type": "ListItem",
             "position": i + 1,
             "name": story.title,
@@ -333,7 +348,7 @@ export default function SuccessStoriesPage() {
                         marginBottom: '28px'
                       }}>
                         {story.metrics.map(m => {
-                          const MetricIcon = m.icon;
+                          const MetricIcon = typeof m.icon === 'string' ? (ICON_MAP[m.icon] || Users) : (m.icon || Users);
                           return (
                             <div key={m.label} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                               <div style={{

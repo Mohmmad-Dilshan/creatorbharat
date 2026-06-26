@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Copy, Download, Calendar, Mail, FileText, Check, ChevronRight, ExternalLink } from 'lucide-react';
 import Seo from '@/components/common/SEO';
 import { Btn, Bdg } from '@/components/common/Primitives';
+import { apiCall } from '@/utils/api';
 import { BRAND_COLORS, BRAND_ASSETS, PRESS_RELEASES, CORPORATE_FACTS } from '@/data/pressData';
 
 export default function PressPage() {
@@ -11,6 +12,19 @@ export default function PressPage() {
   const [copiedColor, setCopiedColor] = useState(null);
   const [downloading, setDownloading] = useState(null);
   const [copiedEmail, setCopiedEmail] = useState(false);
+  const [dynamicPress, setDynamicPress] = useState(null);
+
+  useEffect(() => {
+    apiCall('/pages/press')
+      .then(res => {
+        if (res?.content && Array.isArray(res.content) && res.content.length > 0) {
+          setDynamicPress(res.content);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const ACTIVE_PRESS_RELEASES = dynamicPress || PRESS_RELEASES;
 
   useEffect(() => {
     const checkSize = () => setMob(window.innerWidth < 768);
@@ -396,7 +410,7 @@ export default function PressPage() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-            {PRESS_RELEASES.map((pr, i) => (
+            {ACTIVE_PRESS_RELEASES.map((pr, i) => (
               <motion.div
                 key={pr.title}
                 initial={{ opacity: 0, y: 20 }}
