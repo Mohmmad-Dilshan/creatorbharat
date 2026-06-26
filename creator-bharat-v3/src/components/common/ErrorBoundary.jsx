@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-// import * as Sentry from '@sentry/react';
+import * as Sentry from '@sentry/react';
+
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -14,9 +15,8 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error("Critical UI Crash caught by Boundary:", error, errorInfo);
-    
-    // Sentry Error Tracking Tool ko critical crash bhejna
-    // Sentry.captureException(error, { extra: errorInfo });
+    // Report to Sentry if DSN is configured
+    Sentry.captureException(error, { extra: errorInfo });
   }
 
   render() {

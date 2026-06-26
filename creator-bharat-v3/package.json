@@ -11,6 +11,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@sentry/browser": "^10.62.0",
+    "@sentry/react": "^10.62.0",
     "d3": "^7.9.0",
     "framer-motion": "^12.38.0",
     "i18next": "^26.3.1",

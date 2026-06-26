@@ -1,4 +1,5 @@
 // 🇮🇳 CreatorBharat SaaS Express API Server
+import * as Sentry from '@sentry/node';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -39,15 +40,24 @@ import ambassadorRouter from './routes/ambassador.js';
 import savedRouter from './routes/saved.js';
 import teamRouter from './routes/team.js';
 
-
 dotenv.config();
+
+// ─── Sentry Error Tracking ────────────────────────────────────────────────────
+Sentry.init({
+  dsn: process.env.SENTRY_DSN || '', // Set SENTRY_DSN in .env for error tracking
+  environment: process.env.NODE_ENV || 'development',
+  tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.2 : 0,
+  enabled: !!process.env.SENTRY_DSN, // Only active when DSN is provided
+});
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 const server = createServer(app);
 
-// Dynamic CORS configuration to support localhost, multiple Vercel deployments, and custom domains
-const allowedOrigins = [
+// ─── CORS Configuration ───────────────────────────────────────────────────────
+// In production: reads ALLOWED_ORIGINS env var (comma-separated)
+// In development: allows localhost + any Vercel preview + creatorbharat domains
+const devAllowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:5175',
@@ -55,11 +65,28 @@ const allowedOrigins = [
   'http://localhost:4000'
 ];
 
+const productionOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : [];
+
 const corsOptions = {
   origin: (origin, callback) => {
+    // Allow server-to-server calls (no origin)
     if (!origin) return callback(null, true);
-    const isAllowed = allowedOrigins.includes(origin) || 
-                      origin.endsWith('.vercel.app') || 
+
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    if (isProduction) {
+      // Strict: only explicitly listed production origins
+      if (productionOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error(`CORS: Origin ${origin} is not allowed in production.`));
+    }
+
+    // Development: allow localhost + Vercel previews + creatorbharat domains
+    const isAllowed = devAllowedOrigins.includes(origin) ||
+                      origin.endsWith('.vercel.app') ||
                       origin.includes('creatorbharat');
     if (isAllowed) {
       callback(null, true);
@@ -1918,6 +1945,15 @@ io.on('connection', (socket) => {
     console.error('[Database Seeder Error]:', err.message);
   }
 })();
+
+// ─── Sentry Error Handler (must be after all routes) ─────────────────────────
+Sentry.setupExpressErrorHandler(app);
+
+// Global 500 error handler
+app.use((err, req, res, next) => {
+  console.error('[Unhandled Error]:', err.message);
+  res.status(500).json({ error: 'An unexpected server error occurred. Our team has been notified.' });
+});
 
 // Start Server
 if (process.env.NODE_ENV !== 'test') {

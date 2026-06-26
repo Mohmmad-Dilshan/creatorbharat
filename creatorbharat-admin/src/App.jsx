@@ -454,6 +454,15 @@ export default function App() {
   const [apDiagnostics, setApDiagnostics] = useState(null);
   const [apDiagLoading, setApDiagLoading] = useState(false);
 
+  // ── Admin 2FA States
+  const [twoFAEnabled, setTwoFAEnabled] = useState(false);
+  const [twoFAQrCode, setTwoFAQrCode] = useState(null);
+  const [twoFASecret, setTwoFASecret] = useState('');
+  const [twoFACode, setTwoFACode] = useState('');
+  const [twoFALoading, setTwoFALoading] = useState(false);
+  const [twoFAMessage, setTwoFAMessage] = useState(null); // { type: 'success'|'error', text }
+  const [twoFAStep, setTwoFAStep] = useState('idle'); // idle | setup | verify | enabled
+
   // ── Podcast Editor States
   const [podcastModalOpen, setPodcastModalOpen] = useState(false);
   const [editingPodcast, setEditingPodcast] = useState(null);
@@ -7343,6 +7352,112 @@ export default function App() {
                             <div style={{ position: 'absolute', top: 2, left: adminPanelSettings.requireMFA ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
                           </div>
                         </div>
+                      </div>
+
+                      {/* 2FA TOTP Setup Card */}
+                      <div style={{ gridColumn: mob ? '1' : 'span 2', background: T.card, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            <div style={{ fontSize: 14, fontWeight: 800, color: T.navy }}>🔐 Two-Factor Authentication (TOTP)</div>
+                            <div style={{ fontSize: 11, color: T.muted }}>Use Google Authenticator, Authy, or any TOTP app to secure your admin login.</div>
+                          </div>
+                          {twoFAEnabled ? (
+                            <span style={{ background: '#dcfce7', color: '#16a34a', fontSize: 11, fontWeight: 800, padding: '4px 12px', borderRadius: 20 }}>ACTIVE</span>
+                          ) : (
+                            <span style={{ background: '#fee2e2', color: '#dc2626', fontSize: 11, fontWeight: 800, padding: '4px 12px', borderRadius: 20 }}>DISABLED</span>
+                          )}
+                        </div>
+
+                        {twoFAMessage && (
+                          <div style={{ padding: '10px 14px', borderRadius: 10, background: twoFAMessage.type === 'success' ? '#dcfce7' : '#fee2e2', color: twoFAMessage.type === 'success' ? '#16a34a' : '#dc2626', fontSize: 12, fontWeight: 700 }}>
+                            {twoFAMessage.type === 'success' ? '✅' : '❌'} {twoFAMessage.text}
+                          </div>
+                        )}
+
+                        {twoFAStep === 'idle' && !twoFAEnabled && (
+                          <button
+                            onClick={async () => {
+                              setTwoFALoading(true);
+                              setTwoFAMessage(null);
+                              try {
+                                const r = await fetch(`${API_BASE}/auth/2fa/setup`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+                                const d = await r.json();
+                                if (!r.ok) throw new Error(d.error);
+                                setTwoFAQrCode(d.qrCode);
+                                setTwoFASecret(d.secret);
+                                setTwoFAStep('setup');
+                              } catch(e) { setTwoFAMessage({ type: 'error', text: e.message }); }
+                              setTwoFALoading(false);
+                            }}
+                            disabled={twoFALoading}
+                            style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: 10, fontWeight: 800, fontSize: 13, cursor: 'pointer', alignSelf: 'flex-start' }}
+                          >
+                            {twoFALoading ? '⏳ Generating...' : '🔑 Setup 2FA Now'}
+                          </button>
+                        )}
+
+                        {twoFAStep === 'setup' && twoFAQrCode && (
+                          <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}>
+                              <img src={twoFAQrCode} alt="2FA QR Code" style={{ width: 160, height: 160, borderRadius: 12, border: `2px solid ${T.border}` }} />
+                              <div style={{ fontSize: 10, color: T.muted, textAlign: 'center' }}>Scan with your TOTP app</div>
+                            </div>
+                            <div style={{ flex: 1, minWidth: 200, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                              <div style={{ fontSize: 11, fontWeight: 700, color: T.muted }}>Or enter this secret manually in your app:</div>
+                              <code style={{ padding: '8px 12px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 11, letterSpacing: 2, wordBreak: 'break-all', color: T.navy }}>{twoFASecret}</code>
+                              <div style={{ fontSize: 11, fontWeight: 700, color: T.muted }}>Enter the 6-digit code from your app to activate:</div>
+                              <input
+                                type="text"
+                                value={twoFACode}
+                                onChange={e => setTwoFACode(e.target.value.replace(/\D/g,'').slice(0,6))}
+                                placeholder="000000"
+                                maxLength={6}
+                                style={{ padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 20, fontWeight: 900, letterSpacing: 8, color: T.navy, background: T.bg, outline: 'none', width: '100%', boxSizing: 'border-box', textAlign: 'center' }}
+                              />
+                              <button
+                                onClick={async () => {
+                                  setTwoFALoading(true);
+                                  setTwoFAMessage(null);
+                                  try {
+                                    const r = await fetch(`${API_BASE}/auth/2fa/verify`, {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                                      body: JSON.stringify({ code: twoFACode })
+                                    });
+                                    const d = await r.json();
+                                    if (!r.ok) throw new Error(d.error);
+                                    setTwoFAEnabled(true);
+                                    setTwoFAStep('enabled');
+                                    setTwoFAQrCode(null);
+                                    setTwoFACode('');
+                                    setTwoFAMessage({ type: 'success', text: '2FA is now active on your admin account.' });
+                                  } catch(e) { setTwoFAMessage({ type: 'error', text: e.message }); }
+                                  setTwoFALoading(false);
+                                }}
+                                disabled={twoFALoading || twoFACode.length !== 6}
+                                style={{ background: '#16a34a', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: 10, fontWeight: 800, fontSize: 13, cursor: 'pointer' }}
+                              >
+                                {twoFALoading ? '⏳ Verifying...' : '✅ Activate 2FA'}
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                        {(twoFAStep === 'enabled' || twoFAEnabled) && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                            <div style={{ fontSize: 12, color: T.muted }}>2FA is protecting your account. Each login will require a code from your authenticator app.</div>
+                            <button
+                              onClick={() => {
+                                setTwoFAMessage(null);
+                                setTwoFAStep('idle');
+                                setTwoFAEnabled(false);
+                              }}
+                              style={{ background: T.bg, color: '#dc2626', border: '1.5px solid #dc2626', padding: '8px 16px', borderRadius: 10, fontWeight: 700, fontSize: 12, cursor: 'pointer', alignSelf: 'flex-start' }}
+                            >
+                              Disable 2FA (Requires Re-setup)
+                            </button>
+                          </div>
+                        )}
                       </div>
 
                       {/* Active Sessions list */}

@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useReducer, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { isValidRole } from '@/utils/security';
-import { setUnauthorizedHandler } from '@/utils/api';
+import { setUnauthorizedHandler, setTokens, clearTokens, getRefreshToken } from '@/utils/api';
+
 
 const Ctx = createContext(null);
 export const useApp = () => useContext(Ctx);
@@ -33,9 +34,22 @@ export function reducer(s, a) {
       };
     case 'LOGIN': {
       const role = isValidRole(a.role) ? a.role : 'guest';
+      // Store both access and refresh tokens
+      if (a.token) localStorage.setItem('cb_token', a.token);
+      if (a.refreshToken) localStorage.setItem('cb_refresh_token', a.refreshToken);
       return { ...s, user: a.u, role, ui: { ...s.ui, mobileMenu: false } };
     }
     case 'LOGOUT': {
+      // Revoke refresh token server-side (fire and forget)
+      const refreshToken = getRefreshToken();
+      if (refreshToken) {
+        fetch(import.meta.env.VITE_API_URL + '/auth/logout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken })
+        }).catch(() => {});
+      }
+      clearTokens();
       localStorage.removeItem('cb_saved');
       localStorage.removeItem('cb_compared');
       localStorage.removeItem('cb_applied');
@@ -44,7 +58,8 @@ export function reducer(s, a) {
       return { ...IS, page: 'home' };
     }
     case 'SESSION_EXPIRED': {
-      ['cb_token','cb_user','cb_role','cb_creators','cb_is_pro',
+      clearTokens();
+      ['cb_user','cb_role','cb_creators','cb_is_pro',
        'cb_follows','cb_saved','cb_compared','cb_applied']
         .forEach(k => localStorage.removeItem(k));
       return { ...IS, page: 'home' };

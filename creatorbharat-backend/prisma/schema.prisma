@@ -11,19 +11,22 @@ generator client {
 }
 
 model User {
-  id          String   @id @default(cuid())
-  email       String   @unique
-  phone       String?  @unique
-  password    String
-  role        Role     @default(CREATOR)
-  isSuspended Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                 String   @id @default(cuid())
+  email              String   @unique
+  phone              String?  @unique
+  password           String
+  role               Role     @default(CREATOR)
+  isSuspended        Boolean  @default(false)
+  twoFactorSecret    String?  // Encrypted TOTP secret
+  twoFactorEnabled   Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
-  creator     Creator?
-  brand       Brand?
-  savedItems  SavedItem[]
-  teamProfile TeamMember?
+  creator        Creator?
+  brand          Brand?
+  savedItems     SavedItem[]
+  teamProfile    TeamMember?
+  refreshTokens  RefreshToken[]
 }
 
 enum Role {
@@ -565,4 +568,14 @@ model InviteToken {
   createdAt DateTime @default(now())
 }
 
+// 🔐 JWT Refresh Tokens (revocable, 7-day expiry)
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 
+  @@index([userId])
+}
