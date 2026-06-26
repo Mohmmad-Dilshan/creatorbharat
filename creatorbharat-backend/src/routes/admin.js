@@ -1691,5 +1691,59 @@ router.post('/missions/completions/:id/status', async (req, res) => {
   }
 });
 
+// POST /api/admin/notifications/send — Dispatch a custom notification
+router.post('/notifications/send', async (req, res) => {
+  try {
+    const { targetGroup, userId, title, body, type, link } = req.body;
+    if (!title || !body) {
+      return res.status(400).json({ error: 'Title and body are required.' });
+    }
+
+    if (targetGroup === 'ALL_CREATORS') {
+      const creators = await prisma.creator.findMany({ select: { userId: true } });
+      const notifications = creators.map(c => ({
+        userId: c.userId,
+        title,
+        body,
+        type: type || 'INFO',
+        link: link || null
+      }));
+      await prisma.notification.createMany({ data: notifications });
+      return res.json({ success: true, message: `Notification sent to all ${creators.length} creators.` });
+    }
+
+    if (targetGroup === 'ALL_BRANDS') {
+      const brands = await prisma.brand.findMany({ select: { userId: true } });
+      const notifications = brands.map(b => ({
+        userId: b.userId,
+        title,
+        body,
+        type: type || 'INFO',
+        link: link || null
+      }));
+      await prisma.notification.createMany({ data: notifications });
+      return res.json({ success: true, message: `Notification sent to all ${brands.length} brands.` });
+    }
+
+    if (targetGroup === 'INDIVIDUAL' && userId) {
+      await prisma.notification.create({
+        data: {
+          userId,
+          title,
+          body,
+          type: type || 'INFO',
+          link: link || null
+        }
+      });
+      return res.json({ success: true, message: 'Notification sent to user.' });
+    }
+
+    return res.status(400).json({ error: 'Invalid target group or missing user ID.' });
+  } catch (err) {
+    console.error('[POST /api/admin/notifications/send] Error:', err.message);
+    res.status(500).json({ error: 'Failed to send notifications.' });
+  }
+});
+
 export default router;
 

@@ -87,19 +87,42 @@ export default function NotificationsPage() {
   const { st } = useApp();
   const [notifications, setNotifications] = useState([]);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [loading, setLoading] = useState(true);
+
+  const loadNotifications = async () => {
+    try {
+      const { apiCall } = await import('@/utils/api');
+      const data = await apiCall('/notifications');
+      const backendNotifs = (data.notifications || []).map(n => ({
+        id: n.id,
+        type: n.type?.toLowerCase() || 'info',
+        category: n.type === 'PAYMENT' ? 'payment' : n.type === 'CAMPAIGN' ? 'pitch' : 'platform',
+        title: n.title,
+        msg: n.body,
+        time: new Date(n.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }),
+        read: n.isRead,
+        actionPath: n.link || null,
+        _backendId: n.id
+      }));
+
+      if (backendNotifs.length > 0) {
+        setNotifications(backendNotifs);
+      } else {
+        const localNotifs = LS.get('cb_notifications', DEFAULT_BRAND_NOTIFS);
+        setNotifications(localNotifs);
+      }
+    } catch {
+      const localNotifs = LS.get('cb_notifications', DEFAULT_BRAND_NOTIFS);
+      setNotifications(localNotifs);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Attempt to read notifications from localStorage or generate defaults
-    const localNotifs = LS.get('cb_notifications', []);
-    const brandSpecificNotifs = localNotifs.filter(n => n.id.startsWith('nb-') || n.id.startsWith('b-'));
-    
-    if (brandSpecificNotifs.length > 0) {
-      setNotifications(brandSpecificNotifs);
-    } else {
-      const initial = [...DEFAULT_BRAND_NOTIFS];
-      setNotifications(initial);
-      LS.set('cb_notifications', initial);
-    }
+    loadNotifications();
+    const interval = setInterval(loadNotifications, 60000);
+    return () => clearInterval(interval);
   }, []);
 
   const unreadCount = useMemo(() => {
@@ -112,19 +135,35 @@ export default function NotificationsPage() {
     return notifications.filter(n => n.category === activeFilter || n.type === activeFilter);
   }, [notifications, activeFilter]);
 
-  const handleMarkRead = (id) => {
+  const handleMarkRead = async (id) => {
+    const notif = notifications.find(n => n.id === id);
+    const backendId = notif?._backendId || id;
+    try {
+      const { apiCall } = await import('@/utils/api');
+      await apiCall(`/notifications/${backendId}/read`, { method: 'PUT' });
+    } catch { /* non-fatal */ }
     const updated = notifications.map(n => n.id === id ? { ...n, read: true } : n);
     setNotifications(updated);
     LS.set('cb_notifications', updated);
   };
 
-  const handleMarkAllRead = () => {
+  const handleMarkAllRead = async () => {
+    try {
+      const { apiCall } = await import('@/utils/api');
+      await apiCall('/notifications/read-all', { method: 'PUT' });
+    } catch { /* non-fatal */ }
     const updated = notifications.map(n => ({ ...n, read: true }));
     setNotifications(updated);
     LS.set('cb_notifications', updated);
   };
 
-  const handleDeleteNotif = (id) => {
+  const handleDeleteNotif = async (id) => {
+    const notif = notifications.find(n => n.id === id);
+    const backendId = notif?._backendId || id;
+    try {
+      const { apiCall } = await import('@/utils/api');
+      await apiCall(`/notifications/${backendId}`, { method: 'DELETE' });
+    } catch { /* non-fatal */ }
     const updated = notifications.filter(n => n.id !== id);
     setNotifications(updated);
     LS.set('cb_notifications', updated);

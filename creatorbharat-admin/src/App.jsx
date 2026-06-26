@@ -203,6 +203,7 @@ const NAV_SECTIONS = (counts) => [
       { id: 'media-library', label: 'Media Library', icon: FolderOpen, badge: counts.uploads },
       { id: 'pages', label: 'Page Content Manager', icon: SlidersHorizontal },
       { id: 'events', label: 'Events Manager', icon: Calendar },
+      { id: 'admin-notifications', label: 'Notification Center', icon: Bell },
     ]
   },
   {
@@ -244,6 +245,7 @@ const TAB_META = {
   events: { title: 'Events Manager', sub: 'Create and coordinate public platform events and conferences' },
   ambassadors: { title: 'Campus Ambassador Applications', sub: 'Review and approve/reject college student representation applications' },
   missions: { title: 'Monthly Missions & Completions', sub: 'Manage monthly platform-wide creator tasks and proof submissions' },
+  'admin-notifications': { title: 'Notification Dispatch Center', sub: 'Send customized in-app push alerts and updates to creators or brands' },
 };
 
 // ─── STATUS COLORS ─────────────────────────────────────────────────────────
@@ -628,6 +630,14 @@ export default function App() {
   const [twilioPhone, setTwilioPhone] = useState('');
   const [settingsTab, setSettingsTab] = useState('general');
 
+  // ── Platform Custom Notifications Dispatcher States
+  const [notifTargetGroup, setNotifTargetGroup] = useState('ALL_CREATORS');
+  const [notifUserId, setNotifUserId] = useState('');
+  const [notifTitle, setNotifTitle] = useState('');
+  const [notifBody, setNotifBody] = useState('');
+  const [notifType, setNotifType] = useState('INFO');
+  const [notifLink, setNotifLink] = useState('');
+
   // ── Creator Profile Editor
   const [editCreatorModalOpen, setEditCreatorModalOpen] = useState(false);
   const [editingCreator, setEditingCreator] = useState(null);
@@ -993,6 +1003,37 @@ export default function App() {
       setMissionModalOpen(false);
       setEditingMission(null);
       fetchData();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  };
+
+  const handleSendPlatformNotification = async (e) => {
+    e.preventDefault();
+    if (!notifTitle || !notifBody) {
+      toast('Title and Body are required', 'error');
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE}/admin/notifications/send`, {
+        method: 'POST',
+        headers: H(),
+        body: JSON.stringify({
+          targetGroup: notifTargetGroup,
+          userId: notifTargetGroup === 'INDIVIDUAL' ? notifUserId : undefined,
+          title: notifTitle,
+          body: notifBody,
+          type: notifType,
+          link: notifLink || null
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to dispatch notifications');
+      toast(data.message || 'Notification dispatched successfully!', 'success');
+      setNotifTitle('');
+      setNotifBody('');
+      setNotifLink('');
+      setNotifUserId('');
     } catch (err) {
       toast(err.message, 'error');
     }
@@ -2919,6 +2960,111 @@ export default function App() {
                   </Table>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* ══ NOTIFICATION CENTER ═══════════════════════════════════════ */}
+          {activeTab === 'admin-notifications' && (
+            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
+              <SectionHeader 
+                title="Notification Dispatch Center" 
+                sub="Send customized in-app push alerts and updates to creators or brands" 
+              />
+              <form onSubmit={handleSendPlatformNotification} style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 650, marginTop: 20 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Recipient Group *</label>
+                  <select 
+                    value={notifTargetGroup} 
+                    onChange={e => { setNotifTargetGroup(e.target.value); setNotifUserId(''); }} 
+                    required 
+                    style={{ width: '100%', padding: '12px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}
+                  >
+                    <option value="ALL_CREATORS">📢 All Creators ({creators.length} users)</option>
+                    <option value="ALL_BRANDS">🏢 All Brands ({brands.length} users)</option>
+                    <option value="INDIVIDUAL">👤 Individual Creator / Brand</option>
+                  </select>
+                </div>
+
+                {notifTargetGroup === 'INDIVIDUAL' && (
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Select Target User *</label>
+                    <select 
+                      value={notifUserId} 
+                      onChange={e => setNotifUserId(e.target.value)} 
+                      required 
+                      style={{ width: '100%', padding: '12px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}
+                    >
+                      <option value="">-- Select Recipient --</option>
+                      <optgroup label="Creators">
+                        {creators.map(c => (
+                          <option key={c.id} value={c.userId}>{c.name} (@{c.handle})</option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="Brands">
+                        {brands.map(b => (
+                          <option key={b.id} value={b.userId}>{b.companyName} (Brand)</option>
+                        ))}
+                      </optgroup>
+                    </select>
+                  </div>
+                )}
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Alert Type / Theme *</label>
+                    <select 
+                      value={notifType} 
+                      onChange={e => setNotifType(e.target.value)} 
+                      required 
+                      style={{ width: '100%', padding: '12px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}
+                    >
+                      <option value="INFO">🔵 INFO (Standard News/Info)</option>
+                      <option value="SUCCESS">🟢 SUCCESS (Payments/Approve)</option>
+                      <option value="WARNING">🟡 WARNING (Milestone Updates)</option>
+                      <option value="DANGER">🔴 DANGER (Policy Alerts/Suspension)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Alert Title *</label>
+                    <input 
+                      value={notifTitle} 
+                      onChange={e => setNotifTitle(e.target.value)} 
+                      required 
+                      placeholder="e.g. ⚡ System Scheduled Maintenance" 
+                      style={{ width: '100%', padding: '12px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} 
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Notification Message *</label>
+                  <textarea 
+                    value={notifBody} 
+                    onChange={e => setNotifBody(e.target.value)} 
+                    required 
+                    rows={4} 
+                    placeholder="Enter the notification content here..." 
+                    style={{ width: '100%', padding: '12px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} 
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Optional Action Link</label>
+                  <input 
+                    value={notifLink} 
+                    onChange={e => setNotifLink(e.target.value)} 
+                    placeholder="e.g. /creator/opportunities or /brand-dashboard" 
+                    style={{ width: '100%', padding: '12px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} 
+                  />
+                </div>
+
+                <button 
+                  type="submit" 
+                  style={{ width: '100%', padding: '14px', background: T.orange, color: '#fff', border: 'none', borderRadius: 12, fontWeight: 800, fontSize: 14, cursor: 'pointer', display: 'flex', gap: 8, alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(255, 148, 49, 0.2)' }}
+                >
+                  <Bell size={18} /> Send Notification
+                </button>
+              </form>
             </div>
           )}
 
