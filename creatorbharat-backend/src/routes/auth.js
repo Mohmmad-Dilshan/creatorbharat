@@ -58,9 +58,6 @@ async function buildAuthResponse(user) {
   return { token: accessToken, refreshToken, user: safeUser(user) };
 }
 
-// ─── In-memory OTP store (legacy) ───────────────────────────────────────────
-const otpStore = new Map();
-
 // ─── Zod Schemas ────────────────────────────────────────────────────────────
 
 const CreatorRegisterSchema = z.object({
