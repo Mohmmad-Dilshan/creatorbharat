@@ -27,7 +27,7 @@ export const PRIVACY_POLICY = {
   badgeColor: "#22C55E",
   badgeBg: "rgba(34, 197, 94, 0.1)",
   badgeBorder: "rgba(34, 197, 94, 0.2)",
-  lastUpdated: "Last Updated: June 1, 2026",
+  lastUpdated: "Last Updated: June 27, 2026",
   notice: {
     icon: ShieldCheck,
     title: "Bank-Grade Security",
@@ -90,6 +90,22 @@ export const PRIVACY_POLICY = {
           <p>You can manage, correct, or request the deletion of your account and personal details directly from your settings. For compliance under escrow guidelines, transaction record-keeping is retained for 7 years as legally mandated.</p>
         </div>
       )
+    },
+    {
+      id: "grievance",
+      title: "6. Grievance Officer (India DPDP Act 2023)",
+      content: (
+        <div>
+          <p>In accordance with the Digital Personal Data Protection Act, 2023 (India), you may reach our designated Grievance Officer for any privacy-related concerns:</p>
+          <ul style={{ paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <li><strong>Name:</strong> Mohmmad Dilshan</li>
+            <li><strong>Role:</strong> Founder &amp; Data Protection Officer</li>
+            <li><strong>Email:</strong> privacy@creatorbharat.com</li>
+            <li><strong>Address:</strong> CreatorBharat, Bhilwara, Rajasthan — 311001, India</li>
+            <li><strong>Response Time:</strong> Within 30 days of receipt of grievance.</li>
+          </ul>
+        </div>
+      )
     }
   ]
 };
@@ -102,7 +118,7 @@ export const TERMS_OF_SERVICE = {
   badgeColor: "#3B82F6",
   badgeBg: "rgba(59, 130, 246, 0.1)",
   badgeBorder: "rgba(59, 130, 246, 0.2)",
-  lastUpdated: "Last Updated: June 1, 2026",
+  lastUpdated: "Last Updated: June 27, 2026",
   notice: {
     icon: AlertCircle,
     title: "Important Notice",
@@ -182,7 +198,7 @@ export const COOKIE_POLICY = {
   badgeColor: "#A855F7",
   badgeBg: "rgba(168, 85, 247, 0.1)",
   badgeBorder: "rgba(168, 85, 247, 0.2)",
-  lastUpdated: "Last Updated: June 1, 2026",
+  lastUpdated: "Last Updated: June 27, 2026",
   notice: {
     icon: Info,
     title: "Transparency First",
@@ -243,7 +259,7 @@ export const REFUND_POLICY = {
   badgeColor: "#FF9431",
   badgeBg: "rgba(255, 148, 49, 0.1)",
   badgeBorder: "rgba(255, 148, 49, 0.2)",
-  lastUpdated: "Last Updated: June 1, 2026",
+  lastUpdated: "Last Updated: June 27, 2026",
   notice: {
     icon: Scale,
     title: "The Escrow Philosophy",
@@ -327,7 +343,7 @@ export const CREATOR_GUIDELINES = {
   badgeColor: "#3B82F6",
   badgeBg: "rgba(59, 130, 246, 0.1)",
   badgeBorder: "rgba(59, 130, 246, 0.2)",
-  lastUpdated: "Last Updated: June 1, 2026",
+  lastUpdated: "Last Updated: June 27, 2026",
   notice: {
     icon: AlertTriangle,
     title: "The Strike System",
@@ -396,7 +412,7 @@ export const BRAND_GUIDELINES = {
   badgeColor: "#FF9431",
   badgeBg: "rgba(255, 148, 49, 0.1)",
   badgeBorder: "rgba(255, 148, 49, 0.2)",
-  lastUpdated: "Last Updated: June 1, 2026",
+  lastUpdated: "Last Updated: June 27, 2026",
   notice: {
     icon: Shield,
     title: "Escrow Mandate",
