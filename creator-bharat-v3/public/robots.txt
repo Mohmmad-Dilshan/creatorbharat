@@ -1,5 +1,5 @@
 # robots.txt — CreatorBharat (https://creatorbharat.com)
-# Last updated: June 2026
+# Last updated: June 27, 2026
 
 User-agent: *
 Allow: /
