@@ -93,6 +93,7 @@ router.post('/create-escrow', authMiddleware, async (req, res) => {
       return res.status(404).json({ error: 'Campaign details not found.' });
     }
 
+    const razorpay = await getRazorpayClient();
     const order = await razorpay.orders.create({
       amount: amount * 100, // in paise
       currency: 'INR',

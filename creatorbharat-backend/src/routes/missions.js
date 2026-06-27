@@ -24,10 +24,13 @@ router.get('/', authMiddleware, async (req, res) => {
       });
     }
 
+    const colors = { REFER: '#7C3AED', POST_SOCIAL: '#3B82F6', COMPLETE_PROFILE: '#10B981', APPLY_CAMPAIGN: '#FF9431' };
     const formatted = missions.map(mission => {
       const completion = completions.find(c => c.missionId === mission.id);
       return {
         ...mission,
+        rewardColor: colors[mission.type] || '#FF9431',
+        deadline: mission.expiresAt,
         status: completion ? completion.status : 'NOT_STARTED',
         proofUrl: completion ? completion.proofUrl : null,
         completionId: completion ? completion.id : null

@@ -517,8 +517,10 @@ router.post('/register/brand', async (req, res) => {
     let verifiedPhone = null;
     if (validated.phone) {
       const cleanedPhone = validated.phone.replace(/\D/g, '');
-      const record = otpStore.get(cleanedPhone);
-      if (!record || record.otp !== validated.otp?.trim() || Date.now() > record.expiresAt) {
+      const record = await prisma.otpVerification.findUnique({
+        where: { phone: cleanedPhone }
+      });
+      if (!record || record.otp !== validated.otp?.trim() || new Date() > record.expiresAt) {
         return res.status(400).json({ error: 'Invalid or expired OTP for phone verification.' });
       }
       
@@ -527,7 +529,7 @@ router.post('/register/brand', async (req, res) => {
         return res.status(400).json({ error: 'Phone number already registered to another account.' });
       }
       verifiedPhone = cleanedPhone;
-      otpStore.delete(cleanedPhone);
+      await prisma.otpVerification.delete({ where: { phone: cleanedPhone } }).catch(() => {});
     }
 
     const hashedPassword = await bcrypt.hash(validated.password, 10);

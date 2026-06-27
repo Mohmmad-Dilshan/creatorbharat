@@ -1573,7 +1573,13 @@ router.get('/missions', async (req, res) => {
     const missions = await prisma.mission.findMany({
       orderBy: { createdAt: 'desc' }
     });
-    res.json(missions);
+    const colors = { REFER: '#7C3AED', POST_SOCIAL: '#3B82F6', COMPLETE_PROFILE: '#10B981', APPLY_CAMPAIGN: '#FF9431' };
+    const formatted = missions.map(m => ({
+      ...m,
+      rewardColor: colors[m.type] || '#FF9431',
+      deadline: m.expiresAt
+    }));
+    res.json(formatted);
   } catch (err) {
     console.error('[GET /api/admin/missions] Error:', err.message);
     res.status(500).json({ error: 'Failed to retrieve missions.' });
@@ -1583,7 +1589,7 @@ router.get('/missions', async (req, res) => {
 // POST /api/admin/missions — create a new mission
 router.post('/missions', async (req, res) => {
   try {
-    const { title, description, reward, rewardColor, deadline, steps, active } = req.body;
+    const { title, description, reward, type, deadline, steps, active } = req.body;
     if (!title || !reward) {
       return res.status(400).json({ error: 'Title and Reward are required.' });
     }
@@ -1593,13 +1599,20 @@ router.post('/missions', async (req, res) => {
         title,
         description: description || '',
         reward,
-        rewardColor: rewardColor || '#FF9431',
-        deadline: deadline ? new Date(deadline) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        type: type || 'POST_SOCIAL',
+        expiresAt: deadline ? new Date(deadline) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         steps: Array.isArray(steps) ? steps : (steps ? steps.split('\n').map(s => s.trim()).filter(Boolean) : []),
         active: active !== undefined ? active : true
       }
     });
-    res.status(201).json(mission);
+
+    // Format for frontend response
+    const colors = { REFER: '#7C3AED', POST_SOCIAL: '#3B82F6', COMPLETE_PROFILE: '#10B981', APPLY_CAMPAIGN: '#FF9431' };
+    res.status(201).json({
+      ...mission,
+      rewardColor: colors[mission.type] || '#FF9431',
+      deadline: mission.expiresAt
+    });
   } catch (err) {
     console.error('[POST /api/admin/missions] Error:', err.message);
     res.status(500).json({ error: 'Failed to create mission.' });
@@ -1610,14 +1623,14 @@ router.post('/missions', async (req, res) => {
 router.put('/missions/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, reward, rewardColor, deadline, steps, active } = req.body;
+    const { title, description, reward, type, deadline, steps, active } = req.body;
 
     const updateData = {};
     if (title !== undefined) updateData.title = title;
     if (description !== undefined) updateData.description = description;
     if (reward !== undefined) updateData.reward = reward;
-    if (rewardColor !== undefined) updateData.rewardColor = rewardColor;
-    if (deadline !== undefined) updateData.deadline = new Date(deadline);
+    if (type !== undefined) updateData.type = type;
+    if (deadline !== undefined) updateData.expiresAt = new Date(deadline);
     if (steps !== undefined) updateData.steps = Array.isArray(steps) ? steps : steps.split('\n').map(s => s.trim()).filter(Boolean);
     if (active !== undefined) updateData.active = active;
 
@@ -1625,7 +1638,13 @@ router.put('/missions/:id', async (req, res) => {
       where: { id },
       data: updateData
     });
-    res.json(mission);
+
+    const colors = { REFER: '#7C3AED', POST_SOCIAL: '#3B82F6', COMPLETE_PROFILE: '#10B981', APPLY_CAMPAIGN: '#FF9431' };
+    res.json({
+      ...mission,
+      rewardColor: colors[mission.type] || '#FF9431',
+      deadline: mission.expiresAt
+    });
   } catch (err) {
     console.error('[PUT /api/admin/missions/:id] Error:', err.message);
     res.status(500).json({ error: 'Failed to update mission.' });
@@ -1782,22 +1801,22 @@ function toCSV(rows) {
 router.get('/export/creators', async (req, res) => {
   try {
     const creators = await prisma.creator.findMany({
-      include: { user: { select: { email: true, createdAt: true, isSuspended: true } } },
+      include: { user: { select: { email: true, createdAt: true, isSuspended: true, phone: true } } },
       orderBy: { createdAt: 'desc' }
     });
     const rows = creators.map(c => ({
       id: c.id,
-      name: c.displayName || c.name,
+      name: c.name || '',
       email: c.user?.email || '',
-      phone: c.phone || '',
+      phone: c.user?.phone || '',
       city: c.city || '',
       state: c.state || '',
-      niche: Array.isArray(c.niches) ? c.niches.join('|') : (c.niche || ''),
-      cbScore: c.cbScore || 0,
+      niche: Array.isArray(c.niche) ? c.niche.join('|') : '',
+      cbScore: c.score || 0,
       followers: c.followers || 0,
       isVerified: c.isVerified,
       isSuspended: c.user?.isSuspended || false,
-      plan: c.plan || 'FREE',
+      plan: c.isPro ? 'PRO' : 'FREE',
       joinedAt: c.user?.createdAt ? new Date(c.user.createdAt).toISOString().split('T')[0] : ''
     }));
     const csv = toCSV(rows);
@@ -1822,11 +1841,11 @@ router.get('/export/brands', async (req, res) => {
     });
     const rows = brands.map(b => ({
       id: b.id,
-      brandName: b.brandName || b.name,
+      brandName: b.companyName || '',
       email: b.user?.email || '',
       industry: b.industry || '',
       website: b.website || '',
-      plan: b.plan || 'FREE',
+      plan: 'FREE',
       totalCampaigns: b._count?.campaigns || 0,
       isSuspended: b.user?.isSuspended || false,
       joinedAt: b.user?.createdAt ? new Date(b.user.createdAt).toISOString().split('T')[0] : ''
@@ -1846,7 +1865,7 @@ router.get('/export/campaigns', async (req, res) => {
   try {
     const campaigns = await prisma.campaign.findMany({
       include: {
-        brand: { select: { brandName: true } },
+        brand: { select: { companyName: true } },
         _count: { select: { applications: true } }
       },
       orderBy: { createdAt: 'desc' }
@@ -1854,14 +1873,14 @@ router.get('/export/campaigns', async (req, res) => {
     const rows = campaigns.map(c => ({
       id: c.id,
       title: c.title,
-      brandName: c.brand?.brandName || '',
+      brandName: c.brand?.companyName || '',
       status: c.status,
       budget: c.budget || 0,
-      platforms: Array.isArray(c.platforms) ? c.platforms.join('|') : (c.platforms || ''),
-      niches: Array.isArray(c.niches) ? c.niches.join('|') : (c.niches || ''),
+      platforms: Array.isArray(c.platform) ? c.platform.join('|') : '',
+      niches: Array.isArray(c.niche) ? c.niche.join('|') : '',
       totalApplications: c._count?.applications || 0,
       createdAt: c.createdAt ? new Date(c.createdAt).toISOString().split('T')[0] : '',
-      deadline: c.deadline ? new Date(c.deadline).toISOString().split('T')[0] : ''
+      deadline: ''
     }));
     const csv = toCSV(rows);
     res.setHeader('Content-Type', 'text/csv');
@@ -1878,20 +1897,20 @@ router.get('/export/payments', async (req, res) => {
   try {
     const payments = await prisma.payment.findMany({
       include: {
-        creator: { select: { displayName: true } },
-        brand: { select: { brandName: true } }
+        creator: { select: { name: true } },
+        brand: { select: { companyName: true } }
       },
       orderBy: { createdAt: 'desc' },
       take: 10000
     });
     const rows = payments.map(p => ({
       id: p.id,
-      creatorName: p.creator?.displayName || '',
-      brandName: p.brand?.brandName || '',
+      creatorName: p.creator?.name || '',
+      brandName: p.brand?.companyName || '',
       amount: p.amount || 0,
       currency: p.currency || 'INR',
       status: p.status,
-      method: p.method || '',
+      method: '',
       razorpayId: p.razorpayId || '',
       createdAt: p.createdAt ? new Date(p.createdAt).toISOString().split('T')[0] : ''
     }));
@@ -1968,8 +1987,8 @@ router.post('/danger/revoke-pending-verifications', async (req, res) => {
       return res.status(400).json({ error: 'Send { "confirm": "DELETE" } to confirm this destructive action.' });
     }
     const result = await prisma.creator.updateMany({
-      where: { isVerified: false, verificationStatus: 'PENDING' },
-      data: { verificationStatus: 'REJECTED', verificationNote: 'Bulk revoked by admin' }
+      where: { isVerified: false, status: 'PENDING' },
+      data: { status: 'REJECTED' }
     });
     console.warn(`[DANGER] Admin ${req.user?.id} revoked ${result.count} pending verifications.`);
     res.json({ success: true, revoked: result.count, message: `${result.count} pending verification requests revoked.` });
