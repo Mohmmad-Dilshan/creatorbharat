@@ -221,7 +221,7 @@ const HeroValueProps = memo(({ mob }) => {
         }}>
           {/* The real human photo — fills the entire right half */}
           <img
-            src="/creator_landing_hero.webp"
+            src="/success_stories_hero.webp"
             alt="Indian Creators from Bharat"
             style={{
               width: '100%',
