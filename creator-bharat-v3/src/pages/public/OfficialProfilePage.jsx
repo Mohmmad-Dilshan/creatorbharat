@@ -151,7 +151,7 @@ export default function OfficialProfilePage() {
       "name": "CreatorBharat",
       "alternateName": "क्रिएटरभारत ऑफिशियल",
       "url": "https://creatorbharat.com",
-      "logo": "https://creatorbharat.com/logo.png",
+      "logo": "https://creatorbharat.com/android-chrome-512x512.png",
       "description": "India's premier creator discovery ecosystem. Connecting brands with authentic Bharat talent.",
       "sameAs": [
         "https://www.linkedin.com/company/creatorbharat"

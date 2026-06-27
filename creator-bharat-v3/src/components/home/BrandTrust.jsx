@@ -2,11 +2,11 @@ import React from 'react';
 import { W } from '../../utils/helpers';
 
 const LOGOS = [
-  { name: 'Zomato', url: 'https://upload.wikimedia.org/wikipedia/commons/7/75/Zomato_logo.png' },
+  { name: 'Zomato', url: 'https://upload.wikimedia.org/wikipedia/commons/7/75/.webp },
   { name: 'Nike', url: 'https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg' },
   { name: 'Hotstar', url: 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Hotstar_logo.svg' },
   { name: 'Netflix', url: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg' },
-  { name: 'MakeMyTrip', url: 'https://upload.wikimedia.org/wikipedia/commons/c/cd/MakeMyTrip_Logo.png' },
+  { name: 'MakeMyTrip', url: 'https://upload.wikimedia.org/wikipedia/commons/c/cd/.webp },
   { name: 'Amazon', url: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg' },
   { name: 'Paytm', url: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg' },
 ];

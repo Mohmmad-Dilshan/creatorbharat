@@ -2044,6 +2044,18 @@ router.post('/system/test-mail', async (req, res) => {
   }
 });
 
+// POST /api/admin/drip/run — manually trigger onboarding drip (admin only)
+router.post('/drip/run', async (req, res) => {
+  try {
+    const { runOnboardingDrip } = await import('../drip/onboardingDrip.js');
+    const result = await runOnboardingDrip();
+    res.json({ success: true, ...result, message: `Drip run complete. Sent: ${result.sent}, Errors: ${result.errors}` });
+  } catch (err) {
+    console.error('[/admin/drip/run] Error:', err.message);
+    res.status(500).json({ error: 'Drip execution failed: ' + err.message });
+  }
+});
+
 // GET /api/admin/referrals — Fetch all referrals with referrer and referred profiles
 router.get('/referrals', async (req, res) => {
   try {

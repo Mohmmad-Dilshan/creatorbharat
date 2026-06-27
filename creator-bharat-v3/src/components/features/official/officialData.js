@@ -47,7 +47,7 @@ export const OFFICIAL_DATA = {
       readTime: '3 min read',
       icon: Code2,
       color: '#0f172a',
-      image: '/official_launch_poster.png',
+      image: '/official_launch_poster.webp',
       summary: 'CreatorBharat v1.0 is officially live! Opening the gateway to direct, commission-free collaborations between brands and regional talent.',
       fullContent: `We are thrilled to announce that CreatorBharat v1.0 is officially live across India. Our mission is to build the trust infrastructure for India's regional creator economy.
       
@@ -65,7 +65,7 @@ export const OFFICIAL_DATA = {
       readTime: '4 min read',
       icon: Activity,
       color: '#7C3AED',
-      image: '/creator_score_poster.png',
+      image: '/creator_score_poster.webp',
       summary: 'How Creator Score V1 computes reputation transparently to help brands discover reliable partners.',
       fullContent: `To build trust in our marketplace, we introduce the algorithmic Creator Score. This metric helps brands identify highly reliable partners instantly.
       
@@ -82,7 +82,7 @@ export const OFFICIAL_DATA = {
       readTime: '3 min read',
       icon: ShieldCheck,
       color: '#10B981',
-      image: '/escrow_secure_poster.png',
+      image: '/escrow_secure_poster.webp',
       summary: 'Say goodbye to payout delays. Our escrow system secures campaign budgets for complete peace of mind.',
       fullContent: `CreatorBharat's secure escrow ensures campaigns run smoothly for both brands and creators without delays.
       
@@ -99,7 +99,7 @@ export const OFFICIAL_DATA = {
       readTime: '4 min read',
       icon: Globe,
       color: '#3B82F6',
-      image: '/regional_creators_poster.png',
+      image: '/regional_creators_poster.webp',
       summary: 'Why influencer marketing is migrating to Tier-2 & Tier-3 Indian cities and regional languages.',
       fullContent: `Metro saturation is real. The next wave of consumer growth in India is driven by regional creators speaking regional languages.
       
@@ -130,7 +130,7 @@ export const OFFICIAL_DATA = {
       role: 'Founder & CEO',
       category: 'leadership',
       location: 'Bhilwara, Rajasthan',
-      avatar: '/team_dilshan.jpg',
+      avatar: '/team_dilshan.webp',
       bio: 'On a mission to democratize the creator marketplace across India, providing secure direct collaborations and fair payouts.',
       skills: ['Ecosystem Vision', 'Product Strategy', 'Business Operations', 'Community Relations'],
       linkedin: 'https://linkedin.com/in/mohmmad-dilshan',

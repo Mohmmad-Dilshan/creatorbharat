@@ -292,7 +292,7 @@ export default function CreatorLandingPage() {
                 background: '#f8fafc'
               }}>
                 <img
-                  src="/creator_landing_hero.png"
+                  src="/creator_landing_hero.webp"
                   alt="Creator Legacy"
                   style={{
                     position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',

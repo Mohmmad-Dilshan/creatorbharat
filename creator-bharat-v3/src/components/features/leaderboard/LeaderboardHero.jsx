@@ -113,7 +113,7 @@ export default function LeaderboardHero({ mob }) {
               }}
             >
               <img 
-                src="/leaderboard_header_art.png" 
+                src="/leaderboard_header_art.webp" 
                 alt="Ecosystem Assets" 
                 style={{ width: '100%', height: 'auto', display: 'block', borderRadius: '20px' }} 
               />

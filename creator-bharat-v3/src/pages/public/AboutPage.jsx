@@ -218,7 +218,7 @@ export default function AboutPage() {
     "@type": "Organization",
     "name": "CreatorBharat",
     "url": "https://creatorbharat.com",
-    "logo": "https://creatorbharat.com/logo.png",
+    "logo": "https://creatorbharat.com/android-chrome-512x512.png",
     "description": "The infrastructure of trust for India's regional creator economy.",
     "address": {
       "@type": "PostalAddress",

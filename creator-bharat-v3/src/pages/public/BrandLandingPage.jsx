@@ -278,7 +278,7 @@ export default function BrandLandingPage() {
                 background: '#f8fafc'
               }}>
                 <img
-                  src="/brand_landing_hero.png"
+                  src="/brand_landing_hero.webp"
                   alt="Brand Analytics"
                   style={{
                     position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',

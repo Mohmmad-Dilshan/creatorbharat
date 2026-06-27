@@ -322,7 +322,7 @@ export default function AmbassadorPage() {
                 background: '#f8fafc'
               }}>
                 <img
-                  src="/ambassador_hero.png"
+                  src="/ambassador_hero.webp"
                   alt="Campus Ambassador Program"
                   style={{
                     position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',

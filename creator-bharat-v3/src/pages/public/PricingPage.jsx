@@ -866,7 +866,7 @@ export default function PricingPage() {
             overflow: 'hidden',
             boxShadow: '0 30px 60px rgba(234,88,12,0.2)'
           }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'url("https://www.transparenttextures.com/patterns/carbon-fibre.png")', opacity: 0.05 }} />
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.05) 0%, transparent 50%)', opacity: 0.5 }} />
             <h2 style={{ fontSize: '56px', fontWeight: 950, marginBottom: '24px', letterSpacing: '-0.05em', position: 'relative' }}>Ready to Scale?</h2>
             <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.85)', marginBottom: '48px', maxWidth: '600px', margin: '0 auto 56px', fontWeight: 500 }}>
               Join the elite circle of creators and brands building the future of commerce in Bharat.

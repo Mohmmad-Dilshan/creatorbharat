@@ -260,7 +260,7 @@ export function GalleryHeader({ stats }) {
               background: '#f8fafc'
             }}>
               <img 
-                src="/gallery_hero_group.png" 
+                src="/gallery_hero_group.webp" 
                 alt="CreatorBharat Ecosystem" 
                 style={{
                   position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',

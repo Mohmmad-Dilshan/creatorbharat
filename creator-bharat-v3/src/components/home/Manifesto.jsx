@@ -162,7 +162,7 @@ export default function Manifesto({ mob }) {
           }}>
             {/* Blended Network Image */}
             <img 
-              src="/about_hero_network.png" 
+              src="/cb_saas_collage.webp" 
               alt="Regional Creator Network Grid mapping Bharat influencers" 
               loading="lazy"
               style={{

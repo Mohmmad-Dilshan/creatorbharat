@@ -242,7 +242,7 @@ export default function CalculatorsHubPage() {
                 background: '#f8fafc'
               }}>
                 <img
-                  src="/calculators_hub_hero.png"
+                  src="/calculators_hub_hero.webp"
                   alt="Rupee Coins and 3D Charts Calculator illustration"
                   style={{
                     position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',

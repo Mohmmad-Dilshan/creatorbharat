@@ -154,7 +154,7 @@ export default function VerificationGuidePage() {
                 background: '#f8fafc'
               }}>
                 <img
-                  src="/verification_guide_hero.png"
+                  src="/verification_guide_hero.webp"
                   alt="Verification Shield and Badge Graphic"
                   style={{
                     position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',

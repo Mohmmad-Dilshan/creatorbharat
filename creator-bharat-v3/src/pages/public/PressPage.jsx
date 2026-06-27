@@ -190,7 +190,7 @@ export default function PressPage() {
                 background: '#f8fafc'
               }}>
                 <img
-                  src="/press_hero.png"
+                  src="/press_hero.webp"
                   alt="Branding Guidelines & Press Assets"
                   style={{
                     position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',

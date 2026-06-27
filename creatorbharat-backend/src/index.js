@@ -39,6 +39,7 @@ import missionsRouter from './routes/missions.js';
 import ambassadorRouter from './routes/ambassador.js';
 import savedRouter from './routes/saved.js';
 import teamRouter from './routes/team.js';
+import { runOnboardingDrip } from './drip/onboardingDrip.js';
 
 dotenv.config();
 
@@ -1960,6 +1961,23 @@ if (process.env.NODE_ENV !== 'test') {
   server.listen(PORT, () => {
     logger.info(`CreatorBharat SaaS API Server running on port ${PORT}`, { port: PORT });
   });
+
+  // ─── Onboarding Email Drip — Auto Cron (every 6 hours) ───────────────────
+  // Sends Day 1, Day 3, Day 7 welcome emails to new creators and brands.
+  // Set DISABLE_DRIP_CRON=true in .env to disable (useful for local dev).
+  if (process.env.DISABLE_DRIP_CRON !== 'true') {
+    const SIX_HOURS = 6 * 60 * 60 * 1000;
+    setInterval(async () => {
+      try {
+        logger.info('[Drip Cron] Running onboarding email drip...');
+        const result = await runOnboardingDrip();
+        logger.info(`[Drip Cron] Complete — Sent: ${result.sent}, Errors: ${result.errors}`);
+      } catch (err) {
+        logger.error('[Drip Cron] Error:', err.message);
+      }
+    }, SIX_HOURS);
+    logger.info('[Drip Cron] Onboarding email drip scheduled — every 6 hours');
+  }
 }
 
 export { app, server };

@@ -665,7 +665,7 @@ export default function Testimonials({ mob }) {
           }}>
             {/* Real Human Model Image */}
             <img 
-              src={activeTab === 'creator' ? '/about_hero_model.jpg' : '/about_workspace.jpg'} 
+              src={activeTab === 'creator' ? '/about_hero_model.webp' : '/about_workspace.webp'} 
               alt={activeTab === 'creator' ? "Indian Creator using the CreatorBharat platform" : "Brand workspace collaboration portal"} 
               loading="lazy"
               style={{

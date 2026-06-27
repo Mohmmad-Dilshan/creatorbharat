@@ -157,7 +157,7 @@ export default function AiFaqPage() {
                 background: '#f8fafc'
               }}>
                 <img
-                  src="/faq_hero.png"
+                  src="/faq_hero.webp"
                   alt="AI Knowledge Hub & Matchmaker illustration"
                   style={{
                     position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',

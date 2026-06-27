@@ -18,7 +18,7 @@ import {
 } from '@/components/icons/SocialIcons';
 import { OFFICIAL_DATA } from './officialData';
 
-const DilshanImg = "/team_dilshan.jpg";
+const DilshanImg = "/team_dilshan.webp";
 
 export default function MastermindSection({ mob }) {
   const [filter, setFilter] = useState('all');

@@ -57,7 +57,7 @@ export default function CreatorMap({ mob }) {
             
             {/* Using a PNG fallback to avoid SVG rendering issues */}
             <img 
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/India_Map_with_States_and_UTs.svg/800px-India_Map_with_States_and_UTs.svg.png" 
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/India_Map_with_States_and_UTs.svg/.webp 
               alt="Map of India highlighting regional creator density across states"
               loading="lazy"
               style={{ 

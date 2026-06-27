@@ -85,7 +85,7 @@ export const LEADERSHIP_TEAM = [
   {
     name: "Mohmmad Dilshan",
     role: "Founder & Chief Architect",
-    image: "/team_dilshan.jpg",
+    image: "/team_dilshan.webp",
     bio: "Democratizing the digital economy for the next billion users through decentralized intelligence, modular architecture, and zero-brokerage campaigns.",
     skills: ["System Architecture", "Product Strategy", "Decentralized Networks", "Escrow Ledgers"],
     socials: {

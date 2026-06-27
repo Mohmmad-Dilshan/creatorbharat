@@ -3038,6 +3038,20 @@ export default function App() {
                     >
                       <ShieldAlert size={14} /> {maintenanceMode ? 'Disable Maint.' : 'Maint. Toggle'}
                     </button>
+                    <button onClick={async () => {
+                      toast('Running email drip...', 'info');
+                      try {
+                        const res = await fetch(`${API}/admin/drip/run`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` } });
+                        const data = await res.json();
+                        if (res.ok) toast(`Drip done — Sent: ${data.sent}, Errors: ${data.errors}`, 'success');
+                        else toast(data.error || 'Drip failed', 'error');
+                      } catch { toast('Drip network error', 'error'); }
+                    }} style={{ padding: '10px 14px', background: T.orangeLight || '#fff4ed', color: '#f97316', border: '1px solid rgba(249,115,22,0.2)', borderRadius: 10, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s' }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(249,115,22,0.1)'}
+                      onMouseLeave={e => e.currentTarget.style.background = T.orangeLight || '#fff4ed'}
+                    >
+                      <Mail size={14} /> Run Email Drip
+                    </button>
                   </div>
                 </div>
               </div>

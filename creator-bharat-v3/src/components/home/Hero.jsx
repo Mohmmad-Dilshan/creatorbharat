@@ -18,10 +18,10 @@ import { useTranslation } from 'react-i18next';
 const CITIES_LIST = ['Jaipur', 'Mumbai', 'Lucknow', 'Indore', 'Bhopal', 'Surat', 'Bhilwara', 'Patna', 'Kochi'];
 
 const MARKETING_POSTERS = [
-  { id: 'p1', src: '/regional_creators_poster.png', title: 'India\'s Creator Network — Mapped' },
-  { id: 'p2', src: '/official_launch_poster.png', title: 'CreatorBharat — Empowering Indian Creators' },
-  { id: 'p3', src: '/success_stories_hero.png', title: 'Verified Creators from Bharat' },
-  { id: 'p4', src: '/platform_milestone_bharat.png', title: 'India-Wide Verification Network' },
+  { id: 'p1', src: '/regional_creators_poster.webp', title: 'India\'s Creator Network — Mapped' },
+  { id: 'p2', src: '/official_launch_poster.webp', title: 'CreatorBharat — Empowering Indian Creators' },
+  { id: 'p3', src: '/success_stories_hero.webp', title: 'Verified Creators from Bharat' },
+  { id: 'p4', src: '/platform_milestone_bharat.webp', title: 'India-Wide Verification Network' },
 ];
 
 
@@ -221,7 +221,7 @@ const HeroValueProps = memo(({ mob }) => {
         }}>
           {/* The real human photo — fills the entire right half */}
           <img
-            src="/success_stories_hero.png"
+            src="/creator_landing_hero.webp"
             alt="Indian Creators from Bharat"
             style={{
               width: '100%',
