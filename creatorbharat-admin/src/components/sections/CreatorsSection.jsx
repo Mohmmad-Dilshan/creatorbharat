@@ -3,7 +3,7 @@ import {
   ExternalLink, Wallet, Trophy, UserCheck, UserX, Trash2, RefreshCw
 } from 'lucide-react';
 import {
-  T, fmtINR, fmtNum, fmtDate, Badge, SectionHeader, SearchBar, EmptyState, ActionBtn, DangerBtn, Table, Td
+  T, fmtINR, fmtNum, fmtDate, fmtCompleteness, Badge, SectionHeader, SearchBar, EmptyState, ActionBtn, DangerBtn, Table, Td
 } from '../ui/Primitives';
 
 const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5173' : 'https://creatorbharat.com');
@@ -67,6 +67,18 @@ export default function CreatorsSection({
   setLeaderSearch,
   filteredLeaderboard
 }) {
+  const [filterMode, setFilterMode] = React.useState('ALL');
+
+  const processedCreators = React.useMemo(() => {
+    return filteredCreators.filter(cr => {
+      const cmp = fmtCompleteness(cr);
+      if (filterMode === 'DRAFT') return cmp < 85 && !cr.isVerified;
+      if (filterMode === 'READY') return cmp >= 85 && !cr.isVerified;
+      if (filterMode === 'VERIFIED') return !!cr.isVerified;
+      return true;
+    });
+  }, [filteredCreators, filterMode]);
+
   return (
     <>
       {/* ══ ALL CREATORS ═══════════════════════════════════════════════ */}
@@ -78,17 +90,71 @@ export default function CreatorsSection({
             sub="Manage creator profiles, suspensions and data" 
             action={<button onClick={() => { clearCreatorForm(); setCreateCreatorModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ New Creator</button>}
           />
+
+          {/* Dynamic Profile Completeness Filter Tabs */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+            {[
+              { id: 'ALL', label: 'All Users', count: filteredCreators.length },
+              { id: 'DRAFT', label: 'Draft / Incomplete (<85%)', count: filteredCreators.filter(c => fmtCompleteness(c) < 85 && !c.isVerified).length },
+              { id: 'READY', label: 'Ready / Review (>=85%)', count: filteredCreators.filter(c => fmtCompleteness(c) >= 85 && !c.isVerified).length },
+              { id: 'VERIFIED', label: 'Verified & Live', count: filteredCreators.filter(c => c.isVerified).length },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setFilterMode(tab.id)}
+                style={{
+                  padding: '8px 16px',
+                  background: filterMode === tab.id ? T.orangeLight : 'transparent',
+                  color: filterMode === tab.id ? T.orange : T.muted,
+                  border: `1.5px solid ${filterMode === tab.id ? T.orange : T.border}`,
+                  borderRadius: 12,
+                  fontSize: 12,
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  transition: 'all 0.18s'
+                }}
+              >
+                {tab.label}
+                <span style={{ 
+                  background: filterMode === tab.id ? T.orange : '#E2E8F0', 
+                  color: filterMode === tab.id ? '#fff' : T.slate,
+                  padding: '2px 6px',
+                  borderRadius: 6,
+                  fontSize: 10,
+                  fontWeight: 900
+                }}>{tab.count}</span>
+              </button>
+            ))}
+          </div>
+
           <SearchBar value={creatorSearch} onChange={setCreatorSearch} placeholder="Search by name, handle, or city..." />
-          <Table cols={['Creator', 'Handle', 'Location', 'Followers', 'Verified', 'Status', { label: 'Actions', align: 'right' }]}>
-            {filteredCreators.map(cr => (
-              <tr key={cr.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                <Td bold>{cr.name}</Td>
-                <Td><span style={{ color: T.orange, fontWeight: 700 }}>@{cr.handle}</span></Td>
-                <Td muted>{cr.city || '—'}, {cr.state || '—'}</Td>
-                <Td bold>{fmtNum(cr.followers)}</Td>
-                <Td><Badge color={cr.isVerified ? T.green : T.muted}>{cr.isVerified ? '✓ Verified' : 'Unverified'}</Badge></Td>
-                <Td><Badge color={cr.user?.isSuspended ? T.red : T.green}>{cr.user?.isSuspended ? 'Suspended' : 'Active'}</Badge></Td>
-                <Td right>
+          <Table cols={['Creator', 'Handle', 'Location', 'Completeness', 'Followers', 'Verified', 'Status', { label: 'Actions', align: 'right' }]}>
+            {processedCreators.map(cr => {
+              const compPct = fmtCompleteness(cr);
+              return (
+                <tr key={cr.id} style={{ borderBottom: `1px solid ${T.border}` }}>
+                  <Td bold>{cr.name}</Td>
+                  <Td><span style={{ color: T.orange, fontWeight: 700 }}>@{cr.handle}</span></Td>
+                  <Td muted>{cr.city || '—'}, {cr.state || '—'}</Td>
+                  <Td>
+                    <span style={{ 
+                      fontWeight: 850, 
+                      color: compPct >= 85 ? T.green : compPct >= 50 ? T.yellow : T.red,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4
+                    }}>
+                      {compPct}%
+                    </span>
+                  </Td>
+                  <Td bold>{fmtNum(cr.followers)}</Td>
+                  <Td><Badge color={cr.isVerified ? T.green : T.muted}>{cr.isVerified ? '✓ Verified' : 'Unverified'}</Badge></Td>
+                  <Td><Badge color={cr.user?.isSuspended ? T.red : T.green}>{cr.user?.isSuspended ? 'Suspended' : 'Active'}</Badge></Td>
+                  <Td right>
                   <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                     <a href={`${FRONTEND_URL}/creator/${cr.id}`} target="_blank" rel="noopener noreferrer" style={{ padding: '5px 10px', background: T.blueLight, color: T.blue, borderRadius: 7, fontSize: 11, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                       <ExternalLink size={10} /> Profile
@@ -127,9 +193,9 @@ export default function CreatorsSection({
                   </div>
                 </Td>
               </tr>
-            ))}
+            )})}
           </Table>
-          {filteredCreators.length === 0 && <EmptyState icon="👤" msg="No creators match your search" />}
+          {processedCreators.length === 0 && <EmptyState icon="👤" msg="No creators match your search" />}
         </div>
       )}
 

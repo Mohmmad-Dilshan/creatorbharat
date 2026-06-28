@@ -24,6 +24,31 @@ export const T = {
 export const fmtINR = (n) => `\u20B9${Number(n || 0).toLocaleString('en-IN')}`;
 export const fmtNum = (n) => Number(n || 0).toLocaleString('en-IN');
 export const fmtDate = (d) => d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '\u2014';
+export const fmtCompleteness = (c) => {
+  if (!c) return 0;
+  const fields = [
+    { k: 'photo', p: 10 },
+    { k: 'bio', p: 15 },
+    { k: 'city', p: 5 },
+    { k: 'niche', p: 5 },
+    { k: 'platform', p: 5 },
+    { k: 'instagram', p: 5 },
+    { k: 'rateMin', p: 8 },
+    { k: 'services', p: 7 }
+  ];
+  let done = 0, total = 60;
+  fields.forEach(f => {
+    const v = c[f.k] || c[f.k.toLowerCase()];
+    let has = false;
+    if (Array.isArray(v)) {
+      has = f.k === 'services' ? v.length >= 3 : v.length > 0;
+    } else {
+      has = !!v;
+    }
+    if (has) done += f.p;
+  });
+  return Math.min(100, Math.round((done / total) * 100));
+};
 
 // ─── Badge ────────────────────────────────────────────────────────────────────
 export const Badge = ({ color = T.orange, children, size = 'sm' }) => (
