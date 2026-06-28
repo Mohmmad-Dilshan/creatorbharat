@@ -806,7 +806,10 @@ router.get('/google/callback', async (req, res) => {
 
     let emailLower, name, picture;
 
-    if (code === 'mock_development_code' && process.env.NODE_ENV !== 'production') {
+    const host = req.get('host') || '';
+    const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1');
+
+    if (code === 'mock_development_code' && isLocalhost && process.env.NODE_ENV !== 'production') {
       emailLower = 'google-mock-user@creatorbharat.com';
       name = 'Google Dev User';
       picture = 'https://lh3.googleusercontent.com/a/default-user=s96-c';
