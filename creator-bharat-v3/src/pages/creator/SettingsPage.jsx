@@ -1324,7 +1324,9 @@ export default function SettingsPage() {
            <Shield size={14} fill="#FF9431" /> CONSOLE SETTINGS
         </div>
         <h1 className="page-title">Account Settings</h1>
-        <p className="db-sub-text">Manage your preferences, details, and platform security credentials.</p>
+        <p className="db-sub-text">
+          <strong>🔒 Secure Settings Console:</strong> Manage your private account preferences, passwords, verified email/phone details, bank payout methods, and billing. All settings here are strictly <strong>private</strong> and never shared publicly.
+        </p>
       </div>
 
       <div className="db-main-grid">

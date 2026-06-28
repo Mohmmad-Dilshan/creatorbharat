@@ -2210,7 +2210,9 @@ export default function ProfileBuilderPage() {
            <Shield size={14} fill="#FF9431" /> CREATOR IDENTITY
         </div>
         <h1 className="page-title">Profile Builder</h1>
-        <p className="db-sub-text">Build your 7-tab digital portfolio and unlock verified admin vetting status. Complete all tabs to maximize your CB Score.</p>
+        <p className="db-sub-text">
+          <strong>📢 Public Portfolio Builder:</strong> Build your digital portfolio. The details you fill here (portfolio media, biography, social links, rates) are <strong>public</strong> and will be visible to brands in the marketplace to secure collaborations.
+        </p>
       </div>
 
       <div className="db-main-grid">
