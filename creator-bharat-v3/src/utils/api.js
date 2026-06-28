@@ -212,7 +212,7 @@ export async function apiCall(endpoint, options = {}, retries = 2) {
         return execute(attempt + 1);
       }
 
-      if (isUnauthorized && _unauthorizedHandler) {
+      if (isUnauthorized && _unauthorizedHandler && !endpoint.includes('/auth/')) {
         _unauthorizedHandler();
       }
 
