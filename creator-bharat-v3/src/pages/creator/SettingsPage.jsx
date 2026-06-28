@@ -66,6 +66,83 @@ StepNavItem.propTypes = {
   onClick: PropTypes.func.isRequired
 };
 
+const FullScreenSaveOverlay = ({ show, title = 'Syncing Profile...', subtitle = 'Securing your portfolio to the cloud' }) => (
+  <AnimatePresence>
+    {show && (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(10px)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 99999,
+          color: '#fff',
+          fontFamily: 'Outfit, sans-serif'
+        }}
+      >
+        <div style={{ position: 'relative', width: 90, height: 90, marginBottom: 20 }}>
+          <motion.div
+            animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
+            transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: '50%',
+              border: '2px dashed #FF9431',
+            }}
+          />
+          <div style={{
+            position: 'absolute',
+            inset: 15,
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #FF9431, #EA580C)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 8px 24px rgba(255,148,49,0.4)'
+          }}>
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }}
+            >
+              <Loader2 size={28} style={{ color: '#fff' }} />
+            </motion.div>
+          </div>
+        </div>
+        <motion.h4
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.15 }}
+          style={{ fontSize: 18, fontWeight: 950, margin: '0 0 8px 0', letterSpacing: '0.02em' }}
+        >
+          {title}
+        </motion.h4>
+        <motion.p
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 0.7 }}
+          transition={{ delay: 0.3 }}
+          style={{ fontSize: 13, fontWeight: 600, margin: 0 }}
+        >
+          {subtitle}
+        </motion.p>
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
+
+FullScreenSaveOverlay.propTypes = {
+  show: PropTypes.bool.isRequired,
+  title: PropTypes.string,
+  subtitle: PropTypes.string
+};
+
 const ProfileInfoTabContent = ({ c, st, mob }) => {
   const { dsp } = useApp();
   const [loading, setLoading] = useState(false);
@@ -131,6 +208,7 @@ const ProfileInfoTabContent = ({ c, st, mob }) => {
 
   return (
     <Card className="settings-form-card card-3d-effect">
+      <FullScreenSaveOverlay show={loading} title="Updating Profile Info..." subtitle="Saving your name and location safely" />
       <h3 className="db-section-title">Profile Info</h3>
       <p className="db-sub-text" style={{ marginBottom: 28 }}>
         Update your personal details, handle and location.
@@ -371,8 +449,11 @@ const SecurityTabContent = ({ st }) => {
   const currentEmail = st.user?.email || 'verified@user.com';
   const currentPhone = st.user?.phone || st.user?.creatorProfile?.phone || 'Not configured';
 
+  const anySecurityLoading = passwordLoading || phoneLoading || emailLoading;
+
   return (
     <Card className="settings-form-card card-3d-effect" style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+       <FullScreenSaveOverlay show={anySecurityLoading} title="Securing Credentials..." subtitle="Updating authentication endpoints & verification channels" />
        <div>
          <h3 className="db-section-title" style={{ margin: 0 }}>Account Security</h3>
          <p style={{ fontSize: 13, color: '#64748b', fontWeight: 500, marginTop: 6 }}>
@@ -881,6 +962,7 @@ const PayoutSettingsTab = ({ c, st }) => {
 
   return (
     <Card className="settings-form-card card-3d-effect">
+      <FullScreenSaveOverlay show={loading} title="Saving Payout Methods..." subtitle="Encrypting and securing your bank credentials" />
       <h3 className="db-section-title">Payout & Bank Settings</h3>
       <p className="db-sub-text" style={{ marginBottom: 28 }}>
         Define your preferred payout destinations. Funds will be released here when escrow milestones are cleared.

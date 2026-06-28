@@ -70,13 +70,15 @@ export default function CreatorsSection({
   const [filterMode, setFilterMode] = React.useState('ALL');
 
   const processedCreators = React.useMemo(() => {
-    return filteredCreators.filter(cr => {
-      const cmp = fmtCompleteness(cr);
-      if (filterMode === 'DRAFT') return cmp < 85 && !cr.isVerified;
-      if (filterMode === 'READY') return cmp >= 85 && !cr.isVerified;
-      if (filterMode === 'VERIFIED') return !!cr.isVerified;
-      return true;
-    });
+    return (filteredCreators || [])
+      .filter(Boolean)
+      .filter(cr => {
+        const cmp = fmtCompleteness(cr);
+        if (filterMode === 'DRAFT') return cmp < 85 && !cr.isVerified;
+        if (filterMode === 'READY') return cmp >= 85 && !cr.isVerified;
+        if (filterMode === 'VERIFIED') return !!cr.isVerified;
+        return true;
+      });
   }, [filteredCreators, filterMode]);
 
   return (
@@ -86,7 +88,7 @@ export default function CreatorsSection({
         <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
           <SectionHeader 
             title="All Creators" 
-            badge={creators.length} 
+            badge={(creators || []).length} 
             sub="Manage creator profiles, suspensions and data" 
             action={<button onClick={() => { clearCreatorForm(); setCreateCreatorModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ New Creator</button>}
           />
@@ -94,10 +96,10 @@ export default function CreatorsSection({
           {/* Dynamic Profile Completeness Filter Tabs */}
           <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
             {[
-              { id: 'ALL', label: 'All Users', count: filteredCreators.length },
-              { id: 'DRAFT', label: 'Draft / Incomplete (<85%)', count: filteredCreators.filter(c => fmtCompleteness(c) < 85 && !c.isVerified).length },
-              { id: 'READY', label: 'Ready / Review (>=85%)', count: filteredCreators.filter(c => fmtCompleteness(c) >= 85 && !c.isVerified).length },
-              { id: 'VERIFIED', label: 'Verified & Live', count: filteredCreators.filter(c => c.isVerified).length },
+              { id: 'ALL', label: 'All Users', count: (filteredCreators || []).filter(Boolean).length },
+              { id: 'DRAFT', label: 'Draft / Incomplete (<85%)', count: (filteredCreators || []).filter(Boolean).filter(c => fmtCompleteness(c) < 85 && !c.isVerified).length },
+              { id: 'READY', label: 'Ready / Review (>=85%)', count: (filteredCreators || []).filter(Boolean).filter(c => fmtCompleteness(c) >= 85 && !c.isVerified).length },
+              { id: 'VERIFIED', label: 'Verified & Live', count: (filteredCreators || []).filter(Boolean).filter(c => c.isVerified).length },
             ].map(tab => (
               <button
                 key={tab.id}

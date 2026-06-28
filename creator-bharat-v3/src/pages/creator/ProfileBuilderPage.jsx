@@ -40,6 +40,83 @@ StepNavItem.propTypes = {
   onClick: PropTypes.func.isRequired
 };
 
+const FullScreenSaveOverlay = ({ show, title = 'Syncing Profile...', subtitle = 'Securing your portfolio to the cloud' }) => (
+  <AnimatePresence>
+    {show && (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(10px)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 99999,
+          color: '#fff',
+          fontFamily: 'Outfit, sans-serif'
+        }}
+      >
+        <div style={{ position: 'relative', width: 90, height: 90, marginBottom: 20 }}>
+          <motion.div
+            animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
+            transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: '50%',
+              border: '2px dashed #FF9431',
+            }}
+          />
+          <div style={{
+            position: 'absolute',
+            inset: 15,
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #FF9431, #EA580C)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 8px 24px rgba(255,148,49,0.4)'
+          }}>
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }}
+            >
+              <Loader2 size={28} style={{ color: '#fff' }} />
+            </motion.div>
+          </div>
+        </div>
+        <motion.h4
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.15 }}
+          style={{ fontSize: 18, fontWeight: 950, margin: '0 0 8px 0', letterSpacing: '0.02em' }}
+        >
+          {title}
+        </motion.h4>
+        <motion.p
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 0.7 }}
+          transition={{ delay: 0.3 }}
+          style={{ fontSize: 13, fontWeight: 600, margin: 0 }}
+        >
+          {subtitle}
+        </motion.p>
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
+
+FullScreenSaveOverlay.propTypes = {
+  show: PropTypes.bool.isRequired,
+  title: PropTypes.string,
+  subtitle: PropTypes.string
+};
+
 // ─── Pro Lock Overlay ────────────────────────────────────────────────────────
 const ProLockBanner = ({ onUpgrade }) => (
   <div style={{
@@ -2264,6 +2341,7 @@ export default function ProfileBuilderPage() {
       </div>
       {renderQuickBuildModal()}
       {renderAiModal()}
+      <FullScreenSaveOverlay show={saving} title="Syncing Profile..." subtitle="Updating your public creator portfolio to the marketplace" />
     </div>
   );
 }
