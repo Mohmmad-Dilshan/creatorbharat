@@ -166,7 +166,7 @@ const CommentsSection = ({ mob, blogId, initialComments }) => {
 
     if (blogId) {
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+        const apiUrl = import.meta.env.VITE_API_URL || 'https://creatorbharat.onrender.com/api';
         const res = await fetch(`${apiUrl}/blog/${blogId}/comment`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1039,7 +1039,7 @@ export default function BlogArticlePage() {
   useEffect(() => {
     const fetchArticle = async () => {
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+        const apiUrl = import.meta.env.VITE_API_URL || 'https://creatorbharat.onrender.com/api';
         const res = await fetch(`${apiUrl}/blog/${slug}`);
         if (res.ok) {
           const data = await res.json();

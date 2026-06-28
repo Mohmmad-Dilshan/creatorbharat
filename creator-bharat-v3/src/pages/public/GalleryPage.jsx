@@ -22,7 +22,7 @@ export default function GalleryPage() {
     window.scrollTo(0, 0);
     const fetchGallery = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/gallery`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://creatorbharat.onrender.com/api'}/gallery`);
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && data.length > 0) {

@@ -369,7 +369,7 @@ export default function BlogPage() {
 
     const fetchBlogs = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/blog`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://creatorbharat.onrender.com/api'}/blog`);
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && data.length > 0) {
