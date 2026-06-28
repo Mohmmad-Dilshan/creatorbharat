@@ -171,7 +171,11 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
       setShowSplash(true);
       setTimeout(() => {
         setShowSplash(false);
-        if (view === 'register') {
+        const hasPhone = profileEntry.phone && profileEntry.phone.trim().length >= 10;
+        const hasLocation = profileEntry.state && profileEntry.city;
+        const isProfileIncomplete = !hasPhone || !hasLocation;
+
+        if (view === 'register' || isProfileIncomplete) {
           navigate('/creator/onboarding');
         } else {
           navigate('/creator/dashboard');
