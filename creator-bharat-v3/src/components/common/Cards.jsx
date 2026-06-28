@@ -2,6 +2,7 @@ import React from 'react';
 
 import PropTypes from 'prop-types';
 import { useApp } from '../../core/context';
+import { apiCall } from '@/utils/api';
 import { T } from '../../core/theme';
 import { fmt } from '../../utils/helpers';
 import { Card, Bdg, Btn, Bar } from './Primitives';
@@ -49,7 +50,13 @@ const CardHeader = ({ coverUrl, photo, id, saved, dsp, mob, tierLabel, requireBr
         <button 
           onClick={e => { 
             e.stopPropagation(); 
-            if (requireBrand?.()) dsp({ t: 'SAVE', id }); 
+            if (!requireBrand?.()) return;
+            dsp({ t: 'SAVE', id }); 
+            if (saved) {
+              apiCall(`/saved/${id}`, { method: 'DELETE' }).catch(() => {});
+            } else {
+              apiCall('/saved', { method: 'POST', body: JSON.stringify({ targetId: id }) }).catch(() => {});
+            }
           }} 
           style={{ 
             background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',

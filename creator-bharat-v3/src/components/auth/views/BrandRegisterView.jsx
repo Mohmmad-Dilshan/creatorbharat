@@ -1,13 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
-import { Mail, Phone, Lock, MapPin, CheckCircle2, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Mail, Phone, Lock, MapPin, CheckCircle2, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
 import { Btn, Fld } from '@/components/common/Primitives';
 import { useApp } from '@/core/context';
 import { INDIAN_STATES, STATE_CITY_MAP, MAJOR_CITIES } from '../../../utils/geo.js';
 import { getDemoOtp, isUsingDemoAuth, registerBrand, sendOtp, verifyOtp } from '../../../utils/authService.js';
 
 const PhoneVerifySection = ({ form, up, blur, errors, mob, otpSent, verified, loading, sendOTP, verifyOTP, timer }) => {
+  if (form.country !== 'India') {
+    return (
+      <div style={{ marginBottom: 10 }}>
+        <Fld 
+          label="Official Phone" 
+          type="tel" 
+          icon={Phone} 
+          value={form.phone} 
+          onChange={e => {
+            const val = e.target.value.replace(/[^\d+]/g, '');
+            if (val.length <= 20) up('phone', val);
+          }} 
+          onBlur={() => blur('phone')} 
+          placeholder="+1 555-0199" 
+          error={errors.phone} 
+          required 
+        />
+      </div>
+    );
+  }
+
   const isInactive = otpSent || timer > 0;
   const btnBackground = isInactive ? '#F8FAFC' : '#111827';
   const btnColor = isInactive ? '#64748B' : '#fff';
@@ -74,6 +95,8 @@ const PhoneVerifySection = ({ form, up, blur, errors, mob, otpSent, verified, lo
   );
 };
 
+const COUNTRIES_LIST = ['India', 'United States', 'United Kingdom', 'Canada', 'Australia', 'United Arab Emirates', 'Singapore', 'Germany', 'France', 'Other'];
+
 const BrandStep1 = ({ form, up, errors, mob, otpSent, verified, loading, sendOTP, verifyOTP, next, blur, timer }) => (
   <div style={{ display: 'grid', gap: 2 }}>
     <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 0 : 14 }}>
@@ -85,16 +108,28 @@ const BrandStep1 = ({ form, up, errors, mob, otpSent, verified, loading, sendOTP
       <Fld label="Official Work Email" type="email" icon={Mail} value={form.email} onChange={e => up('email', e.target.value)} onBlur={() => blur('email')} placeholder="partnerships@company.com" error={errors.email} required />
     </div>
     
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 0 }}>
+      <Fld label="Country" value={form.country} onChange={e => up('country', e.target.value)} options={COUNTRIES_LIST} required />
+    </div>
+
     <PhoneVerifySection 
       form={form} up={up} blur={blur} errors={errors} mob={mob}
       otpSent={otpSent} verified={verified} loading={loading}
       sendOTP={sendOTP} verifyOTP={verifyOTP} timer={timer}
     />
 
-    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 0 : 14 }}>
-      <Fld label="State" value={form.state} onChange={e => up('state', e.target.value)} options={INDIAN_STATES} required />
-      <Fld label="City / District" value={form.city} icon={MapPin} onChange={e => up('city', e.target.value)} options={STATE_CITY_MAP[form.state] || MAJOR_CITIES} required />
-    </div>
+    {form.country === 'India' ? (
+      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 0 : 14 }}>
+        <Fld label="State" value={form.state} onChange={e => up('state', e.target.value)} options={INDIAN_STATES} required />
+        <Fld label="City / District" value={form.city} icon={MapPin} onChange={e => up('city', e.target.value)} options={STATE_CITY_MAP[form.state] || MAJOR_CITIES} required />
+      </div>
+    ) : (
+      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 0 : 14 }}>
+        <Fld label="State / Province / Region" value={form.state} onChange={e => up('state', e.target.value)} onBlur={() => blur('state')} placeholder="e.g. California, Ontario..." required />
+        <Fld label="City" value={form.city} icon={MapPin} onChange={e => up('city', e.target.value)} onBlur={() => blur('city')} placeholder="e.g. San Francisco, Toronto..." required />
+      </div>
+    )}
+    
     <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: mob ? 0 : 14 }}>
       <Fld label="Password" type="password" icon={Lock} value={form.password} onChange={e => up('password', e.target.value)} onBlur={() => blur('password')} placeholder="••••••" error={errors.password} required />
       <Fld label="Confirm Password" type="password" icon={Lock} value={form.confirmPassword} onChange={e => up('confirmPassword', e.target.value)} onBlur={() => blur('confirmPassword')} placeholder="••••••" error={errors.confirmPassword} required />
@@ -132,9 +167,16 @@ const validateBrandField = (key, val, form) => {
     email: v => /^\S+@\S+\.\S+$/.test(v || '') ? null : 'Valid work email required',
     password: v => (v?.length >= 6) ? null : 'Min 6 characters',
     confirmPassword: v => v === form?.password ? null : 'Passwords do not match',
-    phone: v => (v?.length === 10) ? null : 'Enter valid 10-digit number',
+    phone: v => {
+      if (form?.country === 'India') {
+        return (v?.length === 10) ? null : 'Enter valid 10-digit number';
+      }
+      return (v?.length >= 5) ? null : 'Enter valid phone number (min 5 digits)';
+    },
     website: v => v?.includes('.') ? null : 'Valid website required',
-    linkedin: v => v ? null : 'LinkedIn profile is required'
+    linkedin: v => v ? null : 'LinkedIn profile is required',
+    state: v => v ? null : 'State/Region is required',
+    city: v => v ? null : 'City is required'
   };
   return rules[key]?.(val) ?? null;
 };
@@ -144,6 +186,7 @@ const BrandRegisterView = ({ mob, setView, onSuccess }) => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [formError, setFormError] = useState('');
   const [form, setForm] = useState({
     companyName: '',
     industry: '',
@@ -157,6 +200,7 @@ const BrandRegisterView = ({ mob, setView, onSuccess }) => {
     linkedin: '',
     gstin: '',
     about: '',
+    country: 'India',
     state: 'Maharashtra',
     city: 'Mumbai'
   });
@@ -176,7 +220,15 @@ const BrandRegisterView = ({ mob, setView, onSuccess }) => {
   const up = (key, value) => {
     setForm(prev => {
       const next = { ...prev, [key]: value };
-      if (key === 'state') {
+      if (key === 'country') {
+        if (value === 'India') {
+          next.state = 'Maharashtra';
+          next.city = 'Mumbai';
+        } else {
+          next.state = '';
+          next.city = '';
+        }
+      } else if (key === 'state' && prev.country === 'India') {
         const availableCities = STATE_CITY_MAP[value] || MAJOR_CITIES;
         next.city = availableCities[0];
       }
@@ -193,10 +245,13 @@ const BrandRegisterView = ({ mob, setView, onSuccess }) => {
   const next = () => {
     const errs = {};
     Object.keys(form).forEach(k => {
+      if (k === 'otp' && form.country !== 'India') return;
       const e = validateBrandField(k, form[k], form);
       if (e) errs[k] = e;
     });
-    if (!verified) errs.phone = 'Please verify your phone number';
+    if (form.country === 'India' && !verified) {
+      errs.phone = 'Please verify your phone number';
+    }
     
     setErrors(errs);
     if (!Object.keys(errs).filter(k => !['website', 'linkedin'].includes(k)).length) setStep(2);
@@ -208,6 +263,7 @@ const BrandRegisterView = ({ mob, setView, onSuccess }) => {
       return;
     }
     setLoading(true);
+    setFormError('');
     try {
       await sendOtp(form.phone);
       setOtpSent(true);
@@ -216,6 +272,7 @@ const BrandRegisterView = ({ mob, setView, onSuccess }) => {
       dsp({ t: 'TOAST', d: { type: 'info', msg: isUsingDemoAuth() ? `Demo OTP is ${getDemoOtp()}` : 'OTP sent successfully.' } });
     } catch (err) {
       setErrors(prev => ({ ...prev, phone: err.message || 'Failed to send OTP' }));
+      setFormError(err.message || 'Failed to send OTP');
     } finally {
       setLoading(false);
     }
@@ -223,6 +280,7 @@ const BrandRegisterView = ({ mob, setView, onSuccess }) => {
 
   const verifyOTP = async () => {
     setLoading(true);
+    setFormError('');
     try {
       await verifyOtp(form.phone, form.otp);
       setVerified(true);
@@ -230,6 +288,7 @@ const BrandRegisterView = ({ mob, setView, onSuccess }) => {
       dsp({ t: 'TOAST', d: { type: 'success', msg: 'Phone verified successfully' } });
     } catch (err) {
       setErrors(prev => ({ ...prev, otp: err.message || 'Invalid OTP' }));
+      setFormError(err.message || 'Invalid OTP');
       dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Invalid OTP' } });
     } finally {
       setLoading(false);
@@ -246,11 +305,13 @@ const BrandRegisterView = ({ mob, setView, onSuccess }) => {
     if (Object.keys(errs).length) return;
 
     setLoading(true);
+    setFormError('');
     try {
       const { user, token } = await registerBrand(form);
       dsp({ t: 'TOAST', d: { type: 'success', msg: 'Brand registered successfully!' } });
       onSuccess(user, token);
     } catch (err) {
+      setFormError(err.message || 'Brand registration failed. Please try again.');
       dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Brand registration failed. Please try again.' } });
     } finally {
       setLoading(false);
@@ -270,6 +331,25 @@ const BrandRegisterView = ({ mob, setView, onSuccess }) => {
         <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: mob ? 22 : 28, fontWeight: 950, color: '#111827', marginBottom: 6, letterSpacing: '-0.5px' }}>Brand Console</h2>
         <p style={{ color: '#64748B', fontSize: 14, fontWeight: 650 }}>Register your brand and start collaborating with creators.</p>
       </div>
+
+      {formError && (
+        <div 
+          className="shake"
+          style={{
+            background: 'rgba(239, 68, 68, 0.04)',
+            border: '1.5px solid rgba(239, 68, 68, 0.15)',
+            borderRadius: 14,
+            padding: '12px 16px',
+            marginBottom: 20,
+            display: 'flex',
+            gap: 10,
+            alignItems: 'center'
+          }}
+        >
+          <AlertCircle size={16} color="#EF4444" style={{ flexShrink: 0 }} />
+          <span style={{ fontSize: 13, color: '#EF4444', fontWeight: 650 }}>{formError}</span>
+        </div>
+      )}
 
       <div style={{ display: 'flex', gap: 6, padding: 5, borderRadius: 16, background: '#F8FAFC', border: '1px solid #EEF2F7', marginBottom: 26 }}>
         {[1, 2].map(s => (

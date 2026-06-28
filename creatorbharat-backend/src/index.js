@@ -12,6 +12,7 @@ import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import prisma from './prisma.js';
+import { getSettings } from './utils/settings.js';
 
 // Route Imports
 import authRouter from './routes/auth.js';
@@ -213,6 +214,52 @@ app.get('/api/stats/summary', async (req, res) => {
   } catch (err) {
     console.error('[GET /api/stats/summary] Error:', err.message);
     res.status(500).json({ error: 'Failed to fetch platform summary statistics.' });
+  }
+});
+
+// GET /api/settings/public — public endpoint to load branding details
+app.get('/api/settings/public', async (req, res) => {
+  try {
+    const settings = await getSettings();
+    res.json({
+      siteName: settings.siteName,
+      supportEmail: settings.supportEmail,
+      logoUrl: settings.logoUrl,
+      footerEmail: settings.footerEmail,
+    });
+  } catch (err) {
+    console.error('[GET /api/settings/public] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve public settings.' });
+  }
+});
+
+// GET /api/brands/:id — public route to fetch brand profile details
+app.get('/api/brands/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const brand = await prisma.brand.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        companyName: true,
+        logo: true,
+        website: true,
+        verified: true
+      }
+    });
+    if (!brand) {
+      return res.status(404).json({ error: 'Brand profile not found.' });
+    }
+    res.json({
+      id: brand.id,
+      name: brand.companyName,
+      photo: brand.logo,
+      website: brand.website,
+      verified: brand.verified
+    });
+  } catch (err) {
+    console.error('[GET /api/brands/:id] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve brand profile.' });
   }
 });
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
-import { Mail, Lock, User, Briefcase, ArrowRight, Phone, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, User, Briefcase, ArrowRight, Phone, ShieldCheck, AlertCircle } from 'lucide-react';
 import { Btn, Fld } from '@/components/common/Primitives';
 import { useApp } from '@/core/context';
 import { ModeButton } from '../AuthShared.jsx';
@@ -9,7 +9,7 @@ import { sendOtp, loginWithOtp, isUsingDemoAuth, getDemoOtp } from '@/utils/auth
 import { useOtpTimer } from '@/hooks/useOtpTimer';
 import { LS } from '@/utils/helpers';
 
-const LoginView = ({ role, setRole, onLogin, onAuthSuccess, loading, setView }) => {
+const LoginView = ({ role, setRole, onLogin, onAuthSuccess, loading, setView, authError, setAuthError }) => {
   const { dsp } = useApp();
   const [googleLoading, setGoogleLoading] = useState(false);
   const isCreator = role === 'creator';
@@ -60,10 +60,12 @@ const LoginView = ({ role, setRole, onLogin, onAuthSuccess, loading, setView }) 
 
   const handleSendOtp = async () => {
     if (!phone || phone.length < 10) {
+      if (setAuthError) setAuthError('Please enter a valid 10-digit number.');
       dsp({ t: 'TOAST', d: { type: 'error', msg: 'Please enter a valid 10-digit number.' } });
       return;
     }
     setOtpLoading(true);
+    if (setAuthError) setAuthError('');
     try {
       await sendOtp(phone);
       setOtpSent(true);
@@ -76,6 +78,7 @@ const LoginView = ({ role, setRole, onLogin, onAuthSuccess, loading, setView }) 
         } 
       });
     } catch (err) {
+      if (setAuthError) setAuthError(err.message || 'Failed to send OTP.');
       dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Failed to send OTP.' } });
     } finally {
       setOtpLoading(false);
@@ -85,15 +88,18 @@ const LoginView = ({ role, setRole, onLogin, onAuthSuccess, loading, setView }) 
   const handleVerifyOtpAndLogin = async (e) => {
     e.preventDefault();
     if (!otp) {
+      if (setAuthError) setAuthError('Please enter the OTP.');
       dsp({ t: 'TOAST', d: { type: 'error', msg: 'Please enter the OTP.' } });
       return;
     }
     setOtpLoading(true);
+    if (setAuthError) setAuthError('');
     try {
       const { user, token } = await loginWithOtp(phone, otp);
       onAuthSuccess(user, token, phone);
       dsp({ t: 'TOAST', d: { type: 'success', msg: `Welcome back!` } });
     } catch (err) {
+      if (setAuthError) setAuthError(err.message || 'Invalid OTP or login failed.');
       dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Invalid OTP or login failed.' } });
     } finally {
       setOtpLoading(false);
@@ -118,9 +124,28 @@ const LoginView = ({ role, setRole, onLogin, onAuthSuccess, loading, setView }) 
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 22 }}>
-        <ModeButton active={isCreator} icon={User} title="Creator" sub="Hub access" color="#FF9431" onClick={() => setRole('creator')} />
-        <ModeButton active={!isCreator} icon={Briefcase} title="Brand" sub="Brand console" color="#10B981" onClick={() => setRole('brand')} />
+        <ModeButton active={isCreator} icon={User} title="Creator" sub="Hub access" color="#FF9431" onClick={() => { setRole('creator'); if (setAuthError) setAuthError(''); }} />
+        <ModeButton active={!isCreator} icon={Briefcase} title="Brand" sub="Brand console" color="#10B981" onClick={() => { setRole('brand'); if (setAuthError) setAuthError(''); }} />
       </div>
+
+      {authError && (
+        <div 
+          className="shake"
+          style={{
+            background: 'rgba(239, 68, 68, 0.04)',
+            border: '1.5px solid rgba(239, 68, 68, 0.15)',
+            borderRadius: 14,
+            padding: '12px 16px',
+            marginBottom: 20,
+            display: 'flex',
+            gap: 10,
+            alignItems: 'center'
+          }}
+        >
+          <AlertCircle size={16} color="#EF4444" style={{ flexShrink: 0 }} />
+          <span style={{ fontSize: 13, color: '#EF4444', fontWeight: 650 }}>{authError}</span>
+        </div>
+      )}
 
       {isMobileView ? (
         <form onSubmit={handleVerifyOtpAndLogin}>
@@ -319,7 +344,9 @@ LoginView.propTypes = {
   onLogin: PropTypes.func.isRequired,
   onAuthSuccess: PropTypes.func.isRequired,
   loading: PropTypes.bool,
-  setView: PropTypes.func.isRequired
+  setView: PropTypes.func.isRequired,
+  authError: PropTypes.string,
+  setAuthError: PropTypes.func
 };
 
 export default LoginView;

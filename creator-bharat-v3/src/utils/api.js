@@ -135,6 +135,46 @@ function logApiError(err, endpoint) {
 // Core fetch execution (accepts explicit token override for retry)
 async function executeRequest(endpoint, options = {}, tokenOverride = null) {
   const token = tokenOverride || getAccessToken();
+  if (ENV.authMode === 'demo' || token?.startsWith('mock-')) {
+    console.log('[Demo Mode Mock API]', endpoint, options);
+    // Return mock data for standard protected endpoints
+    if (endpoint.includes('/payments/history')) {
+      return [
+        { id: 't1', type: 'CREDIT', amount: 5000, status: 'SUCCESS', description: 'Brand Campaign - Jaipur Tourism', createdAt: '2026-06-25T12:00:00.000Z' },
+        { id: 't2', type: 'DEBIT', amount: -1500, status: 'SUCCESS', description: 'Payout to Bank Ac', createdAt: '2026-06-20T12:00:00.000Z' }
+      ];
+    }
+    if (endpoint.includes('/campaigns')) {
+      return [
+        { id: 'c1', title: 'Summer Collection Launch', brand: { name: 'Zara India' }, budget: 45000, niche: ['Fashion'], status: 'ACTIVE', matchScore: 92, platform: 'Instagram' },
+        { id: 'c2', title: 'Tech Gadget Review', brand: { name: 'Boat Smart' }, budget: 15000, niche: ['Tech'], status: 'ACTIVE', matchScore: 88, platform: 'YouTube' }
+      ];
+    }
+    if (endpoint.includes('/missions')) {
+      return [];
+    }
+    if (endpoint.includes('/achievements/creator')) {
+      return [];
+    }
+    if (endpoint.includes('/community/posts')) {
+      return [];
+    }
+    if (endpoint.includes('/notifications')) {
+      return [];
+    }
+    if (endpoint.includes('/events')) {
+      return [];
+    }
+    if (endpoint.includes('/messages/conversations')) {
+      return [];
+    }
+    if (endpoint.includes('/referrals/my')) {
+      return { referralsCount: 0 };
+    }
+    return { success: true, message: 'Mock demo success' };
+  }
+
+
 
   const res = await fetch(API_BASE + endpoint, {
     headers: {

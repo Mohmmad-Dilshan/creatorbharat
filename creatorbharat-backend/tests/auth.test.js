@@ -78,7 +78,11 @@ describe('Authentication API Endpoint Tests', () => {
         email: 'taken@creatorbharat.com',
         password: 'password123',
         name: 'Amit Kumar',
-        handle: 'amit_kumar_creator'
+        handle: 'amit_kumar_creator',
+        phone: '9876543210',
+        otp: '1234',
+        state: 'Maharashtra',
+        city: 'Mumbai'
       })
       .expect(400);
 

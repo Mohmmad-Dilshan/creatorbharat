@@ -61,6 +61,14 @@ export default function VerificationPage() {
     try {
       const res = await uploadFile(file);
       setAadhaarUrl(res.url);
+      await updateCreatorProfile({
+        ...c,
+        aadhaarUrl: res.url
+      });
+      dsp({ 
+        t: 'UPDATE_PROFILE', 
+        profile: { aadhaarUrl: res.url } 
+      });
       dsp({ t: 'TOAST', d: { type: 'success', msg: 'Aadhaar document uploaded!' } });
     } catch (err) {
       dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Upload failed' } });
@@ -77,6 +85,14 @@ export default function VerificationPage() {
     try {
       const res = await uploadFile(file);
       setPanUrl(res.url);
+      await updateCreatorProfile({
+        ...c,
+        panUrl: res.url
+      });
+      dsp({ 
+        t: 'UPDATE_PROFILE', 
+        profile: { panUrl: res.url } 
+      });
       dsp({ t: 'TOAST', d: { type: 'success', msg: 'PAN document uploaded!' } });
     } catch (err) {
       dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Upload failed' } });
@@ -189,7 +205,7 @@ export default function VerificationPage() {
           </div>
 
           {/* KYC Documents Upload Section */}
-          {status === 'DRAFT' && profileCompleted && (
+          {status === 'DRAFT' && (
             <div style={{ marginTop: 28, paddingTop: 28, borderTop: '1px dashed #e2e8f0', marginBottom: 20 }}>
               <h4 style={{ fontSize: 15, fontWeight: 900, color: '#0f172a', marginBottom: 6 }}>KYC Document Verification</h4>
               <p style={{ fontSize: 13, color: '#64748b', fontWeight: 600, marginBottom: 16 }}>Please upload scanned copies/photos of your Aadhaar & PAN card to request trust badge verification.</p>
@@ -249,13 +265,59 @@ export default function VerificationPage() {
           )}
 
           {/* Action Button */}
+          {/* Action Button */}
           {status === 'DRAFT' && !profileCompleted && (
-            <Btn full lg onClick={() => navigate('/creator/profile')} style={{ background: 'linear-gradient(90deg, #FF9431, #EA580C)', color: '#fff', border: 'none', borderRadius: 16, marginTop: 16 }}>
-              Complete Profile Builder <ArrowRight size={18} />
-            </Btn>
+            <div style={{
+              background: 'rgba(239, 68, 68, 0.04)',
+              border: '1.5px solid rgba(239, 68, 68, 0.15)',
+              borderRadius: 16,
+              padding: 16,
+              marginTop: 20,
+              display: 'flex',
+              gap: 12,
+              alignItems: 'flex-start'
+            }}>
+              <AlertCircle size={20} color="#EF4444" style={{ flexShrink: 0, marginTop: 2 }} />
+              <div>
+                <h4 style={{ margin: '0 0 4px', fontSize: 13, fontWeight: 900, color: '#991B1B' }}>Verification Locked</h4>
+                <p style={{ margin: 0, fontSize: 12, color: '#B91C1C', fontWeight: 650, lineHeight: 1.4 }}>
+                  You must complete at least 85% of your profile strength to submit for verification (Current: {comp.pct}%). Please fill out all tabs in the Profile Builder to unlock submission.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => navigate('/creator/profile')}
+                  style={{
+                    background: '#EF4444',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 100,
+                    padding: '6px 14px',
+                    fontSize: 11,
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    marginTop: 10
+                  }}
+                >
+                  Open Profile Builder →
+                </button>
+              </div>
+            </div>
           )}
-          {status === 'DRAFT' && profileCompleted && (
-            <Btn full lg onClick={handleSubmitReview} style={{ background: (!aadhaarUrl || !panUrl) ? '#e2e8f0' : 'linear-gradient(90deg, #FF9431, #EA580C)', color: (!aadhaarUrl || !panUrl) ? '#94a3b8' : '#fff', border: 'none', borderRadius: 16, marginTop: 16, cursor: (!aadhaarUrl || !panUrl) ? 'not-allowed' : 'pointer' }} disabled={!aadhaarUrl || !panUrl}>
+          {status === 'DRAFT' && (
+            <Btn 
+              full 
+              lg 
+              onClick={handleSubmitReview} 
+              style={{ 
+                background: (!aadhaarUrl || !panUrl || !profileCompleted) ? '#e2e8f0' : 'linear-gradient(90deg, #FF9431, #EA580C)', 
+                color: (!aadhaarUrl || !panUrl || !profileCompleted) ? '#94a3b8' : '#fff', 
+                border: 'none', 
+                borderRadius: 16, 
+                marginTop: 16, 
+                cursor: (!aadhaarUrl || !panUrl || !profileCompleted) ? 'not-allowed' : 'pointer' 
+              }} 
+              disabled={!aadhaarUrl || !panUrl || !profileCompleted}
+            >
               Submit for Verification <ArrowRight size={18} />
             </Btn>
           )}

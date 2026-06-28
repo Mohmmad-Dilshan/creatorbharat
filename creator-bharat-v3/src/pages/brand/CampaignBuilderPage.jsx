@@ -190,12 +190,25 @@ export default function CampaignBuilderPage() {
     }
   };
 
-  const submit = () => {
+  const submit = async () => {
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const payload = {
+        title: F.title,
+        description: F.desc,
+        budget: parseInt(F.budgetMin) || 0,
+        niche: F.niche ? [F.niche] : [],
+        platform: F.platform ? F.platform.split(',').map(s => s.trim()) : ['Instagram']
+      };
+      
+      const realCampaign = await apiCall('/campaigns/create', {
+        method: 'POST',
+        body: payload
+      });
+
       const camp = { 
         ...F, 
-        id: 'c-' + Date.now(), 
+        id: realCampaign.id || 'c-' + Date.now(), 
         brand: st.user.companyName || st.user.name, 
         brandEmail: st.user.email,
         filled: 0,
@@ -206,9 +219,12 @@ export default function CampaignBuilderPage() {
       LS.set('cb_campaigns', [camp, ...allC]);
       
       setDone(true);
-      setLoading(false);
       toast('Campaign launched successfully!', 'success');
-    }, 2000);
+    } catch (err) {
+      toast(err.message || 'Failed to deploy campaign. Please try again.', 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const previewCampaign = {

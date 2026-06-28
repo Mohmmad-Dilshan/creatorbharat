@@ -408,7 +408,15 @@ export default function CommunityPage() {
       <CreatorDetailView
         creator={selected}
         saved={st.saved.includes(selected.id)}
-        onSave={() => dsp({ t: 'SAVE', id: selected.id })}
+        onSave={() => {
+          const isSaved = st.saved.includes(selected.id);
+          dsp({ t: 'SAVE', id: selected.id });
+          if (isSaved) {
+            apiCall(`/saved/${selected.id}`, { method: 'DELETE' }).catch(() => {});
+          } else {
+            apiCall('/saved', { method: 'POST', body: JSON.stringify({ targetId: selected.id }) }).catch(() => {});
+          }
+        }}
         onBack={() => navigate('/creator/community')}
         navigate={navigate}
       />
@@ -681,7 +689,15 @@ export default function CommunityPage() {
                     key={creator.id || i}
                     creator={creator}
                     saved={st.saved.includes(creator.id)}
-                    onSave={() => dsp({ t: 'SAVE', id: creator.id })}
+                    onSave={() => {
+                      const isSaved = st.saved.includes(creator.id);
+                      dsp({ t: 'SAVE', id: creator.id });
+                      if (isSaved) {
+                        apiCall(`/saved/${creator.id}`, { method: 'DELETE' }).catch(() => {});
+                      } else {
+                        apiCall('/saved', { method: 'POST', body: JSON.stringify({ targetId: creator.id }) }).catch(() => {});
+                      }
+                    }}
                     onChat={() => navigate('/creator/messages')}
                     onView={() => navigate(`/creator/community/${creator.handle || creator.id}`)}
                     delay={i * 0.04}

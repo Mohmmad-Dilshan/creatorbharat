@@ -9,7 +9,8 @@ import {
   User,
   ChevronRight,
   Phone,
-  CheckCircle2
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import { Btn, Fld } from '@/components/common/Primitives';
 
@@ -23,6 +24,7 @@ import { getDemoOtp, isUsingDemoAuth, registerCreator, sendOtp, verifyOtp } from
 export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
   const { dsp } = useApp();
   const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState('');
   const [F, setF] = useState({
     name: '',
     handle: '',
@@ -87,7 +89,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
     if (key === 'email' && (!val || !/^\S+@\S+\.\S+$/.test(val))) err = 'Valid email required';
     if (key === 'password' && (!val || val.length < 6)) err = 'Min 6 characters';
     if (key === 'confirm' && val !== F.password) err = 'Passwords mismatch';
-    if (key === 'phone' && (!val || val.length < 10)) err = 'Enter valid 10-digit number';
+    if (key === 'phone' && (!val || !/^[6-9]\d{9}$/.test(val))) err = 'Enter valid 10-digit Indian mobile number';
     
     if (err) setErrors(prev => ({ ...prev, [key]: err }));
   };
@@ -96,7 +98,8 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
     const errs = {};
     if (!F.name) errs.name = 'Full name is required';
     if (!F.email || !/^\S+@\S+\.\S+$/.test(F.email)) errs.email = 'Valid email required';
-    if (!verified) errs.phone = 'Please verify your phone number';
+    if (!F.phone || !/^[6-9]\d{9}$/.test(F.phone)) errs.phone = 'Enter valid 10-digit Indian mobile number';
+    else if (!verified) errs.phone = 'Please verify your phone number';
     if (!F.password || F.password.length < 6) errs.password = 'Min 6 characters';
     if (F.password !== F.confirm) errs.confirm = 'Passwords mismatch';
     
@@ -105,11 +108,12 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
   };
 
   const sendOTP = async () => {
-    if (!F.phone || F.phone.length < 10) {
-      setErrors(prev => ({ ...prev, phone: 'Enter valid 10-digit number' }));
+    if (!F.phone || !/^[6-9]\d{9}$/.test(F.phone)) {
+      setErrors(prev => ({ ...prev, phone: 'Enter valid 10-digit Indian mobile number' }));
       return;
     }
     setLoading(true);
+    setFormError('');
     try {
       await sendOtp(F.phone);
       setOtpSent(true);
@@ -118,6 +122,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
       dsp({ t: 'TOAST', d: { type: 'info', msg: isUsingDemoAuth() ? `Demo OTP is ${getDemoOtp()}` : 'OTP sent successfully.' } });
     } catch (err) {
       setErrors(prev => ({ ...prev, phone: err.message || 'Failed to send OTP' }));
+      setFormError(err.message || 'Failed to send OTP');
     } finally {
       setLoading(false);
     }
@@ -129,6 +134,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
       return;
     }
     setLoading(true);
+    setFormError('');
     try {
       await verifyOtp(F.phone, F.otp);
       setVerified(true);
@@ -136,6 +142,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
       dsp({ t: 'TOAST', d: { type: 'success', msg: 'Phone verified successfully!' } });
     } catch (err) {
       setErrors(prev => ({ ...prev, otp: err.message || 'Invalid OTP' }));
+      setFormError(err.message || 'Invalid OTP');
       dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Invalid OTP' } });
     } finally {
       setLoading(false);
@@ -146,6 +153,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
+    setFormError('');
     try {
       if (F.bio) {
         localStorage.setItem('cb_pending_bio', F.bio);
@@ -154,6 +162,7 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
       dsp({ t: 'TOAST', d: { type: 'success', msg: 'Welcome to CreatorBharat!' } });
       onSuccess(user, token, F.phone);
     } catch (err) {
+      setFormError(err.message || 'Registration failed. Please try again.');
       dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Registration failed. Please try again.' } });
     } finally {
       setLoading(false);
@@ -222,6 +231,25 @@ export default function ApplyForm({ onSuccess, onBackToLogin, mob }) {
           <h3 style={{ fontSize: mob ? 24 : 32, fontWeight: 950, color: '#111827', marginTop: 4, letterSpacing: '-0.5px' }}>Start your legacy.</h3>
           <p style={{ fontSize: 15, color: '#64748B', fontWeight: 650, marginTop: 4 }}>Join Bharat&apos;s most trusted creator ecosystem in seconds.</p>
         </div>
+
+        {formError && (
+          <div 
+            className="shake"
+            style={{
+              background: 'rgba(239, 68, 68, 0.04)',
+              border: '1.5px solid rgba(239, 68, 68, 0.15)',
+              borderRadius: 14,
+              padding: '12px 16px',
+              marginBottom: 20,
+              display: 'flex',
+              gap: 10,
+              alignItems: 'center'
+            }}
+          >
+            <AlertCircle size={16} color="#EF4444" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: 13, color: '#EF4444', fontWeight: 650 }}>{formError}</span>
+          </div>
+        )}
 
         <div className="apply-field-stack">
           <div className="apply-two-col">

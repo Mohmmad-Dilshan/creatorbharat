@@ -51,8 +51,8 @@ const ApplicationCard = ({ app: a, mob, onAction, onChat, delay = 0 }) => {
       transition={{ delay }}
     >
       <Card className="activity-item" style={{ padding: mob ? '24px' : '32px', display: 'block' }}>
-         <div className="header-content" style={{ alignItems: 'flex-start' }}>
-            <div className="item-left" style={{ flex: 1, minWidth: '280px' }}>
+         <div className="header-content" style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', alignItems: mob ? 'stretch' : 'flex-start', gap: mob ? 16 : 0, justifyContent: 'space-between' }}>
+            <div className="item-left" style={{ flex: 1, minWidth: mob ? '100%' : '280px', display: 'flex', flexDirection: mob ? 'column' : 'row', alignItems: mob ? 'flex-start' : 'center', gap: 16 }}>
                <img src={brandImg} className="tx-icon-wrap" style={{ width: 64, height: 64, borderRadius: 18 }} alt="" />
                <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>

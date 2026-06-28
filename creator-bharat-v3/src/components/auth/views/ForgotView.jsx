@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
-import { Mail, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Mail, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Btn, Fld } from '@/components/common/Primitives';
 import { sendForgotPassword } from '@/utils/authService';
 
@@ -58,6 +58,8 @@ const ForgotView = ({ setView }) => {
         </div>
         <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 26, fontWeight: 950, color: '#111827', marginBottom: 12 }}>Check your email</h2>
         <p style={{ color: '#64748B', fontSize: 15, fontWeight: 650, lineHeight: 1.6, marginBottom: 32 }}>
+
+
           We've sent a password reset link to <br/>
           <strong style={{ color: '#111827' }}>{email}</strong>
         </p>
@@ -100,9 +102,28 @@ const ForgotView = ({ setView }) => {
             setError(null);
           }}
           placeholder="name@domain.com" 
-          error={error}
           required 
         />
+
+        {error && (
+          <div 
+            className="shake"
+            style={{
+              background: 'rgba(239, 68, 68, 0.04)',
+              border: '1.5px solid rgba(239, 68, 68, 0.15)',
+              borderRadius: 14,
+              padding: '12px 16px',
+              marginTop: 16,
+              marginBottom: 10,
+              display: 'flex',
+              gap: 10,
+              alignItems: 'center'
+            }}
+          >
+            <AlertCircle size={16} color="#EF4444" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: 13, color: '#EF4444', fontWeight: 650 }}>{error}</span>
+          </div>
+        )}
 
         <Btn full lg loading={loading} style={{ height: 56, borderRadius: 16, background: '#111827', color: '#fff', border: 'none', fontWeight: 900, marginTop: 12 }}>
           Send Reset Link <ArrowRight size={18} />

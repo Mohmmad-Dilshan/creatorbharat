@@ -223,7 +223,7 @@ export default function SavedPage() {
 
       <div style={{ padding: '24px 20px', background: '#fff', borderBottom: '1px solid rgba(0,0,0,0.05)', position: 'sticky', top: 80, zIndex: 100 }}>
         <div style={W()}>
-           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+           <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', alignItems: mob ? 'flex-start' : 'center', gap: mob ? 16 : 0, justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', gap: 12 }}>
                  <button 
                    onClick={() => setTab('creators')} 

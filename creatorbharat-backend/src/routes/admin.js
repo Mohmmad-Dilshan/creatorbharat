@@ -5,6 +5,7 @@ import { authMiddleware, requireRole } from '../middleware/auth.js';
 import { sendEmail } from '../utils/mailer.js';
 import { getSettings, invalidateSettingsCache } from '../utils/settings.js';
 import { createNotification } from './notifications.js';
+import { checkAndAwardAchievements } from '../utils/achievementAwarder.js';
 import bcrypt from 'bcryptjs';
 import fs from 'fs';
 import path from 'path';
@@ -352,10 +353,13 @@ router.post('/verify/:creatorId', async (req, res) => {
       return res.status(404).json({ error: 'Creator profile not found.' });
     }
 
-      const updated = await prisma.creator.update({
+    const updated = await prisma.creator.update({
       where: { id: creatorId },
-      data: { isVerified: true }
+      data: { isVerified: true, status: 'APPROVED' }
     });
+
+    // Award verified badges automatically
+    checkAndAwardAchievements(creatorId);
 
     res.json({ message: 'Creator profile successfully verified.', creator: updated });
 
@@ -951,6 +955,9 @@ router.post('/creators/:id/score', async (req, res) => {
       data: { score: Number(score) }
     });
 
+    // Check and award score milestone achievements automatically
+    checkAndAwardAchievements(id);
+
     res.json({ message: `Creator score updated to ${score}. Reason: ${reason || 'Admin override'}`, creator: updated });
 
     // Notify creator via in-app + email (non-blocking)
@@ -1255,7 +1262,7 @@ router.get('/settings', async (req, res) => {
 router.post('/settings', async (req, res) => {
   try {
     const {
-      siteName, supportEmail, frontendUrl,
+      siteName, supportEmail, frontendUrl, logoUrl, footerEmail,
       proMembershipPrice, campaignBoostPrice, featuredSlotPrice, platformFee,
       enableAIAssistant, enableEscrowSystem, maintenanceMode, enableEmail, enableSMS,
       razorpayKeyId, razorpaySecret, razorpayMode,
@@ -1267,6 +1274,8 @@ router.post('/settings', async (req, res) => {
     if (siteName !== undefined) data.siteName = siteName;
     if (supportEmail !== undefined) data.supportEmail = supportEmail;
     if (frontendUrl !== undefined) data.frontendUrl = frontendUrl;
+    if (logoUrl !== undefined) data.logoUrl = logoUrl;
+    if (footerEmail !== undefined) data.footerEmail = footerEmail;
     if (proMembershipPrice !== undefined) data.proMembershipPrice = Number(proMembershipPrice);
     if (campaignBoostPrice !== undefined) data.campaignBoostPrice = Number(campaignBoostPrice);
     if (featuredSlotPrice !== undefined) data.featuredSlotPrice = Number(featuredSlotPrice);

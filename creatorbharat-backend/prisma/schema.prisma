@@ -95,6 +95,9 @@ model Brand {
   companyName String
   industry    String?
   website     String?
+  country     String   @default("India")
+  state       String?
+  city        String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -395,11 +398,13 @@ model SystemSetting {
   siteName       String @default("CreatorBharat")
   supportEmail   String @default("support@creatorbharat.com")
   frontendUrl    String @default("http://localhost:5173")
+  logoUrl        String @default("")
+  footerEmail    String @default("hello@creatorbharat.com")
 
-  // Pricing (in INR, stored as paise × 100)
-  proMembershipPrice   Int @default(4900)
-  campaignBoostPrice   Int @default(9900)
-  featuredSlotPrice    Int @default(19900)
+  // Pricing (in INR, stored as Rupees)
+  proMembershipPrice   Int @default(49)
+  campaignBoostPrice   Int @default(99)
+  featuredSlotPrice    Int @default(199)
   platformFee          Int @default(10) // percentage
 
   // Feature Toggles
@@ -416,7 +421,7 @@ model SystemSetting {
 
   // Email (Resend)
   resendApiKey String @default("")
-  emailFrom    String @default("onboarding@resend.dev")
+  emailFrom    String @default("CreatorBharat <onboarding@creatorbharat.com>")
 
   // SMS
   smsProvider    String @default("fast2sms") // fast2sms | twilio

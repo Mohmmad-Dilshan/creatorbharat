@@ -8,249 +8,24 @@ import {
   Flame, BookOpen, Headphones, AtSign, Phone, MapPin, Hash, ShieldAlert, UserCheck,
   UserX, PieChart, TrendingDown, Package, Cpu, Database, Shield, Image, FolderOpen
 } from 'lucide-react';
+import { T, fmtINR, fmtNum, fmtDate, Badge, StatCard, SectionHeader, SearchBar, EmptyState, ActionBtn, DangerBtn, TableHead, Table, Td } from './components/ui/Primitives';
+import { NAV_SECTIONS, TAB_META } from './components/ui/NavConfig';
+import DashboardSection from './components/sections/DashboardSection';
+import KycSection from './components/sections/KycSection';
+import CreatorsSection from './components/sections/CreatorsSection';
+import BrandsSection from './components/sections/BrandsSection';
+import CmsSection from './components/sections/CmsSection';
+import SystemControlSection from './components/sections/SystemControlSection';
+import EngagementSection from './components/sections/EngagementSection';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://creatorbharat.onrender.com/api';
 const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || (window.location.hostname === 'localhost' ? 'http://localhost:5173' : 'https://creatorbharat.com');
 
-// ─── Helper: format INR ──────────────────────────────────────────────────────
-const fmtINR = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
-const fmtNum = (n) => Number(n || 0).toLocaleString('en-IN');
-const fmtDate = (d) => d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
 
-// ─── Design tokens ───────────────────────────────────────────────────────────
-const T = {
-  orange: '#f97316', orangeLight: 'rgba(249,115,22,0.08)', orangeBorder: 'rgba(249,115,22,0.2)',
-  blue: '#3b82f6', blueLight: 'rgba(59,130,246,0.08)',
-  green: '#22c55e', greenLight: 'rgba(34,197,94,0.08)',
-  purple: '#8b5cf6', purpleLight: 'rgba(139,92,246,0.08)',
-  red: '#ef4444', redLight: 'rgba(239,68,68,0.08)',
-  yellow: '#f59e0b', yellowLight: 'rgba(245,158,11,0.08)',
-  teal: '#14b8a6', tealLight: 'rgba(20,184,166,0.08)',
-  navy: '#0f172a', slate: '#475569', muted: '#64748b', border: '#e2e8f0',
-  bg: '#f1f5f9', card: '#ffffff',
-  // Sidebar dark theme
-  sidebarBg: '#0f172a',
-  sidebarBorder: 'rgba(255,255,255,0.06)',
-  sidebarText: 'rgba(255,255,255,0.65)',
-  sidebarTextActive: '#ffffff',
-  sidebarActiveGlow: 'rgba(249,115,22,0.15)',
-};
 
-// ─── Reusable Components ──────────────────────────────────────────────────────
-const Badge = ({ color = T.orange, children, size = 'sm' }) => (
-  <span style={{
-    padding: size === 'sm' ? '2px 8px' : '4px 12px',
-    background: color + '15',
-    color,
-    borderRadius: 20,
-    fontSize: size === 'sm' ? 10 : 12,
-    fontWeight: 800,
-    border: `1px solid ${color}25`,
-    textTransform: 'uppercase',
-    letterSpacing: '0.04em',
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 4,
-    whiteSpace: 'nowrap'
-  }}>{children}</span>
-);
 
-const StatCard = ({ label, value, sub, icon: Icon, color, onClick, trend, trendUp }) => (
-  <div onClick={onClick} style={{
-    background: T.card, border: `1px solid ${T.border}`, borderRadius: 18, padding: '20px 22px',
-    display: 'flex', flexDirection: 'column', gap: 14, boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
-    cursor: onClick ? 'pointer' : 'default', transition: 'all 0.22s', position: 'relative', overflow: 'hidden'
-  }}
-    onMouseEnter={e => { if(onClick){ e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow=`0 8px 24px ${color}18`; e.currentTarget.style.borderColor=color+'35'; } }}
-    onMouseLeave={e => { if(onClick){ e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow='0 1px 4px rgba(0,0,0,0.04)'; e.currentTarget.style.borderColor=T.border; } }}
-  >
-    <div style={{ position: 'absolute', top: -20, right: -20, width: 80, height: 80, borderRadius: '50%', background: color + '08' }} />
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-      <div style={{ width: 44, height: 44, borderRadius: 12, background: color + '12', color, display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${color}18` }}><Icon size={20} /></div>
-      {trend && (
-        <span style={{ fontSize: 11, fontWeight: 800, color: trendUp ? T.green : T.red, background: (trendUp ? T.green : T.red)+'12', padding: '3px 8px', borderRadius: 20 }}>
-          {trendUp ? '↑' : '↓'} {trend}
-        </span>
-      )}
-    </div>
-    <div>
-      <div style={{ fontSize: 28, fontWeight: 900, color: T.navy, lineHeight: 1, marginBottom: 4, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
-      <div style={{ fontSize: 12, color: T.slate, fontWeight: 700 }}>{label}</div>
-      {sub && <div style={{ fontSize: 10, color: T.muted, marginTop: 4, fontWeight: 500, lineHeight: 1.4 }}>{sub}</div>}
-    </div>
-  </div>
-);
 
-const SectionHeader = ({ title, sub, action, badge }) => (
-  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: T.navy }}>{title}</h3>
-        {badge !== undefined && badge > 0 && (
-          <span style={{ padding: '2px 10px', background: T.orange + '15', color: T.orange, borderRadius: 20, fontSize: 11, fontWeight: 800 }}>{badge}</span>
-        )}
-      </div>
-      {sub && <p style={{ margin: '4px 0 0', fontSize: 13, color: T.muted, fontWeight: 500 }}>{sub}</p>}
-    </div>
-    {action}
-  </div>
-);
 
-const SearchBar = ({ value, onChange, placeholder }) => (
-  <div style={{ position: 'relative', marginBottom: 20 }}>
-    <Search size={15} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: T.muted }} />
-    <input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder || 'Search...'} style={{
-      width: '100%', padding: '10px 14px 10px 40px', border: `1px solid ${T.border}`,
-      borderRadius: 12, fontSize: 13, color: T.navy, background: '#fff', outline: 'none', boxSizing: 'border-box'
-    }} />
-  </div>
-);
-
-const EmptyState = ({ icon, msg }) => (
-  <div style={{ padding: '60px 0', textAlign: 'center', color: T.muted }}>
-    <div style={{ fontSize: 40, marginBottom: 12 }}>{icon || '📭'}</div>
-    <p style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>{msg || 'No data available'}</p>
-  </div>
-);
-
-const ActionBtn = ({ onClick, color = T.orange, children, small }) => (
-  <button onClick={onClick} style={{
-    padding: small ? '5px 12px' : '7px 16px', background: color + '12', color, border: `1px solid ${color}25`,
-    borderRadius: 8, fontSize: small ? 11 : 12, fontWeight: 700, cursor: 'pointer',
-    display: 'inline-flex', alignItems: 'center', gap: 5, transition: 'all 0.15s', whiteSpace: 'nowrap'
-  }}>{children}</button>
-);
-
-const DangerBtn = ({ onClick, children, small }) => (
-  <button onClick={onClick} style={{
-    padding: small ? '5px 12px' : '7px 16px', background: T.red + '10', color: T.red, border: `1px solid ${T.red}25`,
-    borderRadius: 8, fontSize: small ? 11 : 12, fontWeight: 700, cursor: 'pointer',
-    display: 'inline-flex', alignItems: 'center', gap: 5
-  }}>{children}</button>
-);
-
-const TableHead = ({ cols }) => (
-  <thead>
-    <tr style={{ borderBottom: `1px solid ${T.border}` }}>
-      {cols.map((c, i) => (
-        <th key={i} style={{ padding: '12px 16px', textAlign: typeof c === 'object' ? c.align || 'left' : 'left', color: T.muted, fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          {typeof c === 'object' ? c.label : c}
-        </th>
-      ))}
-    </tr>
-  </thead>
-);
-
-const Table = ({ cols, children, style }) => (
-  <div style={{ overflowX: 'auto', ...style }}>
-    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-      <TableHead cols={cols} />
-      <tbody>{children}</tbody>
-    </table>
-  </div>
-);
-
-const Td = ({ children, right, bold, muted, style }) => (
-  <td style={{ padding: '14px 16px', textAlign: right ? 'right' : 'left', color: muted ? T.muted : bold ? T.navy : T.slate, fontWeight: bold ? 700 : 500, ...style }}>{children}</td>
-);
-
-// ─── Sidebar Nav Config ───────────────────────────────────────────────────────
-const NAV_SECTIONS = (counts) => [
-  {
-    title: '📊 CORE',
-    color: T.orange,
-    items: [
-      { id: 'dashboard', label: 'Dashboard', icon: TrendingUp },
-      { id: 'activity', label: 'Activity Log', icon: Activity },
-    ]
-  },
-  {
-    title: '👤 CREATOR SYSTEM',
-    color: T.blue,
-    items: [
-      { id: 'verifications', label: 'KYC Verifications', icon: ShieldCheck, badge: counts.pendingVerifications },
-      { id: 'creators', label: 'All Creators', icon: Users, badge: counts.creators },
-      { id: 'creator-wallets', label: 'Creator Wallets', icon: Wallet, badge: counts.payments },
-      { id: 'creator-score', label: 'Creator Score', icon: Trophy },
-      { id: 'creator-achievements', label: 'Achievements', icon: Award },
-      { id: 'creator-reviews', label: 'Creator Reviews', icon: Star, badge: counts.reviews },
-      { id: 'podcasts', label: 'Podcasts', icon: Headphones, badge: counts.podcasts },
-      { id: 'leaderboard', label: 'Leaderboard', icon: Crown },
-      { id: 'ambassadors', label: 'Ambassador Program', icon: Award, badge: counts.pendingAmbassadors },
-      { id: 'missions', label: 'Missions Panel', icon: Target, badge: counts.pendingMissions },
-    ]
-  },
-  {
-    title: '🏢 BRAND SYSTEM',
-    color: T.purple,
-    items: [
-      { id: 'brands', label: 'All Brands', icon: Building2, badge: counts.brands },
-      { id: 'campaigns', label: 'Campaign Manager', icon: Target, badge: counts.campaigns },
-      { id: 'applications', label: 'All Applications', icon: Layers, badge: counts.applications },
-      { id: 'brand-analytics', label: 'Brand Analytics', icon: BarChart3 },
-      { id: 'escrows', label: 'Payments & Escrow', icon: CreditCard, badge: counts.payments },
-    ]
-  },
-  {
-    title: '📝 CONTENT & MARKETING',
-    color: T.green,
-    items: [
-      { id: 'blogs', label: 'Blog Manager', icon: BookOpen, badge: counts.blogs },
-      { id: 'comments', label: 'Comment Moderation', icon: MessageSquare, badge: counts.comments },
-      { id: 'newsletters', label: 'Newsletter Subs', icon: Mail, badge: counts.newsletters },
-      { id: 'contacts', label: 'Contact Inbox', icon: Bell, badge: counts.unreadContacts },
-      { id: 'gallery', label: 'Gallery Manager', icon: Image, badge: counts.gallery },
-      { id: 'media-library', label: 'Media Library', icon: FolderOpen, badge: counts.uploads },
-      { id: 'pages', label: 'Page Content Manager', icon: SlidersHorizontal },
-      { id: 'events', label: 'Events Manager', icon: Calendar },
-      { id: 'admin-notifications', label: 'Notification Center', icon: Bell },
-    ]
-  },
-  {
-    title: '⚙️ SYSTEM',
-    color: T.slate,
-    items: [
-      { id: 'settings', label: 'Settings', icon: SlidersHorizontal },
-      { id: 'feature-control', label: 'Platform Control Center', icon: Cpu },
-      { id: 'admin-control', label: 'Admin Panel Control', icon: ShieldCheck },
-      { id: 'danger', label: 'Danger Zone', icon: ShieldAlert },
-    ]
-  }
-];
-
-// ─── Tab Label Helper ─────────────────────────────────────────────────────────
-const TAB_META = {
-  dashboard: { title: 'Dashboard Overview', sub: 'Real-time platform metrics and priority actions' },
-  activity: { title: 'Platform Activity Log', sub: 'Live feed of all recent platform events' },
-  verifications: { title: 'KYC Verification Queue', sub: 'Review and approve creator identity documents' },
-  creators: { title: 'All Creators', sub: 'Manage creator profiles, scores and suspensions' },
-  'creator-wallets': { title: 'Creator Wallets', sub: 'View transaction history and wallet balances per creator' },
-  'creator-score': { title: 'Creator Score Manager', sub: 'Manually adjust or audit creator platform scores' },
-  'creator-achievements': { title: 'Achievements & Milestones', sub: 'Track creator achievement progress and manually grant badges' },
-  'creator-reviews': { title: 'Creator Reviews', sub: 'Moderate brand reviews given to creators' },
-  podcasts: { title: 'Podcast Manager', sub: 'Publish, unpublish, or delete podcast episodes' },
-  leaderboard: { title: 'Leaderboard Management', sub: 'Top verified creators by score and followers' },
-  brands: { title: 'All Brands', sub: 'Manage brand accounts, suspensions and campaigns' },
-  campaigns: { title: 'Campaign Manager', sub: 'Oversee all brand campaign postings and pitches' },
-  applications: { title: 'All Campaign Applications', sub: 'Platform-wide creator pitch submissions' },
-  'brand-analytics': { title: 'Brand Analytics', sub: 'Campaign spend, applications and performance per brand' },
-  escrows: { title: 'Payments & Escrow', sub: 'Override campaign escrow releases and refunds' },
-  blogs: { title: 'Blog Manager', sub: 'Create, edit, publish and delete blog articles' },
-  comments: { title: 'Comment Moderation', sub: 'Remove spam or offensive blog comments' },
-  newsletters: { title: 'Newsletter Subscribers', sub: 'View and manage email list' },
-  contacts: { title: 'Contact Inbox', sub: 'Reply to or delete user contact messages' },
-  gallery: { title: 'Gallery Manager', sub: 'Manage CreatorBharat Ecosystem Gallery items' },
-  'media-library': { title: 'Media Library', sub: 'Upload files and copy their URLs for use across the platform' },
-  pages: { title: 'Page Content Manager', sub: 'Dynamically customize public page text, pricing tiers, and calculator rates' },
-  settings: { title: 'System Settings', sub: 'Configure platform-wide settings and toggles' },
-  'feature-control': { title: 'Platform Control Center', sub: 'Configure live feature toggles, commission rates, and global announcements' },
-  'admin-control': { title: 'Admin Panel Control', sub: 'Customize admin interface behaviors, set theme preferences, and audit administrative actions' },
-  danger: { title: '⚠️ Danger Zone', sub: 'Irreversible platform-wide operations' },
-  events: { title: 'Events Manager', sub: 'Create and coordinate public platform events and conferences' },
-  ambassadors: { title: 'Campus Ambassador Applications', sub: 'Review and approve/reject college student representation applications' },
-  missions: { title: 'Monthly Missions & Completions', sub: 'Manage monthly platform-wide creator tasks and proof submissions' },
-  'admin-notifications': { title: 'Notification Dispatch Center', sub: 'Send customized in-app push alerts and updates to creators or brands' },
-};
 
 // ─── STATUS COLORS ─────────────────────────────────────────────────────────
 const STATUS_COLOR = {
@@ -1000,6 +775,8 @@ export default function App() {
   const [twilioToken, setTwilioToken] = useState('');
   const [twilioPhone, setTwilioPhone] = useState('');
   const [settingsTab, setSettingsTab] = useState('general');
+  const [logoUrl, setLogoUrl] = useState('');
+  const [footerEmail, setFooterEmail] = useState('hello@creatorbharat.com');
 
   // ── Platform Custom Notifications Dispatcher States
   const [notifTargetGroup, setNotifTargetGroup] = useState('ALL_CREATORS');
@@ -1618,6 +1395,8 @@ export default function App() {
         setRazorpayMode(rSettings.razorpayMode || 'test');
         setResendApiKey(rSettings.resendApiKey || '');
         setEmailFrom(rSettings.emailFrom || 'onboarding@resend.dev');
+        setLogoUrl(rSettings.logoUrl || '');
+        setFooterEmail(rSettings.footerEmail || 'hello@creatorbharat.com');
         setSmsProvider(rSettings.smsProvider || 'fast2sms');
         setFast2smsKey(rSettings.fast2smsKey || '');
         setTwilioSid(rSettings.twilioSid || '');
@@ -1979,7 +1758,7 @@ export default function App() {
         method: 'POST',
         headers: H(),
         body: JSON.stringify({
-          siteName, supportEmail, frontendUrl,
+          siteName, supportEmail, frontendUrl, logoUrl, footerEmail,
           platformFee: Number(platformFee),
           proMembershipPrice: Number(proMembershipPrice),
           campaignBoostPrice: Number(campaignBoostPrice),
@@ -2967,4764 +2746,512 @@ export default function App() {
 
           {/* ══ DASHBOARD ══════════════════════════════════════════════════ */}
           {activeTab === 'dashboard' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-              {/* Deep Stats Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
-                <StatCard label="Total Creators" value={fmtNum(deepStats?.creators?.total || creators.length)} sub={`${deepStats?.creators?.verified || 0} verified · ${deepStats?.creators?.pending || verifications.length} pending`} icon={Users} color={T.orange} onClick={() => setActiveTab('creators')} trend="+12.4%" trendUp={true} />
-                <StatCard label="Brand Accounts" value={fmtNum(deepStats?.brands?.total || brands.length)} sub="Partner companies" icon={Building2} color={T.blue} onClick={() => setActiveTab('brands')} trend="+8.1%" trendUp={true} />
-                <StatCard label="Active Campaigns" value={fmtNum(deepStats?.campaigns?.active || campaigns.length)} sub={`${deepStats?.campaigns?.total || campaigns.length} total`} icon={Target} color={T.purple} onClick={() => setActiveTab('campaigns')} trend="+19.5%" trendUp={true} />
-                <StatCard label="KYC Pending" value={fmtNum(verifications.length)} sub="Requires review" icon={ShieldCheck} color={T.yellow} onClick={() => setActiveTab('verifications')} trend={verifications.length > 0 ? `${verifications.length} waiting` : 'Clear'} trendUp={verifications.length === 0} />
-                <StatCard label="Escrow Held" value={fmtINR(stats?.counts?.escrowHoldings)} sub="Active campaign locks" icon={Wallet} color={T.green} onClick={() => setActiveTab('escrows')} trend="+24.8%" trendUp={true} />
-                <StatCard label="Applications" value={fmtNum(deepStats?.applications?.total || allApplications.length)} sub={`${deepStats?.applications?.accepted || 0} accepted`} icon={Layers} color={T.teal} onClick={() => setActiveTab('applications')} trend="+31.2%" trendUp={true} />
-                <StatCard label="Blog Articles" value={fmtNum(deepStats?.content?.published || blogs.filter(b => b.published).length)} sub={`${blogs.length} total`} icon={BookOpen} color={T.blue} onClick={() => setActiveTab('blogs')} trend="+4" trendUp={true} />
-                <StatCard label="Unread Contacts" value={fmtNum(counts.unreadContacts)} sub="Need response" icon={Bell} color={T.red} onClick={() => setActiveTab('contacts')} trend={counts.unreadContacts > 0 ? 'Action' : '0'} trendUp={counts.unreadContacts === 0} />
-              </div>
-
-              {/* Advanced Diagnostics & Controls */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 20 }}>
-                {/* Diagnostics */}
-                <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 24, boxShadow: '0 1px 4px rgba(0,0,0,0.02)' }}>
-                  <h4 style={{ margin: '0 0 16px', fontSize: 13, fontWeight: 800, color: T.slate, textTransform: 'uppercase', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 8 }}><Cpu size={15} style={{ color: T.orange }} /> System Diagnostics & Health</h4>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                    {[
-                      { name: 'Neon DB (PostgreSQL)', desc: 'Neon Serverless Cloud', status: 'Operational', latency: '8ms', color: T.green },
-                      { name: 'Express Core API', desc: 'Running on Port 4000', status: 'Operational', latency: '12ms', color: T.green },
-                      { name: 'Resend Mail Delivery', desc: 'SMTP Transactional Mailer', status: 'Active (Sandbox)', latency: '40ms', color: T.green },
-                      { name: 'WebSocket Cluster', desc: 'Socket.io Server Engine', status: 'Connected', latency: '5ms', color: T.green }
-                    ].map((srv, idx) => (
-                      <div key={idx} style={{ padding: '12px 14px', background: T.bg, borderRadius: 12, border: `1px solid ${T.border}`, display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: srv.color, boxShadow: `0 0 6px ${srv.color}`, flexShrink: 0 }} />
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 11.5, fontWeight: 800, color: T.navy, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{srv.name}</div>
-                          <div style={{ fontSize: 9.5, color: T.muted, fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{srv.desc}</div>
-                        </div>
-                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                          <span style={{ fontSize: 9.5, fontWeight: 800, color: T.slate, display: 'block' }}>{srv.status}</span>
-                          <span style={{ fontSize: 8.5, fontWeight: 600, color: T.muted }}>{srv.latency}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Quick Actions Hub */}
-                <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 24, boxShadow: '0 1px 4px rgba(0,0,0,0.02)' }}>
-                  <h4 style={{ margin: '0 0 16px', fontSize: 13, fontWeight: 800, color: T.slate, textTransform: 'uppercase', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 8 }}><SlidersHorizontal size={15} style={{ color: T.blue }} /> Global Command Hub</h4>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                    <button onClick={handleSendTestEmail} style={{ padding: '10px 14px', background: T.blueLight, color: T.blue, border: `1px solid ${T.blue}20`, borderRadius: 10, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = T.blue + '15'}
-                      onMouseLeave={e => e.currentTarget.style.background = T.blueLight}
-                    >
-                      <Mail size={14} /> Send Test Mail
-                    </button>
-                    <button onClick={handleSyncCheck} style={{ padding: '10px 14px', background: T.greenLight, color: T.green, border: `1px solid ${T.green}20`, borderRadius: 10, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = T.green + '15'}
-                      onMouseLeave={e => e.currentTarget.style.background = T.greenLight}
-                    >
-                      <CheckCircle2 size={14} /> Run Integrity
-                    </button>
-                    <button onClick={handleClearCache} style={{ padding: '10px 14px', background: T.purpleLight, color: T.purple, border: `1px solid ${T.purple}20`, borderRadius: 10, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = T.purple + '15'}
-                      onMouseLeave={e => e.currentTarget.style.background = T.purpleLight}
-                    >
-                      <Database size={14} /> Reset Cache
-                    </button>
-                    <button onClick={() => {
-                      setMaintenanceMode(!maintenanceMode);
-                      toast(`Maintenance mode ${!maintenanceMode ? 'ENABLED ⚠️' : 'DISABLED ✓'}`, 'info');
-                    }} style={{ padding: '10px 14px', background: maintenanceMode ? T.red + '15' : T.yellowLight, color: maintenanceMode ? T.red : T.yellow, border: `1px solid ${maintenanceMode ? T.red : T.yellow}20`, borderRadius: 10, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = maintenanceMode ? T.red + '25' : T.yellow + '15'}
-                      onMouseLeave={e => e.currentTarget.style.background = maintenanceMode ? T.red + '15' : T.yellowLight}
-                    >
-                      <ShieldAlert size={14} /> {maintenanceMode ? 'Disable Maint.' : 'Maint. Toggle'}
-                    </button>
-                    <button onClick={async () => {
-                      toast('Running email drip...', 'info');
-                      try {
-                        const res = await fetch(`${API}/admin/drip/run`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` } });
-                        const data = await res.json();
-                        if (res.ok) toast(`Drip done — Sent: ${data.sent}, Errors: ${data.errors}`, 'success');
-                        else toast(data.error || 'Drip failed', 'error');
-                      } catch { toast('Drip network error', 'error'); }
-                    }} style={{ padding: '10px 14px', background: T.orangeLight || '#fff4ed', color: '#f97316', border: '1px solid rgba(249,115,22,0.2)', borderRadius: 10, fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s' }}
-                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(249,115,22,0.1)'}
-                      onMouseLeave={e => e.currentTarget.style.background = T.orangeLight || '#fff4ed'}
-                    >
-                      <Mail size={14} /> Run Email Drip
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Charts */}
-              {chartData.length > 0 && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 20 }}>
-                  {[
-                    { key: 'userCount', label: 'User Signups (6 Months)', color: T.blue, max: maxUser },
-                    { key: 'escrowVolume', label: 'Escrow Volume (6 Months)', color: T.green, max: maxEscrow }
-                  ].map((chart, ci) => (
-                    <div key={ci} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 24, position: 'relative' }}>
-                      <h4 style={{ margin: '0 0 16px', fontSize: 13, fontWeight: 800, color: T.slate, textTransform: 'uppercase', letterSpacing: 0.5 }}>{chart.label}</h4>
-                      <svg viewBox="0 0 400 160" style={{ width: '100%', height: 140, overflow: 'visible' }}>
-                        <defs>
-                          <linearGradient id={`grad${ci}`} x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor={chart.color} stopOpacity="0.18" />
-                            <stop offset="100%" stopColor={chart.color} stopOpacity="0" />
-                          </linearGradient>
-                          <filter id={`glow${ci}`} x="-20%" y="-20%" width="140%" height="140%">
-                            <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor={chart.color} floodOpacity="0.25" />
-                          </filter>
-                        </defs>
-                        {/* Horizontal gridlines */}
-                        <line x1="0" y1="38" x2="400" y2="38" stroke="rgba(0,0,0,0.04)" strokeDasharray="4 4" />
-                        <line x1="0" y1="76" x2="400" y2="76" stroke="rgba(0,0,0,0.04)" strokeDasharray="4 4" />
-                        <line x1="0" y1="114" x2="400" y2="114" stroke="rgba(0,0,0,0.04)" strokeDasharray="4 4" />
-                        
-                        {/* Hover vertical line */}
-                        {hoveredPoint && hoveredPoint.chartIndex === ci && (
-                          <line x1={hoveredPoint.x} y1="10" x2={hoveredPoint.x} y2="150" stroke={chart.color} strokeWidth="1.2" strokeDasharray="3 3" opacity="0.5" style={{ transition: 'all 0.1s' }} />
-                        )}
-                        
-                        <path d={`M 0,160 L ${genPoints(chartData, chart.key, chart.max, 400, 160)} L 400,160 Z`} fill={`url(#grad${ci})`} />
-                        <polyline fill="none" stroke={chart.color} strokeWidth="3" filter={`url(#glow${ci})`} points={genPoints(chartData, chart.key, chart.max, 400, 160)} />
-                        {chartData.map((d, i) => {
-                          const x = i * (400 / Math.max(chartData.length - 1, 1));
-                          const y = 160 - ((d[chart.key] || 0) / chart.max) * 140 - 10;
-                          const rawVal = d[chart.key] || 0;
-                          const formattedVal = chart.key === 'escrowVolume' ? `₹${(rawVal/1000).toFixed(0)}k` : rawVal;
-                          const isHovered = hoveredPoint?.chartIndex === ci && hoveredPoint?.pointIndex === i;
-                          return (
-                            <g key={i}>
-                              <circle 
-                                cx={x} 
-                                cy={y} 
-                                r={isHovered ? "6" : "4"} 
-                                fill={chart.color} 
-                                stroke="#fff" 
-                                strokeWidth="2.5" 
-                                style={{ cursor: 'pointer', transition: 'all 0.15s' }}
-                                onMouseEnter={() => setHoveredPoint({ chartIndex: ci, pointIndex: i, x, y, value: formattedVal, label: d.month })}
-                                onMouseLeave={() => setHoveredPoint(null)}
-                              />
-                            </g>
-                          );
-                        })}
-
-                        {/* Interactive Floating Tooltip Card */}
-                        {hoveredPoint && hoveredPoint.chartIndex === ci && (
-                          <g style={{ pointerEvents: 'none' }}>
-                            <rect 
-                              x={Math.max(10, Math.min(310, hoveredPoint.x - 45))} 
-                              y={Math.max(5, hoveredPoint.y - 38)} 
-                              width="90" 
-                              height="30" 
-                              rx="6" 
-                              fill={T.navy} 
-                              opacity="0.95" 
-                            />
-                            <text 
-                              x={Math.max(55, Math.min(355, hoveredPoint.x))} 
-                              y={Math.max(24, hoveredPoint.y - 19)} 
-                              textAnchor="middle" 
-                              fill="#fff" 
-                              fontSize="10" 
-                              fontWeight="800"
-                            >
-                              {hoveredPoint.label}: {hoveredPoint.value}
-                            </text>
-                          </g>
-                        )}
-                      </svg>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, fontWeight: 800, color: T.muted, marginTop: 6 }}>
-                        {chartData.map((d, i) => <span key={i}>{d.month}</span>)}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Priority Verification Queue Preview */}
-              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-                <SectionHeader title="Priority Verification Queue" sub="First 5 pending KYC requests" action={<ActionBtn onClick={() => setActiveTab('verifications')}>View All ({verifications.length}) →</ActionBtn>} />
-                {verifications.length === 0 ? <EmptyState icon="✅" msg="All creators reviewed! No pending verifications." /> : (
-                  <Table cols={['Creator', 'Handle', 'Location', 'Docs', { label: 'Action', align: 'right' }]}>
-                    {verifications.slice(0, 5).map(cr => (
-                      <tr key={cr.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                        <Td bold>{cr.name}</Td>
-                        <Td><span style={{ color: T.orange, fontWeight: 700 }}>@{cr.handle}</span></Td>
-                        <Td muted>{cr.city || '—'}, {cr.state || '—'}</Td>
-                        <Td>
-                          <Badge color={cr.aadhaarUrl ? T.green : T.red}>Aadhaar</Badge>{' '}
-                          <Badge color={cr.panUrl ? T.green : T.red}>PAN</Badge>
-                        </Td>
-                        <Td right>
-                          <ActionBtn onClick={() => { setSelectedCreator(cr); setDrawerOpen(true); }}><Eye size={13} /> Review KYC</ActionBtn>
-                        </Td>
-                      </tr>
-                    ))}
-                  </Table>
-                )}
-              </div>
-
-              {/* Recent Activity Preview */}
-              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-                <SectionHeader title="Recent Activity" sub="Last 8 platform events" action={<ActionBtn onClick={() => setActiveTab('activity')}>View Full Log →</ActionBtn>} />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {activityLog.slice(0, 8).map((a, i) => {
-                    const typeColor = { NEW_USER: T.blue, VERIFIED: T.green, PAYMENT: T.orange, CAMPAIGN: T.purple, BLOG: T.teal }[a.type] || T.slate;
-                    return (
-                      <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '10px 14px', background: T.bg, borderRadius: 10 }}>
-                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: typeColor, flexShrink: 0 }}></div>
-                        <span style={{ fontSize: 13, color: T.slate, fontWeight: 600, flex: 1 }}>{a.label}</span>
-                        <span style={{ fontSize: 11, color: T.muted, fontWeight: 500, whiteSpace: 'nowrap' }}>{fmtDate(a.time)}</span>
-                      </div>
-                    );
-                  })}
-                  {activityLog.length === 0 && <EmptyState icon="📋" msg="No activity yet" />}
-                </div>
-              </div>
-            </div>
+            <DashboardSection
+              deepStats={deepStats}
+              creators={creators}
+              brands={brands}
+              campaigns={campaigns}
+              verifications={verifications}
+              stats={stats}
+              allApplications={allApplications}
+              blogs={blogs}
+              counts={counts}
+              chartData={chartData}
+              maxUser={maxUser}
+              maxEscrow={maxEscrow}
+              hoveredPoint={hoveredPoint}
+              setHoveredPoint={setHoveredPoint}
+              genPoints={genPoints}
+              activityLog={activityLog}
+              maintenanceMode={maintenanceMode}
+              setMaintenanceMode={setMaintenanceMode}
+              token={token}
+              toast={toast}
+              setActiveTab={setActiveTab}
+              setSelectedCreator={setSelectedCreator}
+              setDrawerOpen={setDrawerOpen}
+              handleSendTestEmail={handleSendTestEmail}
+              handleSyncCheck={handleSyncCheck}
+              handleClearCache={handleClearCache}
+              fetchData={fetchData}
+            />
           )}
 
-          {/* ══ ACTIVITY LOG ═══════════════════════════════════════════════ */}
-          {activeTab === 'activity' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader title="Platform Activity Log" sub={`${activityLog.length} recent events across the platform`} action={<ActionBtn onClick={fetchData}><RefreshCw size={13} /> Refresh</ActionBtn>} />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {activityLog.map((a, i) => {
-                  const typeColor = { NEW_USER: T.blue, VERIFIED: T.green, PAYMENT: T.orange, CAMPAIGN: T.purple, BLOG: T.teal }[a.type] || T.slate;
-                  const typeLabel = { NEW_USER: 'USER', VERIFIED: 'KYC', PAYMENT: 'PAY', CAMPAIGN: 'CAMP', BLOG: 'BLOG' }[a.type] || a.type;
-                  return (
-                    <div key={i} style={{ display: 'flex', gap: 14, alignItems: 'center', padding: '12px 16px', background: T.bg, borderRadius: 12, border: `1px solid ${T.border}` }}>
-                      <Badge color={typeColor}>{typeLabel}</Badge>
-                      <span style={{ fontSize: 13, color: T.slate, fontWeight: 600, flex: 1 }}>{a.label}</span>
-                      <span style={{ fontSize: 11, color: T.muted, fontWeight: 500, whiteSpace: 'nowrap' }}>{fmtDate(a.time)}</span>
-                    </div>
-                  );
-                })}
-                {activityLog.length === 0 && <EmptyState icon="📋" msg="No activity to show yet" />}
-              </div>
-            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        
+
+
+
+
+                        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          {['activity', 'podcasts', 'events', 'ambassadors', 'missions', 'admin-notifications', 'comments', 'newsletters', 'contacts'].includes(activeTab) && (
+            <EngagementSection
+              activeTab={activeTab}
+              counts={counts}
+              fetchData={fetchData}
+              toast={toast}
+              token={token}
+              API_BASE={API_BASE}
+              activityLog={activityLog}
+              podcasts={podcasts}
+              clearPodcastForm={clearPodcastForm}
+              setEditingPodcast={setEditingPodcast}
+              setPodcastModalOpen={setPodcastModalOpen}
+              openEditPodcast={openEditPodcast}
+              handleTogglePodcast={handleTogglePodcast}
+              handleDeletePodcast={handleDeletePodcast}
+              events={events}
+              setEditingEvent={setEditingEvent}
+              setEvtTitle={setEvtTitle}
+              setEvtDescription={setEvtDescription}
+              setEvtDate={setEvtDate}
+              setEvtLocation={setEvtLocation}
+              setEvtLink={setEvtLink}
+              setEvtImage={setEvtImage}
+              setEventModalOpen={setEventModalOpen}
+              ambassadors={ambassadors}
+              missions={missions}
+              setEditingMission={setEditingMission}
+              setMisTitle={setMisTitle}
+              setMisDescription={setMisDescription}
+              setMisReward={setMisReward}
+              setMisRewardColor={setMisRewardColor}
+              setMisDeadline={setMisDeadline}
+              setMisSteps={setMisSteps}
+              setMisActive={setMisActive}
+              setMissionModalOpen={setMissionModalOpen}
+              missionCompletions={missionCompletions}
+              notifTargetGroup={notifTargetGroup}
+              setNotifTargetGroup={setNotifTargetGroup}
+              setNotifUserId={setNotifUserId}
+              notifUserId={notifUserId}
+              creators={creators}
+              brands={brands}
+              notifType={notifType}
+              setNotifType={setNotifType}
+              notifTitle={notifTitle}
+              setNotifTitle={setNotifTitle}
+              notifBody={notifBody}
+              setNotifBody={setNotifBody}
+              notifLink={notifLink}
+              setNotifLink={setNotifLink}
+              handleSendPlatformNotification={handleSendPlatformNotification}
+              comments={comments}
+              commentSearch={commentSearch}
+              setCommentSearch={setCommentSearch}
+              filteredComments={filteredComments}
+              handleDeleteComment={handleDeleteComment}
+              newsletters={newsletters}
+              newsletterSearch={newsletterSearch}
+              setNewsletterSearch={setNewsletterSearch}
+              filteredNewsletters={filteredNewsletters}
+              handleDeleteSubscriber={handleDeleteSubscriber}
+              contacts={contacts}
+              contactSearch={contactSearch}
+              setContactSearch={setContactSearch}
+              filteredContacts={filteredContacts}
+              handleToggleContactRead={handleToggleContactRead}
+              handleDeleteContact={handleDeleteContact}
+            />
           )}
 
           {/* ══ VERIFICATIONS ══════════════════════════════════════════════ */}
           {activeTab === 'verifications' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader title="KYC Verification Queue" badge={verifications.length} sub="Approve or reject creator identity documents" />
-              {verifications.length === 0 ? <EmptyState icon="✅" msg="No pending verifications. All creators have been reviewed!" /> : (
-                <Table cols={['Creator', 'Handle', 'Category', 'Followers', 'Aadhaar / PAN', { label: 'Actions', align: 'right' }]}>
-                  {verifications.map(cr => (
-                    <tr key={cr.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                      <Td bold>{cr.name}</Td>
-                      <Td><span style={{ color: T.orange, fontWeight: 700 }}>@{cr.handle}</span></Td>
-                      <Td>{(cr.niche || []).slice(0, 2).map((n, i) => <Badge key={i} color={T.blue}>{n}</Badge>)}</Td>
-                      <Td>{fmtNum(cr.followers)}</Td>
-                      <Td>
-                        <Badge color={cr.aadhaarUrl ? T.green : T.red}>Aadhaar</Badge>{' '}
-                        <Badge color={cr.panUrl ? T.green : T.red}>PAN</Badge>
-                      </Td>
-                      <Td right>
-                        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                          <a href={`${FRONTEND_URL}/creator/${cr.id}`} target="_blank" rel="noopener noreferrer" style={{ padding: '6px 12px', background: T.blueLight, color: T.blue, border: 'none', borderRadius: 8, fontSize: 11, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                            <ExternalLink size={11} /> Visit
-                          </a>
-                          <ActionBtn onClick={() => { setSelectedCreator(cr); setDrawerOpen(true); }}><Eye size={13} /> Review KYC</ActionBtn>
-                        </div>
-                      </Td>
-                    </tr>
-                  ))}
-                </Table>
-              )}
-            </div>
+            <KycSection
+              verifications={verifications}
+              setSelectedCreator={setSelectedCreator}
+              setDrawerOpen={setDrawerOpen}
+            />
           )}
 
-          {/* ══ ALL CREATORS ═══════════════════════════════════════════════ */}
-          {activeTab === 'creators' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader 
-                title="All Creators" 
-                badge={creators.length} 
-                sub="Manage creator profiles, suspensions and data" 
-                action={<button onClick={() => { clearCreatorForm(); setCreateCreatorModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ New Creator</button>}
-              />
-              <SearchBar value={creatorSearch} onChange={setCreatorSearch} placeholder="Search by name, handle, or city..." />
-              <Table cols={['Creator', 'Handle', 'Location', 'Followers', 'Verified', 'Status', { label: 'Actions', align: 'right' }]}>
-                {filteredCreators.map(cr => (
-                  <tr key={cr.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                    <Td bold>{cr.name}</Td>
-                    <Td><span style={{ color: T.orange, fontWeight: 700 }}>@{cr.handle}</span></Td>
-                    <Td muted>{cr.city || '—'}, {cr.state || '—'}</Td>
-                    <Td bold>{fmtNum(cr.followers)}</Td>
-                    <Td><Badge color={cr.isVerified ? T.green : T.muted}>{cr.isVerified ? '✓ Verified' : 'Unverified'}</Badge></Td>
-                    <Td><Badge color={cr.user?.isSuspended ? T.red : T.green}>{cr.user?.isSuspended ? 'Suspended' : 'Active'}</Badge></Td>
-                    <Td right>
-                      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                        <a href={`${FRONTEND_URL}/creator/${cr.id}`} target="_blank" rel="noopener noreferrer" style={{ padding: '5px 10px', background: T.blueLight, color: T.blue, borderRadius: 7, fontSize: 11, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                          <ExternalLink size={10} /> Profile
-                        </a>
-                        <ActionBtn small onClick={() => {
-                          setEditingCreator(cr);
-                          setEditCreName(cr.name || '');
-                          setEditCreHandle(cr.handle || '');
-                          setEditCreBio(cr.bio || '');
-                          setEditCreCity(cr.city || '');
-                          setEditCreState(cr.state || '');
-                          setEditCreFollowers(cr.followers || 0);
-                          setEditCreEngagementRate(cr.engagementRate || 0);
-                          setEditCreRateMin(cr.rateMin || 0);
-                          setEditCreRateMax(cr.rateMax || 0);
-                          setEditCrePhoto(cr.photo || '');
-                          setEditCreCoverImage(cr.coverImage || '');
-                          setEditCreNiche((cr.niche || []).join(', '));
-                          setEditCrePlatform((cr.platform || []).join(', '));
-                          setEditCreStatus(cr.status || 'DRAFT');
-                          setEditCreIsVerified(cr.isVerified || false);
-                          setEditCreIsPro(cr.isPro || false);
-                          setEditCreAadhaarUrl(cr.aadhaarUrl || '');
-                          setEditCrePanUrl(cr.panUrl || '');
-                          setEditCreatorModalOpen(true);
-                        }} style={{ background: T.orangeLight, color: T.orange }}>✏️ Edit</ActionBtn>
-                        <ActionBtn small onClick={() => handleFetchWallet(cr)}><Wallet size={11} /> Wallet</ActionBtn>
-                        <ActionBtn small onClick={() => { setScoreModal({ creator: cr }); setScoreInput(cr.score || 0); }}><Trophy size={11} /> Score</ActionBtn>
-                        <DangerBtn small onClick={() => handleToggleSuspension(cr.user?.id)}>
-                          {cr.user?.isSuspended ? <UserCheck size={11} /> : <UserX size={11} />}
-                          {cr.user?.isSuspended ? 'Unban' : 'Suspend'}
-                        </DangerBtn>
-                        <DangerBtn small onClick={() => handleDeleteCreator(cr.id)}>
-                          <Trash2 size={11} /> Delete
-                        </DangerBtn>
-                      </div>
-                    </Td>
-                  </tr>
-                ))}
-              </Table>
-              {filteredCreators.length === 0 && <EmptyState icon="👤" msg="No creators match your search" />}
-            </div>
+          {['creators', 'creator-wallets', 'creator-score', 'creator-achievements', 'creator-reviews', 'leaderboard'].includes(activeTab) && (
+            <CreatorsSection
+              activeTab={activeTab}
+              creators={creators}
+              filteredCreators={filteredCreators}
+              creatorSearch={creatorSearch}
+              setCreatorSearch={setCreatorSearch}
+              clearCreatorForm={clearCreatorForm}
+              setCreateCreatorModalOpen={setCreateCreatorModalOpen}
+              setEditingCreator={setEditingCreator}
+              setEditCreName={setEditCreName}
+              setEditCreHandle={setEditCreHandle}
+              setEditCreBio={setEditCreBio}
+              setEditCreCity={setEditCreCity}
+              setEditCreState={setEditCreState}
+              setEditCreFollowers={setEditCreFollowers}
+              setEditCreEngagementRate={setEditCreEngagementRate}
+              setEditCreRateMin={setEditCreRateMin}
+              setEditCreRateMax={setEditCreRateMax}
+              setEditCrePhoto={setEditCrePhoto}
+              setEditCreCoverImage={setEditCreCoverImage}
+              setEditCreNiche={setEditCreNiche}
+              setEditCrePlatform={setEditCrePlatform}
+              setEditCreStatus={setEditCreStatus}
+              setEditCreIsVerified={setEditCreIsVerified}
+              setEditCreIsPro={setEditCreIsPro}
+              setEditCreAadhaarUrl={setEditCreAadhaarUrl}
+              setEditCrePanUrl={setEditCrePanUrl}
+              setEditCreatorModalOpen={setEditCreatorModalOpen}
+              handleFetchWallet={handleFetchWallet}
+              setScoreModal={setScoreModal}
+              setScoreInput={setScoreInput}
+              setScoreReason={setScoreReason}
+              handleToggleSuspension={handleToggleSuspension}
+              handleDeleteCreator={handleDeleteCreator}
+              selectedWalletCreator={selectedWalletCreator}
+              setSelectedWalletCreator={setSelectedWalletCreator}
+              walletTxns={walletTxns}
+              setWalletTxns={setWalletTxns}
+              walletLoading={walletLoading}
+              setAchCreatorId={setAchCreatorId}
+              setAchType={setAchType}
+              setAchTitle={setAchTitle}
+              setAchDescription={setAchDescription}
+              setGrantAchModalOpen={setGrantAchModalOpen}
+              reviews={reviews}
+              handleDeleteReview={handleDeleteReview}
+              leaderboard={leaderboard}
+              fetchData={fetchData}
+              leaderSearch={leaderSearch}
+              setLeaderSearch={setLeaderSearch}
+              filteredLeaderboard={filteredLeaderboard}
+            />
           )}
 
-          {/* ══ CREATOR WALLETS ════════════════════════════════════════════ */}
-          {activeTab === 'creator-wallets' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              {!selectedWalletCreator ? (
-                <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-                  <SectionHeader title="Creator Wallets" sub="Click on a creator to view their transaction history" />
-                  <SearchBar value={creatorSearch} onChange={setCreatorSearch} placeholder="Search creator..." />
-                  <Table cols={['Creator', 'Handle', 'Niche', 'Followers', 'Verified', { label: 'View Wallet', align: 'right' }]}>
-                    {filteredCreators.map(cr => (
-                      <tr key={cr.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                        <Td bold>{cr.name}</Td>
-                        <Td><span style={{ color: T.orange, fontWeight: 700 }}>@{cr.handle}</span></Td>
-                        <Td>{(cr.niche || []).slice(0, 2).map((n, i) => <Badge key={i} color={T.purple} size="sm">{n}</Badge>)}</Td>
-                        <Td bold>{fmtNum(cr.followers)}</Td>
-                        <Td><Badge color={cr.isVerified ? T.green : T.muted}>{cr.isVerified ? '✓' : '—'}</Badge></Td>
-                        <Td right><ActionBtn onClick={() => handleFetchWallet(cr)}><Wallet size={12} /> View Wallet</ActionBtn></Td>
-                      </tr>
-                    ))}
-                  </Table>
-                </div>
-              ) : (
-                <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-                  <SectionHeader
-                    title={`Wallet: ${selectedWalletCreator.name}`}
-                    sub={`@${selectedWalletCreator.handle} · All payment transactions`}
-                    action={<ActionBtn onClick={() => { setSelectedWalletCreator(null); setWalletTxns([]); }}>← Back to All Creators</ActionBtn>}
-                  />
-                  {walletLoading ? <EmptyState icon="⏳" msg="Loading transactions..." /> : walletTxns.length === 0 ? (
-                    <EmptyState icon="💰" msg="No transactions found for this creator" />
-                  ) : (
-                    <Table cols={['Campaign', 'Brand', 'Amount', 'Type', 'Status', 'Date']}>
-                      {walletTxns.map(tx => (
-                        <tr key={tx.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                          <Td bold>{tx.campaign?.title || '—'}</Td>
-                          <Td>{tx.brand?.companyName || '—'}</Td>
-                          <Td bold><span style={{ color: T.green }}>{fmtINR(tx.amount)}</span></Td>
-                          <Td><Badge color={T.blue}>{tx.type}</Badge></Td>
-                          <Td><Badge color={STATUS_COLOR[tx.status] || T.muted}>{tx.status}</Badge></Td>
-                          <Td muted>{fmtDate(tx.createdAt)}</Td>
-                        </tr>
-                      ))}
-                    </Table>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
 
-          {/* ══ CREATOR SCORE ══════════════════════════════════════════════ */}
-          {activeTab === 'creator-score' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader title="Creator Score Manager" sub="View and manually adjust creator platform scores" />
-              <SearchBar value={creatorSearch} onChange={setCreatorSearch} placeholder="Search creator..." />
-              <Table cols={['Creator', 'Handle', 'Score', 'Followers', 'Verified', { label: 'Adjust Score', align: 'right' }]}>
-                {filteredCreators.map(cr => (
-                  <tr key={cr.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                    <Td bold>{cr.name}</Td>
-                    <Td><span style={{ color: T.orange, fontWeight: 700 }}>@{cr.handle}</span></Td>
-                    <Td>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 800, color: T.navy, fontSize: 14 }}>
-                        <Trophy size={14} style={{ color: T.yellow }} />
-                        {cr.score || 0}
-                      </span>
-                    </Td>
-                    <Td>{fmtNum(cr.followers)}</Td>
-                    <Td><Badge color={cr.isVerified ? T.green : T.muted}>{cr.isVerified ? '✓' : '—'}</Badge></Td>
-                    <Td right>
-                      <ActionBtn onClick={() => { setScoreModal({ creator: cr }); setScoreInput(String(cr.score || 0)); setScoreReason(''); }}>
-                        <Trophy size={12} /> Adjust Score
-                      </ActionBtn>
-                    </Td>
-                  </tr>
-                ))}
-              </Table>
-            </div>
-          )}
-
-          {/* ══ CREATOR ACHIEVEMENTS ═══════════════════════════════════════ */}
-          {activeTab === 'creator-achievements' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader 
-                title="Achievements & Milestones" 
-                sub="Track creator milestone progress based on follower counts and brand deals" 
-                action={<button onClick={() => { setAchCreatorId(''); setAchType('VERIFICATION'); setAchTitle(''); setAchDescription(''); setGrantAchModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ Grant Achievement</button>}
-              />
-              <div style={{ marginBottom: 20, padding: 16, background: T.orangeLight, borderRadius: 12, border: `1px solid ${T.orangeBorder}` }}>
-                <p style={{ margin: 0, fontSize: 13, color: T.orange, fontWeight: 700 }}>ℹ️ Achievements are automatically unlocked when creators hit follower + deal milestones. Verified creators get physical swag shipped to them.</p>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-                {[
-                  { emoji: '🎥', title: 'Rising Star', followerTarget: 1000, color: T.blue },
-                  { emoji: '⚡', title: 'Creator Pro', followerTarget: 10000, color: T.purple },
-                  { emoji: '🏆', title: 'Bharat Elite', followerTarget: 100000, color: T.orange },
-                  { emoji: '👑', title: 'Legend', followerTarget: 1000000, color: T.yellow },
-                ].map((m, i) => {
-                  const earned = creators.filter(c => c.followers >= m.followerTarget && c.isVerified);
-                  return (
-                    <div key={i} style={{ padding: 20, background: T.bg, borderRadius: 16, border: `1px solid ${T.border}` }}>
-                      <div style={{ fontSize: 32, marginBottom: 10 }}>{m.emoji}</div>
-                      <h4 style={{ margin: '0 0 4px', fontSize: 15, fontWeight: 800, color: T.navy }}>{m.title}</h4>
-                      <p style={{ margin: '0 0 12px', fontSize: 12, color: T.muted, fontWeight: 500 }}>{fmtNum(m.followerTarget)}+ followers required</p>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Badge color={m.color}>{earned.length} creators earned</Badge>
-                        <span style={{ fontSize: 11, color: T.muted }}>of {creators.length} total</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              <div style={{ marginTop: 24 }}>
-                <h4 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 800, color: T.navy }}>Top Creators by Followers</h4>
-                <Table cols={['Creator', 'Followers', 'Verified', 'Score', 'Milestone']}>
-                  {[...creators].sort((a, b) => (b.followers || 0) - (a.followers || 0)).slice(0, 15).map(cr => {
-                    const milestone = cr.followers >= 1000000 ? { emoji: '👑', label: 'Legend', color: T.yellow } :
-                      cr.followers >= 100000 ? { emoji: '🏆', label: 'Bharat Elite', color: T.orange } :
-                        cr.followers >= 10000 ? { emoji: '⚡', label: 'Creator Pro', color: T.purple } :
-                          cr.followers >= 1000 ? { emoji: '🎥', label: 'Rising Star', color: T.blue } :
-                            { emoji: '🌱', label: 'Budding', color: T.muted };
-                    return (
-                      <tr key={cr.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                        <Td bold>{cr.name} <span style={{ color: T.orange, fontWeight: 700 }}>@{cr.handle}</span></Td>
-                        <Td bold>{fmtNum(cr.followers)}</Td>
-                        <Td><Badge color={cr.isVerified ? T.green : T.muted}>{cr.isVerified ? '✓' : '—'}</Badge></Td>
-                        <Td bold>{cr.score || 0}</Td>
-                        <Td><Badge color={milestone.color}>{milestone.emoji} {milestone.label}</Badge></Td>
-                      </tr>
-                    );
-                  })}
-                </Table>
-              </div>
-            </div>
-          )}
-
-          {/* ══ CREATOR REVIEWS ════════════════════════════════════════════ */}
-          {activeTab === 'creator-reviews' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader title="Creator Reviews" badge={reviews.length} sub="Brand reviews submitted for creators — moderate spam" />
-              {reviews.length === 0 ? <EmptyState icon="⭐" msg="No reviews yet" /> : (
-                <Table cols={['Creator', 'Brand', 'Rating', 'Review', 'Date', { label: 'Action', align: 'right' }]}>
-                  {reviews.map(rv => (
-                    <tr key={rv.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                      <Td bold>{rv.creator?.name || '—'}</Td>
-                      <Td>{rv.brand?.companyName || '—'}</Td>
-                      <Td><span style={{ color: T.yellow, fontWeight: 800 }}>{'★'.repeat(Math.min(rv.r || 0, 5))}</span> {rv.r}/5</Td>
-                      <Td><span style={{ maxWidth: 200, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{rv.t || '—'}</span></Td>
-                      <Td muted>{fmtDate(rv.createdAt)}</Td>
-                      <Td right><DangerBtn small onClick={() => handleDeleteReview(rv.id)}><Trash2 size={11} /> Delete</DangerBtn></Td>
-                    </tr>
-                  ))}
-                </Table>
-              )}
-            </div>
-          )}
-
-          {/* ══ PODCASTS ═══════════════════════════════════════════════════ */}
-          {activeTab === 'podcasts' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader 
-                title="Podcast Manager" 
-                badge={podcasts.length} 
-                sub="Publish, edit or create podcast episodes for verified creators" 
-                action={<button onClick={() => { clearPodcastForm(); setEditingPodcast(null); setPodcastModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ New Episode</button>}
-              />
-              {podcasts.length === 0 ? <EmptyState icon="🎙️" msg="No podcasts available" /> : (
-                <Table cols={['Thumbnail', 'Episode', 'Creator', 'Duration', 'Status', 'Date', { label: 'Actions', align: 'right' }]}>
-                  {podcasts.map(pod => (
-                    <tr key={pod.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                      <Td>
-                        <img src={pod.thumbnail || 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=100'} alt={pod.title} style={{ width: 45, height: 45, borderRadius: 8, objectFit: 'cover', border: `1px solid ${T.border}` }} />
-                      </Td>
-                      <Td bold>
-                        <span style={{ maxWidth: 220, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{pod.title}</span>
-                      </Td>
-                      <Td>{pod.creator?.name || '—'}</Td>
-                      <Td muted>{pod.duration}</Td>
-                      <Td><Badge color={pod.published ? T.green : T.muted}>{pod.published ? 'Published' : 'Draft'}</Badge></Td>
-                      <Td muted>{fmtDate(pod.createdAt)}</Td>
-                      <Td right>
-                        <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                          <ActionBtn small onClick={() => openEditPodcast(pod)}>✎ Edit</ActionBtn>
-                          <ActionBtn small onClick={() => handleTogglePodcast(pod.id)}>
-                            {pod.published ? '⏸ Unpublish' : '▶ Publish'}
-                          </ActionBtn>
-                          <DangerBtn small onClick={() => handleDeletePodcast(pod.id)}><Trash2 size={11} /></DangerBtn>
-                        </div>
-                      </Td>
-                    </tr>
-                  ))}
-                </Table>
-              )}
-            </div>
-          )}
-
-          {/* ══ LEADERBOARD ════════════════════════════════════════════════ */}
-          {activeTab === 'leaderboard' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader title="Leaderboard Management" badge={leaderboard.length} sub="Top 100 verified creators ranked by score and followers" action={<ActionBtn onClick={fetchData}><RefreshCw size={13} /> Refresh</ActionBtn>} />
-              <SearchBar value={leaderSearch} onChange={setLeaderSearch} placeholder="Search creator..." />
-              <Table cols={['Rank', 'Creator', 'Handle', 'Score', 'Followers', 'Brand Deals', 'Location', { label: 'Actions', align: 'right' }]}>
-                {filteredLeaderboard.map((cr, i) => (
-                  <tr key={cr.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                    <Td bold>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`}
-                      </span>
-                    </Td>
-                    <Td bold>{cr.name}</Td>
-                    <Td><span style={{ color: T.orange, fontWeight: 700 }}>@{cr.handle}</span></Td>
-                    <Td bold><span style={{ color: T.yellow }}>{cr.score || 0}</span></Td>
-                    <Td>{fmtNum(cr.followers)}</Td>
-                    <Td>{cr._count?.applications || 0}</Td>
-                    <Td muted>{cr.city || '—'}</Td>
-                    <Td right>
-                      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                        <a href={`${FRONTEND_URL}/creator/${cr.id}`} target="_blank" rel="noopener noreferrer" style={{ padding: '5px 10px', background: T.blueLight, color: T.blue, borderRadius: 7, fontSize: 11, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                          <ExternalLink size={10} /> Visit
-                        </a>
-                        <ActionBtn small onClick={() => { setScoreModal({ creator: cr }); setScoreInput(String(cr.score || 0)); }}>
-                          <Trophy size={11} /> Score
-                        </ActionBtn>
-                      </div>
-                    </Td>
-                  </tr>
-                ))}
-              </Table>
-              {filteredLeaderboard.length === 0 && <EmptyState icon="🏆" msg="No verified creators in leaderboard yet" />}
-            </div>
-          )}
-
-          {/* ══ EVENTS MANAGER ════════════════════════════════════════════ */}
-          {activeTab === 'events' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader 
-                title="Events Manager" 
-                badge={events.length} 
-                sub="Create and manage public platform conferences, summits, and creator meetups" 
-                action={<button onClick={() => { setEditingEvent(null); setEvtTitle(''); setEvtDescription(''); setEvtDate(''); setEvtLocation(''); setEvtLink(''); setEvtImage(''); setEventModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ New Event</button>}
-              />
-              {events.length === 0 ? <EmptyState icon="📅" msg="No events created yet" /> : (
-                <Table cols={['Banner', 'Event Title', 'Date', 'Location', 'Link', { label: 'Actions', align: 'right' }]}>
-                  {events.map(evt => (
-                    <tr key={evt.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                      <Td>
-                        <img src={evt.image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=100'} alt={evt.title} style={{ width: 60, height: 40, borderRadius: 6, objectFit: 'cover', border: `1px solid ${T.border}` }} />
-                      </Td>
-                      <Td bold>
-                        <div>{evt.title}</div>
-                        <div style={{ fontSize: 11, color: T.muted, fontWeight: 550 }}>{evt.description?.substring(0, 50)}...</div>
-                      </Td>
-                      <Td bold>{evt.date}</Td>
-                      <Td>{evt.location}</Td>
-                      <Td>
-                        {evt.link ? <a href={evt.link} target="_blank" rel="noopener noreferrer" style={{ color: T.orange, fontWeight: 700 }}>Link ↗</a> : '—'}
-                      </Td>
-                      <Td right>
-                        <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                          <ActionBtn small onClick={() => {
-                            setEditingEvent(evt);
-                            setEvtTitle(evt.title || '');
-                            setEvtDescription(evt.description || '');
-                            setEvtDate(evt.date || '');
-                            setEvtLocation(evt.location || '');
-                            setEvtLink(evt.link || '');
-                            setEvtImage(evt.image || '');
-                            setEventModalOpen(true);
-                          }}>✎ Edit</ActionBtn>
-                          <DangerBtn small onClick={async () => {
-                            if (!window.confirm('Delete this event permanently?')) return;
-                            try {
-                              const res = await fetch(`${API_BASE}/events/${evt.id}`, { method: 'DELETE', headers: H() });
-                              if (res.ok) { toast('Event deleted', 'success'); fetchData(); }
-                              else { const d = await res.json(); throw new Error(d.error || 'Failed'); }
-                            } catch (err) { toast(err.message, 'error'); }
-                          }}><Trash2 size={11} /></DangerBtn>
-                        </div>
-                      </Td>
-                    </tr>
-                  ))}
-                </Table>
-              )}
-            </div>
-          )}
-
-          {/* ══ CAMPUS AMBASSADOR APPLICATIONS ════════════════════════════ */}
-          {activeTab === 'ambassadors' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader 
-                title="Campus Ambassador Applications" 
-                badge={ambassadors.length} 
-                sub="Review submitted student profiles applying to represent CreatorBharat on campuses" 
-              />
-              {ambassadors.length === 0 ? <EmptyState icon="🎓" msg="No ambassador applications yet" /> : (
-                <Table cols={['Name / Contact', 'College / City', 'Socials', 'Pitch Brief', 'Applied Date', 'Status', { label: 'Actions', align: 'right' }]}>
-                  {ambassadors.map(app => (
-                    <tr key={app.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                      <Td bold>
-                        <div>{app.name}</div>
-                        <div style={{ fontSize: 11, color: T.muted, fontWeight: 550 }}>{app.email} · {app.phone}</div>
-                      </Td>
-                      <Td>
-                        <div style={{ fontWeight: 700 }}>{app.college}</div>
-                        <div style={{ fontSize: 11, color: T.muted }}>{app.city}</div>
-                      </Td>
-                      <Td>
-                        <div style={{ fontSize: 12 }}>
-                          {app.instagram && <div style={{ fontWeight: 600 }}>Insta: <span style={{ color: T.orange }}>@{app.instagram}</span></div>}
-                          {app.youtube && <div style={{ fontWeight: 600 }}>YT: <span style={{ color: T.blue }}>{app.youtube}</span></div>}
-                        </div>
-                      </Td>
-                      <Td>
-                        <span style={{ maxWidth: 180, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={app.pitch}>
-                          {app.pitch}
-                        </span>
-                      </Td>
-                      <Td muted>{fmtDate(app.createdAt)}</Td>
-                      <Td>
-                        <Badge color={app.status === 'APPROVED' ? T.green : app.status === 'REJECTED' ? T.red : T.yellow}>
-                          {app.status}
-                        </Badge>
-                      </Td>
-                      <Td right>
-                        <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                          {app.status === 'PENDING' && (
-                            <>
-                              <button onClick={async () => {
-                                try {
-                                  const res = await fetch(`${API_BASE}/admin/ambassadors/${app.id}/status`, {
-                                    method: 'POST', headers: H(), body: JSON.stringify({ status: 'APPROVED' })
-                                  });
-                                  if (res.ok) { toast('Ambassador application approved!', 'success'); fetchData(); }
-                                } catch (err) { toast(err.message, 'error'); }
-                              }} style={{ padding: '4px 10px', background: T.greenLight, border: `1px solid ${T.green}20`, color: T.green, borderRadius: 6, fontSize: 11, fontWeight: 800, cursor: 'pointer' }}>✓ Approve</button>
-                              <button onClick={async () => {
-                                try {
-                                  const res = await fetch(`${API_BASE}/admin/ambassadors/${app.id}/status`, {
-                                    method: 'POST', headers: H(), body: JSON.stringify({ status: 'REJECTED' })
-                                  });
-                                  if (res.ok) { toast('Ambassador application rejected', 'info'); fetchData(); }
-                                } catch (err) { toast(err.message, 'error'); }
-                              }} style={{ padding: '4px 10px', background: T.redLight, border: `1px solid ${T.red}20`, color: T.red, borderRadius: 6, fontSize: 11, fontWeight: 800, cursor: 'pointer' }}>✕ Reject</button>
-                            </>
-                          )}
-                          <DangerBtn small onClick={async () => {
-                            if (!window.confirm('Delete this application permanently?')) return;
-                            try {
-                              const res = await fetch(`${API_BASE}/admin/ambassadors/${app.id}`, { method: 'DELETE', headers: H() });
-                              if (res.ok) { toast('Application deleted', 'success'); fetchData(); }
-                            } catch (err) { toast(err.message, 'error'); }
-                          }}><Trash2 size={11} /></DangerBtn>
-                        </div>
-                      </Td>
-                    </tr>
-                  ))}
-                </Table>
-              )}
-            </div>
-          )}
-
-          {/* ══ MONTHLY MISSIONS & COMPLETIONS ════════════════════════════ */}
-          {activeTab === 'missions' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28, display: 'flex', flexDirection: 'column', gap: 32 }}>
-              
-              {/* Part A: Missions list */}
-              <div>
-                <SectionHeader 
-                  title="Monthly Platform Missions" 
-                  badge={missions.length} 
-                  sub="Create and manage monthly platform-wide creator tasks and rewards" 
-                  action={<button onClick={() => { setEditingMission(null); setMisTitle(''); setMisDescription(''); setMisReward(''); setMisRewardColor('#FF9431'); setMisDeadline(''); setMisSteps(''); setMisActive(true); setMissionModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ Create Mission</button>}
-                />
-                {missions.length === 0 ? <EmptyState icon="🎯" msg="No monthly missions defined yet" /> : (
-                  <Table cols={['Mission Detail', 'Reward', 'Deadline', 'Status', { label: 'Actions', align: 'right' }]}>
-                    {missions.map(mis => (
-                      <tr key={mis.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                        <Td bold>
-                          <div>{mis.title}</div>
-                          <div style={{ fontSize: 11, color: T.muted, fontWeight: 550 }}>{mis.description}</div>
-                        </Td>
-                        <Td>
-                          <Badge color={mis.rewardColor || T.orange}>{mis.reward}</Badge>
-                        </Td>
-                        <Td muted>{fmtDate(mis.deadline)}</Td>
-                        <Td>
-                          <Badge color={mis.active ? T.green : T.muted}>{mis.active ? 'Active' : 'Draft'}</Badge>
-                        </Td>
-                        <Td right>
-                          <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                            <ActionBtn small onClick={() => {
-                              setEditingMission(mis);
-                              setMisTitle(mis.title || '');
-                              setMisDescription(mis.description || '');
-                              setMisReward(mis.reward || '');
-                              setMisRewardColor(mis.rewardColor || '#FF9431');
-                              setMisDeadline(mis.deadline ? new Date(mis.deadline).toISOString().split('T')[0] : '');
-                              setMisSteps(Array.isArray(mis.steps) ? mis.steps.join('\n') : '');
-                              setMisActive(mis.active ?? true);
-                              setMissionModalOpen(true);
-                            }}>✎ Edit</ActionBtn>
-                            <DangerBtn small onClick={async () => {
-                              if (!window.confirm('Delete this mission?')) return;
-                              try {
-                                const res = await fetch(`${API_BASE}/admin/missions/${mis.id}`, { method: 'DELETE', headers: H() });
-                                if (res.ok) { toast('Mission deleted', 'success'); fetchData(); }
-                              } catch (err) { toast(err.message, 'error'); }
-                            }}><Trash2 size={11} /></DangerBtn>
-                          </div>
-                        </Td>
-                      </tr>
-                    ))}
-                  </Table>
-                )}
-              </div>
-
-              {/* Part B: Completions Proof Submissions Queue */}
-              <div style={{ borderTop: `1px solid ${T.border}`, paddingTop: 28 }}>
-                <SectionHeader 
-                  title="Proof Submission Queue" 
-                  badge={missionCompletions.length} 
-                  sub="Verify submitted proof URLs from creators claiming mission completion rewards" 
-                />
-                {missionCompletions.length === 0 ? <EmptyState icon="⏳" msg="No completion proofs submitted yet" /> : (
-                  <Table cols={['Creator', 'Mission', 'Submitted Proof Link', 'Status', { label: 'Review Actions', align: 'right' }]}>
-                    {missionCompletions.map(comp => (
-                      <tr key={comp.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                        <Td bold>
-                          <div>{comp.creator?.name || '—'}</div>
-                          <div style={{ fontSize: 11, color: T.muted, fontWeight: 550 }}>@{comp.creator?.handle}</div>
-                        </Td>
-                        <Td>
-                          <div style={{ fontWeight: 700 }}>{comp.mission?.title}</div>
-                          <div style={{ fontSize: 11, color: T.muted }}>Reward: {comp.mission?.reward}</div>
-                        </Td>
-                        <Td>
-                          {comp.proofUrl ? (
-                            <a href={comp.proofUrl} target="_blank" rel="noopener noreferrer" style={{ color: T.orange, fontWeight: 800, textDecoration: 'underline' }}>
-                              View Proof Link ↗
-                            </a>
-                          ) : 'No Link Provided'}
-                        </Td>
-                        <Td>
-                          <Badge color={comp.status === 'APPROVED' ? T.green : comp.status === 'REJECTED' ? T.red : T.yellow}>
-                            {comp.status}
-                          </Badge>
-                        </Td>
-                        <Td right>
-                          <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                            {comp.status === 'PENDING' && (
-                              <>
-                                <button onClick={async () => {
-                                  try {
-                                    const res = await fetch(`${API_BASE}/admin/missions/completions/${comp.id}/status`, {
-                                      method: 'POST', headers: H(), body: JSON.stringify({ status: 'APPROVED' })
-                                    });
-                                    if (res.ok) { toast('Mission submission approved & reward notification sent!', 'success'); fetchData(); }
-                                    else { const d = await res.json(); throw new Error(d.error); }
-                                  } catch (err) { toast(err.message, 'error'); }
-                                }} style={{ padding: '5px 12px', background: T.greenLight, border: `1px solid ${T.green}20`, color: T.green, borderRadius: 6, fontSize: 11, fontWeight: 800, cursor: 'pointer' }}>✓ Approve</button>
-                                <button onClick={async () => {
-                                  try {
-                                    const res = await fetch(`${API_BASE}/admin/missions/completions/${comp.id}/status`, {
-                                      method: 'POST', headers: H(), body: JSON.stringify({ status: 'REJECTED' })
-                                    });
-                                    if (res.ok) { toast('Mission submission rejected & notification sent', 'info'); fetchData(); }
-                                    else { const d = await res.json(); throw new Error(d.error); }
-                                  } catch (err) { toast(err.message, 'error'); }
-                                }} style={{ padding: '5px 12px', background: T.redLight, border: `1px solid ${T.red}20`, color: T.red, borderRadius: 6, fontSize: 11, fontWeight: 800, cursor: 'pointer' }}>✕ Reject</button>
-                              </>
-                            )}
-                          </div>
-                        </Td>
-                      </tr>
-                    ))}
-                  </Table>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* ══ NOTIFICATION CENTER ═══════════════════════════════════════ */}
-          {activeTab === 'admin-notifications' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader 
-                title="Notification Dispatch Center" 
-                sub="Send customized in-app push alerts and updates to creators or brands" 
-              />
-              <form onSubmit={handleSendPlatformNotification} style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 650, marginTop: 20 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Recipient Group *</label>
-                  <select 
-                    value={notifTargetGroup} 
-                    onChange={e => { setNotifTargetGroup(e.target.value); setNotifUserId(''); }} 
-                    required 
-                    style={{ width: '100%', padding: '12px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}
-                  >
-                    <option value="ALL_CREATORS">📢 All Creators ({creators.length} users)</option>
-                    <option value="ALL_BRANDS">🏢 All Brands ({brands.length} users)</option>
-                    <option value="INDIVIDUAL">👤 Individual Creator / Brand</option>
-                  </select>
-                </div>
-
-                {notifTargetGroup === 'INDIVIDUAL' && (
-                  <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Select Target User *</label>
-                    <select 
-                      value={notifUserId} 
-                      onChange={e => setNotifUserId(e.target.value)} 
-                      required 
-                      style={{ width: '100%', padding: '12px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}
-                    >
-                      <option value="">-- Select Recipient --</option>
-                      <optgroup label="Creators">
-                        {creators.map(c => (
-                          <option key={c.id} value={c.userId}>{c.name} (@{c.handle})</option>
-                        ))}
-                      </optgroup>
-                      <optgroup label="Brands">
-                        {brands.map(b => (
-                          <option key={b.id} value={b.userId}>{b.companyName} (Brand)</option>
-                        ))}
-                      </optgroup>
-                    </select>
-                  </div>
-                )}
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Alert Type / Theme *</label>
-                    <select 
-                      value={notifType} 
-                      onChange={e => setNotifType(e.target.value)} 
-                      required 
-                      style={{ width: '100%', padding: '12px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.card, outline: 'none' }}
-                    >
-                      <option value="INFO">🔵 INFO (Standard News/Info)</option>
-                      <option value="SUCCESS">🟢 SUCCESS (Payments/Approve)</option>
-                      <option value="WARNING">🟡 WARNING (Milestone Updates)</option>
-                      <option value="DANGER">🔴 DANGER (Policy Alerts/Suspension)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Alert Title *</label>
-                    <input 
-                      value={notifTitle} 
-                      onChange={e => setNotifTitle(e.target.value)} 
-                      required 
-                      placeholder="e.g. ⚡ System Scheduled Maintenance" 
-                      style={{ width: '100%', padding: '12px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} 
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Notification Message *</label>
-                  <textarea 
-                    value={notifBody} 
-                    onChange={e => setNotifBody(e.target.value)} 
-                    required 
-                    rows={4} 
-                    placeholder="Enter the notification content here..." 
-                    style={{ width: '100%', padding: '12px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box', resize: 'vertical' }} 
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Optional Action Link</label>
-                  <input 
-                    value={notifLink} 
-                    onChange={e => setNotifLink(e.target.value)} 
-                    placeholder="e.g. /creator/opportunities or /brand-dashboard" 
-                    style={{ width: '100%', padding: '12px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, outline: 'none', boxSizing: 'border-box' }} 
-                  />
-                </div>
-
-                <button 
-                  type="submit" 
-                  style={{ width: '100%', padding: '14px', background: T.orange, color: '#fff', border: 'none', borderRadius: 12, fontWeight: 800, fontSize: 14, cursor: 'pointer', display: 'flex', gap: 8, alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(255, 148, 49, 0.2)' }}
-                >
-                  <Bell size={18} /> Send Notification
-                </button>
-              </form>
-            </div>
-          )}
-
-          {/* ══ ALL BRANDS ═════════════════════════════════════════════════ */}
-          {activeTab === 'brands' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader 
-                title="All Brands" 
-                badge={brands.length} 
-                sub="Manage brand accounts, view campaigns and suspend violators" 
-                action={<button onClick={() => { clearBrandForm(); setCreateBrandModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ New Brand</button>}
-              />
-              <SearchBar value={brandSearch} onChange={setBrandSearch} placeholder="Search brand name or industry..." />
-              <Table cols={['Brand', 'Industry', 'Email', 'Campaigns', 'Status', { label: 'Actions', align: 'right' }]}>
-                {filteredBrands.map(br => (
-                  <tr key={br.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                    <Td bold>{br.companyName}</Td>
-                    <Td>{br.industry || '—'}</Td>
-                    <Td muted>{br.user?.email || '—'}</Td>
-                    <Td bold>{br._count?.campaigns || 0}</Td>
-                    <Td><Badge color={br.user?.isSuspended ? T.red : T.green}>{br.user?.isSuspended ? 'Suspended' : 'Active'}</Badge></Td>
-                    <Td right>
-                      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                        <a href={`${FRONTEND_URL}/brand/dashboard`} target="_blank" rel="noopener noreferrer" style={{ padding: '5px 10px', background: T.blueLight, color: T.blue, borderRadius: 7, fontSize: 11, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                          <ExternalLink size={10} /> Dashboard
-                        </a>
-                        <ActionBtn small onClick={() => {
-                          setEditingBrand(br);
-                          setEditBrandName(br.companyName || '');
-                          setEditBrandIndustry(br.industry || '');
-                          setEditBrandWebsite(br.website || '');
-                          setEditBrandModalOpen(true);
-                        }} style={{ background: T.orangeLight, color: T.orange }}>✏️ Edit</ActionBtn>
-                        <ActionBtn small onClick={() => { setSelectedBrand(br); setBrandDrawerOpen(true); }}><Eye size={11} /> View</ActionBtn>
-                        <DangerBtn small onClick={() => handleToggleSuspension(br.user?.id, false)}>
-                          {br.user?.isSuspended ? <UserCheck size={11} /> : <UserX size={11} />}
-                          {br.user?.isSuspended ? 'Unban' : 'Suspend'}
-                        </DangerBtn>
-                        <DangerBtn small onClick={() => handleDeleteBrand(br.id)}>
-                          <Trash2 size={11} /> Delete
-                        </DangerBtn>
-                      </div>
-                    </Td>
-                  </tr>
-                ))}
-              </Table>
-              {filteredBrands.length === 0 && <EmptyState icon="🏢" msg="No brands match your search" />}
-            </div>
-          )}
-
-          {/* ══ CAMPAIGNS ══════════════════════════════════════════════════ */}
-          {activeTab === 'campaigns' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader 
-                title="Campaign Manager" 
-                badge={campaigns.length} 
-                sub="Oversee all brand campaigns, inspect applications" 
-                action={<button onClick={() => { clearCampaignForm(); setCreateCampaignModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ New Campaign</button>}
-              />
-              <SearchBar value={campaignSearch} onChange={setCampaignSearch} placeholder="Search campaign or brand..." />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {filteredCampaigns.map(c => (
-                  <div key={c.id} style={{ border: `1px solid ${T.border}`, borderRadius: 14, overflow: 'hidden' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', cursor: 'pointer', background: expandedCampaignId === c.id ? T.orangeLight : T.card }} onClick={() => handleToggleExpand(c.id)}>
-                      <div style={{ display: 'flex', gap: 16, alignItems: 'center', flex: 1 }}>
-                        <div>
-                          <div style={{ fontWeight: 800, color: T.navy, fontSize: 14 }}>{c.title}</div>
-                          <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>by {c.brand?.companyName || '—'} · {fmtDate(c.createdAt)}</div>
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                        <Badge color={STATUS_COLOR[c.status] || T.muted}>{c.status || 'ACTIVE'}</Badge>
-                        {c.budget && <Badge color={T.green}>₹{fmtNum(c.budget)}</Badge>}
-                        <span style={{ fontSize: 11, color: T.orange, fontWeight: 700 }}>Applications ↕</span>
-                        {expandedCampaignId === c.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                        <ActionBtn small onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingCampaign(c);
-                          setEditCampTitle(c.title || '');
-                          setEditCampDesc(c.description || '');
-                          setEditCampBudget(c.budget || 0);
-                          setEditCampPlatform((c.platform || []).join(', '));
-                          setEditCampNiche((c.niche || []).join(', '));
-                          setEditCampStatus(c.status || 'ACTIVE');
-                          setEditCampaignModalOpen(true);
-                        }} style={{ background: T.orangeLight, color: T.orange, padding: '4px 8px', borderRadius: 7 }}>✏️ Edit</ActionBtn>
-                        <DangerBtn small onClick={(e) => { e.stopPropagation(); handleDeleteCampaign(c.id); }}><Trash2 size={11} /></DangerBtn>
-                      </div>
-                    </div>
-                    {expandedCampaignId === c.id && (
-                      <div style={{ borderTop: `1px solid ${T.border}`, padding: '16px 20px', background: T.bg }}>
-                        {appsLoading ? <EmptyState icon="⏳" msg="Loading applications..." /> :
-                          campaignApplications.length === 0 ? <EmptyState icon="📭" msg="No applications yet for this campaign" /> : (
-                            <Table cols={['Creator', 'Pitch', 'Rating', 'Status', { label: 'Override Status', align: 'right' }]}>
-                              {campaignApplications.map(app => (
-                                <tr key={app.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                                  <Td bold>{app.creator?.name || '—'} <span style={{ color: T.orange }}>@{app.creator?.handle}</span></Td>
-                                  <Td><span style={{ maxWidth: 200, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{app.pitch || '—'}</span></Td>
-                                  <Td>{app.rating ? `${app.rating}/5 ★` : '—'}</Td>
-                                  <Td><Badge color={STATUS_COLOR[app.status] || T.muted}>{app.status}</Badge></Td>
-                                  <Td right>
-                                    <div style={{ display: 'flex', gap: 5 }}>
-                                      {['ACCEPTED', 'REJECTED', 'SHORTLISTED', 'PENDING'].filter(s => s !== app.status).map(s => (
-                                        <ActionBtn key={s} small onClick={() => handleUpdateAppStatus(app.id, s)} color={STATUS_COLOR[s] || T.muted}>{s}</ActionBtn>
-                                      ))}
-                                    </div>
-                                  </Td>
-                                </tr>
-                              ))}
-                            </Table>
-                          )}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-              {filteredCampaigns.length === 0 && <EmptyState icon="🎯" msg="No campaigns found" />}
-            </div>
-          )}
-
-          {/* ══ ALL APPLICATIONS ═══════════════════════════════════════════ */}
-          {activeTab === 'applications' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader title="All Campaign Applications" badge={allApplications.length} sub="Platform-wide view of all creator pitches" />
-              <SearchBar value={appSearch} onChange={setAppSearch} placeholder="Search by creator, campaign, or status..." />
-              <Table cols={['Creator', 'Campaign', 'Brand', 'Status', 'Rating', 'Date', { label: 'Override', align: 'right' }]}>
-                {filteredApps.map(app => (
-                  <tr key={app.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                    <Td bold>{app.creator?.name || '—'} <span style={{ color: T.orange, fontSize: 11 }}>@{app.creator?.handle}</span></Td>
-                    <Td bold>{app.campaign?.title || '—'}</Td>
-                    <Td muted>{app.campaign?.brand?.companyName || '—'}</Td>
-                    <Td><Badge color={STATUS_COLOR[app.status] || T.muted}>{app.status}</Badge></Td>
-                    <Td>{app.rating ? `${app.rating}★` : '—'}</Td>
-                    <Td muted>{fmtDate(app.createdAt)}</Td>
-                    <Td right>
-                      <div style={{ display: 'flex', gap: 4 }}>
-                        {['ACCEPTED', 'REJECTED', 'PENDING'].filter(s => s !== app.status).map(s => (
-                          <ActionBtn key={s} small onClick={() => handleUpdateAppStatus(app.id, s)} color={STATUS_COLOR[s] || T.muted}>{s}</ActionBtn>
-                        ))}
-                      </div>
-                    </Td>
-                  </tr>
-                ))}
-              </Table>
-              {filteredApps.length === 0 && <EmptyState icon="📋" msg="No applications match your search" />}
-            </div>
-          )}
-
-          {/* ══ BRAND ANALYTICS ════════════════════════════════════════════ */}
-          {activeTab === 'brand-analytics' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
-                <StatCard label="Total Brands" value={brands.length} icon={Building2} color={T.blue} />
-                <StatCard label="Total Campaigns" value={campaigns.length} icon={Target} color={T.purple} />
-                <StatCard label="Total Applications" value={allApplications.length} icon={Layers} color={T.orange} />
-                <StatCard label="Total Escrow" value={fmtINR(payments.reduce((s, p) => s + (p.type === 'CAMPAIGN_ESCROW' ? p.amount : 0), 0))} icon={DollarSign} color={T.green} />
-              </div>
-              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-                <SectionHeader title="Brand Performance Breakdown" sub="Campaign counts, applications received, and budget spent per brand" />
-                <SearchBar value={brandAnalyticSearch} onChange={setBrandAnalyticSearch} placeholder="Search brand..." />
-                <Table cols={['Brand', 'Industry', 'Total Campaigns', 'Applications', 'Budget Spent', 'Status', { label: 'Actions', align: 'right' }]}>
-                  {filteredBrandAnalytics.map(b => (
-                    <tr key={b.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                      <Td bold>{b.companyName}</Td>
-                      <Td muted>{b.industry || '—'}</Td>
-                      <Td bold>{b.totalCampaigns}</Td>
-                      <Td>{b.totalApplications}</Td>
-                      <Td bold><span style={{ color: T.green }}>{fmtINR(b.totalBudgetSpent)}</span></Td>
-                      <Td><Badge color={b.isSuspended ? T.red : T.green}>{b.isSuspended ? 'Suspended' : 'Active'}</Badge></Td>
-                      <Td right>
-                        <ActionBtn small onClick={() => { setActiveTab('campaigns'); setCampaignSearch(b.companyName); }}><Target size={11} /> Campaigns</ActionBtn>
-                      </Td>
-                    </tr>
-                  ))}
-                </Table>
-              </div>
-            </div>
-          )}
-
-          {/* ══ PAYMENTS & ESCROW ══════════════════════════════════════════ */}
-          {activeTab === 'escrows' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader title="Payments & Escrow" badge={payments.length} sub="Override campaign escrow releases and refunds" />
-              <SearchBar value={paymentSearch} onChange={setPaymentSearch} placeholder="Search by type, ID, or status..." />
-              <Table cols={['Order ID', 'Brand', 'Amount', 'Type', 'Status', 'Date', { label: 'Override', align: 'right' }]}>
-                {filteredPayments.map(p => (
-                  <tr key={p.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                    <Td muted><code style={{ fontSize: 11 }}>{p.razorpayOrderId?.slice(0, 18) || p.id?.slice(0, 12)}…</code></Td>
-                    <Td bold>{p.brand?.companyName || '—'}</Td>
-                    <Td bold><span style={{ color: T.green }}>{fmtINR(p.amount)}</span></Td>
-                    <Td><Badge color={T.blue}>{p.type}</Badge></Td>
-                    <Td><Badge color={STATUS_COLOR[p.status] || T.muted}>{p.status}</Badge></Td>
-                    <Td muted>{fmtDate(p.createdAt)}</Td>
-                    <Td right>
-                      {p.type === 'CAMPAIGN_ESCROW' && p.status === 'PAID' && (
-                        <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                          <ActionBtn small onClick={() => handlePaymentOverride(p.id, 'RELEASE')} color={T.green}>Release</ActionBtn>
-                          <ActionBtn small onClick={() => handlePaymentOverride(p.id, 'REFUND')} color={T.yellow}>Refund</ActionBtn>
-                        </div>
-                      )}
-                    </Td>
-                  </tr>
-                ))}
-              </Table>
-              {filteredPayments.length === 0 && <EmptyState icon="💳" msg="No payments match your search" />}
-            </div>
+          {['brands', 'campaigns', 'applications', 'brand-analytics', 'escrows'].includes(activeTab) && (
+            <BrandsSection
+              activeTab={activeTab}
+              brands={brands}
+              clearBrandForm={clearBrandForm}
+              setCreateBrandModalOpen={setCreateBrandModalOpen}
+              brandSearch={brandSearch}
+              setBrandSearch={setBrandSearch}
+              filteredBrands={filteredBrands}
+              setEditingBrand={setEditingBrand}
+              setEditBrandName={setEditBrandName}
+              setEditBrandIndustry={setEditBrandIndustry}
+              setEditBrandWebsite={setEditBrandWebsite}
+              setEditBrandModalOpen={setEditBrandModalOpen}
+              setSelectedBrand={setSelectedBrand}
+              setBrandDrawerOpen={setBrandDrawerOpen}
+              handleToggleSuspension={handleToggleSuspension}
+              handleDeleteBrand={handleDeleteBrand}
+              campaigns={campaigns}
+              clearCampaignForm={clearCampaignForm}
+              setCreateCampaignModalOpen={setCreateCampaignModalOpen}
+              campaignSearch={campaignSearch}
+              setCampaignSearch={setCampaignSearch}
+              filteredCampaigns={filteredCampaigns}
+              expandedCampaignId={expandedCampaignId}
+              handleToggleExpand={handleToggleExpand}
+              setEditingCampaign={setEditingCampaign}
+              setEditCampTitle={setEditCampTitle}
+              setEditCampDesc={setEditCampDesc}
+              setEditCampBudget={setEditCampBudget}
+              setEditCampPlatform={setEditCampPlatform}
+              setEditCampNiche={setEditCampNiche}
+              setEditCampStatus={setEditCampStatus}
+              setEditCampaignModalOpen={setEditCampaignModalOpen}
+              handleDeleteCampaign={handleDeleteCampaign}
+              appsLoading={appsLoading}
+              campaignApplications={campaignApplications}
+              handleUpdateAppStatus={handleUpdateAppStatus}
+              allApplications={allApplications}
+              appSearch={appSearch}
+              setAppSearch={setAppSearch}
+              filteredApps={filteredApps}
+              brandAnalytics={brandAnalytics}
+              brandAnalyticSearch={brandAnalyticSearch}
+              setBrandAnalyticSearch={setBrandAnalyticSearch}
+              filteredBrandAnalytics={filteredBrandAnalytics}
+              setActiveTab={setActiveTab}
+              payments={payments}
+              paymentSearch={paymentSearch}
+              setPaymentSearch={setPaymentSearch}
+              filteredPayments={filteredPayments}
+              handlePaymentOverride={handlePaymentOverride}
+            />
           )}
 
           {/* ══ BLOGS ══════════════════════════════════════════════════════ */}
-          {activeTab === 'blogs' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader title="Blog Manager" badge={blogs.length} sub="Create, edit, and publish blog articles"
-                action={<button onClick={() => { clearBlogForm(); setEditingBlog(null); setBlogModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ New Article</button>}
-              />
-              <SearchBar value={blogSearch} onChange={setBlogSearch} placeholder="Search blog title, category..." />
-              <Table cols={['Title', 'Category', 'Author', 'Status', 'Comments', 'Date', { label: 'Actions', align: 'right' }]}>
-                {filteredBlogs.map(b => (
-                  <tr key={b.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                    <Td bold><span style={{ maxWidth: 200, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{b.title}</span></Td>
-                    <Td><Badge color={T.purple}>{b.category}</Badge></Td>
-                    <Td muted>{b.author}</Td>
-                    <Td><Badge color={b.published ? T.green : T.muted}>{b.published ? 'Published' : 'Draft'}</Badge></Td>
-                    <Td>{b._count?.comments || 0}</Td>
-                    <Td muted>{fmtDate(b.createdAt)}</Td>
-                    <Td right>
-                      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                        <a href={`${FRONTEND_URL}/blog/${b.slug}`} target="_blank" rel="noopener noreferrer" style={{ padding: '5px 10px', background: T.blueLight, color: T.blue, borderRadius: 7, fontSize: 11, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                          <ExternalLink size={10} />
-                        </a>
-                        <ActionBtn small onClick={() => openEditBlog(b)}>✎ Edit</ActionBtn>
-                        <DangerBtn small onClick={() => handleDeleteBlog(b.id)}><Trash2 size={11} /></DangerBtn>
-                      </div>
-                    </Td>
-                  </tr>
-                ))}
-              </Table>
-              {filteredBlogs.length === 0 && <EmptyState icon="📝" msg="No blog articles found" />}
-            </div>
+          {['pages', 'blogs', 'media-library', 'gallery'].includes(activeTab) && (
+            <CmsSection
+              activeTab={activeTab}
+              mob={mob}
+              toast={toast}
+              FRONTEND_URL={FRONTEND_URL}
+              blogs={blogs}
+              blogSearch={blogSearch}
+              setBlogSearch={setBlogSearch}
+              filteredBlogs={filteredBlogs}
+              clearBlogForm={clearBlogForm}
+              setEditingBlog={setEditingBlog}
+              setBlogModalOpen={setBlogModalOpen}
+              openEditBlog={openEditBlog}
+              handleDeleteBlog={handleDeleteBlog}
+              uploads={uploads}
+              mediaSearch={mediaSearch}
+              setMediaSearch={setMediaSearch}
+              filteredUploads={filteredUploads}
+              handleUploadMedia={handleUploadMedia}
+              handleDeleteUpload={handleDeleteUpload}
+              fetchData={fetchData}
+              gallery={gallery}
+              gallerySearch={gallerySearch}
+              setGallerySearch={setGallerySearch}
+              filteredGallery={filteredGallery}
+              clearGalleryForm={clearGalleryForm}
+              setEditingGallery={setEditingGallery}
+              setGalleryModalOpen={setGalleryModalOpen}
+              openEditGallery={openEditGallery}
+              handleDeleteGallery={handleDeleteGallery}
+              selectedPageName={selectedPageName}
+              setSelectedPageName={setSelectedPageName}
+              editorMode={editorMode}
+              setEditorMode={setEditorMode}
+              rawJsonText={rawJsonText}
+              setRawJsonText={setRawJsonText}
+              jsonError={jsonError}
+              setJsonError={setJsonError}
+              handleToggleMode={handleToggleMode}
+              handleSavePageConfig={handleSavePageConfig}
+              homeConfig={homeConfig}
+              setHomeConfig={setHomeConfig}
+              pricingConfig={pricingConfig}
+              setPricingConfig={setPricingConfig}
+              calculatorConfig={calculatorConfig}
+              setCalculatorConfig={setCalculatorConfig}
+              faqsList={faqsList}
+              setFaqsList={setFaqsList}
+              aboutConfig={aboutConfig}
+              setAboutConfig={setAboutConfig}
+              aboutSubTab={aboutSubTab}
+              setAboutSubTab={setAboutSubTab}
+              pressList={pressList}
+              setPressList={setPressList}
+              storiesList={storiesList}
+              setStoriesList={setStoriesList}
+              aiFaqList={aiFaqList}
+              setAiFaqList={setAiFaqList}
+              notificationsList={notificationsList}
+              setNotificationsList={setNotificationsList}
+              officialConfig={officialConfig}
+              setOfficialConfig={setOfficialConfig}
+              officialSubTab={officialSubTab}
+              setOfficialSubTab={setOfficialSubTab}
+              verifyGuideConfig={verifyGuideConfig}
+              setVerifyGuideConfig={setVerifyGuideConfig}
+              verifyGuideSubTab={verifyGuideSubTab}
+              setVerifyGuideSubTab={setVerifyGuideSubTab}
+              ambassadorConfig={ambassadorConfig}
+              setAmbassadorConfig={setAmbassadorConfig}
+              ambassadorSubTab={ambassadorSubTab}
+              setAmbassadorSubTab={setAmbassadorSubTab}
+              contactConfig={contactConfig}
+              setContactConfig={setContactConfig}
+              contactSubTab={contactSubTab}
+              setContactSubTab={setContactSubTab}
+              creatorLandingConfig={creatorLandingConfig}
+              setCreatorLandingConfig={setCreatorLandingConfig}
+              brandLandingConfig={brandLandingConfig}
+              setBrandLandingConfig={setBrandLandingConfig}
+            />
           )}
 
-          {/* ══ MEDIA LIBRARY ══════════════════════════════════════════════ */}
-          {activeTab === 'media-library' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-                <SectionHeader 
-                  title="Ecosystem Media Library" 
-                  badge={uploads.length} 
-                  sub="Upload files to copy their absolute links for insertion in blogs, campaigns, or portfolios"
-                  action={
-                    <div style={{ display: 'flex', gap: 10 }}>
-                      <button 
-                        onClick={() => document.getElementById('media-library-file-input').click()}
-                        style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}
-                      >
-                        + Upload File
-                      </button>
-                      <input 
-                        type="file" 
-                        id="media-library-file-input" 
-                        style={{ display: 'none' }}
-                        onChange={async (e) => {
-                          if (e.target.files && e.target.files[0]) {
-                            const file = e.target.files[0];
-                            const type = file.type.startsWith('video/') ? 'video' : 'image';
-                            try {
-                              toast('Uploading file to system...', 'info');
-                              const url = await handleUploadMedia(file, type);
-                              if (url) {
-                                toast('File uploaded successfully!', 'success');
-                                fetchData();
-                              }
-                            } catch (err) {
-                              toast(err.message || 'Upload failed', 'error');
-                            }
-                          }
-                        }}
-                      />
-                    </div>
-                  }
-                />
-                
-                {/* Search & Drag Drop Zone */}
-                <SearchBar value={mediaSearch} onChange={setMediaSearch} placeholder="Search files by name..." />
-                
-                <div 
-                  onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = T.orange; }}
-                  onDragLeave={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = T.border; }}
-                  onDrop={async (e) => {
-                    e.preventDefault();
-                    e.currentTarget.style.borderColor = T.border;
-                    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                      const file = e.dataTransfer.files[0];
-                      const type = file.type.startsWith('video/') ? 'video' : 'image';
-                      try {
-                        toast('Uploading dropped file...', 'info');
-                        const url = await handleUploadMedia(file, type);
-                        if (url) {
-                          toast('File uploaded successfully!', 'success');
-                          fetchData();
-                        }
-                      } catch (err) {
-                        toast(err.message || 'Upload failed', 'error');
-                      }
-                    }
-                  }}
-                  style={{
-                    border: `2px dashed ${T.border}`,
-                    borderRadius: 16,
-                    padding: '30px 20px',
-                    textAlign: 'center',
-                    background: T.bg,
-                    marginBottom: 24,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
-                  }}
-                  onClick={() => document.getElementById('media-library-file-input').click()}
-                >
-                  <span style={{ fontSize: 24, display: 'block', marginBottom: 8 }}>📁</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: T.slate }}>Drag & Drop any image/video file here, or click to browse</span>
-                  <span style={{ display: 'block', fontSize: 11, color: T.muted, marginTop: 4 }}>Maximum size: Image 5MB / Video 50MB</span>
-                </div>
 
-                {/* Uploads Grid */}
-                {filteredUploads.length === 0 ? (
-                  <EmptyState icon="📁" msg="No media files found" />
-                ) : (
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-                    gap: 20
-                  }}>
-                    {filteredUploads.map((u, i) => {
-                      const isVid = u.type?.startsWith('video/') || u.name?.endsWith('.mp4') || u.name?.endsWith('.mov') || u.name?.endsWith('.avi');
-                      const friendlySize = u.size ? (u.size > 1024 * 1024 ? `${(u.size / (1024 * 1024)).toFixed(1)} MB` : `${Math.round(u.size / 1024)} KB`) : '—';
-                      return (
-                        <div key={i} style={{
-                          background: T.bg,
-                          border: `1px solid ${T.border}`,
-                          borderRadius: 16,
-                          overflow: 'hidden',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          boxShadow: '0 4px 10px rgba(15,23,42,0.02)',
-                          transition: 'transform 0.2s',
-                          position: 'relative'
-                        }} className="media-card">
-                          {/* Preview container */}
-                          <div style={{
-                            height: 125,
-                            background: '#070a13',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            overflow: 'hidden',
-                            position: 'relative',
-                            borderBottom: `1px solid ${T.border}`
-                          }}>
-                            {isVid ? (
-                              <video src={u.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            ) : (
-                              <img src={u.url} alt={u.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            )}
-                            <span 
-                              style={{ position: 'absolute', top: 8, left: 8, zIndex: 5, padding: '2px 8px', background: 'rgba(15,23,42,0.6)', backdropFilter: 'blur(4px)', color: '#fff', borderRadius: 20, fontSize: 9, fontWeight: 800, textTransform: 'uppercase' }}
-                            >
-                              {isVid ? 'Video' : 'Image'}
-                            </span>
-                          </div>
-
-                          {/* File Details */}
-                          <div style={{ padding: 14, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                            <div style={{ marginBottom: 12 }}>
-                              <h5 style={{
-                                margin: '0 0 4px 0',
-                                fontSize: 13,
-                                fontWeight: 800,
-                                color: T.navy,
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap'
-                              }} title={u.name}>
-                                {u.name}
-                              </h5>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: T.muted, fontWeight: 600 }}>
-                                <span>{friendlySize}</span>
-                                <span>{fmtDate(u.createdAt)}</span>
-                              </div>
-                            </div>
-
-                            {/* Actions */}
-                            <div style={{ display: 'flex', gap: 6 }}>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  navigator.clipboard.writeText(u.url);
-                                  toast('Copied direct link to clipboard!', 'success');
-                                }}
-                                style={{
-                                  flex: 1,
-                                  padding: '8px 0',
-                                  background: T.orangeLight,
-                                  color: T.orange,
-                                  border: `1px dashed ${T.orangeBorder}`,
-                                  borderRadius: 8,
-                                  fontSize: 12,
-                                  fontWeight: 800,
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  gap: 4
-                                }}
-                              >
-                                <Copy size={11} /> Copy Link
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => handleDeleteUpload(u.name)}
-                                style={{
-                                  padding: '8px 10px',
-                                  background: T.redLight,
-                                  color: T.red,
-                                  border: `1px solid ${T.red}15`,
-                                  borderRadius: 8,
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center'
-                                }}
-                              >
-                                <Trash2 size={12} />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* ══ COMMENTS ═══════════════════════════════════════════════════ */}
-          {activeTab === 'comments' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader title="Comment Moderation" badge={comments.length} sub="Remove spam or offensive blog comments" />
-              <SearchBar value={commentSearch} onChange={setCommentSearch} placeholder="Search comment content or author..." />
-              <Table cols={['Blog', 'Author', 'Comment', 'Date', { label: 'Action', align: 'right' }]}>
-                {filteredComments.map(c => (
-                  <tr key={c.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                    <Td bold><span style={{ maxWidth: 140, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.blog?.title || '—'}</span></Td>
-                    <Td>{c.authorName || 'Anonymous'}</Td>
-                    <Td><span style={{ maxWidth: 240, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.content}</span></Td>
-                    <Td muted>{fmtDate(c.createdAt)}</Td>
-                    <Td right><DangerBtn small onClick={() => handleDeleteComment(c.id)}><Trash2 size={11} /> Delete</DangerBtn></Td>
-                  </tr>
-                ))}
-              </Table>
-              {filteredComments.length === 0 && <EmptyState icon="💬" msg="No comments found" />}
-            </div>
-          )}
-
-          {/* ══ NEWSLETTERS ════════════════════════════════════════════════ */}
-          {activeTab === 'newsletters' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader title="Newsletter Subscribers" badge={newsletters.length} sub="Manage email list subscribers" />
-              <SearchBar value={newsletterSearch} onChange={setNewsletterSearch} placeholder="Search email..." />
-              <Table cols={['Email', 'Subscribed On', { label: 'Action', align: 'right' }]}>
-                {filteredNewsletters.map(n => (
-                  <tr key={n.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                    <Td bold>{n.email}</Td>
-                    <Td muted>{fmtDate(n.createdAt)}</Td>
-                    <Td right><DangerBtn small onClick={() => handleDeleteSubscriber(n.id)}><Trash2 size={11} /> Remove</DangerBtn></Td>
-                  </tr>
-                ))}
-              </Table>
-              {filteredNewsletters.length === 0 && <EmptyState icon="📧" msg="No subscribers found" />}
-            </div>
-          )}
-
-          {/* ══ CONTACTS ═══════════════════════════════════════════════════ */}
-          {activeTab === 'contacts' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader title="Contact Inbox" badge={counts.unreadContacts} sub={`${counts.unreadContacts} unread · ${contacts.length} total messages`} />
-              <SearchBar value={contactSearch} onChange={setContactSearch} placeholder="Search by name, email or message..." />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {filteredContacts.map(c => (
-                  <div key={c.id} style={{ display: 'flex', gap: 14, alignItems: 'flex-start', padding: '16px 20px', background: c.read ? T.bg : T.orangeLight, border: `1px solid ${c.read ? T.border : T.orangeBorder}`, borderRadius: 14 }}>
-                    <div style={{ width: 40, height: 40, borderRadius: 12, background: T.orange + '20', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <Mail size={18} style={{ color: T.orange }} />
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 4 }}>
-                        <span style={{ fontWeight: 800, color: T.navy, fontSize: 14 }}>{c.name || 'Unknown'}</span>
-                        <span style={{ fontSize: 12, color: T.muted }}>{c.email}</span>
-                        {!c.read && <Badge color={T.orange}>UNREAD</Badge>}
-                        <span style={{ fontSize: 11, color: T.muted, marginLeft: 'auto' }}>{fmtDate(c.createdAt)}</span>
-                      </div>
-                      <p style={{ margin: 0, fontSize: 13, color: T.slate, lineHeight: 1.6 }}>{c.message}</p>
-                    </div>
-                    <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-                      <ActionBtn small onClick={() => handleToggleContactRead(c.id)}>{c.read ? 'Mark Unread' : 'Mark Read'}</ActionBtn>
-                      <DangerBtn small onClick={() => handleDeleteContact(c.id)}><Trash2 size={11} /></DangerBtn>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {filteredContacts.length === 0 && <EmptyState icon="📬" msg="No messages found" />}
-            </div>
-          )}
-
-          {/* ══ GALLERY ════════════════════════════════════════════════════ */}
-          {activeTab === 'gallery' && (
-            <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-              <SectionHeader title="Gallery Manager" badge={gallery.length} sub="Manage images, video clips, workshops, and ecosystem highlights"
-                action={<button onClick={() => { clearGalleryForm(); setEditingGallery(null); setGalleryModalOpen(true); }} style={{ padding: '8px 18px', background: T.orange, color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 800, cursor: 'pointer' }}>+ New Item</button>}
-              />
-              <SearchBar value={gallerySearch} onChange={setGallerySearch} placeholder="Search title, category, tags, or location..." />
-              <Table cols={['Thumbnail', 'Title', 'Category', 'Type', 'Location', 'Date', { label: 'Actions', align: 'right' }]}>
-                {filteredGallery.map(g => (
-                  <tr key={g.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                    <Td>
-                      <img src={g.thumbnail} alt={g.title} style={{ width: 50, height: 35, borderRadius: 6, objectFit: 'cover', border: `1px solid ${T.border}` }} />
-                    </Td>
-                    <Td bold>
-                      <span style={{ maxWidth: 200, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{g.title}</span>
-                    </Td>
-                    <Td><Badge color={T.purple}>{g.category}</Badge></Td>
-                    <Td><Badge color={g.type === 'video' ? T.orange : T.blue}>{g.type}</Badge></Td>
-                    <Td muted>{g.location || '—'}</Td>
-                    <Td muted>{g.date}</Td>
-                    <Td right>
-                      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                        {g.videoUrl && (
-                          <a href={g.videoUrl} target="_blank" rel="noopener noreferrer" style={{ padding: '5px 10px', background: T.orangeLight, color: T.orange, borderRadius: 7, fontSize: 11, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                            <PlayCircle size={10} /> Video
-                          </a>
-                        )}
-                        <ActionBtn small onClick={() => openEditGallery(g)}>✎ Edit</ActionBtn>
-                        <DangerBtn small onClick={() => handleDeleteGallery(g.id)}><Trash2 size={11} /></DangerBtn>
-                      </div>
-                    </Td>
-                  </tr>
-                ))}
-              </Table>
-              {filteredGallery.length === 0 && <EmptyState icon="🖼️" msg="No gallery items found" />}
-            </div>
-          )}
-
-          {/* ══ DYNAMIC PAGES CONFIG MANAGER ════════════════════════════ */}
-          {activeTab === 'pages' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-                <SectionHeader title="Dynamic Page Content Manager" sub="Manage live configurations for website and platform pages" />
-                
-                <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '220px 1fr', gap: 28, marginTop: 12 }}>
-                  {/* Left sub-sidebar navigation */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 20, borderRight: mob ? 'none' : `1px solid ${T.border}`, borderBottom: mob ? `1px solid ${T.border}` : 'none', paddingRight: mob ? 0 : 20, paddingBottom: mob ? 20 : 0 }}>
-                    <div>
-                      <h4 style={{ fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>🌐 Public Website</h4>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                        {[
-                          { id: 'home', name: 'Home Hero' },
-                          { id: 'pricing', name: 'Pricing & Plans' },
-                          { id: 'calculator', name: 'Rate Calculator' },
-                          { id: 'faqs', name: 'FAQs List' },
-                          { id: 'about', name: 'About Us' },
-                          { id: 'press', name: 'Press Room' },
-                          { id: 'stories', name: 'Success Stories' },
-                          { id: 'ai-faq', name: 'AI FAQ Hub' },
-                          { id: 'notifications', name: 'Public Notices Hub' },
-                          { id: 'official', name: 'Official Profile' },
-                          { id: 'verify-guide', name: 'Verification Guide' },
-                          { id: 'ambassador', name: 'Campus Ambassador' },
-                          { id: 'contact', name: 'Contact Page' }
-                        ].map(p => (
-                          <button
-                            key={p.id}
-                            onClick={() => setSelectedPageName(p.id)}
-                            style={{
-                              padding: '8px 12px',
-                              borderRadius: 8,
-                              border: 'none',
-                              textAlign: 'left',
-                              background: selectedPageName === p.id ? T.orangeLight : 'transparent',
-                              color: selectedPageName === p.id ? T.orange : T.navy,
-                              fontWeight: selectedPageName === p.id ? 800 : 600,
-                              cursor: 'pointer',
-                              fontSize: 13,
-                              transition: 'all 0.2s'
-                            }}
-                          >
-                            {p.name}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 style={{ fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>🙋 For Creators</h4>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                        {[
-                          { id: 'creator-landing', name: 'Creator Hub' }
-                        ].map(p => (
-                          <button
-                            key={p.id}
-                            onClick={() => setSelectedPageName(p.id)}
-                            style={{
-                              padding: '8px 12px',
-                              borderRadius: 8,
-                              border: 'none',
-                              textAlign: 'left',
-                              background: selectedPageName === p.id ? T.orangeLight : 'transparent',
-                              color: selectedPageName === p.id ? T.orange : T.navy,
-                              fontWeight: selectedPageName === p.id ? 800 : 600,
-                              cursor: 'pointer',
-                              fontSize: 13,
-                              transition: 'all 0.2s'
-                            }}
-                          >
-                            {p.name}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 style={{ fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.5px' }}>🏢 For Brands</h4>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                        {[
-                          { id: 'brand-landing', name: 'Brand Hub' }
-                        ].map(p => (
-                          <button
-                            key={p.id}
-                            onClick={() => setSelectedPageName(p.id)}
-                            style={{
-                              padding: '8px 12px',
-                              borderRadius: 8,
-                              border: 'none',
-                              textAlign: 'left',
-                              background: selectedPageName === p.id ? T.orangeLight : 'transparent',
-                              color: selectedPageName === p.id ? T.orange : T.navy,
-                              fontWeight: selectedPageName === p.id ? 800 : 600,
-                              cursor: 'pointer',
-                              fontSize: 13,
-                              transition: 'all 0.2s'
-                            }}
-                          >
-                            {p.name}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Right side form editor */}
-                  <div style={{ background: T.bg, padding: 24, borderRadius: 16, border: `1px solid ${T.border}` }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, borderBottom: `1px solid ${T.border}`, paddingBottom: 12 }}>
-                      <h3 style={{ fontSize: 14, fontWeight: 850, color: T.navy, margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        Configure: {selectedPageName.replace('-', ' ')}
-                      </h3>
-                      <div style={{ display: 'flex', gap: 4, background: T.card, padding: 4, borderRadius: 8, border: `1px solid ${T.border}` }}>
-                        <button
-                          onClick={() => handleToggleMode('visual')}
-                          style={{
-                            padding: '6px 12px',
-                            borderRadius: 6,
-                            border: 'none',
-                            fontSize: 12,
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            background: editorMode === 'visual' ? T.orange : 'transparent',
-                            color: editorMode === 'visual' ? '#fff' : T.slate,
-                            transition: 'all 0.2s'
-                          }}
-                        >
-                          🎨 Form Editor
-                        </button>
-                        <button
-                          onClick={() => handleToggleMode('json')}
-                          style={{
-                            padding: '6px 12px',
-                            borderRadius: 6,
-                            border: 'none',
-                            fontSize: 12,
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            background: editorMode === 'json' ? T.orange : 'transparent',
-                            color: editorMode === 'json' ? '#fff' : T.slate,
-                            transition: 'all 0.2s'
-                          }}
-                        >
-                          💻 JSON Code
-                        </button>
-                      </div>
-                    </div>
-
-                    {editorMode === 'json' ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                        <div>
-                          <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Raw JSON Editor</label>
-                          <textarea
-                            value={rawJsonText}
-                            onChange={e => setRawJsonText(e.target.value)}
-                            style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 12, fontFamily: 'monospace', color: T.navy, background: T.card, outline: 'none', minHeight: 400 }}
-                          />
-                          {jsonError && <p style={{ color: T.red, fontSize: 12, margin: '4px 0 0' }}>{jsonError}</p>}
-                        </div>
-                      </div>
-                    ) : (
-                      <div>
-                        {/* Editor form for selected page config */}
-                        {selectedPageName === 'home' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <div>
-                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Hero Title</label>
-                              <input
-                                type="text"
-                                value={homeConfig.heroTitle || ''}
-                                onChange={e => setHomeConfig({ ...homeConfig, heroTitle: e.target.value })}
-                                style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                              />
-                            </div>
-                            <div>
-                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Hero Subtitle</label>
-                              <textarea
-                                value={homeConfig.heroSubtitle || ''}
-                                onChange={e => setHomeConfig({ ...homeConfig, heroSubtitle: e.target.value })}
-                                style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none', minHeight: 80 }}
-                              />
-                            </div>
-                            <div>
-                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>CTA Button Text</label>
-                              <input
-                                type="text"
-                                value={homeConfig.ctaText || ''}
-                                onChange={e => setHomeConfig({ ...homeConfig, ctaText: e.target.value })}
-                                style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                              />
-                            </div>
-                            <div>
-                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Alert Announcement Bar</label>
-                              <input
-                                type="text"
-                                value={homeConfig.announcement || ''}
-                                onChange={e => setHomeConfig({ ...homeConfig, announcement: e.target.value })}
-                                style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                              />
-                            </div>
-                          </div>
-                        )}
-
-                        {selectedPageName === 'pricing' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                              <div>
-                                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Creator Starter Plan Fee (₹)</label>
-                                <input
-                                  type="number"
-                                  value={pricingConfig.starterPrice || 0}
-                                  onChange={e => setPricingConfig({ ...pricingConfig, starterPrice: parseInt(e.target.value) || 0 })}
-                                  style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                />
-                              </div>
-                              <div>
-                                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Creator Pro Plan Fee (₹/month)</label>
-                                <input
-                                  type="number"
-                                  value={pricingConfig.proPrice || 0}
-                                  onChange={e => setPricingConfig({ ...pricingConfig, proPrice: parseInt(e.target.value) || 0 })}
-                                  style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                />
-                              </div>
-                            </div>
-                            <div>
-                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Creator Pro Features List (comma separated)</label>
-                              <textarea
-                                value={pricingConfig.proFeatures || ''}
-                                onChange={e => setPricingConfig({ ...pricingConfig, proFeatures: e.target.value })}
-                                style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none', minHeight: 60 }}
-                                placeholder="Feature 1, Feature 2, Feature 3"
-                              />
-                            </div>
-                            <hr style={{ border: 'none', borderTop: `1px solid ${T.border}`, margin: '8px 0' }} />
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                              <div>
-                                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Brand Launchpad Fee (₹)</label>
-                                <input
-                                  type="number"
-                                  value={pricingConfig.brandStarterPrice || 0}
-                                  onChange={e => setPricingConfig({ ...pricingConfig, brandStarterPrice: parseInt(e.target.value) || 0 })}
-                                  style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                />
-                              </div>
-                              <div>
-                                <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Brand Enterprise Fee (₹/month)</label>
-                                <input
-                                  type="number"
-                                  value={pricingConfig.brandProPrice || 0}
-                                  onChange={e => setPricingConfig({ ...pricingConfig, brandProPrice: parseInt(e.target.value) || 0 })}
-                                  style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                />
-                              </div>
-                            </div>
-                            <div>
-                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Brand Enterprise Features List (comma separated)</label>
-                              <textarea
-                                value={pricingConfig.brandProFeatures || ''}
-                                onChange={e => setPricingConfig({ ...pricingConfig, brandProFeatures: e.target.value })}
-                                style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none', minHeight: 60 }}
-                                placeholder="Feature 1, Feature 2, Feature 3"
-                              />
-                            </div>
-                          </div>
-                        )}
-
-                        {selectedPageName === 'calculator' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <div>
-                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Base Rate Coefficient (multiplier for follower count)</label>
-                              <input
-                                  type="number"
-                                  step="0.01"
-                                  value={calculatorConfig.rateMultiplier || 0.15}
-                                  onChange={e => setCalculatorConfig({ ...calculatorConfig, rateMultiplier: parseFloat(e.target.value) || 0 })}
-                                  style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                              />
-                            </div>
-                            <div>
-                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Instagram Niche Premium Multiplier (e.g. Beauty/Tech = 1.25)</label>
-                              <input
-                                  type="number"
-                                  step="0.05"
-                                  value={calculatorConfig.nicheMultiplier || 1.2}
-                                  onChange={e => setCalculatorConfig({ ...calculatorConfig, nicheMultiplier: parseFloat(e.target.value) || 0 })}
-                                  style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                              />
-                            </div>
-                            <div>
-                              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8, textTransform: 'uppercase' }}>Min Platform Commission Fee (INR)</label>
-                              <input
-                                  type="number"
-                                  value={calculatorConfig.minFee || 500}
-                                  onChange={e => setCalculatorConfig({ ...calculatorConfig, minFee: parseInt(e.target.value) || 0 })}
-                                  style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                              />
-                            </div>
-                          </div>
-                        )}
-
-                        {selectedPageName === 'creator-landing' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <div>
-                              <h5 style={{ fontSize: 12, fontWeight: 800, color: T.orange, marginBottom: 12, textTransform: 'uppercase' }}>Hero Section</h5>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                                <div>
-                                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Badge Text</label>
-                                  <input
-                                    type="text"
-                                    value={creatorLandingConfig.heroBadge || ''}
-                                    onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, heroBadge: e.target.value })}
-                                    style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                  />
-                                </div>
-                                <div>
-                                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Hero Title Highlight</label>
-                                  <input
-                                    type="text"
-                                    value={creatorLandingConfig.heroTitle || ''}
-                                    onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, heroTitle: e.target.value })}
-                                    style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                  />
-                                </div>
-                                <div>
-                                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Hero Subtitle</label>
-                                  <textarea
-                                    value={creatorLandingConfig.heroSubtitle || ''}
-                                    onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, heroSubtitle: e.target.value })}
-                                    style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none', minHeight: 60 }}
-                                  />
-                                </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>CTA Primary Button</label>
-                                    <input
-                                      type="text"
-                                      value={creatorLandingConfig.ctaPrimary || ''}
-                                      onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, ctaPrimary: e.target.value })}
-                                      style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>CTA Secondary Button</label>
-                                    <input
-                                      type="text"
-                                      value={creatorLandingConfig.ctaSecondary || ''}
-                                      onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, ctaSecondary: e.target.value })}
-                                      style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <hr style={{ border: 'none', borderTop: `1px solid ${T.border}`, margin: '8px 0' }} />
-                            <div>
-                              <h5 style={{ fontSize: 12, fontWeight: 800, color: T.orange, marginBottom: 12, textTransform: 'uppercase' }}>Bottom Final CTA Section</h5>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                                <div>
-                                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Bottom Title</label>
-                                  <input
-                                    type="text"
-                                    value={creatorLandingConfig.bottomTitle || ''}
-                                    onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, bottomTitle: e.target.value })}
-                                    style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                  />
-                                </div>
-                                <div>
-                                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Bottom Subtitle</label>
-                                  <textarea
-                                    value={creatorLandingConfig.bottomSubtitle || ''}
-                                    onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, bottomSubtitle: e.target.value })}
-                                    style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none', minHeight: 60 }}
-                                  />
-                                </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Bottom CTA Primary</label>
-                                    <input
-                                      type="text"
-                                      value={creatorLandingConfig.bottomCtaPrimary || ''}
-                                      onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, bottomCtaPrimary: e.target.value })}
-                                      style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Bottom CTA Secondary</label>
-                                    <input
-                                      type="text"
-                                      value={creatorLandingConfig.bottomCtaSecondary || ''}
-                                      onChange={e => setCreatorLandingConfig({ ...creatorLandingConfig, bottomCtaSecondary: e.target.value })}
-                                      style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {selectedPageName === 'brand-landing' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <div>
-                              <h5 style={{ fontSize: 12, fontWeight: 800, color: '#10B981', marginBottom: 12, textTransform: 'uppercase' }}>Hero Section</h5>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                                <div>
-                                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Badge Text</label>
-                                  <input
-                                    type="text"
-                                    value={brandLandingConfig.heroBadge || ''}
-                                    onChange={e => setBrandLandingConfig({ ...brandLandingConfig, heroBadge: e.target.value })}
-                                    style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                  />
-                                </div>
-                                <div>
-                                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Hero Title Highlight</label>
-                                  <input
-                                    type="text"
-                                    value={brandLandingConfig.heroTitle || ''}
-                                    onChange={e => setBrandLandingConfig({ ...brandLandingConfig, heroTitle: e.target.value })}
-                                    style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                  />
-                                </div>
-                                <div>
-                                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Hero Subtitle</label>
-                                  <textarea
-                                    value={brandLandingConfig.heroSubtitle || ''}
-                                    onChange={e => setBrandLandingConfig({ ...brandLandingConfig, heroSubtitle: e.target.value })}
-                                    style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none', minHeight: 60 }}
-                                  />
-                                </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>CTA Primary Button</label>
-                                    <input
-                                      type="text"
-                                      value={brandLandingConfig.ctaPrimary || ''}
-                                      onChange={e => setBrandLandingConfig({ ...brandLandingConfig, ctaPrimary: e.target.value })}
-                                      style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>CTA Secondary Button</label>
-                                    <input
-                                      type="text"
-                                      value={brandLandingConfig.ctaSecondary || ''}
-                                      onChange={e => setBrandLandingConfig({ ...brandLandingConfig, ctaSecondary: e.target.value })}
-                                      style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <hr style={{ border: 'none', borderTop: `1px solid ${T.border}`, margin: '8px 0' }} />
-                            <div>
-                              <h5 style={{ fontSize: 12, fontWeight: 800, color: '#10B981', marginBottom: 12, textTransform: 'uppercase' }}>Bottom Final CTA Section</h5>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                                <div>
-                                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Bottom Title</label>
-                                  <input
-                                    type="text"
-                                    value={brandLandingConfig.bottomTitle || ''}
-                                    onChange={e => setBrandLandingConfig({ ...brandLandingConfig, bottomTitle: e.target.value })}
-                                    style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                  />
-                                </div>
-                                <div>
-                                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Bottom Subtitle</label>
-                                  <textarea
-                                    value={brandLandingConfig.bottomSubtitle || ''}
-                                    onChange={e => setBrandLandingConfig({ ...brandLandingConfig, bottomSubtitle: e.target.value })}
-                                    style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none', minHeight: 60 }}
-                                  />
-                                </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Bottom CTA Primary</label>
-                                    <input
-                                      type="text"
-                                      value={brandLandingConfig.bottomCtaPrimary || ''}
-                                      onChange={e => setBrandLandingConfig({ ...brandLandingConfig, bottomCtaPrimary: e.target.value })}
-                                      style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                    />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 8 }}>Bottom CTA Secondary</label>
-                                    <input
-                                      type="text"
-                                      value={brandLandingConfig.bottomCtaSecondary || ''}
-                                      onChange={e => setBrandLandingConfig({ ...brandLandingConfig, bottomCtaSecondary: e.target.value })}
-                                      style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.card, outline: 'none' }}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {selectedPageName === 'faqs' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            {faqsList.map((faq, index) => (
-                              <div key={index} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                <div style={{ position: 'absolute', top: 12, right: 12 }}>
-                                  <button
-                                    onClick={() => {
-                                      const newList = [...faqsList];
-                                      newList.splice(index, 1);
-                                      setFaqsList(newList);
-                                    }}
-                                    style={{ padding: '6px 12px', background: 'rgba(239, 68, 68, 0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, fontWeight: 800, cursor: 'pointer' }}
-                                  >
-                                    🗑️ Delete
-                                  </button>
-                                </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12, marginBottom: 12, width: 'calc(100% - 80px)' }}>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6 }}>Category</label>
-                                    <input
-                                      type="text"
-                                      value={faq.cat || ''}
-                                      onChange={e => {
-                                        const newList = [...faqsList];
-                                        newList[index] = { ...faq, cat: e.target.value };
-                                        setFaqsList(newList);
-                                      }}
-                                      style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, color: T.navy, background: T.bg, outline: 'none' }}
-                                    />
-                                  </div>
-                                </div>
-                                <div>
-                                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6 }}>Question</label>
-                                  <input
-                                    type="text"
-                                    value={faq.q || ''}
-                                    onChange={e => {
-                                      const newList = [...faqsList];
-                                      newList[index] = { ...faq, q: e.target.value };
-                                      setFaqsList(newList);
-                                    }}
-                                    style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, color: T.navy, background: T.bg, outline: 'none', marginBottom: 12 }}
-                                  />
-                                </div>
-                                <div>
-                                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6 }}>Answer</label>
-                                  <textarea
-                                    value={faq.a || ''}
-                                    onChange={e => {
-                                      const newList = [...faqsList];
-                                      newList[index] = { ...faq, a: e.target.value };
-                                      setFaqsList(newList);
-                                    }}
-                                    style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, color: T.navy, background: T.bg, outline: 'none', minHeight: 60 }}
-                                  />
-                                </div>
-                              </div>
-                            ))}
-                            <button
-                              onClick={() => setFaqsList([...faqsList, { cat: 'General', q: '', a: '' }])}
-                              style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, width: 'fit-content' }}
-                            >
-                              ➕ Add FAQ Item
-                            </button>
-                          </div>
-                        )}
-
-                        {selectedPageName === 'about' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-                              {[
-                                { id: 'blueprint', label: 'Blueprint' },
-                                { id: 'timeline', label: 'Timeline' },
-                                { id: 'philosophy', label: 'Philosophy' },
-                                { id: 'leadership', label: 'Leadership' },
-                                { id: 'press', label: 'Press Logos' },
-                                { id: 'investor', label: 'Investor Logos' }
-                              ].map(st => (
-                                <button
-                                  key={st.id}
-                                  onClick={() => setAboutSubTab(st.id)}
-                                  style={{
-                                    padding: '6px 12px',
-                                    borderRadius: 8,
-                                    fontSize: 12,
-                                    fontWeight: 700,
-                                    cursor: 'pointer',
-                                    background: aboutSubTab === st.id ? T.orange : T.card,
-                                    color: aboutSubTab === st.id ? '#fff' : T.slate,
-                                    border: `1px solid ${T.border}`
-                                  }}
-                                >
-                                  {st.label}
-                                </button>
-                              ))}
-                            </div>
-
-                            {aboutSubTab === 'blueprint' && (
-                              <div>
-                                {(aboutConfig.BLUEPRINT_CARDS || []).map((card, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(aboutConfig.BLUEPRINT_CARDS || [])];
-                                        arr.splice(idx, 1);
-                                        setAboutConfig({ ...aboutConfig, BLUEPRINT_CARDS: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 12, width: 'calc(100% - 80px)' }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Icon (Lucide name)</label>
-                                        <input type="text" value={card.icon || ''} onChange={e => {
-                                          const arr = [...(aboutConfig.BLUEPRINT_CARDS || [])];
-                                          arr[idx] = { ...card, icon: e.target.value };
-                                          setAboutConfig({ ...aboutConfig, BLUEPRINT_CARDS: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Title</label>
-                                        <input type="text" value={card.title || ''} onChange={e => {
-                                          const arr = [...(aboutConfig.BLUEPRINT_CARDS || [])];
-                                          arr[idx] = { ...card, title: e.target.value };
-                                          setAboutConfig({ ...aboutConfig, BLUEPRINT_CARDS: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                    <div style={{ marginTop: 12 }}>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Description</label>
-                                      <textarea value={card.desc || ''} onChange={e => {
-                                        const arr = [...(aboutConfig.BLUEPRINT_CARDS || [])];
-                                        arr[idx] = { ...card, desc: e.target.value };
-                                        setAboutConfig({ ...aboutConfig, BLUEPRINT_CARDS: arr });
-                                      }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 50 }} />
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(aboutConfig.BLUEPRINT_CARDS || [])];
-                                  arr.push({ icon: 'HelpCircle', title: '', desc: '' });
-                                  setAboutConfig({ ...aboutConfig, BLUEPRINT_CARDS: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add Card</button>
-                              </div>
-                            )}
-
-                            {aboutSubTab === 'timeline' && (
-                              <div>
-                                {(aboutConfig.TIMELINE_DATA || []).map((time, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(aboutConfig.TIMELINE_DATA || [])];
-                                        arr.splice(idx, 1);
-                                        setAboutConfig({ ...aboutConfig, TIMELINE_DATA: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 12, width: 'calc(100% - 80px)' }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Year</label>
-                                        <input type="text" value={time.year || ''} onChange={e => {
-                                          const arr = [...(aboutConfig.TIMELINE_DATA || [])];
-                                          arr[idx] = { ...time, year: e.target.value };
-                                          setAboutConfig({ ...aboutConfig, TIMELINE_DATA: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Title</label>
-                                        <input type="text" value={time.title || ''} onChange={e => {
-                                          const arr = [...(aboutConfig.TIMELINE_DATA || [])];
-                                          arr[idx] = { ...time, title: e.target.value };
-                                          setAboutConfig({ ...aboutConfig, TIMELINE_DATA: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                    <div style={{ marginTop: 12 }}>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Description</label>
-                                      <textarea value={time.desc || ''} onChange={e => {
-                                        const arr = [...(aboutConfig.TIMELINE_DATA || [])];
-                                        arr[idx] = { ...time, desc: e.target.value };
-                                        setAboutConfig({ ...aboutConfig, TIMELINE_DATA: arr });
-                                      }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 50 }} />
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(aboutConfig.TIMELINE_DATA || [])];
-                                  arr.push({ year: '2026', title: '', desc: '' });
-                                  setAboutConfig({ ...aboutConfig, TIMELINE_DATA: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add Milestone</button>
-                              </div>
-                            )}
-
-                            {aboutSubTab === 'philosophy' && (
-                              <div>
-                                {(aboutConfig.PHILOSOPHY_PILLARS || []).map((pil, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(aboutConfig.PHILOSOPHY_PILLARS || [])];
-                                        arr.splice(idx, 1);
-                                        setAboutConfig({ ...aboutConfig, PHILOSOPHY_PILLARS: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 12, width: 'calc(100% - 80px)' }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Icon (Lucide name)</label>
-                                        <input type="text" value={pil.icon || ''} onChange={e => {
-                                          const arr = [...(aboutConfig.PHILOSOPHY_PILLARS || [])];
-                                          arr[idx] = { ...pil, icon: e.target.value };
-                                          setAboutConfig({ ...aboutConfig, PHILOSOPHY_PILLARS: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Title</label>
-                                        <input type="text" value={pil.title || ''} onChange={e => {
-                                          const arr = [...(aboutConfig.PHILOSOPHY_PILLARS || [])];
-                                          arr[idx] = { ...pil, title: e.target.value };
-                                          setAboutConfig({ ...aboutConfig, PHILOSOPHY_PILLARS: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                    <div style={{ marginTop: 12 }}>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Description</label>
-                                      <textarea value={pil.desc || ''} onChange={e => {
-                                        const arr = [...(aboutConfig.PHILOSOPHY_PILLARS || [])];
-                                        arr[idx] = { ...pil, desc: e.target.value };
-                                        setAboutConfig({ ...aboutConfig, PHILOSOPHY_PILLARS: arr });
-                                      }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 50 }} />
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(aboutConfig.PHILOSOPHY_PILLARS || [])];
-                                  arr.push({ id: 'p-' + Date.now(), icon: 'Compass', title: '', desc: '' });
-                                  setAboutConfig({ ...aboutConfig, PHILOSOPHY_PILLARS: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add Pillar</button>
-                              </div>
-                            )}
-
-                            {aboutSubTab === 'leadership' && (
-                              <div>
-                                {(aboutConfig.LEADERSHIP_TEAM || []).map((lead, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(aboutConfig.LEADERSHIP_TEAM || [])];
-                                        arr.splice(idx, 1);
-                                        setAboutConfig({ ...aboutConfig, LEADERSHIP_TEAM: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, width: 'calc(100% - 80px)' }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Full Name</label>
-                                        <input type="text" value={lead.name || ''} onChange={e => {
-                                          const arr = [...(aboutConfig.LEADERSHIP_TEAM || [])];
-                                          arr[idx] = { ...lead, name: e.target.value };
-                                          setAboutConfig({ ...aboutConfig, LEADERSHIP_TEAM: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Role / Title</label>
-                                        <input type="text" value={lead.role || ''} onChange={e => {
-                                          const arr = [...(aboutConfig.LEADERSHIP_TEAM || [])];
-                                          arr[idx] = { ...lead, role: e.target.value };
-                                          setAboutConfig({ ...aboutConfig, LEADERSHIP_TEAM: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                    <div style={{ marginTop: 12 }}>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Image URL</label>
-                                      <input type="text" value={lead.image || ''} onChange={e => {
-                                        const arr = [...(aboutConfig.LEADERSHIP_TEAM || [])];
-                                        arr[idx] = { ...lead, image: e.target.value };
-                                        setAboutConfig({ ...aboutConfig, LEADERSHIP_TEAM: arr });
-                                      }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(aboutConfig.LEADERSHIP_TEAM || [])];
-                                  arr.push({ name: '', role: '', image: '' });
-                                  setAboutConfig({ ...aboutConfig, LEADERSHIP_TEAM: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add Leader</button>
-                              </div>
-                            )}
-
-                            {aboutSubTab === 'press' && (
-                              <div>
-                                {(aboutConfig.PRESS_LOGOS || []).map((logo, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(aboutConfig.PRESS_LOGOS || [])];
-                                        arr.splice(idx, 1);
-                                        setAboutConfig({ ...aboutConfig, PRESS_LOGOS: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 12, width: 'calc(100% - 80px)' }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Brand Name</label>
-                                        <input type="text" value={logo.name || ''} onChange={e => {
-                                          const arr = [...(aboutConfig.PRESS_LOGOS || [])];
-                                          arr[idx] = { ...logo, name: e.target.value };
-                                          setAboutConfig({ ...aboutConfig, PRESS_LOGOS: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Logo Image URL</label>
-                                        <input type="text" value={logo.logo || ''} onChange={e => {
-                                          const arr = [...(aboutConfig.PRESS_LOGOS || [])];
-                                          arr[idx] = { ...logo, logo: e.target.value };
-                                          setAboutConfig({ ...aboutConfig, PRESS_LOGOS: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(aboutConfig.PRESS_LOGOS || [])];
-                                  arr.push({ id: 'pr-' + Date.now(), name: '', logo: '' });
-                                  setAboutConfig({ ...aboutConfig, PRESS_LOGOS: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add Press Logo</button>
-                              </div>
-                            )}
-
-                            {aboutSubTab === 'investor' && (
-                              <div>
-                                {(aboutConfig.INVESTOR_LOGOS || []).map((logo, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(aboutConfig.INVESTOR_LOGOS || [])];
-                                        arr.splice(idx, 1);
-                                        setAboutConfig({ ...aboutConfig, INVESTOR_LOGOS: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 12, width: 'calc(100% - 80px)' }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Investor Name</label>
-                                        <input type="text" value={logo.name || ''} onChange={e => {
-                                          const arr = [...(aboutConfig.INVESTOR_LOGOS || [])];
-                                          arr[idx] = { ...logo, name: e.target.value };
-                                          setAboutConfig({ ...aboutConfig, INVESTOR_LOGOS: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Logo Image URL</label>
-                                        <input type="text" value={logo.logo || ''} onChange={e => {
-                                          const arr = [...(aboutConfig.INVESTOR_LOGOS || [])];
-                                          arr[idx] = { ...logo, logo: e.target.value };
-                                          setAboutConfig({ ...aboutConfig, INVESTOR_LOGOS: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(aboutConfig.INVESTOR_LOGOS || [])];
-                                  arr.push({ id: 'in-' + Date.now(), name: '', logo: '' });
-                                  setAboutConfig({ ...aboutConfig, INVESTOR_LOGOS: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add Investor Logo</button>
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {selectedPageName === 'press' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            {pressList.map((item, idx) => (
-                              <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                <button
-                                  onClick={() => {
-                                    const arr = [...pressList];
-                                    arr.splice(idx, 1);
-                                    setPressList(arr);
-                                  }}
-                                  style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                >
-                                  🗑️ Delete
-                                </button>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 12, width: 'calc(100% - 80px)' }}>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Date</label>
-                                    <input type="text" value={item.date || ''} onChange={e => {
-                                      const arr = [...pressList];
-                                      arr[idx] = { ...item, date: e.target.value };
-                                      setPressList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Title</label>
-                                    <input type="text" value={item.title || ''} onChange={e => {
-                                      const arr = [...pressList];
-                                      arr[idx] = { ...item, title: e.target.value };
-                                      setPressList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                </div>
-                                <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12 }}>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Excerpt</label>
-                                    <input type="text" value={item.excerpt || ''} onChange={e => {
-                                      const arr = [...pressList];
-                                      arr[idx] = { ...item, excerpt: e.target.value };
-                                      setPressList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>URL</label>
-                                    <input type="text" value={item.url || ''} onChange={e => {
-                                      const arr = [...pressList];
-                                      arr[idx] = { ...item, url: e.target.value };
-                                      setPressList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                            <button onClick={() => setPressList([...pressList, { date: '', title: '', excerpt: '', url: '' }])} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer', width: 'fit-content' }}>➕ Add Press Release</button>
-                          </div>
-                        )}
-
-                        {selectedPageName === 'stories' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            {storiesList.map((story, idx) => (
-                              <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                <button
-                                  onClick={() => {
-                                    const arr = [...storiesList];
-                                    arr.splice(idx, 1);
-                                    setStoriesList(arr);
-                                  }}
-                                  style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                >
-                                  🗑️ Delete
-                                </button>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, width: 'calc(100% - 80px)', marginBottom: 12 }}>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Type</label>
-                                    <select value={story.type || 'creator'} onChange={e => {
-                                      const arr = [...storiesList];
-                                      arr[idx] = { ...story, type: e.target.value };
-                                      setStoriesList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }}>
-                                      <option value="creator">Creator Story</option>
-                                      <option value="brand">Brand Case Study</option>
-                                    </select>
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Creator Name</label>
-                                    <input type="text" value={story.creatorName || ''} onChange={e => {
-                                      const arr = [...storiesList];
-                                      arr[idx] = { ...story, creatorName: e.target.value };
-                                      setStoriesList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Brand Name</label>
-                                    <input type="text" value={story.brandName || ''} onChange={e => {
-                                      const arr = [...storiesList];
-                                      arr[idx] = { ...story, brandName: e.target.value };
-                                      setStoriesList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                </div>
-                                <div style={{ marginBottom: 12 }}>
-                                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Title</label>
-                                  <input type="text" value={story.title || ''} onChange={e => {
-                                    const arr = [...storiesList];
-                                    arr[idx] = { ...story, title: e.target.value };
-                                    setStoriesList(arr);
-                                  }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Description</label>
-                                    <textarea value={story.description || ''} onChange={e => {
-                                      const arr = [...storiesList];
-                                      arr[idx] = { ...story, description: e.target.value };
-                                      setStoriesList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 60 }} />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Testimonial Quote</label>
-                                    <textarea value={story.testimonial || ''} onChange={e => {
-                                      const arr = [...storiesList];
-                                      arr[idx] = { ...story, testimonial: e.target.value };
-                                      setStoriesList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 60 }} />
-                                  </div>
-                                </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Metrics Highlight (comma-separated)</label>
-                                    <input type="text" value={Array.isArray(story.metrics) ? story.metrics.join(', ') : story.metrics || ''} onChange={e => {
-                                      const arr = [...storiesList];
-                                      arr[idx] = { ...story, metrics: e.target.value.split(',').map(s => s.trim()).filter(Boolean) };
-                                      setStoriesList(arr);
-                                    }} placeholder="e.g. 15% CTR, 3x Engagement" style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Image/Avatar URL</label>
-                                    <input type="text" value={story.avatar || ''} onChange={e => {
-                                      const arr = [...storiesList];
-                                      arr[idx] = { ...story, avatar: e.target.value };
-                                      setStoriesList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                            <button onClick={() => setStoriesList([...storiesList, { id: 's-' + Date.now(), type: 'creator', brandName: '', creatorName: '', title: '', description: '', metrics: [], testimonial: '', avatar: '' }])} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer', width: 'fit-content' }}>➕ Add Story</button>
-                          </div>
-                        )}
-
-                        {selectedPageName === 'ai-faq' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            {aiFaqList.map((item, idx) => (
-                              <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                <button
-                                  onClick={() => {
-                                    const arr = [...aiFaqList];
-                                    arr.splice(idx, 1);
-                                    setPageData(arr);
-                                  }}
-                                  style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                >
-                                  🗑️ Delete
-                                </button>
-                                <div style={{ width: 'calc(100% - 80px)' }}>
-                                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>AI Prompt/Question</label>
-                                  <input type="text" value={item.q || ''} onChange={e => {
-                                    const arr = [...aiFaqList];
-                                    arr[idx] = { ...item, q: e.target.value };
-                                    setAiFaqList(arr);
-                                  }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, marginBottom: 12 }} />
-                                </div>
-                                <div>
-                                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>AI/System Answer</label>
-                                  <textarea value={item.a || ''} onChange={e => {
-                                    const arr = [...aiFaqList];
-                                    arr[idx] = { ...item, a: e.target.value };
-                                    setAiFaqList(arr);
-                                  }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 60 }} />
-                                </div>
-                              </div>
-                            ))}
-                            <button onClick={() => setAiFaqList([...aiFaqList, { q: '', a: '' }])} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer', width: 'fit-content' }}>➕ Add AI FAQ Item</button>
-                          </div>
-                        )}
-
-                        {selectedPageName === 'notifications' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            {notificationsList.map((item, idx) => (
-                              <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                <button
-                                  onClick={() => {
-                                    const arr = [...notificationsList];
-                                    arr.splice(idx, 1);
-                                    setNotificationsList(arr);
-                                  }}
-                                  style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                >
-                                  🗑️ Delete
-                                </button>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, width: 'calc(100% - 80px)', marginBottom: 12 }}>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Ref No.</label>
-                                    <input type="text" value={item.refNo || ''} onChange={e => {
-                                      const arr = [...notificationsList];
-                                      arr[idx] = { ...item, refNo: e.target.value };
-                                      setNotificationsList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Date</label>
-                                    <input type="text" value={item.date || ''} onChange={e => {
-                                      const arr = [...notificationsList];
-                                      arr[idx] = { ...item, date: e.target.value };
-                                      setNotificationsList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Department</label>
-                                    <input type="text" value={item.department || ''} onChange={e => {
-                                      const arr = [...notificationsList];
-                                      arr[idx] = { ...item, department: e.target.value };
-                                      setNotificationsList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Title (EN)</label>
-                                    <input type="text" value={item.title || ''} onChange={e => {
-                                      const arr = [...notificationsList];
-                                      arr[idx] = { ...item, title: e.target.value };
-                                      setNotificationsList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Title (HI)</label>
-                                    <input type="text" value={item.titleHi || ''} onChange={e => {
-                                      const arr = [...notificationsList];
-                                      arr[idx] = { ...item, titleHi: e.target.value };
-                                      setNotificationsList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                </div>
-                                <div style={{ marginBottom: 12 }}>
-                                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Description</label>
-                                  <textarea value={item.description || ''} onChange={e => {
-                                    const arr = [...notificationsList];
-                                    arr[idx] = { ...item, description: e.target.value };
-                                    setNotificationsList(arr);
-                                  }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 60 }} />
-                                </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>PDF File Name</label>
-                                    <input type="text" value={item.pdfName || ''} onChange={e => {
-                                      const arr = [...notificationsList];
-                                      arr[idx] = { ...item, pdfName: e.target.value };
-                                      setNotificationsList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Signatory Authority</label>
-                                    <input type="text" value={item.signatory || ''} onChange={e => {
-                                      const arr = [...notificationsList];
-                                      arr[idx] = { ...item, signatory: e.target.value };
-                                      setNotificationsList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Status</label>
-                                    <select value={item.status || 'PUBLISHED'} onChange={e => {
-                                      const arr = [...notificationsList];
-                                      arr[idx] = { ...item, status: e.target.value };
-                                      setNotificationsList(arr);
-                                    }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }}>
-                                      <option value="PUBLISHED">Published</option>
-                                      <option value="DRAFT">Draft</option>
-                                    </select>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                            <button onClick={() => setNotificationsList([...notificationsList, { id: 'n-' + Date.now(), refNo: '', date: '', department: '', title: '', titleHi: '', description: '', pdfName: '', status: 'PUBLISHED', signatory: '' }])} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer', width: 'fit-content' }}>➕ Add Notification Circular</button>
-                          </div>
-                        )}
-
-                        {selectedPageName === 'official' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-                              {[
-                                { id: 'bio', label: 'Handle Bio' },
-                                { id: 'socials', label: 'Platforms' },
-                                { id: 'highlights', label: 'Highlights Stories' },
-                                { id: 'announcements', label: 'HQ Articles' },
-                                { id: 'shards', label: 'Platform Shards' },
-                                { id: 'portals', label: 'Portals & Routes' }
-                              ].map(st => (
-                                <button
-                                  key={st.id}
-                                  onClick={() => setOfficialSubTab(st.id)}
-                                  style={{
-                                    padding: '6px 12px',
-                                    borderRadius: 8,
-                                    fontSize: 12,
-                                    fontWeight: 700,
-                                    cursor: 'pointer',
-                                    background: officialSubTab === st.id ? T.orange : T.card,
-                                    color: officialSubTab === st.id ? '#fff' : T.slate,
-                                    border: `1px solid ${T.border}`
-                                  }}
-                                >
-                                  {st.label}
-                                </button>
-                              ))}
-                            </div>
-
-                            {officialSubTab === 'bio' && (
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6 }}>Display Name (EN)</label>
-                                    <input type="text" value={officialConfig.en?.displayName || ''} onChange={e => setOfficialConfig({ ...officialConfig, en: { ...(officialConfig.en || {}), displayName: e.target.value } })} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6 }}>Display Name (HI)</label>
-                                    <input type="text" value={officialConfig.hi?.displayName || ''} onChange={e => setOfficialConfig({ ...officialConfig, hi: { ...(officialConfig.hi || {}), displayName: e.target.value } })} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6 }}>Bio Description (EN)</label>
-                                    <textarea value={officialConfig.en?.bio || ''} onChange={e => setOfficialConfig({ ...officialConfig, en: { ...(officialConfig.en || {}), bio: e.target.value } })} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 60 }} />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6 }}>Bio Description (HI)</label>
-                                    <textarea value={officialConfig.hi?.bio || ''} onChange={e => setOfficialConfig({ ...officialConfig, hi: { ...(officialConfig.hi || {}), bio: e.target.value } })} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 60 }} />
-                                  </div>
-                                </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6 }}>Base Posts Count</label>
-                                    <input type="number" value={officialConfig.baseStats?.posts || 0} onChange={e => setOfficialConfig({ ...officialConfig, baseStats: { ...(officialConfig.baseStats || {}), posts: parseInt(e.target.value) || 0 } })} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6 }}>Base Followers Count</label>
-                                    <input type="text" value={officialConfig.baseStats?.followers || ''} onChange={e => setOfficialConfig({ ...officialConfig, baseStats: { ...(officialConfig.baseStats || {}), followers: e.target.value } })} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6 }}>Base Following Count</label>
-                                    <input type="number" value={officialConfig.baseStats?.following || 0} onChange={e => setOfficialConfig({ ...officialConfig, baseStats: { ...(officialConfig.baseStats || {}), following: parseInt(e.target.value) || 0 } })} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                  </div>
-                                </div>
-                                <hr style={{ border: 'none', borderTop: `1px solid ${T.border}`, margin: '8px 0' }} />
-                                <div>
-                                  <h5 style={{ fontSize: 12, fontWeight: 800, color: T.orange, marginBottom: 12 }}>Founder HQ Details</h5>
-                                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 12 }}>
-                                    <div>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Founder Name</label>
-                                      <input type="text" value={officialConfig.founder?.name || ''} onChange={e => setOfficialConfig({ ...officialConfig, founder: { ...(officialConfig.founder || {}), name: e.target.value } })} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                    </div>
-                                    <div>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Role</label>
-                                      <input type="text" value={officialConfig.founder?.role || ''} onChange={e => setOfficialConfig({ ...officialConfig, founder: { ...(officialConfig.founder || {}), role: e.target.value } })} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                    </div>
-                                    <div>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Location</label>
-                                      <input type="text" value={officialConfig.founder?.location || ''} onChange={e => setOfficialConfig({ ...officialConfig, founder: { ...(officialConfig.founder || {}), location: e.target.value } })} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                    </div>
-                                  </div>
-                                  <div>
-                                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Founder Vision</label>
-                                    <textarea value={officialConfig.founder?.vision || ''} onChange={e => setOfficialConfig({ ...officialConfig, founder: { ...(officialConfig.founder || {}), vision: e.target.value } })} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 50 }} />
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-
-                            {officialSubTab === 'socials' && (
-                              <div>
-                                {(officialConfig.socialPlatforms || []).map((social, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(officialConfig.socialPlatforms || [])];
-                                        arr.splice(idx, 1);
-                                        setOfficialConfig({ ...officialConfig, socialPlatforms: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: 12, width: 'calc(100% - 80px)' }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Platform Name</label>
-                                        <input type="text" value={social.platform || ''} onChange={e => {
-                                          const arr = [...(officialConfig.socialPlatforms || [])];
-                                          arr[idx] = { ...social, platform: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, socialPlatforms: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Display Handle</label>
-                                        <input type="text" value={social.handle || ''} onChange={e => {
-                                          const arr = [...(officialConfig.socialPlatforms || [])];
-                                          arr[idx] = { ...social, handle: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, socialPlatforms: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>URL Link</label>
-                                        <input type="text" value={social.url || ''} onChange={e => {
-                                          const arr = [...(officialConfig.socialPlatforms || [])];
-                                          arr[idx] = { ...social, url: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, socialPlatforms: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(officialConfig.socialPlatforms || [])];
-                                  arr.push({ platform: '', handle: '', url: '' });
-                                  setOfficialConfig({ ...officialConfig, socialPlatforms: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add Social Handle</button>
-                              </div>
-                            )}
-
-                            {officialSubTab === 'highlights' && (
-                              <div>
-                                {(officialConfig.highlights || []).map((hl, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(officialConfig.highlights || [])];
-                                        arr.splice(idx, 1);
-                                        setOfficialConfig({ ...officialConfig, highlights: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: 12, width: 'calc(100% - 80px)', marginBottom: 12 }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Story Label</label>
-                                        <input type="text" value={hl.label || ''} onChange={e => {
-                                          const arr = [...(officialConfig.highlights || [])];
-                                          arr[idx] = { ...hl, label: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, highlights: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Icon (Lucide name)</label>
-                                        <input type="text" value={hl.icon || ''} onChange={e => {
-                                          const arr = [...(officialConfig.highlights || [])];
-                                          arr[idx] = { ...hl, icon: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, highlights: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Theme Color Hex</label>
-                                        <input type="text" value={hl.color || '#FF9431'} onChange={e => {
-                                          const arr = [...(officialConfig.highlights || [])];
-                                          arr[idx] = { ...hl, color: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, highlights: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6 }}>Story Text Slide</label>
-                                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 12 }}>
-                                        <input type="text" placeholder="Title" value={hl.stories?.[0]?.title || ''} onChange={e => {
-                                          const arr = [...(officialConfig.highlights || [])];
-                                          arr[idx] = { ...hl, stories: [{ title: e.target.value, text: hl.stories?.[0]?.text || '', date: hl.stories?.[0]?.date || 'Live' }] };
-                                          setOfficialConfig({ ...officialConfig, highlights: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                        <input type="text" placeholder="Slide content text" value={hl.stories?.[0]?.text || ''} onChange={e => {
-                                          const arr = [...(officialConfig.highlights || [])];
-                                          arr[idx] = { ...hl, stories: [{ title: hl.stories?.[0]?.title || '', text: e.target.value, date: hl.stories?.[0]?.date || 'Live' }] };
-                                          setOfficialConfig({ ...officialConfig, highlights: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(officialConfig.highlights || [])];
-                                  arr.push({ id: 'hl-' + Date.now(), label: '', icon: 'Zap', color: '#FF9431', stories: [{ title: '', text: '', date: 'Live' }] });
-                                  setOfficialConfig({ ...officialConfig, highlights: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add Highlight Story</button>
-                              </div>
-                            )}
-
-                            {officialSubTab === 'announcements' && (
-                              <div>
-                                {(officialConfig.posts || []).map((post, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(officialConfig.posts || [])];
-                                        arr.splice(idx, 1);
-                                        setOfficialConfig({ ...officialConfig, posts: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12, width: 'calc(100% - 80px)', marginBottom: 12 }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Post/Article Title</label>
-                                        <input type="text" value={post.title || ''} onChange={e => {
-                                          const arr = [...(officialConfig.posts || [])];
-                                          arr[idx] = { ...post, title: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, posts: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Category</label>
-                                        <input type="text" value={post.category || 'Announcements'} onChange={e => {
-                                          const arr = [...(officialConfig.posts || [])];
-                                          arr[idx] = { ...post, category: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, posts: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Read Time</label>
-                                        <input type="text" value={post.readTime || '3 min read'} onChange={e => {
-                                          const arr = [...(officialConfig.posts || [])];
-                                          arr[idx] = { ...post, readTime: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, posts: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr 1fr', gap: 12, marginBottom: 12 }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Icon</label>
-                                        <input type="text" value={post.icon || ''} onChange={e => {
-                                          const arr = [...(officialConfig.posts || [])];
-                                          arr[idx] = { ...post, icon: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, posts: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Cover Poster Image URL</label>
-                                        <input type="text" value={post.image || ''} onChange={e => {
-                                          const arr = [...(officialConfig.posts || [])];
-                                          arr[idx] = { ...post, image: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, posts: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Post Date</label>
-                                        <input type="text" value={post.date || ''} onChange={e => {
-                                          const arr = [...(officialConfig.posts || [])];
-                                          arr[idx] = { ...post, date: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, posts: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                    <div style={{ marginBottom: 12 }}>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Summary Excerpt</label>
-                                      <input type="text" value={post.summary || ''} onChange={e => {
-                                        const arr = [...(officialConfig.posts || [])];
-                                        arr[idx] = { ...post, summary: e.target.value };
-                                        setOfficialConfig({ ...officialConfig, posts: arr });
-                                      }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                    </div>
-                                    <div>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Full Content Markdown</label>
-                                      <textarea value={post.fullContent || ''} onChange={e => {
-                                        const arr = [...(officialConfig.posts || [])];
-                                        arr[idx] = { ...post, fullContent: e.target.value };
-                                        setOfficialConfig({ ...officialConfig, posts: arr });
-                                      }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 80 }} />
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(officialConfig.posts || [])];
-                                  arr.push({ id: 'po-' + Date.now(), title: '', category: 'Announcements', date: 'June 2026', readTime: '3 min read', icon: 'Code2', color: '#0f172a', image: '', summary: '', fullContent: '' });
-                                  setOfficialConfig({ ...officialConfig, posts: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add HQ Article</button>
-                              </div>
-                            )}
-
-                            {officialSubTab === 'shards' && (
-                              <div>
-                                {(officialConfig.shards || []).map((sh, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(officialConfig.shards || [])];
-                                        arr.splice(idx, 1);
-                                        setOfficialConfig({ ...officialConfig, shards: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr 1fr', gap: 12, width: 'calc(100% - 80px)' }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Shard ID</label>
-                                        <input type="text" value={sh.id || ''} onChange={e => {
-                                          const arr = [...(officialConfig.shards || [])];
-                                          arr[idx] = { ...sh, id: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, shards: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Region Name</label>
-                                        <input type="text" value={sh.region || ''} onChange={e => {
-                                          const arr = [...(officialConfig.shards || [])];
-                                          arr[idx] = { ...sh, region: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, shards: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Load Factor</label>
-                                        <input type="text" value={sh.load || '70%'} onChange={e => {
-                                          const arr = [...(officialConfig.shards || [])];
-                                          arr[idx] = { ...sh, load: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, shards: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Status</label>
-                                        <input type="text" value={sh.status || 'Active'} onChange={e => {
-                                          const arr = [...(officialConfig.shards || [])];
-                                          arr[idx] = { ...sh, status: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, shards: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(officialConfig.shards || [])];
-                                  arr.push({ id: '', region: '', status: 'Active', latency: '0ms', load: '50%' });
-                                  setOfficialConfig({ ...officialConfig, shards: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add Platform Shard</button>
-                              </div>
-                            )}
-
-                            {officialSubTab === 'portals' && (
-                              <div>
-                                {(officialConfig.portals || []).map((pt, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(officialConfig.portals || [])];
-                                        arr.splice(idx, 1);
-                                        setOfficialConfig({ ...officialConfig, portals: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1.5fr 1fr', gap: 12, width: 'calc(100% - 80px)', marginBottom: 12 }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Portal Title</label>
-                                        <input type="text" value={pt.title || ''} onChange={e => {
-                                          const arr = [...(officialConfig.portals || [])];
-                                          arr[idx] = { ...pt, title: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, portals: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Portal Route Path</label>
-                                        <input type="text" value={pt.route || ''} onChange={e => {
-                                          const arr = [...(officialConfig.portals || [])];
-                                          arr[idx] = { ...pt, route: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, portals: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Tag Category</label>
-                                        <input type="text" value={pt.tag || ''} onChange={e => {
-                                          const arr = [...(officialConfig.portals || [])];
-                                          arr[idx] = { ...pt, tag: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, portals: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12 }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Portal Description</label>
-                                        <input type="text" value={pt.description || ''} onChange={e => {
-                                          const arr = [...(officialConfig.portals || [])];
-                                          arr[idx] = { ...pt, description: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, portals: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Icon Name</label>
-                                        <input type="text" value={pt.iconName || pt.icon || ''} onChange={e => {
-                                          const arr = [...(officialConfig.portals || [])];
-                                          arr[idx] = { ...pt, iconName: e.target.value, icon: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, portals: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Accent Color Hex</label>
-                                        <input type="text" value={pt.color || '#3B82F6'} onChange={e => {
-                                          const arr = [...(officialConfig.portals || [])];
-                                          arr[idx] = { ...pt, color: e.target.value };
-                                          setOfficialConfig({ ...officialConfig, portals: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(officialConfig.portals || [])];
-                                  arr.push({ id: 'po-' + Date.now(), title: '', description: '', tag: 'Ecosystem', route: '/', iconName: 'Globe', color: '#FF9431' });
-                                  setOfficialConfig({ ...officialConfig, portals: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add Ecosystem Portal</button>
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {selectedPageName === 'verify-guide' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-                              {[
-                                { id: 'creator', label: '🙋 Creator Steps' },
-                                { id: 'brand', label: '💼 Brand Steps' }
-                              ].map(st => (
-                                <button
-                                  key={st.id}
-                                  onClick={() => setVerifyGuideSubTab(st.id)}
-                                  style={{
-                                    padding: '6px 12px',
-                                    borderRadius: 8,
-                                    fontSize: 12,
-                                    fontWeight: 700,
-                                    cursor: 'pointer',
-                                    background: verifyGuideSubTab === st.id ? T.orange : T.card,
-                                    color: verifyGuideSubTab === st.id ? '#fff' : T.slate,
-                                    border: `1px solid ${T.border}`
-                                  }}
-                                >
-                                  {st.label}
-                                </button>
-                              ))}
-                            </div>
-
-                            {verifyGuideSubTab === 'creator' ? (
-                              <div>
-                                {(verifyGuideConfig.creatorSteps || []).map((step, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(verifyGuideConfig.creatorSteps || [])];
-                                        arr.splice(idx, 1);
-                                        setVerifyGuideConfig({ ...verifyGuideConfig, creatorSteps: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr 1fr', gap: 12, width: 'calc(100% - 80px)', marginBottom: 12 }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Step No.</label>
-                                        <input type="text" value={step.n || ''} onChange={e => {
-                                          const arr = [...(verifyGuideConfig.creatorSteps || [])];
-                                          arr[idx] = { ...step, n: e.target.value };
-                                          setVerifyGuideConfig({ ...verifyGuideConfig, creatorSteps: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Step Title</label>
-                                        <input type="text" value={step.title || ''} onChange={e => {
-                                          const arr = [...(verifyGuideConfig.creatorSteps || [])];
-                                          arr[idx] = { ...step, title: e.target.value };
-                                          setVerifyGuideConfig({ ...verifyGuideConfig, creatorSteps: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Icon</label>
-                                        <input type="text" value={step.iconName || step.icon || ''} onChange={e => {
-                                          const arr = [...(verifyGuideConfig.creatorSteps || [])];
-                                          arr[idx] = { ...step, iconName: e.target.value, icon: e.target.value };
-                                          setVerifyGuideConfig({ ...verifyGuideConfig, creatorSteps: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Color Hex</label>
-                                        <input type="text" value={step.color || '#FF9431'} onChange={e => {
-                                          const arr = [...(verifyGuideConfig.creatorSteps || [])];
-                                          arr[idx] = { ...step, color: e.target.value };
-                                          setVerifyGuideConfig({ ...verifyGuideConfig, creatorSteps: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Description</label>
-                                      <textarea value={step.desc || ''} onChange={e => {
-                                        const arr = [...(verifyGuideConfig.creatorSteps || [])];
-                                        arr[idx] = { ...step, desc: e.target.value };
-                                        setVerifyGuideConfig({ ...verifyGuideConfig, creatorSteps: arr });
-                                      }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 50 }} />
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(verifyGuideConfig.creatorSteps || [])];
-                                  arr.push({ n: '01', title: '', iconName: 'Zap', color: '#FF9431', desc: '' });
-                                  setVerifyGuideConfig({ ...verifyGuideConfig, creatorSteps: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add Creator Step</button>
-                              </div>
-                            ) : (
-                              <div>
-                                {(verifyGuideConfig.brandSteps || []).map((step, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(verifyGuideConfig.brandSteps || [])];
-                                        arr.splice(idx, 1);
-                                        setVerifyGuideConfig({ ...verifyGuideConfig, brandSteps: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr 1fr', gap: 12, width: 'calc(100% - 80px)', marginBottom: 12 }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Step No.</label>
-                                        <input type="text" value={step.n || ''} onChange={e => {
-                                          const arr = [...(verifyGuideConfig.brandSteps || [])];
-                                          arr[idx] = { ...step, n: e.target.value };
-                                          setVerifyGuideConfig({ ...verifyGuideConfig, brandSteps: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Step Title</label>
-                                        <input type="text" value={step.title || ''} onChange={e => {
-                                          const arr = [...(verifyGuideConfig.brandSteps || [])];
-                                          arr[idx] = { ...step, title: e.target.value };
-                                          setVerifyGuideConfig({ ...verifyGuideConfig, brandSteps: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Icon</label>
-                                        <input type="text" value={step.iconName || step.icon || ''} onChange={e => {
-                                          const arr = [...(verifyGuideConfig.brandSteps || [])];
-                                          arr[idx] = { ...step, iconName: e.target.value, icon: e.target.value };
-                                          setVerifyGuideConfig({ ...verifyGuideConfig, brandSteps: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Color Hex</label>
-                                        <input type="text" value={step.color || '#10B981'} onChange={e => {
-                                          const arr = [...(verifyGuideConfig.brandSteps || [])];
-                                          arr[idx] = { ...step, color: e.target.value };
-                                          setVerifyGuideConfig({ ...verifyGuideConfig, brandSteps: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Description</label>
-                                      <textarea value={step.desc || ''} onChange={e => {
-                                        const arr = [...(verifyGuideConfig.brandSteps || [])];
-                                        arr[idx] = { ...step, desc: e.target.value };
-                                        setVerifyGuideConfig({ ...verifyGuideConfig, brandSteps: arr });
-                                      }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 50 }} />
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(verifyGuideConfig.brandSteps || [])];
-                                  arr.push({ n: '01', title: '', iconName: 'Users', color: '#10B981', desc: '' });
-                                  setVerifyGuideConfig({ ...verifyGuideConfig, brandSteps: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add Brand Step</button>
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {selectedPageName === 'ambassador' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-                              {[
-                                { id: 'perks', label: '🎁 Perks & Benefits' },
-                                { id: 'steps', label: '🚦 Recruitment Steps' },
-                                { id: 'faqs', label: '❓ Ambassador FAQs' }
-                              ].map(st => (
-                                <button
-                                  key={st.id}
-                                  onClick={() => setAmbassadorSubTab(st.id)}
-                                  style={{
-                                    padding: '6px 12px',
-                                    borderRadius: 8,
-                                    fontSize: 12,
-                                    fontWeight: 700,
-                                    cursor: 'pointer',
-                                    background: ambassadorSubTab === st.id ? T.orange : T.card,
-                                    color: ambassadorSubTab === st.id ? '#fff' : T.slate,
-                                    border: `1px solid ${T.border}`
-                                  }}
-                                >
-                                  {st.label}
-                                </button>
-                              ))}
-                            </div>
-
-                            {ambassadorSubTab === 'perks' && (
-                              <div>
-                                {(ambassadorConfig.perks || []).map((perk, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(ambassadorConfig.perks || [])];
-                                        arr.splice(idx, 1);
-                                        setAmbassadorConfig({ ...ambassadorConfig, perks: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12, width: 'calc(100% - 80px)', marginBottom: 12 }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Perk Title</label>
-                                        <input type="text" value={perk.title || ''} onChange={e => {
-                                          const arr = [...(ambassadorConfig.perks || [])];
-                                          arr[idx] = { ...perk, title: e.target.value };
-                                          setAmbassadorConfig({ ...ambassadorConfig, perks: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Icon</label>
-                                        <input type="text" value={perk.iconName || perk.icon || ''} onChange={e => {
-                                          const arr = [...(ambassadorConfig.perks || [])];
-                                          arr[idx] = { ...perk, iconName: e.target.value, icon: e.target.value };
-                                          setAmbassadorConfig({ ...ambassadorConfig, perks: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Color Hex</label>
-                                        <input type="text" value={perk.color || '#FF9431'} onChange={e => {
-                                          const arr = [...(ambassadorConfig.perks || [])];
-                                          arr[idx] = { ...perk, color: e.target.value };
-                                          setAmbassadorConfig({ ...ambassadorConfig, perks: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Description</label>
-                                      <textarea value={perk.desc || ''} onChange={e => {
-                                        const arr = [...(ambassadorConfig.perks || [])];
-                                        arr[idx] = { ...perk, desc: e.target.value };
-                                        setAmbassadorConfig({ ...ambassadorConfig, perks: arr });
-                                      }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 50 }} />
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(ambassadorConfig.perks || [])];
-                                  arr.push({ id: 'pe-' + Date.now(), title: '', iconName: 'Gift', color: '#10B981', desc: '' });
-                                  setAmbassadorConfig({ ...ambassadorConfig, perks: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add Perk Card</button>
-                              </div>
-                            )}
-
-                            {ambassadorSubTab === 'steps' && (
-                              <div>
-                                {(ambassadorConfig.steps || []).map((step, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(ambassadorConfig.steps || [])];
-                                        arr.splice(idx, 1);
-                                        setAmbassadorConfig({ ...ambassadorConfig, steps: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 3fr', gap: 12, width: 'calc(100% - 80px)', marginBottom: 12 }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Step Num</label>
-                                        <input type="text" value={step.num || ''} onChange={e => {
-                                          const arr = [...(ambassadorConfig.steps || [])];
-                                          arr[idx] = { ...step, num: e.target.value };
-                                          setAmbassadorConfig({ ...ambassadorConfig, steps: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Step Title</label>
-                                        <input type="text" value={step.title || ''} onChange={e => {
-                                          const arr = [...(ambassadorConfig.steps || [])];
-                                          arr[idx] = { ...step, title: e.target.value };
-                                          setAmbassadorConfig({ ...ambassadorConfig, steps: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Description</label>
-                                      <textarea value={step.desc || ''} onChange={e => {
-                                        const arr = [...(ambassadorConfig.steps || [])];
-                                        arr[idx] = { ...step, desc: e.target.value };
-                                        setAmbassadorConfig({ ...ambassadorConfig, steps: arr });
-                                      }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 50 }} />
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(ambassadorConfig.steps || [])];
-                                  arr.push({ num: '01', title: '', desc: '' });
-                                  setAmbassadorConfig({ ...ambassadorConfig, steps: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add Recruitment Step</button>
-                              </div>
-                            )}
-
-                            {ambassadorSubTab === 'faqs' && (
-                              <div>
-                                {(ambassadorConfig.faqs || []).map((faq, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(ambassadorConfig.faqs || [])];
-                                        arr.splice(idx, 1);
-                                        setAmbassadorConfig({ ...ambassadorConfig, faqs: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ width: 'calc(100% - 80px)', marginBottom: 12 }}>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Question</label>
-                                      <input type="text" value={faq.q || ''} onChange={e => {
-                                        const arr = [...(ambassadorConfig.faqs || [])];
-                                        arr[idx] = { ...faq, q: e.target.value };
-                                        setAmbassadorConfig({ ...ambassadorConfig, faqs: arr });
-                                      }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                    </div>
-                                    <div>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Answer</label>
-                                      <textarea value={faq.a || ''} onChange={e => {
-                                        const arr = [...(ambassadorConfig.faqs || [])];
-                                        arr[idx] = { ...faq, a: e.target.value };
-                                        setAmbassadorConfig({ ...ambassadorConfig, faqs: arr });
-                                      }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 60 }} />
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(ambassadorConfig.faqs || [])];
-                                  arr.push({ q: '', a: '' });
-                                  setAmbassadorConfig({ ...ambassadorConfig, faqs: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add FAQ Item</button>
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        {selectedPageName === 'contact' && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-                              {[
-                                { id: 'advantages', label: '⭐ Unique Advantages' },
-                                { id: 'hubs', label: '🏢 Regional Hubs' },
-                                { id: 'methods', label: '📞 Contact Methods' },
-                                { id: 'faqs', label: '❓ FAQ Accordions' }
-                              ].map(st => (
-                                <button
-                                  key={st.id}
-                                  onClick={() => setContactSubTab(st.id)}
-                                  style={{
-                                    padding: '6px 12px',
-                                    borderRadius: 8,
-                                    fontSize: 12,
-                                    fontWeight: 700,
-                                    cursor: 'pointer',
-                                    background: contactSubTab === st.id ? T.orange : T.card,
-                                    color: contactSubTab === st.id ? '#fff' : T.slate,
-                                    border: `1px solid ${T.border}`
-                                  }}
-                                >
-                                  {st.label}
-                                </button>
-                              ))}
-                            </div>
-
-                            {contactSubTab === 'advantages' && (
-                              <div>
-                                {(contactConfig.advantages || []).map((adv, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(contactConfig.advantages || [])];
-                                        arr.splice(idx, 1);
-                                        setContactConfig({ ...contactConfig, advantages: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1.5fr', gap: 12, width: 'calc(100% - 80px)', marginBottom: 12 }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Advantage Title</label>
-                                        <input type="text" value={adv.title || ''} onChange={e => {
-                                          const arr = [...(contactConfig.advantages || [])];
-                                          arr[idx] = { ...adv, title: e.target.value };
-                                          setContactConfig({ ...contactConfig, advantages: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Icon</label>
-                                        <input type="text" value={adv.iconName || adv.icon || ''} onChange={e => {
-                                          const arr = [...(contactConfig.advantages || [])];
-                                          arr[idx] = { ...adv, iconName: e.target.value, icon: e.target.value };
-                                          setContactConfig({ ...contactConfig, advantages: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Description</label>
-                                      <textarea value={adv.desc || ''} onChange={e => {
-                                        const arr = [...(contactConfig.advantages || [])];
-                                        arr[idx] = { ...adv, desc: e.target.value };
-                                        setContactConfig({ ...contactConfig, advantages: arr });
-                                      }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 50 }} />
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(contactConfig.advantages || [])];
-                                  arr.push({ id: 'ad-' + Date.now(), title: '', iconName: 'Mail', desc: '' });
-                                  setContactConfig({ ...contactConfig, advantages: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add Advantage Card</button>
-                              </div>
-                            )}
-
-                            {contactSubTab === 'hubs' && (
-                              <div>
-                                {(contactConfig.regionalHubs || []).map((hub, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(contactConfig.regionalHubs || [])];
-                                        arr.splice(idx, 1);
-                                        setContactConfig({ ...contactConfig, regionalHubs: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: 12, width: 'calc(100% - 80px)', marginBottom: 12 }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>City</label>
-                                        <input type="text" value={hub.city || ''} onChange={e => {
-                                          const arr = [...(contactConfig.regionalHubs || [])];
-                                          arr[idx] = { ...hub, city: e.target.value };
-                                          setContactConfig({ ...contactConfig, regionalHubs: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>State</label>
-                                        <input type="text" value={hub.state || ''} onChange={e => {
-                                          const arr = [...(contactConfig.regionalHubs || [])];
-                                          arr[idx] = { ...hub, state: e.target.value };
-                                          setContactConfig({ ...contactConfig, regionalHubs: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Hub Type</label>
-                                        <input type="text" value={hub.type || ''} onChange={e => {
-                                          const arr = [...(contactConfig.regionalHubs || [])];
-                                          arr[idx] = { ...hub, type: e.target.value };
-                                          setContactConfig({ ...contactConfig, regionalHubs: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Focus Operations</label>
-                                      <input type="text" value={hub.focus || ''} onChange={e => {
-                                        const arr = [...(contactConfig.regionalHubs || [])];
-                                        arr[idx] = { ...hub, focus: e.target.value };
-                                        setContactConfig({ ...contactConfig, regionalHubs: arr });
-                                      }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(contactConfig.regionalHubs || [])];
-                                  arr.push({ city: '', state: '', type: 'Regional Hub', focus: '' });
-                                  setContactConfig({ ...contactConfig, regionalHubs: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add Regional Hub</button>
-                              </div>
-                            )}
-
-                            {contactSubTab === 'methods' && (
-                              <div>
-                                {(contactConfig.contactMethods || []).map((method, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(contactConfig.contactMethods || [])];
-                                        arr.splice(idx, 1);
-                                        setContactConfig({ ...contactConfig, contactMethods: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1.5fr 1fr', gap: 12, width: 'calc(100% - 80px)', marginBottom: 12 }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Method Title</label>
-                                        <input type="text" value={method.title || ''} onChange={e => {
-                                          const arr = [...(contactConfig.contactMethods || [])];
-                                          arr[idx] = { ...method, title: e.target.value };
-                                          setContactConfig({ ...contactConfig, contactMethods: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Contact Detail Value</label>
-                                        <input type="text" value={method.value || ''} onChange={e => {
-                                          const arr = [...(contactConfig.contactMethods || [])];
-                                          arr[idx] = { ...method, value: e.target.value };
-                                          setContactConfig({ ...contactConfig, contactMethods: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Icon Name</label>
-                                        <input type="text" value={method.iconName || method.icon || ''} onChange={e => {
-                                          const arr = [...(contactConfig.contactMethods || [])];
-                                          arr[idx] = { ...method, iconName: e.target.value, icon: e.target.value };
-                                          setContactConfig({ ...contactConfig, contactMethods: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 12 }}>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Sub-Label Description</label>
-                                        <input type="text" value={method.sub || ''} onChange={e => {
-                                          const arr = [...(contactConfig.contactMethods || [])];
-                                          arr[idx] = { ...method, sub: e.target.value };
-                                          setContactConfig({ ...contactConfig, contactMethods: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                      <div>
-                                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Redirect Link URL</label>
-                                        <input type="text" value={method.link || ''} onChange={e => {
-                                          const arr = [...(contactConfig.contactMethods || [])];
-                                          arr[idx] = { ...method, link: e.target.value };
-                                          setContactConfig({ ...contactConfig, contactMethods: arr });
-                                        }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(contactConfig.contactMethods || [])];
-                                  arr.push({ title: '', value: '', iconName: 'Mail', sub: '', link: '' });
-                                  setContactConfig({ ...contactConfig, contactMethods: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add Contact Method</button>
-                              </div>
-                            )}
-
-                            {contactSubTab === 'faqs' && (
-                              <div>
-                                {(contactConfig.faqs || []).map((faq, idx) => (
-                                  <div key={idx} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 16, marginBottom: 12, position: 'relative' }}>
-                                    <button
-                                      onClick={() => {
-                                        const arr = [...(contactConfig.faqs || [])];
-                                        arr.splice(idx, 1);
-                                        setContactConfig({ ...contactConfig, faqs: arr });
-                                      }}
-                                      style={{ position: 'absolute', top: 12, right: 12, padding: '4px 8px', background: 'rgba(239,68,68,0.1)', color: T.red, border: 'none', borderRadius: 6, fontSize: 11, cursor: 'pointer' }}
-                                    >
-                                      🗑️ Delete
-                                    </button>
-                                    <div style={{ width: 'calc(100% - 80px)', marginBottom: 12 }}>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Question</label>
-                                      <input type="text" value={faq.q || ''} onChange={e => {
-                                        const arr = [...(contactConfig.faqs || [])];
-                                        arr[idx] = { ...faq, q: e.target.value };
-                                        setContactConfig({ ...contactConfig, faqs: arr });
-                                      }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg }} />
-                                    </div>
-                                    <div>
-                                      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 4 }}>Answer</label>
-                                      <textarea value={faq.a || ''} onChange={e => {
-                                        const arr = [...(contactConfig.faqs || [])];
-                                        arr[idx] = { ...faq, a: e.target.value };
-                                        setContactConfig({ ...contactConfig, faqs: arr });
-                                      }} style={{ width: '100%', padding: '8px 12px', border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, background: T.bg, minHeight: 60 }} />
-                                    </div>
-                                  </div>
-                                ))}
-                                <button onClick={() => {
-                                  const arr = [...(contactConfig.faqs || [])];
-                                  arr.push({ q: '', a: '' });
-                                  setContactConfig({ ...contactConfig, faqs: arr });
-                                }} style={{ padding: '8px 16px', background: T.orangeLight, color: T.orange, border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>➕ Add FAQ Accordion</button>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    <button
-                      onClick={handleSavePageConfig}
-                      style={{
-                        marginTop: 24,
-                        padding: '12px 28px',
-                        background: T.orange,
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: 12,
-                        fontWeight: 800,
-                        fontSize: 14,
-                        cursor: 'pointer',
-                        boxShadow: `0 4px 14px ${T.orange}30`
-                      }}
-                    >
-                      Save Page Content
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ══ SETTINGS ═══════════════════════════════════════════════════ */}
-          {activeTab === 'settings' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <SectionHeader title="System Settings" sub="Manage API keys, pricing, and feature toggles — changes are live instantly without redeployment" />
-
-              {/* Settings Tabs */}
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {[
-                  { id: 'general', label: '⚙️ General' },
-                  { id: 'pricing', label: '💰 Pricing' },
-                  { id: 'razorpay', label: '💳 Razorpay' },
-                  { id: 'email', label: '📧 Email' },
-                  { id: 'sms', label: '📱 SMS' },
-                  { id: 'toggles', label: '🔀 Feature Toggles' },
-                ].map(tab => (
-                  <button key={tab.id} onClick={() => setSettingsTab(tab.id)} style={{
-                    padding: '8px 18px', borderRadius: 10, border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: 13,
-                    background: settingsTab === tab.id ? T.orange : T.bg,
-                    color: settingsTab === tab.id ? '#fff' : T.slate,
-                    boxShadow: settingsTab === tab.id ? `0 4px 12px ${T.orange}30` : 'none',
-                    transition: 'all 0.2s'
-                  }}>{tab.label}</button>
-                ))}
-              </div>
-
-              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
-
-                {/* General Tab */}
-                {settingsTab === 'general' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-                    <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: T.navy }}>⚙️ General Configuration</h4>
-                    {[
-                      { label: 'Site Name', value: siteName, setter: setSiteName, type: 'text', ph: 'CreatorBharat' },
-                      { label: 'Support Email', value: supportEmail, setter: setSupportEmail, type: 'email', ph: 'support@creatorbharat.com' },
-                      { label: 'Frontend URL', value: frontendUrl, setter: setFrontendUrl, type: 'url', ph: 'https://creatorbharat.com' },
-                      { label: 'Platform Commission Fee (%)', value: platformFee, setter: setPlatformFee, type: 'number', ph: '10' },
-                    ].map((f, i) => (
-                      <div key={i}>
-                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>{f.label}</label>
-                        <input type={f.type} value={f.value} placeholder={f.ph} onChange={e => f.setter(e.target.value)}
-                          style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box' }} />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Pricing Tab */}
-                {settingsTab === 'pricing' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-                    <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: T.navy }}>💰 Subscription Pricing (in ₹)</h4>
-                    <p style={{ margin: 0, fontSize: 13, color: T.muted }}>Change prices here — frontend and payment gateway will use updated values automatically.</p>
-                    {[
-                      { label: 'Creator Pro Membership (₹)', value: proMembershipPrice, setter: setProMembershipPrice },
-                      { label: 'Campaign Boost (₹)', value: campaignBoostPrice, setter: setCampaignBoostPrice },
-                      { label: 'Featured Creator Slot (₹)', value: featuredSlotPrice, setter: setFeaturedSlotPrice },
-                    ].map((f, i) => (
-                      <div key={i}>
-                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>{f.label}</label>
-                        <input type="number" value={f.value} onChange={e => f.setter(e.target.value)}
-                          style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box' }} />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Razorpay Tab */}
-                {settingsTab === 'razorpay' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-                    <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: T.navy }}>💳 Razorpay Payment Gateway</h4>
-                    <div style={{ padding: 14, background: '#fef3c7', border: '1px solid #fcd34d', borderRadius: 10, fontSize: 13, color: '#92400e', fontWeight: 600 }}>
-                      ⚠️ These keys are stored securely in the database. Use Test keys for development, Live keys for production.
-                    </div>
-                    <div style={{ display: 'flex', gap: 12 }}>
-                      {['test', 'live'].map(mode => (
-                        <button key={mode} onClick={() => setRazorpayMode(mode)} style={{
-                          flex: 1, padding: '10px 0', borderRadius: 10, border: `2px solid ${razorpayMode === mode ? T.orange : T.border}`,
-                          background: razorpayMode === mode ? T.orangeLight : T.bg,
-                          color: razorpayMode === mode ? T.orange : T.slate,
-                          fontWeight: 800, fontSize: 13, cursor: 'pointer', textTransform: 'uppercase'
-                        }}>{mode} Mode</button>
-                      ))}
-                    </div>
-                    {[
-                      { label: 'Key ID (rzp_test_... or rzp_live_...)', value: razorpayKeyId, setter: setRazorpayKeyId, ph: 'rzp_test_xxxxxxxxxxxx' },
-                      { label: 'Key Secret', value: razorpaySecret, setter: setRazorpaySecret, ph: '••••••••••••••••••••', type: 'password' },
-                    ].map((f, i) => (
-                      <div key={i}>
-                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>{f.label}</label>
-                        <input type={f.type || 'text'} value={f.value} placeholder={f.ph} onChange={e => f.setter(e.target.value)}
-                          style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box', fontFamily: 'monospace' }} />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Email Tab */}
-                {settingsTab === 'email' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-                    <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: T.navy }}>📧 Email Service (Resend)</h4>
-                    <p style={{ margin: 0, fontSize: 13, color: T.muted }}>Get your API key from <a href="https://resend.com" target="_blank" rel="noreferrer" style={{ color: T.blue }}>resend.com</a>. Email sending can be toggled below.</p>
-                    {[
-                      { label: 'Resend API Key', value: resendApiKey, setter: setResendApiKey, ph: 're_xxxxxxxxxxxxxxxxxxxx', type: 'password' },
-                      { label: 'From Email Address', value: emailFrom, setter: setEmailFrom, ph: 'hello@yourdomain.com', type: 'email' },
-                    ].map((f, i) => (
-                      <div key={i}>
-                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>{f.label}</label>
-                        <input type={f.type || 'text'} value={f.value} placeholder={f.ph} onChange={e => f.setter(e.target.value)}
-                          style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box', fontFamily: 'monospace' }} />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* SMS Tab */}
-                {settingsTab === 'sms' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-                    <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: T.navy }}>📱 SMS Provider</h4>
-                    <div style={{ display: 'flex', gap: 12 }}>
-                      {['fast2sms', 'twilio'].map(p => (
-                        <button key={p} onClick={() => setSmsProvider(p)} style={{
-                          flex: 1, padding: '10px 0', borderRadius: 10, border: `2px solid ${smsProvider === p ? T.blue : T.border}`,
-                          background: smsProvider === p ? T.blueLight : T.bg,
-                          color: smsProvider === p ? T.blue : T.slate,
-                          fontWeight: 800, fontSize: 13, cursor: 'pointer', textTransform: 'uppercase'
-                        }}>{p === 'fast2sms' ? 'Fast2SMS (India)' : 'Twilio (Global)'}</button>
-                      ))}
-                    </div>
-                    {smsProvider === 'fast2sms' && (
-                      <div>
-                        <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Fast2SMS API Key</label>
-                        <input type="password" value={fast2smsKey} placeholder="Fast2SMS Authorization Key" onChange={e => setFast2smsKey(e.target.value)}
-                          style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box', fontFamily: 'monospace' }} />
-                      </div>
-                    )}
-                    {smsProvider === 'twilio' && (
-                      <>
-                        {[
-                          { label: 'Twilio Account SID', value: twilioSid, setter: setTwilioSid, ph: 'ACxxxxxxxxxxxxxxxx' },
-                          { label: 'Twilio Auth Token', value: twilioToken, setter: setTwilioToken, ph: '••••••••••••••••••••', type: 'password' },
-                          { label: 'Twilio Phone Number', value: twilioPhone, setter: setTwilioPhone, ph: '+1XXXXXXXXXX' },
-                        ].map((f, i) => (
-                          <div key={i}>
-                            <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>{f.label}</label>
-                            <input type={f.type || 'text'} value={f.value} placeholder={f.ph} onChange={e => f.setter(e.target.value)}
-                              style={{ width: '100%', padding: '11px 14px', border: `1px solid ${T.border}`, borderRadius: 10, fontSize: 14, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box', fontFamily: 'monospace' }} />
-                          </div>
-                        ))}
-                      </>
-                    )}
-                  </div>
-                )}
-
-                {/* Feature Toggles Tab */}
-                {settingsTab === 'toggles' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                    <h4 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: T.navy }}>🔀 Feature Toggles</h4>
-                    <p style={{ margin: 0, fontSize: 13, color: T.muted }}>Enable or disable platform features instantly — no code deployment required.</p>
-                    {[
-                      { label: 'AI Assistant (Pitch Generator)', sub: 'Gemini-powered pitch writer for creators', value: featAchievements, setter: setFeatAchievements, color: T.purple },
-                      { label: 'Creator Wallet & Escrow System', sub: 'Razorpay-backed payment escrow for campaigns', value: featWallet, setter: setFeatWallet, color: T.green },
-                      { label: 'Email Notifications', sub: 'Send transactional emails via Resend', value: enableEmail, setter: setEnableEmail, color: T.blue },
-                      { label: 'SMS / OTP Service', sub: 'Phone number verification via Fast2SMS or Twilio', value: enableSMS, setter: setEnableSMS, color: T.teal },
-                      { label: '🚨 Maintenance Mode', sub: 'Shows maintenance page to all users — keep this OFF in production', value: maintenanceMode, setter: setMaintenanceMode, color: T.red },
-                    ].map((flag, i) => (
-                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', background: flag.value ? flag.color + '08' : T.bg, border: `1px solid ${flag.value ? flag.color + '30' : T.border}`, borderRadius: 14, transition: 'all 0.2s' }}>
-                        <div>
-                          <div style={{ fontSize: 14, fontWeight: 800, color: T.navy }}>{flag.label}</div>
-                          <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>{flag.sub}</div>
-                        </div>
-                        <div onClick={() => flag.setter(!flag.value)} style={{ width: 52, height: 28, borderRadius: 14, background: flag.value ? flag.color : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', flexShrink: 0 }}>
-                          <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#fff', position: 'absolute', top: 3, left: flag.value ? 27 : 3, transition: 'left 0.25s', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-              </div>
-
-              <button onClick={handleSaveSettings} style={{ padding: '14px 32px', background: T.orange, color: '#fff', border: 'none', borderRadius: 12, fontWeight: 800, fontSize: 14, cursor: 'pointer', boxShadow: `0 4px 14px ${T.orange}30`, alignSelf: 'flex-start' }}>
-                💾 Save All Settings
-              </button>
-            </div>
-          )}
-
-          {/* ══ DANGER ZONE ════════════════════════════════════════════════ */}
-          {activeTab === 'danger' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ padding: 20, background: '#fef2f2', border: `1px solid ${T.red}25`, borderRadius: 16 }}>
-                <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 8 }}>
-                  <ShieldAlert size={22} style={{ color: T.red }} />
-                  <h3 style={{ margin: 0, fontSize: 17, fontWeight: 900, color: T.red }}>⚠️ Danger Zone</h3>
-                </div>
-                <p style={{ margin: 0, fontSize: 13, color: '#7f1d1d', fontWeight: 600 }}>These operations are irreversible. Proceed only if you know what you are doing.</p>
-              </div>
-              {/* Data Export Section */}
-              <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: 22 }}>
-                <div style={{ fontWeight: 800, color: T.navy, fontSize: 15, marginBottom: 6 }}>📊 Data Export</div>
-                <div style={{ fontSize: 13, color: T.muted, fontWeight: 500, marginBottom: 16 }}>Download platform data as CSV files for analysis or backup.</div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 10 }}>
-                  {[
-                    { label: '👥 Export Creators', type: 'creators', color: T.blue },
-                    { label: '🏢 Export Brands', type: 'brands', color: T.green },
-                    { label: '📢 Export Campaigns', type: 'campaigns', color: T.purple },
-                    { label: '💰 Export Payments', type: 'payments', color: T.orange },
-                    { label: '📧 Export Newsletters', type: 'newsletters', color: T.slate },
-                  ].map(exp => (
-                    <button key={exp.type} onClick={() => handleExportCSV(exp.type)} style={{ padding: '10px 14px', background: exp.color + '12', color: exp.color, border: `1px solid ${exp.color}25`, borderRadius: 10, fontWeight: 800, fontSize: 12, cursor: 'pointer', textAlign: 'left' }}>
-                      {exp.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Danger Operations */}
-              {[
-                { title: 'Clear All Newsletter Subscribers', desc: 'Permanently remove all email subscribers from the mailing list', action: 'Clear Subscribers', color: T.orange, endpoint: 'clear-newsletters' },
-                { title: 'Delete All Draft Blogs', desc: 'Remove all unpublished blog drafts from the system', action: 'Delete Drafts', color: T.red, endpoint: 'delete-draft-blogs' },
-                { title: 'Revoke All Pending Verifications', desc: 'Reset the entire verification queue — creators must re-submit', action: 'Revoke All KYC', color: T.red, endpoint: 'revoke-pending-verifications' },
-              ].map((op, i) => (
-                <div key={i} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: 22, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20 }}>
-                  <div>
-                    <div style={{ fontWeight: 800, color: T.navy, fontSize: 14, marginBottom: 4 }}>{op.title}</div>
-                    <div style={{ fontSize: 13, color: T.muted, fontWeight: 500 }}>{op.desc}</div>
-                  </div>
-                  <button onClick={() => handleDangerOp(op.endpoint, op.title)} style={{ padding: '9px 20px', background: op.color + '15', color: op.color, border: `1px solid ${op.color}30`, borderRadius: 10, fontWeight: 800, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                    {op.action}
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* ══ PLATFORM CONTROL CENTER ══════════════════════════════════════ */}
-          {activeTab === 'feature-control' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              {/* Header + Save Button */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: '20px 24px' }}>
-                <div>
-                  <h2 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: T.navy, fontFamily: 'Outfit, sans-serif' }}>⚙️ Platform Control Center</h2>
-                  <p style={{ margin: '4px 0 0', fontSize: 13, color: T.muted, fontWeight: 600 }}>Feature flags, commissions, creator/brand limits, announcements — live changes, no deploy needed.</p>
-                </div>
-                <button onClick={savePlatformSettings} disabled={psSaving || !platformSettings} style={{ padding: '12px 28px', background: psSaved ? T.green : T.orange, color: '#fff', border: 'none', borderRadius: 14, fontWeight: 900, fontSize: 14, cursor: 'pointer', opacity: psSaving ? 0.7 : 1, transition: 'all 0.2s', minWidth: 140 }}>
-                  {psSaving ? '⏳ Saving...' : psSaved ? '✅ Saved!' : '💾 Save All Changes'}
-                </button>
-              </div>
-
-              {psLoading || !platformSettings ? (
-                <div style={{ textAlign: 'center', padding: 60, color: T.muted }}>
-                  <div style={{ fontSize: 36, marginBottom: 12 }}>⚙️</div>
-                  <div style={{ fontWeight: 700 }}>Loading platform settings...</div>
-                </div>
-              ) : (
-                <>
-                  {/* Sub-tab nav */}
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', borderBottom: `1.5px solid ${T.border}`, paddingBottom: 12 }}>
-                    {[
-                      { id: 'features', label: '🔀 Feature Flags' },
-                      { id: 'comingSoon', label: '🚧 Coming Soon' },
-                      { id: 'commission', label: '💰 Commission & Pricing' },
-                      { id: 'creatorLimits', label: '🎛️ Creator Controls' },
-                      { id: 'brandLimits', label: '🏢 Brand Controls' },
-                      { id: 'announcement', label: '📢 Announcements' }
-                    ].map(st => (
-                      <button key={st.id} onClick={() => setPsSubTab(st.id)} type="button" style={{ padding: '8px 16px', borderRadius: 10, background: psSubTab === st.id ? T.orange : T.bg, color: psSubTab === st.id ? '#fff' : T.navy, fontWeight: 800, cursor: 'pointer', fontSize: 13, border: `1.5px solid ${psSubTab === st.id ? T.orange : T.border}`, transition: 'all 0.15s' }}>
-                        {st.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* ── SECTION: Feature Flags ── */}
-                  {psSubTab === 'features' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
-                      {[
-                        { key: 'creatorRegistration', label: '👤 Creator Registration', desc: 'Naye creators account bana sakte hain' },
-                        { key: 'brandRegistration', label: '🏢 Brand Registration', desc: 'Naye brands register kar sakte hain' },
-                        { key: 'campaignCreation', label: '📢 Campaign Creation', desc: 'Brands naye campaigns post kar sakte hain' },
-                        { key: 'escrowPayments', label: '💰 Escrow Payments', desc: 'Escrow payment system active hai' },
-                        { key: 'verificationRequests', label: '✅ Verification Requests', desc: 'Creators blue tick apply kar sakte hain' },
-                        { key: 'leaderboard', label: '🏆 Leaderboard', desc: 'Public creator leaderboard visible hai' },
-                        { key: 'rateCalculator', label: '🧮 Rate Calculator', desc: 'AI rate calculator public page pe dikhta hai' },
-                        { key: 'communityFeed', label: '💬 Community Feed', desc: 'Creator community posts aur discussions' },
-                        { key: 'brandSearch', label: '🔍 Brand Creator Search', desc: 'Brands creators ko search/filter kar sakte hain' },
-                        { key: 'messages', label: '💌 Messaging System', desc: 'Creator ↔ Brand direct messages' },
-                        { key: 'achievements', label: '🏅 Achievements', desc: 'Creator achievement badges aur milestones' },
-                        { key: 'referralSystem', label: '🔗 Referral System', desc: 'Referral links aur rewards active hain' },
-                        { key: 'walletWithdrawal', label: '💸 Wallet Withdrawal', desc: 'Creators apna balance withdraw kar sakte hain' },
-                        { key: 'creatorScore', label: '⭐ Creator Score', desc: 'Creator score algorithm active hai' },
-                        { key: 'events', label: '📅 Events', desc: 'Platform events aur conferences visible hain' },
-                        { key: 'podcasts', label: '🎙️ Podcasts', desc: 'Podcast section active hai' },
-                        { key: 'missionSystem', label: '🎯 Monthly Missions', desc: 'Creator monthly missions aur quests' },
-                        { key: 'gigs', label: '💼 Gigs / Projects', desc: 'Freelance gig marketplace active hai' }
-                      ].map(f => {
-                        const isOn = platformSettings.features[f.key] !== false;
-                        return (
-                          <div key={f.key} style={{ background: T.card, border: `1.5px solid ${isOn ? T.green + '40' : T.red + '30'}`, borderRadius: 16, padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, transition: 'all 0.2s' }}>
-                            <div style={{ flex: 1 }}>
-                              <div style={{ fontSize: 14, fontWeight: 800, color: T.navy, marginBottom: 3 }}>{f.label}</div>
-                              <div style={{ fontSize: 11, color: T.muted, fontWeight: 600 }}>{f.desc}</div>
-                            </div>
-                            {/* iOS-style toggle */}
-                            <div onClick={() => updatePS('features', f.key, !isOn)} style={{ width: 52, height: 28, borderRadius: 14, background: isOn ? T.green : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', flexShrink: 0, border: `2px solid ${isOn ? T.green : '#94a3b8'}` }}>
-                              <div style={{ position: 'absolute', top: 2, left: isOn ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
-                            </div>
-                            <span style={{ fontSize: 11, fontWeight: 800, color: isOn ? T.green : T.red, minWidth: 28 }}>{isOn ? 'ON' : 'OFF'}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  {/* ── SECTION: Coming Soon ── */}
-                  {psSubTab === 'comingSoon' && (
-                    <div>
-                      <div style={{ background: '#fffbeb', border: '1.5px solid #fcd34d', borderRadius: 14, padding: '12px 16px', marginBottom: 20, fontSize: 13, color: '#92400e', fontWeight: 700 }}>
-                        🚧 "Coming Soon" ON karne se us feature pe "Coming Soon" badge/overlay dikhega users ko. Feature disabled nahi hoga — sirf label lagega.
-                      </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
-                        {[
-                          { key: 'aiMatchmaking', label: '🤖 AI Matchmaking', desc: 'AI-powered brand-creator automatic matching' },
-                          { key: 'videoVerification', label: '🎥 Video Verification', desc: 'Face/video based identity verification' },
-                          { key: 'mobileApp', label: '📱 Mobile App', desc: 'CreatorBharat Android + iOS apps' },
-                          { key: 'advancedAnalytics', label: '📊 Advanced Analytics', desc: 'Deep creator performance analytics dashboard' },
-                          { key: 'multiLanguage', label: '🌐 Multi-Language', desc: 'Hindi, Tamil, Bengali language support' },
-                          { key: 'apiAccess', label: '🔌 Developer API', desc: 'Public REST API for third-party integrations' },
-                          { key: 'liveStreaming', label: '📺 Live Streaming', desc: 'Creator live stream integration' },
-                          { key: 'brandMarketplace', label: '🛒 Brand Marketplace', desc: 'Self-serve brand campaign marketplace' }
-                        ].map(f => {
-                          const isCS = !!(platformSettings.comingSoon[f.key]);
-                          return (
-                            <div key={f.key} style={{ background: T.card, border: `1.5px solid ${isCS ? '#fcd34d' : T.border}`, borderRadius: 16, padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, transition: 'all 0.2s' }}>
-                              <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: 14, fontWeight: 800, color: T.navy, marginBottom: 3 }}>{f.label}</div>
-                                <div style={{ fontSize: 11, color: T.muted, fontWeight: 600 }}>{f.desc}</div>
-                              </div>
-                              <div onClick={() => updatePS('comingSoon', f.key, !isCS)} style={{ width: 52, height: 28, borderRadius: 14, background: isCS ? '#f59e0b' : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', flexShrink: 0, border: `2px solid ${isCS ? '#f59e0b' : '#94a3b8'}` }}>
-                                <div style={{ position: 'absolute', top: 2, left: isCS ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
-                              </div>
-                              <span style={{ fontSize: 11, fontWeight: 800, color: isCS ? '#f59e0b' : T.muted, minWidth: 60 }}>{isCS ? '🚧 SOON' : 'LIVE'}</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* ── SECTION: Commission & Pricing ── */}
-                  {psSubTab === 'commission' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                      <div style={{ background: '#eff6ff', border: '1.5px solid #93c5fd', borderRadius: 14, padding: '12px 16px', fontSize: 13, color: '#1d4ed8', fontWeight: 700 }}>
-                        💡 Ye values pricing page pe aur commission calculations mein use honge. 0% = free platform.
-                      </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
-                        {[
-                          { key: 'platformFeePercent', label: '🏦 Platform Fee %', desc: 'Platform ki overall commission percentage', min: 0, max: 30, step: 0.5 },
-                          { key: 'escrowFeePercent', label: '🔐 Escrow Fee %', desc: 'Escrow release pe processing fee', min: 0, max: 10, step: 0.5 },
-                          { key: 'brandCommissionPercent', label: '🏢 Brand Commission %', desc: 'Brand campaigns pe additional fee', min: 0, max: 20, step: 0.5 },
-                          { key: 'creatorCommissionPercent', label: '👤 Creator Revenue Share %', desc: 'Creator earnings pe platform cut', min: 0, max: 20, step: 0.5 },
-                          { key: 'minCampaignBudget', label: '📉 Min Campaign Budget (₹)', desc: 'Minimum allowed campaign budget in INR', min: 100, max: 10000, step: 100 },
-                          { key: 'maxCampaignBudget', label: '📈 Max Campaign Budget (₹)', desc: 'Maximum allowed campaign budget in INR', min: 10000, max: 10000000, step: 10000 }
-                        ].map(f => (
-                          <div key={f.key} style={{ background: T.card, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: '18px 20px' }}>
-                            <div style={{ fontSize: 14, fontWeight: 800, color: T.navy, marginBottom: 2 }}>{f.label}</div>
-                            <div style={{ fontSize: 11, color: T.muted, fontWeight: 600, marginBottom: 12 }}>{f.desc}</div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                              <input type="range" min={f.min} max={f.max} step={f.step} value={platformSettings.commission[f.key]} onChange={e => updatePS('commission', f.key, parseFloat(e.target.value))} style={{ flex: 1, accentColor: T.orange }} />
-                              <input type="number" min={f.min} max={f.max} step={f.step} value={platformSettings.commission[f.key]} onChange={e => updatePS('commission', f.key, parseFloat(e.target.value) || 0)} style={{ width: 80, padding: '6px 10px', border: `1.5px solid ${T.border}`, borderRadius: 8, fontSize: 14, fontWeight: 800, color: T.navy, textAlign: 'center', background: T.bg }} />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* ── SECTION: Creator Controls ── */}
-                  {psSubTab === 'creatorLimits' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                      <div style={{ background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: 14, padding: '12px 16px', fontSize: 13, color: '#15803d', fontWeight: 700 }}>
-                        👤 Creator-side platform limits aur thresholds. Ye values creator dashboard aur verification mein use honge.
-                      </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
-                        {[
-                          { key: 'maxActiveCampaigns', label: '📢 Max Active Campaigns', desc: 'Ek creator ek saath kitne campaigns le sakta hai', min: 1, max: 50, step: 1, type: 'number' },
-                          { key: 'minFollowersForVerification', label: '👥 Min Followers for Verification', desc: 'Blue tick ke liye minimum follower count', min: 100, max: 100000, step: 100, type: 'number' },
-                          { key: 'profileCompletionRequired', label: '✅ Profile Completion Required (%)', desc: 'Campaign apply karne ke liye minimum profile %', min: 0, max: 100, step: 5, type: 'number' },
-                          { key: 'scoreDecayDays', label: '⏳ Score Decay Days', desc: 'Kitne din baad creator score decay hota hai', min: 7, max: 365, step: 7, type: 'number' },
-                          { key: 'maxPortfolioItems', label: '🖼️ Max Portfolio Items', desc: 'Creator profile mein max portfolio entries', min: 5, max: 100, step: 5, type: 'number' }
-                        ].map(f => (
-                          <div key={f.key} style={{ background: T.card, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: '18px 20px' }}>
-                            <div style={{ fontSize: 14, fontWeight: 800, color: T.navy, marginBottom: 2 }}>{f.label}</div>
-                            <div style={{ fontSize: 11, color: T.muted, fontWeight: 600, marginBottom: 12 }}>{f.desc}</div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                              <input type="range" min={f.min} max={f.max} step={f.step} value={platformSettings.creator[f.key]} onChange={e => updatePS('creator', f.key, parseInt(e.target.value))} style={{ flex: 1, accentColor: T.green }} />
-                              <input type="number" min={f.min} max={f.max} step={f.step} value={platformSettings.creator[f.key]} onChange={e => updatePS('creator', f.key, parseInt(e.target.value) || f.min)} style={{ width: 80, padding: '6px 10px', border: `1.5px solid ${T.border}`, borderRadius: 8, fontSize: 14, fontWeight: 800, color: T.navy, textAlign: 'center', background: T.bg }} />
-                            </div>
-                          </div>
-                        ))}
-                        {/* Toggle for allowGuestProfiles */}
-                        <div style={{ background: T.card, border: `1.5px solid ${platformSettings.creator.allowGuestProfiles ? T.green + '40' : T.red + '30'}`, borderRadius: 16, padding: '18px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div>
-                            <div style={{ fontSize: 14, fontWeight: 800, color: T.navy, marginBottom: 2 }}>👁️ Guest Profile Viewing</div>
-                            <div style={{ fontSize: 11, color: T.muted, fontWeight: 600 }}>Non-logged-in users creator profiles dekh sakte hain</div>
-                          </div>
-                          <div onClick={() => updatePS('creator', 'allowGuestProfiles', !platformSettings.creator.allowGuestProfiles)} style={{ width: 52, height: 28, borderRadius: 14, background: platformSettings.creator.allowGuestProfiles ? T.green : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', border: `2px solid ${platformSettings.creator.allowGuestProfiles ? T.green : '#94a3b8'}` }}>
-                            <div style={{ position: 'absolute', top: 2, left: platformSettings.creator.allowGuestProfiles ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* ── SECTION: Brand Controls ── */}
-                  {psSubTab === 'brandLimits' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                      <div style={{ background: '#eff6ff', border: '1.5px solid #93c5fd', borderRadius: 14, padding: '12px 16px', fontSize: 13, color: '#1d4ed8', fontWeight: 700 }}>
-                        🏢 Brand-side platform settings. Campaign limits, approval rules, aur visibility controls.
-                      </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
-                        {/* Number sliders */}
-                        {[
-                          { key: 'maxActiveCampaigns', label: '📢 Max Active Campaigns per Brand', desc: 'Ek brand ek saath kitne campaigns post kar sakta hai', min: 1, max: 100, step: 1 },
-                          { key: 'maxCreatorsPerCampaign', label: '👥 Max Creators per Campaign', desc: 'Ek campaign mein maximum creator slots', min: 1, max: 500, step: 5 }
-                        ].map(f => (
-                          <div key={f.key} style={{ background: T.card, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: '18px 20px' }}>
-                            <div style={{ fontSize: 14, fontWeight: 800, color: T.navy, marginBottom: 2 }}>{f.label}</div>
-                            <div style={{ fontSize: 11, color: T.muted, fontWeight: 600, marginBottom: 12 }}>{f.desc}</div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                              <input type="range" min={f.min} max={f.max} step={f.step} value={platformSettings.brand[f.key]} onChange={e => updatePS('brand', f.key, parseInt(e.target.value))} style={{ flex: 1, accentColor: T.blue }} />
-                              <input type="number" min={f.min} max={f.max} step={f.step} value={platformSettings.brand[f.key]} onChange={e => updatePS('brand', f.key, parseInt(e.target.value) || f.min)} style={{ width: 80, padding: '6px 10px', border: `1.5px solid ${T.border}`, borderRadius: 8, fontSize: 14, fontWeight: 800, color: T.navy, textAlign: 'center', background: T.bg }} />
-                            </div>
-                          </div>
-                        ))}
-                        {/* Toggle switches */}
-                        {[
-                          { key: 'autoApproveBrands', label: '⚡ Auto-Approve Brands', desc: 'Naye brand accounts automatically approved ho jayein', color: T.orange },
-                          { key: 'requireEscrowForCampaigns', label: '🔐 Require Escrow for Campaigns', desc: 'Campaign launch ke liye escrow mandatory hai', color: T.blue },
-                          { key: 'allowDirectMessages', label: '💌 Allow Direct Messages', desc: 'Brands creators ko seedha message kar sakte hain', color: T.green },
-                          { key: 'showBudgetToCreators', label: '👁️ Show Budget to Creators', desc: 'Creators campaign budget dekhein application mein', color: T.purple }
-                        ].map(f => (
-                          <div key={f.key} style={{ background: T.card, border: `1.5px solid ${platformSettings.brand[f.key] ? f.color + '40' : T.border}`, borderRadius: 16, padding: '18px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-                            <div>
-                              <div style={{ fontSize: 14, fontWeight: 800, color: T.navy, marginBottom: 2 }}>{f.label}</div>
-                              <div style={{ fontSize: 11, color: T.muted, fontWeight: 600 }}>{f.desc}</div>
-                            </div>
-                            <div onClick={() => updatePS('brand', f.key, !platformSettings.brand[f.key])} style={{ width: 52, height: 28, borderRadius: 14, background: platformSettings.brand[f.key] ? f.color : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', flexShrink: 0, border: `2px solid ${platformSettings.brand[f.key] ? f.color : '#94a3b8'}` }}>
-                              <div style={{ position: 'absolute', top: 2, left: platformSettings.brand[f.key] ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* ── SECTION: Announcements ── */}
-                  {psSubTab === 'announcement' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                      {/* Global Banner */}
-                      <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: 24 }}>
-                        <div style={{ fontSize: 15, fontWeight: 900, color: T.navy, marginBottom: 16, borderBottom: `1px solid ${T.border}`, paddingBottom: 10 }}>📢 Global Site Banner</div>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                          <div>
-                            <div style={{ fontSize: 13, fontWeight: 800, color: T.navy }}>Enable Banner</div>
-                            <div style={{ fontSize: 11, color: T.muted }}>Sab pages ke upar ek banner dikhao</div>
-                          </div>
-                          <div onClick={() => updatePS('announcement', 'globalBannerEnabled', !platformSettings.announcement.globalBannerEnabled)} style={{ width: 52, height: 28, borderRadius: 14, background: platformSettings.announcement.globalBannerEnabled ? T.orange : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', border: `2px solid ${platformSettings.announcement.globalBannerEnabled ? T.orange : '#94a3b8'}` }}>
-                            <div style={{ position: 'absolute', top: 2, left: platformSettings.announcement.globalBannerEnabled ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
-                          </div>
-                        </div>
-                        <div style={{ marginBottom: 12 }}>
-                          <label style={{ fontSize: 11, fontWeight: 800, color: T.muted, display: 'block', marginBottom: 6, textTransform: 'uppercase' }}>Banner Message</label>
-                          <input type="text" value={platformSettings.announcement.globalBannerText} onChange={e => updatePS('announcement', 'globalBannerText', e.target.value)} placeholder="e.g. 🚀 New features launched! Check out our updated dashboard." style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, boxSizing: 'border-box', background: T.bg }} />
-                        </div>
-                        <div>
-                          <label style={{ fontSize: 11, fontWeight: 800, color: T.muted, display: 'block', marginBottom: 6, textTransform: 'uppercase' }}>Banner Type</label>
-                          <div style={{ display: 'flex', gap: 8 }}>
-                            {[{ v: 'info', l: 'ℹ️ Info', c: '#3b82f6' }, { v: 'success', l: '✅ Success', c: '#10b981' }, { v: 'warning', l: '⚠️ Warning', c: '#f59e0b' }, { v: 'danger', l: '🚨 Danger', c: '#ef4444' }].map(t => (
-                              <button key={t.v} type="button" onClick={() => updatePS('announcement', 'globalBannerType', t.v)} style={{ padding: '8px 14px', borderRadius: 8, border: `2px solid ${platformSettings.announcement.globalBannerType === t.v ? t.c : T.border}`, background: platformSettings.announcement.globalBannerType === t.v ? t.c + '15' : 'transparent', color: platformSettings.announcement.globalBannerType === t.v ? t.c : T.muted, fontWeight: 800, fontSize: 12, cursor: 'pointer' }}>{t.l}</button>
-                            ))}
-                          </div>
-                        </div>
-                        {/* Preview */}
-                        {platformSettings.announcement.globalBannerText && (
-                          <div style={{ marginTop: 16, padding: '10px 16px', borderRadius: 10, background: platformSettings.announcement.globalBannerType === 'info' ? '#eff6ff' : platformSettings.announcement.globalBannerType === 'success' ? '#f0fdf4' : platformSettings.announcement.globalBannerType === 'warning' ? '#fffbeb' : '#fef2f2', border: `1.5px solid ${platformSettings.announcement.globalBannerType === 'info' ? '#93c5fd' : platformSettings.announcement.globalBannerType === 'success' ? '#86efac' : platformSettings.announcement.globalBannerType === 'warning' ? '#fcd34d' : '#fca5a5'}`, fontSize: 13, fontWeight: 700, color: platformSettings.announcement.globalBannerType === 'info' ? '#1d4ed8' : platformSettings.announcement.globalBannerType === 'success' ? '#15803d' : platformSettings.announcement.globalBannerType === 'warning' ? '#92400e' : '#991b1b' }}>
-                            <span style={{ marginRight: 8 }}>👁️ Preview:</span>{platformSettings.announcement.globalBannerText}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Maintenance Mode */}
-                      <div style={{ background: T.card, border: `1.5px solid ${platformSettings.announcement.maintenanceMode ? T.red + '50' : T.border}`, borderRadius: 16, padding: 24 }}>
-                        <div style={{ fontSize: 15, fontWeight: 900, color: T.navy, marginBottom: 16, borderBottom: `1px solid ${T.border}`, paddingBottom: 10 }}>🔧 Maintenance Mode</div>
-                        {platformSettings.announcement.maintenanceMode && (
-                          <div style={{ background: '#fef2f2', border: '1.5px solid #fca5a5', borderRadius: 10, padding: '10px 14px', marginBottom: 16, fontSize: 13, fontWeight: 800, color: '#991b1b' }}>
-                            ⚠️ MAINTENANCE MODE ACTIVE — Users ko full-page overlay dikh raha hai!
-                          </div>
-                        )}
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                          <div>
-                            <div style={{ fontSize: 13, fontWeight: 800, color: T.navy }}>Enable Maintenance Mode</div>
-                            <div style={{ fontSize: 11, color: T.muted }}>Pura site visitors ke liye maintenance overlay show karega</div>
-                          </div>
-                          <div onClick={() => updatePS('announcement', 'maintenanceMode', !platformSettings.announcement.maintenanceMode)} style={{ width: 52, height: 28, borderRadius: 14, background: platformSettings.announcement.maintenanceMode ? T.red : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', border: `2px solid ${platformSettings.announcement.maintenanceMode ? T.red : '#94a3b8'}` }}>
-                            <div style={{ position: 'absolute', top: 2, left: platformSettings.announcement.maintenanceMode ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
-                          </div>
-                        </div>
-                        <label style={{ fontSize: 11, fontWeight: 800, color: T.muted, display: 'block', marginBottom: 6, textTransform: 'uppercase' }}>Maintenance Message</label>
-                        <input type="text" value={platformSettings.announcement.maintenanceMessage} onChange={e => updatePS('announcement', 'maintenanceMessage', e.target.value)} placeholder="Platform is under scheduled maintenance. Back in 2 hours." style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, boxSizing: 'border-box', background: T.bg }} />
-                      </div>
-
-                      {/* News Ticker */}
-                      <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: 24 }}>
-                        <div style={{ fontSize: 15, fontWeight: 900, color: T.navy, marginBottom: 16, borderBottom: `1px solid ${T.border}`, paddingBottom: 10 }}>📰 News Ticker</div>
-                        <label style={{ fontSize: 11, fontWeight: 800, color: T.muted, display: 'block', marginBottom: 6, textTransform: 'uppercase' }}>Ticker Text (scrolls across top of site — empty = no ticker)</label>
-                        <input type="text" value={platformSettings.announcement.newsTicker} onChange={e => updatePS('announcement', 'newsTicker', e.target.value)} placeholder="e.g. 🎉 New creators joined this week! Leaderboard updated — check your rank now." style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, boxSizing: 'border-box', background: T.bg }} />
-                        {platformSettings.announcement.newsTicker && (
-                          <div style={{ marginTop: 12, background: '#0f172a', borderRadius: 8, padding: '8px 16px', overflow: 'hidden' }}>
-                            <span style={{ color: '#FF9431', fontSize: 12, fontWeight: 800 }}>🔔 {platformSettings.announcement.newsTicker}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          )}
-
-          {/* ══ ADMIN PANEL CONTROL ═════════════════════════════════════════ */}
-          {activeTab === 'admin-control' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              {/* Header + Save Button */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: '20px 24px' }}>
-                <div>
-                  <h2 style={{ margin: 0, fontSize: 18, fontWeight: 900, color: T.navy, fontFamily: 'Outfit, sans-serif' }}>🛡️ Admin Panel Control</h2>
-                  <p style={{ margin: '4px 0 0', fontSize: 13, color: T.muted, fontWeight: 600 }}>Configure administrator UI styles, session parameters, sound notifications, and audit administrative trails.</p>
-                </div>
-                <button onClick={saveAdminPanelSettings} disabled={apSaving || !adminPanelSettings} style={{ padding: '12px 28px', background: apSaved ? T.green : T.orange, color: '#fff', border: 'none', borderRadius: 14, fontWeight: 900, fontSize: 14, cursor: 'pointer', opacity: apSaving ? 0.7 : 1, transition: 'all 0.2s', minWidth: 140 }}>
-                  {apSaving ? '⏳ Saving...' : apSaved ? '✅ Saved!' : '💾 Save Admin Settings'}
-                </button>
-              </div>
-
-              {apLoading || !adminPanelSettings ? (
-                <div style={{ textAlign: 'center', padding: 60, color: T.muted }}>
-                  <div style={{ fontSize: 36, marginBottom: 12 }}>🛡️</div>
-                  <div style={{ fontWeight: 700 }}>Loading admin settings...</div>
-                </div>
-              ) : (
-                <>
-                  {/* Summary Bar */}
-                  <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr 1fr 1fr', gap: 16 }}>
-                    {/* Card 1: Security Health Score */}
-                    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
-                      <div style={{ fontSize: 24, width: 44, height: 44, borderRadius: 12, background: 'rgba(34, 197, 94, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🛡️</div>
-                      <div>
-                        <div style={{ fontSize: 11, color: T.muted, fontWeight: 700, textTransform: 'uppercase' }}>Security Health</div>
-                        <div style={{ fontSize: 18, fontWeight: 900, color: T.navy }}>{(() => {
-                          const mfaWeight = adminPanelSettings.requireMFA ? 35 : 0;
-                          const timeoutWeight = adminPanelSettings.sessionTimeout <= 3600 ? 30 : 15;
-                          const soundWeight = adminPanelSettings.soundAlerts ? 15 : 10;
-                          const refreshWeight = adminPanelSettings.autoRefreshRate > 0 ? 20 : 10;
-                          return mfaWeight + timeoutWeight + soundWeight + refreshWeight;
-                        })()}% Secured</div>
-                      </div>
-                    </div>
-
-                    {/* Card 2: SaaS Platform Revenue */}
-                    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
-                      <div style={{ fontSize: 24, width: 44, height: 44, borderRadius: 12, background: 'rgba(234, 179, 8, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>💰</div>
-                      <div>
-                        <div style={{ fontSize: 11, color: T.muted, fontWeight: 700, textTransform: 'uppercase' }}>Platform Profit</div>
-                        <div style={{ fontSize: 18, fontWeight: 900, color: T.navy }}>₹{(() => {
-                          const totalVolume = payments ? payments.reduce((acc, curr) => acc + (curr.amount || 0), 0) : 0;
-                          const escrowFeePercent = platformSettings?.commission?.escrowFeePercent || 2.5;
-                          return (totalVolume * (escrowFeePercent / 100)).toFixed(2);
-                        })()}</div>
-                      </div>
-                    </div>
-
-                    {/* Card 3: Database Protection */}
-                    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
-                      <div style={{ fontSize: 24, width: 44, height: 44, borderRadius: 12, background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>💾</div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 11, color: T.muted, fontWeight: 700, textTransform: 'uppercase' }}>System Backup</div>
-                        <button onClick={() => window.open(`${API_BASE}/admin/system/backup?token=${token}`, '_blank')} style={{ border: 'none', background: 'none', padding: 0, color: T.orange, fontWeight: 800, fontSize: 13, cursor: 'pointer', textAlign: 'left' }}>
-                          ⬇️ Download JSON
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Card 4: Active Portal Admins */}
-                    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
-                      <div style={{ fontSize: 24, width: 44, height: 44, borderRadius: 12, background: 'rgba(236, 72, 153, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>👥</div>
-                      <div>
-                        <div style={{ fontSize: 11, color: T.muted, fontWeight: 700, textTransform: 'uppercase' }}>Portal Admins</div>
-                        <div style={{ fontSize: 18, fontWeight: 900, color: T.navy }}>{stats?.activeAdmins || 1} Active</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Sub-tab nav */}
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', borderBottom: `1.5px solid ${T.border}`, paddingBottom: 12, marginTop: 12 }}>
-                    {[
-                      { id: 'theme', label: '🎨 UI Theme & Style' },
-                      { id: 'security', label: '🔒 Access & Security' },
-                      { id: 'credentials', label: '🔑 Change Credentials' },
-                      { id: 'diagnostics', label: '⚡ System Diagnostics' },
-                      { id: 'audit', label: '📋 Audit Trail & Logs' },
-                      { id: 'roles', label: '🛡️ Permissions Matrix' }
-                    ].map(st => (
-                      <button key={st.id} onClick={() => setApSubTab(st.id)} type="button" style={{ padding: '8px 16px', borderRadius: 10, background: apSubTab === st.id ? T.orange : T.bg, color: apSubTab === st.id ? '#fff' : T.navy, fontWeight: 800, cursor: 'pointer', fontSize: 13, border: `1.5px solid ${apSubTab === st.id ? T.orange : T.border}`, transition: 'all 0.15s' }}>
-                        {st.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* ── SUB-TAB: UI Theme ── */}
-                  {apSubTab === 'theme' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
-                      {/* Sidebar Theme Selector */}
-                      <div style={{ background: T.card, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-                        <div>
-                          <div style={{ fontSize: 14, fontWeight: 800, color: T.navy, marginBottom: 2 }}>Sidebar Theme</div>
-                          <div style={{ fontSize: 11, color: T.muted, fontWeight: 600 }}>Choose the accent style and color theme of the admin sidebar</div>
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                          {[
-                            { value: 'dark-sidebar', label: '🌑 Slate Dark', desc: 'Standard slate theme' },
-                            { value: 'light-sidebar', label: '☀️ Classic Light', desc: 'Clean bright layout' },
-                            { value: 'slate-neon', label: '🤖 Tech Blue', desc: 'Electric blue accents' },
-                            { value: 'sunset-crimson', label: '🌇 Orange Sunset', desc: 'Warm gradient sunset' }
-                          ].map(opt => {
-                            const isSelected = adminPanelSettings.theme === opt.value;
-                            return (
-                              <button key={opt.value} onClick={() => updateAP('theme', opt.value)} style={{ padding: '10px 12px', border: `2px solid ${isSelected ? T.orange : T.border}`, borderRadius: 10, background: isSelected ? T.orangeLight : T.card, cursor: 'pointer', textAlign: 'left' }}>
-                                <div style={{ fontSize: 12, fontWeight: 800, color: T.navy }}>{opt.label}</div>
-                                <div style={{ fontSize: 10, color: T.muted }}>{opt.desc}</div>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Display Preferences */}
-                      <div style={{ background: T.card, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-                        <div style={{ fontSize: 14, fontWeight: 800, color: T.navy }}>UI Layout Toggles</div>
-                        
-                        {/* Compact Sidebar */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: T.navy }}>Compact Sidebar</div>
-                            <div style={{ fontSize: 11, color: T.muted }}>Minimize sidebar size and show icons only</div>
-                          </div>
-                          <div onClick={() => updateAP('compactSidebar', !adminPanelSettings.compactSidebar)} style={{ width: 52, height: 28, borderRadius: 14, background: adminPanelSettings.compactSidebar ? T.green : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', border: `2px solid ${adminPanelSettings.compactSidebar ? T.green : '#94a3b8'}` }}>
-                            <div style={{ position: 'absolute', top: 2, left: adminPanelSettings.compactSidebar ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
-                          </div>
-                        </div>
-
-                        {/* Developer logs toggle */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: T.navy }}>Show Console Dev-Logs</div>
-                            <div style={{ fontSize: 11, color: T.muted }}>Show low-level API queries and console events inside panels</div>
-                          </div>
-                          <div onClick={() => updateAP('showConsoleLogs', !adminPanelSettings.showConsoleLogs)} style={{ width: 52, height: 28, borderRadius: 14, background: adminPanelSettings.showConsoleLogs ? T.orange : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', border: `2px solid ${adminPanelSettings.showConsoleLogs ? T.orange : '#94a3b8'}` }}>
-                            <div style={{ position: 'absolute', top: 2, left: adminPanelSettings.showConsoleLogs ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* ── SUB-TAB: Access & Security ── */}
-                  {apSubTab === 'security' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: 16 }}>
-                      {/* Session Parameters */}
-                      <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-                        <div style={{ fontSize: 14, fontWeight: 800, color: T.navy }}>Session & Authentication</div>
-                        
-                        {/* Auto Timeout */}
-                        <div>
-                          <label style={{ fontSize: 11, fontWeight: 800, color: T.muted, display: 'block', marginBottom: 6, textTransform: 'uppercase' }}>Session Auto-Timeout</label>
-                          <select value={adminPanelSettings.sessionTimeout} onChange={e => updateAP('sessionTimeout', parseInt(e.target.value))} style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.bg, fontWeight: 700 }}>
-                            <option value={900}>15 Minutes (High Security)</option>
-                            <option value={3600}>1 Hour (Standard)</option>
-                            <option value={28800}>8 Hours (Shift Session)</option>
-                            <option value={999999}>Never Timeout</option>
-                          </select>
-                        </div>
-
-                        {/* Real-time Refresh Rate */}
-                        <div>
-                          <label style={{ fontSize: 11, fontWeight: 800, color: T.muted, display: 'block', marginBottom: 6, textTransform: 'uppercase' }}>Stats Auto-Refresh Rate</label>
-                          <select value={adminPanelSettings.autoRefreshRate} onChange={e => updateAP('autoRefreshRate', parseInt(e.target.value))} style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.bg, fontWeight: 700 }}>
-                            <option value={0}>Manual Refresh Only</option>
-                            <option value={30}>Every 30 Seconds</option>
-                            <option value={60}>Every 1 Minute</option>
-                            <option value={300}>Every 5 Minutes</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      {/* Security policies */}
-                      <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-                        <div style={{ fontSize: 14, fontWeight: 800, color: T.navy }}>Auditing & Alert Policies</div>
-
-                        {/* sound alerts */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: T.navy }}>Sound Notifications</div>
-                            <div style={{ fontSize: 11, color: T.muted }}>Play a subtle chime alert when new verifications arrive</div>
-                          </div>
-                          <div onClick={() => updateAP('soundAlerts', !adminPanelSettings.soundAlerts)} style={{ width: 52, height: 28, borderRadius: 14, background: adminPanelSettings.soundAlerts ? T.green : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', border: `2px solid ${adminPanelSettings.soundAlerts ? T.green : '#94a3b8'}` }}>
-                            <div style={{ position: 'absolute', top: 2, left: adminPanelSettings.soundAlerts ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
-                          </div>
-                        </div>
-
-                        {/* require MFA */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: T.navy }}>Force Administrator MFA</div>
-                            <div style={{ fontSize: 11, color: T.muted }}>All administrators must complete Multi-Factor Authentication</div>
-                          </div>
-                          <div onClick={() => updateAP('requireMFA', !adminPanelSettings.requireMFA)} style={{ width: 52, height: 28, borderRadius: 14, background: adminPanelSettings.requireMFA ? T.red : '#cbd5e1', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', border: `2px solid ${adminPanelSettings.requireMFA ? T.red : '#94a3b8'}` }}>
-                            <div style={{ position: 'absolute', top: 2, left: adminPanelSettings.requireMFA ? 24 : 2, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.25s', boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }} />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* 2FA TOTP Setup Card */}
-                      <div style={{ gridColumn: mob ? '1' : 'span 2', background: T.card, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div>
-                            <div style={{ fontSize: 14, fontWeight: 800, color: T.navy }}>🔐 Two-Factor Authentication (TOTP)</div>
-                            <div style={{ fontSize: 11, color: T.muted }}>Use Google Authenticator, Authy, or any TOTP app to secure your admin login.</div>
-                          </div>
-                          {twoFAEnabled ? (
-                            <span style={{ background: '#dcfce7', color: '#16a34a', fontSize: 11, fontWeight: 800, padding: '4px 12px', borderRadius: 20 }}>ACTIVE</span>
-                          ) : (
-                            <span style={{ background: '#fee2e2', color: '#dc2626', fontSize: 11, fontWeight: 800, padding: '4px 12px', borderRadius: 20 }}>DISABLED</span>
-                          )}
-                        </div>
-
-                        {twoFAMessage && (
-                          <div style={{ padding: '10px 14px', borderRadius: 10, background: twoFAMessage.type === 'success' ? '#dcfce7' : '#fee2e2', color: twoFAMessage.type === 'success' ? '#16a34a' : '#dc2626', fontSize: 12, fontWeight: 700 }}>
-                            {twoFAMessage.type === 'success' ? '✅' : '❌'} {twoFAMessage.text}
-                          </div>
-                        )}
-
-                        {twoFAStep === 'idle' && !twoFAEnabled && (
-                          <button
-                            onClick={async () => {
-                              setTwoFALoading(true);
-                              setTwoFAMessage(null);
-                              try {
-                                const r = await fetch(`${API_BASE}/auth/2fa/setup`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
-                                const d = await r.json();
-                                if (!r.ok) throw new Error(d.error);
-                                setTwoFAQrCode(d.qrCode);
-                                setTwoFASecret(d.secret);
-                                setTwoFAStep('setup');
-                              } catch(e) { setTwoFAMessage({ type: 'error', text: e.message }); }
-                              setTwoFALoading(false);
-                            }}
-                            disabled={twoFALoading}
-                            style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: 10, fontWeight: 800, fontSize: 13, cursor: 'pointer', alignSelf: 'flex-start' }}
-                          >
-                            {twoFALoading ? '⏳ Generating...' : '🔑 Setup 2FA Now'}
-                          </button>
-                        )}
-
-                        {twoFAStep === 'setup' && twoFAQrCode && (
-                          <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'flex-start' }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}>
-                              <img src={twoFAQrCode} alt="2FA QR Code" style={{ width: 160, height: 160, borderRadius: 12, border: `2px solid ${T.border}` }} />
-                              <div style={{ fontSize: 10, color: T.muted, textAlign: 'center' }}>Scan with your TOTP app</div>
-                            </div>
-                            <div style={{ flex: 1, minWidth: 200, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                              <div style={{ fontSize: 11, fontWeight: 700, color: T.muted }}>Or enter this secret manually in your app:</div>
-                              <code style={{ padding: '8px 12px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 11, letterSpacing: 2, wordBreak: 'break-all', color: T.navy }}>{twoFASecret}</code>
-                              <div style={{ fontSize: 11, fontWeight: 700, color: T.muted }}>Enter the 6-digit code from your app to activate:</div>
-                              <input
-                                type="text"
-                                value={twoFACode}
-                                onChange={e => setTwoFACode(e.target.value.replace(/\D/g,'').slice(0,6))}
-                                placeholder="000000"
-                                maxLength={6}
-                                style={{ padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 20, fontWeight: 900, letterSpacing: 8, color: T.navy, background: T.bg, outline: 'none', width: '100%', boxSizing: 'border-box', textAlign: 'center' }}
-                              />
-                              <button
-                                onClick={async () => {
-                                  setTwoFALoading(true);
-                                  setTwoFAMessage(null);
-                                  try {
-                                    const r = await fetch(`${API_BASE}/auth/2fa/verify`, {
-                                      method: 'POST',
-                                      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                                      body: JSON.stringify({ code: twoFACode })
-                                    });
-                                    const d = await r.json();
-                                    if (!r.ok) throw new Error(d.error);
-                                    setTwoFAEnabled(true);
-                                    setTwoFAStep('enabled');
-                                    setTwoFAQrCode(null);
-                                    setTwoFACode('');
-                                    setTwoFAMessage({ type: 'success', text: '2FA is now active on your admin account.' });
-                                  } catch(e) { setTwoFAMessage({ type: 'error', text: e.message }); }
-                                  setTwoFALoading(false);
-                                }}
-                                disabled={twoFALoading || twoFACode.length !== 6}
-                                style={{ background: '#16a34a', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: 10, fontWeight: 800, fontSize: 13, cursor: 'pointer' }}
-                              >
-                                {twoFALoading ? '⏳ Verifying...' : '✅ Activate 2FA'}
-                              </button>
-                            </div>
-                          </div>
-                        )}
-
-                        {(twoFAStep === 'enabled' || twoFAEnabled) && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                            <div style={{ fontSize: 12, color: T.muted }}>2FA is protecting your account. Each login will require a code from your authenticator app.</div>
-                            <button
-                              onClick={() => {
-                                setTwoFAMessage(null);
-                                setTwoFAStep('idle');
-                                setTwoFAEnabled(false);
-                              }}
-                              style={{ background: T.bg, color: '#dc2626', border: '1.5px solid #dc2626', padding: '8px 16px', borderRadius: 10, fontWeight: 700, fontSize: 12, cursor: 'pointer', alignSelf: 'flex-start' }}
-                            >
-                              Disable 2FA (Requires Re-setup)
-                            </button>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Active Sessions list */}
-                      <div style={{ gridColumn: mob ? '1' : 'span 2', background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
-                        <div>
-                          <div style={{ fontSize: 14, fontWeight: 800, color: T.navy }}>👤 Active Portal Sessions Monitor</div>
-                          <div style={{ fontSize: 11, color: T.muted }}>Currently active sessions authenticated to access the administrative control panel.</div>
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: T.bg, padding: '10px 14px', borderRadius: 10, border: `1.5px solid ${T.border}` }}>
-                            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                              <span style={{ fontSize: 18 }}>🖥️</span>
-                              <div>
-                                <div style={{ fontSize: 12, fontWeight: 800, color: T.navy }}>Current Session (You)</div>
-                                <div style={{ fontSize: 10, color: T.muted }}>IP: 127.0.0.1 • Windows • Chrome</div>
-                              </div>
-                            </div>
-                            <span style={{ background: T.greenLight, color: T.green, fontSize: 10, fontWeight: 800, padding: '3px 8px', borderRadius: 12 }}>ACTIVE NOW</span>
-                          </div>
-                          
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: T.bg, padding: '10px 14px', borderRadius: 10, border: `1.5px solid ${T.border}`, opacity: 0.6 }}>
-                            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                              <span style={{ fontSize: 18 }}>📱</span>
-                              <div>
-                                <div style={{ fontSize: 12, fontWeight: 800, color: T.navy }}>Mobile App Gateway</div>
-                                <div style={{ fontSize: 10, color: T.muted }}>IP: 192.168.1.58 • iOS • Safari</div>
-                              </div>
-                            </div>
-                            <span style={{ background: T.slate, color: '#fff', fontSize: 10, fontWeight: 800, padding: '3px 8px', borderRadius: 12 }}>IDLE (15m)</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* ── SUB-TAB: Change Credentials ── */}
-                  {apSubTab === 'credentials' && (
-                    <div style={{ maxWidth: 500, margin: '0 auto', background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 32, display: 'flex', flexDirection: 'column', gap: 20 }}>
-                      <div>
-                        <div style={{ fontSize: 16, fontWeight: 900, color: T.navy }}>🔑 Update Admin Login Details</div>
-                        <div style={{ fontSize: 12, color: T.muted, fontWeight: 500 }}>Update your login email address and account credentials. Log out after updating to verify.</div>
-                      </div>
-
-                      <form onSubmit={handleUpdateAdminCredentials} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                        <div>
-                          <label style={{ display: 'block', fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>New Login Email (Optional)</label>
-                          <input type="email" value={adminNewEmail} onChange={e => setAdminNewEmail(e.target.value)} placeholder="new-admin@creatorbharat.com" style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box' }} />
-                        </div>
-                        
-                        <div>
-                          <label style={{ display: 'block', fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Current Password</label>
-                          <input type="password" value={adminCurrentPassword} onChange={e => setAdminCurrentPassword(e.target.value)} placeholder="••••••••" required style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box' }} />
-                        </div>
-
-                        <div>
-                          <label style={{ display: 'block', fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>New Password</label>
-                          <input type="password" value={adminNewPassword} onChange={e => setAdminNewPassword(e.target.value)} placeholder="••••••••" required style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box' }} />
-                        </div>
-
-                        <div>
-                          <label style={{ display: 'block', fontSize: 11, fontWeight: 800, color: T.slate, marginBottom: 6, textTransform: 'uppercase' }}>Confirm New Password</label>
-                          <input type="password" value={adminConfirmPassword} onChange={e => setAdminConfirmPassword(e.target.value)} placeholder="••••••••" required style={{ width: '100%', padding: '10px 14px', border: `1.5px solid ${T.border}`, borderRadius: 10, fontSize: 13, color: T.navy, background: T.bg, outline: 'none', boxSizing: 'border-box' }} />
-                        </div>
-
-                        <button type="submit" disabled={adminCredsUpdating} style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)', color: '#fff', border: 'none', padding: '12px', borderRadius: 12, fontWeight: 900, fontSize: 14, cursor: 'pointer', transition: 'all 0.2s', marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                          {adminCredsUpdating ? '⏳ Updating Security Details...' : '🔐 Confirm Credentials Change'}
-                        </button>
-                      </form>
-                    </div>
-                  )}
-
-                  {/* ── SUB-TAB: System Diagnostics ── */}
-                  {apSubTab === 'diagnostics' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                      {apDiagLoading || !apDiagnostics ? (
-                        <div style={{ textAlign: 'center', padding: 60, color: T.muted }}>
-                          <div style={{ fontSize: 36, marginBottom: 12 }}>⚡</div>
-                          <div style={{ fontWeight: 700 }}>Reading live system environment...</div>
-                        </div>
-                      ) : (
-                        <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1.2fr', gap: 16 }}>
-                          
-                          {/* Left Card: System & Process Info */}
-                          <div style={{ background: T.card, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <div style={{ borderBottom: `1.5px solid ${T.border}`, paddingBottom: 10 }}>
-                              <div style={{ fontSize: 15, fontWeight: 900, color: T.navy }}>🖥️ Server Environment</div>
-                              <div style={{ fontSize: 11, color: T.muted, fontWeight: 600 }}>Active Node.js process and memory usage statistics.</div>
-                            </div>
-
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                                <span style={{ color: T.muted, fontWeight: 600 }}>Node.js Version</span>
-                                <span style={{ color: T.navy, fontWeight: 800 }}>{apDiagnostics.nodeVersion}</span>
-                              </div>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                                <span style={{ color: T.muted, fontWeight: 600 }}>OS Platform</span>
-                                <span style={{ color: T.navy, fontWeight: 800, textTransform: 'capitalize' }}>{apDiagnostics.platform}</span>
-                              </div>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                                <span style={{ color: T.muted, fontWeight: 600 }}>Server Uptime</span>
-                                <span style={{ color: T.navy, fontWeight: 800 }}>{(() => {
-                                  const sec = apDiagnostics.uptime || 0;
-                                  const h = Math.floor(sec / 3600);
-                                  const m = Math.floor((sec % 3600) / 60);
-                                  return `${h}h ${m}m elapsed`;
-                                })()}</span>
-                              </div>
-                              
-                              <div style={{ borderTop: `1px solid ${T.border}`, paddingTop: 10, marginTop: 4 }}>
-                                <div style={{ fontSize: 12, fontWeight: 800, color: T.muted, marginBottom: 8, textTransform: 'uppercase' }}>Memory Allocation</div>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                                  <div style={{ background: T.bg, padding: 10, borderRadius: 8, border: `1px solid ${T.border}` }}>
-                                    <div style={{ fontSize: 10, color: T.muted, fontWeight: 700 }}>HEAP USED</div>
-                                    <div style={{ fontSize: 14, fontWeight: 900, color: T.navy }}>{apDiagnostics.memory?.heapUsed}</div>
-                                  </div>
-                                  <div style={{ background: T.bg, padding: 10, borderRadius: 8, border: `1px solid ${T.border}` }}>
-                                    <div style={{ fontSize: 10, color: T.muted, fontWeight: 700 }}>TOTAL ALLOCATED</div>
-                                    <div style={{ fontSize: 14, fontWeight: 900, color: T.navy }}>{apDiagnostics.memory?.heapTotal}</div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Right Card: Schema Counts & Maintenance */}
-                          <div style={{ background: T.card, border: `1.5px solid ${T.border}`, borderRadius: 16, padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <div style={{ borderBottom: `1.5px solid ${T.border}`, paddingBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <div>
-                                <div style={{ fontSize: 15, fontWeight: 900, color: T.navy }}>📊 Database Record Audit</div>
-                                <div style={{ fontSize: 11, color: T.muted, fontWeight: 600 }}>Active tables and total synced rows in SQL engine.</div>
-                              </div>
-                              <button onClick={fetchDiagnostics} style={{ padding: '6px 12px', background: T.bg, border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 11, fontWeight: 800, cursor: 'pointer', color: T.navy }}>🔄 Recalculate</button>
-                            </div>
-
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                              {[
-                                { label: '👥 User Accounts', val: apDiagnostics.counts?.users },
-                                { label: '💅 Creator Profiles', val: apDiagnostics.counts?.creators },
-                                { label: '🏢 Brand Profiles', val: apDiagnostics.counts?.brands },
-                                { label: '📢 Live Campaigns', val: apDiagnostics.counts?.campaigns },
-                                { label: '💳 Escrow / Payments', val: apDiagnostics.counts?.payments },
-                                { label: '🛡️ Team Directory', val: apDiagnostics.counts?.teamMembers }
-                              ].map((item, idx) => (
-                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: T.bg, padding: '10px 14px', borderRadius: 10, border: `1.5px solid ${T.border}` }}>
-                                  <span style={{ fontSize: 12, fontWeight: 700, color: T.navy }}>{item.label}</span>
-                                  <span style={{ fontSize: 13, fontWeight: 900, color: T.orange }}>{item.val || 0}</span>
-                                </div>
-                              ))}
-                            </div>
-
-                            {/* Maintenance Tools */}
-                            <div style={{ marginTop: 8, borderTop: `1px solid ${T.border}`, paddingTop: 14, display: 'flex', gap: 10 }}>
-                              <button onClick={() => {
-                                toast('⚡ Database indices rebuilt successfully, caches cleared!', 'success');
-                              }} style={{ flex: 1, padding: '10px 14px', background: T.bg, border: `1.5px solid ${T.border}`, borderRadius: 10, color: T.navy, fontSize: 12, fontWeight: 800, cursor: 'pointer' }}>
-                                ⚙️ Re-index Tables
-                              </button>
-                              <button onClick={() => {
-                                toast('✨ Verification queues cleaned, logs optimized!', 'success');
-                              }} style={{ flex: 1, padding: '10px 14px', background: T.orange, border: 'none', borderRadius: 10, color: '#fff', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}>
-                                🧹 Prune Temp Files
-                              </button>
-                            </div>
-                          </div>
-
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* ── SUB-TAB: Audit Trail & Logs ── */}
-                  {apSubTab === 'audit' && (
-                    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '22px 24px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                        <div>
-                          <div style={{ fontSize: 15, fontWeight: 900, color: T.navy }}>📋 Administrative Audit Trail</div>
-                          <div style={{ fontSize: 12, color: T.muted, fontWeight: 500 }}>Real-time logs of administrative actions executed in the panel</div>
-                        </div>
-                        <button onClick={fetchData} style={{ padding: '6px 12px', background: T.bg, border: `1.5px solid ${T.border}`, borderRadius: 8, fontSize: 11, fontWeight: 800, cursor: 'pointer', color: T.navy }}>🔄 Refresh Logs</button>
-                      </div>
-
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 400, overflowY: 'auto', paddingRight: 6 }}>
-                        {activityLog && activityLog.length > 0 ? (
-                          activityLog.slice(0, 10).map((log, i) => (
-                            <div key={i} style={{ display: 'flex', gap: 12, borderBottom: i === activityLog.length - 1 ? 'none' : `1px solid ${T.border}`, paddingBottom: 10, paddingTop: 4 }}>
-                              <div style={{ fontSize: 16, width: 24, height: 24, borderRadius: 6, background: T.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                {log.action?.toLowerCase().includes('approve') || log.action?.toLowerCase().includes('verify') ? '✅' : log.action?.toLowerCase().includes('delete') || log.action?.toLowerCase().includes('clear') ? '🚨' : '⚙️'}
-                              </div>
-                              <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: 13, fontWeight: 700, color: T.navy }}>{log.action}</div>
-                                <div style={{ fontSize: 11, color: T.muted, display: 'flex', gap: 8, marginTop: 2 }}>
-                                  <span>👤 {log.performedBy || 'Admin'}</span>
-                                  <span>•</span>
-                                  <span>📅 {fmtDate(log.createdAt)}</span>
-                                </div>
-                              </div>
-                              <span style={{ fontSize: 10, fontWeight: 800, padding: '3px 8px', borderRadius: 12, background: T.bg, color: T.navy, height: 'fit-content' }}>
-                                {log.entityType || 'SYSTEM'}
-                              </span>
-                            </div>
-                          ))
-                        ) : (
-                          <div style={{ textAlign: 'center', padding: 40, color: T.muted, fontSize: 13, fontWeight: 600 }}>No administrative logs recorded in session.</div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* ── SUB-TAB: Permissions Matrix ── */}
-                  {apSubTab === 'roles' && (
-                    <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 16, padding: '22px 24px' }}>
-                      <div style={{ marginBottom: 16 }}>
-                        <div style={{ fontSize: 15, fontWeight: 900, color: T.navy }}>🛡️ Role-Based Access Control (RBAC) Matrix</div>
-                        <div style={{ fontSize: 12, color: T.muted, fontWeight: 500 }}>Global read/write permissions mapped to administrative staff tiers.</div>
-                      </div>
-
-                      <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'left' }}>
-                          <thead>
-                            <tr style={{ borderBottom: `1.5px solid ${T.border}` }}>
-                              <th style={{ padding: '12px 10px', color: T.muted, fontWeight: 800 }}>MODULE / FEATURE</th>
-                              <th style={{ padding: '12px 10px', color: T.navy, fontWeight: 900 }}>👑 SUPERADMIN</th>
-                              <th style={{ padding: '12px 10px', color: T.navy, fontWeight: 900 }}>👮 MODERATOR</th>
-                              <th style={{ padding: '12px 10px', color: T.navy, fontWeight: 900 }}>📞 SUPPORT</th>
-                              <th style={{ padding: '12px 10px', color: T.navy, fontWeight: 900 }}>💰 FINANCE</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {[
-                              { module: '⚙️ Platform Control Center', super: 'Full Access', mod: 'Read Only', sup: 'No Access', fin: 'No Access' },
-                              { module: '🔒 Danger Zone Ops', super: 'Full Access', mod: 'No Access', sup: 'No Access', fin: 'No Access' },
-                              { module: '✅ KYC Verification Queue', super: 'Approve / Reject', mod: 'Approve / Reject', sup: 'Read Only', fin: 'No Access' },
-                              { module: '👥 Team member Invite/Revoke', super: 'Invite & Modify', mod: 'No Access', sup: 'No Access', fin: 'No Access' },
-                              { module: '💰 Escrow & Releases', super: 'Full Access', mod: 'Read Only', sup: 'No Access', fin: 'Release & Refund' },
-                              { module: '📰 Page Content / CMS', super: 'Full Access', mod: 'Edit Content', sup: 'Read Only', fin: 'No Access' },
-                              { module: '💬 Comment Moderation', super: 'Full Access', mod: 'Delete & Moderate', sup: 'Delete Only', fin: 'No Access' }
-                            ].map((row, i) => (
-                              <tr key={i} style={{ borderBottom: `1px solid ${T.border}` }}>
-                                <td style={{ padding: '12px 10px', fontWeight: 800, color: T.navy }}>{row.module}</td>
-                                <td style={{ padding: '12px 10px', color: T.green, fontWeight: 700 }}>{row.super}</td>
-                                <td style={{ padding: '12px 10px', color: row.mod.includes('No') ? T.red : T.blue, fontWeight: 700 }}>{row.mod}</td>
-                                <td style={{ padding: '12px 10px', color: row.sup.includes('No') ? T.red : T.slate, fontWeight: 700 }}>{row.sup}</td>
-                                <td style={{ padding: '12px 10px', color: row.fin.includes('No') ? T.red : T.purple, fontWeight: 700 }}>{row.fin}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
+          {/* ══ SYSTEM CONTROL SECTION ═══════════════════════════════════ */}
+          {['settings', 'danger', 'feature-control', 'admin-control'].includes(activeTab) && (
+            <SystemControlSection
+              activeTab={activeTab}
+              mob={mob}
+              toast={toast}
+              token={token}
+              API_BASE={API_BASE}
+              fetchData={fetchData}
+              settingsTab={settingsTab}
+              setSettingsTab={setSettingsTab}
+              siteName={siteName}
+              setSiteName={setSiteName}
+              supportEmail={supportEmail}
+              setSupportEmail={setSupportEmail}
+              frontendUrl={frontendUrl}
+              setFrontendUrl={setFrontendUrl}
+              platformFee={platformFee}
+              setPlatformFee={setPlatformFee}
+              proMembershipPrice={proMembershipPrice}
+              setProMembershipPrice={setProMembershipPrice}
+              campaignBoostPrice={campaignBoostPrice}
+              setCampaignBoostPrice={setCampaignBoostPrice}
+              featuredSlotPrice={featuredSlotPrice}
+              setFeaturedSlotPrice={setFeaturedSlotPrice}
+              razorpayMode={razorpayMode}
+              setRazorpayMode={setRazorpayMode}
+              razorpayKeyId={razorpayKeyId}
+              setRazorpayKeyId={setRazorpayKeyId}
+              razorpaySecret={razorpaySecret}
+              setRazorpaySecret={setRazorpaySecret}
+              resendApiKey={resendApiKey}
+              setResendApiKey={setResendApiKey}
+              emailFrom={emailFrom}
+              setEmailFrom={setEmailFrom}
+              logoUrl={logoUrl}
+              setLogoUrl={setLogoUrl}
+              footerEmail={footerEmail}
+              setFooterEmail={setFooterEmail}
+              handleUploadFile={handleUploadFile}
+              smsProvider={smsProvider}
+              setSmsProvider={setSmsProvider}
+              fast2smsKey={fast2smsKey}
+              setFast2smsKey={setFast2smsKey}
+              twilioSid={twilioSid}
+              setTwilioSid={setTwilioSid}
+              twilioToken={twilioToken}
+              setTwilioToken={setTwilioToken}
+              twilioPhone={twilioPhone}
+              setTwilioPhone={setTwilioPhone}
+              featAchievements={featAchievements}
+              setFeatAchievements={setFeatAchievements}
+              featWallet={featWallet}
+              setFeatWallet={setFeatWallet}
+              enableEmail={enableEmail}
+              setEnableEmail={setEnableEmail}
+              enableSMS={enableSMS}
+              setEnableSMS={setEnableSMS}
+              maintenanceMode={maintenanceMode}
+              setMaintenanceMode={setMaintenanceMode}
+              handleSaveSettings={handleSaveSettings}
+              handleExportCSV={handleExportCSV}
+              handleDangerOp={handleDangerOp}
+              psSaving={psSaving}
+              psSaved={psSaved}
+              psLoading={psLoading}
+              platformSettings={platformSettings}
+              savePlatformSettings={savePlatformSettings}
+              psSubTab={psSubTab}
+              setPsSubTab={setPsSubTab}
+              updatePS={updatePS}
+              apSaving={apSaving}
+              apSaved={apSaved}
+              apLoading={apLoading}
+              adminPanelSettings={adminPanelSettings}
+              saveAdminPanelSettings={saveAdminPanelSettings}
+              payments={payments}
+              stats={stats}
+              apSubTab={apSubTab}
+              setApSubTab={setApSubTab}
+              updateAP={updateAP}
+              adminNewEmail={adminNewEmail}
+              setAdminNewEmail={setAdminNewEmail}
+              adminCurrentPassword={adminCurrentPassword}
+              setAdminCurrentPassword={setAdminCurrentPassword}
+              adminNewPassword={adminNewPassword}
+              setAdminNewPassword={setAdminNewPassword}
+              adminConfirmPassword={adminConfirmPassword}
+              setAdminConfirmPassword={setAdminConfirmPassword}
+              adminCredsUpdating={adminCredsUpdating}
+              handleUpdateAdminCredentials={handleUpdateAdminCredentials}
+              apDiagLoading={apDiagLoading}
+              apDiagnostics={apDiagnostics}
+              fetchDiagnostics={fetchDiagnostics}
+              activityLog={activityLog}
+              twoFAEnabled={twoFAEnabled}
+              setTwoFAEnabled={setTwoFAEnabled}
+              twoFAQrCode={twoFAQrCode}
+              setTwoFAQrCode={setTwoFAQrCode}
+              twoFASecret={twoFASecret}
+              setTwoFASecret={setTwoFASecret}
+              twoFACode={twoFACode}
+              setTwoFACode={setTwoFACode}
+              twoFALoading={twoFALoading}
+              setTwoFALoading={setTwoFALoading}
+              twoFAMessage={twoFAMessage}
+              setTwoFAMessage={setTwoFAMessage}
+              twoFAStep={twoFAStep}
+              setTwoFAStep={setTwoFAStep}
+            />
           )}
 
         </div>

@@ -332,72 +332,18 @@ export default function PricingPage() {
     return () => window.removeEventListener('resize', checkSize);
   }, []);
 
-  const handleProActivate = async () => {
+  const handleSelectPlan = (plan) => {
     if (!st.user) {
       navigate(tab === 'brand' ? '/brand-register' : '/apply');
       return;
     }
 
-    try {
-      const isLoaded = await loadRazorpayScript();
-      if (!isLoaded) {
-        dsp?.({ t: 'TOAST', d: { type: 'error', msg: 'Razorpay SDK failed to load. Please check your connection.' } });
-        return;
-      }
-
-      const res = await apiCall('/payments/create-order', {
-        method: 'POST',
-        body: { type: 'PRO_LISTING' }
-      });
-
-      const options = {
-        key: res.key,
-        amount: res.amount,
-        currency: res.currency,
-        name: 'CreatorBharat Pro',
-        description: 'Upgrade to Elite Creator status',
-        order_id: res.orderId,
-        handler: async function (response) {
-          try {
-            const verifyRes = await apiCall('/payments/verify', {
-              method: 'POST',
-              body: {
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature
-              }
-            });
-            if (verifyRes.success) {
-              localStorage.setItem('cb_is_pro', 'true');
-              if (st.user?.creatorProfile) {
-                st.user.creatorProfile.isPro = true;
-              }
-              dsp?.({ t: 'SESSION_UPDATE', v: { isPro: true } });
-              dsp?.({ t: 'TOAST', d: { type: 'success', msg: 'Payment successful! Welcome to Pro! 🎉' } });
-              navigate('/creator/dashboard');
-            } else {
-              dsp?.({ t: 'TOAST', d: { type: 'error', msg: 'Verification failed. Please contact support.' } });
-            }
-          } catch (err) {
-            console.error('Verify payment error:', err);
-            dsp?.({ t: 'TOAST', d: { type: 'error', msg: 'Payment verification failed.' } });
-          }
-        },
-        prefill: {
-          name: st.user.name || '',
-          email: st.user.email || '',
-          contact: st.user.phone || ''
-        },
-        theme: {
-          color: '#FF9431'
-        }
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (err) {
-      console.error('Payment checkout initiation failed:', err);
-      dsp?.({ t: 'TOAST', d: { type: 'error', msg: 'Failed to initiate payment. Please try again.' } });
+    if (st.role === 'creator') {
+      navigate('/creator/settings?upgrade=pro');
+    } else if (st.role === 'brand') {
+      navigate('/settings?upgrade=pro');
+    } else {
+      navigate(tab === 'brand' ? '/brand-register' : '/apply');
     }
   };
 
@@ -734,7 +680,7 @@ export default function PricingPage() {
                    plan={plan} 
                    delay={0.1 * i} 
                    navigate={navigate}
-                   onProActivate={handleProActivate}
+                   onSelectPlan={handleSelectPlan}
                  />
                ))}
             </motion.div>

@@ -58,27 +58,74 @@ async function buildAuthResponse(user) {
   return { token: accessToken, refreshToken, user: safeUser(user) };
 }
 
-// ─── Zod Schemas ────────────────────────────────────────────────────────────
+const INDIAN_STATES = [
+  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana', 
+  'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 
+  'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 
+  'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+  'Andaman and Nicobar Islands', 'Chandigarh', 'Dadra and Nagar Haveli and Daman and Diu', 
+  'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry', 'Other'
+];
 
 const CreatorRegisterSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
   name: z.string().min(2),
   handle: z.string().regex(HANDLE_REGEX),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  phone: z.string().optional().or(z.literal('')),
-  otp: z.string().optional().or(z.literal(''))
+  city: z.string().min(1, 'City is required'),
+  state: z.string().refine(val => INDIAN_STATES.includes(val), {
+    message: 'Only creators located in India are allowed to register.'
+  }),
+  phone: z.string().regex(/^[6-9]\d{9}$/, 'Please enter a valid 10-digit Indian phone number.'),
+  otp: z.string().min(4, 'OTP is required')
 });
 
 const BrandRegisterSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
   companyName: z.string().min(2),
+  contactName: z.string().optional(),
   industry: z.string().optional(),
-  website: z.string().url().optional().or(z.literal('')),
+  website: z.string().optional().or(z.literal('')),
+  linkedin: z.string().optional().or(z.literal('')),
+  gstin: z.string().optional().or(z.literal('')),
+  country: z.string().default('India'),
+  state: z.string().optional().or(z.literal('')),
+  city: z.string().optional().or(z.literal('')),
   phone: z.string().optional().or(z.literal('')),
   otp: z.string().optional().or(z.literal(''))
+}).superRefine((data, ctx) => {
+  if (data.country === 'India') {
+    if (!data.phone || !/^[6-9]\d{9}$/.test(data.phone)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['phone'],
+        message: 'Please enter a valid 10-digit Indian phone number.'
+      });
+    }
+    if (!data.otp || data.otp.length < 4) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['otp'],
+        message: 'OTP is required for Indian brand verification.'
+      });
+    }
+    if (!data.state || !INDIAN_STATES.includes(data.state)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['state'],
+        message: 'Please select a valid Indian state.'
+      });
+    }
+  } else {
+    if (!data.phone || data.phone.length < 5 || data.phone.length > 20) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['phone'],
+        message: 'Please enter a valid phone number (5-20 digits).'
+      });
+    }
+  }
 });
 
 // ─── Token Refresh ──────────────────────────────────────────────────────────
@@ -513,20 +560,29 @@ router.post('/register/brand', async (req, res) => {
 
     let verifiedPhone = null;
     if (validated.phone) {
-      const cleanedPhone = validated.phone.replace(/\D/g, '');
-      const record = await prisma.otpVerification.findUnique({
-        where: { phone: cleanedPhone }
-      });
-      if (!record || record.otp !== validated.otp?.trim() || new Date() > record.expiresAt) {
-        return res.status(400).json({ error: 'Invalid or expired OTP for phone verification.' });
+      if (validated.country === 'India') {
+        const cleanedPhone = validated.phone.replace(/\D/g, '');
+        const record = await prisma.otpVerification.findUnique({
+          where: { phone: cleanedPhone }
+        });
+        if (!record || record.otp !== validated.otp?.trim() || new Date() > record.expiresAt) {
+          return res.status(400).json({ error: 'Invalid or expired OTP for phone verification.' });
+        }
+        
+        const phoneExists = await prisma.user.findUnique({ where: { phone: cleanedPhone } });
+        if (phoneExists) {
+          return res.status(400).json({ error: 'Phone number already registered to another account.' });
+        }
+        verifiedPhone = cleanedPhone;
+        await prisma.otpVerification.delete({ where: { phone: cleanedPhone } }).catch(() => {});
+      } else {
+        const cleanedPhone = validated.phone.replace(/[^\d+]/g, '');
+        const phoneExists = await prisma.user.findUnique({ where: { phone: cleanedPhone } });
+        if (phoneExists) {
+          return res.status(400).json({ error: 'Phone number already registered to another account.' });
+        }
+        verifiedPhone = cleanedPhone;
       }
-      
-      const phoneExists = await prisma.user.findUnique({ where: { phone: cleanedPhone } });
-      if (phoneExists) {
-        return res.status(400).json({ error: 'Phone number already registered to another account.' });
-      }
-      verifiedPhone = cleanedPhone;
-      await prisma.otpVerification.delete({ where: { phone: cleanedPhone } }).catch(() => {});
     }
 
     const hashedPassword = await bcrypt.hash(validated.password, 10);
@@ -541,7 +597,10 @@ router.post('/register/brand', async (req, res) => {
           create: {
             companyName: validated.companyName.trim(),
             industry: validated.industry?.trim() || null,
-            website: validated.website?.trim() || null
+            website: validated.website?.trim() || null,
+            country: validated.country,
+            state: validated.state?.trim() || null,
+            city: validated.city?.trim() || null
           }
         }
       },

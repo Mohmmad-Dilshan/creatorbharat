@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { isValidRole } from '@/utils/security';
-import { setUnauthorizedHandler, setTokens, clearTokens, getRefreshToken } from '@/utils/api';
+import { setUnauthorizedHandler, setTokens, clearTokens, getRefreshToken, apiCall } from '@/utils/api';
 
 
 const Ctx = createContext(null);
@@ -20,7 +20,13 @@ export const IS = {
   toasts: [],
   ui: { mobileMenu: false, hideNav: false },
   cf: { q: '', state: '', niche: [], platform: [], sort: 'score', verified: false, minFollowers: '', minER: '', minScore: '', minRating: '' },
-  cpf: { q: '', niche: '', urgent: false }
+  cpf: { q: '', niche: '', urgent: false },
+  settings: {
+    siteName: 'CreatorBharat',
+    supportEmail: 'support@creatorbharat.com',
+    logoUrl: '',
+    footerEmail: 'hello@creatorbharat.com'
+  }
 };
 
 export function reducer(s, a) {
@@ -86,6 +92,7 @@ export function reducer(s, a) {
       const h = s.saved.includes(a.id);
       return { ...s, saved: h ? s.saved.filter(x => x !== a.id) : [...s.saved, a.id] };
     }
+    case 'SET_SAVED_ITEMS': return { ...s, saved: a.v };
     case 'COMPARE': {
       if (s.compared.includes(a.id)) return { ...s, compared: s.compared.filter(x => x !== a.id) };
       if (s.compared.length >= 3) return s;
@@ -112,6 +119,7 @@ export function reducer(s, a) {
       localStorage.setItem('cb_user', JSON.stringify(updatedUser));
       return { ...s, user: updatedUser };
     }
+    case 'SET_SETTINGS': return { ...s, settings: a.v };
     default: return s;
   }
 }
@@ -170,6 +178,31 @@ export const AppProvider = ({ children }) => {
       window.location.href = '/login';
     });
   }, [dsp]);
+
+  // Fetch dynamic platform branding settings on mount
+  useEffect(() => {
+    apiCall('/settings/public')
+      .then(res => {
+        if (res) {
+          dsp({ t: 'SET_SETTINGS', v: res });
+        }
+      })
+      .catch(() => {});
+  }, [dsp]);
+
+  // Sync saved items from database on mount if user is logged in
+  useEffect(() => {
+    if (st.user) {
+      apiCall('/saved')
+        .then(res => {
+          if (Array.isArray(res)) {
+            const savedIds = res.map(item => item.targetId);
+            dsp({ t: 'SET_SAVED_ITEMS', v: savedIds });
+          }
+        })
+        .catch(() => {});
+    }
+  }, [st.user, dsp]);
 
   const value = useMemo(() => ({ st, dsp }), [st, dsp]);
 

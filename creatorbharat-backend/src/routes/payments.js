@@ -25,9 +25,9 @@ router.post('/create-order', authMiddleware, async (req, res) => {
     const { type } = req.body; // PRO_LISTING, CAMPAIGN_BOOST, FEATURED_SLOT
     const settings = await getSettings();
     const amounts = {
-      PRO_LISTING: settings.proMembershipPrice || 4900,
-      CAMPAIGN_BOOST: settings.campaignBoostPrice || 9900,
-      FEATURED_SLOT: settings.featuredSlotPrice || 19900
+      PRO_LISTING: settings.proMembershipPrice || 49,
+      CAMPAIGN_BOOST: settings.campaignBoostPrice || 99,
+      FEATURED_SLOT: settings.featuredSlotPrice || 199
     };
     const amount = amounts[type];
 

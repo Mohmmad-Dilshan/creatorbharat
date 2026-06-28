@@ -207,7 +207,8 @@ export default function MessagesPage() {
           activeId = targetChat;
         } else {
           try {
-            const profile = await apiCall(`/creators/${targetChat}`);
+            const path = st.role === 'CREATOR' ? `/brands/${targetChat}` : `/creators/${targetChat}`;
+            const profile = await apiCall(path);
             if (profile) {
               const newConv = {
                 id: profile.id,

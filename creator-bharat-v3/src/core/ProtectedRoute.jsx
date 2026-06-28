@@ -21,9 +21,23 @@ const ProtectedRoute = ({ children, allowedRole }) => {
 
   // If a specific role is required and user role doesn't match
   if (allowedRole && st.role !== allowedRole) {
-    // Redirect creators to their dashboard and brands to theirs
-    const fallbackPath = st.role === 'brand' ? '/brand-dashboard' : '/creator/dashboard';
+    // Redirect creators to onboarding if they are incomplete, otherwise dashboard
+    const fallbackPath = st.role === 'brand' ? '/brand-dashboard' : '/creator/onboarding';
     return <Navigate to={fallbackPath} replace />;
+  }
+
+  // If the user is a creator, ensure they have completed onboarding.
+  // If their profile is incomplete, redirect them to /creator/onboarding (unless they are already going to onboarding or profile builder pages)
+  if (st.user && st.role === 'creator') {
+    const creatorProfile = st.user.creatorProfile || st.user.creator || {};
+    const hasIndianPhone = creatorProfile.phone && /^[6-9]\d{9}$/.test(creatorProfile.phone.replace(/\D/g, ''));
+    const hasIndianLocation = creatorProfile.state && creatorProfile.city;
+    
+    const isProfileIncomplete = !hasIndianPhone || !hasIndianLocation;
+    
+    if (isProfileIncomplete && location.pathname !== '/creator/onboarding' && location.pathname !== '/creator/profile') {
+      return <Navigate to="/creator/onboarding" replace />;
+    }
   }
 
   return children;

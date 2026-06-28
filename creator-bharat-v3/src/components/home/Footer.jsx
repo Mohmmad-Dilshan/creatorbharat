@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useApp } from '@/core/context';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Logo } from '@/components/common';
@@ -229,6 +230,8 @@ FLink.propTypes = {
 
 export default function Footer() {
   const navigate = useNavigate();
+  const { st } = useApp();
+  const { settings } = st;
   const go = (p) => {
     navigate(p);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -300,11 +303,11 @@ export default function Footer() {
               Premium infrastructure for India's rising creator economy, built around identity, trust, regional voice, and direct brand access.
             </p>
             <div className="footer-contact-list">
-              <a href="mailto:hello@creatorbharat.com" className="footer-contact-link">
-                <Mail size={14} /> hello@creatorbharat.com
+              <a href={`mailto:${settings.footerEmail}`} className="footer-contact-link">
+                <Mail size={14} /> {settings.footerEmail}
               </a>
-              <a href="mailto:brands@creatorbharat.com" className="footer-contact-link">
-                <ExternalLink size={14} /> brands@creatorbharat.com
+              <a href={`mailto:${settings.supportEmail}`} className="footer-contact-link">
+                <ExternalLink size={14} /> {settings.supportEmail}
               </a>
               <div className="footer-contact-text">
                 <MapPin size={14} /> India, focused on Tier 2 and Tier 3 cities
@@ -333,7 +336,7 @@ export default function Footer() {
 
         <div className="footer-bottom">
           <span className="footer-copy">
-            (c) {new Date().getFullYear()} CreatorBharat. All rights reserved.
+            &copy; {new Date().getFullYear()} {settings.siteName}. All rights reserved.
           </span>
           <span className="footer-love">
             Built with <Heart size={13} fill="#ff9431" color="#ff9431" /> for Bharat

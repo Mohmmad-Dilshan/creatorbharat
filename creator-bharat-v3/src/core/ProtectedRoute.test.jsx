@@ -42,7 +42,13 @@ describe('ProtectedRoute Component Route Guard Tests', () => {
 
   it('renders children if user is authenticated and has matching role', () => {
     useApp.mockReturnValue({
-      st: { user: { id: 'user-1' }, role: 'creator' }
+      st: { 
+        user: { 
+          id: 'user-1', 
+          creatorProfile: { phone: '9876543210', state: 'Maharashtra', city: 'Mumbai' } 
+        }, 
+        role: 'creator' 
+      }
     });
 
     render(

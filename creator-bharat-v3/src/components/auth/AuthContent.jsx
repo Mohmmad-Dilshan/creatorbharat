@@ -27,6 +27,7 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
   const [view, setView] = useState(initialView); 
   const [isMobile, setIsMobile] = useState(globalThis.innerWidth <= 768);
   const [showSplash, setShowSplash] = useState(false);
+  const [authError, setAuthError] = useState('');
 
   useEffect(() => {
     if (st.user) {
@@ -73,6 +74,7 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
   }, [navigate, dsp]);
 
   const handleSetView = (v) => {
+    setAuthError('');
     if (isPage) {
       if (v === 'register') { navigate('/apply'); return; }
       if (v === 'brand-register') { navigate('/brand-register'); return; }
@@ -186,11 +188,13 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
     const password = e.target.password?.value;
 
     setLoading(true);
+    setAuthError('');
     try {
       const { user, token } = await loginWithPassword({ email, password, role });
       onAuthSuccess(user, token);
       dsp({ t: 'TOAST', d: { type: 'success', msg: `Welcome back!` } });
     } catch (err) {
+      setAuthError(err.message || 'Login failed. Please try again.');
       dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Login failed. Please try again.' } });
     } finally {
       setLoading(false);
@@ -284,7 +288,7 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
               <div className="auth-form-wrapper">
                 <AnimatePresence mode="wait">
                   {view === 'gateway' && <GatewayView setView={handleSetView} setRole={setRole} mob={isMobile} />}
-                  {view === 'login' && <LoginView role={role} setRole={setRole} onLogin={handleLogin} onAuthSuccess={onAuthSuccess} loading={loading} setView={handleSetView} mob={isMobile} />}
+                  {view === 'login' && <LoginView role={role} setRole={setRole} onLogin={handleLogin} onAuthSuccess={onAuthSuccess} loading={loading} setView={handleSetView} mob={isMobile} authError={authError} setAuthError={setAuthError} />}
                   {view === 'register' && <ApplyForm onSuccess={onAuthSuccess} onBackToLogin={() => handleSetView('login')} mob={isMobile} />}
                   {view === 'brand-register' && <BrandRegisterView setView={handleSetView} onSuccess={onAuthSuccess} mob={isMobile} />}
                   {view === 'forgot' && <ForgotView setView={handleSetView} />}

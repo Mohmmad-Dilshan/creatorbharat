@@ -182,6 +182,22 @@ export default function OpportunitiesPage() {
   const { st, dsp } = useApp();
   const navigate = useNavigate();
   const [q, setQ] = useState('');
+  const [mob, setMob] = useState(globalThis.innerWidth < 768);
+
+  useEffect(() => {
+    const h = () => setMob(globalThis.innerWidth < 768);
+    globalThis.addEventListener('resize', h);
+    return () => globalThis.removeEventListener('resize', h);
+  }, []);
+  
+  const getBrandName = (c) => {
+    if (!c) return 'Brand Partner';
+    if (typeof c.brand === 'object' && c.brand !== null) {
+      return c.brand.companyName || 'Brand Partner';
+    }
+    return c.brand || 'Brand Partner';
+  };
+
   const [tab, setTab] = useState('campaigns'); // 'campaigns' | 'gigs' | 'missions'
   const [allCampaigns, setAllCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -259,7 +275,7 @@ export default function OpportunitiesPage() {
     return allCampaigns.filter(c =>
       !term ||
       (c.title || '').toLowerCase().includes(term) ||
-      (c.brand || '').toLowerCase().includes(term) ||
+      (getBrandName(c)).toLowerCase().includes(term) ||
       (c.targetCity || '').toLowerCase().includes(term)
     );
   }, [q, allCampaigns]);
@@ -270,7 +286,7 @@ export default function OpportunitiesPage() {
       return;
     }
     setSelectedCampaign(campaign);
-    setPitchText(`Hi ${campaign.brand} Team,\n\nI would love to collaborate on your "${campaign.title}" campaign! As a verified creator, I specialize in producing highly engaging visual content and can build direct brand equity with my audience.\n\nLooking forward to hearing from you!`);
+    setPitchText(`Hi ${getBrandName(campaign)} Team,\n\nI would love to collaborate on your "${campaign.title}" campaign! As a verified creator, I specialize in producing highly engaging visual content and can build direct brand equity with my audience.\n\nLooking forward to hearing from you!`);
   };
 
   const handleAiPitch = async () => {
@@ -282,7 +298,7 @@ export default function OpportunitiesPage() {
         body: {
           creatorName: st.user?.name || 'Verified Creator',
           creatorNiches: st.user?.creator?.niche?.join(', ') || 'Lifestyle',
-          brandName: selectedCampaign.brand,
+          brandName: getBrandName(selectedCampaign),
           campaignTitle: selectedCampaign.title,
           campaignBrief: selectedCampaign.desc || selectedCampaign.description || 'Brand collaboration',
           dialect: pitchDialect
@@ -466,7 +482,14 @@ export default function OpportunitiesPage() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginBottom: 20 }}>
                       <Bdg color={campaign.status === 'active' || campaign.status === 'live' ? 'green' : 'blue'}>{campaign.status || 'active'}</Bdg>
                       <button
-                        onClick={() => dsp({ t: 'SAVE', id: campaign.id })}
+                        onClick={() => {
+                          dsp({ t: 'SAVE', id: campaign.id });
+                          if (saved) {
+                            apiCall(`/saved/${campaign.id}`, { method: 'DELETE' }).catch(() => {});
+                          } else {
+                            apiCall('/saved', { method: 'POST', body: JSON.stringify({ targetId: campaign.id }) }).catch(() => {});
+                          }
+                        }}
                         style={{ border: '1px solid #e2e8f0', background: saved ? '#FF943112' : '#fff', color: saved ? '#FF9431' : '#64748b', width: 40, height: 40, borderRadius: 12, display: 'grid', placeItems: 'center', cursor: 'pointer' }}
                         aria-label="Save campaign"
                       >
@@ -474,7 +497,7 @@ export default function OpportunitiesPage() {
                       </button>
                     </div>
                     <h3 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 950, color: '#0f172a' }}>{campaign.title}</h3>
-                    <p style={{ margin: 0, color: '#64748b', fontWeight: 700 }}>{campaign.brand} · {campaign.targetCity || 'India'}</p>
+                    <p style={{ margin: 0, color: '#64748b', fontWeight: 700 }}>{getBrandName(campaign)} · {campaign.targetCity || 'India'}</p>
                     <div style={{ margin: '22px 0', fontSize: 28, fontWeight: 950, color: '#0f172a' }}>{fmt.inr(campaign.budget || campaign.budgetMin)}</div>
                     <Btn full onClick={() => apply(campaign)} disabled={applied} style={{ background: applied ? '#e2e8f0' : '#0f172a', color: applied ? '#64748b' : '#fff', borderRadius: 14 }}>
                       {applied ? 'Applied ✓' : 'Apply with Pitch'} <Send size={16} />
@@ -646,7 +669,7 @@ export default function OpportunitiesPage() {
               style={{ background: '#fff', borderRadius: 32, padding: 32, maxWidth: 550, width: '100%', boxShadow: '0 40px 80px rgba(0,0,0,0.2)' }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                <h3 style={{ fontSize: 20, fontWeight: 950, color: '#0f172a', margin: 0 }}>Apply to {selectedCampaign.brand}</h3>
+                <h3 style={{ fontSize: 20, fontWeight: 950, color: '#0f172a', margin: 0 }}>Apply to {getBrandName(selectedCampaign)}</h3>
                 <button 
                   onClick={() => setSelectedCampaign(null)}
                   style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: 20, fontWeight: 900, cursor: 'pointer' }}

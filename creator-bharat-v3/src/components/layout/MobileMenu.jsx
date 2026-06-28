@@ -418,7 +418,7 @@ export default function MobileMenu({ open }) {
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
                     <img 
-                      src={(st.creatorProfile?.photo || st.creatorProfile?.avatarUrl) || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user?.name || 'U')}&background=0f172a&color=fff`} 
+                      src={st.user?.creatorProfile?.photo || st.user?.brandProfile?.logo || st.user?.photo || st.creatorProfile?.photo || st.creatorProfile?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user?.name || 'U')}&background=0f172a&color=fff`} 
                       style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: '1px solid #e2e8f0' }} 
                       alt=""
                     />

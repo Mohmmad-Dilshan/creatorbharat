@@ -165,6 +165,19 @@ router.put('/me', authMiddleware, async (req, res) => {
       regionalDialects, localVoice
     } = req.body;
 
+    const INDIAN_STATES = [
+      'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana', 
+      'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 
+      'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 
+      'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+      'Andaman and Nicobar Islands', 'Chandigarh', 'Dadra and Nagar Haveli and Daman and Diu', 
+      'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry', 'Other'
+    ];
+
+    if (state && !INDIAN_STATES.includes(state)) {
+      return res.status(400).json({ error: 'Only Indian locations are allowed for creator profiles.' });
+    }
+
     const updated = await prisma.creator.update({
       where: { userId: req.user.id },
       data: {

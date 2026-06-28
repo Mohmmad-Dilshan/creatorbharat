@@ -264,6 +264,7 @@ export default function CreatorLayout({ children }) {
 
   const userName = st.user?.name || 'Creator';
   const userInitial = userName[0]?.toUpperCase() || 'C';
+  const profilePhoto = st.user?.creatorProfile?.photo || st.user?.photo || '';
 
   return (
     <div className="db-layout creator-isolated-layout">
@@ -441,7 +442,13 @@ export default function CreatorLayout({ children }) {
                 className="db-user-profile"
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
               >
-                <div className="db-avatar">{userInitial}</div>
+                <div className="db-avatar" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
+                  {profilePhoto ? (
+                    <img src={profilePhoto} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                  ) : (
+                    userInitial
+                  )}
+                </div>
                 {!mob && (
                   <div style={{ textAlign: 'left' }}>
                     <p className="db-user-name">{userName.split(' ')[0]}</p>
@@ -478,11 +485,16 @@ export default function CreatorLayout({ children }) {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <div style={{
                           width: 38, height: 38, borderRadius: 10,
-                          background: 'linear-gradient(135deg, #FF9431, #EA580C)',
+                          background: profilePhoto ? '#f1f5f9' : 'linear-gradient(135deg, #FF9431, #EA580C)',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          color: '#fff', fontSize: 15, fontWeight: 900, flexShrink: 0
+                          color: '#fff', fontSize: 15, fontWeight: 900, flexShrink: 0,
+                          overflow: 'hidden'
                         }}>
-                          {userInitial}
+                          {profilePhoto ? (
+                            <img src={profilePhoto} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                          ) : (
+                            userInitial
+                          )}
                         </div>
                         <div style={{ overflow: 'hidden' }}>
                           <p style={{ fontSize: 14, fontWeight: 800, color: '#0f172a', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Check, ArrowRight, Sparkles } from 'lucide-react';
 import { Btn } from '@/components/common/Primitives';
 
-export default function PricingCard({ plan, delay = 0, navigate, onProActivate }) {
+export default function PricingCard({ plan, delay = 0, navigate, onSelectPlan }) {
   const isPro = plan.id === 'pro' || plan.id === 'brand_pro';
 
   return (
@@ -103,7 +103,7 @@ export default function PricingCard({ plan, delay = 0, navigate, onProActivate }
       <Btn 
         full 
         lg={isPro}
-        onClick={() => isPro && onProActivate ? onProActivate() : navigate('/join')}
+        onClick={() => onSelectPlan ? onSelectPlan(plan) : navigate('/join')}
         style={{
           padding: '20px',
           borderRadius: '100px',
@@ -134,5 +134,6 @@ PricingCard.propTypes = {
   }).isRequired,
   delay: PropTypes.number,
   navigate: PropTypes.func.isRequired,
-  onProActivate: PropTypes.func
+  onSelectPlan: PropTypes.func
 };
+

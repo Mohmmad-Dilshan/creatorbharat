@@ -99,7 +99,7 @@ router.get('/conversations', async (req, res) => {
     } else {
       const brands = await prisma.brand.findMany({
         where: { id: { in: otherIds } },
-        select: { id: true, companyName: true, companyLogo: true }
+        select: { id: true, companyName: true }
       });
 
       brands.forEach(b => {
@@ -107,7 +107,7 @@ router.get('/conversations', async (req, res) => {
         conversations.push({
           id: b.id,
           name: b.companyName || 'Brand Partner',
-          photo: b.companyLogo,
+          photo: `https://ui-avatars.com/api/?name=${encodeURIComponent(b.companyName || 'B')}&background=0f172a&color=fff`,
           handle: b.companyName ? b.companyName.toLowerCase().replace(/\s+/g, '') : 'brand',
           lastMsg: chatInfo.lastMessage.text,
           time: new Date(chatInfo.lastMessage.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),

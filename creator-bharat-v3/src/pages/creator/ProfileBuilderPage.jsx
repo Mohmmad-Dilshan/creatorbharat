@@ -76,6 +76,45 @@ ProLockBanner.propTypes = {
   onUpgrade: PropTypes.func.isRequired
 };
 
+const StepInstructionBanner = ({ icon: Icon, title, reason, points = [] }) => (
+  <div style={{
+    background: 'rgba(255, 148, 49, 0.04)',
+    border: '1px dashed rgba(255, 148, 49, 0.22)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+    display: 'flex',
+    gap: 14,
+    alignItems: 'flex-start'
+  }}>
+    <div style={{
+      background: 'rgba(255, 148, 49, 0.1)',
+      color: '#FF9431',
+      padding: 10,
+      borderRadius: 12,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexShrink: 0
+    }}>
+      <Icon size={20} />
+    </div>
+    <div style={{ flex: 1 }}>
+      <h4 style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 900, color: '#0f172a' }}>{title}</h4>
+      <p style={{ margin: '0 0 10px', fontSize: 12.5, fontWeight: 600, color: '#475569', lineHeight: 1.5 }}>
+        <strong style={{ color: '#FF9431' }}>Why this matters:</strong> {reason}
+      </p>
+      {points.length > 0 && (
+        <ul style={{ margin: 0, paddingLeft: 16, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {points.map((pt, i) => (
+            <li key={i} style={{ fontSize: 11.5, fontWeight: 550, color: '#64748b', lineHeight: 1.4 }}>{pt}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+);
+
 const PLATFORM_OPTIONS = ['Instagram', 'YouTube', 'LinkedIn', 'Twitter / X', 'Telegram', 'WhatsApp', 'Threads', 'Moj', 'ShareChat', 'Josh', 'Snapchat', 'Facebook', 'Pinterest', 'Twitch', 'Spotify', 'Discord', 'Reddit', 'GitHub', 'Behance', 'Dribbble', 'Medium', 'Website'];
 const PLATFORM_EMOJI = {
   'Instagram': '📸', 'YouTube': '▶️', 'LinkedIn': '💼', 'Twitter / X': '𝕏',
@@ -119,7 +158,7 @@ const getMonthlyStoriesCount = (stories) => {
 
 
 // ─── Tab 1: Identity ──────────────────────────────────────────────────────────
-const IdentityTabContent = ({ F, c, st, mob, upF, saveProfile, saving }) => {
+const IdentityTabContent = ({ F, c, st, mob, upF, saveProfile, saving, dsp }) => {
   const toggleNiche = (n) => {
     const current = F.niche || [];
     if (current.includes(n)) {
@@ -145,6 +184,16 @@ const IdentityTabContent = ({ F, c, st, mob, upF, saveProfile, saving }) => {
   return (
     <Card className="settings-form-card card-3d-effect">
        <h3 className="db-section-title">Step 1: Personal Identity</h3>
+       <StepInstructionBanner 
+          icon={User}
+          title="Step 1: Identity & Bio Setup"
+          reason="Brands search and filter creators by categories (niche), language, and city. A completed identity card is the first impression a corporate sponsor evaluates."
+          points={[
+            "Select up to 3 niches that define your content style.",
+            "Write a clear, professional bio. Mention your audience focus.",
+            "Add your active city and state to qualify for location-based offline campaigns."
+          ]}
+        />
        
        <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', gap: '24px', marginBottom: '24px' }}>
           {/* Avatar Photo */}
@@ -350,7 +399,17 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
 
   return (
     <Card className="settings-form-card card-3d-effect">
-       <h3 className="db-section-title">Step 2: Social Ecosystem & Gallery</h3>
+       <h3 className="db-section-title">Step 2: Social Ecosystem & Handles</h3>
+       <StepInstructionBanner 
+          icon={Globe}
+          title="Step 2: Connect Social Handles"
+          reason="Connecting social metrics proves your audience reach, engagement rate, and authentic follower count. Brands prioritize creators with connected active socials."
+          points={[
+            "Link your Instagram or YouTube handles.",
+            "Double-check your follower count for accuracy — this is audit-verified by admin.",
+            "Providing active channels increases deal opportunities by up to 2.5x."
+          ]}
+        />
        <p className="db-sub-text" style={{ marginBottom: 40 }}>Link your active social channels, add extra links, and showcase your visual gallery.</p>
        
       <div className="form-stack">
@@ -569,7 +628,7 @@ SocialTabContent.propTypes = {
 };
 
 // ─── Tab 3: Gallery Portfolio ──────────────────────────────────────────────────
-const GalleryTabContent = ({ F, mob, upF, saveProfile, setTab, isPro, navigate }) => {
+const GalleryTabContent = ({ F, mob, upF, saveProfile, setTab, isPro, navigate, dsp }) => {
   const [newUrl, setNewUrl] = useState('');
   const [newCaption, setNewCaption] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -644,9 +703,9 @@ const GalleryTabContent = ({ F, mob, upF, saveProfile, setTab, isPro, navigate }
       upF('gallery', [...currentGallery, data.item]);
       setPhotoTitle('');
       setPhotoDesc('');
-      alert('Portfolio image uploaded successfully! 📸');
+      dsp({ t: 'TOAST', d: { type: 'success', msg: 'Portfolio image uploaded successfully! 📸' } });
     } catch (err) {
-      alert(err.message || 'Upload failed');
+      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Upload failed' } });
     } finally {
       setUploading(false);
     }
@@ -671,7 +730,7 @@ const GalleryTabContent = ({ F, mob, upF, saveProfile, setTab, isPro, navigate }
 
       upF('gallery', (F.gallery || []).filter(item => item.id !== itemId));
     } catch (err) {
-      alert(err.message || 'Failed to delete');
+      dsp({ t: 'TOAST', d: { type: 'error', msg: err.message || 'Failed to delete' } });
     }
   };
 
@@ -686,6 +745,16 @@ const GalleryTabContent = ({ F, mob, upF, saveProfile, setTab, isPro, navigate }
   return (
     <Card className="settings-form-card card-3d-effect">
        <h3 className="db-section-title">Step 3: Gallery Portfolio & Creator Stories</h3>
+       <StepInstructionBanner 
+         icon={ImageIcon}
+         title="Step 3: Creator Portfolio & Media Kit"
+         reason="Your media kit and project gallery showcase your best visual work, past collaborations, and aesthetic style. It acts as your professional resume."
+         points={[
+           "Upload high-definition images of your content creation projects.",
+           "Showcase brand campaigns you have previously completed.",
+           "Keep your portfolio updated with your latest high-performing reels or shots."
+         ]}
+       />
        <p className="db-sub-text" style={{ marginBottom: 30 }}>Showcase your dynamic portfolio by uploading photos and share temporary Creator Stories.</p>
        
        <div className="form-stack">
@@ -934,6 +1003,16 @@ GalleryTabContent.propTypes = {
 const StoryTabContent = ({ F, mob, upF, upAward, upCollab, upMilestone, saveProfile, setTab, openAiWriter }) => (
   <Card className="settings-form-card card-3d-effect">
      <h3 className="db-section-title">Step 3: Journey Milestones & Bio</h3>
+     <StepInstructionBanner 
+       icon={Sparkles}
+       title="Step 4: Biography & Career Journey"
+       reason="A detailed story explains your passion, unique value proposition, and career milestones. Brands invest in creators who have a compelling narrative."
+       points={[
+         "Write an engaging background story (paragraph by paragraph) to share your history.",
+         "Add milestones with specific years (e.g. reached 50k followers, launched merchandise).",
+         "Specify awards, nominations, or industry recognition you have received."
+       ]}
+     />
      <p className="db-sub-text" style={{ marginBottom: 40 }}>Write your rich biography and declare historical milestones to construct your My Story tab.</p>
      
      <div className="form-stack">
@@ -1083,6 +1162,16 @@ const PackagesTabContent = ({ F, mob, upF, upService, addService, removeService,
   return (
   <Card className="settings-form-card card-3d-effect">
      <h3 className="db-section-title">Step 4: Commercial Deliverables & Pro Work</h3>
+     <StepInstructionBanner 
+       icon={Layers}
+       title="Step 5: Brand Collaboration Packages & Rates"
+       reason="Setting clear, transparent prices and deliverable scopes speeds up brand negotiation. Upfront pricing decreases transaction times by 80%."
+       points={[
+         "Set your minimum and maximum starting rate range.",
+         "Click 'Suggest Rates' to get auto-calculated rates based on your connected follower count.",
+         "Add custom service packages detailing exactly what you deliver (e.g. Reels, Stories, Posts)."
+       ]}
+     />
      <p className="db-sub-text" style={{ marginBottom: 40 }}>Define your rate range, service packages, viral hits, and case studies for brand discovery.</p>
      
      <div className="form-stack">
@@ -1246,6 +1335,16 @@ PackagesTabContent.propTypes = {
 const LocalTabContent = ({ F, mob, upF, upLocalHub, saveProfile, setTab, openAiWriter }) => (
   <Card className="settings-form-card card-3d-effect">
      <h3 className="db-section-title">Step 5: Local Collab Hub</h3>
+     <StepInstructionBanner 
+       icon={MapPin}
+       title="Step 6: Regional Hub & Local Reach"
+       reason="Many local campaigns target regional dialects, local slang, and specific cities. Configuring these helps brands match local hyper-targeted campaigns."
+       points={[
+         "Select your regional language dialects (e.g. Hindi, Punjabi, Tamil).",
+         "Define your active hyper-local reach cities.",
+         "Specify target demographics for local community campaigns."
+       ]}
+     />
      <p className="db-sub-text" style={{ marginBottom: 40 }}>Define your regional reach and attract hyper-local sponsorships from Tier-2 city brands.</p>
      
      <div className="form-stack">
@@ -2125,12 +2224,12 @@ export default function ProfileBuilderPage() {
             <AnimatePresence mode="wait">
                {tab === 'identity' && (
                  <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="identity">
-                    <IdentityTabContent F={F} c={c} st={st} mob={mob} upF={upF} saveProfile={saveProfile} saving={saving} />
+                    <IdentityTabContent F={F} c={c} st={st} mob={mob} upF={upF} saveProfile={saveProfile} saving={saving} dsp={dsp} />
                  </motion.div>
                )}
                 {tab === 'gallery' && (
                   <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="gallery">
-                     <GalleryTabContent F={F} mob={mob} upF={upF} upGallery={upGallery} saveProfile={saveProfile} setTab={setTab} isPro={isPro} navigate={navigate} />
+                     <GalleryTabContent F={F} mob={mob} upF={upF} upGallery={upGallery} saveProfile={saveProfile} setTab={setTab} isPro={isPro} navigate={navigate} dsp={dsp} />
                   </motion.div>
                 )}
                 {tab === 'social' && (
