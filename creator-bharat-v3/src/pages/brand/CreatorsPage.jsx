@@ -77,13 +77,14 @@ const checkMetrics = (c, f) => {
 
 // Filter logic
 const filterCreators = (all, f) => {
-  return all.filter(c => {
-    if (!checkSearchQuery(c, f.q)) return false;
-    if (f.state && c.state !== f.state) return false;
-    if (f.district && c.city !== f.district) return false;
-    if (!checkNiche(c, f.niche)) return false;
-    if (!checkPlatform(c, f.platform)) return false;
-    return checkMetrics(c, f);
+  return (all || []).filter(c => {
+    if (!c) return false;
+    if (!checkSearchQuery(c, f?.q)) return false;
+    if (f?.state && c.state !== f.state) return false;
+    if (f?.district && c.city !== f.district) return false;
+    if (!checkNiche(c, f?.niche)) return false;
+    if (!checkPlatform(c, f?.platform)) return false;
+    return checkMetrics(c, f || {});
   });
 };
 

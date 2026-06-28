@@ -2255,8 +2255,8 @@ export default function App() {
   ), [uploads, mediaSearch]);
 
   // ─── Filter Helpers ───────────────────────────────────────────────────────────
-  const filteredCreators = useMemo(() => creators.filter(c =>
-    `${c.name} ${c.handle} ${c.city || ''}`.toLowerCase().includes(creatorSearch.toLowerCase())
+  const filteredCreators = useMemo(() => (creators || []).filter(c =>
+    c && `${c.name || ''} ${c.handle || ''} ${c.city || ''}`.toLowerCase().includes((creatorSearch || '').toLowerCase())
   ), [creators, creatorSearch]);
 
   const filteredBrands = useMemo(() => brands.filter(b =>
