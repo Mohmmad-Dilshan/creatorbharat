@@ -779,10 +779,24 @@ router.post('/reset-password', async (req, res) => {
 router.get('/google', (req, res) => {
   const role = req.query.role || 'creator';
   
+  let origin = req.query.origin || '';
+  if (!origin) {
+    const referer = req.get('referer') || '';
+    if (referer) {
+      try {
+        origin = new URL(referer).origin;
+      } catch (err) {
+        origin = 'http://localhost:5173';
+      }
+    } else {
+      origin = 'http://localhost:5173';
+    }
+  }
+
   if (!process.env.GOOGLE_CLIENT_ID) {
     if (process.env.NODE_ENV !== 'production') {
       console.warn('[Google OAuth]: Missing GOOGLE_CLIENT_ID in development. Redirecting to mock login.');
-      const redirectCallbackUrl = `${req.protocol}://${req.get('host')}/api/auth/google/callback?code=mock_development_code&state=${role}`;
+      const redirectCallbackUrl = `${req.protocol}://${req.get('host')}/api/auth/google/callback?code=mock_development_code&state=${role}:::${origin}`;
       return res.redirect(redirectCallbackUrl);
     }
     console.error('[Google OAuth]: Missing GOOGLE_CLIENT_ID in server environment.');
@@ -790,15 +804,20 @@ router.get('/google', (req, res) => {
   }
 
   const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/auth/google/callback`;
-  const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=email%20profile&state=${role}`;
+  const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=email%20profile&state=${role}:::${origin}`;
   res.redirect(googleAuthUrl);
 });
 
 router.get('/google/callback', async (req, res) => {
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+  const stateVal = req.query.state || '';
+  const parts = stateVal.split(':::');
+  const rolePart = parts[0] || 'creator';
+  const originPart = parts[1] || process.env.FRONTEND_URL || 'http://localhost:5173';
+
+  const frontendUrl = originPart;
   try {
-    const { code, state } = req.query;
-    const role = state === 'brand' ? 'BRAND' : 'CREATOR';
+    const { code } = req.query;
+    const role = rolePart === 'brand' ? 'BRAND' : 'CREATOR';
 
     if (!code) {
       return res.redirect(`${frontendUrl}/login?error=auth_failed`);

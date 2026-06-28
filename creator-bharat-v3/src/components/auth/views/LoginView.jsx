@@ -54,8 +54,7 @@ const LoginView = ({ role, setRole, onLogin, onAuthSuccess, loading, setView, au
       dsp({ t: 'TOAST', d: { type: 'success', msg: 'Signed in with Google (Demo Mode) successfully!' } });
       return;
     }
-    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
-    globalThis.location.href = `${apiBase}/auth/google?role=${role}`;
+    globalThis.location.href = `${apiBase}/auth/google?role=${role}&origin=${encodeURIComponent(globalThis.location.origin)}`;
   };
 
   const handleSendOtp = async () => {
