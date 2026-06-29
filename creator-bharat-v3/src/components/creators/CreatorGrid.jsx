@@ -63,7 +63,7 @@ const CreatorListItem = ({ c, i, mob, onCardView }) => (
     </div>
     {!mob && (
       <>
-        <span style={{ flex: 1, fontSize: 14, color: '#475569', fontWeight: 600 }}>📍 {typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')}</span>
+        <span style={{ flex: 1, fontSize: 14, color: '#475569', fontWeight: 600 }}>📍 {(c.city && typeof c.city === 'object') ? c.city.name : (c.city || 'Bharat')}</span>
         <span style={{ flex: 1, fontSize: 14, color: '#475569', fontWeight: 600 }}>{(Array.isArray(c.niche) ? c.niche : [c.niche]).slice(0, 1).join('')}</span>
         <span style={{ flex: 1, fontSize: 14, color: '#1e293b', fontWeight: 800 }}>{fmt.num(c.followers || 0)}</span>
         <div style={{ width: 100, textAlign: 'right' }}>

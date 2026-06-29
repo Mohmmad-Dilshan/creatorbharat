@@ -195,7 +195,7 @@ const CreatorBio = ({ c, mob }) => (
         margin: 0 
       }}>
         <MapPin size={mob ? 9 : 14} color="#64748B" strokeWidth={2.5} style={{ flexShrink: 0 }} /> 
-        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{typeof c.city === 'object' ? c.city.name : (c.city || 'Bharat')}</span>
+        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{(c.city && typeof c.city === 'object') ? c.city.name : (c.city || 'Bharat')}</span>
       </p>
       
       {/* Star Rating Capsule */}
