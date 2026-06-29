@@ -1603,7 +1603,9 @@ const SettingsSidebar = ({ score, comp, tab, setTab, F }) => (
            <div className="ring-container">
               <Ring score={score} size={140} strokeWidth={12} color="#FF9431" />
            </div>
-           <Bdg color="saffron" lg>Elite Creator</Bdg>
+           <Bdg color={score >= 91 ? 'violet' : score >= 76 ? 'saffron' : score >= 51 ? 'blue' : 'slate'} lg>
+              {fmt.badge(score).label} Tier
+           </Bdg>
         </div>
 
         <div className="progress-box">
