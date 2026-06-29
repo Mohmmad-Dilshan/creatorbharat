@@ -80,7 +80,7 @@ const STEPS = [
     icon: MapPin,
     color: '#F59E0B',
     required: false,
-    check: (c) => !!(c?.local_voice || c?.localVoice || (c?.local_impact_hubs?.length > 0 || c?.localHubs?.length > 0 || c?.local_hubs?.length > 0) || c?.regionalDialects || c?.regional_dialects),
+    check: (c) => !!(c?.local_voice || c?.localVoice || (c?.local_impact_hubs?.length > 0 || c?.localHubs?.length > 0 || c?.local_hubs?.length > 0) || (c?.regionalDialects?.length > 0) || (c?.regional_dialects?.length > 0)),
   },
   {
     id: 'verification',
@@ -90,7 +90,7 @@ const STEPS = [
     icon: ShieldCheck,
     color: '#0f172a',
     required: false,
-    check: (c) => (c?.status && c?.status !== 'DRAFT') || localStorage.getItem('cb_verification_status') !== 'DRAFT',
+    check: (c) => (c?.status && c?.status !== 'DRAFT') || (localStorage.getItem('cb_verification_status') && localStorage.getItem('cb_verification_status') !== 'DRAFT'),
   },
 ];
 
