@@ -1698,19 +1698,9 @@ const getDefaultSponsoredPosts = () => [
 const getInitialFormState = (c) => {
   const localHubs = (c?.local_impact_hubs?.length || c?.local_hubs?.length || c?.localHubs?.length)
     ? [...(c.local_impact_hubs || c.local_hubs || c.localHubs)]
-    : [
-    { l: 'Indore', v: '85%' }, { l: 'Bhopal', v: '72%' }, { l: 'Ujjain', v: '64%' }
-  ];
-  const awards = c?.awards?.length ? [...c.awards] : [
-    { t: '', o: '', y: '' },
-    { t: '', o: '', y: '' },
-    { t: '', o: '', y: '' }
-  ];
-  const collabs = (c?.collabs?.length ? c.collabs : [
-    { p: '', l: '', d: '', brandLink: '', videoLink: '', img: '', metric: '' },
-    { p: '', l: '', d: '', brandLink: '', videoLink: '', img: '', metric: '' },
-    { p: '', l: '', d: '', brandLink: '', videoLink: '', img: '', metric: '' }
-  ]).map((col, idx) => ({
+    : [];
+  const awards = c?.awards?.length ? [...c.awards] : [];
+  const collabs = (c?.collabs?.length ? c.collabs : []).map((col, idx) => ({
     p: col.p || '',
     l: col.l || '',
     d: col.d || '',
@@ -1720,12 +1710,7 @@ const getInitialFormState = (c) => {
     metric: col.metric || '',
     id: col.id || `collab-${idx}`
   }));
-  const milestones = (c?.milestones?.length ? c.milestones : [
-    { y: '', t: '', d: '', category: '', metric: '', img: '', link: '' }, 
-    { y: '', t: '', d: '', category: '', metric: '', img: '', link: '' },
-    { y: '', t: '', d: '', category: '', metric: '', img: '', link: '' }, 
-    { y: '', t: '', d: '', category: '', metric: '', img: '', link: '' }
-  ]).map((m, idx) => ({
+  const milestones = (c?.milestones?.length ? c.milestones : []).map((m, idx) => ({
     y: m.y || '',
     t: m.t || '',
     d: m.d || '',
@@ -1735,17 +1720,13 @@ const getInitialFormState = (c) => {
     link: m.link || '',
     id: m.id || `milestone-${idx}`
   }));
-  const services = (c?.services?.length ? c.services : [
-    { t: 'Cinematic Reel', d: 'Brand integration in high-fidelity 4K video reel.', rate: '12000' },
-    { t: 'Product Placement', d: 'Seamless product placement in community posts.', rate: '6000' },
-    { t: 'Full YouTube Review', d: 'Dedicated 5-minute product breakdown.', rate: '25000' }
-  ]).map((s, idx) => ({ ...s, id: s.id || `service-${idx}` }));
+  const services = (c?.services?.length ? c.services : []).map((s, idx) => ({ ...s, id: s.id || `service-${idx}` }));
 
   // viral_content — read both snake_case and camelCase
   const rawViral = c?.viral_content || c?.viralContent || [];
   const viralContent = (rawViral.length 
     ? rawViral.map(v => typeof v === 'object' ? { views: v.views || '', img: v.img || '', title: v.title || '', link: v.link || '' } : { views: `${v}M`, img: '', title: '', link: '' }) 
-    : [{ views: '1.2M', img: '', title: '', link: '' }, { views: '3.5M', img: '', title: '', link: '' }, { views: '5.8M', img: '', title: '', link: '' }]
+    : []
   ).map((v, idx) => ({ ...v, id: `viral-${idx}` }));
 
   // case_studies — read both snake_case and camelCase
@@ -1755,11 +1736,7 @@ const getInitialFormState = (c) => {
     desc: cs.desc || '', link: cs.link || '', img: cs.img || '',
     r1_label: cs.results?.[0]?.l || cs.r1_label || 'Reach', r1_val: cs.results?.[0]?.v || cs.r1_val || '',
     r2_label: cs.results?.[1]?.l || cs.r2_label || 'ROI', r2_val: cs.results?.[1]?.v || cs.r2_val || ''
-  })) : [
-    { title: '', brand: '', desc: '', link: '', img: '', r1_label: 'Reach', r1_val: '', r2_label: 'ROI', r2_val: '' },
-    { title: '', brand: '', desc: '', link: '', img: '', r1_label: 'Sales', r1_val: '', r2_label: 'Clicks', r2_val: '' },
-    { title: '', brand: '', desc: '', link: '', img: '', r1_label: 'Views', r1_val: '', r2_label: 'Shares', r2_val: '' }
-  ]).map((cs, idx) => ({ ...cs, id: cs.id || `casestudy-${idx}` }));
+  })) : []).map((cs, idx) => ({ ...cs, id: cs.id || `casestudy-${idx}` }));
 
   // social_links — read both snake_case and camelCase
   const socialLinks = (c?.social_links || c?.socialLinks || []).map(link => ({

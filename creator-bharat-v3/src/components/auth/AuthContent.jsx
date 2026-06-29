@@ -28,6 +28,7 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
   const [isMobile, setIsMobile] = useState(globalThis.innerWidth <= 768);
   const [showSplash, setShowSplash] = useState(false);
   const [authError, setAuthError] = useState('');
+  const [isVerifyingGoogle, setIsVerifyingGoogle] = useState(false);
 
   useEffect(() => {
     if (st.user) {
@@ -52,6 +53,7 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
     
     if (urlToken) {
       globalThis.history.replaceState({}, document.title, globalThis.location.pathname);
+      setIsVerifyingGoogle(true);
       setLoading(true);
       
       localStorage.setItem('cb_token', urlToken);
@@ -68,6 +70,7 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
           })
           .finally(() => {
             setLoading(false);
+            setIsVerifyingGoogle(false);
           });
       });
     }
@@ -290,18 +293,46 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
                 )}
               </div>
               <div className="auth-form-wrapper">
-                <AnimatePresence mode="wait">
-                  {view === 'gateway' && <GatewayView setView={handleSetView} setRole={setRole} mob={isMobile} />}
-                  {view === 'login' && <LoginView role={role} setRole={setRole} onLogin={handleLogin} onAuthSuccess={onAuthSuccess} loading={loading} setView={handleSetView} mob={isMobile} authError={authError} setAuthError={setAuthError} />}
-                  {view === 'register' && <ApplyForm onSuccess={onAuthSuccess} onBackToLogin={() => handleSetView('login')} mob={isMobile} />}
-                  {view === 'brand-register' && <BrandRegisterView setView={handleSetView} onSuccess={onAuthSuccess} mob={isMobile} />}
-                  {view === 'forgot' && <ForgotView setView={handleSetView} />}
-                </AnimatePresence>
+                {isVerifyingGoogle ? (
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '280px',
+                    width: '100%',
+                    gap: '16px',
+                    color: '#0f172a',
+                    padding: '40px'
+                  }}>
+                    <div className="cb-spinner" style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      border: '4px solid #f3f4f6',
+                      borderTopColor: accent,
+                      animation: 'spin 1s linear infinite'
+                    }} />
+                    <h3 style={{ fontSize: '18px', fontWeight: 900, margin: 0 }}>Logging in with Google...</h3>
+                    <p style={{ fontSize: '14px', color: '#64748b', margin: 0, textAlign: 'center' }}>Please wait while we verify your credentials.</p>
+                  </div>
+                ) : (
+                  <AnimatePresence mode="wait">
+                    {view === 'gateway' && <GatewayView setView={handleSetView} setRole={setRole} mob={isMobile} />}
+                    {view === 'login' && <LoginView role={role} setRole={setRole} onLogin={handleLogin} onAuthSuccess={onAuthSuccess} loading={loading} setView={handleSetView} mob={isMobile} authError={authError} setAuthError={setAuthError} />}
+                    {view === 'register' && <ApplyForm onSuccess={onAuthSuccess} onBackToLogin={() => handleSetView('login')} mob={isMobile} />}
+                    {view === 'brand-register' && <BrandRegisterView setView={handleSetView} onSuccess={onAuthSuccess} mob={isMobile} />}
+                    {view === 'forgot' && <ForgotView setView={handleSetView} />}
+                  </AnimatePresence>
+                )}
               </div>
             </div>
           </main>
         </div>
       </div>
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+      `}</style>
     </>
   );
 };
