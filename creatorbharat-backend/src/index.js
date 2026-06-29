@@ -43,6 +43,12 @@ import teamRouter from './routes/team.js';
 import { runOnboardingDrip } from './drip/onboardingDrip.js';
 
 dotenv.config();
+console.log('--- GOOGLE OAUTH STARTUP CHECK ---');
+console.log('GOOGLE_CLIENT_ID exists:', !!process.env.GOOGLE_CLIENT_ID);
+console.log('GOOGLE_CLIENT_SECRET exists:', !!process.env.GOOGLE_CLIENT_SECRET);
+console.log('GOOGLE_REDIRECT_URI exists:', !!process.env.GOOGLE_REDIRECT_URI);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('----------------------------------');
 
 // ─── Sentry Error Tracking ────────────────────────────────────────────────────
 Sentry.init({
