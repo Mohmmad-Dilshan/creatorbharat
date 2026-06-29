@@ -873,6 +873,32 @@ router.get('/google/callback', async (req, res) => {
       include: { creator: true, brand: true }
     });
 
+    if (user) {
+      if (user.role === 'CREATOR' && user.creator) {
+        let needsUpdate = false;
+        const updateData = {};
+        if (!user.creator.photo && picture) {
+          updateData.photo = picture;
+          needsUpdate = true;
+        }
+        if ((!user.creator.name || user.creator.name === 'Bharat Creator') && name) {
+          updateData.name = name;
+          needsUpdate = true;
+        }
+        if (needsUpdate) {
+          await prisma.creator.update({
+            where: { id: user.creator.id },
+            data: updateData
+          });
+          // Reload user with updated creator info
+          user = await prisma.user.findUnique({
+            where: { id: user.id },
+            include: { creator: true, brand: true }
+          });
+        }
+      }
+    }
+
     if (!user) {
       const dummyPassword = crypto.randomBytes(16).toString('hex');
       const hashedPassword = await bcrypt.hash(dummyPassword, 10);
