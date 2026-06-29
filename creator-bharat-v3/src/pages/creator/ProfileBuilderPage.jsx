@@ -1698,9 +1698,19 @@ const getDefaultSponsoredPosts = () => [
 const getInitialFormState = (c) => {
   const localHubs = (c?.local_impact_hubs?.length || c?.local_hubs?.length || c?.localHubs?.length)
     ? [...(c.local_impact_hubs || c.local_hubs || c.localHubs)]
-    : [];
-  const awards = c?.awards?.length ? [...c.awards] : [];
-  const collabs = (c?.collabs?.length ? c.collabs : []).map((col, idx) => ({
+    : [
+    { l: '', v: '' }, { l: '', v: '' }, { l: '', v: '' }
+  ];
+  const awards = c?.awards?.length ? [...c.awards] : [
+    { t: '', o: '', y: '', img: '', link: '' },
+    { t: '', o: '', y: '', img: '', link: '' },
+    { t: '', o: '', y: '', img: '', link: '' }
+  ];
+  const collabs = (c?.collabs?.length ? c.collabs : [
+    { p: '', l: '', d: '', brandLink: '', videoLink: '', img: '', metric: '' },
+    { p: '', l: '', d: '', brandLink: '', videoLink: '', img: '', metric: '' },
+    { p: '', l: '', d: '', brandLink: '', videoLink: '', img: '', metric: '' }
+  ]).map((col, idx) => ({
     p: col.p || '',
     l: col.l || '',
     d: col.d || '',
@@ -1710,7 +1720,12 @@ const getInitialFormState = (c) => {
     metric: col.metric || '',
     id: col.id || `collab-${idx}`
   }));
-  const milestones = (c?.milestones?.length ? c.milestones : []).map((m, idx) => ({
+  const milestones = (c?.milestones?.length ? c.milestones : [
+    { y: '', t: '', d: '', category: '', metric: '', img: '', link: '' }, 
+    { y: '', t: '', d: '', category: '', metric: '', img: '', link: '' },
+    { y: '', t: '', d: '', category: '', metric: '', img: '', link: '' }, 
+    { y: '', t: '', d: '', category: '', metric: '', img: '', link: '' }
+  ]).map((m, idx) => ({
     y: m.y || '',
     t: m.t || '',
     d: m.d || '',
@@ -1726,8 +1741,11 @@ const getInitialFormState = (c) => {
   const rawViral = c?.viral_content || c?.viralContent || [];
   const viralContent = (rawViral.length 
     ? rawViral.map(v => typeof v === 'object' ? { views: v.views || '', img: v.img || '', title: v.title || '', link: v.link || '' } : { views: `${v}M`, img: '', title: '', link: '' }) 
-    : []
-  ).map((v, idx) => ({ ...v, id: `viral-${idx}` }));
+    : [
+    { views: '', img: '', title: '', link: '' },
+    { views: '', img: '', title: '', link: '' },
+    { views: '', img: '', title: '', link: '' }
+  ]).map((v, idx) => ({ ...v, id: `viral-${idx}` }));
 
   // case_studies — read both snake_case and camelCase
   const rawCS = c?.case_studies || c?.caseStudies || [];
@@ -1736,7 +1754,11 @@ const getInitialFormState = (c) => {
     desc: cs.desc || '', link: cs.link || '', img: cs.img || '',
     r1_label: cs.results?.[0]?.l || cs.r1_label || 'Reach', r1_val: cs.results?.[0]?.v || cs.r1_val || '',
     r2_label: cs.results?.[1]?.l || cs.r2_label || 'ROI', r2_val: cs.results?.[1]?.v || cs.r2_val || ''
-  })) : []).map((cs, idx) => ({ ...cs, id: cs.id || `casestudy-${idx}` }));
+  })) : [
+    { title: '', brand: '', desc: '', link: '', img: '', r1_label: 'Reach', r1_val: '', r2_label: 'ROI', r2_val: '' },
+    { title: '', brand: '', desc: '', link: '', img: '', r1_label: 'Sales', r1_val: '', r2_label: 'Clicks', r2_val: '' },
+    { title: '', brand: '', desc: '', link: '', img: '', r1_label: 'Views', r1_val: '', r2_label: 'Shares', r2_val: '' }
+  ]).map((cs, idx) => ({ ...cs, id: cs.id || `casestudy-${idx}` }));
 
   // social_links — read both snake_case and camelCase
   const socialLinks = (c?.social_links || c?.socialLinks || []).map(link => ({
@@ -2081,32 +2103,32 @@ export default function ProfileBuilderPage() {
     setSaving(true);
     try {
       const filteredGallery = F.gallery.filter(Boolean);
-      const filteredMilestones = F.milestones.filter(m => m.y && m.t).map(m => ({
+      const filteredMilestones = F.milestones.filter(m => m && m.y && m.t).map(m => ({
         y: m.y, t: m.t, d: m.d,
         category: m.category || '', metric: m.metric || '', img: m.img || '', link: m.link || ''
       }));
-      const filteredServices = F.services.filter(s => s.t);
-      const filteredAwards = F.awards.filter(a => a.t && a.y);
-      const filteredCollabs = F.collabs.filter(col => col.p && col.l).map(col => ({
+      const filteredServices = F.services.filter(s => s && s.t);
+      const filteredAwards = F.awards.filter(a => a && a.t && a.y);
+      const filteredCollabs = F.collabs.filter(col => col && col.p && col.l).map(col => ({
         p: col.p, l: col.l, d: col.d,
         brandLink: col.brandLink || '',
         videoLink: col.videoLink || '',
         img: col.img || '',
         metric: col.metric || ''
       }));
-      const filteredLocalHubs = F.localHubs.filter(h => h.l && h.v);
-      const filteredViral = F.viralContent.filter(v => v.views).map(v => ({
+      const filteredLocalHubs = F.localHubs.filter(h => h && h.l && h.v);
+      const filteredViral = F.viralContent.filter(v => v && v.views).map(v => ({
         views: v.views, img: v.img || '', title: v.title || '', link: v.link || ''
       }));
-      const filteredSponsoredPosts = F.sponsoredPosts.filter(p => p.brand && p.campaign);
+      const filteredSponsoredPosts = F.sponsoredPosts.filter(p => p && p.brand && p.campaign);
       
-      const filteredSocialLinks = F.socialLinks.filter(l => l.url).map(l => ({
+      const filteredSocialLinks = F.socialLinks.filter(l => l && l.url).map(l => ({
         platform: l.platform,
         url: l.url,
         followers: parseInt(l.followers) || 0
       }));
 
-      const filteredCaseStudies = F.caseStudies.filter(cs => cs.title && cs.brand).map(cs => ({
+      const filteredCaseStudies = F.caseStudies.filter(cs => cs && cs.title && cs.brand).map(cs => ({
         title: cs.title, brand: cs.brand,
         desc: cs.desc || '', link: cs.link || '', img: cs.img || '',
         results: [
