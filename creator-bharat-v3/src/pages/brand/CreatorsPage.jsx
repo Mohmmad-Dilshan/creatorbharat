@@ -114,7 +114,7 @@ VisualPortal.propTypes = {
 
 const DataHub = ({ creator, mob, saved, compared, requireBrand, dsp, onFullView, navigate }) => {
   const score = creator.score || fmt.score(creator);
-  const cityLabel = typeof creator.city === 'object' ? creator.city.name : (creator.city || 'Bharat');
+  const cityLabel = (creator.city && typeof creator.city === 'object') ? creator.city.name : (creator.city || 'Bharat');
   const nicheLabel = Array.isArray(creator.niche) ? creator.niche.join(' & ') : (creator.niche || creator.category || 'Premium');
   const erRate = creator.er || 4.8;
   const followersCount = creator.followers || 125000;
