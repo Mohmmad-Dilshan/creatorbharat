@@ -54,6 +54,7 @@ model Creator {
   rateMax        Int           @default(0)
   isVerified     Boolean       @default(false)
   isPro          Boolean       @default(false)
+  isProfileActive Boolean      @default(false)
   score          Int           @default(70)
   aadhaarUrl     String?
   panUrl         String?

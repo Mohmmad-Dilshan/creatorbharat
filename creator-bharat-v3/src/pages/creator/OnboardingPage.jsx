@@ -80,7 +80,7 @@ const STEPS = [
     icon: MapPin,
     color: '#F59E0B',
     required: false,
-    check: (c) => !!(c?.local_voice || c?.localVoice || (c?.local_impact_hubs?.length > 0 || c?.localHubs?.length > 0 || c?.local_hubs?.length > 0) || (c?.regionalDialects?.length > 0) || (c?.regional_dialects?.length > 0)),
+    check: (c) => !!(c?.local_voice || c?.localVoice || c?.local_impact_hubs?.some(h => h.l) || c?.localHubs?.some(h => h.l) || c?.local_hubs?.some(h => h.l) || c?.regionalDialects?.length || c?.regional_dialects?.length),
   },
   {
     id: 'verification',
@@ -90,7 +90,7 @@ const STEPS = [
     icon: ShieldCheck,
     color: '#0f172a',
     required: false,
-    check: (c) => (c?.status && c?.status !== 'DRAFT') || (localStorage.getItem('cb_verification_status') && localStorage.getItem('cb_verification_status') !== 'DRAFT'),
+    check: (c) => !!((c?.status && c?.status !== 'DRAFT') || (localStorage.getItem('cb_verification_status') && localStorage.getItem('cb_verification_status') !== 'DRAFT')),
   },
 ];
 
@@ -110,8 +110,10 @@ export default function OnboardingPage() {
     phone: st.user?.phone || ''
   };
   const comp = fmt.completeness(c);
-
+  const stepsToCount = STEPS.filter(s => s.id !== 'verification');
   const completedCount = STEPS.filter(s => s.check(c)).length;
+  const completedStepsCount = stepsToCount.filter(s => s.check(c)).length;
+  const pct = Math.round((completedStepsCount / stepsToCount.length) * 100);
   const requiredDone = STEPS.filter(s => s.required).every(s => s.check(c));
 
   useEffect(() => {
@@ -132,7 +134,7 @@ export default function OnboardingPage() {
   const radius = 54;
   const strokeWidth = 8;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (comp.pct / 100) * circumference;
+  const strokeDashoffset = circumference - (pct / 100) * circumference;
 
   return (
     <div style={{ background: 'var(--db-bg, #F0F2F7)', minHeight: '100%', padding: mob ? '16px' : '32px', paddingBottom: '80px' }}>
@@ -195,7 +197,7 @@ export default function OnboardingPage() {
                     cy={70}
                     r={radius}
                     fill="none"
-                    stroke={comp.pct === 100 ? T.emerald : T.saffron}
+                    stroke={pct === 100 ? T.emerald : T.saffron}
                     strokeWidth={strokeWidth}
                     strokeLinecap="round"
                     strokeDasharray={circumference}
@@ -206,7 +208,7 @@ export default function OnboardingPage() {
                 </svg>
                 <div style={{ position: 'absolute', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                   <span style={{ fontSize: 28, fontWeight: 950, color: '#0F172A', letterSpacing: '-0.02em', fontFamily: 'Outfit, sans-serif' }}>
-                    {comp.pct}%
+                    {pct}%
                   </span>
                   <span style={{ fontSize: 9, color: '#475569', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.02em', marginTop: -2 }}>
                     Finished

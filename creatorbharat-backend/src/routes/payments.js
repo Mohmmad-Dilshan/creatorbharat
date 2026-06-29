@@ -22,14 +22,22 @@ async function getRazorpayClient() {
 // POST /api/payments/create-order — start Razorpay checkout transaction for Pro Membership
 router.post('/create-order', authMiddleware, async (req, res) => {
   try {
-    const { type } = req.body; // PRO_LISTING, CAMPAIGN_BOOST, FEATURED_SLOT
+    const { type } = req.body; // PRO_LISTING, CAMPAIGN_BOOST, FEATURED_SLOT, PROFILE_ACTIVATION
     const settings = await getSettings();
-    const amounts = {
-      PRO_LISTING: settings.proMembershipPrice || 49,
-      CAMPAIGN_BOOST: settings.campaignBoostPrice || 99,
-      FEATURED_SLOT: settings.featuredSlotPrice || 199
-    };
-    const amount = amounts[type];
+    let amount;
+    if (type === 'PROFILE_ACTIVATION') {
+      const activeCount = await prisma.creator.count({
+        where: { isProfileActive: true }
+      });
+      amount = activeCount < 1000 ? 199 : 499;
+    } else {
+      const amounts = {
+        PRO_LISTING: settings.proMembershipPrice || 49,
+        CAMPAIGN_BOOST: settings.campaignBoostPrice || 99,
+        FEATURED_SLOT: settings.featuredSlotPrice || 199
+      };
+      amount = amounts[type];
+    }
 
     if (!amount) {
       return res.status(400).json({ error: 'Invalid checkout payment tier.' });
@@ -160,6 +168,14 @@ router.post('/verify', authMiddleware, async (req, res) => {
       await prisma.creator.update({
         where: { id: payment.creatorId },
         data: { isPro: true }
+      });
+    }
+
+    // Handle Profile activation subscription
+    if (payment.type === 'PROFILE_ACTIVATION' && payment.creatorId) {
+      await prisma.creator.update({
+        where: { id: payment.creatorId },
+        data: { isProfileActive: true }
       });
     }
 

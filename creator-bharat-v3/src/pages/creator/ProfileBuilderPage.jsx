@@ -235,7 +235,7 @@ const getMonthlyStoriesCount = (stories) => {
 
 
 // ─── Tab 1: Identity ──────────────────────────────────────────────────────────
-const IdentityTabContent = ({ F, c, st, mob, upF, saveProfile, saving, dsp }) => {
+const IdentityTabContent = ({ F, c, st, mob, upF, saveProfile, saving, dsp, openAiWriter }) => {
   const toggleNiche = (n) => {
     const current = F.niche || [];
     if (current.includes(n)) {
@@ -458,7 +458,8 @@ const IdentityTabContent = ({ F, c, st, mob, upF, saveProfile, saving, dsp }) =>
 
 IdentityTabContent.propTypes = {
   F: PropTypes.object.isRequired, c: PropTypes.object.isRequired, st: PropTypes.object.isRequired,
-  mob: PropTypes.bool.isRequired, upF: PropTypes.func.isRequired, saveProfile: PropTypes.func.isRequired, saving: PropTypes.bool
+  mob: PropTypes.bool.isRequired, upF: PropTypes.func.isRequired, saveProfile: PropTypes.func.isRequired, saving: PropTypes.bool,
+  openAiWriter: PropTypes.func
 };
 
 // ─── Tab 2: Social Ecosystem ──────────────────────────────────────────────────
@@ -944,7 +945,7 @@ const GalleryTabContent = ({ F, mob, upF, saveProfile, setTab, isPro, navigate, 
              {!isPro && (
                <div style={{ marginTop: 16, padding: '12px 16px', background: '#f8fafc', borderRadius: 12, border: '1px dashed #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                  <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 650 }}>
-                   🔒 Free account tier limit: Max 4 images. (Upgrade to Pro for 12)
+                   🔒 Free account tier limit: Max 3 images. (Upgrade to Pro for 12)
                  </span>
                  <span onClick={() => navigate('/creator/monetization')} style={{ fontSize: 12, color: '#FF9431', fontWeight: 800, cursor: 'pointer', textDecoration: 'underline' }}>
                    Go Pro ↗
@@ -955,6 +956,43 @@ const GalleryTabContent = ({ F, mob, upF, saveProfile, setTab, isPro, navigate, 
 
           {/* Stories Management Section */}
           <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '32px' }}>
+             {!isPro ? (
+               <div style={{ 
+                 background: 'linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,250,252,0.98))', 
+                 borderRadius: '24px', 
+                 padding: '40px 24px', 
+                 textAlign: 'center', 
+                 border: '1px dashed #FF9431',
+                 display: 'flex',
+                 flexDirection: 'column',
+                 alignItems: 'center',
+                 justifyContent: 'center',
+                 gap: '16px'
+               }}>
+                 <Lock size={40} color="#FF9431" />
+                 <h4 style={{ fontSize: '18px', fontWeight: 900, color: '#0f172a', margin: 0 }}>🔒 Unlock Creator Stories</h4>
+                 <p style={{ fontSize: '13px', color: '#64748b', maxWidth: '450px', margin: 0, fontWeight: 550, lineHeight: 1.5 }}>
+                   Interactive Creator Stories allow you to share 48-hour temporary behind-the-scenes content that brands see directly on your avatar. Upgrade to <strong>Creator Pro</strong> to unlock stories!
+                 </p>
+                 <button 
+                   type="button" 
+                   onClick={() => navigate('/creator/monetization')}
+                   style={{
+                     background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)',
+                     color: '#fff',
+                     border: 'none',
+                     padding: '12px 32px',
+                     borderRadius: '100px',
+                     fontSize: '13px',
+                     fontWeight: 800,
+                     cursor: 'pointer'
+                   }}
+                 >
+                   Upgrade to Pro ⚡
+                 </button>
+               </div>
+             ) : (
+               <>
              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <h4 style={{ fontSize: '16px', fontWeight: 950, color: '#0f172a', margin: 0 }}>📸 Interactive Creator Stories</h4>
                 <span style={{ fontSize: '12px', fontWeight: 800, color: '#FF9431', background: 'rgba(255,148,49,0.08)', padding: '4px 12px', borderRadius: '100px' }}>
@@ -1059,6 +1097,8 @@ const GalleryTabContent = ({ F, mob, upF, saveProfile, setTab, isPro, navigate, 
                      ))}
                   </div>
                </div>
+             )}
+               </>
              )}
           </div>
        </div>
@@ -1437,7 +1477,14 @@ const LocalTabContent = ({ F, mob, upF, upLocalHub, saveProfile, setTab, openAiW
         <div>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
             <label style={{ fontSize:13, fontWeight:700, color:'#0f172a' }}>Vocal for Local / Regional Voice Statement</label>
-            <AiBtn onClick={() => openAiWriter('localVoice')} />
+            <button
+              type="button"
+              onClick={() => openAiWriter('localVoice')}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'rgba(255,148,49,0.08)', border: '1px solid rgba(255,148,49,0.2)', borderRadius: 100, padding: '4px 10px', fontSize: 11, fontWeight: 800, color: '#FF9431', cursor: 'pointer', outline: 'none' }}
+            >
+              <Sparkles size={11} fill="#FF9431" fillOpacity={0.2} />
+              Write with AI
+            </button>
           </div>
           <Fld value={F.localVoice} onChange={e => upF('localVoice', e.target.value)} rows={3} placeholder="Main local brands aur startups ko support karne ke liye hamesha ready hoon..." />
         </div>
@@ -1468,7 +1515,8 @@ const LocalTabContent = ({ F, mob, upF, upLocalHub, saveProfile, setTab, openAiW
 
 LocalTabContent.propTypes = {
   F: PropTypes.object.isRequired, mob: PropTypes.bool.isRequired, upF: PropTypes.func.isRequired,
-  upLocalHub: PropTypes.func.isRequired, saveProfile: PropTypes.func.isRequired, setTab: PropTypes.func.isRequired
+  upLocalHub: PropTypes.func.isRequired, saveProfile: PropTypes.func.isRequired, setTab: PropTypes.func.isRequired,
+  openAiWriter: PropTypes.func.isRequired
 };
 
 // ─── Tab 6: Sponsored Posts ───────────────────────────────────────────────────
@@ -1595,63 +1643,130 @@ const MOBILE_TABS = [
 ];
 
 // ─── Settings Sidebar ──────────────────────────────────────────────────────────
-const SettingsSidebar = ({ score, comp, tab, setTab, F }) => (
-  <div className="db-col-left">
-     <Card className="settings-sidebar-card">
-        <div className="card-header-center">
-           <p className="db-sidebar-label">Profile Strength</p>
-           <div className="ring-container">
-              <Ring score={score} size={140} strokeWidth={12} color="#FF9431" />
-           </div>
-           <Bdg color={score >= 91 ? 'violet' : score >= 76 ? 'saffron' : score >= 51 ? 'blue' : 'slate'} lg>
-              {fmt.badge(score).label} Tier
-           </Bdg>
-        </div>
+const SettingsSidebar = ({ score, comp, tab, setTab, F, activation, onActivate }) => {
+  const isProfileActive = activation?.isProfileActive;
+  const status = activation?.status || 'DRAFT';
+  const currentPrice = activation?.currentPrice || 199;
+  const activeCount = activation?.activeCount || 0;
 
-        <div className="progress-box">
-           <div className="progress-labels">
-              <span className="label">Completion</span>
-              <span className="value">{comp.pct}%</span>
-           </div>
-           <Bar value={comp.pct} color="#FF9431" height={6} />
-        </div>
+  return (
+    <div className="db-col-left">
+       <Card className="settings-sidebar-card">
+          <div className="card-header-center">
+             <p className="db-sidebar-label">Profile Strength</p>
+             <div className="ring-container">
+                <Ring score={score} size={140} strokeWidth={12} color="#FF9431" />
+             </div>
+             <Bdg color={score >= 91 ? 'violet' : score >= 76 ? 'saffron' : score >= 51 ? 'blue' : 'slate'} lg>
+                {fmt.tier(score).label} Tier
+             </Bdg>
+          </div>
 
-        <div className="tasks-box" style={{ marginTop: 32 }}>
-           {SIDEBAR_STEPS.map(step => (
-              <StepNavItem 
-                key={step.id} id={step.id} label={step.label}
-                icon={step.icon} active={tab === step.id}
-                completed={checkTabComplete(step.id, F)} onClick={() => setTab(step.id)}
-              />
-           ))}
-        </div>
-     </Card>
+          <div className="progress-box">
+             <div className="progress-labels">
+                <span className="label">Completion</span>
+                <span className="value">{comp.pct}%</span>
+             </div>
+             <Bar value={comp.pct} color="#FF9431" height={6} />
+          </div>
 
-     <Card className="promo-card-dark" style={{ marginTop: 24, padding: 32, background: '#0F172A', color: '#FFF', borderRadius: 32 }}>
-        <div className="promo-header" style={{ marginBottom: 16 }}>
-           <Sparkles size={18} color="#FF9431" fill="#FF9431" />
-           <span style={{ fontSize: '14px', fontWeight: 900, textTransform: 'uppercase' }}>Pro Checklist</span>
-        </div>
-        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, margin: '0 0 16px' }}>
-          Fill all 7 tabs including Sponsored Posts to unlock "Submit to Admin" and get <strong style={{ color: '#FF9431' }}>+15 CB Score bonus</strong>!
-        </p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {SIDEBAR_STEPS.map(step => (
-            <div key={step.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 16, height: 16, borderRadius: '50%', background: checkTabComplete(step.id, F) ? '#10B981' : 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                {checkTabComplete(step.id, F) && <CheckCircle2 size={10} color="#fff" />}
+          {/* Profile Status & Activation Section */}
+          <div style={{ marginTop: 24, padding: 16, background: '#f8fafc', borderRadius: 20, border: '1px solid #e2e8f0' }}>
+             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <span style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase' }}>Visibility</span>
+                {isProfileActive ? (
+                   status === 'APPROVED' ? (
+                      <span style={{ fontSize: 11, fontWeight: 850, color: '#10B981', background: 'rgba(16,185,129,0.08)', padding: '2px 8px', borderRadius: 100 }}>🟢 Live</span>
+                   ) : status === 'PENDING' ? (
+                      <span style={{ fontSize: 11, fontWeight: 850, color: '#FF9431', background: 'rgba(255,148,49,0.08)', padding: '2px 8px', borderRadius: 100 }}>⏳ Pending Approval</span>
+                   ) : status === 'REJECTED' ? (
+                      <span style={{ fontSize: 11, fontWeight: 850, color: '#EF4444', background: 'rgba(239,68,68,0.08)', padding: '2px 8px', borderRadius: 100 }}>❌ Rejected</span>
+                   ) : (
+                      <span style={{ fontSize: 11, fontWeight: 850, color: '#64748b', background: 'rgba(100,116,139,0.08)', padding: '2px 8px', borderRadius: 100 }}>📝 Draft</span>
+                   )
+                ) : (
+                   <span style={{ fontSize: 11, fontWeight: 850, color: '#64748b', background: '#e2e8f0', padding: '2px 8px', borderRadius: 100 }}>🔒 Inactive</span>
+                )}
+             </div>
+
+             {!isProfileActive ? (
+                <div>
+                   <p style={{ fontSize: 11, color: '#64748b', lineHeight: 1.4, margin: '0 0 12px', fontWeight: 600 }}>
+                      List your profile in the directory to receive brand pitches. 
+                   </p>
+                   <button 
+                      type="button"
+                      onClick={onActivate}
+                      style={{
+                         width: '100%',
+                         background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)',
+                         color: '#fff',
+                         border: 'none',
+                         padding: '10px 16px',
+                         borderRadius: 12,
+                         fontSize: 12,
+                         fontWeight: 900,
+                         cursor: 'pointer',
+                         boxShadow: '0 4px 12px rgba(255,148,49,0.15)'
+                      }}
+                   >
+                      Activate Portfolio (₹{currentPrice}/yr)
+                   </button>
+                   <p style={{ fontSize: 9, color: '#94a3b8', margin: '6px 0 0', textAlign: 'center', fontWeight: 650 }}>
+                      Offer: ₹199/yr for first 1,000 active creators ({activeCount} active).
+                   </p>
+                </div>
+             ) : (
+                <p style={{ fontSize: 11, color: '#64748b', lineHeight: 1.4, margin: 0, fontWeight: 600 }}>
+                   {status === 'APPROVED' ? (
+                      '🎉 Your profile is active and visible to all brands on the platform!'
+                   ) : status === 'PENDING' ? (
+                      '⏳ Verification pending. Our admin team is auditing your details.'
+                   ) : (
+                      '📝 Portfolio listing paid. Submit all 7 tabs for verification to go live.'
+                   )}
+                </p>
+             )}
+          </div>
+
+          <div className="tasks-box" style={{ marginTop: 24 }}>
+             {SIDEBAR_STEPS.map(step => (
+                <StepNavItem 
+                  key={step.id} id={step.id} label={step.label}
+                  icon={step.icon} active={tab === step.id}
+                  completed={checkTabComplete(step.id, F)} onClick={() => setTab(step.id)}
+                />
+             ))}
+          </div>
+       </Card>
+
+       <Card className="promo-card-dark" style={{ marginTop: 24, padding: 32, background: '#0F172A', color: '#FFF', borderRadius: 32 }}>
+          <div className="promo-header" style={{ marginBottom: 16 }}>
+             <Sparkles size={18} color="#FF9431" fill="#FF9431" />
+             <span style={{ fontSize: '14px', fontWeight: 900, textTransform: 'uppercase' }}>Pro Checklist</span>
+          </div>
+          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, margin: '0 0 16px' }}>
+            Fill all 7 tabs including Sponsored Posts to unlock "Submit to Admin" and get <strong style={{ color: '#FF9431' }}>+15 CB Score bonus</strong>!
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {SIDEBAR_STEPS.map(step => (
+              <div key={step.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 16, height: 16, borderRadius: '50%', background: checkTabComplete(step.id, F) ? '#10B981' : 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {checkTabComplete(step.id, F) && <CheckCircle2 size={10} color="#fff" />}
+                </div>
+                <span style={{ fontSize: 12, color: checkTabComplete(step.id, F) ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)', fontWeight: 700 }}>{step.label}</span>
               </div>
-              <span style={{ fontSize: 12, color: checkTabComplete(step.id, F) ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)', fontWeight: 700 }}>{step.label}</span>
-            </div>
-          ))}
-        </div>
-     </Card>
-  </div>
-);
+            ))}
+          </div>
+       </Card>
+    </div>
+  );
+};
 
 SettingsSidebar.propTypes = {
   score: PropTypes.number.isRequired, comp: PropTypes.object.isRequired,
-  tab: PropTypes.string.isRequired, setTab: PropTypes.func.isRequired, F: PropTypes.object.isRequired
+  tab: PropTypes.string.isRequired, setTab: PropTypes.func.isRequired, F: PropTypes.object.isRequired,
+  activation: PropTypes.object, onActivate: PropTypes.func
 };
 
 // ─── Mobile Tab Selector ───────────────────────────────────────────────────────
@@ -1822,6 +1937,175 @@ const getInitialFormState = (c) => {
     contactPhone: c?.contact_phone || c?.contactPhone || '',
     contactMethod: c?.contact_method || c?.contactMethod || 'whatsapp'
   };
+};
+
+// ─── Activation Modal ──────────────────────────────────────────────────────────
+const ActivationModal = ({ isOpen, onClose, currentPrice, activeCount, onSuccess }) => {
+  const [step, setStep] = useState('summary'); // summary -> processing -> success
+  const [method, setMethod] = useState('upi');
+
+  if (!isOpen) return null;
+
+  const handlePay = async () => {
+    setStep('processing');
+    try {
+      const token = localStorage.getItem('cb_token');
+      const orderRes = await fetch(ENV.apiUrl + '/payments/create-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ type: 'PROFILE_ACTIVATION' })
+      });
+      const orderData = await orderRes.json();
+      if (!orderRes.ok) throw new Error(orderData.error || 'Failed to create order');
+
+      const verifyRes = await fetch(ENV.apiUrl + '/payments/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          razorpay_order_id: orderData.orderId,
+          razorpay_payment_id: 'pay_sim_' + Math.random().toString(36).slice(2, 11),
+          razorpay_signature: 'simulated_signature'
+        })
+      });
+      const verifyData = await verifyRes.json();
+      if (!verifyRes.ok) throw new Error(verifyData.error || 'Payment verification failed');
+
+      setStep('success');
+      setTimeout(() => {
+        onSuccess();
+        onClose();
+        setStep('summary');
+      }, 1800);
+    } catch (err) {
+      alert(err.message || 'Payment failed');
+      setStep('summary');
+    }
+  };
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, background: 'rgba(15,23,42,0.7)', backdropFilter: 'blur(8px)' }}>
+      <motion.div
+        initial={{ scale: 0.93, opacity: 0, y: 15 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.93, opacity: 0 }}
+        style={{
+          background: '#fff',
+          borderRadius: 28,
+          padding: 32,
+          maxWidth: 400,
+          width: '100%',
+          boxShadow: '0 30px 60px rgba(0,0,0,0.25)',
+          color: '#0f172a',
+          position: 'relative'
+        }}
+      >
+        {step !== 'processing' && (
+          <button onClick={onClose} style={{ position: 'absolute', top: 20, right: 20, background: 'none', border: 'none', color: '#94a3b8', fontSize: 18, cursor: 'pointer' }}>✕</button>
+        )}
+
+        {step === 'summary' && (
+          <div>
+            <div style={{ width: 56, height: 56, borderRadius: 16, background: 'rgba(255,148,49,0.1)', color: '#FF9431', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+              <Shield size={24} />
+            </div>
+            <h3 style={{ fontSize: 20, fontWeight: 950, textAlign: 'center', margin: '0 0 4px', fontFamily: 'Outfit' }}>Profile Activation</h3>
+            <p style={{ fontSize: 13, color: '#64748b', textAlign: 'center', margin: '0 0 24px', fontWeight: 600 }}>Secure checkout to list your profile live</p>
+
+            <div style={{ background: '#f8fafc', padding: 18, borderRadius: 16, border: '1px solid #e2e8f0', marginBottom: 24 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 800, color: '#64748b', marginBottom: 8 }}>
+                <span>Order ID</span>
+                <span style={{ color: '#0f172a' }}>CB-ACT-{Date.now().toString().slice(-6)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 800, color: '#64748b', marginBottom: 12 }}>
+                <span>Package Plan</span>
+                <span style={{ color: '#0f172a' }}>1-Year Portfolio Listing</span>
+              </div>
+              <div style={{ height: 1, background: '#e2e8f0', marginBottom: 12 }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 16, fontWeight: 950, color: '#0f172a' }}>
+                <span>Total Amount</span>
+                <span style={{ color: '#10B981' }}>₹{currentPrice}.00</span>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 24 }}>
+              <label style={{ fontSize: 11, fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: 8 }}>Select Payment Method</label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {[
+                  { id: 'upi', label: 'UPI (Google Pay / PhonePe)', sub: 'Fast & Secure instant checkout', icon: '⚡' },
+                  { id: 'card', label: 'Credit / Debit Card', sub: 'Visa, Mastercard, RuPay', icon: '💳' },
+                ].map(m => (
+                  <div 
+                    key={m.id} 
+                    onClick={() => setMethod(m.id)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderRadius: 14,
+                      border: `1.5px solid ${method === m.id ? '#FF9431' : '#e2e8f0'}`,
+                      background: method === m.id ? 'rgba(255,148,49,0.04)' : '#fff',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <span style={{ fontSize: 20 }}>{m.icon}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 13, fontWeight: 900, color: '#0f172a' }}>{m.label}</div>
+                      <div style={{ fontSize: 11, color: '#64748b', fontWeight: 650 }}>{m.sub}</div>
+                    </div>
+                    <div style={{ width: 16, height: 16, borderRadius: '50%', border: `1.5px solid ${method === m.id ? '#FF9431' : '#cbd5e1'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {method === m.id && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#FF9431' }} />}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button 
+              onClick={handlePay}
+              style={{
+                width: '100%', padding: '16px', borderRadius: 14, background: 'linear-gradient(90deg, #FF9431, #EA580C)',
+                color: '#fff', fontSize: 14, fontWeight: 950, border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                boxShadow: '0 8px 24px rgba(255,148,49,0.2)'
+              }}
+            >
+              Secure Checkout — Pay ₹{currentPrice}
+            </button>
+            <div style={{ textAlign: 'center', fontSize: 10, color: '#94a3b8', marginTop: 12, fontWeight: 600 }}>
+              {activeCount} / 1000 active profiles live on launch offer.
+            </div>
+          </div>
+        )}
+
+        {step === 'processing' && (
+          <div style={{ textAlign: 'center', padding: '24px 0' }}>
+            <div style={{ display: 'inline-block', width: 48, height: 48, borderRadius: '50%', border: '4px solid rgba(255,148,49,0.1)', borderTopColor: '#FF9431', animation: 'spin 1s linear infinite' }} />
+            <h4 style={{ fontSize: 16, fontWeight: 950, marginTop: 24, marginBlockEnd: 4, fontFamily: 'Outfit' }}>Processing Transaction...</h4>
+            <p style={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>Please do not close or reload this page.</p>
+          </div>
+        )}
+
+        {step === 'success' && (
+          <div style={{ textAlign: 'center', padding: '16px 0' }}>
+            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(16,185,129,0.1)', color: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 28 }}>✓</div>
+            <h4 style={{ fontSize: 18, fontWeight: 950, marginBlockEnd: 4, fontFamily: 'Outfit', color: '#10B981' }}>Payment Successful!</h4>
+            <p style={{ fontSize: 13, color: '#64748b', fontWeight: 600, marginBlockEnd: 0 }}>Your portfolio has been activated successfully!</p>
+          </div>
+        )}
+      </motion.div>
+    </div>
+  );
+};
+
+ActivationModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  currentPrice: PropTypes.number.isRequired,
+  activeCount: PropTypes.number.isRequired,
+  onSuccess: PropTypes.func.isRequired
 };
 
 // ─── Main Component ────────────────────────────────────────────────────────────
@@ -2055,6 +2339,33 @@ export default function ProfileBuilderPage() {
   const allC = LS.get('cb_creators', []);
   const c = getDefaultCreator(st, allC);
   const [F, setF] = useState(() => getInitialFormState(c));
+
+  const [activation, setActivation] = useState({
+    activeCount: 0,
+    currentPrice: 199,
+    isProfileActive: false,
+    status: 'DRAFT'
+  });
+  const [isActivationOpen, setIsActivationOpen] = useState(false);
+
+  const fetchActivationStatus = async () => {
+    try {
+      const token = localStorage.getItem('cb_token');
+      const res = await fetch(ENV.apiUrl + '/creators/activation/status', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setActivation(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch activation status:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchActivationStatus();
+  }, []);
 
   useEffect(() => {
     if (c) {
@@ -2297,14 +2608,14 @@ export default function ProfileBuilderPage() {
          {mob ? (
             <MobileTabSelector comp={comp} tab={tab} setTab={setTab} F={F} />
          ) : (
-            <SettingsSidebar score={score} comp={comp} tab={tab} setTab={setTab} F={F} />
+            <SettingsSidebar score={score} comp={comp} tab={tab} setTab={setTab} F={F} activation={activation} onActivate={() => setIsActivationOpen(true)} />
          )}
 
          <div className="db-col-right">
             <AnimatePresence mode="wait">
                {tab === 'identity' && (
                  <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="identity">
-                    <IdentityTabContent F={F} c={c} st={st} mob={mob} upF={upF} saveProfile={saveProfile} saving={saving} dsp={dsp} />
+                    <IdentityTabContent F={F} c={c} st={st} mob={mob} upF={upF} saveProfile={saveProfile} saving={saving} dsp={dsp} openAiWriter={openAiWriter} />
                  </motion.div>
                )}
                 {tab === 'gallery' && (
@@ -2329,7 +2640,7 @@ export default function ProfileBuilderPage() {
                )}
                {tab === 'local' && (
                  <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} key="local">
-                    <LocalTabContent F={F} mob={mob} upF={upF} upLocalHub={upLocalHub} saveProfile={saveProfile} setTab={setTab} />
+                    <LocalTabContent F={F} mob={mob} upF={upF} upLocalHub={upLocalHub} saveProfile={saveProfile} setTab={setTab} openAiWriter={openAiWriter} />
                  </motion.div>
                )}
                {tab === 'sponsored' && (
@@ -2342,6 +2653,13 @@ export default function ProfileBuilderPage() {
       </div>
       {renderQuickBuildModal()}
       {renderAiModal()}
+      <ActivationModal 
+        isOpen={isActivationOpen} 
+        onClose={() => setIsActivationOpen(false)} 
+        currentPrice={activation.currentPrice} 
+        activeCount={activation.activeCount} 
+        onSuccess={fetchActivationStatus} 
+      />
       <FullScreenSaveOverlay show={saving} title="Syncing Profile..." subtitle="Updating your public creator portfolio to the marketplace" />
     </div>
   );

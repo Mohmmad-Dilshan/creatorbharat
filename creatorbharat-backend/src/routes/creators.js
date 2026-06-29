@@ -46,7 +46,10 @@ router.get('/', async (req, res) => {
   try {
     const { q, state, niche, platform, verified, minFollowers, sort, page = 1, limit = 20 } = req.query;
 
-    const where = {};
+    const where = {
+      status: 'APPROVED',
+      isProfileActive: true
+    };
     
     // Text search (name, bio, handle)
     if (q) {
@@ -112,6 +115,30 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET /api/creators/activation/status — check activation price & count
+router.get('/activation/status', authMiddleware, async (req, res) => {
+  try {
+    const activeCount = await prisma.creator.count({
+      where: { isProfileActive: true }
+    });
+    const currentPrice = activeCount < 1000 ? 199 : 499;
+    
+    const creator = await prisma.creator.findUnique({
+      where: { userId: req.user.id }
+    });
+    
+    res.json({
+      activeCount,
+      currentPrice,
+      isProfileActive: creator?.isProfileActive || false,
+      status: creator?.status || 'DRAFT'
+    });
+  } catch (err) {
+    console.error('[GET /api/creators/activation/status] Error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve activation status.' });
+  }
+});
+
 // GET /api/creators/:idOrHandle — fetch single profile
 router.get('/:idOrHandle', async (req, res) => {
   try {
@@ -140,6 +167,23 @@ router.get('/:idOrHandle', async (req, res) => {
 
     if (!creator) {
       return res.status(404).json({ error: 'Creator profile not found.' });
+    }
+
+    if (creator.status !== 'APPROVED' || !creator.isProfileActive) {
+      try {
+        if (req.headers.authorization) {
+          const token = req.headers.authorization.split(' ')[1];
+          const jwt = await import('jsonwebtoken');
+          const decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'your_secret_key');
+          if (decoded.id === creator.userId || decoded.role === 'ADMIN') {
+            const rank = await getCreatorRankDetails(creator);
+            return res.json({ ...creator, rank, isPreview: true });
+          }
+        }
+      } catch (jwtErr) {
+        // failed decode, fall through to restrict
+      }
+      return res.status(403).json({ error: 'Profile is not live. Admin approval and active subscription required.' });
     }
 
     const rank = await getCreatorRankDetails(creator);
