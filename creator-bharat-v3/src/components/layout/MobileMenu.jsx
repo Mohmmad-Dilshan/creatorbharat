@@ -147,6 +147,7 @@ export default function MobileMenu({ open }) {
 
   const isCreator = st.role === 'creator';
   const isBrand = st.role === 'brand';
+  const dispName = st.user?.creatorProfile?.name || st.user?.brand?.companyName || st.user?.name || 'User';
 
   return (
     <AnimatePresence>
@@ -418,12 +419,12 @@ export default function MobileMenu({ open }) {
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
                     <img 
-                      src={st.user?.creatorProfile?.photo || st.user?.brandProfile?.logo || st.user?.photo || st.creatorProfile?.photo || st.creatorProfile?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(st.user?.name || 'U')}&background=0f172a&color=fff`} 
+                      src={st.user?.creatorProfile?.photo || st.user?.brandProfile?.logo || st.user?.photo || st.creatorProfile?.photo || st.creatorProfile?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(dispName)}&background=0f172a&color=fff`} 
                       style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', border: '1px solid #e2e8f0' }} 
                       alt=""
                     />
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{st.user?.name || st.user?.companyName}</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{dispName}</div>
                       <div style={{ fontSize: 12, color: '#475569' }}>
                         {(() => {
                           if (isCreator) return 'Creator Account';

@@ -118,6 +118,8 @@ export default function DashboardLayout({ children }) {
   }, []);
 
   const role = st.role || 'brand';
+  const userName = st.user?.brand?.companyName || st.user?.name || 'Partner Account';
+  const userInitial = userName[0]?.toUpperCase() || 'P';
   
   const links = [
     { label: 'Command', icon: LayoutDashboard, path: '/brand-dashboard' },
@@ -211,12 +213,12 @@ export default function DashboardLayout({ children }) {
             <button className="db-user-profile" onClick={() => navigate('/settings')}>
               {!mob && (
                 <div style={{ textAlign: 'right' }}>
-                  <p className="db-user-name">{st.user?.name || 'Partner Account'}</p>
+                  <p className="db-user-name">{userName}</p>
                   <p className="db-user-role">{role} ELITE</p>
                 </div>
               )}
               <div className="db-avatar">
-                {st.user?.name?.[0] || 'U'}
+                {userInitial}
               </div>
             </button>
           </div>

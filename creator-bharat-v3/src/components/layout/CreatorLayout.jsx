@@ -262,7 +262,7 @@ export default function CreatorLayout({ children }) {
     navigate('/');
   };
 
-  const userName = st.user?.name || 'Creator';
+  const userName = st.user?.creatorProfile?.name || st.user?.name || 'Creator';
   const userInitial = userName[0]?.toUpperCase() || 'C';
   const profilePhoto = st.user?.creatorProfile?.photo || st.user?.photo || '';
 
