@@ -120,6 +120,7 @@ export default function DashboardLayout({ children }) {
   const role = st.role || 'brand';
   const userName = st.user?.brand?.companyName || st.user?.name || 'Partner Account';
   const userInitial = userName[0]?.toUpperCase() || 'P';
+  const profilePhoto = st.user?.creatorProfile?.photo || st.user?.brandProfile?.logo || st.user?.photo || '';
   
   const links = [
     { label: 'Command', icon: LayoutDashboard, path: '/brand-dashboard' },
@@ -217,8 +218,12 @@ export default function DashboardLayout({ children }) {
                   <p className="db-user-role">{role} ELITE</p>
                 </div>
               )}
-              <div className="db-avatar">
-                {userInitial}
+              <div className="db-avatar" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9' }}>
+                {profilePhoto ? (
+                  <img src={profilePhoto} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                ) : (
+                  userInitial
+                )}
               </div>
             </button>
           </div>
