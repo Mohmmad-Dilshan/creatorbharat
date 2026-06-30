@@ -464,7 +464,7 @@ IdentityTabContent.propTypes = {
 
 // ─── Tab 2: Social Ecosystem ──────────────────────────────────────────────────
 const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink, removeSocialLink, saveProfile, setTab, isPro, navigate }) => {
-  const freeLimit = 5;
+  const freeLimit = 0;
   const linksUsed = F.socialLinks?.filter(l => l.url).length || 0;
 
   const instagramFollowersInt = parseInt(F.instagramFollowers) || 0;
@@ -527,7 +527,7 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
                     Additional Social Links
                   </p>
                   <p style={{ fontSize: 12, color: '#94a3b8', margin: '4px 0 0', fontWeight: 600 }}>
-                    {isPro ? 'Unlimited links (Pro)' : `${linksUsed}/${freeLimit} links used (Free)`}
+                    {isPro ? 'Unlimited links (Pro)' : 'Unlock Custom Links (Pro Feature)'}
                   </p>
                 </div>
                 {(isPro || linksUsed < freeLimit) && (
