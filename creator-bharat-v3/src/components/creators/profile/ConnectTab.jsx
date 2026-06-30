@@ -18,7 +18,8 @@ import {
   Shield,
   Phone,
   AtSign,
-  MessageCircle
+  MessageCircle,
+  Lock
 } from 'lucide-react';
 import { useApp } from '../../../core/context';
 import { Card } from '../../common/Primitives';
@@ -185,8 +186,8 @@ export const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
              </Card>
 
              {/* Direct Contact Card */}
-              {(st.user?.role === 'BRAND' || st.user?.role === 'ADMIN' || st.user?.email === c.email) ? (
-                (c.contactPhone || c.contactEmail || c.contactTelegram) && (
+              {(st?.user?.role === 'BRAND' || st?.user?.role === 'ADMIN' || (st?.user?.email && st?.user?.email === c?.email)) ? (
+                (c?.contactPhone || c?.contactEmail || c?.contactTelegram) && (
                   <Card style={{ padding: '24px', borderRadius: '32px', border: '1.5px solid #10B98130', background: 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%)', position: 'relative', overflow: 'hidden' }}>
                     <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', alignItems: 'center', gap: 4, background: '#10B98115', border: '1px solid #10B98130', padding: '4px 10px', borderRadius: 100 }}>
                       <Shield size={12} color="#10B981" />
@@ -196,19 +197,19 @@ export const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
                     <div style={{ fontSize: '11px', fontWeight: 950, color: '#047857', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '1px' }}>Direct Contact Info</div>
                     
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                       {c.contactPhone && (
+                       {c?.contactPhone && (
                          <div>
                            <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>Phone / WhatsApp</div>
                            <div style={{ fontSize: '14px', fontWeight: 850, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
                              <Phone size={14} color="#64748b" />
-                             <a href={`https://wa.me/${c.contactPhone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ color: '#0073b1', textDecoration: 'none', fontWeight: 900 }}>
+                             <a href={`https://wa.me/${String(c.contactPhone).replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ color: '#0073b1', textDecoration: 'none', fontWeight: 900 }}>
                                {c.contactPhone}
                              </a>
                            </div>
                          </div>
                        )}
                        
-                       {c.contactEmail && (
+                       {c?.contactEmail && (
                          <div>
                            <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>Deal Email</div>
                            <div style={{ fontSize: '14px', fontWeight: 850, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -220,12 +221,12 @@ export const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
                          </div>
                        )}
  
-                       {c.contactTelegram && (
+                       {c?.contactTelegram && (
                          <div>
                            <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>Telegram Handle</div>
                            <div style={{ fontSize: '14px', fontWeight: 850, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
                              <MessageCircle size={14} color="#64748b" />
-                             <a href={`https://t.me/${c.contactTelegram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" style={{ color: '#0073b1', textDecoration: 'none', fontWeight: 900 }}>
+                             <a href={`https://t.me/${String(c.contactTelegram).replace('@', '')}`} target="_blank" rel="noopener noreferrer" style={{ color: '#0073b1', textDecoration: 'none', fontWeight: 900 }}>
                                {c.contactTelegram}
                              </a>
                            </div>
