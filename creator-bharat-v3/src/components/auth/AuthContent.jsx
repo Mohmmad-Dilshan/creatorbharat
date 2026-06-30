@@ -50,7 +50,30 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
   useEffect(() => {
     const params = new URLSearchParams(globalThis.location.search);
     const urlToken = params.get('token');
-    
+    const urlError = params.get('error');
+    const existingRole = params.get('existing_role');
+
+    // ── Handle OAuth errors ────────────────────────────────────────────────
+    if (urlError) {
+      globalThis.history.replaceState({}, document.title, globalThis.location.pathname);
+      let errorMsg = 'Google sign-in failed. Please try again.';
+
+      if (urlError === 'email_role_mismatch') {
+        const existingLabel = existingRole === 'creator' ? 'Creator' : 'Brand';
+        const wrongLabel = existingRole === 'creator' ? 'Brand' : 'Creator';
+        errorMsg = `This Google account is already registered as a ${existingLabel}. Please use the ${existingLabel} login, not ${wrongLabel} login.`;
+      } else if (urlError === 'suspended') {
+        errorMsg = 'Your account has been suspended. Contact support for help.';
+      } else if (urlError === 'server_error') {
+        errorMsg = 'A server error occurred during Google sign-in. Please try again.';
+      }
+
+      dsp({ t: 'TOAST', d: { type: 'error', msg: errorMsg } });
+      setAuthError(errorMsg);
+      return;
+    }
+
+    // ── Handle successful OAuth token ─────────────────────────────────────
     if (urlToken) {
       globalThis.history.replaceState({}, document.title, globalThis.location.pathname);
       setIsVerifyingGoogle(true);

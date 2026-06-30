@@ -874,6 +874,18 @@ router.get('/google/callback', async (req, res) => {
     });
 
     if (user) {
+      // ─── Role Mismatch Protection ─────────────────────────────────────────
+      // If someone tries to use the same email for a different role via Google,
+      // block it and redirect with a clear error message.
+      const userRoleLower = user.role.toLowerCase();
+      if (userRoleLower !== role) {
+        const existingRoleLabel = userRoleLower === 'creator' ? 'Creator' : 'Brand';
+        const attemptedRoleLabel = role === 'creator' ? 'Creator' : 'Brand';
+        console.warn(`[Google OAuth] Role mismatch: ${emailLower} is a ${existingRoleLabel}, tried to login as ${attemptedRoleLabel}`);
+        return res.redirect(`${frontendUrl}/login?error=email_role_mismatch&existing_role=${userRoleLower}`);
+      }
+      // ─────────────────────────────────────────────────────────────────────
+
       if (user.role === 'CREATOR' && user.creator) {
         let needsUpdate = false;
         const updateData = {};
