@@ -153,6 +153,45 @@ ProLockBanner.propTypes = {
   onUpgrade: PropTypes.func.isRequired
 };
 
+const TabFooter = ({ onPrev, onNextText = 'Save and Continue →', onNext, disabled = false, mob }) => (
+  <div style={{ 
+    marginTop: '48px', 
+    display: 'flex', 
+    flexDirection: mob ? 'column-reverse' : 'row', 
+    justifyContent: mob ? 'stretch' : (onPrev ? 'space-between' : 'flex-end'), 
+    alignItems: 'center', 
+    gap: 16 
+  }}>
+    {onPrev && (
+      <button 
+        type="button"
+        onClick={onPrev} 
+        className="btn-text-slate"
+        style={{ width: mob ? '100%' : 'auto', padding: mob ? '12px' : '0', cursor: 'pointer', display: 'flex', justifyContent: 'center' }}
+      >
+        ← Previous
+      </button>
+    )}
+    <Btn 
+      lg 
+      className="btn-primary-pill" 
+      style={{ height: 'auto', padding: mob ? '14px 24px' : '16px 48px', width: mob ? '100%' : 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center' }} 
+      onClick={onNext}
+      disabled={disabled}
+    >
+      {onNextText}
+    </Btn>
+  </div>
+);
+
+TabFooter.propTypes = {
+  onPrev: PropTypes.func,
+  onNextText: PropTypes.string,
+  onNext: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+  mob: PropTypes.bool.isRequired
+};
+
 const StepInstructionBanner = ({ icon: Icon, title, reason, points = [] }) => (
   <div style={{
     background: 'rgba(255, 148, 49, 0.04)',
@@ -444,14 +483,15 @@ const IdentityTabContent = ({ F, c, st, mob, upF, saveProfile, saving, dsp, open
                 <Fld label="Retention Score" value={F.aiRetention} onChange={e => upF('aiRetention', e.target.value)} placeholder="Excellent" />
                 <Fld label="ROI Potential" value={F.aiRoi} onChange={e => upF('aiRoi', e.target.value)} placeholder="5.2x" />
              </div>
-          </div>
-       </div>
+           </div>
+        </div>
 
-       <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'flex-end' }}>
-          <Btn lg className="btn-primary-pill" style={{ height: 'auto', padding: '16px 48px', display: 'flex', gap: 8 }} onClick={saveProfile} disabled={saving}>
-             {saving ? <Loader2 className="spin" size={18} /> : 'Save Identity →'}
-          </Btn>
-       </div>
+        <TabFooter 
+          onNextText={saving ? "Saving..." : "Save Identity →"} 
+          onNext={saveProfile} 
+          disabled={saving} 
+          mob={mob} 
+        />
     </Card>
   );
 };
@@ -743,10 +783,12 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
            </div>
        </div>
 
-       <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <button onClick={() => setTab('identity')} className="btn-text-slate">← Previous</button>
-          <Btn lg className="btn-primary-pill" style={{ height: 'auto', padding: '16px 48px' }} onClick={saveProfile}>Sync Social Hub →</Btn>
-       </div>
+       <TabFooter 
+          onPrev={() => setTab('identity')} 
+          onNextText="Sync Social Hub →" 
+          onNext={saveProfile} 
+          mob={mob} 
+        />
     </Card>
   );
 };
@@ -917,7 +959,7 @@ const GalleryTabContent = ({ F, mob, upF, saveProfile, setTab, isPro, navigate, 
                        placeholder="Describe this project..." 
                      />
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <div style={{ display: 'flex', flexDirection: mob ? 'column' : 'row', alignItems: mob ? 'stretch' : 'center', gap: '16px' }}>
                     <input 
                       type="file" 
                       id="portfolio-image-upload" 
@@ -997,7 +1039,7 @@ const GalleryTabContent = ({ F, mob, upF, saveProfile, setTab, isPro, navigate, 
              )}
 
              {!isPro && (
-               <div style={{ marginTop: 16, padding: '12px 16px', background: '#f8fafc', borderRadius: 12, border: '1px dashed #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+               <div style={{ marginTop: 16, padding: '12px 16px', background: '#f8fafc', borderRadius: 12, border: '1px dashed #e2e8f0', display: 'flex', flexDirection: mob ? 'column' : 'row', gap: '8px', justifyContent: 'space-between', alignItems: 'center' }}>
                  <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 650 }}>
                    🔒 Free account tier limit: Max 3 images. (Upgrade to Pro for 12)
                  </span>
@@ -1157,10 +1199,12 @@ const GalleryTabContent = ({ F, mob, upF, saveProfile, setTab, isPro, navigate, 
           </div>
        </div>
 
-       <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <button onClick={() => setTab('social')} className="btn-text-slate">← Previous</button>
-          <Btn lg className="btn-primary-pill" style={{ height: 'auto', padding: '16px 48px' }} onClick={saveProfile}>Sync Gallery & Stories →</Btn>
-       </div>
+       <TabFooter 
+          onPrev={() => setTab('social')} 
+          onNextText="Sync Gallery & Stories →" 
+          onNext={saveProfile} 
+          mob={mob} 
+        />
     </Card>
   );
 };
@@ -1305,10 +1349,12 @@ const StoryTabContent = ({ F, mob, upF, upAward, upCollab, upMilestone, saveProf
         </div>
      </div>
 
-     <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <button onClick={() => setTab('social')} className="btn-text-slate">← Previous</button>
-        <Btn lg className="btn-primary-pill" style={{ height: 'auto', padding: '16px 48px' }} onClick={saveProfile}>Sync Journey →</Btn>
-     </div>
+     <TabFooter 
+        onPrev={() => setTab('social')} 
+        onNextText="Sync Journey →" 
+        onNext={saveProfile} 
+        mob={mob} 
+      />
   </Card>
 );
 
@@ -1432,7 +1478,7 @@ const PackagesTabContent = ({ F, mob, upF, upService, addService, removeService,
               );
            })}
            {!isPro && F.services.length >= 3 && (
-             <div style={{ marginTop: 12, padding: '10px 16px', background: '#f8fafc', borderRadius: 12, border: '1px dashed #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+             <div style={{ marginTop: 12, padding: '10px 16px', background: '#f8fafc', borderRadius: 12, border: '1px dashed #e2e8f0', display: 'flex', flexDirection: mob ? 'column' : 'row', gap: '8px', justifyContent: 'space-between', alignItems: 'center' }}>
                <p style={{ fontSize: 12, color: '#94a3b8', margin: 0, fontWeight: 600 }}>
                  🔒 Upgrade to Pro to add unlimited services (currently max 3)
                </p>
@@ -1486,10 +1532,12 @@ const PackagesTabContent = ({ F, mob, upF, upService, addService, removeService,
         </div>
      </div>
 
-     <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <button onClick={() => setTab('story')} className="btn-text-slate">← Previous</button>
-        <Btn lg className="btn-primary-pill" style={{ height: 'auto', padding: '16px 48px' }} onClick={saveProfile}>Sync Deliverables →</Btn>
-     </div>
+     <TabFooter 
+        onPrev={() => setTab('story')} 
+        onNextText="Sync Deliverables →" 
+        onNext={saveProfile} 
+        mob={mob} 
+      />
   </Card>
   );
 };
@@ -1560,10 +1608,12 @@ const LocalTabContent = ({ F, mob, upF, upLocalHub, saveProfile, setTab, openAiW
         </div>
      </div>
 
-     <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <button onClick={() => setTab('packages')} className="btn-text-slate">← Previous</button>
-        <Btn lg className="btn-primary-pill" style={{ height: 'auto', padding: '16px 48px' }} onClick={saveProfile}>Sync Local Hub →</Btn>
-     </div>
+     <TabFooter 
+        onPrev={() => setTab('packages')} 
+        onNextText="Sync Local Hub →" 
+        onNext={saveProfile} 
+        mob={mob} 
+      />
   </Card>
 );
 
@@ -1640,12 +1690,12 @@ const SponsoredTabContent = ({ F, mob, upSponsoredPost, saveProfile, setTab }) =
          </p>
        </div>
 
-       <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <button onClick={() => setTab('local')} className="btn-text-slate">← Previous</button>
-          <Btn lg className="btn-primary-pill" style={{ height: 'auto', padding: '16px 48px' }} onClick={saveProfile}>
-            🎉 Complete Profile & Go Live
-          </Btn>
-       </div>
+       <TabFooter 
+          onPrev={() => setTab('local')} 
+          onNextText="🎉 Complete Profile & Go Live" 
+          onNext={saveProfile} 
+          mob={mob} 
+        />
     </Card>
   );
 };
@@ -2317,7 +2367,7 @@ export default function ProfileBuilderPage() {
     if (!aiModalOpen) return null;
     return (
       <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.4)', backdropFilter: 'blur(8px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-        <div style={{ background: '#fff', borderRadius: 28, border: '1.5px solid #F1F5F9', padding: '32px', maxWidth: 450, width: '100%', boxShadow: '0 30px 60px rgba(15,23,42,0.15)', boxSizing: 'border-box' }}>
+        <div style={{ background: '#fff', borderRadius: 28, border: '1.5px solid #F1F5F9', padding: mob ? '20px' : '32px', maxWidth: 450, width: '100%', boxShadow: '0 30px 60px rgba(15,23,42,0.15)', boxSizing: 'border-box' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
             <div style={{ width: 44, height: 44, borderRadius: 14, background: 'rgba(255,148,49,0.12)', color: '#FF9431', display: 'grid', placeItems: 'center' }}>
               <Sparkles size={20} fill="#FF9431" fillOpacity={0.2} />
