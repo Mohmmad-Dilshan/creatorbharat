@@ -767,6 +767,31 @@ router.post('/reset-password', async (req, res) => {
     await prisma.user.update({ where: { id: record.userId }, data: { password: hashedPassword } });
     await prisma.passwordReset.delete({ where: { token } }).catch(() => {});
 
+    // Send security alert email after successful password reset
+    const updatedUser = await prisma.user.findUnique({
+      where: { id: record.userId },
+      include: { creator: true, brand: true }
+    });
+    if (updatedUser) {
+      const userName = updatedUser.creator?.name || updatedUser.brand?.companyName || 'Member';
+      const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' });
+      sendEmail({
+        to: updatedUser.email,
+        subject: '⚠️ Your CreatorBharat Password Was Changed',
+        html: `
+          <div style="font-family: sans-serif; padding: 20px; color: #0f172a; max-width: 600px; margin: auto; border: 1px solid #f1f5f9; border-radius: 12px;">
+            <h2 style="color: #FF9431;">Password Changed Successfully 🔒</h2>
+            <p>Hello ${userName},</p>
+            <p>Your CreatorBharat account password was successfully changed on <strong>${now} IST</strong>.</p>
+            <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 14px; margin: 20px 0;">
+              <p style="margin: 0; font-size: 13px; color: #9a3412;">⚠️ <strong>If you did NOT make this change</strong>, your account may be compromised. Please contact us immediately at <a href="mailto:support@creatorbharat.com" style="color: #FF9431;">support@creatorbharat.com</a> or reset your password again right away.</p>
+            </div>
+            <p style="margin-top: 24px; font-size: 13px;">Best regards,<br/><strong>Team CreatorBharat</strong></p>
+          </div>
+        `
+      }).catch(err => console.error('[reset-password] Confirmation email error:', err));
+    }
+
     res.json({ success: true, message: 'Your password has been reset successfully.' });
   } catch (err) {
     console.error('[reset-password] Error:', err.message);
@@ -941,6 +966,26 @@ router.get('/google/callback', async (req, res) => {
           },
           include: { creator: true }
         });
+
+        // Send welcome email to new Google Creator
+        sendEmail({
+          to: user.email,
+          subject: 'Welcome to CreatorBharat! 🇮🇳',
+          html: `
+            <div style="font-family: sans-serif; padding: 20px; color: #0f172a; max-width: 600px; margin: auto; border: 1px solid #f1f5f9; border-radius: 12px;">
+              <h2 style="color: #FF9431;">Welcome to CreatorBharat, ${name || 'Creator'}! 🎉</h2>
+              <p>You have successfully signed up using Google. We are thrilled to have you join India's premier influencer network.</p>
+              <p>Here are your next steps to get started:</p>
+              <ul style="line-height: 1.6;">
+                <li><strong>Complete your profile:</strong> Add your portfolio, rates, and local impact details.</li>
+                <li><strong>Submit for Verification:</strong> Get your Elite Badge to stand out to premium brands.</li>
+                <li><strong>Apply to Campaigns:</strong> Pitch directly to campaigns in your niche.</li>
+              </ul>
+              <p style="margin-top: 24px;">Best regards,<br/><strong>Team CreatorBharat</strong></p>
+            </div>
+          `
+        }).catch(err => console.error('[Google OAuth] Creator welcome email error:', err));
+
       } else {
         user = await prisma.user.create({
           data: {
@@ -953,6 +998,25 @@ router.get('/google/callback', async (req, res) => {
           },
           include: { brand: true }
         });
+
+        // Send welcome email to new Google Brand
+        sendEmail({
+          to: user.email,
+          subject: 'Welcome to CreatorBharat for Brands! 💼',
+          html: `
+            <div style="font-family: sans-serif; padding: 20px; color: #0f172a; max-width: 600px; margin: auto; border: 1px solid #f1f5f9; border-radius: 12px;">
+              <h2 style="color: #FF9431;">Welcome to CreatorBharat, ${name || 'Brand Partner'}! 🎉</h2>
+              <p>You have successfully signed up using Google. We are thrilled to help you scale your campaigns with India's top regional storytellers.</p>
+              <p>Here is what you can do right now:</p>
+              <ul style="line-height: 1.6;">
+                <li><strong>Post a Campaign:</strong> Create a campaign proposal and set your budget.</li>
+                <li><strong>Discover Creators:</strong> Use our advanced geographic and niche filters to find verified partners.</li>
+                <li><strong>Manage Pitches:</strong> Review creator applications and deposit funds securely into escrow.</li>
+              </ul>
+              <p style="margin-top: 24px;">Best regards,<br/><strong>Team CreatorBharat</strong></p>
+            </div>
+          `
+        }).catch(err => console.error('[Google OAuth] Brand welcome email error:', err));
       }
     }
 
