@@ -14,7 +14,11 @@ import {
   ShieldCheck, 
   UserCheck,
   Globe,
-  ArrowRight
+  ArrowRight,
+  Shield,
+  Phone,
+  AtSign,
+  MessageCircle
 } from 'lucide-react';
 import { useApp } from '../../../core/context';
 import { Card } from '../../common/Primitives';
@@ -179,6 +183,97 @@ export const QuickConnectHub = ({ c, mob, dsp, onBrief, onMediaKit }) => {
                    </button>
                 </div>
              </Card>
+
+             {/* Direct Contact Card */}
+              {(st.user?.role === 'BRAND' || st.user?.role === 'ADMIN' || st.user?.email === c.email) ? (
+                (c.contactPhone || c.contactEmail || c.contactTelegram) && (
+                  <Card style={{ padding: '24px', borderRadius: '32px', border: '1.5px solid #10B98130', background: 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%)', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', alignItems: 'center', gap: 4, background: '#10B98115', border: '1px solid #10B98130', padding: '4px 10px', borderRadius: 100 }}>
+                      <Shield size={12} color="#10B981" />
+                      <span style={{ fontSize: 10, fontWeight: 900, color: '#10B981', textTransform: 'uppercase' }}>Verified Access</span>
+                    </div>
+                    
+                    <div style={{ fontSize: '11px', fontWeight: 950, color: '#047857', textTransform: 'uppercase', marginBottom: '20px', letterSpacing: '1px' }}>Direct Contact Info</div>
+                    
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                       {c.contactPhone && (
+                         <div>
+                           <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>Phone / WhatsApp</div>
+                           <div style={{ fontSize: '14px', fontWeight: 850, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                             <Phone size={14} color="#64748b" />
+                             <a href={`https://wa.me/${c.contactPhone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" style={{ color: '#0073b1', textDecoration: 'none', fontWeight: 900 }}>
+                               {c.contactPhone}
+                             </a>
+                           </div>
+                         </div>
+                       )}
+                       
+                       {c.contactEmail && (
+                         <div>
+                           <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>Deal Email</div>
+                           <div style={{ fontSize: '14px', fontWeight: 850, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                             <AtSign size={14} color="#64748b" />
+                             <a href={`mailto:${c.contactEmail}`} style={{ color: '#0073b1', textDecoration: 'none', fontWeight: 900 }}>
+                               {c.contactEmail}
+                             </a>
+                           </div>
+                         </div>
+                       )}
+ 
+                       {c.contactTelegram && (
+                         <div>
+                           <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>Telegram Handle</div>
+                           <div style={{ fontSize: '14px', fontWeight: 850, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                             <MessageCircle size={14} color="#64748b" />
+                             <a href={`https://t.me/${c.contactTelegram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" style={{ color: '#0073b1', textDecoration: 'none', fontWeight: 900 }}>
+                               {c.contactTelegram}
+                             </a>
+                           </div>
+                         </div>
+                       )}
+ 
+                       {c.contactAvailability && (
+                         <div>
+                           <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>Best Time to Contact</div>
+                           <div style={{ fontSize: '13px', fontWeight: 700, color: '#475569' }}>
+                             {c.contactAvailability}
+                           </div>
+                         </div>
+                       )}
+ 
+                       <div>
+                         <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '2px' }}>Preferred Channel</div>
+                         <div style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a', textTransform: 'capitalize' }}>
+                           {c.contactMethod || 'WhatsApp'}
+                         </div>
+                       </div>
+                    </div>
+                  </Card>
+                )
+              ) : (
+                <Card style={{ padding: '24px', borderRadius: '32px', border: '1.5px solid #e2e8f0', background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', alignItems: 'center', gap: 4, background: '#f1f5f9', border: '1px solid #e2e8f0', padding: '4px 10px', borderRadius: 100 }}>
+                    <Lock size={12} color="#64748b" />
+                    <span style={{ fontSize: 10, fontWeight: 900, color: '#64748b', textTransform: 'uppercase' }}>Gated Data</span>
+                  </div>
+                  
+                  <div style={{ fontSize: '11px', fontWeight: 950, color: '#64748b', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '1px' }}>Direct Contact Info</div>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                     <div>
+                       <div style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>Phone & Email</div>
+                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontSize: '13px', fontWeight: 600 }}>
+                         <Lock size={14} color="#94a3b8" />
+                         ••••••••••••
+                       </div>
+                     </div>
+                     
+                     <p style={{ fontSize: '12px', color: '#64748b', margin: '4px 0 0', lineHeight: 1.5, fontWeight: 550 }}>
+                       Upgrade to a verified <strong>Brand account</strong> to access direct contact details of this creator.
+                     </p>
+                  </div>
+                </Card>
+              )}
 
              {/* Regional Identity */}
              <div style={{ padding: '32px', background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', borderRadius: '32px', color: '#0f172a', border: '1.5px solid rgba(226, 232, 240, 0.8)', boxShadow: '0 20px 40px rgba(15,23,42,0.03)', position: 'relative', overflow: 'hidden' }}>

@@ -705,6 +705,20 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
                   icon={Phone}
                 />
                 <Fld 
+                  label="Professional Deal Email" 
+                  value={F.contactEmail} 
+                  onChange={e => upF('contactEmail', e.target.value)} 
+                  placeholder="collab@domain.com" 
+                  icon={AtSign}
+                />
+                <Fld 
+                  label="Telegram Username (Optional)" 
+                  value={F.contactTelegram} 
+                  onChange={e => upF('contactTelegram', e.target.value)} 
+                  placeholder="@username" 
+                  icon={MessageCircle}
+                />
+                <Fld 
                   label="Preferred Contact Method" 
                   value={F.contactMethod} 
                   onChange={e => upF('contactMethod', e.target.value)}
@@ -714,9 +728,19 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
                     { v: 'platform', l: 'Platform Messages (In-App)' },
                     { v: 'instagram', l: 'Instagram DM' }
                   ]}
-                />
-             </div>
-          </div>
+                 />
+              </div>
+              
+              <div style={{ marginTop: 16 }}>
+                 <Fld 
+                   label="Availability / Best Time to Contact" 
+                   value={F.contactAvailability} 
+                   onChange={e => upF('contactAvailability', e.target.value)} 
+                   placeholder="e.g. 10 AM - 6 PM IST, Weekdays only" 
+                   icon={User}
+                 />
+              </div>
+           </div>
        </div>
 
        <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1965,7 +1989,10 @@ const getInitialFormState = (c) => {
     languages: Array.isArray(c?.languages) ? [...c.languages] : (c?.languages ? [c.languages] : ['Hindi']),
     stories: c?.stories ? [...c.stories] : [],
     contactPhone: c?.contact_phone || c?.contactPhone || '',
-    contactMethod: c?.contact_method || c?.contactMethod || 'whatsapp'
+    contactEmail: c?.contact_email || c?.contactEmail || c?.email || '',
+    contactTelegram: c?.contact_telegram || c?.contactTelegram || '',
+    contactMethod: c?.contact_method || c?.contactMethod || 'whatsapp',
+    contactAvailability: c?.contact_availability || c?.contactAvailability || ''
   };
 };
 
@@ -2625,8 +2652,14 @@ export default function ProfileBuilderPage() {
         // ── Contact ──
         contact_phone: F.contactPhone,
         contactPhone: F.contactPhone,
+        contact_email: F.contactEmail,
+        contactEmail: F.contactEmail,
+        contact_telegram: F.contactTelegram,
+        contactTelegram: F.contactTelegram,
         contact_method: F.contactMethod,
         contactMethod: F.contactMethod,
+        contact_availability: F.contactAvailability,
+        contactAvailability: F.contactAvailability,
 
         email: st.user?.email
       };

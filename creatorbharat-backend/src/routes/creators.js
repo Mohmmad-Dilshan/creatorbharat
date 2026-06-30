@@ -206,7 +206,8 @@ router.put('/me', authMiddleware, async (req, res) => {
       followers, engagementRate, rateMin, rateMax, score,
       aadhaarUrl, panUrl, status,
       fullStory, socialLinks, milestones, services, packages, localHubs,
-      regionalDialects, localVoice
+      regionalDialects, localVoice,
+      contactPhone, contactEmail, contactTelegram, contactMethod, contactAvailability
     } = req.body;
 
     const INDIAN_STATES = [
@@ -248,7 +249,12 @@ router.put('/me', authMiddleware, async (req, res) => {
         packages: packages !== undefined ? packages : undefined,
         localHubs: localHubs !== undefined ? localHubs : undefined,
         regionalDialects: Array.isArray(regionalDialects) ? regionalDialects : undefined,
-        localVoice: localVoice !== undefined ? localVoice : undefined
+        localVoice: localVoice !== undefined ? localVoice : undefined,
+        contactPhone,
+        contactEmail,
+        contactTelegram,
+        contactMethod,
+        contactAvailability
       }
     });
 

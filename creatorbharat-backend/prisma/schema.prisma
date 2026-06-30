@@ -67,6 +67,11 @@ model Creator {
   localHubs      Json?
   regionalDialects String[]
   localVoice     String?
+  contactPhone   String?
+  contactEmail   String?
+  contactTelegram String?
+  contactMethod  String        @default("whatsapp")
+  contactAvailability String?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
