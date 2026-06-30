@@ -1,6 +1,7 @@
 # Stage 1: Build production assets
 FROM node:22-alpine AS builder
 WORKDIR /app
+RUN apk add --no-cache libc6-compat python3 make g++
 COPY package*.json ./
 RUN npm ci --legacy-peer-deps
 COPY . .
