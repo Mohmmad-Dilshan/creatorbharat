@@ -98,7 +98,7 @@ export default function OnboardingPage() {
   const navigate = useNavigate();
   const { st, dsp } = useApp();
   const [expanded, setExpanded] = useState(null);
-  const [mob, setMob] = useState(() => globalThis.innerWidth < 768);
+  const [mob, setMob] = useState(() => globalThis.innerWidth < 1024);
 
   const allC = LS.get('cb_creators', []);
   const c = st.user?.creatorProfile || allC.find(cr => cr.email === st.user?.email) || {
@@ -117,7 +117,7 @@ export default function OnboardingPage() {
   const requiredDone = STEPS.filter(s => s.required).every(s => s.check(c));
 
   useEffect(() => {
-    const h = () => setMob(globalThis.innerWidth < 768);
+    const h = () => setMob(globalThis.innerWidth < 1024);
     globalThis.addEventListener('resize', h);
     return () => globalThis.removeEventListener('resize', h);
   }, []);

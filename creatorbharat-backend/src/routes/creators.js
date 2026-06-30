@@ -203,7 +203,7 @@ router.put('/me', authMiddleware, async (req, res) => {
 
     const {
       name, bio, photo, coverImage, coverPhoto, city, state, niche, platform,
-      followers, engagementRate, rateMin, rateMax,
+      followers, engagementRate, rateMin, rateMax, score,
       aadhaarUrl, panUrl, status,
       fullStory, socialLinks, milestones, services, packages, localHubs,
       regionalDialects, localVoice
@@ -237,6 +237,7 @@ router.put('/me', authMiddleware, async (req, res) => {
         engagementRate: engagementRate !== undefined ? parseFloat(engagementRate) : undefined,
         rateMin: rateMin !== undefined ? parseInt(rateMin) : undefined,
         rateMax: rateMax !== undefined ? parseInt(rateMax) : undefined,
+        score: score !== undefined ? parseInt(score) : undefined,
         aadhaarUrl,
         panUrl,
         status,

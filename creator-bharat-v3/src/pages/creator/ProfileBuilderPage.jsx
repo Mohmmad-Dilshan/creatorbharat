@@ -2112,7 +2112,7 @@ ActivationModal.propTypes = {
 export default function ProfileBuilderPage() {
   const { st, dsp } = useApp();
   const navigate = useNavigate();
-  const [mob, setMob] = useState(globalThis.innerWidth < 768);
+  const [mob, setMob] = useState(globalThis.innerWidth < 1024);
   const [tab, setTab] = useState('identity');
   const [saving, setSaving] = useState(false);
 
@@ -2386,7 +2386,7 @@ export default function ProfileBuilderPage() {
   }, [st.user?.creatorProfile]);
 
   useEffect(() => {
-    const h = () => setMob(globalThis.innerWidth < 768);
+    const h = () => setMob(globalThis.innerWidth < 1024);
     globalThis.addEventListener('resize', h);
     return () => globalThis.removeEventListener('resize', h);
   }, []);
@@ -2469,8 +2469,36 @@ export default function ProfileBuilderPage() {
         ]
       };
 
+      const activePlatforms = [];
+      if (F.instagram) activePlatforms.push('Instagram');
+      if (F.youtube) activePlatforms.push('YouTube');
+      if (F.linkedin) activePlatforms.push('LinkedIn');
+      if (F.twitter) activePlatforms.push('Twitter / X');
+      if (F.facebook) activePlatforms.push('Facebook');
+      filteredSocialLinks.forEach(l => {
+        if (l.platform) activePlatforms.push(l.platform);
+      });
+
+      const calculatedScore = fmt.score({
+        photo: F.photo,
+        bio: F.bio,
+        city: F.city,
+        state: F.state,
+        niche: F.niche,
+        platform: activePlatforms,
+        services: filteredServices,
+        instagram: F.instagram,
+        youtube: F.youtube,
+        rateMin: F.rateMin,
+        languages: F.languages,
+        followers: totalReach,
+        er: c?.engagementRate || c?.er || 0.05
+      });
+
       const updatedProfile = { 
         ...c,
+        platform: activePlatforms,
+        score: calculatedScore,
         // ── Core Identity ──
         name: F.name, bio: F.bio, city: F.city, state: F.state,
         niche: F.niche || [],
@@ -2589,8 +2617,67 @@ export default function ProfileBuilderPage() {
     }
   };
 
-  const comp = c ? fmt.completeness(c) : { pct: 0, missing: [] };
-  const score = c?.score || 85;
+  const getDynamicCompleteness = (F) => {
+    const activePlatforms = [];
+    if (F.instagram) activePlatforms.push('Instagram');
+    if (F.youtube) activePlatforms.push('YouTube');
+    if (F.linkedin) activePlatforms.push('LinkedIn');
+    if (F.twitter) activePlatforms.push('Twitter / X');
+    if (F.facebook) activePlatforms.push('Facebook');
+    F.socialLinks?.forEach(l => {
+      if (l.url && l.platform) activePlatforms.push(l.platform);
+    });
+
+    return fmt.completeness({
+      photo: F.photo,
+      bio: F.bio,
+      city: F.city,
+      niche: F.niche,
+      platform: activePlatforms,
+      instagram: F.instagram,
+      rateMin: F.rateMin,
+      services: F.services?.filter(s => s.t) || []
+    });
+  };
+
+  const getDynamicScore = (F, c) => {
+    const instagramFollowersInt = parseInt(F.instagramFollowers) || 0;
+    const youtubeFollowersInt = parseInt(F.youtubeFollowers) || 0;
+    const linkedinFollowersInt = parseInt(F.linkedinFollowers) || 0;
+    const twitterFollowersInt = parseInt(F.twitterFollowers) || 0;
+    const facebookFollowersInt = parseInt(F.facebookFollowers) || 0;
+    const customFollowersSum = F.socialLinks?.filter(l => l.url).reduce((sum, l) => sum + (parseInt(l.followers) || 0), 0) || 0;
+    const totalFollowers = instagramFollowersInt + youtubeFollowersInt + linkedinFollowersInt + twitterFollowersInt + facebookFollowersInt + customFollowersSum;
+
+    const activePlatforms = [];
+    if (F.instagram) activePlatforms.push('Instagram');
+    if (F.youtube) activePlatforms.push('YouTube');
+    if (F.linkedin) activePlatforms.push('LinkedIn');
+    if (F.twitter) activePlatforms.push('Twitter / X');
+    if (F.facebook) activePlatforms.push('Facebook');
+    F.socialLinks?.forEach(l => {
+      if (l.url && l.platform) activePlatforms.push(l.platform);
+    });
+
+    return fmt.score({
+      photo: F.photo,
+      bio: F.bio,
+      city: F.city,
+      state: F.state,
+      niche: F.niche,
+      platform: activePlatforms,
+      services: F.services?.filter(s => s.t) || [],
+      instagram: F.instagram,
+      youtube: F.youtube,
+      rateMin: F.rateMin,
+      languages: F.languages,
+      followers: totalFollowers,
+      er: c?.engagementRate || c?.er || 0.05
+    });
+  };
+
+  const comp = getDynamicCompleteness(F);
+  const score = getDynamicScore(F, c);
 
   return (
     <div className="dashboard-page-container">
