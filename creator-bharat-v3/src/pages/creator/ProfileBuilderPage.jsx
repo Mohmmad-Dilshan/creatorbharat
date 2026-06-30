@@ -672,19 +672,49 @@ const SocialTabContent = ({ F, mob, upF, upGallery, upSocialLink, addSocialLink,
 
           {/* Contact Details */}
           <div style={{ marginTop: 32, borderTop: '1px solid #f1f5f9', paddingTop: 32 }}>
-             <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', marginBottom: 16, textTransform: 'uppercase' }}>Contact Details (Visible to Verified Brands Only)</p>
+             <p style={{ fontSize: 13, fontWeight: 900, color: '#FF9431', marginBottom: 16, textTransform: 'uppercase' }}>
+               Contact Details (Visible to Verified Brands Only)
+             </p>
+             
+             {/* Security & Verification Banner */}
+             <div style={{ 
+               background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.02) 100%)', 
+               border: '1.5px dashed rgba(16, 185, 129, 0.25)', 
+               borderRadius: 16, 
+               padding: '16px 20px', 
+               marginBottom: 24, 
+               display: 'flex', 
+               gap: 12, 
+               alignItems: 'flex-start' 
+             }}>
+               <Shield size={20} color="#10B981" style={{ flexShrink: 0, marginTop: 2 }} />
+               <div>
+                 <p style={{ fontSize: 13, fontWeight: 900, color: '#065f46', margin: '0 0 4px' }}>Private & Secure Data</p>
+                 <p style={{ fontSize: 12, color: '#047857', margin: 0, lineHeight: 1.6, fontWeight: 550 }}>
+                   Your contact details are encrypted. They will <strong>only</strong> be shared with verified, KYC-approved brands once you accept their campaign proposals. Public visitors cannot see this.
+                 </p>
+               </div>
+             </div>
+
              <div style={{ display: 'grid', gridTemplateColumns: mob ? '1fr' : '1fr 1fr', gap: '24px' }}>
-                <Fld label="WhatsApp / Phone" value={F.contactPhone} onChange={e => upF('contactPhone', e.target.value)} placeholder="+91 98765 43210" />
-                <div>
-                  <label style={{ fontSize: 12, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, display: 'block' }}>Preferred Contact Method</label>
-                  <select value={F.contactMethod} onChange={e => upF('contactMethod', e.target.value)}
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 13, fontWeight: 700, color: '#0f172a' }}>
-                    <option value="whatsapp">WhatsApp</option>
-                    <option value="email">Email</option>
-                    <option value="platform">Platform Messages</option>
-                    <option value="instagram">Instagram DM</option>
-                  </select>
-                </div>
+                <Fld 
+                  label="WhatsApp / Phone" 
+                  value={F.contactPhone} 
+                  onChange={e => upF('contactPhone', e.target.value)} 
+                  placeholder="+91 98765 43210" 
+                  icon={Phone}
+                />
+                <Fld 
+                  label="Preferred Contact Method" 
+                  value={F.contactMethod} 
+                  onChange={e => upF('contactMethod', e.target.value)}
+                  options={[
+                    { v: 'whatsapp', l: 'WhatsApp Direct' },
+                    { v: 'email', l: 'Email Address' },
+                    { v: 'platform', l: 'Platform Messages (In-App)' },
+                    { v: 'instagram', l: 'Instagram DM' }
+                  ]}
+                />
              </div>
           </div>
        </div>
