@@ -250,13 +250,39 @@ export default function BrandsSection({
         <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 20, padding: 28 }}>
           <SectionHeader title="Payments & Escrow" badge={payments.length} sub="Override campaign escrow releases and refunds" />
           <SearchBar value={paymentSearch} onChange={setPaymentSearch} placeholder="Search by type, ID, or status..." />
-          <Table cols={['Order ID', 'Brand', 'Amount', 'Type', 'Status', 'Date', { label: 'Override', align: 'right' }]}>
+          <Table cols={['Order ID', 'Payer / Entity', 'Amount', 'Type', 'Status', 'Date', { label: 'Override', align: 'right' }]}>
             {filteredPayments.map(p => (
               <tr key={p.id} style={{ borderBottom: `1px solid ${T.border}` }}>
                 <Td muted><code style={{ fontSize: 11 }}>{p.razorpayOrderId?.slice(0, 18) || p.id?.slice(0, 12)}…</code></Td>
-                <Td bold>{p.brand?.companyName || '—'}</Td>
+                <Td bold>
+                  {p.brand ? (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                      🏢 {p.brand.companyName}
+                      <span style={{ fontSize: 9, color: T.muted, background: '#f1f5f9', padding: '1px 4px', borderRadius: 4 }}>Brand</span>
+                    </span>
+                  ) : p.creator ? (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                      👤 {p.creator.name}
+                      <span style={{ fontSize: 9, color: '#8B5CF6', background: 'rgba(139, 92, 246, 0.1)', padding: '1px 4px', borderRadius: 4, fontWeight: 800 }}>Creator</span>
+                    </span>
+                  ) : '—'}
+                </Td>
                 <Td bold><span style={{ color: T.green }}>{fmtINR(p.amount)}</span></Td>
-                <Td><Badge color={T.blue}>{p.type}</Badge></Td>
+                <Td>
+                  {p.type === 'PRO_LISTING' ? (
+                    <span style={{ padding: '3px 8px', background: 'rgba(139, 92, 246, 0.12)', color: '#8B5CF6', border: '1px solid rgba(139, 92, 246, 0.22)', borderRadius: 6, fontSize: 10, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      ⚡ Pro Plan
+                    </span>
+                  ) : p.type === 'PROFILE_ACTIVATION' ? (
+                    <span style={{ padding: '3px 8px', background: 'rgba(255, 148, 49, 0.12)', color: '#FF9431', border: '1px solid rgba(255, 148, 49, 0.22)', borderRadius: 6, fontSize: 10, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      💼 Live Activation
+                    </span>
+                  ) : (
+                    <span style={{ padding: '3px 8px', background: 'rgba(16, 185, 129, 0.12)', color: '#10B981', border: '1px solid rgba(16, 185, 129, 0.22)', borderRadius: 6, fontSize: 10, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      🔒 Escrow Deposit
+                    </span>
+                  )}
+                </Td>
                 <Td><Badge color={STATUS_COLOR[p.status] || T.muted}>{p.status}</Badge></Td>
                 <Td muted>{fmtDate(p.createdAt)}</Td>
                 <Td right>

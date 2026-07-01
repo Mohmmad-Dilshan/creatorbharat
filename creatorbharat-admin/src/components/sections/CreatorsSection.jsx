@@ -134,7 +134,7 @@ export default function CreatorsSection({
           </div>
 
           <SearchBar value={creatorSearch} onChange={setCreatorSearch} placeholder="Search by name, handle, or city..." />
-          <Table cols={['Creator', 'Handle', 'Location', 'Completeness', 'Followers', 'Verified', 'Status', { label: 'Actions', align: 'right' }]}>
+          <Table cols={['Creator', 'Handle', 'Location', 'Completeness', 'Followers', 'Membership', 'Verified', 'Status', { label: 'Actions', align: 'right' }]}>
             {processedCreators.map(cr => {
               const compPct = fmtCompleteness(cr);
               return (
@@ -154,6 +154,21 @@ export default function CreatorsSection({
                     </span>
                   </Td>
                   <Td bold>{fmtNum(cr.followers)}</Td>
+                  <Td>
+                    {cr.isPro ? (
+                      <span style={{ padding: '3px 8px', background: 'rgba(139, 92, 246, 0.12)', color: '#8B5CF6', border: '1px solid rgba(139, 92, 246, 0.22)', borderRadius: 6, fontSize: 10, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        ⚡ Pro
+                      </span>
+                    ) : cr.isProfileActive ? (
+                      <span style={{ padding: '3px 8px', background: 'rgba(255, 148, 49, 0.12)', color: '#FF9431', border: '1px solid rgba(255, 148, 49, 0.22)', borderRadius: 6, fontSize: 10, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        💼 Live
+                      </span>
+                    ) : (
+                      <span style={{ padding: '3px 6px', background: '#F1F5F9', color: '#64748B', border: '1px solid #E2E8F0', borderRadius: 6, fontSize: 10, fontWeight: 800 }}>
+                        Free
+                      </span>
+                    )}
+                  </Td>
                   <Td><Badge color={cr.isVerified ? T.green : T.muted}>{cr.isVerified ? '✓ Verified' : 'Unverified'}</Badge></Td>
                   <Td><Badge color={cr.user?.isSuspended ? T.red : T.green}>{cr.user?.isSuspended ? 'Suspended' : 'Active'}</Badge></Td>
                   <Td right>
@@ -231,13 +246,45 @@ export default function CreatorsSection({
               {walletLoading ? <EmptyState icon="⏳" msg="Loading transactions..." /> : walletTxns.length === 0 ? (
                 <EmptyState icon="💰" msg="No transactions found for this creator" />
               ) : (
-                <Table cols={['Campaign', 'Brand', 'Amount', 'Type', 'Status', 'Date']}>
+                <Table cols={['Description', 'Counterparty', 'Amount', 'Type', 'Status', 'Date']}>
                   {walletTxns.map(tx => (
                     <tr key={tx.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                      <Td bold>{tx.campaign?.title || '—'}</Td>
-                      <Td>{tx.brand?.companyName || '—'}</Td>
+                      <Td bold style={{ display: 'flex', flexDirection: 'column' }}>
+                        {tx.campaign?.title ? (
+                          <span>Campaign: {tx.campaign.title}</span>
+                        ) : tx.type === 'PRO_LISTING' ? (
+                          <span style={{ color: '#8B5CF6' }}>🌟 Creator Pro Membership</span>
+                        ) : tx.type === 'PROFILE_ACTIVATION' ? (
+                          <span style={{ color: '#FF9431' }}>🚀 Portfolio Listing Activation</span>
+                        ) : (
+                          <span>Platform Transaction</span>
+                        )}
+                      </Td>
+                      <Td>
+                        {tx.brand?.companyName ? (
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                            🏢 {tx.brand.companyName}
+                          </span>
+                        ) : (
+                          <span style={{ color: T.muted }}>Self (Creator Payment)</span>
+                        )}
+                      </Td>
                       <Td bold><span style={{ color: T.green }}>{fmtINR(tx.amount)}</span></Td>
-                      <Td><Badge color={T.blue}>{tx.type}</Badge></Td>
+                      <Td>
+                        {tx.type === 'PRO_LISTING' ? (
+                          <span style={{ padding: '3px 8px', background: 'rgba(139, 92, 246, 0.12)', color: '#8B5CF6', border: '1px solid rgba(139, 92, 246, 0.22)', borderRadius: 6, fontSize: 10, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            ⚡ Pro
+                          </span>
+                        ) : tx.type === 'PROFILE_ACTIVATION' ? (
+                          <span style={{ padding: '3px 8px', background: 'rgba(255, 148, 49, 0.12)', color: '#FF9431', border: '1px solid rgba(255, 148, 49, 0.22)', borderRadius: 6, fontSize: 10, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            💼 Live
+                          </span>
+                        ) : (
+                          <span style={{ padding: '3px 8px', background: 'rgba(16, 185, 129, 0.12)', color: '#10B981', border: '1px solid rgba(16, 185, 129, 0.22)', borderRadius: 6, fontSize: 10, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            🔒 Escrow
+                          </span>
+                        )}
+                      </Td>
                       <Td><Badge color={STATUS_COLOR[tx.status] || T.muted}>{tx.status}</Badge></Td>
                       <Td muted>{fmtDate(tx.createdAt)}</Td>
                     </tr>
