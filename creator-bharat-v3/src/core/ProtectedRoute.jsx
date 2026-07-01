@@ -35,7 +35,7 @@ const ProtectedRoute = ({ children, allowedRole }) => {
     
     const isProfileIncomplete = !hasIndianPhone || !hasIndianLocation;
     
-    if (isProfileIncomplete && location.pathname !== '/creator/onboarding' && location.pathname !== '/creator/profile') {
+    if (isProfileIncomplete && location.pathname !== '/creator/onboarding' && location.pathname !== '/creator/profile' && location.pathname !== '/creator/profile-builder') {
       return <Navigate to="/creator/onboarding" replace />;
     }
   }

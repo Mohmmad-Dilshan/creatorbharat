@@ -243,6 +243,63 @@ router.post('/verify', authMiddleware, async (req, res) => {
               </div>
             `
           });
+        } else if (payment.type === 'PROFILE_ACTIVATION') {
+          // Send notification inside dashboard
+          await createNotification({
+            userId: req.user.id,
+            title: '🚀 Portfolio Active & Live!',
+            body: 'Your CreatorBharat portfolio is now live and searchable in the public marketplace. Start matching with top brand campaigns!',
+            type: 'PAYMENT',
+            link: '/creator/dashboard'
+          });
+
+          // Send receipt email
+          await sendEmail({
+            to: req.user.email,
+            subject: 'Your CreatorBharat Portfolio is Officially Live! 🚀',
+            html: `
+              <div style="font-family: sans-serif; padding: 20px; color: #0f172a; max-width: 600px; margin: auto; border: 1px solid #f1f5f9; border-radius: 12px;">
+                <h2 style="color: #FF9431;">Portfolio Activation Complete! 🚀</h2>
+                <p>Hello ${req.user.name || 'Creator'},</p>
+                <p>Congratulations! Your CreatorBharat profile listing fee has been paid successfully, and your portfolio is now <strong>Live</strong> on the public directory.</p>
+                
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 20px 0;">
+                  <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    <tr>
+                      <td style="color: #64748b; padding: 6px 0;">Order ID:</td>
+                      <td style="text-align: right; font-weight: 500;">${razorpay_order_id}</td>
+                    </tr>
+                    <tr>
+                      <td style="color: #64748b; padding: 6px 0;">Payment ID:</td>
+                      <td style="text-align: right; font-weight: 500;">${razorpay_payment_id}</td>
+                    </tr>
+                    <tr>
+                      <td style="color: #64748b; padding: 6px 0;">Period:</td>
+                      <td style="text-align: right; font-weight: 500;">2 Years Visibility</td>
+                    </tr>
+                    <tr>
+                      <td style="color: #64748b; padding: 6px 0; border-top: 1px solid #e2e8f0;">Amount Paid:</td>
+                      <td style="text-align: right; font-weight: bold; color: #10B981; padding: 6px 0; border-top: 1px solid #e2e8f0;">₹${payment.amount}.00 INR</td>
+                    </tr>
+                  </table>
+                </div>
+
+                <p>Here is what happens next:</p>
+                <ul style="line-height: 1.6;">
+                  <li><strong>Marketplace Visibility:</strong> Your portfolio is indexed and visible to brands searching in your city and niche.</li>
+                  <li><strong>Brand discovery:</strong> Brands can shortlist your card and view your case studies.</li>
+                  <li><strong>Profile SEO:</strong> Your search engine visibility is automatically enhanced.</li>
+                </ul>
+
+                <p style="margin-top: 24px;">
+                  <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/creators" style="background: #FF9431; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                    View Your Live Card
+                  </a>
+                </p>
+                <p style="margin-top: 28px; font-size: 12px; color: #94a3b8;">Best regards,<br/>Team CreatorBharat</p>
+              </div>
+            `
+          });
         } else if (payment.type === 'CAMPAIGN_ESCROW') {
           // Fetch Campaign detail to include in the receipt
           const campaign = await prisma.campaign.findUnique({

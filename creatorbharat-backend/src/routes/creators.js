@@ -223,6 +223,12 @@ router.put('/me', authMiddleware, async (req, res) => {
       return res.status(400).json({ error: 'Only Indian locations are allowed for creator profiles.' });
     }
 
+    // Prevent creators from self-approving verification status
+    let finalStatus = status;
+    if (status && status !== 'PENDING_APPROVAL' && status !== 'DRAFT') {
+      finalStatus = undefined;
+    }
+
     const updated = await prisma.creator.update({
       where: { userId: req.user.id },
       data: {
@@ -241,7 +247,7 @@ router.put('/me', authMiddleware, async (req, res) => {
         score: score !== undefined ? parseInt(score) : undefined,
         aadhaarUrl,
         panUrl,
-        status,
+        status: finalStatus,
         fullStory: fullStory !== undefined ? fullStory : undefined,
         socialLinks: socialLinks !== undefined ? socialLinks : undefined,
         milestones: milestones !== undefined ? milestones : undefined,

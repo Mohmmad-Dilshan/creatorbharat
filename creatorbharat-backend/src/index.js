@@ -199,6 +199,7 @@ app.get('/api/stats/summary', async (req, res) => {
     });
     const totalReach = reachResult._sum.followers || 0;
     const totalCampaigns = await prisma.campaign.count();
+    const totalBrands = await prisma.brand.count();
 
     const stateCountsResult = await prisma.creator.groupBy({
       by: ['state'],
@@ -216,6 +217,7 @@ app.get('/api/stats/summary', async (req, res) => {
       totalCreators,
       totalReach,
       totalCampaigns,
+      totalBrands,
       stateCounts
     });
   } catch (err) {

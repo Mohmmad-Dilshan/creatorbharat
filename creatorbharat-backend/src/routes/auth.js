@@ -829,7 +829,7 @@ router.get('/google', (req, res) => {
   }
 
   const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${req.protocol}://${req.get('host')}/api/auth/google/callback`;
-  const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=email%20profile&state=${role}:::${origin}`;
+  const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=email%20profile&prompt=select_account&state=${role}:::${origin}`;
   res.redirect(googleAuthUrl);
 });
 
@@ -907,7 +907,7 @@ router.get('/google/callback', async (req, res) => {
         const existingRoleLabel = userRoleLower === 'creator' ? 'Creator' : 'Brand';
         const attemptedRoleLabel = role === 'creator' ? 'Creator' : 'Brand';
         console.warn(`[Google OAuth] Role mismatch: ${emailLower} is a ${existingRoleLabel}, tried to login as ${attemptedRoleLabel}`);
-        return res.redirect(`${frontendUrl}/login?error=email_role_mismatch&existing_role=${userRoleLower}`);
+        return res.redirect(`${frontendUrl}/login?error=email_role_mismatch&existing_role=${userRoleLower}&attempted_role=${role.toLowerCase()}`);
       }
       // ─────────────────────────────────────────────────────────────────────
 

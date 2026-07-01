@@ -26,7 +26,8 @@ import {
   Verified,
   Activity,
   Share2,
-  Headphones
+  Headphones,
+  Lock
 } from 'lucide-react';
 
 // Tab component imports
@@ -260,6 +261,8 @@ export default function CreatorProfilePage() {
   const [tabScrolled, setTabScrolled] = useState(false);
   const [currency, setCurrency] = useState('INR');
   const lastY = useRef(0);
+  const [isInactive, setIsInactive] = useState(false);
+  const [inactiveMsg, setInactiveMsg] = useState('');
 
   useEffect(() => {
     const h = () => setMob(globalThis.innerWidth < 768);
@@ -299,9 +302,15 @@ export default function CreatorProfilePage() {
         return;
       }
       try {
+        setIsInactive(false);
         const found = await fetchCreatorById(id);
         setC(found || getFallbackCreator(id));
       } catch (err) {
+        if (err.status === 403) {
+          setIsInactive(true);
+          setInactiveMsg(err.message || 'Profile is not live. Admin approval and active subscription required.');
+          return;
+        }
         if (import.meta.env.DEV && (err.name === 'TypeError' || err.message?.includes('Failed to fetch') || err.message?.includes('fetch'))) {
           console.warn('Creator Profile fetch warning (API sleeping/offline, using seed fallback):', err.message);
         } else {
@@ -419,6 +428,59 @@ export default function CreatorProfilePage() {
       }
     }, 20);
   };
+
+  if (isInactive) {
+    const isOwner = st.user?.creatorProfile?.id === id || st.user?.creatorProfile?.handle === id || localStorage.getItem('cb_creator_id') === id;
+
+    return (
+      <div style={{ background: '#fcfcfc', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 20px' }}>
+        <Seo title="Listing Inactive — CreatorBharat" description="This creator portfolio listing is currently inactive." />
+        <div style={{
+          background: '#fff',
+          border: '1.5px solid rgba(255, 148, 49, 0.15)',
+          borderRadius: '32px',
+          padding: '48px 32px',
+          maxWidth: '500px',
+          width: '100%',
+          textAlign: 'center',
+          boxShadow: '0 20px 40px rgba(15,23,42,0.06)'
+        }}>
+          <div style={{ 
+            width: '64px', height: '64px', background: 'rgba(239, 68, 68, 0.08)', 
+            borderRadius: '20px', display: 'flex', alignItems: 'center', 
+            justifyContent: 'center', margin: '0 auto 24px', color: '#ef4444'
+          }}>
+            <Lock size={28} />
+          </div>
+
+          <h3 style={{ fontSize: '22px', fontWeight: 950, color: '#0f172a', marginBottom: '12px', fontFamily: 'Outfit, sans-serif' }}>
+            Portfolio Listing Inactive 🔒
+          </h3>
+          <p style={{ fontSize: '14px', color: '#64748b', fontWeight: 600, marginBottom: '32px', lineHeight: 1.6 }}>
+            {isOwner 
+              ? 'Aapka portfolio listing subscription period ya verified status inactive hai. Portfolio ko wapas public marketplace aur direct URL access par live karne ke liye listing active karein.'
+              : 'This creator\'s portfolio is currently inactive. If you are the creator, please log in to your CreatorBharat dashboard to reactivate your listing.'
+            }
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {isOwner ? (
+              <button onClick={() => navigate('/creator/monetization')} style={{ background: 'linear-gradient(135deg, #FF9431 0%, #EA580C 100%)', border: 'none', borderRadius: '100px', padding: '16px 24px', fontWeight: 900, color: '#fff', fontSize: '14px', cursor: 'pointer', boxShadow: '0 8px 16px rgba(255,148,49,0.2)' }}>
+                Reactivate Portfolio (₹199)
+              </button>
+            ) : (
+              <button onClick={() => navigate('/login')} style={{ background: '#0f172a', border: 'none', borderRadius: '100px', padding: '16px 24px', fontWeight: 900, color: '#fff', fontSize: '14px', cursor: 'pointer' }}>
+                Creator Login
+              </button>
+            )}
+            <button onClick={() => navigate('/')} style={{ background: 'transparent', border: '1.5px solid #e2e8f0', borderRadius: '100px', padding: '14px 24px', fontWeight: 800, color: '#475569', fontSize: '14px', cursor: 'pointer' }}>
+              Back to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (ld) return <ProfileSkeleton id={id} mob={mob} />;
   if (!c) return <div style={{ ...W(), padding: '120px 20px', textAlign: 'center' }}><Empty title="Profile Not Found" onCta={() => navigate('/creators')} /></div>;

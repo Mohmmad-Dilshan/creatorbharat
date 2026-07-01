@@ -20,7 +20,7 @@ router.use(requireRole(['ADMIN']));
 router.get('/verifications', async (req, res) => {
   try {
     const creators = await prisma.creator.findMany({
-      where: { isVerified: false },
+      where: { status: 'PENDING_APPROVAL' },
       include: { user: true },
       orderBy: { updatedAt: 'desc' }
     });

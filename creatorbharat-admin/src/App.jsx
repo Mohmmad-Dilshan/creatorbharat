@@ -3305,6 +3305,37 @@ export default function App() {
                 <a href={`${FRONTEND_URL}/creator/${selectedCreator.id}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: T.blueLight, border: `1px solid ${T.blue}25`, borderRadius: 10, textDecoration: 'none', color: T.blue, fontSize: 12, fontWeight: 800 }}>
                   <ExternalLink size={14} /> View Live Profile on Frontend
                 </a>
+
+                {/* Document Previews */}
+                {(selectedCreator.aadhaarUrl || selectedCreator.panUrl) && (
+                  <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div style={{ fontSize: 10, fontWeight: 800, color: T.muted, textTransform: 'uppercase', letterSpacing: 0.5 }}>Uploaded Documents Preview</div>
+                    <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }} className="no-scrollbar">
+                      {selectedCreator.aadhaarUrl && (
+                        <div style={{ flex: '0 0 160px', border: `1px solid ${T.border}`, borderRadius: 12, padding: 8, background: '#f8fafc', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <div style={{ fontSize: 10, fontWeight: 800, color: T.slate, marginBottom: 6, textAlign: 'center' }}>Aadhaar</div>
+                          {selectedCreator.aadhaarUrl.toLowerCase().endsWith('.pdf') ? (
+                            <div style={{ height: 100, width: '100%', display: 'grid', placeItems: 'center', background: '#e2e8f0', borderRadius: 8, fontSize: 11, fontWeight: 700, color: T.muted }}>PDF Document</div>
+                          ) : (
+                            <img src={selectedCreator.aadhaarUrl} alt="Aadhaar" style={{ width: '100%', height: 100, objectFit: 'contain', borderRadius: 8, cursor: 'zoom-in' }} onClick={() => window.open(selectedCreator.aadhaarUrl, '_blank')} />
+                          )}
+                          <a href={selectedCreator.aadhaarUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', fontSize: 10, textAlign: 'center', marginTop: 6, color: T.blue, fontWeight: 800, textDecoration: 'none' }}>View Original</a>
+                        </div>
+                      )}
+                      {selectedCreator.panUrl && (
+                        <div style={{ flex: '0 0 160px', border: `1px solid ${T.border}`, borderRadius: 12, padding: 8, background: '#f8fafc', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <div style={{ fontSize: 10, fontWeight: 800, color: T.slate, marginBottom: 6, textAlign: 'center' }}>PAN Card</div>
+                          {selectedCreator.panUrl.toLowerCase().endsWith('.pdf') ? (
+                            <div style={{ height: 100, width: '100%', display: 'grid', placeItems: 'center', background: '#e2e8f0', borderRadius: 8, fontSize: 11, fontWeight: 700, color: T.muted }}>PDF Document</div>
+                          ) : (
+                            <img src={selectedCreator.panUrl} alt="PAN Card" style={{ width: '100%', height: 100, objectFit: 'contain', borderRadius: 8, cursor: 'zoom-in' }} onClick={() => window.open(selectedCreator.panUrl, '_blank')} />
+                          )}
+                          <a href={selectedCreator.panUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', fontSize: 10, textAlign: 'center', marginTop: 6, color: T.blue, fontWeight: 800, textDecoration: 'none' }}>View Original</a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

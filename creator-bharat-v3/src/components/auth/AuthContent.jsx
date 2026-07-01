@@ -9,6 +9,7 @@ import WelcomeSplash from '@/components/common/WelcomeSplash';
 import ApplyForm from '../apply/ApplyForm.jsx';
 import { sanitize } from '@/utils/security';
 import { LS } from '@/utils/helpers';
+import { usePlatformStats } from '../../hooks/usePlatformStats';
 
 
 // Views
@@ -24,11 +25,14 @@ import { loginWithPassword, mergeRegistrationProfile } from '../../utils/authSer
 const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
   const { st, dsp } = useApp();
   const navigate = useNavigate();
+  const { analytics } = usePlatformStats();
   const [view, setView] = useState(initialView); 
   const [isMobile, setIsMobile] = useState(globalThis.innerWidth <= 768);
   const [showSplash, setShowSplash] = useState(false);
   const [authError, setAuthError] = useState('');
   const [isVerifyingGoogle, setIsVerifyingGoogle] = useState(false);
+  const [role, setRole] = useState('creator');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (st.user) {
@@ -52,6 +56,7 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
     const urlToken = params.get('token');
     const urlError = params.get('error');
     const existingRole = params.get('existing_role');
+    const attemptedRole = params.get('attempted_role');
 
     // ── Handle OAuth errors ────────────────────────────────────────────────
     if (urlError) {
@@ -62,6 +67,13 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
         const existingLabel = existingRole === 'creator' ? 'Creator' : 'Brand';
         const wrongLabel = existingRole === 'creator' ? 'Brand' : 'Creator';
         errorMsg = `This Google account is already registered as a ${existingLabel}. Please use the ${existingLabel} login, not ${wrongLabel} login.`;
+        
+        // Ensure the error displays under the attempted login tab
+        if (attemptedRole) {
+          setRole(attemptedRole.toLowerCase());
+        } else if (existingRole) {
+          setRole(existingRole === 'creator' ? 'brand' : 'creator');
+        }
       } else if (urlError === 'suspended') {
         errorMsg = 'Your account has been suspended. Contact support for help.';
       } else if (urlError === 'server_error') {
@@ -114,8 +126,6 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
     }
     setView(v);
   };
-  const [role, setRole] = useState('creator');
-  const [loading, setLoading] = useState(false);
 
   const onAuthSuccess = (backendUser, token, formPhone) => {
     if (token) {
@@ -243,6 +253,19 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
       title: "Turn Your Influence into a Legacy",
       sub: "Join the elite 1% of creators and collaborate with top brands in India."
     };
+    if (view === 'login') {
+      if (role === 'brand') {
+        return {
+          title: "Welcome to the Brand Console",
+          sub: "Manage campaigns, discover verified regional storytellers, and analyze data-driven influencer marketing ROI."
+        };
+      } else {
+        return {
+          title: "Welcome to the Creator Hub",
+          sub: "Access your creator dashboard, collaborate with verified brands, and track your commercial payouts."
+        };
+      }
+    }
     return {
       title: view === 'gateway' ? "Join Bharat's Elite Ecosystem" : "Welcome to the Creator Hub",
       sub: "Verified discovery, transparent pricing, and local impact for every creator and brand."
@@ -250,6 +273,32 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
   };
 
   const hero = getHeroContent();
+
+  const formatNum = (num) => {
+    if (!num) return '0';
+    if (num >= 10000000) return (num / 10000000).toFixed(1).replace(/\.0$/, '') + 'Cr+';
+    if (num >= 100000) return (num / 100000).toFixed(1).replace(/\.0$/, '') + 'L+';
+    if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K+';
+    return num.toString();
+  };
+
+  const getStats = () => {
+    if (isBrand) {
+      return [
+        [formatNum(analytics.totalCreators), 'Creators Available'],
+        [formatNum(analytics.totalReach), 'Total Reach'],
+        [formatNum(analytics.totalCampaigns), 'Active Campaigns']
+      ];
+    } else {
+      return [
+        [formatNum(analytics.brandCount), 'Active Brands'],
+        ['98%', 'Verified Deals'],
+        ['₹45Cr+', 'Paid Out']
+      ];
+    }
+  };
+
+  const statsList = getStats();
 
   return (
     <>
@@ -273,11 +322,7 @@ const AuthContent = ({ initialView = 'gateway', isPage = false, onClose }) => {
                 </p>
                 
                 <div className="auth-stats-grid">
-                  {[
-                    [isBrand ? '1.2K+' : '50K+', isBrand ? 'Active Brands' : 'Creators'],
-                    ['98%', 'Verified'],
-                    ['₹45Cr+', 'Paid Out']
-                  ].map(([num, label]) => (
+                  {statsList.map(([num, label]) => (
                     <div key={label} className="auth-stat-card">
                       <p className="auth-stat-num">{num}</p>
                       <p className="auth-stat-label">{label}</p>

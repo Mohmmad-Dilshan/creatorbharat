@@ -8,6 +8,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import CreatorLayout from '@/components/layout/CreatorLayout';
 import { useApp } from '@/core/context';
 import PremiumLock from '@/components/auth/PremiumLock';
+import ProMembershipLock from '@/components/auth/ProMembershipLock';
 import PageLoader from '@/components/common/PageLoader';
 
 // Public Pages
@@ -171,7 +172,7 @@ export default function AppRoutes({ location }) {
           <Route path="/creator/score" element={<CreatorScorePage />} />
           <Route path="/creator/verification" element={<CreatorVerificationPage />} />
           <Route path="/creator/notifications" element={<CreatorNotificationsPage />} />
-          <Route path="/creator/calendar" element={<CreatorCalendarPage />} />
+          <Route path="/creator/calendar" element={<ProMembershipLock><CreatorCalendarPage /></ProMembershipLock>} />
           <Route path="/creator/messages" element={<MessagesPage />} />
           <Route path="/creator/saved" element={<SavedPage />} />
           <Route path="/creator/settings" element={<SettingsPage />} />

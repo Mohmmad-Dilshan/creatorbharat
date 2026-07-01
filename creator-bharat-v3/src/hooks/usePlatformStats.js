@@ -58,7 +58,7 @@ export function usePlatformStats() {
           { city: 'Mumbai', state: 'Maharashtra', creators: 18, reach: 180000, deals: 12 },
           { city: 'Indore', state: 'Madhya Pradesh', creators: 12, reach: 90000, deals: 4 }
         ],
-        brandCount: 14
+        brandCount: data.totalBrands || 14
       });
       setLastUpdated(new Date());
     } catch (err) {

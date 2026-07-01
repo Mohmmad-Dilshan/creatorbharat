@@ -244,6 +244,13 @@ export async function fetchCreators({ limit = 250, force = false, filters = {} }
         });
       }
 
+      // Filter out profiles that are not APPROVED (unless they are seed creators without database properties)
+      merged = merged.filter(c => {
+        const isSeed = !c.userId && !c.email;
+        if (isSeed) return true;
+        return c.status === 'APPROVED' && c.isProfileActive === true;
+      });
+
       if (merged.length === 0 && !hasFilters) {
         merged = SEED_CREATORS;
       }
@@ -299,6 +306,9 @@ export async function fetchCreatorById(id) {
     const base = getEnrichedCreator(remoteCreator);
     return localCopy ? { ...base, ...localCopy } : base;
   } catch (err) {
+    if (err.status === 403) {
+      throw err;
+    }
     if (err.status !== 429) {
       if (import.meta.env.DEV && (err.name === 'TypeError' || err.message?.includes('Failed to fetch') || err.message?.includes('fetch'))) {
         console.warn(`fetchCreatorById [${id}]: API host offline/sleeping. Using seed fallback.`);

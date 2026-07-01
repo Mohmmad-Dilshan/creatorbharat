@@ -30,27 +30,72 @@ import {
   PanelLeft,
   Plus,
   Sparkles,
-  MessageSquare
+  MessageSquare,
+  Lock
 } from 'lucide-react';
 import { Logo } from '@/components/common';
 import EliteMobileNav from './EliteMobileNav';
 import NotificationDropdown from './NotificationDropdown';
 
 // ─── Sidebar Item ────────────────────────────────────────────────────────────
-const SidebarItem = ({ icon: Icon, label, path, active, collapsed, onClick }) => (
-  <button
-    onClick={() => onClick(path)}
-    title={collapsed ? label : undefined}
-    className={`db-sidebar-item ${active ? 'active' : ''}`}
-  >
-    <div className="db-sidebar-icon-wrap">
-      <Icon size={18} strokeWidth={active ? 2.2 : 1.8} />
-    </div>
-    {!collapsed && (
-      <span className="db-sidebar-text">{label}</span>
-    )}
-  </button>
-);
+const SidebarItem = ({ icon: Icon, label, path, active, collapsed, onClick, isProUser }) => {
+  const isProFeature = [
+    '/creator/opportunities',
+    '/creator/brand-requests',
+    '/creator/calendar',
+    '/creator/messages',
+    '/creator/analytics'
+  ].includes(path);
+
+  const showLock = isProFeature && !isProUser;
+
+  return (
+    <button
+      onClick={() => onClick(path)}
+      title={collapsed ? label : undefined}
+      className={`db-sidebar-item ${active ? 'active' : ''}`}
+      style={{ position: 'relative' }}
+    >
+      <div className="db-sidebar-icon-wrap" style={{ position: 'relative' }}>
+        <Icon size={18} strokeWidth={active ? 2.2 : 1.8} />
+        {showLock && (
+          <div style={{
+            position: 'absolute',
+            bottom: -3,
+            right: -3,
+            background: '#EF4444',
+            borderRadius: '50%',
+            width: 12,
+            height: 12,
+            display: 'grid',
+            placeItems: 'center',
+            border: '1.5px solid var(--db-sidebar-bg, #fff)'
+          }}>
+            <Lock size={6} color="#fff" />
+          </div>
+        )}
+      </div>
+      {!collapsed && (
+        <span className="db-sidebar-text" style={{ display: 'flex', alignItems: 'center', gap: 6, width: '100%', justifyContent: 'space-between' }}>
+          <span>{label}</span>
+          {showLock && (
+            <span style={{
+              fontSize: 8,
+              fontWeight: 900,
+              color: '#fff',
+              background: '#8B5CF6',
+              padding: '1px 5px',
+              borderRadius: 4,
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              lineHeight: 1.2
+            }}>Pro</span>
+          )}
+        </span>
+      )}
+    </button>
+  );
+};
 
 SidebarItem.propTypes = {
   icon: PropTypes.elementType.isRequired,
@@ -58,11 +103,12 @@ SidebarItem.propTypes = {
   path: PropTypes.string,
   active: PropTypes.bool,
   collapsed: PropTypes.bool,
-  onClick: PropTypes.func.isRequired
+  onClick: PropTypes.func.isRequired,
+  isProUser: PropTypes.bool
 };
 
 // ─── Sidebar Group ───────────────────────────────────────────────────────────
-const SidebarGroup = ({ title, links, collapsed, location, onClick }) => (
+const SidebarGroup = ({ title, links, collapsed, location, onClick, isProUser }) => (
   <div style={{ marginBottom: collapsed ? 8 : 4 }}>
     {!collapsed && (
       <span className="db-sidebar-label">{title}</span>
@@ -75,6 +121,7 @@ const SidebarGroup = ({ title, links, collapsed, location, onClick }) => (
         active={location.pathname === link.path || location.pathname.startsWith(`${link.path}/`)}
         collapsed={collapsed}
         onClick={onClick}
+        isProUser={isProUser}
       />
     ))}
   </div>
@@ -85,7 +132,8 @@ SidebarGroup.propTypes = {
   links: PropTypes.arrayOf(PropTypes.object).isRequired,
   collapsed: PropTypes.bool,
   location: PropTypes.object.isRequired,
-  onClick: PropTypes.func.isRequired
+  onClick: PropTypes.func.isRequired,
+  isProUser: PropTypes.bool
 };
 
 // ─── Profile Dropdown Item ───────────────────────────────────────────────────
@@ -262,6 +310,7 @@ export default function CreatorLayout({ children }) {
     navigate('/');
   };
 
+  const isProUser = st.isPro || localStorage.getItem('cb_is_pro') === 'true';
   const userName = st.user?.creatorProfile?.name || st.user?.name || 'Creator';
   const userInitial = userName[0]?.toUpperCase() || 'C';
   const profilePhoto = st.user?.creatorProfile?.photo || st.user?.photo || '';
@@ -337,6 +386,7 @@ export default function CreatorLayout({ children }) {
                 collapsed={collapsed}
                 location={location}
                 onClick={handleNav}
+                isProUser={isProUser}
               />
             ))}
           </div>
