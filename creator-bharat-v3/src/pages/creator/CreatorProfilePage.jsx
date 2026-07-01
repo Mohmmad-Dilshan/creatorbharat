@@ -326,12 +326,16 @@ export default function CreatorProfilePage() {
 
   const stats = useMemo(() => {
     if (!c) return { followers: 0, er: 0, reach: 0, authenticity: 0, score: 0 };
+    // Real followers count: use database value if defined/not null, otherwise 0
+    const rawFollowers = c.followers;
+    const followers = (rawFollowers !== undefined && rawFollowers !== null) ? Number(rawFollowers) : 0;
+    const er = c.engagementRate !== undefined ? Number(c.engagementRate) : (c.er !== undefined ? Number(c.er) : 0);
     return { 
-      followers: c.followers || 130000, 
-      er: c.er || 4.8, 
-      reach: Math.floor((c.followers || 130000) * 0.85), 
+      followers, 
+      er: er || 0, 
+      reach: Math.floor(followers * 0.85), 
       authenticity: c.authenticity || 98.2, 
-      score: c.score || 85 
+      score: c.score || 0 
     };
   }, [c]);
 

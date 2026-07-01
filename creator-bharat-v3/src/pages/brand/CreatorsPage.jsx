@@ -116,8 +116,8 @@ const DataHub = ({ creator, mob, saved, compared, requireBrand, dsp, onFullView,
   const score = creator.score || fmt.score(creator);
   const cityLabel = (creator.city && typeof creator.city === 'object') ? creator.city.name : (creator.city || 'Bharat');
   const nicheLabel = Array.isArray(creator.niche) ? creator.niche.join(' & ') : (creator.niche || creator.category || 'Premium');
-  const erRate = creator.er || 4.8;
-  const followersCount = creator.followers || 125000;
+  const erRate = creator.engagementRate !== undefined ? Number(creator.engagementRate) : (creator.er || 0);
+  const followersCount = (creator.followers !== undefined && creator.followers !== null) ? Number(creator.followers) : 0;
   const authenticityScore = creator.authenticity || 98.2;
   const responseTimeVal = creator.responseTime || creator.response_time || '2.4 hrs';
   const repeatRateVal = creator.repeatRate || creator.repeat_rate || '85%';
