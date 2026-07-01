@@ -23,7 +23,7 @@ const LoginView = ({ role, setRole, onLogin, onAuthSuccess, loading, setView, au
   const [otpLoading, setOtpLoading] = useState(false);
   const { timer, startTimer, isActive: timerActive } = useOtpTimer(30);
 
-  const onGoogle = () => {
+  const onGoogle = async () => {
     if (isUsingDemoAuth()) {
       const allCreators = LS.get('cb_creators', []);
       const matched = allCreators.find(cr => cr.email === 'google-mock-user@creatorbharat.com');
@@ -55,6 +55,24 @@ const LoginView = ({ role, setRole, onLogin, onAuthSuccess, loading, setView, au
       return;
     }
     const apiBase = import.meta.env.VITE_API_URL || 'https://creatorbharat.onrender.com/api';
+    setGoogleLoading(true);
+    dsp({ t: 'TOAST', d: { type: 'info', msg: 'Connecting to secure cloud server... Please wait a moment.' } });
+
+    try {
+      const pingStart = Date.now();
+      const controller = new AbortController();
+      const abortTimeout = setTimeout(() => controller.abort(), 12000);
+      
+      await fetch(`${apiBase}/health`, { signal: controller.signal }).catch(() => {});
+      clearTimeout(abortTimeout);
+      
+      if (Date.now() - pingStart > 2500) {
+        dsp({ t: 'TOAST', d: { type: 'success', msg: 'Cloud database awake! Redirecting to Google...' } });
+        await new Promise(r => setTimeout(r, 600));
+      }
+    } catch (err) {
+      console.warn('Backend ping failed, proceeding to redirect:', err);
+    }
     globalThis.location.href = `${apiBase}/auth/google?role=${role}&origin=${encodeURIComponent(globalThis.location.origin)}`;
   };
 
